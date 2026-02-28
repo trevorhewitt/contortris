@@ -25,7 +25,7 @@ const CONFIG = {
     pause: { hideShapes: true },
     render: {
       cellPx: 24,
-      gridLineAlpha: 0.12,
+      gridLineAlpha: 0.22,
       bg: "#000000",
       silhouetteColor: "rgba(240,240,255,0.16)",
       silhouetteStroke: "rgba(240,240,255,0.20)",
@@ -276,7 +276,7 @@ const CONFIG = {
     if (inDiff2Zone) return { zone: "assist: difficulty ≤ 2 (sometimes >2)", cap: 2 };
     return { zone: "normal", cap: Infinity };
   }
-  
+
   function randomShape(state) {
     // Decide difficulty cap based on how high the locked stack is.
     const inDiff1Zone = isStackInTopRows(state, CONFIG.assist.topRowsForDiff1Only);

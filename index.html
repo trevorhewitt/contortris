@@ -6,31 +6,50 @@
   <title>Contortris</title>
   <style>
     :root{
-      --bg: #07070a;
-      --panel: #0c0c12;
-      --grid: rgba(200,200,210,0.12);
-      --text: rgba(245,245,255,0.9);
-      --muted: rgba(245,245,255,0.6);
-      --accent: #7bf7ff;
+      --bg: #0f1020;          /* brighter outside the board */
+      --bg2: #070714;
+      --panel: rgba(12,12,18,0.78);
+      --panelBorder: rgba(255,255,255,0.10);
+
+      --text: rgba(245,245,255,0.92);
+      --muted: rgba(245,245,255,0.70);
+
       --cell: 24px;
-      --board-w: calc(var(--cell) * 10);
-      --board-h: calc(var(--cell) * 20);
+      --board-cols: 10;
+      --board-rows: 20;
+
+      --board-w: calc(var(--cell) * var(--board-cols));
+      --board-h: calc(var(--cell) * var(--board-rows));
+
+      /* Grid/board contrast */
+      --grid: rgba(230,230,245,0.22);   /* clearer grid lines */
+      --boardEdge: rgba(245,245,255,0.26);
+      --boardEdgeInner: rgba(245,245,255,0.10);
     }
 
     html, body{
       height: 100%;
       margin: 0;
-      background: radial-gradient(1200px 800px at 30% 10%, #151326 0%, var(--bg) 60%, #05050a 100%);
       color: var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:
+        radial-gradient(1200px 900px at 30% 10%, #2a2550 0%, var(--bg) 45%, var(--bg2) 100%);
     }
 
     .wrap{
-      display:flex;
+      display:grid;
+      grid-template-columns: auto 260px;
       gap: 18px;
-      align-items:flex-start;
+      align-items:start;
       justify-content:center;
       padding: 24px;
+    }
+
+    .boardCol{
+      display:flex;
+      flex-direction:column;
+      align-items:stretch;
+      width: var(--board-w);
     }
 
     .boardShell{
@@ -38,13 +57,17 @@
       width: var(--board-w);
       height: var(--board-h);
       background: #000;
-      border-radius: 10px;
-      box-shadow:
-        0 18px 60px rgba(0,0,0,0.6),
-        0 0 0 1px rgba(255,255,255,0.06) inset;
+      border-radius: 12px;
       overflow:hidden;
+
+      /* clearer edge */
+      box-shadow:
+        0 18px 60px rgba(0,0,0,0.60),
+        0 0 0 2px var(--boardEdge),
+        0 0 0 1px var(--boardEdgeInner) inset;
     }
 
+    /* Canvas: crisp pixel scaling */
     canvas{
       width: var(--board-w);
       height: var(--board-h);
@@ -53,14 +76,12 @@
       display:block;
     }
 
-    /* Behind-block name banner */
+    /* Name layer behind blocks */
     .nameLayer{
       position:absolute;
       inset: 0;
       pointer-events:none;
       overflow:hidden;
-
-      /* more visible + distracting */
       opacity: 1.0;
       mix-blend-mode: screen;
       filter:
@@ -70,51 +91,60 @@
 
     .nameText{
       position:absolute;
-
-      /* centre X axis */
       left: 50%;
-      transform: translateX(-50%);
-
-      /* not at very top */
       top: 54px;
-
-      /* larger + more visible */
+      transform: translateX(-50%);
       font-size: 34px;
       line-height: 1;
       font-style: italic;
       font-weight: 800;
       letter-spacing: 0.06em;
-
-      color: rgba(245,245,255,0.20);
-
-      /* “hyperreal” chroma + glow */
+      color: rgba(245,245,255,0.22);
       text-shadow:
-        2px 0 0 rgba(255,0,140,0.12),
-        -2px 0 0 rgba(0,255,255,0.10),
-        0 0 18px rgba(180,180,255,0.10),
-        0 0 34px rgba(255,80,220,0.08);
-
+        2px 0 0 rgba(255,0,140,0.14),
+        -2px 0 0 rgba(0,255,255,0.12),
+        0 0 18px rgba(180,180,255,0.12),
+        0 0 34px rgba(255,80,220,0.10);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       user-select:none;
-
       transition: transform 260ms ease, opacity 260ms ease;
+      max-width: calc(var(--board-w) - 20px);
+      text-align:center;
     }
-
-    /* Slide animation: keep centring via translateX(-50%) baseline */
     .nameText.enterFromRight{ transform: translateX(calc(-50% + 110%)); opacity: 0.0; }
     .nameText.enterToCenter{ transform: translateX(-50%); opacity: 1.0; }
     .nameText.exitToLeft{ transform: translateX(calc(-50% - 120%)); opacity: 0.0; }
 
+    /* Debug panel under board */
+    .debugPanel{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.10);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .debugPanel .k{
+      color: rgba(245,245,255,0.70);
+      display:inline-block;
+      width: 140px;
+    }
+    .debugPanel .v{
+      color: rgba(245,245,255,0.95);
+      font-weight: 800;
+    }
+
     .side{
-      width: 260px;
-      background: rgba(12,12,18,0.75);
+      width: 100px;
+      background: var(--panel);
       border-radius: 14px;
       padding: 14px;
       box-shadow:
         0 18px 60px rgba(0,0,0,0.45),
-        0 0 0 1px rgba(255,255,255,0.06) inset;
+        0 0 0 1px var(--panelBorder) inset;
       backdrop-filter: blur(10px);
     }
 
@@ -125,48 +155,19 @@
       gap: 10px;
       margin-bottom: 10px;
     }
-
     .titleRow h1{
       margin:0;
       font-size: 18px;
       letter-spacing: 0.02em;
     }
-
     .meta{
       color: var(--muted);
       font-size: 12px;
     }
 
-    .btnRow{
-      display:flex;
-      gap:10px;
-      margin: 10px 0 14px 0;
-    }
-
-    button{
-      border: 0;
-      border-radius: 12px;
-      padding: 10px 12px;
-      color: rgba(10,10,12,0.95);
-      background: linear-gradient(135deg, rgba(123,247,255,0.95), rgba(255,80,220,0.85));
-      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
-      font-weight: 700;
-      cursor:pointer;
-    }
-    button.secondary{
-      background: rgba(255,255,255,0.08);
-      color: var(--text);
-      box-shadow: none;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    button:disabled{
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
-
     .card{
       background: rgba(0,0,0,0.35);
-      border: 1px solid rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.10);
       border-radius: 12px;
       padding: 12px;
       margin-top: 10px;
@@ -181,9 +182,9 @@
     .nextShell{
       width: 100%;
       height: 140px;
-      background: radial-gradient(200px 160px at 30% 20%, rgba(123,247,255,0.08), rgba(0,0,0,0.55));
+      background: radial-gradient(220px 160px at 35% 25%, rgba(123,247,255,0.10), rgba(0,0,0,0.55));
       border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
       box-shadow: 0 0 0 1px rgba(0,0,0,0.3) inset;
       overflow:hidden;
       position: relative;
@@ -194,35 +195,6 @@
       height: 140px;
       image-rendering: pixelated;
       display:block;
-    }
-
-    .hud{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .hud .stat{
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 12px;
-      padding: 10px;
-    }
-    .hud .stat .k{
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-    .hud .stat .v{
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-    }
-
-    .help{
-      margin-top: 10px;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.35;
     }
 
     .statCol{
@@ -236,7 +208,7 @@
       justify-content:space-between;
       gap: 10px;
       background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
       border-radius: 12px;
       padding: 10px;
     }
@@ -246,28 +218,59 @@
     }
     .statRow .v{
       font-size: 18px;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: 0.02em;
     }
 
-    .debugPanel{
-      width: var(--board-w);
-      margin-top: 10px;
-      padding: 10px 12px;
+    button{
+      border: 0;
       border-radius: 12px;
-      background: rgba(0,0,0,0.35);
-      border: 1px solid rgba(255,255,255,0.08);
+      padding: 10px 12px;
+      color: rgba(10,10,12,0.95);
+      background: linear-gradient(135deg, rgba(123,247,255,0.95), rgba(255,80,220,0.85));
+      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+      font-weight: 800;
+      cursor:pointer;
+    }
+    button.secondary{
+      background: rgba(255,255,255,0.10);
+      color: var(--text);
+      box-shadow: none;
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .overlay{
+      position:absolute;
+      inset: 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(0,0,0,0.58);
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity 140ms ease;
+    }
+    .overlay.show{
+      opacity: 1;
+      pointer-events:auto;
+    }
+    .overlay .msg{
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(0,0,0,0.60);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+      text-align:center;
+      max-width: min(520px, calc(100vw - 48px));
+    }
+    .overlay .msg .big{
+      font-weight: 950;
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+    .overlay .msg .small{
       font-size: 12px;
       color: var(--muted);
-    }
-    .debugPanel .k{
-      color: rgba(245,245,255,0.55);
-      display:inline-block;
-      width: 120px;
-    }
-    .debugPanel .v{
-      color: rgba(245,245,255,0.90);
-      font-weight: 700;
     }
 
     .controlsBlock{
@@ -275,11 +278,11 @@
       text-align:left;
       padding: 10px 12px;
       border-radius: 12px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.10);
     }
     .controlsHeader{
-      font-weight: 900;
+      font-weight: 950;
       font-size: 12px;
       letter-spacing: 0.04em;
       margin-bottom: 6px;
@@ -298,97 +301,71 @@
       flex-wrap: wrap;
     }
 
-    /* Mobile layout: stack board over sidebar */
+    /* Mobile layout */
     @media (max-width: 860px){
       .wrap{
-        flex-direction: column;
-        align-items:center;
+        grid-template-columns: 1fr;
+        justify-items:center;
       }
       .side{
         width: min(360px, calc(100vw - 48px));
       }
-    }
-
-    .overlay{
-      position:absolute;
-      inset: 0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: rgba(0,0,0,0.55);
-      opacity: 0;
-      pointer-events:none;
-      transition: opacity 140ms ease;
-    }
-    .overlay.show{
-      opacity: 1;
-      pointer-events:auto;
-    }
-    .overlay .msg{
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: rgba(0,0,0,0.55);
-      border: 1px solid rgba(255,255,255,0.09);
-      box-shadow: 0 18px 60px rgba(0,0,0,0.55);
-      text-align:center;
-    }
-    .overlay .msg .big{
-      font-weight: 900;
-      letter-spacing: 0.02em;
-      margin-bottom: 6px;
-    }
-    .overlay .msg .small{
-      font-size: 12px;
-      color: var(--muted);
+      .boardCol{
+        width: var(--board-w);
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="boardShell">
-      <div id="nameLayer" class="nameLayer"></div>
-      <canvas id="boardCanvas"></canvas>
-      <div id="overlay" class="overlay show">
-        <div class="msg">
-          <div class="big" id="overlayTitle">Contortris</div>
-          <div class="small" id="overlaySubtitle">Press Play.</div>
-      
-          <div class="controlsBlock" id="controlsBlock">
-            <div class="controlsHeader">Controls</div>
-            <div class="controlsText">
-              Desktop: ←/→ move, ↑ rotate, ↓ soft drop, Space pause, D debug<br/>
-              Mobile: swipe ←/→ move, swipe ↑ rotate, swipe ↓ drop 1 step, double-tap play
+    <div class="boardCol">
+      <div class="boardShell">
+        <div id="nameLayer" class="nameLayer"></div>
+        <canvas id="boardCanvas"></canvas>
+
+        <div id="overlay" class="overlay show">
+          <div class="msg">
+            <div class="big" id="overlayTitle">Contortris</div>
+            <div class="small" id="overlaySubtitle">Press Play.</div>
+
+            <div class="controlsBlock" id="controlsBlock">
+              <div class="controlsHeader">Controls</div>
+              <div class="controlsText">
+                Desktop: ←/→ move, ↑ rotate, ↓ soft drop, Space pause, D debug<br/>
+                Mobile: swipe ←/→ move, swipe ↑ rotate, swipe ↓ drop 1 step, touch & hold bottom half = soft drop, double-tap play/pause
+              </div>
+            </div>
+
+            <div class="overlayBtns">
+              <button id="overlayPlayBtn">Play</button>
+              <button id="overlayResumeBtn" class="secondary">Resume</button>
+              <button id="overlayNewBtn" class="secondary">New game</button>
             </div>
           </div>
-      
-          <div class="overlayBtns">
-            <button id="overlayPlayBtn">Play</button>
-            <button id="overlayResumeBtn" class="secondary">Resume</button>
-            <button id="overlayNewBtn" class="secondary">New game</button>
-          </div>
         </div>
-    </div>
+      </div>
 
-    <div id="debugPanel" class="debugPanel" style="display:none;">
-      <div><span class="k">Zone</span> <span id="dbgZone" class="v">normal</span></div>
-      <div><span class="k">Piece difficulty</span> <span id="dbgPieceDiff" class="v">–</span></div>
-      <div><span class="k">Base fall speed</span> <span id="dbgBaseSpeed" class="v">–</span></div>
+      <div id="debugPanel" class="debugPanel" style="display:none;">
+        <div><span class="k">Zone</span> <span id="dbgZone" class="v">normal</span></div>
+        <div><span class="k">Piece difficulty</span> <span id="dbgPieceDiff" class="v">–</span></div>
+        <div><span class="k">Base fall speed</span> <span id="dbgBaseSpeed" class="v">–</span></div>
+      </div>
     </div>
 
     <div class="side">
       <div class="titleRow">
         <h1>Contortris</h1>
-        <div class="meta" id="statusText">ready</div>
+        <div class="meta" id="statusText"> </div>
       </div>
-    
+
       <div class="card">
-        <div class="label">Next (silhouette)</div>
+        <div class="label">Next shape:</div>
         <div class="nextShell">
           <canvas id="nextCanvas"></canvas>
         </div>
       </div>
-    
+
       <div class="card">
         <div class="statCol">
           <div class="statRow">
