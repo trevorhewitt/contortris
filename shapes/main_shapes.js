@@ -31,9 +31,7 @@ export const SHAPES = [
   {
     id: 'semicolon',
     name: 'the semicolon',
-    grid: [
-      'X.X',
-    ],
+    grid: ['X.X'],
     color: '#5e3f34',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -42,9 +40,7 @@ export const SHAPES = [
   {
     id: 'dot',
     name: 'the dot',
-    grid: [
-      'X',
-    ],
+    grid: ['X'],
     color: '#bfbfbf',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -53,12 +49,8 @@ export const SHAPES = [
   {
     id: 'donut',
     name: 'the donut',
-    grid: [
-      'XXX',
-      'X.X',
-      'XXX',
-    ],
-    color: '#ff00e6',
+    grid: ['XXX', 'X.X', 'XXX'],
+    color: [['#5cf4ff', '#5cf4ff', '#ff00e6', '#ff00e6', '#ffffff', '#ffffff'], ['#ff00e6', '#ff00e6', '#ff00e6', '#ff00e6', '#fe2fe2', '#fe2fe2'], ['#ffffff', '#ff00e6', '', '', '#d336ce', '#5cf4ff'], ['#ff00e6', '#ff00e6', '', '', '#d336ce', '#fe2fe2'], ['#ff00e6', '#ffffff', '#d336ce', '#d336ce', '#d336ce', '#f5e684'], ['#fe2fe2', '#ffffff', '#fe2fe2', '#f5e684', '#f5e684', '#f5e684']],
     difficulty: 2,
     rotation: { mode: 'any' },
     frequency: 0.25,
@@ -66,10 +58,7 @@ export const SHAPES = [
   {
     id: 'fat_log',
     name: 'the fat log',
-    grid: [
-      'XXXXXX',
-      'XXXXXX',
-    ],
+    grid: ['XXXXXX', 'XXXXXX'],
     color: '#4a1700',
     difficulty: 2,
     rotation: { mode: 'any' },
@@ -78,11 +67,7 @@ export const SHAPES = [
   {
     id: 'void',
     name: 'the void',
-    grid: [
-      '.X.',
-      'X.X',
-      '.X.',
-    ],
+    grid: ['.X.', 'X.X', '.X.'],
     color: '#280042',
     difficulty: 3,
     rotation: { mode: 'any' },
@@ -91,19 +76,7 @@ export const SHAPES = [
   {
     id: 'choker',
     name: 'the choker',
-    grid: [
-      'X',
-      'X',
-      'X',
-      'X',
-      'X',
-      'X',
-      'X',
-      'X',
-      'X',
-      'X',
-      'X',
-    ],
+    grid: ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
     color: '#5e0e41',
     difficulty: 3,
     rotation: { mode: 'none' },
@@ -112,11 +85,7 @@ export const SHAPES = [
   {
     id: 'emoji',
     name: 'the emoji',
-    grid: [
-      'X.X',
-      '...',
-      'XXX',
-    ],
+    grid: ['X.X', '...', 'XXX'],
     color: '#fff700',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -125,10 +94,7 @@ export const SHAPES = [
   {
     id: 'dumpling',
     name: 'the dumpling',
-    grid: [
-      'XXX',
-      'XXX',
-    ],
+    grid: ['XXX', 'XXX'],
     color: '#d2f59e',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -137,10 +103,7 @@ export const SHAPES = [
   {
     id: 'wave',
     name: 'the wave',
-    grid: [
-      'X.XXX',
-      'XXX.X',
-    ],
+    grid: ['X.XXX', 'XXX.X'],
     color: '#0019d6',
     difficulty: 2,
     rotation: { mode: 'any' },
@@ -149,10 +112,7 @@ export const SHAPES = [
   {
     id: 'angle',
     name: 'the angle',
-    grid: [
-      'XX',
-      'X.',
-    ],
+    grid: ['XX', 'X.'],
     color: '#00c8f0',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -161,13 +121,7 @@ export const SHAPES = [
   {
     id: 'number',
     name: 'the Smitty Werbenjägermanjensen',
-    grid: [
-      '.X.',
-      'XX.',
-      '.X.',
-      '.X.',
-      'XXX',
-    ],
+    grid: ['.X.', 'XX.', '.X.', '.X.', 'XXX'],
     color: '#ff0066',
     difficulty: 2,
     rotation: { mode: 'any' },
@@ -176,12 +130,8 @@ export const SHAPES = [
   {
     id: 'heart',
     name: 'the heart <3',
-    grid: [
-      'XX.',
-      'XXX',
-      'XXX',
-    ],
-    color: '#ff0000',
+    grid: ['XX.', 'XXX', 'XXX'],
+    color: [['#ff5757', '#ff0000', '#ff0000', '#ff0000', '', ''], ['#ff0000', '#ff0000', '#ff0000', '#ff0000', '', ''], ['#ff0000', '#ff0000', '#ff5757', '#db0000', '#ff0000', '#db0000'], ['#ff0000', '#ff5757', '#db0000', '#ff0000', '#ff0000', '#db0000'], ['#ff0000', '#ff0000', '#ff0000', '#ff0000', '#db0000', '#db0000'], ['#db0000', '#db0000', '#db0000', '#db0000', '#db0000', '#db0000']],
     difficulty: 1,
     rotation: { mode: 'any' },
     frequency: 1.00,
@@ -189,11 +139,7 @@ export const SHAPES = [
   {
     id: 'plus',
     name: 'the plus',
-    grid: [
-      '.X.',
-      'XXX',
-      '.X.',
-    ],
+    grid: ['.X.', 'XXX', '.X.'],
     color: '#004cff',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -202,11 +148,7 @@ export const SHAPES = [
   {
     id: 'equality',
     name: 'equality',
-    grid: [
-      'XXX',
-      '...',
-      'XXX',
-    ],
+    grid: ['XXX', '...', 'XXX'],
     color: '#7589f0',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -215,13 +157,7 @@ export const SHAPES = [
   {
     id: 'absolute',
     name: 'the absolute worst',
-    grid: [
-      'X.X.X',
-      '.X.X.',
-      'X.X.X',
-      '.X.X.',
-      'X.X.X',
-    ],
+    grid: ['X.X.X', '.X.X.', 'X.X.X', '.X.X.', 'X.X.X'],
     color: '#c70000',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -230,13 +166,7 @@ export const SHAPES = [
   {
     id: 'amigos',
     name: 'the three amigos',
-    grid: [
-      'XXXX',
-      '....',
-      'XXXX',
-      '....',
-      'XXXX',
-    ],
+    grid: ['XXXX', '....', 'XXXX', '....', 'XXXX'],
     color: '#007a08',
     difficulty: 3,
     rotation: { mode: 'any' },
@@ -245,9 +175,7 @@ export const SHAPES = [
   {
     id: 'balls',
     name: 'poi balls',
-    grid: [
-      'X....X',
-    ],
+    grid: ['X....X'],
     color: '#fffcad',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -256,10 +184,8 @@ export const SHAPES = [
   {
     id: 'dude',
     name: 'the lil dude',
-    grid: [
-      'XX',
-    ],
-    color: '#c800ff',
+    grid: ['X', 'X'],
+    color: [['#f0b000', '#f0b000', '#f0b000'], ['#545454', '#f0b000', '#545454'], ['#f0b000', '#f0b000', '#f0b000'], ['#545454', '#f0b000', '#545454'], ['#545454', '#545454', '#545454'], ['#f0b000', '#f0b000', '#f0b000']],
     difficulty: 1,
     rotation: { mode: 'any' },
     frequency: 1.00,
@@ -267,10 +193,8 @@ export const SHAPES = [
   {
     id: 'eyes',
     name: 'eyes',
-    grid: [
-      'XX..XX',
-    ],
-    color: '#0032c7',
+    grid: ['XX..XX'],
+    color: [['#edf7ca', '#262900', '#262900', '#edf7ca', '', '', '', '', '#edf7ca', '#262900', '#262900', '#edf7ca'], ['#edf7ca', '#262900', '#262900', '#edf7ca', '', '', '', '', '#edf7ca', '#262900', '#262900', '#edf7ca']],
     difficulty: 1,
     rotation: { mode: 'any' },
     frequency: 1.00,
@@ -278,15 +202,8 @@ export const SHAPES = [
   {
     id: 'earth',
     name: 'earth and moon',
-    grid: [
-      '.....X',
-      '......',
-      '......',
-      '......',
-      'XX....',
-      'XX....',
-    ],
-    color: '#00a0f0',
+    grid: ['...X', '....', 'XX..', 'XX..'],
+    color: [['', '', '', '#575757'], ['', '', '', ''], ['#0040ff', '#0040ff', '', ''], ['#0040ff', '#009e28', '', '']],
     difficulty: 2,
     rotation: { mode: 'any' },
     frequency: 0.17,
@@ -294,16 +211,7 @@ export const SHAPES = [
   {
     id: 'approximate',
     name: 'an less approximate circle',
-    grid: [
-      '...XXXX...',
-      '..XXXXXX..',
-      '.XXXXXXXX.',
-      '.XXXXXXXX.',
-      '.XXXXXXXX.',
-      '.XXXXXXXX.',
-      '..XXXXXX..',
-      '...XXXX...',
-    ],
+    grid: ['...XXXX...', '..XXXXXX..', '.XXXXXXXX.', '.XXXXXXXX.', '.XXXXXXXX.', '.XXXXXXXX.', '..XXXXXX..', '...XXXX...'],
     color: '#865b74',
     difficulty: 4,
     rotation: { mode: 'any' },
@@ -312,11 +220,7 @@ export const SHAPES = [
   {
     id: 'therefore',
     name: 'therefore',
-    grid: [
-      '.X.',
-      '...',
-      'X.X',
-    ],
+    grid: ['.X.', '...', 'X.X'],
     color: '#808080',
     difficulty: 3,
     rotation: { mode: 'any' },
@@ -325,10 +229,7 @@ export const SHAPES = [
   {
     id: 'cube',
     name: 'the cube',
-    grid: [
-      'XX',
-      'XX',
-    ],
+    grid: ['XX', 'XX'],
     color: '#151fb2',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -337,12 +238,7 @@ export const SHAPES = [
   {
     id: 'wanted',
     name: 'not quite what you wanted',
-    grid: [
-      '.X',
-      'X.',
-      'X.',
-      'X.',
-    ],
+    grid: ['.X', 'X.', 'X.', 'X.'],
     color: '#45ad00',
     difficulty: 2,
     rotation: { mode: 'any' },
@@ -351,9 +247,7 @@ export const SHAPES = [
   {
     id: 'dotdotdot',
     name: 'dot dot dot',
-    grid: [
-      'X.X.X',
-    ],
+    grid: ['X.X.X'],
     color: '#312650',
     difficulty: 2,
     rotation: { mode: 'any' },
@@ -362,13 +256,7 @@ export const SHAPES = [
   {
     id: 'exclaim',
     name: '!!!!',
-    grid: [
-      'X',
-      'X',
-      'X',
-      '.',
-      'X',
-    ],
+    grid: ['X', 'X', 'X', '.', 'X'],
     color: '#9e1000',
     difficulty: 2,
     rotation: { mode: 'any' },
@@ -377,10 +265,7 @@ export const SHAPES = [
   {
     id: 'zig',
     name: 'the zig',
-    grid: [
-      '.X.',
-      'X.X',
-    ],
+    grid: ['.X.', 'X.X'],
     color: '#cda4d5',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -389,11 +274,8 @@ export const SHAPES = [
   {
     id: 'zag',
     name: 'the zig zag',
-    grid: [
-      'X.X.X.',
-      '.X.X..',
-    ],
-    color: '#682c55',
+    grid: ['X.X.X', '.X.X.'],
+    color: [['#00ffee', '#00ffee', '#00ffee', '', '', '', '#00ffee', '#00ffee', '#00ffee', '', '', '', '#00ffee', '#00ffee', '#7d00b8'], ['#7d00b8', '#7d00b8', '#00ffee', '', '', '', '#00ffee', '#7d00b8', '#00ffee', '', '', '', '#00ffee', '#7d00b8', '#00ffee'], ['#00ffee', '#00ffee', '#7d00b8', '', '', '', '#7d00b8', '#00ffee', '#7d00b8', '', '', '', '#7d00b8', '#00ffee', '#00ffee'], ['', '', '', '#7d00b8', '#00ffee', '#7d00b8', '', '', '', '#7d00b8', '#00ffee', '#7d00b8', '', '', ''], ['', '', '', '#00ffee', '#7d00b8', '#00ffee', '', '', '', '#00ffee', '#7d00b8', '#00ffee', '', '', ''], ['', '', '', '#00ffee', '#00ffee', '#00ffee', '', '', '', '#00ffee', '#00ffee', '#00ffee', '', '', '']],
     difficulty: 3,
     rotation: { mode: 'any' },
     frequency: 0.49,
@@ -401,11 +283,7 @@ export const SHAPES = [
   {
     id: 'orbiters',
     name: 'orbiters',
-    grid: [
-      '..X',
-      '...',
-      'X..',
-    ],
+    grid: ['..X', '...', 'X..'],
     color: '#8db0b9',
     difficulty: 2,
     rotation: { mode: 'any' },
@@ -414,10 +292,7 @@ export const SHAPES = [
   {
     id: 'checker',
     name: 'checker',
-    grid: [
-      '.X',
-      'X.',
-    ],
+    grid: ['.X', 'X.'],
     color: '#d6d6d6',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -426,11 +301,7 @@ export const SHAPES = [
   {
     id: 'ttt',
     name: 'the big T',
-    grid: [
-      'XXX',
-      '.X.',
-      '.X.',
-    ],
+    grid: ['XXX', '.X.', '.X.'],
     color: '#beb8e0',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -439,11 +310,7 @@ export const SHAPES = [
   {
     id: 'h',
     name: 'the H',
-    grid: [
-      'X.X',
-      'XXX',
-      'X.X',
-    ],
+    grid: ['X.X', 'XXX', 'X.X'],
     color: '#2ecc87',
     difficulty: 2,
     rotation: { mode: 'any' },
@@ -452,14 +319,8 @@ export const SHAPES = [
   {
     id: 'diamond',
     name: 'the diamond',
-    grid: [
-      '..X..',
-      '.XXX.',
-      'XXXXX',
-      '.XXX.',
-      '..X..',
-    ],
-    color: '#94f3ff',
+    grid: ['..X..', '.XXX.', 'XXXXX', '.XXX.', '..X..'],
+    color: [['', '', '', '', '#b8f7ff', '#b8f7ff', '', '', '', ''], ['', '', '', '', '#b8f7ff', '#94f3ff', '', '', '', ''], ['', '', '#b8f7ff', '#b8f7ff', '#b8f7ff', '#94f3ff', '#94f3ff', '#94f3ff', '', ''], ['', '', '#b8f7ff', '#94f3ff', '#94f3ff', '#94f3ff', '#ddf5f8', '#94f3ff', '', ''], ['#b8f7ff', '#b8f7ff', '#b8f7ff', '#94f3ff', '#94f3ff', '#7af0ff', '#ddf5f8', '#94f3ff', '#94f3ff', '#94f3ff'], ['#b8f7ff', '#94f3ff', '#94f3ff', '#94f3ff', '#ddf5f8', '#7af0ff', '#ddf5f8', '#94f3ff', '#94f3ff', '#94f3ff'], ['', '', '#94f3ff', '#94f3ff', '#ddf5f8', '#7af0ff', '#94f3ff', '#94f3ff', '', ''], ['', '', '#94f3ff', '#94f3ff', '#ddf5f8', '#7af0ff', '#94f3ff', '#94f3ff', '', ''], ['', '', '', '', '#94f3ff', '#94f3ff', '', '', '', ''], ['', '', '', '', '#94f3ff', '#94f3ff', '', '', '', '']],
     difficulty: 2,
     rotation: { mode: 'any' },
     frequency: 0.12,
@@ -467,11 +328,7 @@ export const SHAPES = [
   {
     id: 'hammer',
     name: 'the hammer',
-    grid: [
-      '.X.',
-      'XXX',
-      'XXX',
-    ],
+    grid: ['.X.', 'XXX', 'XXX'],
     color: '#665000',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -480,9 +337,7 @@ export const SHAPES = [
   {
     id: 'line',
     name: 'the line',
-    grid: [
-      'XXX',
-    ],
+    grid: ['XXX'],
     color: '#cfcdc4',
     difficulty: 1,
     rotation: { mode: 'any' },
@@ -491,12 +346,7 @@ export const SHAPES = [
   {
     id: 'bigangle',
     name: 'the big angle',
-    grid: [
-      'XXXX',
-      'X...',
-      'X...',
-      'X...',
-    ],
+    grid: ['XXXX', 'X...', 'X...', 'X...'],
     color: '#0008ff',
     difficulty: 3,
     rotation: { mode: 'any' },
@@ -505,12 +355,8 @@ export const SHAPES = [
   {
     id: 'apple',
     name: 'the apple',
-    grid: [
-      '..X',
-      'XX.',
-      'XX.',
-    ],
-    color: '#ff0033',
+    grid: ['..X', 'XX.', 'XX.'],
+    color: [['', '', '', '', '#29f500', '#29f500'], ['', '', '', '', '#29f500', '#29f500'], ['#ff0033', '#ff0033', '#ff0033', '#ff0033', '', ''], ['#ff0033', '#ffffff', '#ffffff', '#ff0033', '', ''], ['#ff0033', '#ff0033', '#ff0033', '#ff0033', '', ''], ['#ff0033', '#ff0033', '#ff0033', '#ff0033', '', '']],
     difficulty: 1,
     rotation: { mode: 'any' },
     frequency: 0.65,
@@ -518,10 +364,7 @@ export const SHAPES = [
   {
     id: 'touch',
     name: 'the touch',
-    grid: [
-      'XX.X',
-      'X.XX',
-    ],
+    grid: ['XX.X', 'X.XX'],
     color: '#4836a6',
     difficulty: 2,
     rotation: { mode: 'any' },
@@ -530,10 +373,8 @@ export const SHAPES = [
   {
     id: 'everyones',
     name: 'everyone\'s favourite',
-    grid: [
-      'XXXX',
-    ],
-    color: '#4a3dff',
+    grid: ['XXXX'],
+    color: [['#4a3dff', '#4a3dff', '#4a3dff', '#4a3dff', '#4a3dff', '#4a3dff', '#4a3dff', '#161065', '#161065', '#4a3dff', '#161065', '#4a3dff'], ['#4a3dff', '#4a3dff', '#4a3dff', '#4a3dff', '#4a3dff', '#4a3dff', '#4a3dff', '#161065', '#4a3dff', '#4a3dff', '#4a3dff', '#4a3dff'], ['#4a3dff', '#4a3dff', '#4a3dff', '#4a3dff', '#4a3dff', '#4a3dff', '#4a3dff', '#161065', '#161065', '#4a3dff', '#161065', '#4a3dff']],
     difficulty: 1,
     rotation: { mode: 'any' },
     frequency: 1.00,
@@ -541,12 +382,8 @@ export const SHAPES = [
   {
     id: 'castle',
     name: 'the castle',
-    grid: [
-      'X.X.X',
-      'XXXXX',
-      'XXXXX',
-    ],
-    color: '#a1a1a1',
+    grid: ['X.X.X', 'XXXXX', 'XXXXX'],
+    color: [['#a6a6a6', '', '#a6a6a6', '', '#878787'], ['#d1d1d1', '#a6a6a6', '#803900', '#a6a6a6', '#878787'], ['#878787', '#a6a6a6', '#803900', '#a6a6a6', '#d1d1d1']],
     difficulty: 3,
     rotation: { mode: 'any' },
     frequency: 1.00,
@@ -554,12 +391,35 @@ export const SHAPES = [
   {
     id: 'horseshoe',
     name: 'the horseshoe',
-    grid: [
-      'X.X',
-      'X.X',
-      'XXX',
-    ],
+    grid: ['X.X', 'X.X', 'XXX'],
     color: '#6e073e',
+    difficulty: 2,
+    rotation: { mode: 'any' },
+    frequency: 1.00,
+  },
+  {
+    id: 'pill',
+    name: 'the pill',
+    grid: ['XX'],
+    color: [['#fb2828', '#fb2828', '#fff15c', '#fff15c'], ['#f00000', '#ff0000', '#ffea00', '#ffea00']],
+    difficulty: 0,
+    rotation: { mode: 'any' },
+    frequency: 1.00,
+  },
+  {
+    id: 'cookie',
+    name: 'the cookie',
+    grid: ['X'],
+    color: [['#be794b', '#be794b', '#be794b', '#be794b'], ['#be794b', '#6d3d1c', '#be794b', '#be794b'], ['#be794b', '#be794b', '#be794b', '#6d3d1c'], ['#be794b', '#6d3d1c', '#be794b', '#be794b']],
+    difficulty: 2,
+    rotation: { mode: 'any' },
+    frequency: 1.00,
+  },
+  {
+    id: 'lisa',
+    name: 'the mona lisa',
+    grid: ['XX', 'XX', 'XX'],
+    color: [['#ffbf52', '#ffbf52', '#ffbf52', '#ffbf52', '#ffbf52', '#ffbf52'], ['#ffbf52', '#a5c270', '#a5c270', '#a5c270', '#a5c270', '#ffbf52'], ['#ffbf52', '#fedfa9', '#fedfa9', '#fedfa9', '#fedfa9', '#ffbf52'], ['#ffbf52', '#382a19', '#fed6a4', '#382a19', '#fed6a4', '#ffbf52'], ['#ffbf52', '#fedfa9', '#fedfa9', '#fedfa9', '#fedfa9', '#ffbf52'], ['#ffbf52', '#ff8a90', '#ff8a90', '#ff8a90', '#fedfa9', '#ffbf52'], ['#ffbf52', '#41591c', '#41591c', '#41591c', '#41591c', '#ffbf52'], ['#ffbf52', '#41591c', '#41591c', '#41591c', '#41591c', '#ffbf52'], ['#ffbf52', '#ffbf52', '#ffbf52', '#ffbf52', '#ffbf52', '#ffbf52']],
     difficulty: 2,
     rotation: { mode: 'any' },
     frequency: 1.00,

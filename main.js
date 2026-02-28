@@ -59,42 +59,154 @@ const CONFIG = {
   // SHAPES — normalisation
   // ============================================================
   
-  function loadAndNormaliseShapes(rawShapes) {
-    const seen = new Set();
-    return rawShapes.map((s) => {
-      if (!s.id) throw new Error("Shape missing id");
-      if (seen.has(s.id)) throw new Error(`Duplicate shape id: ${s.id}`);
-      seen.add(s.id);
+  function loadAndNormaliseShapes(rawShapes, defaults = {}) {
+    // defaults can include:
+    // defaults.style = { baseColor, edgeLight, edgeDark, ... }
+    // defaults.difficulty, defaults.frequency, etc.
   
-      const base = parseGridToBoolMatrix(s.grid);
-      const rotationsAll = computeAllRotations(base);
-      const rotations = filterAllowedRotations(rotationsAll, s.rotation);
+    if (!Array.isArray(rawShapes)) {
+      throw new Error("loadAndNormaliseShapes: rawShapes must be an array");
+    }
   
-      const color = s.color ?? "#ffffff";
-      const style = normaliseStyle(color, s.style);
-  
-      // Guard: pieces wider than board cannot spawn (avoid silent insta-loss).
-      const maxW = Math.max(...rotations.map((m) => m[0].length));
-      if (maxW > CONFIG.board.cols) {
-        throw new Error(
-          `Shape "${s.id}" is too wide for the board (${maxW} > ${CONFIG.board.cols}). ` +
-          `Either narrow it, make it vertical-only, or increase CONFIG.board.cols.`
-        );
+    // Occupancy rotation (boolean matrix) 90° clockwise
+    function rotateMatrix90CW(mat) {
+      const H = mat.length;
+      const W = mat[0].length;
+      const out = Array.from({ length: W }, () => Array(H).fill(false));
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          out[x][H - 1 - y] = !!mat[y][x];
+        }
       }
-
-      // NEW: frequency in [0,1]; default 1
-      let frequency = (s.frequency ?? 1);
-      frequency = Number(frequency);
-      if (!Number.isFinite(frequency)) frequency = 1;
-      frequency = Math.max(0, Math.min(1, frequency));
-        
+      return out;
+    }
+  
+    // Trim empty rows/cols around a boolean matrix
+    function trimMatrix(mat) {
+      let top = 0, bottom = mat.length - 1;
+      let left = 0, right = mat[0].length - 1;
+  
+      const rowEmpty = (y) => mat[y].every(v => !v);
+      const colEmpty = (x) => mat.every(row => !row[x]);
+  
+      while (top <= bottom && rowEmpty(top)) top++;
+      while (bottom >= top && rowEmpty(bottom)) bottom--;
+      while (left <= right && colEmpty(left)) left++;
+      while (right >= left && colEmpty(right)) right--;
+  
+      const out = [];
+      for (let y = top; y <= bottom; y++) {
+        out.push(mat[y].slice(left, right + 1));
+      }
+      return out.length ? out : [[true]];
+    }
+  
+    function parseShapeGrid(shapeLines) {
+      // shapeLines can be:
+      // - array of strings, or
+      // - a single multiline string
+      const lines = Array.isArray(shapeLines)
+        ? shapeLines
+        : String(shapeLines).split("\n");
+  
+      const cleaned = lines
+        .map(s => String(s).trimEnd())
+        .filter(s => s.trim().length > 0);
+  
+      if (cleaned.length === 0) throw new Error("Shape grid is empty");
+  
+      const width = Math.max(...cleaned.map(s => s.length));
+      const mat = cleaned.map(line => {
+        const padded = line.padEnd(width, ".");
+        return Array.from(padded).map(ch => ch === "X");
+      });
+  
+      return trimMatrix(mat);
+    }
+  
+    function safeId(name, idx) {
+      const base = (name ?? `shape_${idx}`).toString().toLowerCase();
+      return base.replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+    }
+  
+    return rawShapes.map((s, idx) => {
+      // --- core metadata ---
+      const name = (s.name ?? `shape ${idx + 1}`).toString();
+      const id = (s.id ?? safeId(name, idx)).toString();
+  
+      const difficulty = Number.isFinite(+s.difficulty) ? +s.difficulty : (Number.isFinite(+defaults.difficulty) ? +defaults.difficulty : 1);
+      const frequency = Number.isFinite(+s.frequency) ? +s.frequency : (Number.isFinite(+defaults.frequency) ? +defaults.frequency : 1);
+  
+      // --- occupancy base matrix ---
+      const baseMat = parseShapeGrid(s.shape ?? s.grid ?? s.matrix);
+  
+      // --- generate 4 rotations (and optionally dedupe elsewhere if you do that) ---
+      const rotations = [baseMat];
+      for (let i = 1; i < 4; i++) rotations.push(rotateMatrix90CW(rotations[i - 1]));
+  
+      // --- style defaults + baseColor selection for shading ---
+      const style = { ...(defaults.style ?? {}), ...(s.style ?? {}) };
+  
+      // Backwards compatible: s.color may be a string or a 2D grid
+      let baseColor = "#FFFFFF";
+      if (isHexColour(s.color)) {
+        baseColor = s.color.trim();
+      } else {
+        const grid = normaliseGrid(s.color);
+        if (grid) {
+          const c0 = firstNonEmptyColour(grid);
+          if (c0) baseColor = c0;
+        }
+      }
+      style.baseColor = style.baseColor ?? baseColor;
+  
+      // --- NEW: colour rotations (optional) ---
+      let colorRotations = null;
+      let pixelK = 1;
+  
+      if (!isHexColour(s.color)) {
+        const grid = normaliseGrid(s.color);
+        if (grid) {
+          const matH0 = rotations[0].length;
+          const matW0 = rotations[0][0].length;
+          const gridH0 = grid.length;
+          const gridW0 = grid[0].length;
+  
+          const k = inferPixelScale(matH0, matW0, gridH0, gridW0);
+          if (k) {
+            pixelK = k;
+  
+            // Clean blanks: "" / "." / null => baseColor
+            const cleaned = grid.map(row =>
+              row.map(v => (isHexColour(v) ? v.trim() : baseColor))
+            );
+  
+            // Rotate colour grid to match occupancy rotations
+            colorRotations = [cleaned];
+            for (let i = 1; i < rotations.length; i++) {
+              colorRotations.push(rotateGrid90CW(colorRotations[i - 1]));
+            }
+          } else {
+            console.warn(`[${id}] colour grid dims (${gridW0}×${gridH0}) do not match piece dims (${matW0}×${matH0}); falling back to solid baseColor.`);
+          }
+        }
+      }
+  
       return {
-        id: s.id,
-        name: s.name ?? s.id,
-        difficulty: Number.isFinite(s.difficulty) ? s.difficulty : 1,
-        frequency, // NEW
-        color,
+        id,
+        name,
+        difficulty,
+        frequency,
         style,
+  
+        // Keep original colour spec for future extension
+        color: s.color,
+  
+        // New fields used by renderer/locking
+        colorRotations,
+        pixelK,
+  
+        // Rotations used for collision + placement
         rotations,
       };
     });
@@ -174,7 +286,6 @@ const CONFIG = {
     if (s.length !== 6) return { r: 255, g: 255, b: 255 };
     return { r: parseInt(s.slice(0, 2), 16), g: parseInt(s.slice(2, 4), 16), b: parseInt(s.slice(4, 6), 16) };
   }
-  function clamp01(x) { return Math.max(0, Math.min(1, x)); }
   
   function rgbToHsl({ r, g, b }) {
     const R = r / 255, G = g / 255, B = b / 255;
@@ -215,7 +326,138 @@ const CONFIG = {
     const f = (n) => n.toString(16).padStart(2, "0");
     return `#${f(r)}${f(g)}${f(b)}`;
   }
+
+// ===============================
+// Pixel-art colour grid utilities
+// ===============================
+
+// Returns true if value looks like a hex colour string (#RGB, #RRGGBB, #RRGGBBAA not supported here)
+function isHexColour(s) {
+  return typeof s === "string" && /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(s.trim());
+}
+
+function firstNonEmptyColour(grid) {
+  for (const row of grid) {
+    for (const c of row) {
+      if (isHexColour(c)) return c.trim();
+    }
+  }
+  return null;
+}
+
+// Ensure rectangular 2D array
+function normaliseGrid(grid) {
+  if (!Array.isArray(grid) || grid.length === 0) return null;
+  const w = Array.isArray(grid[0]) ? grid[0].length : 0;
+  if (w === 0) return null;
+  for (const row of grid) {
+    if (!Array.isArray(row) || row.length !== w) return null;
+  }
+  return grid;
+}
+
+// Infer pixel scale k such that grid is (k*h) x (k*w) for a given block matrix h x w.
+// Returns k in {1,2,3,4} or null.
+function inferPixelScale(matH, matW, gridH, gridW) {
+  if (gridH % matH !== 0) return null;
+  if (gridW % matW !== 0) return null;
+  const kH = gridH / matH;
+  const kW = gridW / matW;
+  if (kH !== kW) return null;
+  if (![1, 2, 3, 4].includes(kH)) return null;
+  return kH;
+}
+
+// Rotate a 2D array 90° clockwise (works for any element type)
+function rotateGrid90CW(grid) {
+  const H = grid.length;
+  const W = grid[0].length;
+  const out = Array.from({ length: W }, () => Array(H));
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      out[x][H - 1 - y] = grid[y][x];
+    }
+  }
+  return out;
+}
+
+// Slice a k×k pixel block from a rotated colour grid at block coords (bx, by)
+function sliceBlockPixels(colorGridRot, k, bx, by) {
+  const y0 = by * k;
+  const x0 = bx * k;
+  const pixels = [];
+  for (let py = 0; py < k; py++) {
+    const row = [];
+    for (let px = 0; px < k; px++) {
+      row.push(colorGridRot[y0 + py][x0 + px]);
+    }
+    pixels.push(row);
+  }
+  return pixels;
+}
   
+function getActivePaintForBlock(state, bx, by) {
+  const shape = state.active.shape;
+  const rotIdx = state.active.rotIdx;
+
+  // Case 1: legacy solid colour
+  if (!shape.colorRotations) {
+    // If old code expects shape.color to be a string, baseColor is the safe choice.
+    return shape.style.baseColor;
+  }
+
+  // Case 2: grid-based colour (per-block or pixel art)
+  const k = shape.pixelK ?? 1;
+  const grid = shape.colorRotations[rotIdx];
+
+  if (k === 1) {
+    // Single colour per block cell
+    return grid[by][bx];
+  }
+
+  // k in {2,3,4}: return pixel art for this block
+  return {
+    k,
+    pixels: sliceBlockPixels(grid, k, bx, by),
+  };
+}
+
+function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+function hexToRgb(hex){
+  const h = hex.replace("#","").trim();
+  const v = h.length === 3
+    ? h.split("").map(ch => ch + ch).join("")
+    : h;
+  const n = parseInt(v, 16);
+  return { r: (n>>16)&255, g: (n>>8)&255, b: n&255 };
+}
+
+function rgbToHex(r,g,b){
+  const to = (x)=>x.toString(16).padStart(2,"0");
+  return `#${to(r)}${to(g)}${to(b)}`;
+}
+
+// Slightly lighter + yellower
+function lightenTowardsYellow(hex){
+  const {r,g,b} = hexToRgb(hex);
+  const rr = Math.round(r + (255 - r) * 0.22);
+  const gg = Math.round(g + (255 - g) * 0.18);
+  const bb = Math.round(b + (50  - b) * 0.10);
+  return rgbToHex(rr, gg, clampByte(bb));
+}
+
+// Slightly darker + bluer
+function darkenTowardsBlue(hex){
+  const {r,g,b} = hexToRgb(hex);
+  const rr = Math.round(r * 0.72);
+  const gg = Math.round(g * 0.72);
+  const bb = Math.round(b + (255 - b) * 0.12);
+  return rgbToHex(clampByte(rr), clampByte(gg), clampByte(bb));
+}
+
+function clampByte(x){ return Math.max(0, Math.min(255, x)); }
+
   // ============================================================
   // GAME CORE
   // ============================================================
@@ -455,13 +697,15 @@ const CONFIG = {
         const bx = state.active.x + x;
         const by = state.active.y + y;
   
-        // If any part of the piece is at negative board y when it locks, that's game over.
         if (by < 0) {
           lockedAboveTop = true;
           continue;
         }
   
-        state.board[by][bx] = { color: shape.color, style: shape.style };
+        const paint = getActivePaintForBlock(state, x, y);
+  
+        // Store paint + style per locked block
+        state.board[by][bx] = { paint, style: shape.style };
       }
     }
   
@@ -535,32 +779,52 @@ const CONFIG = {
       bctx.clearRect(0, 0, bw, bh);
       bctx.fillStyle = CONFIG.render.bg;
       bctx.fillRect(0, 0, bw, bh);
-  
+    
       const hide = state.paused && CONFIG.pause.hideShapes;
-  
+      const cellSize = cell; // alias for clarity
+    
+      // ---- Locked blocks ----
       if (!hide) {
         for (let y = 0; y < CONFIG.board.rows; y++) {
           for (let x = 0; x < CONFIG.board.cols; x++) {
             const cellObj = state.board[y][x];
             if (!cellObj) continue;
-            drawCell(bctx, x, y, cellObj.color, cellObj.style);
+    
+            const px = x * cellSize;
+            const py = y * cellSize;
+    
+            // cellObj is { paint, style }
+            drawBlockWithPaint(bctx, px, py, cellSize, cellObj.paint, cellObj.style);
           }
         }
       }
-  
+    
+      // ---- Active piece ----
       if (!hide && state.active) {
+        const shape = state.active.shape;
         const mat = getActiveMatrix(state);
+    
         for (let y = 0; y < mat.length; y++) {
           for (let x = 0; x < mat[0].length; x++) {
             if (!mat[y][x]) continue;
+    
             const bx = state.active.x + x;
             const by = state.active.y + y;
+    
+            // still entering from above
             if (by < 0) continue;
-            drawCell(bctx, bx, by, state.active.shape.color, state.active.shape.style);
+    
+            const px = bx * cellSize;
+            const py = by * cellSize;
+    
+            // NEW: compute paint for this block of the active piece
+            const paint = getActivePaintForBlock(state, x, y);
+    
+            drawBlockWithPaint(bctx, px, py, cellSize, paint, shape.style);
           }
         }
       }
-  
+    
       drawGrid(bctx, bw, bh, cell, CONFIG.render.gridLineAlpha);
       drawScreenFX(bctx, bw, bh);
     }
@@ -613,29 +877,80 @@ const CONFIG = {
       nctx.restore();
     }
   
-    function drawCell(ctx, gx, gy, baseColor, style) {
-      const x = gx * cell;
-      const y = gy * cell;
-  
-      ctx.fillStyle = baseColor;
-      ctx.fillRect(x, y, cell, cell);
-  
-      ctx.fillStyle = style.shadeTopRight;
-      ctx.fillRect(x, y, cell, 2);
-      ctx.fillRect(x + cell - 2, y, 2, cell);
-  
-      ctx.fillStyle = style.shadeBottomLeft;
-      ctx.fillRect(x, y + cell - 2, cell, 2);
-      ctx.fillRect(x, y, 2, cell);
-  
-      ctx.fillStyle = "rgba(255,255,255,0.08)";
-      ctx.fillRect(x + 3, y + 3, 2, 2);
-  
-      if (style.glow?.enabled) {
+    function drawBlockWithPaint(ctx, px, py, cellSize, paint, style) {
+      // 1) Fill interior (solid or pixel art)
+      if (typeof paint === "string") {
+        ctx.fillStyle = paint;
+        ctx.fillRect(px, py, cellSize, cellSize);
+      } else if (paint && typeof paint === "object" && paint.pixels && paint.k) {
+        const k = paint.k;
+        const sub = cellSize / k;
+    
+        for (let sy = 0; sy < k; sy++) {
+          for (let sx = 0; sx < k; sx++) {
+            const c = paint.pixels[sy][sx];
+            ctx.fillStyle = isHexColour(c) ? c : (style.baseColor ?? "#FFFFFF");
+            ctx.fillRect(px + sx * sub, py + sy * sub, sub, sub);
+          }
+        }
+      } else {
+        ctx.fillStyle = style.baseColor ?? "#FFFFFF";
+        ctx.fillRect(px, py, cellSize, cellSize);
+      }
+    
+      // 2) Block-level shading that PRESERVES pixel hues
+      //    - dark: multiply with near-black translucent overlay
+      //    - light: screen with near-white translucent overlay
+      //
+      // Optional mild tint (yellow/blue) is applied at very low alpha so it doesn't recolour the art.
+      const w = Math.max(1, Math.floor(cellSize * 0.12));
+    
+      // Tunables (keep low to preserve pixel art)
+      const darkAlpha = style.shadeDarkAlpha ?? 0.28;
+      const lightAlpha = style.shadeLightAlpha ?? 0.22;
+    
+      const tintWarmAlpha = style.shadeWarmTintAlpha ?? 0.06; // top/right
+      const tintCoolAlpha = style.shadeCoolTintAlpha ?? 0.06; // bottom/left
+    
+      ctx.save();
+    
+      // --- Darken bottom + left (multiply) ---
+      ctx.globalCompositeOperation = "multiply";
+      ctx.fillStyle = `rgba(0,0,0,${darkAlpha})`;
+      ctx.fillRect(px, py + cellSize - w, cellSize, w); // bottom
+      ctx.fillRect(px, py, w, cellSize);                // left
+    
+      // Optional subtle cool tint (still multiply, very low alpha)
+      if (tintCoolAlpha > 0) {
+        ctx.fillStyle = `rgba(70,120,255,${tintCoolAlpha})`;
+        ctx.fillRect(px, py + cellSize - w, cellSize, w);
+        ctx.fillRect(px, py, w, cellSize);
+      }
+    
+      // --- Lighten top + right (screen) ---
+      ctx.globalCompositeOperation = "screen";
+      ctx.fillStyle = `rgba(255,255,255,${lightAlpha})`;
+      ctx.fillRect(px, py, cellSize, w);               // top
+      ctx.fillRect(px + cellSize - w, py, w, cellSize);// right
+    
+      // Optional subtle warm tint (screen, very low alpha)
+      if (tintWarmAlpha > 0) {
+        ctx.fillStyle = `rgba(255,230,120,${tintWarmAlpha})`;
+        ctx.fillRect(px, py, cellSize, w);
+        ctx.fillRect(px + cellSize - w, py, w, cellSize);
+      }
+    
+      ctx.restore();
+    
+      // 3) Optional thin outline to make blocks “read” crisply (doesn't ruin art)
+      // If you dislike outlines, set style.outlineAlpha = 0.
+      const outlineAlpha = style.outlineAlpha ?? 0.18;
+      if (outlineAlpha > 0) {
         ctx.save();
-        ctx.globalAlpha = 0.10 * (style.glow.strength ?? 0.35);
-        ctx.fillStyle = baseColor;
-        ctx.fillRect(x - 1, y - 1, cell + 2, cell + 2);
+        ctx.globalCompositeOperation = "source-over";
+        ctx.strokeStyle = `rgba(255,255,255,${outlineAlpha})`;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(px + 0.5, py + 0.5, cellSize - 1, cellSize - 1);
         ctx.restore();
       }
     }
