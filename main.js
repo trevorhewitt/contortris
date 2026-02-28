@@ -11,6 +11,13 @@ const CONFIG = {
       softDropFactor: 0.12,
       maxFallStepsPerFrame: 1,        // NEW: 1 = no multi-row jumps per frame
       maxAccumulatedSteps: 2,         // NEW: cap backlog to avoid bursts after lag
+      // Lock grace after touching down
+      lockDelayMsKeyboard: 220,
+      lockDelayMsTouch: 520,
+
+      // Tap-and-hold repeat
+      tapRepeatStartMs: 140,
+      tapRepeatEveryMs: 55,
     },
     scoring: {
       lineClear: { 1: 100, 2: 250, 3: 450, 4: 700 },
@@ -265,6 +272,17 @@ const CONFIG = {
         startT: 0,
         lastTapT: 0,
       },
+      // NEW: lock grace
+      locking: false,
+      lockElapsed: 0,
+
+      // NEW: input typing (for choosing lock delay)
+      lastInputType: "keyboard",   // "keyboard" | "touch"
+      lastInputAt: 0,
+
+      // NEW: tap-hold repeat handle
+      tapRepeatTimer: null,
+      tapRepeatInterval: null,
     };
   }
 
@@ -359,12 +377,38 @@ const CONFIG = {
     }
     return false;
   }
+
+  function markInput(state, type) {
+    state.lastInputType = type;
+    state.lastInputAt = performance.now();
+  }
+  
+  function currentLockDelayMs(state) {
+    // treat as touch if touch input occurred recently
+    const now = performance.now();
+    const recentTouch = (state.lastInputType === "touch") && (now - state.lastInputAt < 1200);
+    return recentTouch ? CONFIG.timing.lockDelayMsTouch : CONFIG.timing.lockDelayMsKeyboard;
+  }
+  
+  function beginLockIfNeeded(state) {
+    if (!state.locking) {
+      state.locking = true;
+      state.lockElapsed = 0;
+    }
+  }
+  
+  function cancelLock(state) {
+    state.locking = false;
+    state.lockElapsed = 0;
+  }
   
   function tryMove(state, dx, dy) {
     const mat = getActiveMatrix(state);
     const nx = state.active.x + dx;
     const ny = state.active.y + dy;
     if (!collides(state, nx, ny, mat)) {
+      // If player nudges a piece while it's in lock grace, reset the timer.
+      if (dx !== 0 || dy !== 0) cancelLock(state);
       state.active.x = nx;
       state.active.y = ny;
       return true;
@@ -391,6 +435,7 @@ const CONFIG = {
         state.active.rotIdx = nextIdx;
         state.active.x = nx;
         state.active.y = ny;
+        cancelLock(state);
         return true;
       }
     }
@@ -661,10 +706,8 @@ const CONFIG = {
   // ============================================================
   // UI + INPUT (soft drop)
   // ============================================================
-  
   function bindUI(state, renderer, nameLayer, boardEl) {
     // HUD
-    //const statusText = document.getElementById("statusText");
     const scoreText = document.getElementById("scoreText");
     const linesText = document.getElementById("linesText");
   
@@ -676,11 +719,16 @@ const CONFIG = {
     const overlayResumeBtn = document.getElementById("overlayResumeBtn");
     const overlayNewBtn = document.getElementById("overlayNewBtn");
   
+    // Pause button (bottom bar)
+    const pauseBtn = document.getElementById("pauseBtn");
+  
     // Debug panel
     const debugPanel = document.getElementById("debugPanel");
     const dbgZone = document.getElementById("dbgZone");
     const dbgPieceDiff = document.getElementById("dbgPieceDiff");
     const dbgBaseSpeed = document.getElementById("dbgBaseSpeed");
+  
+    const boardShellEl = document.getElementById("boardShell");
   
     function showOverlay(show, title, subtitle, mode) {
       overlay.classList.toggle("show", show);
@@ -689,7 +737,6 @@ const CONFIG = {
       overlayTitle.textContent = title ?? "Contortris";
       overlaySubtitle.textContent = subtitle ?? "";
   
-      // Button visibility by mode: "start" | "pause" | "gameover"
       const m = mode ?? "start";
       overlayPlayBtn.style.display = (m === "start") ? "inline-block" : "none";
       overlayResumeBtn.style.display = (m === "pause") ? "inline-block" : "none";
@@ -700,14 +747,6 @@ const CONFIG = {
       scoreText.textContent = String(state.score);
       linesText.textContent = String(state.lines);
   
-      //statusText.textContent = state.gameOver
-      //  ? "game over"
-      //  : state.paused
-      //    ? "paused"
-      //    : state.running
-      //      ? "running"
-      //      : "ready";
-  
       if (state.debug) {
         const z = getDifficultyZone(state);
         dbgZone.textContent = z.zone;
@@ -717,6 +756,7 @@ const CONFIG = {
     }
   
     function startGame() {
+      markInput(state, "keyboard");
       if (state.gameOver) resetGame(state, renderer, nameLayer, updateHUD, showOverlay);
       if (!state.running) {
         state.running = true;
@@ -726,6 +766,7 @@ const CONFIG = {
     }
   
     function resumeGame() {
+      markInput(state, "keyboard");
       if (state.gameOver) return;
       state.paused = false;
       state.running = true;
@@ -737,7 +778,8 @@ const CONFIG = {
       if (state.gameOver) return;
       if (!state.running) return;
       state.paused = true;
-      showOverlay(true, "Paused", "Double-tap to resume, or use buttons below.", "pause");
+      state.softDropping = false;
+      showOverlay(true, "Paused", "Use ▶ to resume. New game resets.", "pause");
       updateHUD();
     }
   
@@ -751,6 +793,12 @@ const CONFIG = {
     overlayPlayBtn.addEventListener("click", () => startGame());
     overlayResumeBtn.addEventListener("click", () => resumeGame());
     overlayNewBtn.addEventListener("click", () => resetGame(state, renderer, nameLayer, updateHUD, showOverlay));
+  
+    // Pause button (always ▶)
+    pauseBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      togglePause();
+    });
   
     // Keyboard
     window.addEventListener("keydown", (e) => {
@@ -770,6 +818,8 @@ const CONFIG = {
       if (!state.running && e.code !== "Enter") return;
       if (state.gameOver) return;
       if (state.paused) return;
+  
+      markInput(state, "keyboard");
   
       switch (e.code) {
         case "ArrowLeft":
@@ -799,111 +849,166 @@ const CONFIG = {
       if (e.code === "ArrowDown") state.softDropping = false;
     });
   
-    // Touch controls:
-    // - swipe left/right: move
-    // - swipe up: rotate
-    // - swipe down: move down 1 step
-    // - double tap: start OR toggle pause (pause/resume)
-    // - touch & hold bottom half: soft drop while held
-    const SWIPE_MIN = 26;
-    const SWIPE_AXIS_DOMINANCE = 1.2;
-    const DOUBLE_TAP_MS = 320;
+    // ---------- Touch controls (tap zones + hold repeat + swipes retained) ----------
+    // Zones are based on the whole viewport, not only the board.
+    // - Left 25%: move left (yellow glow)
+    // - Right 25%: move right (blue glow)
+    // - Top 22%: rotate (green glow)
+    // - Bottom 28%: step down (red glow)
+    //
+    // Priority: top/bottom override left/right if overlapping.
+    const Z = {
+      topFrac: 0.22,
+      bottomFrac: 0.28,
+      sideFrac: 0.25,
+    };
   
-    // Helper: is touch in bottom half of boardEl?
-    function isBottomHalfTouch(touch) {
-      const r = boardEl.getBoundingClientRect();
-      const y = touch.clientY - r.top;
-      return y > (r.height * 0.5);
+    const SWIPE_MIN = 34; // keep swipe as secondary
+    const SWIPE_AXIS_DOMINANCE = 1.25;
+  
+    function clearGlows() {
+      boardShellEl.classList.remove("glow-left", "glow-right", "glow-top", "glow-bottom");
     }
   
-    function endSoftDrop() {
-      state.softDropping = false;
+    function applyGlow(zone) {
+      clearGlows();
+      if (zone === "left") boardShellEl.classList.add("glow-left");
+      if (zone === "right") boardShellEl.classList.add("glow-right");
+      if (zone === "top") boardShellEl.classList.add("glow-top");
+      if (zone === "bottom") boardShellEl.classList.add("glow-bottom");
     }
   
+    function getZoneFromPoint(clientX, clientY) {
+      const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  
+      const yFrac = clientY / vh;
+      const xFrac = clientX / vw;
+  
+      if (yFrac <= Z.topFrac) return "top";
+      if (yFrac >= 1 - Z.bottomFrac) return "bottom";
+      if (xFrac <= Z.sideFrac) return "left";
+      if (xFrac >= 1 - Z.sideFrac) return "right";
+      return null;
+    }
+  
+    function canActNow() {
+      return state.running && !state.gameOver && !state.paused && state.active;
+    }
+  
+    function doAction(zone) {
+      if (!canActNow()) return;
+  
+      markInput(state, "touch");
+  
+      if (zone === "left") {
+        tryMove(state, -1, 0);
+      } else if (zone === "right") {
+        tryMove(state, +1, 0);
+      } else if (zone === "top") {
+        tryRotate(state);
+      } else if (zone === "bottom") {
+        // step down 1
+        const moved = tryMove(state, 0, 1);
+        if (!moved) {
+          // if touching down, start lock grace (longer on touch)
+          beginLockIfNeeded(state);
+        }
+      }
+    }
+  
+    function startRepeat(zone) {
+      // immediate action
+      doAction(zone);
+  
+      // then repeat after short delay while finger is down
+      state.tapRepeatTimer = setTimeout(() => {
+        state.tapRepeatInterval = setInterval(() => doAction(zone), CONFIG.timing.tapRepeatEveryMs);
+      }, CONFIG.timing.tapRepeatStartMs);
+    }
+  
+    function stopRepeat() {
+      if (state.tapRepeatTimer) clearTimeout(state.tapRepeatTimer);
+      if (state.tapRepeatInterval) clearInterval(state.tapRepeatInterval);
+      state.tapRepeatTimer = null;
+      state.tapRepeatInterval = null;
+    }
+  
+    // Touch start: start tap-zone repeat (no double tap)
     boardEl.addEventListener("touchstart", (ev) => {
       if (ev.touches.length !== 1) return;
       const t = ev.touches[0];
   
+      // Record for optional swipe detection
       state.touch.active = true;
       state.touch.startX = t.clientX;
       state.touch.startY = t.clientY;
       state.touch.startT = performance.now();
   
-      // NEW: touch & hold bottom half => soft drop
-      if (state.running && !state.gameOver && !state.paused && isBottomHalfTouch(t)) {
-        state.softDropping = true;
+      // If overlay is showing (not running), allow tap on board to start game.
+      if (!state.running && !state.gameOver) {
+        startGame();
+        return;
+      }
+  
+      // Tap zones
+      const zone = getZoneFromPoint(t.clientX, t.clientY);
+      state.touch.zone = zone;
+  
+      if (zone) {
+        applyGlow(zone);
+        stopRepeat();
+        startRepeat(zone);
       }
     }, { passive: true });
   
+    // Touch move: if the user is swiping, stop repeat and perform a swipe action once
     boardEl.addEventListener("touchmove", (ev) => {
-      // If user moves finger significantly, cancel the “hold soft drop” feel.
-      // (Otherwise it can fight swipes.)
-      if (!state.touch.active) return;
+      if (!state.touch.active || ev.touches.length !== 1) return;
       const t = ev.touches[0];
       const dx = t.clientX - state.touch.startX;
       const dy = t.clientY - state.touch.startY;
-      if (Math.hypot(dx, dy) > 18) {
-        endSoftDrop();
-      }
-    }, { passive: true });
-  
-    boardEl.addEventListener("touchend", (ev) => {
-      if (!state.touch.active) return;
-      state.touch.active = false;
-  
-      endSoftDrop();
-  
-      const now = performance.now();
-  
-      // Double tap: start if not running; otherwise toggle pause (pause/resume).
-      if (now - state.touch.lastTapT < DOUBLE_TAP_MS) {
-        state.touch.lastTapT = 0;
-        if (!state.running) startGame();
-        else togglePause();
-        return;
-      }
-      state.touch.lastTapT = now;
-  
-      const changed = ev.changedTouches && ev.changedTouches[0];
-      if (!changed) return;
-  
-      const dx = changed.clientX - state.touch.startX;
-      const dy = changed.clientY - state.touch.startY;
   
       const adx = Math.abs(dx);
       const ady = Math.abs(dy);
   
-      if (Math.max(adx, ady) < SWIPE_MIN) return;
+      // If user begins a clear swipe, cancel repeat + glow and handle swipe once
+      if (Math.max(adx, ady) >= SWIPE_MIN) {
+        stopRepeat();
+        clearGlows();
   
-      if (!state.running || state.gameOver) return;
-      if (state.paused) return;
+        if (!canActNow()) return;
   
-      // Horizontal swipe
-      if (adx > ady * SWIPE_AXIS_DOMINANCE) {
-        if (state.active) tryMove(state, dx < 0 ? -1 : +1, 0);
-        return;
-      }
-  
-      // Vertical swipe
-      if (ady > adx * SWIPE_AXIS_DOMINANCE) {
-        if (dy < 0) {
-          if (state.active) tryRotate(state);
-        } else {
-          if (state.active) {
+        // Determine swipe direction
+        if (adx > ady * SWIPE_AXIS_DOMINANCE) {
+          markInput(state, "touch");
+          tryMove(state, dx < 0 ? -1 : +1, 0);
+        } else if (ady > adx * SWIPE_AXIS_DOMINANCE) {
+          markInput(state, "touch");
+          if (dy < 0) tryRotate(state);
+          else {
             const moved = tryMove(state, 0, 1);
-            if (!moved) stepLockAndSpawn(state, renderer, nameLayer, updateHUD, showOverlay);
+            if (!moved) beginLockIfNeeded(state);
           }
         }
+  
+        // Prevent repeated swipe triggers
+        state.touch.active = false;
       }
     }, { passive: true });
   
-    boardEl.addEventListener("touchcancel", () => {
+    // Touch end/cancel: stop repeat + glow; do NOT double-tap anything.
+    function endTouch() {
       state.touch.active = false;
-      endSoftDrop();
-    }, { passive: true });
+      stopRepeat();
+      clearGlows();
+    }
+  
+    boardEl.addEventListener("touchend", endTouch, { passive: true });
+    boardEl.addEventListener("touchcancel", endTouch, { passive: true });
   
     // Initial overlay
-    showOverlay(true, "Contortris", "Press Play (or double-tap).", "start");
+    showOverlay(true, "Contortris", "Press Play (tap anywhere on the board).", "start");
     updateHUD();
   
     return { updateHUD, showOverlay };
@@ -957,49 +1062,60 @@ const CONFIG = {
   }
   
   function updateGame(state, dt, renderer, nameLayer, updateHUD, showOverlay) {
-    if (!state.running || state.paused || state.gameOver) return;
+    if (!state.running || state.gameOver) return;
+    if (state.paused) return;
   
-    if (!state.active) {
-      const ok = spawnPiece(state);
-      if (!ok) {
-        state.gameOver = true;
-        state.running = false;
-        showOverlay(true, "Game over", "Reset to try again");
-        updateHUD();
-        return;
-      }
-      nameLayer.setName(state.active.shape.name);
-      renderer.drawNextSilhouette(state.next);
-      updateHUD();
-    }
-  
-    // NEW: effective gravity while soft dropping
+    // --- Gravity timing (base vs soft drop) ---
+    const baseDropMs = state.dropMs;
     const effectiveDropMs = state.softDropping
-      ? Math.max(16, Math.floor(state.dropMs * CONFIG.timing.softDropFactor))
-      : state.dropMs;
-
-    // Accumulate time
+      ? Math.max(16, Math.floor(baseDropMs * CONFIG.timing.softDropFactor))
+      : baseDropMs;
+  
+    // Accumulate time; cap backlog to avoid bursts.
     state.dropAccum += dt;
-
-    // NEW: prevent backlog bursts (e.g., when the tab lags)
-    const maxBacklog = effectiveDropMs * CONFIG.timing.maxAccumulatedSteps;
+    const maxBacklog = effectiveDropMs * (CONFIG.timing.maxAccumulatedSteps ?? 2);
     if (state.dropAccum > maxBacklog) state.dropAccum = maxBacklog;
-
-    // NEW: never process more than N fall steps per frame (prevents “mini teleports”)
+  
+    // Process at most N fall steps per frame (prevents “teleport” feel).
+    const maxSteps = CONFIG.timing.maxFallStepsPerFrame ?? 1;
     let steps = 0;
-    while (state.dropAccum >= effectiveDropMs && steps < CONFIG.timing.maxFallStepsPerFrame) {
+  
+    while (state.dropAccum >= effectiveDropMs && steps < maxSteps) {
       state.dropAccum -= effectiveDropMs;
-
+  
+      // If already in lock grace, do NOT keep trying to drop; lock grace handles it.
+      if (state.locking) break;
+  
       const moved = tryMove(state, 0, 1);
       if (moved) {
-        if (state.softDropping && CONFIG.scoring.softDropPerCell > 0) {
+        if (state.softDropping && (CONFIG.scoring?.softDropPerCell ?? 0) > 0) {
           state.score += CONFIG.scoring.softDropPerCell;
         }
       } else {
-        stepLockAndSpawn(state, renderer, nameLayer, updateHUD, showOverlay);
+        // Touching down: start lock grace (do not lock immediately).
+        beginLockIfNeeded(state);
         break;
       }
+  
       steps++;
+    }
+  
+    // --- Lock grace countdown ---
+    if (state.locking && state.active && !state.gameOver) {
+      state.lockElapsed += dt;
+  
+      // If piece can move down again (e.g., after a slide), cancel lock grace.
+      // This prevents “sticking” if the player shifts into a gap.
+      const mat = getActiveMatrix(state);
+      if (!collides(state, state.active.x, state.active.y + 1, mat)) {
+        cancelLock(state);
+      } else {
+        const delay = currentLockDelayMs(state);
+        if (state.lockElapsed >= delay) {
+          stepLockAndSpawn(state, renderer, nameLayer, updateHUD, showOverlay);
+          cancelLock(state);
+        }
+      }
     }
   }
   
@@ -1023,7 +1139,7 @@ const CONFIG = {
   renderer.drawNextSilhouette(state.next);
   
   const boardShell = document.querySelector(".boardShell");
-  const ui = bindUI(state, renderer, nameLayer, boardShell);
+  const ui = bindUI(state, renderer, nameLayer, document.body);
   
   let last = performance.now();
   function tick(now) {
