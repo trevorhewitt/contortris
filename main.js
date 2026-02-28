@@ -35,11 +35,11 @@ const CONFIG = {
       // “Danger” is measured by how many TOP rows contain any locked blocks.
       // If the stack reaches into the top N rows, apply restrictions.
     
-      // If any locked block is within the top 6 rows -> mostly difficulty <= 2
-      topRowsForDiff2Only: 6,
+      // If any locked block is within the top n rows -> mostly difficulty <= 2
+      topRowsForDiff2Only: 12,
     
-      // If any locked block is within the top 3 rows -> difficulty <= 1 only (no exceptions)
-      topRowsForDiff1Only: 3,
+      // If any locked block is within the top m rows -> difficulty <= 1 only (no exceptions)
+      topRowsForDiff1Only: 5,
     
       // When in the diff<=2 zone, occasionally allow harder pieces anyway
       allowHarderThan2Prob: 0.15,
@@ -708,12 +708,10 @@ const CONFIG = {
             ? "running"
             : "ready";
   
-      // Debug panel updates (only when enabled)
       if (state.debug) {
         const z = getDifficultyZone(state);
         dbgZone.textContent = z.zone;
         dbgPieceDiff.textContent = state.active ? String(state.active.shape.difficulty ?? 1) : "–";
-        // Base fall speed: show the default drop interval (ignoring ArrowDown)
         dbgBaseSpeed.textContent = `${state.dropMs} ms/row (level ${state.level})`;
       }
     }
@@ -729,18 +727,24 @@ const CONFIG = {
   
     function resumeGame() {
       if (state.gameOver) return;
-      state.running = true;
       state.paused = false;
+      state.running = true;
       showOverlay(false);
       updateHUD();
     }
   
     function pauseGame() {
-      if (!state.running || state.gameOver) return;
+      if (state.gameOver) return;
+      if (!state.running) return;
       state.paused = true;
-      state.running = true; // keep running flag true; pause gates update loop
-      showOverlay(true, "Paused", "Space to resume, or use buttons below.", "pause");
+      showOverlay(true, "Paused", "Double-tap to resume, or use buttons below.", "pause");
       updateHUD();
+    }
+  
+    function togglePause() {
+      if (!state.running || state.gameOver) return;
+      if (state.paused) resumeGame();
+      else pauseGame();
     }
   
     // Overlay buttons
@@ -750,7 +754,6 @@ const CONFIG = {
   
     // Keyboard
     window.addEventListener("keydown", (e) => {
-      // Debug toggle always available
       if (e.code === "KeyD") {
         state.debug = !state.debug;
         debugPanel.style.display = state.debug ? "block" : "none";
@@ -758,21 +761,14 @@ const CONFIG = {
         return;
       }
   
-      if (!state.running && e.code !== "Enter") return;
-      if (state.gameOver) return;
-  
       if (e.code === "Space") {
         e.preventDefault();
-        if (state.paused) {
-          state.paused = false;
-          showOverlay(false);
-        } else {
-          pauseGame();
-        }
-        updateHUD();
+        togglePause();
         return;
       }
   
+      if (!state.running && e.code !== "Enter") return;
+      if (state.gameOver) return;
       if (state.paused) return;
   
       switch (e.code) {
@@ -803,42 +799,71 @@ const CONFIG = {
       if (e.code === "ArrowDown") state.softDropping = false;
     });
   
-    // Touch controls (mobile-friendly)
-    // Behaviour:
-    // - swipe left/right: move 1
+    // Touch controls:
+    // - swipe left/right: move
     // - swipe up: rotate
     // - swipe down: move down 1 step
-    // - double tap: play (or resume if paused)
-    const SWIPE_MIN = 26; // px
-    const SWIPE_AXIS_DOMINANCE = 1.2; // must be 20% more in one axis than the other
+    // - double tap: start OR toggle pause (pause/resume)
+    // - touch & hold bottom half: soft drop while held
+    const SWIPE_MIN = 26;
+    const SWIPE_AXIS_DOMINANCE = 1.2;
     const DOUBLE_TAP_MS = 320;
+  
+    // Helper: is touch in bottom half of boardEl?
+    function isBottomHalfTouch(touch) {
+      const r = boardEl.getBoundingClientRect();
+      const y = touch.clientY - r.top;
+      return y > (r.height * 0.5);
+    }
+  
+    function endSoftDrop() {
+      state.softDropping = false;
+    }
   
     boardEl.addEventListener("touchstart", (ev) => {
       if (ev.touches.length !== 1) return;
       const t = ev.touches[0];
+  
       state.touch.active = true;
       state.touch.startX = t.clientX;
       state.touch.startY = t.clientY;
       state.touch.startT = performance.now();
+  
+      // NEW: touch & hold bottom half => soft drop
+      if (state.running && !state.gameOver && !state.paused && isBottomHalfTouch(t)) {
+        state.softDropping = true;
+      }
+    }, { passive: true });
+  
+    boardEl.addEventListener("touchmove", (ev) => {
+      // If user moves finger significantly, cancel the “hold soft drop” feel.
+      // (Otherwise it can fight swipes.)
+      if (!state.touch.active) return;
+      const t = ev.touches[0];
+      const dx = t.clientX - state.touch.startX;
+      const dy = t.clientY - state.touch.startY;
+      if (Math.hypot(dx, dy) > 18) {
+        endSoftDrop();
+      }
     }, { passive: true });
   
     boardEl.addEventListener("touchend", (ev) => {
       if (!state.touch.active) return;
       state.touch.active = false;
   
+      endSoftDrop();
+  
       const now = performance.now();
   
-      // Double tap: start/resume
+      // Double tap: start if not running; otherwise toggle pause (pause/resume).
       if (now - state.touch.lastTapT < DOUBLE_TAP_MS) {
         state.touch.lastTapT = 0;
         if (!state.running) startGame();
-        else if (state.paused) resumeGame();
+        else togglePause();
         return;
       }
-  
       state.touch.lastTapT = now;
   
-      // If no movement, treat as single tap (no action)
       const changed = ev.changedTouches && ev.changedTouches[0];
       if (!changed) return;
   
@@ -848,13 +873,9 @@ const CONFIG = {
       const adx = Math.abs(dx);
       const ady = Math.abs(dy);
   
-      // ignore tiny gestures
       if (Math.max(adx, ady) < SWIPE_MIN) return;
   
-      // Allow gestures even before start? no (except double tap). Keep consistent with keyboard.
       if (!state.running || state.gameOver) return;
-  
-      // If paused, ignore swipes (double tap handles resume)
       if (state.paused) return;
   
       // Horizontal swipe
@@ -866,19 +887,19 @@ const CONFIG = {
       // Vertical swipe
       if (ady > adx * SWIPE_AXIS_DOMINANCE) {
         if (dy < 0) {
-          // swipe up: rotate
           if (state.active) tryRotate(state);
         } else {
-          // swipe down: move down 1 step (not hard drop)
           if (state.active) {
             const moved = tryMove(state, 0, 1);
-            if (!moved) {
-              // If cannot move down, lock immediately (matches typical behaviour)
-              stepLockAndSpawn(state, renderer, nameLayer, updateHUD, showOverlay);
-            }
+            if (!moved) stepLockAndSpawn(state, renderer, nameLayer, updateHUD, showOverlay);
           }
         }
       }
+    }, { passive: true });
+  
+    boardEl.addEventListener("touchcancel", () => {
+      state.touch.active = false;
+      endSoftDrop();
     }, { passive: true });
   
     // Initial overlay
@@ -887,7 +908,6 @@ const CONFIG = {
   
     return { updateHUD, showOverlay };
   }
-   
   function resetGame(state, renderer, nameLayer, updateHUD, showOverlay) {
     state.board = createEmptyBoard(CONFIG.board.cols, CONFIG.board.rows);
     state.active = null;
