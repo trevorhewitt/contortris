@@ -664,7 +664,7 @@ const CONFIG = {
   
   function bindUI(state, renderer, nameLayer, boardEl) {
     // HUD
-    const statusText = document.getElementById("statusText");
+    //const statusText = document.getElementById("statusText");
     const scoreText = document.getElementById("scoreText");
     const linesText = document.getElementById("linesText");
   
@@ -700,13 +700,13 @@ const CONFIG = {
       scoreText.textContent = String(state.score);
       linesText.textContent = String(state.lines);
   
-      statusText.textContent = state.gameOver
-        ? "game over"
-        : state.paused
-          ? "paused"
-          : state.running
-            ? "running"
-            : "ready";
+      //statusText.textContent = state.gameOver
+      //  ? "game over"
+      //  : state.paused
+      //    ? "paused"
+      //    : state.running
+      //      ? "running"
+      //      : "ready";
   
       if (state.debug) {
         const z = getDifficultyZone(state);

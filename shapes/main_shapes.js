@@ -424,8 +424,8 @@ export const SHAPES = [
     frequency: 1.00,
   },
   {
-    id: 'me',
-    name: 'me :D',
+    id: 'ttt',
+    name: 'the big T',
     grid: [
       'XXX',
       '.X.',
@@ -526,5 +526,42 @@ export const SHAPES = [
     difficulty: 2,
     rotation: { mode: 'any' },
     frequency: 0.37,
+  },
+  {
+    id: 'everyones',
+    name: 'everyone\'s favourite',
+    grid: [
+      'XXXX',
+    ],
+    color: '#4a3dff',
+    difficulty: 1,
+    rotation: { mode: 'any' },
+    frequency: 1.00,
+  },
+  {
+    id: 'castle',
+    name: 'the castle',
+    grid: [
+      'X.X.X',
+      'XXXXX',
+      'XXXXX',
+    ],
+    color: '#a1a1a1',
+    difficulty: 2,
+    rotation: { mode: 'any' },
+    frequency: 1.00,
+  },
+  {
+    id: 'horseshoe',
+    name: 'the horseshoe',
+    grid: [
+      'X.X',
+      'X.X',
+      'XXX',
+    ],
+    color: '#6e073e',
+    difficulty: 2,
+    rotation: { mode: 'any' },
+    frequency: 1.00,
   },
 ];

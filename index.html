@@ -2,78 +2,92 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>Contortris</title>
   <style>
     :root{
-      --bg: #0f1020;          /* brighter outside the board */
+      --bg: #0f1020;
       --bg2: #070714;
-      --panel: rgba(12,12,18,0.78);
-      --panelBorder: rgba(255,255,255,0.10);
 
       --text: rgba(245,245,255,0.92);
       --muted: rgba(245,245,255,0.70);
 
-      --cell: 24px;
+      /* Board geometry (desktop default). On mobile we will scale the board to fit. */
       --board-cols: 10;
       --board-rows: 20;
+      --cell: 24px;
 
       --board-w: calc(var(--cell) * var(--board-cols));
       --board-h: calc(var(--cell) * var(--board-rows));
 
       /* Grid/board contrast */
-      --grid: rgba(230,230,245,0.22);   /* clearer grid lines */
+      --grid: rgba(230,230,245,0.22);
       --boardEdge: rgba(245,245,255,0.26);
       --boardEdgeInner: rgba(245,245,255,0.10);
     }
 
+    /* FULL SCROLL DISABLE */
     html, body{
       height: 100%;
+      width: 100%;
       margin: 0;
-      color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: none; /* critical for swipe gestures */
       background:
         radial-gradient(1200px 900px at 30% 10%, #2a2550 0%, var(--bg) 45%, var(--bg2) 100%);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
 
-    .wrap{
-      display:grid;
-      grid-template-columns: auto 260px;
-      gap: 18px;
-      align-items:start;
-      justify-content:center;
-      padding: 24px;
+    /* App is exactly the viewport */
+    .app{
+      height: 100vh;
+      width: 100vw;
+      display: grid;
+      grid-template-rows: 1fr auto; /* board area + bottom bar */
+      align-items: stretch;
+      justify-items: center;
+      gap: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    .boardCol{
-      display:flex;
-      flex-direction:column;
-      align-items:stretch;
-      width: var(--board-w);
+    /* Board region */
+    .boardRegion{
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      box-sizing: border-box;
+      padding: 8px; /* small breathing room */
     }
 
     .boardShell{
       position: relative;
-      width: var(--board-w);
-      height: var(--board-h);
       background: #000;
       border-radius: 12px;
-      overflow:hidden;
+      overflow: hidden;
 
       /* clearer edge */
       box-shadow:
-        0 18px 60px rgba(0,0,0,0.60),
+        0 18px 60px rgba(0,0,0,0.55),
         0 0 0 2px var(--boardEdge),
         0 0 0 1px var(--boardEdgeInner) inset;
+
+      /* IMPORTANT:
+         We scale this element on mobile via JS by setting its width/height style
+         and also updating canvas CSS size. */
+      width: var(--board-w);
+      height: var(--board-h);
     }
 
-    /* Canvas: crisp pixel scaling */
     canvas{
       width: var(--board-w);
       height: var(--board-h);
       image-rendering: pixelated;
       image-rendering: crisp-edges;
-      display:block;
+      display: block;
     }
 
     /* Name layer behind blocks */
@@ -89,156 +103,51 @@
         drop-shadow(0 0 34px rgba(255,80,220,0.22));
     }
 
+    /* Full-width wrapping name banner */
     .nameText{
-      position:absolute;
-      left: 50%;
+      position: absolute;
+      left: 0;
+      right: 0;
       top: 54px;
-      transform: translateX(-50%);
+
+      width: 100%;
+      padding: 0 8px;
+      box-sizing: border-box;
+
       font-size: 34px;
-      line-height: 1;
+      line-height: 1.1;
       font-style: italic;
       font-weight: 800;
       letter-spacing: 0.06em;
+
       color: rgba(245,245,255,0.22);
+      text-align: center;
+
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+
+      overflow: hidden;
+      text-overflow: clip;
+
+      user-select: none;
+
       text-shadow:
         2px 0 0 rgba(255,0,140,0.14),
         -2px 0 0 rgba(0,255,255,0.12),
         0 0 18px rgba(180,180,255,0.12),
         0 0 34px rgba(255,80,220,0.10);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      user-select:none;
+
+      transform: translateX(0);
+      opacity: 1;
       transition: transform 260ms ease, opacity 260ms ease;
-      max-width: calc(var(--board-w) - 20px);
-      text-align:center;
-    }
-    .nameText.enterFromRight{ transform: translateX(calc(-50% + 110%)); opacity: 0.0; }
-    .nameText.enterToCenter{ transform: translateX(-50%); opacity: 1.0; }
-    .nameText.exitToLeft{ transform: translateX(calc(-50% - 120%)); opacity: 0.0; }
-
-    /* Debug panel under board */
-    .debugPanel{
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(0,0,0,0.35);
-      border: 1px solid rgba(255,255,255,0.10);
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .debugPanel .k{
-      color: rgba(245,245,255,0.70);
-      display:inline-block;
-      width: 140px;
-    }
-    .debugPanel .v{
-      color: rgba(245,245,255,0.95);
-      font-weight: 800;
     }
 
-    .side{
-      width: 100px;
-      background: var(--panel);
-      border-radius: 14px;
-      padding: 14px;
-      box-shadow:
-        0 18px 60px rgba(0,0,0,0.45),
-        0 0 0 1px var(--panelBorder) inset;
-      backdrop-filter: blur(10px);
-    }
+    .nameText.enterFromRight{ transform: translateX(110%); opacity: 0; }
+    .nameText.enterToCenter{ transform: translateX(0); opacity: 1; }
+    .nameText.exitToLeft{ transform: translateX(-120%); opacity: 0; }
 
-    .titleRow{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .titleRow h1{
-      margin:0;
-      font-size: 18px;
-      letter-spacing: 0.02em;
-    }
-    .meta{
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .card{
-      background: rgba(0,0,0,0.35);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 12px;
-      padding: 12px;
-      margin-top: 10px;
-    }
-
-    .label{
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 8px;
-    }
-
-    .nextShell{
-      width: 100%;
-      height: 140px;
-      background: radial-gradient(220px 160px at 35% 25%, rgba(123,247,255,0.10), rgba(0,0,0,0.55));
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.10);
-      box-shadow: 0 0 0 1px rgba(0,0,0,0.3) inset;
-      overflow:hidden;
-      position: relative;
-    }
-
-    #nextCanvas{
-      width: 100%;
-      height: 140px;
-      image-rendering: pixelated;
-      display:block;
-    }
-
-    .statCol{
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-    }
-    .statRow{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap: 10px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 12px;
-      padding: 10px;
-    }
-    .statRow .k{
-      font-size: 11px;
-      color: var(--muted);
-    }
-    .statRow .v{
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: 0.02em;
-    }
-
-    button{
-      border: 0;
-      border-radius: 12px;
-      padding: 10px 12px;
-      color: rgba(10,10,12,0.95);
-      background: linear-gradient(135deg, rgba(123,247,255,0.95), rgba(255,80,220,0.85));
-      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
-      font-weight: 800;
-      cursor:pointer;
-    }
-    button.secondary{
-      background: rgba(255,255,255,0.10);
-      color: var(--text);
-      box-shadow: none;
-      border: 1px solid rgba(255,255,255,0.10);
-    }
-
+    /* Overlay */
     .overlay{
       position:absolute;
       inset: 0;
@@ -261,12 +170,13 @@
       border: 1px solid rgba(255,255,255,0.12);
       box-shadow: 0 18px 60px rgba(0,0,0,0.55);
       text-align:center;
-      max-width: min(520px, calc(100vw - 48px));
+      max-width: min(520px, calc(100vw - 24px));
     }
     .overlay .msg .big{
       font-weight: 950;
       letter-spacing: 0.02em;
       margin-bottom: 6px;
+      font-style: italic;
     }
     .overlay .msg .small{
       font-size: 12px;
@@ -292,7 +202,6 @@
       color: var(--muted);
       line-height: 1.35;
     }
-
     .overlayBtns{
       display:flex;
       gap: 10px;
@@ -301,26 +210,116 @@
       flex-wrap: wrap;
     }
 
-    /* Mobile layout */
-    @media (max-width: 860px){
-      .wrap{
-        grid-template-columns: 1fr;
-        justify-items:center;
-      }
-      .side{
-        width: min(360px, calc(100vw - 48px));
-      }
-      .boardCol{
-        width: var(--board-w);
-      }
+    button{
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: rgba(10,10,12,0.95);
+      background: linear-gradient(135deg, rgba(123,247,255,0.95), rgba(255,80,220,0.85));
+      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+      font-weight: 900;
+      cursor:pointer;
+    }
+    button.secondary{
+      background: rgba(255,255,255,0.10);
+      color: var(--text);
+      box-shadow: none;
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    /* Bottom bar (replaces sidebar) */
+    .bottomBar{
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 10px 10px 10px;
+
+      display: grid;
+      grid-template-columns: 110px 1fr; /* next preview + stats */
+      gap: 10px;
+      align-items: center;
+
+      background: rgba(0,0,0,0.30);
+      border-top: 1px solid rgba(255,255,255,0.10);
+      backdrop-filter: blur(10px);
+    }
+
+    .nextMiniShell{
+      width: 110px;
+      height: 74px;
+      border-radius: 12px;
+      background: radial-gradient(180px 120px at 35% 25%, rgba(123,247,255,0.10), rgba(0,0,0,0.55));
+      border: 1px solid rgba(255,255,255,0.10);
+      overflow: hidden;
+      position: relative;
+    }
+    #nextCanvas{
+      width: 110px;
+      height: 74px;
+      display: block;
+      image-rendering: pixelated;
+    }
+
+    .statsMini{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .statPill{
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.10);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      min-width: 0;
+    }
+    .statPill .k{
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .statPill .v{
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    /* Debug panel (optional, hidden by default) */
+    .debugPanel{
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: calc(74px + 10px + 10px); /* above bottom bar */
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.40);
+      border: 1px solid rgba(255,255,255,0.10);
+      font-size: 12px;
+      color: var(--muted);
+      pointer-events: none;
+      display: none;
+    }
+    .debugPanel .k{
+      color: rgba(245,245,255,0.70);
+      display:inline-block;
+      width: 140px;
+    }
+    .debugPanel .v{
+      color: rgba(245,245,255,0.95);
+      font-weight: 900;
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="boardCol">
-      <div class="boardShell">
+  <div class="app">
+    <div class="boardRegion">
+      <div class="boardShell" id="boardShell">
         <div id="nameLayer" class="nameLayer"></div>
         <canvas id="boardCanvas"></canvas>
 
@@ -344,42 +343,73 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <div id="debugPanel" class="debugPanel" style="display:none;">
-        <div><span class="k">Zone</span> <span id="dbgZone" class="v">normal</span></div>
-        <div><span class="k">Piece difficulty</span> <span id="dbgPieceDiff" class="v">–</span></div>
-        <div><span class="k">Base fall speed</span> <span id="dbgBaseSpeed" class="v">–</span></div>
+        <div id="debugPanel" class="debugPanel">
+          <div><span class="k">Zone</span> <span id="dbgZone" class="v">normal</span></div>
+          <div><span class="k">Piece difficulty</span> <span id="dbgPieceDiff" class="v">–</span></div>
+          <div><span class="k">Base fall speed</span> <span id="dbgBaseSpeed" class="v">–</span></div>
+        </div>
       </div>
     </div>
 
-    <div class="side">
-      <div class="titleRow">
-        <h1>Contortris</h1>
-        <div class="meta" id="statusText"> </div>
+    <div class="bottomBar">
+      <div class="nextMiniShell" aria-label="Next shape">
+        <canvas id="nextCanvas"></canvas>
       </div>
 
-      <div class="card">
-        <div class="label">Next shape:</div>
-        <div class="nextShell">
-          <canvas id="nextCanvas"></canvas>
+      <div class="statsMini">
+        <div class="statPill">
+          <div class="k">Score</div>
+          <div class="v" id="scoreText">0</div>
         </div>
-      </div>
-
-      <div class="card">
-        <div class="statCol">
-          <div class="statRow">
-            <div class="k">Score</div>
-            <div class="v" id="scoreText">0</div>
-          </div>
-          <div class="statRow">
-            <div class="k">Lines</div>
-            <div class="v" id="linesText">0</div>
-          </div>
+        <div class="statPill">
+          <div class="k">Lines</div>
+          <div class="v" id="linesText">0</div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Mobile fit script: keeps the board + bottom bar inside the viewport without scrolling -->
+  <script>
+    (function(){
+      const shell = document.getElementById("boardShell");
+      const boardCanvas = document.getElementById("boardCanvas");
+
+      function fit(){
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        // Bottom bar height (approx) + padding in boardRegion
+        const bottomBar = document.querySelector(".bottomBar");
+        const bottomH = bottomBar ? bottomBar.getBoundingClientRect().height : 0;
+
+        const regionPad = 16; // boardRegion padding top+bottom approx
+        const availW = vw - 16; // small breathing room
+        const availH = vh - bottomH - regionPad;
+
+        // Natural board size from CSS variables (10*24 x 20*24)
+        const naturalW = 10 * 24;
+        const naturalH = 20 * 24;
+
+        const scale = Math.min(availW / naturalW, availH / naturalH);
+
+        const scaledW = Math.floor(naturalW * scale);
+        const scaledH = Math.floor(naturalH * scale);
+
+        shell.style.width = scaledW + "px";
+        shell.style.height = scaledH + "px";
+
+        // Canvas CSS size must match shell to avoid stretching.
+        boardCanvas.style.width = scaledW + "px";
+        boardCanvas.style.height = scaledH + "px";
+      }
+
+      window.addEventListener("resize", fit, { passive: true });
+      window.addEventListener("orientationchange", fit, { passive: true });
+      fit();
+    })();
+  </script>
 
   <script type="module" src="./main.js"></script>
 </body>
