@@ -892,11 +892,23 @@ const CONFIG = {
     
       // Inside board: define bands by board-space fractions
       const topBand = r.height * 0.22;
+
+      // Bottom zone should be CENTERED and narrower to avoid accidental smashes.
+      // Example: bottom 28% of height, but only middle 50% of width.
       const bottomBand = r.height * 0.28;
-    
+      const bottomCenterWidthFrac = 0.50;
+
       if (relY <= topBand) return "top";
-      if (relY >= r.height - bottomBand) return "bottom";
-    
+
+      if (relY >= r.height - bottomBand) {
+        const leftBound = r.width * (0.5 - bottomCenterWidthFrac / 2);
+        const rightBound = r.width * (0.5 + bottomCenterWidthFrac / 2);
+
+        if (relX >= leftBound && relX <= rightBound) return "bottom";
+        // Bottom corners behave as left/right instead.
+        return (relX < r.width * 0.5) ? "left" : "right";
+      }
+
       // Middle region: left/right halves
       return (relX <= r.width * 0.5) ? "left" : "right";
     }
