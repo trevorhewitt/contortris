@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contortris</title>
+  <style>
+    :root{
+      --bg: #07070a;
+      --panel: #0c0c12;
+      --grid: rgba(200,200,210,0.12);
+      --text: rgba(245,245,255,0.9);
+      --muted: rgba(245,245,255,0.6);
+      --accent: #7bf7ff;
+      --cell: 24px;
+      --board-w: calc(var(--cell) * 10);
+      --board-h: calc(var(--cell) * 20);
+    }
+
+    html, body{
+      height: 100%;
+      margin: 0;
+      background: radial-gradient(1200px 800px at 30% 10%, #151326 0%, var(--bg) 60%, #05050a 100%);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    .wrap{
+      display:flex;
+      gap: 18px;
+      align-items:flex-start;
+      justify-content:center;
+      padding: 24px;
+    }
+
+    .boardShell{
+      position: relative;
+      width: var(--board-w);
+      height: var(--board-h);
+      background: #000;
+      border-radius: 10px;
+      box-shadow:
+        0 18px 60px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.06) inset;
+      overflow:hidden;
+    }
+
+    canvas{
+      width: var(--board-w);
+      height: var(--board-h);
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      display:block;
+    }
+
+    /* Behind-block name banner */
+    .nameLayer{
+      position:absolute;
+      inset: 0;
+      pointer-events:none;
+      overflow:hidden;
+
+      /* more visible + distracting */
+      opacity: 1.0;
+      mix-blend-mode: screen;
+      filter:
+        drop-shadow(0 0 10px rgba(123,247,255,0.35))
+        drop-shadow(0 0 34px rgba(255,80,220,0.22));
+    }
+
+    .nameText{
+      position:absolute;
+
+      /* centre X axis */
+      left: 50%;
+      transform: translateX(-50%);
+
+      /* not at very top */
+      top: 54px;
+
+      /* larger + more visible */
+      font-size: 34px;
+      line-height: 1;
+      font-style: italic;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+
+      color: rgba(245,245,255,0.20);
+
+      /* “hyperreal” chroma + glow */
+      text-shadow:
+        2px 0 0 rgba(255,0,140,0.12),
+        -2px 0 0 rgba(0,255,255,0.10),
+        0 0 18px rgba(180,180,255,0.10),
+        0 0 34px rgba(255,80,220,0.08);
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      user-select:none;
+
+      transition: transform 260ms ease, opacity 260ms ease;
+    }
+
+    /* Slide animation: keep centring via translateX(-50%) baseline */
+    .nameText.enterFromRight{ transform: translateX(calc(-50% + 110%)); opacity: 0.0; }
+    .nameText.enterToCenter{ transform: translateX(-50%); opacity: 1.0; }
+    .nameText.exitToLeft{ transform: translateX(calc(-50% - 120%)); opacity: 0.0; }
+
+    .side{
+      width: 260px;
+      background: rgba(12,12,18,0.75);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow:
+        0 18px 60px rgba(0,0,0,0.45),
+        0 0 0 1px rgba(255,255,255,0.06) inset;
+      backdrop-filter: blur(10px);
+    }
+
+    .titleRow{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .titleRow h1{
+      margin:0;
+      font-size: 18px;
+      letter-spacing: 0.02em;
+    }
+
+    .meta{
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .btnRow{
+      display:flex;
+      gap:10px;
+      margin: 10px 0 14px 0;
+    }
+
+    button{
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: rgba(10,10,12,0.95);
+      background: linear-gradient(135deg, rgba(123,247,255,0.95), rgba(255,80,220,0.85));
+      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+      font-weight: 700;
+      cursor:pointer;
+    }
+    button.secondary{
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      box-shadow: none;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    button:disabled{
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .card{
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .label{
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .nextShell{
+      width: 100%;
+      height: 140px;
+      background: radial-gradient(200px 160px at 30% 20%, rgba(123,247,255,0.08), rgba(0,0,0,0.55));
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.3) inset;
+      overflow:hidden;
+      position: relative;
+    }
+
+    #nextCanvas{
+      width: 100%;
+      height: 140px;
+      image-rendering: pixelated;
+      display:block;
+    }
+
+    .hud{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .hud .stat{
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 10px;
+    }
+    .hud .stat .k{
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .hud .stat .v{
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .help{
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .overlay{
+      position:absolute;
+      inset: 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(0,0,0,0.55);
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity 140ms ease;
+    }
+    .overlay.show{
+      opacity: 1;
+      pointer-events:auto;
+    }
+    .overlay .msg{
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.09);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+      text-align:center;
+    }
+    .overlay .msg .big{
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+    .overlay .msg .small{
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="boardShell">
+      <div id="nameLayer" class="nameLayer"></div>
+      <canvas id="boardCanvas"></canvas>
+      <div id="overlay" class="overlay show">
+        <div class="msg">
+          <div class="big">Contortris</div>
+          <div class="small">Press Play. Space pauses.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="titleRow">
+        <h1>Contortris</h1>
+        <div class="meta" id="statusText">ready</div>
+      </div>
+
+      <div class="btnRow">
+        <button id="playBtn">Play</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+      </div>
+
+      <div class="card">
+        <div class="label">Next (silhouette)</div>
+        <div class="nextShell">
+          <canvas id="nextCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="hud">
+          <div class="stat">
+            <div class="k">Score</div>
+            <div class="v" id="scoreText">0</div>
+          </div>
+          <div class="stat">
+            <div class="k">Lines</div>
+            <div class="v" id="linesText">0</div>
+          </div>
+          <div class="stat">
+            <div class="k">Level</div>
+            <div class="v" id="levelText">1</div>
+          </div>
+          <div class="stat">
+            <div class="k">Speed</div>
+            <div class="v" id="speedText">1.00×</div>
+          </div>
+        </div>
+        <div class="help">
+          Controls: ←/→ move, ↑ rotate, ↓ soft drop, Space pause.<br/>
+          Pause hides blocks (toggle in config).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
