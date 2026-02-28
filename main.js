@@ -31,6 +31,19 @@ const CONFIG = {
       silhouetteStroke: "rgba(240,240,255,0.20)",
       pixelArtJitter: 0,
     },
+    assist: {
+      // “Danger” is measured by how many TOP rows contain any locked blocks.
+      // If the stack reaches into the top N rows, apply restrictions.
+    
+      // If any locked block is within the top 6 rows -> mostly difficulty <= 2
+      topRowsForDiff2Only: 6,
+    
+      // If any locked block is within the top 3 rows -> difficulty <= 1 only (no exceptions)
+      topRowsForDiff1Only: 3,
+    
+      // When in the diff<=2 zone, occasionally allow harder pieces anyway
+      allowHarderThan2Prob: 0.15,
+    },
   };
   
   import { SHAPES as RAW_SHAPES } from "./shapes/main_shapes.js";
@@ -204,6 +217,23 @@ const CONFIG = {
     return Array.from({ length: rows }, () => Array(cols).fill(null));
   }
   
+  function highestLockedRowIndex(state) {
+    // Returns smallest y (closest to top) that contains ANY locked block.
+    // If board empty, returns null.
+    for (let y = 0; y < CONFIG.board.rows; y++) {
+      for (let x = 0; x < CONFIG.board.cols; x++) {
+        if (state.board[y][x]) return y;
+      }
+    }
+    return null;
+  }
+  
+  function isStackInTopRows(state, topRows) {
+    const y = highestLockedRowIndex(state);
+    if (y === null) return false;
+    return y < topRows; // e.g., y=0..(topRows-1)
+  }
+
   function createGameState(shapes) {
     return {
       shapes,
@@ -228,24 +258,47 @@ const CONFIG = {
       softDropping: false,
     };
   }
-  
   function randomShape(state) {
-    // Weighted by shape.frequency (0..1). 0 => never.
-    // If all frequencies are 0, fall back to uniform.
-    let total = 0;
-    for (const s of state.shapes) total += (s.frequency ?? 1);
+    // Decide difficulty cap based on how high the locked stack is.
+    const inDiff1Zone = isStackInTopRows(state, CONFIG.assist.topRowsForDiff1Only);
+    const inDiff2Zone = !inDiff1Zone && isStackInTopRows(state, CONFIG.assist.topRowsForDiff2Only);
   
-    if (total <= 0) {
+    let difficultyCap = Infinity;
+  
+    if (inDiff1Zone) {
+      difficultyCap = 1; // strict: no exceptions
+    } else if (inDiff2Zone) {
+      // Mostly <=2, but sometimes allow >2.
+      const allowHard = state.rng() < CONFIG.assist.allowHarderThan2Prob;
+      difficultyCap = allowHard ? Infinity : 2;
+    }
+  
+    // Candidate pool respecting cap (and frequency > 0).
+    let candidates = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) <= difficultyCap);
+  
+    // Fallback if cap eliminates everything (e.g., user defined no diff<=1 shapes)
+    if (candidates.length === 0) {
+      candidates = state.shapes.filter(s => (s.frequency ?? 1) > 0);
+    }
+    if (candidates.length === 0) {
+      // Absolute fallback: original uniform behaviour
       return state.shapes[Math.floor(state.rng() * state.shapes.length)];
     }
   
+    // Weighted by frequency (0..1). 0 => never.
+    let total = 0;
+    for (const s of candidates) total += (s.frequency ?? 1);
+  
+    if (total <= 0) {
+      return candidates[Math.floor(state.rng() * candidates.length)];
+    }
+  
     let r = state.rng() * total;
-    for (const s of state.shapes) {
+    for (const s of candidates) {
       r -= (s.frequency ?? 1);
       if (r <= 0) return s;
     }
-    // numerical fallback
-    return state.shapes[state.shapes.length - 1];
+    return candidates[candidates.length - 1];
   }
   
   function getActiveMatrix(state) {

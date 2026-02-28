@@ -10,7 +10,7 @@
     .grid { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 14px; align-items: start; }
     .card { border: 1px solid #ddd; border-radius: 12px; padding: 14px; }
     label { display: block; font-weight: 650; margin: 10px 0 6px; }
-    input[type="text"], textarea, input[type="number"] {
+    input[type="text"], textarea, input[type="number"], select {
       width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #ccc;
       font-size: 14px;
     }
@@ -145,6 +145,18 @@
         </div>
 
         <div>
+          <label for="shapeDifficulty">Difficulty</label>
+          <select id="shapeDifficulty">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+          <div class="muted">Allowed: 0–4 (default 2).</div>
+        </div>
+
+        <div>
           <label>Target file</label>
           <div class="inline">
             <button id="pickFileBtn">Pick file…</button>
@@ -197,17 +209,17 @@
   // -----------------------------
   // State
   // -----------------------------
-  let fileHandle = null;      // for in-place writing
-  let loadedText = null;      // file contents
-  let loadedShapes = null;    // parsed SHAPES array
+  let fileHandle = null;
+  let loadedText = null;
+  let loadedShapes = null;
 
   const DEFAULT_REL_PATH = "./shapes/main_shapes.js";
   const HANDLE_DB_NAME = "shape_designer_fs_handles";
   const HANDLE_DB_STORE = "handles";
   const HANDLE_KEY = "shapesFileHandle";
 
-  let currentFreq = 1.0;      // authoritative frequency value (fixes “always 1” issues)
-  let pageIndex = 0;          // 0-based
+  let currentFreq = 1.0;
+  let pageIndex = 0;
   let pageSize = 25;
 
   // -----------------------------
@@ -245,7 +257,7 @@
     let best = parts[0];
     for (const w of parts) {
       if (w.length > best.length) best = w;
-      else if (w.length === best.length) best = w; // later wins
+      else if (w.length === best.length) best = w;
     }
     return best.toLowerCase().replace(/['-]/g, "").replace(/[^a-z0-9_]/g, "_");
   }
@@ -387,12 +399,14 @@
 
       const cols = (s.grid && s.grid[0]) ? s.grid[0].length : 0;
       const rows = (s.grid && s.grid.length) ? s.grid.length : 0;
-      const freq = (typeof s.frequency === "number") ? s.frequency : Number(s.frequency);
+      const freq = Number(s.frequency);
       const freqText = (Number.isFinite(freq)) ? freq.toFixed(2) : "—";
+      const diff = Number(s.difficulty);
+      const diffText = Number.isFinite(diff) ? String(diff) : "—";
 
       const right = document.createElement("div");
       right.className = "itemStats mono";
-      right.innerHTML = `${cols}×${rows}<br/>f=${freqText}`;
+      right.innerHTML = `${cols}×${rows}<br/>f=${freqText}<br/>d=${diffText}`;
 
       head.appendChild(left);
       head.appendChild(right);
@@ -422,6 +436,9 @@
     currentFreq = freq;
     $("shapeFreq").value = String(freq);
     $("freqVal").textContent = freq.toFixed(2);
+
+    const diff = clamp(parseInt(shape.difficulty ?? 2, 10), 0, 4);
+    $("shapeDifficulty").value = String(diff);
 
     const grid = Array.isArray(shape.grid) ? shape.grid : [];
     $("shapeGrid").value = grid.join("\n");
@@ -519,6 +536,8 @@
 
     for (const shape of ordered) {
       const freq = clamp(Number(shape.frequency ?? 1), 0, 1);
+      const diff = clamp(parseInt(shape.difficulty ?? 2, 10), 0, 4);
+
       lines.push("  {");
       lines.push(`    id: ${jsString(shape.id)},`);
       lines.push(`    name: ${jsString(shape.name)},`);
@@ -526,7 +545,7 @@
       for (const row of shape.grid) lines.push(`      ${jsString(row)},`);
       lines.push("    ],");
       lines.push(`    color: ${jsString(shape.color)},`);
-      lines.push(`    difficulty: ${Number(shape.difficulty)},`);
+      lines.push(`    difficulty: ${diff},`);
       lines.push(`    rotation: ${jsObject(shape.rotation)},`);
       lines.push(`    frequency: ${freq.toFixed(2)},`);
       lines.push("  },");
@@ -553,11 +572,10 @@
     $("fileName").textContent = fileLabel || "Loaded";
     $("fileInfo").textContent = `Loaded ${loadedShapes.length} shape(s).`;
     updateListPanel();
-    $("saveBtn").disabled = !fileHandle; // fast save requires a handle
+    $("saveBtn").disabled = !fileHandle;
   }
 
   async function tryFetchDefaultForBrowsing() {
-    // Works only if served (not file://) and the file exists at ./shapes/main_shapes.js
     try {
       const res = await fetch(DEFAULT_REL_PATH, { cache: "no-store" });
       if (!res.ok) return;
@@ -567,7 +585,6 @@
   }
 
   async function writeBack(updatedText) {
-    // In-place if possible; otherwise download
     if (fileHandle && fileHandle.createWritable) {
       try {
         const writable = await fileHandle.createWritable();
@@ -591,7 +608,7 @@
 
   async function pickFile() {
     if (!window.showOpenFilePicker) {
-      alert("Use Chrome/Edge for direct writing. Otherwise you can still browse the default file if served, but saving will be download-only.");
+      alert("Use Chrome/Edge for direct writing. Otherwise you can browse the default file if served, but saving will be download-only.");
       return;
     }
     const [handle] = await window.showOpenFilePicker({
@@ -708,33 +725,31 @@
   }
 
   // -----------------------------
-  // Build shape from UI (frequency fix)
+  // Build shape from UI
   // -----------------------------
   function buildShapeFromUI() {
     const grid = parseGridTextarea($("shapeGrid").value);
 
     const name = $("shapeName").value.trim() || "(unnamed)";
     let id = $("shapeId").value.trim();
-
     if (!id) {
       id = suggestIdFromName(name);
       if (!id || id === "unnamed") throw new Error("Please provide a shape id (auto-id is not useful for an empty/unnamed name).");
     }
-
     if (!/^[a-z0-9_]+$/.test(id)) throw new Error("ID must contain only lowercase letters, numbers, and underscores.");
 
     const color = $("shapeColor").value.toLowerCase();
     if (!/^#[0-9a-f]{6}$/.test(color)) throw new Error("Colour must be a 6-digit hex value.");
 
-    // IMPORTANT: use currentFreq (kept in sync with slider) rather than trusting element.value
     const freq = clamp(Number(currentFreq), 0, 1);
+    const diff = clamp(parseInt($("shapeDifficulty").value, 10), 0, 4);
 
     return {
       id,
       name,
       grid,
       color,
-      difficulty: 1,
+      difficulty: diff,
       rotation: { mode: "any" },
       frequency: freq,
     };
@@ -821,7 +836,6 @@
 
       await writeBack(updatedText);
 
-      // Update in-memory state immediately; show newest-first list with new shape at top
       await loadFromText(updatedText, fileHandle ? fileHandle.name : (DEFAULT_REL_PATH + " (updated)"));
       pageIndex = 0;
       updateListPanel();
@@ -837,11 +851,12 @@
   (async () => {
     $("shapeColorHex").textContent = $("shapeColor").value.toLowerCase();
     syncFreqFromSlider();
+    $("shapeDifficulty").value = "2"; // default difficulty
 
     const restored = await restoreHandleIfPossible();
     if (!restored) {
       await tryFetchDefaultForBrowsing();
-      $("saveBtn").disabled = true; // enable after picking a file handle
+      $("saveBtn").disabled = true;
       $("fileInfo").textContent =
         "Browse works if served and ./shapes/main_shapes.js is reachable. Pick the file once to enable fast in-place saving (no re-select).";
     }
