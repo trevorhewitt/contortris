@@ -72,8 +72,16 @@
 
       box-shadow:
         0 18px 60px rgba(0,0,0,0.55),
+
+        /* base board edge */
         0 0 0 2px var(--boardEdge),
-        0 0 0 1px var(--boardEdgeInner) inset;
+        0 0 0 1px var(--boardEdgeInner) inset,
+
+        /* ALWAYS-ON faint edge glows */
+        -6px 0 18px rgba(255, 220, 90, 0.12),   /* left yellow */
+        6px 0 18px rgba( 90, 200,255, 0.12),   /* right blue */
+        0 -6px 18px rgba(110, 255,140, 0.10),  /* top green */
+        0  6px 18px rgba(255,  90, 90, 0.10);  /* bottom red */
 
       /* These are set by JS to fit the viewport exactly */
       width: var(--natural-board-w);
@@ -354,34 +362,60 @@
         0 18px 60px rgba(0,0,0,0.55),
         0 0 0 2px var(--boardEdge),
         0 0 0 1px var(--boardEdgeInner) inset,
-        -8px 0 22px rgba(255, 220, 90, 0.35),
-        -2px 0 0 rgba(255, 220, 90, 0.75) inset;
+
+        -6px 0 18px rgba(255, 220, 90, 0.12),
+        6px 0 18px rgba( 90, 200,255, 0.12),
+        0 -6px 18px rgba(110, 255,140, 0.10),
+        0  6px 18px rgba(255,  90, 90, 0.10),
+
+        /* BOOST */
+        -10px 0 30px rgba(255, 220, 90, 0.45),
+        -3px 0 0 rgba(255, 220, 90, 0.90) inset;
     }
     #boardShell.glow-right{
       box-shadow:
         0 18px 60px rgba(0,0,0,0.55),
         0 0 0 2px var(--boardEdge),
         0 0 0 1px var(--boardEdgeInner) inset,
-        8px 0 22px rgba(90, 200, 255, 0.35),
-        -2px 0 0 rgba(90, 200, 255, 0.0) inset,
-        2px 0 0 rgba(90, 200, 255, 0.75) inset;
+
+        -6px 0 18px rgba(255, 220, 90, 0.12),
+        6px 0 18px rgba( 90, 200,255, 0.12),
+        0 -6px 18px rgba(110, 255,140, 0.10),
+        0  6px 18px rgba(255,  90, 90, 0.10),
+
+        /* BOOST */
+        10px 0 30px rgba( 90, 200,255, 0.45),
+        3px 0 0 rgba( 90, 200,255, 0.90) inset;
     }
     #boardShell.glow-top{
       box-shadow:
         0 18px 60px rgba(0,0,0,0.55),
         0 0 0 2px var(--boardEdge),
         0 0 0 1px var(--boardEdgeInner) inset,
-        0 -8px 22px rgba(110, 255, 140, 0.30),
-        0 2px 0 rgba(110, 255, 140, 0.75) inset;
+
+        -6px 0 18px rgba(255, 220, 90, 0.12),
+        6px 0 18px rgba( 90, 200,255, 0.12),
+        0 -6px 18px rgba(110, 255,140, 0.10),
+        0  6px 18px rgba(255,  90, 90, 0.10),
+
+        /* BOOST */
+        0 -10px 30px rgba(110, 255,140, 0.40),
+        0 3px 0 rgba(110, 255,140, 0.90) inset;
     }
     #boardShell.glow-bottom{
       box-shadow:
         0 18px 60px rgba(0,0,0,0.55),
         0 0 0 2px var(--boardEdge),
         0 0 0 1px var(--boardEdgeInner) inset,
-        0 8px 22px rgba(255, 90, 90, 0.30),
-        0 -2px 0 rgba(255, 90, 90, 0.0) inset,
-        0 -2px 0 rgba(255, 90, 90, 0.75) inset;
+
+        -6px 0 18px rgba(255, 220, 90, 0.12),
+        6px 0 18px rgba( 90, 200,255, 0.12),
+        0 -6px 18px rgba(110, 255,140, 0.10),
+        0  6px 18px rgba(255,  90, 90, 0.10),
+
+        /* BOOST */
+        0 10px 30px rgba(255,  90, 90, 0.40),
+        0 -3px 0 rgba(255,  90, 90, 0.90) inset;
     }
   </style>
 </head>

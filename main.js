@@ -706,7 +706,7 @@ const CONFIG = {
   // ============================================================
   // UI + INPUT (soft drop)
   // ============================================================
-  function bindUI(state, renderer, nameLayer, boardEl) {
+  function bindUI(state, renderer, nameLayer) {
     // HUD
     const scoreText = document.getElementById("scoreText");
     const linesText = document.getElementById("linesText");
@@ -729,6 +729,7 @@ const CONFIG = {
     const dbgBaseSpeed = document.getElementById("dbgBaseSpeed");
   
     const boardShellEl = document.getElementById("boardShell");
+    const targetEl = document.body; // IMPORTANT: controls work even off-board
   
     function showOverlay(show, title, subtitle, mode) {
       overlay.classList.toggle("show", show);
@@ -756,7 +757,7 @@ const CONFIG = {
     }
   
     function startGame() {
-      markInput(state, "keyboard");
+      markInput(state, "touch");
       if (state.gameOver) resetGame(state, renderer, nameLayer, updateHUD, showOverlay);
       if (!state.running) {
         state.running = true;
@@ -766,7 +767,7 @@ const CONFIG = {
     }
   
     function resumeGame() {
-      markInput(state, "keyboard");
+      markInput(state, "touch");
       if (state.gameOver) return;
       state.paused = false;
       state.running = true;
@@ -800,7 +801,7 @@ const CONFIG = {
       togglePause();
     });
   
-    // Keyboard
+    // Debug toggle
     window.addEventListener("keydown", (e) => {
       if (e.code === "KeyD") {
         state.debug = !state.debug;
@@ -808,16 +809,17 @@ const CONFIG = {
         updateHUD();
         return;
       }
-  
       if (e.code === "Space") {
         e.preventDefault();
         togglePause();
         return;
       }
+    });
   
+    // Keyboard gameplay (optional)
+    window.addEventListener("keydown", (e) => {
       if (!state.running && e.code !== "Enter") return;
-      if (state.gameOver) return;
-      if (state.paused) return;
+      if (state.gameOver || state.paused) return;
   
       markInput(state, "keyboard");
   
@@ -849,27 +851,14 @@ const CONFIG = {
       if (e.code === "ArrowDown") state.softDropping = false;
     });
   
-    // ---------- Touch controls (tap zones + hold repeat + swipes retained) ----------
-    // Zones are based on the whole viewport, not only the board.
-    // - Left 25%: move left (yellow glow)
-    // - Right 25%: move right (blue glow)
-    // - Top 22%: rotate (green glow)
-    // - Bottom 28%: step down (red glow)
-    //
-    // Priority: top/bottom override left/right if overlapping.
-    const Z = {
-      topFrac: 0.22,
-      bottomFrac: 0.28,
-      sideFrac: 0.25,
-    };
-  
-    const SWIPE_MIN = 34; // keep swipe as secondary
-    const SWIPE_AXIS_DOMINANCE = 1.25;
+    // ----- Tap zones -----
+    // Zones are based on viewport:
+    // top 22% rotate, bottom 28% step down, left 25% move left, right 25% move right.
+    const Z = { top: 0.22, bottom: 0.28, side: 0.25 };
   
     function clearGlows() {
       boardShellEl.classList.remove("glow-left", "glow-right", "glow-top", "glow-bottom");
     }
-  
     function applyGlow(zone) {
       clearGlows();
       if (zone === "left") boardShellEl.classList.add("glow-left");
@@ -878,53 +867,54 @@ const CONFIG = {
       if (zone === "bottom") boardShellEl.classList.add("glow-bottom");
     }
   
-    function getZoneFromPoint(clientX, clientY) {
-      const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
-      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  
-      const yFrac = clientY / vh;
-      const xFrac = clientX / vw;
-  
-      if (yFrac <= Z.topFrac) return "top";
-      if (yFrac >= 1 - Z.bottomFrac) return "bottom";
-      if (xFrac <= Z.sideFrac) return "left";
-      if (xFrac >= 1 - Z.sideFrac) return "right";
-      return null;
+    function getZone(x, y) {
+      // Zones are defined relative to the board rectangle (not the viewport).
+      // Anything outside the board inherits the closest edge’s zone:
+      // - far left of board => left
+      // - far right => right
+      // - above => top
+      // - below => bottom
+      //
+      // If inside the board:
+      // - top band rotates
+      // - bottom band steps down
+      // - else left/right halves move left/right
+      const r = boardShellEl.getBoundingClientRect();
+    
+      const relX = x - r.left;
+      const relY = y - r.top;
+    
+      // Outside board: choose by closest direction first (strong intent).
+      if (relX < 0) return "left";
+      if (relX > r.width) return "right";
+      if (relY < 0) return "top";
+      if (relY > r.height) return "bottom";
+    
+      // Inside board: define bands by board-space fractions
+      const topBand = r.height * 0.22;
+      const bottomBand = r.height * 0.28;
+    
+      if (relY <= topBand) return "top";
+      if (relY >= r.height - bottomBand) return "bottom";
+    
+      // Middle region: left/right halves
+      return (relX <= r.width * 0.5) ? "left" : "right";
     }
-  
-    function canActNow() {
+    function canAct() {
       return state.running && !state.gameOver && !state.paused && state.active;
     }
   
     function doAction(zone) {
-      if (!canActNow()) return;
-  
+      if (!canAct()) return;
       markInput(state, "touch");
   
-      if (zone === "left") {
-        tryMove(state, -1, 0);
-      } else if (zone === "right") {
-        tryMove(state, +1, 0);
-      } else if (zone === "top") {
-        tryRotate(state);
-      } else if (zone === "bottom") {
-        // step down 1
+      if (zone === "left") tryMove(state, -1, 0);
+      else if (zone === "right") tryMove(state, +1, 0);
+      else if (zone === "top") tryRotate(state);
+      else if (zone === "bottom") {
         const moved = tryMove(state, 0, 1);
-        if (!moved) {
-          // if touching down, start lock grace (longer on touch)
-          beginLockIfNeeded(state);
-        }
+        if (!moved) beginLockIfNeeded(state);
       }
-    }
-  
-    function startRepeat(zone) {
-      // immediate action
-      doAction(zone);
-  
-      // then repeat after short delay while finger is down
-      state.tapRepeatTimer = setTimeout(() => {
-        state.tapRepeatInterval = setInterval(() => doAction(zone), CONFIG.timing.tapRepeatEveryMs);
-      }, CONFIG.timing.tapRepeatStartMs);
     }
   
     function stopRepeat() {
@@ -934,25 +924,31 @@ const CONFIG = {
       state.tapRepeatInterval = null;
     }
   
-    // Touch start: start tap-zone repeat (no double tap)
-    boardEl.addEventListener("touchstart", (ev) => {
-      if (ev.touches.length !== 1) return;
-      const t = ev.touches[0];
+    function startRepeat(zone) {
+      doAction(zone);
+      state.tapRepeatTimer = setTimeout(() => {
+        state.tapRepeatInterval = setInterval(() => doAction(zone), CONFIG.timing.tapRepeatEveryMs);
+      }, CONFIG.timing.tapRepeatStartMs);
+    }
   
-      // Record for optional swipe detection
-      state.touch.active = true;
-      state.touch.startX = t.clientX;
-      state.touch.startY = t.clientY;
-      state.touch.startT = performance.now();
+    // Pointer events: reliable tap/hold everywhere
+    targetEl.addEventListener("pointerdown", (e) => {
+      // only primary contact
+      if (!e.isPrimary) return;
   
-      // If overlay is showing (not running), allow tap on board to start game.
+      // stop browser gestures
+      e.preventDefault();
+  
+      // Start game if not running
       if (!state.running && !state.gameOver) {
         startGame();
         return;
       }
   
-      // Tap zones
-      const zone = getZoneFromPoint(t.clientX, t.clientY);
+      // Ignore taps while overlay is up (paused etc.)
+      if (state.paused) return;
+  
+      const zone = getZone(e.clientX, e.clientY);
       state.touch.zone = zone;
   
       if (zone) {
@@ -960,55 +956,23 @@ const CONFIG = {
         stopRepeat();
         startRepeat(zone);
       }
-    }, { passive: true });
+    });
   
-    // Touch move: if the user is swiping, stop repeat and perform a swipe action once
-    boardEl.addEventListener("touchmove", (ev) => {
-      if (!state.touch.active || ev.touches.length !== 1) return;
-      const t = ev.touches[0];
-      const dx = t.clientX - state.touch.startX;
-      const dy = t.clientY - state.touch.startY;
-  
-      const adx = Math.abs(dx);
-      const ady = Math.abs(dy);
-  
-      // If user begins a clear swipe, cancel repeat + glow and handle swipe once
-      if (Math.max(adx, ady) >= SWIPE_MIN) {
-        stopRepeat();
-        clearGlows();
-  
-        if (!canActNow()) return;
-  
-        // Determine swipe direction
-        if (adx > ady * SWIPE_AXIS_DOMINANCE) {
-          markInput(state, "touch");
-          tryMove(state, dx < 0 ? -1 : +1, 0);
-        } else if (ady > adx * SWIPE_AXIS_DOMINANCE) {
-          markInput(state, "touch");
-          if (dy < 0) tryRotate(state);
-          else {
-            const moved = tryMove(state, 0, 1);
-            if (!moved) beginLockIfNeeded(state);
-          }
-        }
-  
-        // Prevent repeated swipe triggers
-        state.touch.active = false;
-      }
-    }, { passive: true });
-  
-    // Touch end/cancel: stop repeat + glow; do NOT double-tap anything.
-    function endTouch() {
-      state.touch.active = false;
+    targetEl.addEventListener("pointerup", (e) => {
+      if (!e.isPrimary) return;
+      e.preventDefault();
       stopRepeat();
       clearGlows();
-    }
+    });
   
-    boardEl.addEventListener("touchend", endTouch, { passive: true });
-    boardEl.addEventListener("touchcancel", endTouch, { passive: true });
+    targetEl.addEventListener("pointercancel", (e) => {
+      if (!e.isPrimary) return;
+      stopRepeat();
+      clearGlows();
+    });
   
     // Initial overlay
-    showOverlay(true, "Contortris", "Press Play (tap anywhere on the board).", "start");
+    showOverlay(true, "Contortris", "Press Play (tap anywhere).", "start");
     updateHUD();
   
     return { updateHUD, showOverlay };
