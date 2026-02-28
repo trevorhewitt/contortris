@@ -238,7 +238,7 @@ export const SHAPES = [
       'XXXX',
     ],
     color: '#007a08',
-    difficulty: 1,
+    difficulty: 2,
     rotation: { mode: 'any' },
     frequency: 1.00,
   },

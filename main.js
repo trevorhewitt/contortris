@@ -256,13 +256,32 @@ const CONFIG = {
   
       // NEW: soft drop state
       softDropping: false,
+
+      debug: false,               // NEW
+      touch: {                    // NEW
+        active: false,
+        startX: 0,
+        startY: 0,
+        startT: 0,
+        lastTapT: 0,
+      },
     };
   }
+
+  function getDifficultyZone(state) {
+    const inDiff1Zone = isStackInTopRows(state, CONFIG.assist.topRowsForDiff1Only);
+    const inDiff2Zone = !inDiff1Zone && isStackInTopRows(state, CONFIG.assist.topRowsForDiff2Only);
+  
+    if (inDiff1Zone) return { zone: "assist: difficulty ≤ 1 (strict)", cap: 1 };
+    if (inDiff2Zone) return { zone: "assist: difficulty ≤ 2 (sometimes >2)", cap: 2 };
+    return { zone: "normal", cap: Infinity };
+  }
+  
   function randomShape(state) {
     // Decide difficulty cap based on how high the locked stack is.
     const inDiff1Zone = isStackInTopRows(state, CONFIG.assist.topRowsForDiff1Only);
     const inDiff2Zone = !inDiff1Zone && isStackInTopRows(state, CONFIG.assist.topRowsForDiff2Only);
-  
+
     let difficultyCap = Infinity;
   
     if (inDiff1Zone) {
@@ -643,23 +662,43 @@ const CONFIG = {
   // UI + INPUT (soft drop)
   // ============================================================
   
-  function bindUI(state, renderer, nameLayer) {
-    const playBtn = document.getElementById("playBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const overlay = document.getElementById("overlay");
+  function bindUI(state, renderer, nameLayer, boardEl) {
+    // HUD
     const statusText = document.getElementById("statusText");
-  
     const scoreText = document.getElementById("scoreText");
     const linesText = document.getElementById("linesText");
-    const levelText = document.getElementById("levelText");
-    const speedText = document.getElementById("speedText");
+  
+    // Overlay + overlay buttons
+    const overlay = document.getElementById("overlay");
+    const overlayTitle = document.getElementById("overlayTitle");
+    const overlaySubtitle = document.getElementById("overlaySubtitle");
+    const overlayPlayBtn = document.getElementById("overlayPlayBtn");
+    const overlayResumeBtn = document.getElementById("overlayResumeBtn");
+    const overlayNewBtn = document.getElementById("overlayNewBtn");
+  
+    // Debug panel
+    const debugPanel = document.getElementById("debugPanel");
+    const dbgZone = document.getElementById("dbgZone");
+    const dbgPieceDiff = document.getElementById("dbgPieceDiff");
+    const dbgBaseSpeed = document.getElementById("dbgBaseSpeed");
+  
+    function showOverlay(show, title, subtitle, mode) {
+      overlay.classList.toggle("show", show);
+      if (!show) return;
+  
+      overlayTitle.textContent = title ?? "Contortris";
+      overlaySubtitle.textContent = subtitle ?? "";
+  
+      // Button visibility by mode: "start" | "pause" | "gameover"
+      const m = mode ?? "start";
+      overlayPlayBtn.style.display = (m === "start") ? "inline-block" : "none";
+      overlayResumeBtn.style.display = (m === "pause") ? "inline-block" : "none";
+      overlayNewBtn.style.display = (m === "pause" || m === "gameover") ? "inline-block" : "none";
+    }
   
     function updateHUD() {
       scoreText.textContent = String(state.score);
       linesText.textContent = String(state.lines);
-      levelText.textContent = String(state.level);
-      const mult = (CONFIG.timing.baseDropMs / state.dropMs);
-      speedText.textContent = `${mult.toFixed(2)}×`;
   
       statusText.textContent = state.gameOver
         ? "game over"
@@ -668,38 +707,68 @@ const CONFIG = {
           : state.running
             ? "running"
             : "ready";
-    }
   
-    function showOverlay(show, big, small) {
-      overlay.classList.toggle("show", show);
-      if (show) {
-        overlay.querySelector(".big").textContent = big ?? "Contortris";
-        overlay.querySelector(".small").textContent = small ?? "";
+      // Debug panel updates (only when enabled)
+      if (state.debug) {
+        const z = getDifficultyZone(state);
+        dbgZone.textContent = z.zone;
+        dbgPieceDiff.textContent = state.active ? String(state.active.shape.difficulty ?? 1) : "–";
+        // Base fall speed: show the default drop interval (ignoring ArrowDown)
+        dbgBaseSpeed.textContent = `${state.dropMs} ms/row (level ${state.level})`;
       }
     }
   
-    playBtn.addEventListener("click", () => {
+    function startGame() {
       if (state.gameOver) resetGame(state, renderer, nameLayer, updateHUD, showOverlay);
       if (!state.running) {
         state.running = true;
         state.paused = false;
         showOverlay(false);
       }
-    });
+    }
   
-    resetBtn.addEventListener("click", () => {
-      resetGame(state, renderer, nameLayer, updateHUD, showOverlay);
-    });
+    function resumeGame() {
+      if (state.gameOver) return;
+      state.running = true;
+      state.paused = false;
+      showOverlay(false);
+      updateHUD();
+    }
   
-    // Keydown: movement + rotate + pause + start + soft drop activate
+    function pauseGame() {
+      if (!state.running || state.gameOver) return;
+      state.paused = true;
+      state.running = true; // keep running flag true; pause gates update loop
+      showOverlay(true, "Paused", "Space to resume, or use buttons below.", "pause");
+      updateHUD();
+    }
+  
+    // Overlay buttons
+    overlayPlayBtn.addEventListener("click", () => startGame());
+    overlayResumeBtn.addEventListener("click", () => resumeGame());
+    overlayNewBtn.addEventListener("click", () => resetGame(state, renderer, nameLayer, updateHUD, showOverlay));
+  
+    // Keyboard
     window.addEventListener("keydown", (e) => {
+      // Debug toggle always available
+      if (e.code === "KeyD") {
+        state.debug = !state.debug;
+        debugPanel.style.display = state.debug ? "block" : "none";
+        updateHUD();
+        return;
+      }
+  
       if (!state.running && e.code !== "Enter") return;
       if (state.gameOver) return;
   
       if (e.code === "Space") {
         e.preventDefault();
-        state.paused = !state.paused;
-        showOverlay(state.paused, "Paused", "Space to resume");
+        if (state.paused) {
+          state.paused = false;
+          showOverlay(false);
+        } else {
+          pauseGame();
+        }
         updateHUD();
         return;
       }
@@ -719,34 +788,106 @@ const CONFIG = {
           e.preventDefault();
           if (state.active) tryRotate(state);
           break;
-  
-        // NEW: ↓ activates soft drop (no teleport).
         case "ArrowDown":
           e.preventDefault();
           state.softDropping = true;
           break;
-  
         case "Enter":
-          if (!state.running) {
-            state.running = true;
-            state.paused = false;
-            showOverlay(false);
-          }
+          e.preventDefault();
+          startGame();
           break;
       }
     });
   
-    // Keyup: deactivate soft drop
     window.addEventListener("keyup", (e) => {
-      if (e.code === "ArrowDown") {
-        state.softDropping = false;
-      }
+      if (e.code === "ArrowDown") state.softDropping = false;
     });
   
+    // Touch controls (mobile-friendly)
+    // Behaviour:
+    // - swipe left/right: move 1
+    // - swipe up: rotate
+    // - swipe down: move down 1 step
+    // - double tap: play (or resume if paused)
+    const SWIPE_MIN = 26; // px
+    const SWIPE_AXIS_DOMINANCE = 1.2; // must be 20% more in one axis than the other
+    const DOUBLE_TAP_MS = 320;
+  
+    boardEl.addEventListener("touchstart", (ev) => {
+      if (ev.touches.length !== 1) return;
+      const t = ev.touches[0];
+      state.touch.active = true;
+      state.touch.startX = t.clientX;
+      state.touch.startY = t.clientY;
+      state.touch.startT = performance.now();
+    }, { passive: true });
+  
+    boardEl.addEventListener("touchend", (ev) => {
+      if (!state.touch.active) return;
+      state.touch.active = false;
+  
+      const now = performance.now();
+  
+      // Double tap: start/resume
+      if (now - state.touch.lastTapT < DOUBLE_TAP_MS) {
+        state.touch.lastTapT = 0;
+        if (!state.running) startGame();
+        else if (state.paused) resumeGame();
+        return;
+      }
+  
+      state.touch.lastTapT = now;
+  
+      // If no movement, treat as single tap (no action)
+      const changed = ev.changedTouches && ev.changedTouches[0];
+      if (!changed) return;
+  
+      const dx = changed.clientX - state.touch.startX;
+      const dy = changed.clientY - state.touch.startY;
+  
+      const adx = Math.abs(dx);
+      const ady = Math.abs(dy);
+  
+      // ignore tiny gestures
+      if (Math.max(adx, ady) < SWIPE_MIN) return;
+  
+      // Allow gestures even before start? no (except double tap). Keep consistent with keyboard.
+      if (!state.running || state.gameOver) return;
+  
+      // If paused, ignore swipes (double tap handles resume)
+      if (state.paused) return;
+  
+      // Horizontal swipe
+      if (adx > ady * SWIPE_AXIS_DOMINANCE) {
+        if (state.active) tryMove(state, dx < 0 ? -1 : +1, 0);
+        return;
+      }
+  
+      // Vertical swipe
+      if (ady > adx * SWIPE_AXIS_DOMINANCE) {
+        if (dy < 0) {
+          // swipe up: rotate
+          if (state.active) tryRotate(state);
+        } else {
+          // swipe down: move down 1 step (not hard drop)
+          if (state.active) {
+            const moved = tryMove(state, 0, 1);
+            if (!moved) {
+              // If cannot move down, lock immediately (matches typical behaviour)
+              stepLockAndSpawn(state, renderer, nameLayer, updateHUD, showOverlay);
+            }
+          }
+        }
+      }
+    }, { passive: true });
+  
+    // Initial overlay
+    showOverlay(true, "Contortris", "Press Play (or double-tap).", "start");
     updateHUD();
+  
     return { updateHUD, showOverlay };
   }
-  
+   
   function resetGame(state, renderer, nameLayer, updateHUD, showOverlay) {
     state.board = createEmptyBoard(CONFIG.board.cols, CONFIG.board.rows);
     state.active = null;
@@ -861,7 +1002,8 @@ const CONFIG = {
   nameLayer.setName(state.active.shape.name);
   renderer.drawNextSilhouette(state.next);
   
-  const ui = bindUI(state, renderer, nameLayer);
+  const boardShell = document.querySelector(".boardShell");
+  const ui = bindUI(state, renderer, nameLayer, boardShell);
   
   let last = performance.now();
   function tick(now) {

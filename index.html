@@ -225,6 +225,90 @@
       line-height: 1.35;
     }
 
+    .statCol{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+    .statRow{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 10px;
+    }
+    .statRow .k{
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .statRow .v{
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .debugPanel{
+      width: var(--board-w);
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .debugPanel .k{
+      color: rgba(245,245,255,0.55);
+      display:inline-block;
+      width: 120px;
+    }
+    .debugPanel .v{
+      color: rgba(245,245,255,0.90);
+      font-weight: 700;
+    }
+
+    .controlsBlock{
+      margin-top: 10px;
+      text-align:left;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .controlsHeader{
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+    .controlsText{
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .overlayBtns{
+      display:flex;
+      gap: 10px;
+      margin-top: 12px;
+      justify-content:center;
+      flex-wrap: wrap;
+    }
+
+    /* Mobile layout: stack board over sidebar */
+    @media (max-width: 860px){
+      .wrap{
+        flex-direction: column;
+        align-items:center;
+      }
+      .side{
+        width: min(360px, calc(100vw - 48px));
+      }
+    }
+
     .overlay{
       position:absolute;
       inset: 0;
@@ -267,10 +351,29 @@
       <canvas id="boardCanvas"></canvas>
       <div id="overlay" class="overlay show">
         <div class="msg">
-          <div class="big">Contortris</div>
-          <div class="small">Press Play. Space pauses.</div>
+          <div class="big" id="overlayTitle">Contortris</div>
+          <div class="small" id="overlaySubtitle">Press Play.</div>
+      
+          <div class="controlsBlock" id="controlsBlock">
+            <div class="controlsHeader">Controls</div>
+            <div class="controlsText">
+              Desktop: ←/→ move, ↑ rotate, ↓ soft drop, Space pause, D debug<br/>
+              Mobile: swipe ←/→ move, swipe ↑ rotate, swipe ↓ drop 1 step, double-tap play
+            </div>
+          </div>
+      
+          <div class="overlayBtns">
+            <button id="overlayPlayBtn">Play</button>
+            <button id="overlayResumeBtn" class="secondary">Resume</button>
+            <button id="overlayNewBtn" class="secondary">New game</button>
+          </div>
         </div>
-      </div>
+    </div>
+
+    <div id="debugPanel" class="debugPanel" style="display:none;">
+      <div><span class="k">Zone</span> <span id="dbgZone" class="v">normal</span></div>
+      <div><span class="k">Piece difficulty</span> <span id="dbgPieceDiff" class="v">–</span></div>
+      <div><span class="k">Base fall speed</span> <span id="dbgBaseSpeed" class="v">–</span></div>
     </div>
 
     <div class="side">
@@ -278,41 +381,24 @@
         <h1>Contortris</h1>
         <div class="meta" id="statusText">ready</div>
       </div>
-
-      <div class="btnRow">
-        <button id="playBtn">Play</button>
-        <button id="resetBtn" class="secondary">Reset</button>
-      </div>
-
+    
       <div class="card">
         <div class="label">Next (silhouette)</div>
         <div class="nextShell">
           <canvas id="nextCanvas"></canvas>
         </div>
       </div>
-
+    
       <div class="card">
-        <div class="hud">
-          <div class="stat">
+        <div class="statCol">
+          <div class="statRow">
             <div class="k">Score</div>
             <div class="v" id="scoreText">0</div>
           </div>
-          <div class="stat">
+          <div class="statRow">
             <div class="k">Lines</div>
             <div class="v" id="linesText">0</div>
           </div>
-          <div class="stat">
-            <div class="k">Level</div>
-            <div class="v" id="levelText">1</div>
-          </div>
-          <div class="stat">
-            <div class="k">Speed</div>
-            <div class="v" id="speedText">1.00×</div>
-          </div>
-        </div>
-        <div class="help">
-          Controls: ←/→ move, ↑ rotate, ↓ soft drop, Space pause.<br/>
-          Pause hides blocks (toggle in config).
         </div>
       </div>
     </div>
