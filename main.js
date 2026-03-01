@@ -43,10 +43,10 @@ const CONFIG = {
       // If the stack reaches into the top N rows, apply restrictions.
     
       // If any locked block is within the top n rows -> mostly difficulty <= 2
-      topRowsForDiff2Only: 12,
+      topRowsForDiff2Only: 20,
     
       // If any locked block is within the top m rows -> difficulty <= 1 only (no exceptions)
-      topRowsForDiff1Only: 5,
+      topRowsForDiff1Only: 10,
     
       // When in the diff<=2 zone, occasionally allow harder pieces anyway
       allowHarderThan2Prob: 0.15,
@@ -892,8 +892,8 @@ function clampByte(x){ return Math.max(0, Math.min(255, x)); }
         Math.min(shadeWidthMaxPx, Math.floor(cellSize / 2) - 1)
       );
     
-      const darkAlpha = clamp(style.shadeDarkAlpha ?? 0.28, 0, 1);
-      const lightAlpha = clamp(style.shadeLightAlpha ?? 0.5, 0, 1);
+      const darkAlpha = clamp(style.shadeDarkAlpha ?? 0.0, 0, 1);
+      const lightAlpha = clamp(style.shadeLightAlpha ?? 0.0, 0, 1);
     
       const darkRGB = style.shadeDarkRGB ?? [0, 0, 0];
       const lightRGB = style.shadeLightRGB ?? [255, 255, 255];
@@ -907,7 +907,7 @@ function clampByte(x){ return Math.max(0, Math.min(255, x)); }
       const coolRGB = style.shadeCoolTintRGB ?? [70, 120, 255];
     
       const outlineAlpha = clamp(style.outlineAlpha ?? 0.55, 0, 1);
-      const outlineWidth = style.outlineWidth ?? 1;
+      const outlineWidth = style.outlineWidth ?? 0.5;
       const outlineRGB = style.outlineRGB ?? [0, 0, 0];
     
       // Corner handling:

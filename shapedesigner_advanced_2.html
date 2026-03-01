@@ -491,7 +491,7 @@
     mask = nextMask;
 
     if (shading === "solid") k = 1;
-    else k = clamp(parseInt(shading, 10), 1, 4);
+    else k = clamp(parseInt(shading, 10), 1, 7);
 
     const newPH = k * nH;
     const newPW = k * nW;
@@ -1149,7 +1149,7 @@
     } else if (Array.isArray(col) && Array.isArray(col[0])) {
       const pH = col.length;
       const pW = col[0].length;
-      factor = clamp(Math.round(Math.min(pH / h, pW / w)), 1, 4);
+      factor = clamp(Math.round(Math.min(pH / h, pW / w)), 1, 7);
       pix = make2D(factor*h, factor*w, "");
       for (let r = 0; r < pix.length; r++) for (let c = 0; c < pix[0].length; c++) pix[r][c] = (col[r] && typeof col[r][c] === "string") ? col[r][c] : "";
     }
@@ -1221,7 +1221,7 @@
           const w = (s.grid?.[0]?.length || 1);
           const pH = s.color.length;
           const pW = s.color[0].length;
-          const factor = clamp(Math.round(Math.min(pH / h, pW / w)), 1, 4);
+          const factor = clamp(Math.round(Math.min(pH / h, pW / w)), 1, 7);
           return `${factor}x`;
         }
         return "?";
@@ -1274,7 +1274,7 @@
       const pW = col[0].length;
       const factorH = Math.round(pH / h);
       const factorW = Math.round(pW / w);
-      const factor = clamp(Math.min(factorH, factorW), 1, 4);
+      const factor = clamp(Math.min(factorH, factorW), 1, 7);
 
       const norm = make2D(factor*h, factor*w, "");
       for (let r = 0; r < norm.length; r++) {
