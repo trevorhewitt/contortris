@@ -217,11 +217,20 @@ export const SHAPES = [
   },
   {
     id: 'tomatoeone',
-    name: 'just one cherry tomatoe',
+    name: 'just a cherry tomatoe',
     grid: ['X'],
     color: [['#850000', '#2a6006', '#850000'], ['#db9595', '#850000', '#610000'], ['#610000', '#850000', '#610000']],
     difficulty: 0,
     rotation: { mode: 'any' },
     frequency: 1.00,
+  },
+  {
+    id: 'hourglass',
+    name: 'an hourglass',
+    grid: ['.X', 'X.'],
+    color: [['', '', '', '', '#bdf7ff', '#bdf7ff', '#bdf7ff', '#bdf7ff'], ['', '', '', '', '#e8d191', '#bdf7ff', '#bdf7ff', '#f0fdff'], ['', '', '', '', '#dec47d', '#e8d191', '#f0fdff', '#bdf7ff'], ['', '', '', '', '#e8d191', '#bdaf89', '#bdaf89', '#bdf7ff'], ['#bdf7ff', '#bdf7ff', '#bdf7ff', '#bdaf89', '', '', '', ''], ['#dec47d', '#bdf7ff', '#e8d191', '#f0fdff', '', '', '', ''], ['#e8d191', '#dec47d', '#f0fdff', '#bdf7ff', '', '', '', ''], ['#dec47d', '#bdaf89', '#bdaf89', '#bdf7ff', '', '', '', '']],
+    difficulty: 2,
+    rotation: { mode: 'any' },
+    frequency: 0.66,
   },
 ];
