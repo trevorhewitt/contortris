@@ -4,7 +4,7 @@ const CONFIG = {
       baseDropMs: 500,
       minDropMs: 110,
       levelEveryLines: 3,
-      speedMultiplierPerLevel: 0.88,
+      speedMultiplierPerLevel: 0.92,
   
       // NEW: soft drop factor while ↓ is held.
       // e.g. 0.12 => ~8.3× faster gravity.
