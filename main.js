@@ -878,20 +878,75 @@ function clampByte(x){ return Math.max(0, Math.min(255, x)); }
       nctx.restore();
     }
   
-    function drawBlockWithPaint(ctx, px, py, cellSize, paint, style) {
-      // 1) Fill interior (solid or pixel art)
+    function drawBlockWithPaint(ctx, px, py, cellSize, paint, style = {}) {
+      const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    
+      // ---------- Tunables ----------
+      const shadeWidthRatio = style.shadeWidthRatio ?? 0.14;
+      const shadeWidthMinPx = style.shadeWidthMinPx ?? 1;
+      const shadeWidthMaxPx = style.shadeWidthMaxPx ?? 10;
+    
+      const w = clamp(
+        Math.round(cellSize * shadeWidthRatio),
+        shadeWidthMinPx,
+        Math.min(shadeWidthMaxPx, Math.floor(cellSize / 2) - 1)
+      );
+    
+      const darkAlpha = clamp(style.shadeDarkAlpha ?? 0.28, 0, 1);
+      const lightAlpha = clamp(style.shadeLightAlpha ?? 0.5, 0, 1);
+    
+      const darkRGB = style.shadeDarkRGB ?? [0, 0, 0];
+      const lightRGB = style.shadeLightRGB ?? [255, 255, 255];
+    
+      const darkComposite = style.shadeDarkComposite ?? "multiply";
+      const lightComposite = style.shadeLightComposite ?? "screen";
+    
+      const tintWarmAlpha = clamp(style.shadeWarmTintAlpha ?? 0.0, 0, 1);
+      const tintCoolAlpha = clamp(style.shadeCoolTintAlpha ?? 0.0, 0, 1);
+      const warmRGB = style.shadeWarmTintRGB ?? [255, 230, 120];
+      const coolRGB = style.shadeCoolTintRGB ?? [70, 120, 255];
+    
+      const outlineAlpha = clamp(style.outlineAlpha ?? 0.55, 0, 1);
+      const outlineWidth = style.outlineWidth ?? 1;
+      const outlineRGB = style.outlineRGB ?? [0, 0, 0];
+    
+      // Corner handling:
+      // - No *double* blending (prevents corner artefacts)
+      // - BUT bottom-left should be dark, top-right should be light
+      // Achieve this by: excluding corners from strips, then filling those two corners once.
+      const cornerMode = style.cornerMode ?? "single"; // "single" or "none"
+      // If you ever want all four corners shaded, change these flags:
+      const shadeBottomLeftCorner = style.shadeBottomLeftCorner ?? true;
+      const shadeTopRightCorner = style.shadeTopRightCorner ?? true;
+    
+      // ---------- 1) Fill interior ----------
       if (typeof paint === "string") {
         ctx.fillStyle = paint;
         ctx.fillRect(px, py, cellSize, cellSize);
       } else if (paint && typeof paint === "object" && paint.pixels && paint.k) {
         const k = paint.k;
-        const sub = cellSize / k;
-    
+      
+        // Build integer boundaries so the grid always fits perfectly in [px, px+cellSize]
+        const xb = new Array(k + 1);
+        const yb = new Array(k + 1);
+        for (let i = 0; i <= k; i++) {
+          xb[i] = px + Math.round((i * cellSize) / k);
+          yb[i] = py + Math.round((i * cellSize) / k);
+        }
+      
         for (let sy = 0; sy < k; sy++) {
+          const y0 = yb[sy], y1 = yb[sy + 1];
+          const h = y1 - y0;
+          if (h <= 0) continue;
+      
           for (let sx = 0; sx < k; sx++) {
-            const c = paint.pixels[sy][sx];
-            ctx.fillStyle = isHexColour(c) ? c : (style.baseColor ?? "#FFFFFF");
-            ctx.fillRect(px + sx * sub, py + sy * sub, sub, sub);
+            const x0 = xb[sx], x1 = xb[sx + 1];
+            const w = x1 - x0;
+            if (w <= 0) continue;
+      
+            const c = paint.pixels?.[sy]?.[sx];
+            ctx.fillStyle = (typeof c === "string" && isHexColour(c)) ? c : (style.baseColor ?? "#FFFFFF");
+            ctx.fillRect(x0, y0, w, h);
           }
         }
       } else {
@@ -899,59 +954,84 @@ function clampByte(x){ return Math.max(0, Math.min(255, x)); }
         ctx.fillRect(px, py, cellSize, cellSize);
       }
     
-      // 2) Block-level shading that PRESERVES pixel hues
-      //    - dark: multiply with near-black translucent overlay
-      //    - light: screen with near-white translucent overlay
-      //
-      // Optional mild tint (yellow/blue) is applied at very low alpha so it doesn't recolour the art.
-      const w = Math.max(1, Math.floor(cellSize * 0.12));
+      // ---------- 2) Shading ----------
+      if (w > 0 && (darkAlpha > 0 || lightAlpha > 0 || tintWarmAlpha > 0 || tintCoolAlpha > 0)) {
+        ctx.save();
     
-      // Tunables (keep low to preserve pixel art)
-      const darkAlpha = style.shadeDarkAlpha ?? 0.28;
-      const lightAlpha = style.shadeLightAlpha ?? 0.22;
+        // Dark: bottom + left, excluding bottom-left so it can be filled exactly once.
+        if (darkAlpha > 0 || tintCoolAlpha > 0) {
+          ctx.globalCompositeOperation = darkComposite;
     
-      const tintWarmAlpha = style.shadeWarmTintAlpha ?? 0.06; // top/right
-      const tintCoolAlpha = style.shadeCoolTintAlpha ?? 0.06; // bottom/left
+          if (darkAlpha > 0) {
+            ctx.fillStyle = `rgba(${darkRGB[0]},${darkRGB[1]},${darkRGB[2]},${darkAlpha})`;
+            // bottom: exclude bottom-left corner area
+            ctx.fillRect(px + w, py + cellSize - w, cellSize - w, w);
+            // left: exclude bottom-left corner area
+            ctx.fillRect(px, py, w, cellSize - w);
+          }
     
-      ctx.save();
+          if (tintCoolAlpha > 0) {
+            ctx.fillStyle = `rgba(${coolRGB[0]},${coolRGB[1]},${coolRGB[2]},${tintCoolAlpha})`;
+            ctx.fillRect(px + w, py + cellSize - w, cellSize - w, w);
+            ctx.fillRect(px, py, w, cellSize - w);
+          }
     
-      // --- Darken bottom + left (multiply) ---
-      ctx.globalCompositeOperation = "multiply";
-      ctx.fillStyle = `rgba(0,0,0,${darkAlpha})`;
-      ctx.fillRect(px, py + cellSize - w, cellSize, w); // bottom
-      ctx.fillRect(px, py, w, cellSize);                // left
+          if (cornerMode === "single" && shadeBottomLeftCorner) {
+            // bottom-left corner shaded ONCE (dark variant)
+            if (darkAlpha > 0) {
+              ctx.fillStyle = `rgba(${darkRGB[0]},${darkRGB[1]},${darkRGB[2]},${darkAlpha})`;
+              ctx.fillRect(px, py + cellSize - w, w, w);
+            }
+            if (tintCoolAlpha > 0) {
+              ctx.fillStyle = `rgba(${coolRGB[0]},${coolRGB[1]},${coolRGB[2]},${tintCoolAlpha})`;
+              ctx.fillRect(px, py + cellSize - w, w, w);
+            }
+          }
+        }
     
-      // Optional subtle cool tint (still multiply, very low alpha)
-      if (tintCoolAlpha > 0) {
-        ctx.fillStyle = `rgba(70,120,255,${tintCoolAlpha})`;
-        ctx.fillRect(px, py + cellSize - w, cellSize, w);
-        ctx.fillRect(px, py, w, cellSize);
+        // Light: top + right, excluding top-right so it can be filled exactly once.
+        if (lightAlpha > 0 || tintWarmAlpha > 0) {
+          ctx.globalCompositeOperation = lightComposite;
+    
+          if (lightAlpha > 0) {
+            ctx.fillStyle = `rgba(${lightRGB[0]},${lightRGB[1]},${lightRGB[2]},${lightAlpha})`;
+            // top: exclude top-right corner area
+            ctx.fillRect(px, py, cellSize - w, w);
+            // right: exclude top-right corner area
+            ctx.fillRect(px + cellSize - w, py + w, w, cellSize - w);
+          }
+    
+          if (tintWarmAlpha > 0) {
+            ctx.fillStyle = `rgba(${warmRGB[0]},${warmRGB[1]},${warmRGB[2]},${tintWarmAlpha})`;
+            ctx.fillRect(px, py, cellSize - w, w);
+            ctx.fillRect(px + cellSize - w, py + w, w, cellSize - w);
+          }
+    
+          if (cornerMode === "single" && shadeTopRightCorner) {
+            // top-right corner shaded ONCE (light variant)
+            if (lightAlpha > 0) {
+              ctx.fillStyle = `rgba(${lightRGB[0]},${lightRGB[1]},${lightRGB[2]},${lightAlpha})`;
+              ctx.fillRect(px + cellSize - w, py, w, w);
+            }
+            if (tintWarmAlpha > 0) {
+              ctx.fillStyle = `rgba(${warmRGB[0]},${warmRGB[1]},${warmRGB[2]},${tintWarmAlpha})`;
+              ctx.fillRect(px + cellSize - w, py, w, w);
+            }
+          }
+        }
+    
+        ctx.restore();
       }
     
-      // --- Lighten top + right (screen) ---
-      ctx.globalCompositeOperation = "screen";
-      ctx.fillStyle = `rgba(255,255,255,${lightAlpha})`;
-      ctx.fillRect(px, py, cellSize, w);               // top
-      ctx.fillRect(px + cellSize - w, py, w, cellSize);// right
-    
-      // Optional subtle warm tint (screen, very low alpha)
-      if (tintWarmAlpha > 0) {
-        ctx.fillStyle = `rgba(255,230,120,${tintWarmAlpha})`;
-        ctx.fillRect(px, py, cellSize, w);
-        ctx.fillRect(px + cellSize - w, py, w, cellSize);
-      }
-    
-      ctx.restore();
-    
-      // 3) Optional thin outline to make blocks “read” crisply (doesn't ruin art)
-      // If you dislike outlines, set style.outlineAlpha = 0.
-      const outlineAlpha = style.outlineAlpha ?? 0.18;
-      if (outlineAlpha > 0) {
+      // ---------- 3) Thin black outline ----------
+      if (outlineAlpha > 0 && outlineWidth > 0) {
         ctx.save();
         ctx.globalCompositeOperation = "source-over";
-        ctx.strokeStyle = `rgba(255,255,255,${outlineAlpha})`;
-        ctx.lineWidth = 1;
-        ctx.strokeRect(px + 0.5, py + 0.5, cellSize - 1, cellSize - 1);
+        ctx.strokeStyle = `rgba(${outlineRGB[0]},${outlineRGB[1]},${outlineRGB[2]},${outlineAlpha})`;
+        ctx.lineWidth = outlineWidth;
+    
+        const half = (outlineWidth % 2) ? 0.5 : 0;
+        ctx.strokeRect(px + half, py + half, cellSize - outlineWidth, cellSize - outlineWidth);
         ctx.restore();
       }
     }
