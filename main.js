@@ -1,9 +1,9 @@
 const CONFIG = {
-    board: { cols: 10, rows: 20 },
+    board: { cols: 14, rows: 28 },
     timing: {
-      baseDropMs: 850,
+      baseDropMs: 500,
       minDropMs: 110,
-      levelEveryLines: 8,
+      levelEveryLines: 3,
       speedMultiplierPerLevel: 0.88,
   
       // NEW: soft drop factor while ↓ is held.
@@ -31,7 +31,7 @@ const CONFIG = {
     },
     pause: { hideShapes: true },
     render: {
-      cellPx: 24,
+      cellPx: 18,
       gridLineAlpha: 0.22,
       bg: "#000000",
       silhouetteColor: "rgba(240,240,255,0.16)",
@@ -364,7 +364,8 @@ function inferPixelScale(matH, matW, gridH, gridW) {
   const kH = gridH / matH;
   const kW = gridW / matW;
   if (kH !== kW) return null;
-  if (![1, 2, 3, 4].includes(kH)) return null;
+  const MAX_K = 7; // rendering cost scales with k^2
+  if (kH < 1 || kH > MAX_K) return null;
   return kH;
 }
 
