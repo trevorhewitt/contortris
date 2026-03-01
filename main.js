@@ -1380,7 +1380,7 @@ function clampByte(x){ return Math.max(0, Math.min(255, x)); }
     });
   
     // Initial overlay
-    showOverlay(true, "Contortris", "Press Play (tap anywhere).", "start");
+    showOverlay(true, "EXTRIS", "Press Play (tap anywhere).", "start");
     updateHUD();
   
     return { updateHUD, showOverlay };

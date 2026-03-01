@@ -125,6 +125,7 @@ export const SHAPES = [
     rotation: { mode: 'any' },
     frequency: 1.00,
   },
+  /*
   {
     id: 'lips',
     name: 'lips',
@@ -134,6 +135,7 @@ export const SHAPES = [
     rotation: { mode: 'any' },
     frequency: 0.20,
   },
+  */
   {
     id: 'smiley',
     name: 'a smiley face',
