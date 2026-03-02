@@ -863,7 +863,7 @@ function clampByte(x){ return Math.max(0, Math.min(255, x)); }
     
       // If you want colourless: use a solid opaque colour here.
       // (Avoid rgba/alpha to prevent any blending artefacts.)
-      nctx.fillStyle = "#1c002e"; // opaque "silhouette ink" (edit if desired)
+      nctx.fillStyle = "#a83deb"; // opaque "silhouette ink" (edit if desired)
     
       nctx.beginPath();
       for (let y = 0; y < ph; y++) {
@@ -1176,7 +1176,7 @@ function clampByte(x){ return Math.max(0, Math.min(255, x)); }
       if (!state.running) return;
       state.paused = true;
       state.softDropping = false;
-      showOverlay(true, "Paused", "Use ▶ to resume. New game resets.", "pause");
+      showOverlay(true, "Paused", "", "pause");
       updateHUD();
     }
   
@@ -1380,7 +1380,7 @@ function clampByte(x){ return Math.max(0, Math.min(255, x)); }
     });
   
     // Initial overlay
-    showOverlay(true, "EXTRIS", "Press Play (tap anywhere).", "start");
+    showOverlay(true, "EXTRIS", "", "start");
     updateHUD();
   
     return { updateHUD, showOverlay };
