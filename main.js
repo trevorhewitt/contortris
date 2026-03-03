@@ -33,39 +33,28 @@ const CONFIG = {
   },
 
   assist: {
-    /* “Danger” is driven by how far the locked stack has climbed.
-       These define *bands* (in rows-from-top) used to softly bias piece levels. */
-    topRowsForDiff2Only: 20, // as stack enters these top rows, bias away from 3/4 towards 1/2 (and later 0)
-    topRowsForDiff1Only: 10, // as stack enters these top rows, strongly bias towards 0/1 with occasional 2
-
-    /* New: piece-level selection dynamics (levels 0–4). */
+    topRowsForDiff2Only: 22,
+    topRowsForDiff1Only: 12,
+  
     pieceMix: {
-      // Baseline level weights in normal play (used before danger/opening adjustments).
-      baseLevelWeight: { 0: 0.10, 1: 0.5, 2: 0.33, 3: 0.1, 4: 0.00 },
-
-      // Opening phase: for the first N drops, blend from this towards baseLevelWeight.
-      openingDrops: 8, // after this, opening bias is fully gone
-      openingLevelWeight: { 0: 0.08, 1: 0.20, 2: 0.42, 3: 0.30, 4: 0.00 },
-
-      // Level 4 scheduling/rarity: “build up an urge, then spend it”.
+      baseLevelWeight:   { 0: 0.18, 1: 0.52, 2: 0.22, 3: 0.08, 4: 0.00 },
+  
+      openingDrops: 7,
+      openingLevelWeight:{ 0: 0.12, 1: 0.30, 2: 0.38, 3: 0.20, 4: 0.00 },
+  
       level4: {
-        minDropIndex: 5,        // never drop a 4 in the first 5 drops (i.e., dropIndex <= 5)
-        softWindowStart: 6,     // start building meaningful chance from here
-        softWindowEnd: 25,      // by around here it should have had a good chance to appear (unless danger suppresses it)
-        rechargePerDrop: 0.025, // how quickly the “4 urge” grows each selection call
-        maxUrge: 0.9,           // cap for the urge accumulator
-        cooldownDrops: 12,       // after a 4, wait at least this many drops before allowing another 4
+        minDropIndex: 5,
+        softWindowStart: 6,
+        softWindowEnd: 25,
+        rechargePerDrop: 0.040,
+        maxUrge: 0.95,
+        cooldownDrops: 9,
       },
-
-      // Soft danger bias: scales how strongly danger reshapes the level mix.
-      dangerBiasStrength: 1.0, // 0 = ignore danger; >1 = more aggressive help when near the top
-
-      // When danger is high, we shift probability mass towards easier levels in this target mix.
-      dangerTargetMix: { 0: 0.55, 1: 0.35, 2: 0.10, 3: 0.00, 4: 0.00 },
-
-      // Hard safety guard: above this danger, level 4 is completely disallowed (even if urge is high).
-      // 0 = safe, 1 = very near top. Keep this < 1 so it can still be “soft” elsewhere.
-      level4MaxDanger: 0.2,
+  
+      dangerBiasStrength: 1.35,
+      dangerTargetMix: { 0: 0.72, 1: 0.25, 2: 0.03, 3: 0.00, 4: 0.00 },
+  
+      level4MaxDanger: 0.32,
     },
   },
 };
