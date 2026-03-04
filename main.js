@@ -46,7 +46,7 @@ const CONFIG = {
         minDropIndex: 5,
         softWindowStart: 6,
         softWindowEnd: 25,
-        rechargePerDrop: 0.040,
+        rechargePerDrop: 0.010,
         maxUrge: 0.95,
         cooldownDrops: 9,
       },
