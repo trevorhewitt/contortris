@@ -40,13 +40,13 @@ const CONFIG = {
       baseLevelWeight:   { 0: 0.18, 1: 0.52, 2: 0.22, 3: 0.08, 4: 0.00 },
   
       openingDrops: 7,
-      openingLevelWeight:{ 0: 0.12, 1: 0.30, 2: 0.38, 3: 0.20, 4: 0.00 },
+      openingLevelWeight:{ 0: 0.0, 1: 0.42, 2: 0.38, 3: 0.20, 4: 0.00 },
   
       level4: {
         minDropIndex: 5,
         softWindowStart: 6,
         softWindowEnd: 25,
-        rechargePerDrop: 0.010,
+        rechargePerDrop: 0.005,
         maxUrge: 0.95,
         cooldownDrops: 9,
       },
