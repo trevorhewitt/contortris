@@ -909,19 +909,84 @@
   }
 
   function serialiseShapes(shapes) {
+    const preferred = ["id", "name", "grid", "color", "difficulty", "rotation", "frequency"];
+
+    function clamp01(n) { return Math.max(0, Math.min(1, n)); }
+
+    function toJsonCompatible(v) {
+      if (v === undefined) return null;
+      if (v === null) return null;
+
+      const t = typeof v;
+      if (t === "number") return Number.isFinite(v) ? v : null;
+      if (t === "string") return v;
+      if (t === "boolean") return v;
+
+      if (Array.isArray(v)) return v.map(toJsonCompatible);
+
+      if (t === "object") {
+        const out = {};
+        for (const k of Object.keys(v)) out[k] = toJsonCompatible(v[k]);
+        return out;
+      }
+
+      return String(v);
+    }
+
+    function orderedKeys(obj) {
+      const keys = Object.keys(obj || {});
+      const head = preferred.filter(k => keys.includes(k));
+      const rest = keys.filter(k => !preferred.includes(k)).sort((a, b) => a.localeCompare(b));
+      return head.concat(rest);
+    }
+
     const lines = [];
     lines.push("export const SHAPES = [");
-    for (const s of shapes) {
+
+    for (const s of (Array.isArray(shapes) ? shapes : [])) {
+      const obj = (s && typeof s === "object") ? s : {};
+      const out = { ...obj };
+
+      out.id = String(obj.id ?? "");
+      out.name = String(obj.name ?? "");
+      out.grid = Array.isArray(obj.grid) ? obj.grid : ["X"];
+      out.color = obj.color;
+
+      out.difficulty = Math.max(0, Math.min(5, parseInt(obj.difficulty ?? 2, 10) || 0));
+      out.frequency = Number(clamp01(Number(obj.frequency ?? 1)).toFixed(2));
+
+      const exRot = (obj.rotation && typeof obj.rotation === "object" && !Array.isArray(obj.rotation)) ? obj.rotation : {};
+      out.rotation = { ...exRot };
+
+      const keys = orderedKeys(out);
+
       lines.push("  {");
-      lines.push(`    id: ${jsString(s.id)},`);
-      lines.push(`    name: ${jsString(s.name)},`);
-      lines.push(`    grid: ${jsValue(s.grid)},`);
-      lines.push(`    color: ${jsValue(s.color)},`);
-      lines.push(`    difficulty: ${clamp(parseInt(s.difficulty ?? 2, 10), 0, 5)},`);
-      lines.push(`    rotation: ${jsValue(s.rotation || { mode: "any" })},`);
-      lines.push(`    frequency: ${clamp(Number(s.frequency ?? 1), 0, 1).toFixed(2)},`);
+
+      for (const k of keys) {
+        const v = out[k];
+
+        if (k === "color") {
+          // Force color arrays onto a single line for readability
+          const json = JSON.stringify(toJsonCompatible(v));
+          lines.push(`    ${k}: ${json},`);
+          continue;
+        }
+
+        const json = JSON.stringify(toJsonCompatible(v), null, 2);
+
+        if (json.includes("\n")) {
+          const indented = json.split("\n").map((ln, i) =>
+            i === 0 ? `    ${k}: ${ln}` : `      ${ln}`
+          ).join("\n");
+          lines.push(`${indented},`);
+        } else {
+          lines.push(`    ${k}: ${json},`);
+        }
+      }
+
       lines.push("  },");
     }
+
     lines.push("];");
     lines.push("");
     return lines.join("\n");
