@@ -33,28 +33,60 @@ const CONFIG = {
   },
 
   assist: {
+    // “Danger” bands (rows-from-top). Higher = assistance kicks in earlier.
     topRowsForDiff2Only: 22,
     topRowsForDiff1Only: 12,
-  
+
     pieceMix: {
-      baseLevelWeight:   { 0: 0.18, 1: 0.52, 2: 0.22, 3: 0.08, 4: 0.00 },
-  
+      // Baseline level weights (0–5). Keep 4/5 at 0: they’re injected via the “hard” scheduler below.
+      baseLevelWeight:    { 0: 0.18, 1: 0.52, 2: 0.22, 3: 0.08, 4: 0.00, 5: 0.00 },
+
+      // Opening blend (first N drops), then fades into baseLevelWeight.
       openingDrops: 7,
-      openingLevelWeight:{ 0: 0.0, 1: 0.42, 2: 0.38, 3: 0.20, 4: 0.00 },
-  
-      level4: {
+      openingLevelWeight: { 0: 0.00, 1: 0.42, 2: 0.38, 3: 0.20, 4: 0.00, 5: 0.00 },
+
+      // Soft danger bias: blends level weights towards dangerTargetMix as danger rises.
+      dangerBiasStrength: 1.35,
+      dangerTargetMix: { 0: 0.72, 1: 0.25, 2: 0.03, 3: 0.00, 4: 0.00, 5: 0.00 },
+
+      // Recency bias against repeating the same shape ID too often.
+      // lastK = “within the last K drops” and penaltyStrength = how hard we downweight repeats (soft, never zero).
+      recency: {
+        lastK: 5,
+        penaltyStrength: 0.75, // 0 = off; 0.75 is strong but still allows repeats if needed
+        minMultiplier: 0.15,   // never downweight below this multiplier
+      },
+
+      // “Hard shapes” scheduler: subclasses are level 4 (awkward) and level 5 (large-but-not-awkward).
+      hard: {
+        // Never drop any hard (4/5) in the first minDropIndex drops.
         minDropIndex: 5,
+
+        // Window where hard becomes increasingly likely (urge grows faster inside window).
         softWindowStart: 6,
         softWindowEnd: 25,
+
+        // Urge accumulator (shared for 4+5). When a 4 or 5 drops: urge -> 0 and cooldown starts.
         rechargePerDrop: 0.005,
         maxUrge: 0.95,
         cooldownDrops: 9,
+
+        // Early “first hard” preference: the first hard drop should be a level 5 (if possible).
+        preferLevel5ForFirstHard: true,
+
+        // If danger is above this, hard is disallowed entirely (same idea as old level4MaxDanger).
+        hardMaxDanger: 0.32,
+
+        // Level 5 gating: level 5 is suppressed as stack gets higher.
+        // Below level5FullAllowedDanger: 5 is fully eligible.
+        // Above level5AlmostNeverDanger: 5 is almost never chosen (but still technically possible).
+        level5FullAllowedDanger: 0.12,
+        level5AlmostNeverDanger: 0.28,
+
+        // When hard is chosen (4/5), split between them using this baseline ratio,
+        // then apply the level-5 suppression curve above.
+        baseProbLevel5WhenHard: 0.55,
       },
-  
-      dangerBiasStrength: 1.35,
-      dangerTargetMix: { 0: 0.72, 1: 0.25, 2: 0.03, 3: 0.00, 4: 0.00 },
-  
-      level4MaxDanger: 0.32,
     },
   },
 };
@@ -65,21 +97,29 @@ const CONFIG = {
    =========================================
    Call once when creating a new run / resetting state.
 */
+
 function initPieceSelectionState(state) {
   state.pieceSel = {
-    dropIndex: 0,          // number of pieces spawned so far
-    lastLevel: null,       // last selected piece level (0–4)
-    lastWas4: false,       // convenience
-    levelCounts: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 },
+    dropIndex: 0,
+    lastLevel: null,
+    lastWasHard: false,
+    lastShapeId: null,
 
-    // “Urge” accumulators (float probabilities you tune over time).
-    // Only 4 is required by spec, but keeping the structure general makes linking/sequencing easier later.
-    urge: { 4: 0.0 },
+    // last few selected shape IDs (for soft non-repetition bias)
+    recentShapeIds: [],
 
-    // Cooldowns (drops remaining).
-    cooldown: { 4: 0 },
+    // counts by level (0–5)
+    levelCounts: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+
+    // shared urge/cooldown for hard (4/5)
+    urge: { hard: 0.0 },
+    cooldown: { hard: 0 },
+
+    // whether we already produced the first hard drop in this run
+    hasDroppedFirstHard: false,
   };
 }
+
 
 /* =========================
    Helper: danger estimation
@@ -132,12 +172,71 @@ function computeStackDanger01(state) {
   return danger;
 }
 
-function clamp01(x) {
-  return Math.max(0, Math.min(1, x));
+function clamp01(x) { return Math.max(0, Math.min(1, x)); }
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+
+
+function sampleByWeight(items, getWeight, rng) {
+  let total = 0;
+  for (const it of items) total += Math.max(0, getWeight(it) ?? 0);
+  if (total <= 0) return items[Math.floor(rng() * items.length)];
+
+  let r = rng() * total;
+  for (const it of items) {
+    r -= Math.max(0, getWeight(it) ?? 0);
+    if (r <= 0) return it;
+  }
+  return items[items.length - 1];
 }
 
-function lerp(a, b, t) {
-  return a + (b - a) * t;
+function getRecencyMultiplier(shapeId, recentIds, lastK, penaltyStrength, minMultiplier) {
+  // If the same ID occurred d drops ago (1..K), apply a multiplier that increases with distance.
+  // d=1 => strongest penalty; d=K => light penalty; not in window => 1.
+  for (let i = recentIds.length - 1, d = 1; i >= 0 && d <= lastK; i--, d++) {
+    if (recentIds[i] === shapeId) {
+      const t = (lastK - d + 1) / lastK; // closer => larger t
+      const mult = 1 - penaltyStrength * t;
+      return Math.max(minMultiplier, mult);
+    }
+  }
+  return 1.0;
+}
+
+function buildIdToShapeMap(shapes) {
+  const m = new Map();
+  for (const s of shapes) {
+    if (s && typeof s.id === "string") m.set(s.id, s);
+  }
+  return m;
+}
+
+function tryLinkedNextShape(state, prevShape, idToShape) {
+  // If prevShape has nextShape + nextShapeProbs, choose linked next with probability sum(probs).
+  if (!prevShape || !Array.isArray(prevShape.nextShape) || !Array.isArray(prevShape.nextShapeProbs)) return null;
+
+  const ids = prevShape.nextShape;
+  const ps = prevShape.nextShapeProbs;
+
+  if (ids.length === 0 || ids.length !== ps.length) return null;
+
+  let sumP = 0;
+  for (const p of ps) sumP += Math.max(0, Math.min(1, p ?? 0));
+  sumP = Math.min(1, sumP);
+
+  if (sumP <= 0) return null;
+  if (state.rng() >= sumP) return null; // default algorithm path
+
+  // Sample among linked targets using their probs (normalised within sumP mass).
+  const keys = ids.map((_, i) => i);
+  const probs = {};
+  for (let i = 0; i < ids.length; i++) probs[i] = Math.max(0, Math.min(1, ps[i] ?? 0));
+  const probsNorm = normaliseWeights(probs, keys);
+  const idx = sampleDiscrete(probsNorm, state.rng, keys);
+
+  const chosenId = ids[idx];
+  const chosen = idToShape.get(chosenId);
+  return chosen ?? null;
 }
 
 
@@ -631,86 +730,125 @@ function getDifficultyZone(state) {
    - This is deliberately split into: (1) chooseLevel, (2) chooseShapeWithinLevel.
    - Later, a “linked piece” rule can override either step cleanly (e.g., force next id).
 */
+
 function selectPiece(state) {
-  // Ensure selection state exists
   if (!state.pieceSel) initPieceSelectionState(state);
 
   const sel = state.pieceSel;
   sel.dropIndex += 1;
 
-  // Decrement cooldowns.
-  if (sel.cooldown[4] > 0) sel.cooldown[4] -= 1;
-
   const mixCfg = CONFIG.assist.pieceMix;
   const danger01 = computeStackDanger01(state);
   const danger = clamp01(danger01 * (mixCfg.dangerBiasStrength ?? 1.0));
 
-  // 1) Build a “desired level weight” vector, starting from baseline and applying opening + danger.
-  const baseW = normaliseWeights({ ...mixCfg.baseLevelWeight });
-  const openingW = normaliseWeights({ ...mixCfg.openingLevelWeight });
+  // Cooldowns tick down.
+  if (sel.cooldown.hard > 0) sel.cooldown.hard -= 1;
 
-  // Opening blend factor: 1 at dropIndex=1, -> 0 by openingDrops.
+  // Map for fast ID lookup (used for linking).
+  const idToShape = buildIdToShapeMap(state.shapes);
+
+  // (2) Linked shape override (probabilistic, overrides frequency entirely).
+  const prevShape = sel.lastShapeId ? idToShape.get(sel.lastShapeId) : null;
+  const linked = tryLinkedNextShape(state, prevShape, idToShape);
+
+  if (linked) {
+    // (1) Apply *soft* recency bias even for linked shapes by occasionally “declining” to take it.
+    // This keeps links strong but avoids extremely repetitive chains if configured that way.
+    const recCfg = mixCfg.recency ?? {};
+    const lastK = recCfg.lastK ?? 5;
+    const penaltyStrength = recCfg.penaltyStrength ?? 0.75;
+    const minMultiplier = recCfg.minMultiplier ?? 0.15;
+
+    const mult = getRecencyMultiplier(linked.id, sel.recentShapeIds, lastK, penaltyStrength, minMultiplier);
+
+    // Interpret multiplier as “acceptance” for linked choice (still soft; never blocks entirely).
+    if (state.rng() < mult || state.shapes.length <= 1) {
+      // Commit linked selection.
+      commitSelectedShape(sel, linked);
+      return linked;
+    }
+    // else: fall through to default algorithm.
+  }
+
+  // Keys for level weights (0–5).
+  const LEVELS = [0, 1, 2, 3, 4, 5];
+
+  // 1) Opening blend -> base.
+  const baseW = normaliseWeights({ ...mixCfg.baseLevelWeight }, LEVELS);
+  const openingW = normaliseWeights({ ...mixCfg.openingLevelWeight }, LEVELS);
+
   const openingDrops = Math.max(0, mixCfg.openingDrops | 0);
   const openingT = openingDrops > 0 ? clamp01(1 - (sel.dropIndex - 1) / openingDrops) : 0;
 
-  // Start with a blend between opening and base.
   let levelW = {};
-  for (const k of [0, 1, 2, 3, 4]) {
-    levelW[k] = lerp(baseW[k] ?? 0, openingW[k] ?? 0, openingT);
-  }
+  for (const k of LEVELS) levelW[k] = lerp(baseW[k] ?? 0, openingW[k] ?? 0, openingT);
 
-  // Danger blend towards an “assistance mix”.
-  const dangerTarget = normaliseWeights({ ...mixCfg.dangerTargetMix });
-  for (const k of [0, 1, 2, 3, 4]) {
-    levelW[k] = lerp(levelW[k] ?? 0, dangerTarget[k] ?? 0, danger);
-  }
+  // 2) Danger blend towards assistance mix (never allocates to 4/5 directly).
+  const dangerTarget = normaliseWeights({ ...mixCfg.dangerTargetMix }, LEVELS);
+  for (const k of LEVELS) levelW[k] = lerp(levelW[k] ?? 0, dangerTarget[k] ?? 0, danger);
 
-  // 2) Level 4 dynamics (urge + gating).
-  // Gating rules:
-  // - never in first 5 drops (configurable)
-  // - never two in a row (via cooldown + lastWas4)
-  // - never when danger too high
-  const l4 = mixCfg.level4;
+  // 3) Hard scheduler (4/5 share the same urge/cooldown).
+  const hardCfg = mixCfg.hard;
 
-  const pastMin = sel.dropIndex > (l4.minDropIndex ?? 5);
-  const dangerAllows4 = danger01 <= (mixCfg.level4MaxDanger ?? 0.35);
-  const cooldownAllows4 = (sel.cooldown[4] ?? 0) <= 0 && !sel.lastWas4;
+  const pastMinHard = sel.dropIndex > (hardCfg.minDropIndex ?? 5);
+  const dangerAllowsHard = danger01 <= (hardCfg.hardMaxDanger ?? 0.32);
+  const cooldownAllowsHard = (sel.cooldown.hard ?? 0) <= 0 && !sel.lastWasHard;
 
-  const allow4 = pastMin && dangerAllows4 && cooldownAllows4;
+  const allowHard = pastMinHard && dangerAllowsHard && cooldownAllowsHard;
 
-  // Update urge every call (float probability-like value).
-  // Make it grow more meaningfully within the 6–25 window.
+  // Update shared hard urge every call.
   const inWindow =
-    sel.dropIndex >= (l4.softWindowStart ?? 6) && sel.dropIndex <= (l4.softWindowEnd ?? 25);
+    sel.dropIndex >= (hardCfg.softWindowStart ?? 6) &&
+    sel.dropIndex <= (hardCfg.softWindowEnd ?? 25);
 
-  const recharge = (l4.rechargePerDrop ?? 0.055) * (inWindow ? 1.4 : 0.8);
-  sel.urge[4] = clamp01(Math.min(l4.maxUrge ?? 1.0, (sel.urge[4] ?? 0) + recharge));
+  const recharge = (hardCfg.rechargePerDrop ?? 0.005) * (inWindow ? 1.4 : 0.8);
+  sel.urge.hard = clamp01(Math.min(hardCfg.maxUrge ?? 0.95, (sel.urge.hard ?? 0) + recharge));
 
-  // Convert urge into an additive weight for level 4 when allowed.
-  // If disallowed, force weight to 0 but keep urge accumulating (so it can pop later when safe).
-  const urge4 = sel.urge[4] ?? 0;
-  const add4 = allow4 ? urge4 : 0;
+  const addHardWeight = allowHard ? (sel.urge.hard ?? 0) : 0;
 
-  // Insert 4 weight as a small competing channel, without deleting other levels.
-  // This keeps 4 “rare but periodic”, and avoids bursts.
-  levelW[4] = add4;
+  // Inject hard weight by allocating it to 4/5 (not to the whole distribution).
+  // This keeps baseline/danger behaviour intact while allowing periodic “hard surprises”.
+  if (addHardWeight > 0) {
+    // Compute probability of choosing a 5 vs 4, with 5 suppressed as danger rises.
+    let p5 = hardCfg.baseProbLevel5WhenHard ?? 0.55;
 
-  // If danger is non-trivial, softly suppress 3 as well (even beyond dangerTarget mix).
-  // This makes the “lifeline” feel stronger near the top.
+    const dFull = hardCfg.level5FullAllowedDanger ?? 0.12;
+    const dNever = hardCfg.level5AlmostNeverDanger ?? 0.28;
+
+    // Suppression factor: 1 below dFull, ~0 above dNever, smooth in between.
+    const t = clamp01((danger01 - dFull) / Math.max(1e-6, (dNever - dFull)));
+    const suppression = 1 - t; // linear; adjust later if you want a steeper curve
+    p5 = p5 * suppression;
+
+    // First hard preference: try to make the first hard a 5 if possible (and not heavily suppressed).
+    if ((hardCfg.preferLevel5ForFirstHard ?? true) && !sel.hasDroppedFirstHard) {
+      const anyLevel5Exists = state.shapes.some(s => (s.difficulty ?? 1) === 5 && (s.frequency ?? 1) >= 0);
+      if (anyLevel5Exists && suppression > 0.25) p5 = Math.max(p5, 0.80);
+    }
+
+    // Allocate injected weight into levels 4 and 5.
+    levelW[4] = (levelW[4] ?? 0) + addHardWeight * (1 - p5);
+    levelW[5] = (levelW[5] ?? 0) + addHardWeight * p5;
+  } else {
+    // Ensure these are not accidentally non-zero from upstream configs.
+    levelW[4] = 0;
+    levelW[5] = 0;
+  }
+
+  // Softly suppress level 3 in danger to prevent “still awkward at the top”.
   levelW[3] *= (1 - 0.65 * danger);
 
-  // Renormalise after modifications.
-  levelW = normaliseWeights(levelW);
+  levelW = normaliseWeights(levelW, LEVELS);
 
-  // 3) Choose a level, then choose a shape within that level.
-  const chosenLevel = sampleDiscrete(levelW, state.rng);
+  // Choose a level.
+  const chosenLevel = sampleDiscrete(levelW, state.rng, LEVELS);
 
-  // Filter shapes by chosen level, and then weight by frequency (as before).
+  // Candidate shapes in that level (frequency>0), then weighted by frequency * recency multiplier.
   let candidates = state.shapes.filter(s =>
     (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) === chosenLevel
   );
 
-  // Fallback: if no shapes of that level exist, fall back to any frequency>0.
+  // Fallback: if no shapes exist for that level, broaden to any frequency>0.
   if (candidates.length === 0) {
     candidates = state.shapes.filter(s => (s.frequency ?? 1) > 0);
   }
@@ -718,22 +856,54 @@ function selectPiece(state) {
     return state.shapes[Math.floor(state.rng() * state.shapes.length)];
   }
 
-  const chosenShape = sampleByFrequency(candidates, state.rng);
+  // (1) Soft anti-repeat within last K: multiply frequency by a recency factor (never zero).
+  const recCfg = mixCfg.recency ?? {};
+  const lastK = recCfg.lastK ?? 5;
+  const penaltyStrength = recCfg.penaltyStrength ?? 0.75;
+  const minMultiplier = recCfg.minMultiplier ?? 0.15;
 
-  // 4) Update trackers after selection.
-  sel.lastLevel = (chosenShape.difficulty ?? 1);
-  sel.lastWas4 = sel.lastLevel === 4;
-  sel.levelCounts[sel.lastLevel] = (sel.levelCounts[sel.lastLevel] ?? 0) + 1;
+  const chosenShape = sampleByWeight(
+    candidates,
+    (s) => {
+      const freq = (s.frequency ?? 1);
+      const mult = (typeof s.id === "string")
+        ? getRecencyMultiplier(s.id, sel.recentShapeIds, lastK, penaltyStrength, minMultiplier)
+        : 1.0;
+      return freq * mult;
+    },
+    state.rng
+  );
 
-  if (sel.lastWas4) {
-    // After dropping a 4: set urge to 0 and apply cooldown to prevent immediate repeats.
-    sel.urge[4] = 0.0;
-    sel.cooldown[4] = Math.max(sel.cooldown[4] ?? 0, l4.cooldownDrops ?? 8);
+  // Commit selection + update trackers (incl. hard bookkeeping).
+  commitSelectedShape(sel, chosenShape);
+
+  // If we dropped a hard shape, reset shared urge and start shared cooldown.
+  const lvl = (chosenShape.difficulty ?? 1);
+  if (lvl === 4 || lvl === 5) {
+    sel.urge.hard = 0.0;
+    sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, hardCfg.cooldownDrops ?? 9);
+    sel.hasDroppedFirstHard = true;
   }
 
   return chosenShape;
 }
 
+function commitSelectedShape(sel, shape) {
+  const lvl = (shape.difficulty ?? 1);
+
+  sel.lastLevel = lvl;
+  sel.lastWasHard = (lvl === 4 || lvl === 5);
+  sel.lastShapeId = (typeof shape.id === "string") ? shape.id : null;
+
+  sel.levelCounts[lvl] = (sel.levelCounts[lvl] ?? 0) + 1;
+
+  if (sel.lastShapeId) {
+    sel.recentShapeIds.push(sel.lastShapeId);
+
+    // Keep a modest history buffer (only last ~20 needed even if lastK=5).
+    if (sel.recentShapeIds.length > 24) sel.recentShapeIds.splice(0, sel.recentShapeIds.length - 24);
+  }
+}
 
 /* =========================
    Sampling helpers
