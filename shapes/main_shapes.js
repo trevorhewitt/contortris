@@ -133,7 +133,7 @@ export const SHAPES = [
     difficulty: 2,
     rotation: { mode: 'any' },
     frequency: 1.00,
-    nextShape: ['spam'],
+    nextShapes: ['spam'],
     nextShapeProbs: [0.8],
   },
   {
@@ -281,6 +281,8 @@ export const SHAPES = [
     difficulty: 3,
     rotation: { mode: 'any' },
     frequency: 1.00,
+    nextShapes: ["smallintestine"],
+    nextShapeProbs: [1.0],
   },
   {
     id: 'eyeball',
@@ -713,6 +715,8 @@ export const SHAPES = [
     difficulty: 0,
     rotation: { mode: 'any' },
     frequency: 1.00,
+    nextShapes: ["toe"],
+    nextShapeProbs: [1.0],
   },
   {
     id: 'toe',
@@ -721,7 +725,7 @@ export const SHAPES = [
     color: [['#a47b0a', '#ffdba8', '#ffdba8', '#a47b0a'], ['#eeba2b', '#fed090', '#fed090', '#ce9f1c'], ['#eeba2b', '#fed090', '#fed090', '#ce9f1c'], ['#eeba2b', '#f7c12b', '#eeba2b', '#ce9f1c'], ['#eeba2b', '#9e7810', '#9e7810', '#ce9f1c'], ['#eeba2b', '#f7c12b', '#eeba2b', '#ce9f1c'], ['#eeba2b', '#9e7810', '#9e7810', '#ce9f1c'], ['#eeba2b', '#f7c12b', '#eeba2b', '#ce9f1c']],
     difficulty: 0,
     rotation: { mode: 'any' },
-    frequency: 1.00,
+    frequency: 0.00,
   },
   {
     id: 'north',

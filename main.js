@@ -211,34 +211,76 @@ function buildIdToShapeMap(shapes) {
   return m;
 }
 
-function tryLinkedNextShape(state, prevShape, idToShape) {
-  // If prevShape has nextShape + nextShapeProbs, choose linked next with probability sum(probs).
-  if (!prevShape || !Array.isArray(prevShape.nextShape) || !Array.isArray(prevShape.nextShapeProbs)) return null;
+function tryLinkedNextShape(state, prevShape, idToShape, debug = false) {
+  if (!prevShape) {
+    if (debug) console.log("[LINK] prevShape is null/undefined");
+    return null;
+  }
 
-  const ids = prevShape.nextShape;
+  const ids = prevShape.nextShapes;
   const ps = prevShape.nextShapeProbs;
 
-  if (ids.length === 0 || ids.length !== ps.length) return null;
+  if (!Array.isArray(ids) || !Array.isArray(ps)) {
+    if (debug) {
+      console.log("[LINK] prevShape has no nextShapes/nextShapeProbs", {
+        id: prevShape.id,
+        nextShapes: ids,
+        nextShapeProbs: ps,
+        keys: Object.keys(prevShape),
+      });
+    }
+    return null;
+  }
+
+  if (ids.length === 0 || ids.length !== ps.length) {
+    if (debug) console.log("[LINK] invalid arrays", { id: prevShape.id, ids, ps });
+    return null;
+  }
+
+  // Coerce probs to numbers safely.
+  const probs = ps.map(p => {
+    const x = Number(p);
+    return Number.isFinite(x) ? Math.max(0, Math.min(1, x)) : 0;
+  });
 
   let sumP = 0;
-  for (const p of ps) sumP += Math.max(0, Math.min(1, p ?? 0));
+  for (const p of probs) sumP += p;
   sumP = Math.min(1, sumP);
 
+  if (debug) console.log("[LINK] candidates", { from: prevShape.id, ids, probs, sumP });
+
   if (sumP <= 0) return null;
-  if (state.rng() >= sumP) return null; // default algorithm path
+
+  const gate = state.rng();
+  if (debug) console.log("[LINK] gate roll", { gate, sumP, triggered: gate < sumP });
+
+  if (gate >= sumP) return null;
 
   // Sample among linked targets using their probs (normalised within sumP mass).
-  const keys = ids.map((_, i) => i);
-  const probs = {};
-  for (let i = 0; i < ids.length; i++) probs[i] = Math.max(0, Math.min(1, ps[i] ?? 0));
-  const probsNorm = normaliseWeights(probs, keys);
-  const idx = sampleDiscrete(probsNorm, state.rng, keys);
+  const total = probs.reduce((a, b) => a + b, 0);
+  if (total <= 0) return null;
 
-  const chosenId = ids[idx];
-  const chosen = idToShape.get(chosenId);
-  return chosen ?? null;
+  let r = state.rng() * total;
+  let chosenIdx = probs.length - 1;
+  for (let i = 0; i < probs.length; i++) {
+    r -= probs[i];
+    if (r <= 0) { chosenIdx = i; break; }
+  }
+
+  const chosenId = ids[chosenIdx];
+  const chosen = idToShape.get(chosenId) ?? null;
+
+  if (debug) console.log("[LINK] chose", { chosenId, existsInStateShapes: !!chosen });
+
+  if (!chosen && debug) {
+    // Dump a few known IDs to spot mismatches quickly.
+    const sampleIds = [];
+    for (const k of idToShape.keys()) { sampleIds.push(k); if (sampleIds.length >= 12) break; }
+    console.log("[LINK] id not found in state.shapes map", { chosenId, sampleIds });
+  }
+
+  return chosen;
 }
-
 
 import { SHAPES as RAW_SHAPES } from "./shapes/main_shapes.js";
 
@@ -321,8 +363,13 @@ function loadAndNormaliseShapes(rawShapes, defaults = {}) {
     const name = (s.name ?? `shape ${idx + 1}`).toString();
     const id = (s.id ?? safeId(name, idx)).toString();
 
-    const difficulty = Number.isFinite(+s.difficulty) ? +s.difficulty : (Number.isFinite(+defaults.difficulty) ? +defaults.difficulty : 1);
-    const frequency = Number.isFinite(+s.frequency) ? +s.frequency : (Number.isFinite(+defaults.frequency) ? +defaults.frequency : 1);
+    const difficulty = Number.isFinite(+s.difficulty)
+      ? +s.difficulty
+      : (Number.isFinite(+defaults.difficulty) ? +defaults.difficulty : 1);
+
+    const frequency = Number.isFinite(+s.frequency)
+      ? +s.frequency
+      : (Number.isFinite(+defaults.frequency) ? +defaults.frequency : 1);
 
     // --- occupancy base matrix ---
     const baseMat = parseShapeGrid(s.shape ?? s.grid ?? s.matrix);
@@ -374,10 +421,19 @@ function loadAndNormaliseShapes(rawShapes, defaults = {}) {
             colorRotations.push(rotateGrid90CW(colorRotations[i - 1]));
           }
         } else {
-          console.warn(`[${id}] colour grid dims (${gridW0}×${gridH0}) do not match piece dims (${matW0}×${matH0}); falling back to solid baseColor.`);
+          console.warn(
+            `[${id}] colour grid dims (${gridW0}×${gridH0}) do not match piece dims (${matW0}×${matH0}); falling back to solid baseColor.`
+          );
         }
       }
     }
+
+    // --- Preserve linking metadata (and keep backward compat with old nextShape) ---
+    const nextShapes = Array.isArray(s.nextShapes)
+      ? s.nextShapes.slice()
+      : (Array.isArray(s.nextShape) ? s.nextShape.slice() : undefined);
+
+    const nextShapeProbs = Array.isArray(s.nextShapeProbs) ? s.nextShapeProbs.slice() : undefined;
 
     return {
       id,
@@ -388,6 +444,10 @@ function loadAndNormaliseShapes(rawShapes, defaults = {}) {
 
       // Keep original colour spec for future extension
       color: s.color,
+
+      // Linking/sequencing metadata (used by selectPiece)
+      nextShapes,
+      nextShapeProbs,
 
       // New fields used by renderer/locking
       colorRotations,
@@ -744,30 +804,41 @@ function selectPiece(state) {
   // Cooldowns tick down.
   if (sel.cooldown.hard > 0) sel.cooldown.hard -= 1;
 
-  // Map for fast ID lookup (used for linking).
+  const DEBUG_LINK = true; // TEMP: set false after debugging
+
   const idToShape = buildIdToShapeMap(state.shapes);
-
-  // (2) Linked shape override (probabilistic, overrides frequency entirely).
+  
   const prevShape = sel.lastShapeId ? idToShape.get(sel.lastShapeId) : null;
-  const linked = tryLinkedNextShape(state, prevShape, idToShape);
-
-  if (linked) {
-    // (1) Apply *soft* recency bias even for linked shapes by occasionally “declining” to take it.
-    // This keeps links strong but avoids extremely repetitive chains if configured that way.
-    const recCfg = mixCfg.recency ?? {};
-    const lastK = recCfg.lastK ?? 5;
-    const penaltyStrength = recCfg.penaltyStrength ?? 0.75;
-    const minMultiplier = recCfg.minMultiplier ?? 0.15;
-
-    const mult = getRecencyMultiplier(linked.id, sel.recentShapeIds, lastK, penaltyStrength, minMultiplier);
-
-    // Interpret multiplier as “acceptance” for linked choice (still soft; never blocks entirely).
-    if (state.rng() < mult || state.shapes.length <= 1) {
-      // Commit linked selection.
-      commitSelectedShape(sel, linked);
-      return linked;
+  
+  if (DEBUG_LINK) {
+    console.log("[LINK] lastShapeId", sel.lastShapeId);
+    if (prevShape) {
+      console.log("[LINK] prevShape found", {
+        id: prevShape.id,
+        hasNextShapes: Array.isArray(prevShape.nextShapes),
+        hasNextShapeProbs: Array.isArray(prevShape.nextShapeProbs),
+        nextShapes: prevShape.nextShapes,
+        nextShapeProbs: prevShape.nextShapeProbs,
+      });
+    } else {
+      console.log("[LINK] prevShape NOT found in state.shapes for lastShapeId");
     }
-    // else: fall through to default algorithm.
+  }
+  
+  const linked = tryLinkedNextShape(state, prevShape, idToShape, DEBUG_LINK);
+  
+  if (linked) {
+    if (DEBUG_LINK) console.log("[LINK] APPLY", { from: prevShape?.id, to: linked.id });
+    commitSelectedShape(sel, linked);
+  
+    const lvl = (linked.difficulty ?? 1);
+    if (lvl === 4 || lvl === 5) {
+      const hardCfg = CONFIG.assist.pieceMix.hard;
+      sel.urge.hard = 0.0;
+      sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, hardCfg.cooldownDrops ?? 9);
+      sel.hasDroppedFirstHard = true;
+    }
+    return linked;
   }
 
   // Keys for level weights (0–5).
