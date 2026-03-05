@@ -804,7 +804,7 @@ function selectPiece(state) {
   // Cooldowns tick down.
   if (sel.cooldown.hard > 0) sel.cooldown.hard -= 1;
 
-  const DEBUG_LINK = true; // TEMP: set false after debugging
+  const DEBUG_LINK = false; 
 
   const idToShape = buildIdToShapeMap(state.shapes);
   

@@ -736,6 +736,7 @@ export const SHAPES = [
     rotation: { mode: 'any' },
     frequency: 1.00,
   },
+  /*
   {
     id: 'whatever',
     name: 'the shining dark light of your soul or whatever',
@@ -745,6 +746,7 @@ export const SHAPES = [
     rotation: { mode: 'any' },
     frequency: 1.00,
   },
+  */
   {
     id: 'popes',
     name: 'the pope\'s fancy hat',
