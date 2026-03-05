@@ -7,14 +7,14 @@
   <style>
     :root{
       --bg:#0b0b0b; --panel:#111; --panel2:#151515; --text:#eaeaea; --muted:#a8a8a8;
-      --line:#2a2a2a; --accent:#6aa6ff; --danger:#ff6a6a;
-      --btn:#1b1b1b; --btn2:#232323;
+      --line:#2a2a2a; --btn:#1b1b1b; --btn2:#232323;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
     body{ margin:16px; background:var(--bg); color:var(--text); }
     .grid{ display:grid; grid-template-columns: 460px 1fr; gap:14px; align-items:start; }
     .card{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px; }
     .card h2{ font-size:14px; margin:0 0 10px 0; color:#fff; font-weight:650; letter-spacing:.2px; }
+
     .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     label{ font-size:12px; color:var(--muted); display:flex; align-items:center; gap:8px; }
     input[type="number"]{ width:84px; background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:8px; padding:6px 8px; }
@@ -29,8 +29,6 @@
     button.danger{ border-color:rgba(255,106,106,.6); }
     button:disabled{ opacity:.5; cursor:not-allowed; }
     .sep{ height:1px; background:var(--line); margin:10px 0; }
-    .tools button{ padding:8px 10px; }
-    .tools button.active{ outline:2px solid rgba(106,166,255,.55); }
     .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
     .pill{
       font-size:11px; color:var(--muted);
@@ -91,17 +89,21 @@
     .layerBtns{ display:flex; gap:6px; align-items:center; justify-content:flex-end; }
     .layerBtns button{ padding:6px 8px; }
 
-    /* Right-side rows under canvas */
+    /* Below canvas: NOW ROW */
     .belowCanvas{
       margin-top:12px;
-      display:grid;
+      display:flex;
       gap:12px;
+      flex-wrap:wrap;
+      align-items:stretch;
     }
     .subCard{
       background:var(--panel);
       border:1px solid var(--line);
       border-radius:12px;
       padding:12px;
+      flex: 1 1 330px;
+      min-width: 330px;
     }
     .subCard h3{
       font-size:13px;
@@ -118,6 +120,7 @@
     }
     .adjRow{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     .adjRow .pill{ min-width:86px; text-align:center; }
+    .tools button.active{ outline:2px solid rgba(106,166,255,.55); }
   </style>
 </head>
 
@@ -127,9 +130,9 @@
   <div class="card">
     <h2>Canvas settings</h2>
     <div class="row">
-      <label>Blocks W <input id="blocksW" type="number" min="1" max="256" value="8"></label>
-      <label>Blocks H <input id="blocksH" type="number" min="1" max="256" value="8"></label>
-      <label>Pixels / block <input id="ppb" type="number" min="1" max="7" value="4"></label>
+      <label>Blocks W <input id="blocksW" type="number" min="1" max="256" value="2"></label>
+      <label>Blocks H <input id="blocksH" type="number" min="1" max="256" value="2"></label>
+      <label>Pixels / block <input id="ppb" type="number" min="1" max="7" value="7"></label>
       <button id="applySize" class="primary">Apply / reset</button>
     </div>
     <div class="row" style="margin-top:8px;">
@@ -144,6 +147,7 @@
     <h2>Tools</h2>
     <div class="row tools">
       <button class="toolBtn active" data-tool="draw">Draw</button>
+      <button class="toolBtn" data-tool="brush" title="Paint an entire block (ppb×ppb) within the clicked block">Brush</button>
       <button class="toolBtn" data-tool="fill">Fill</button>
       <button class="toolBtn" data-tool="erase">Erase</button>
       <button class="toolBtn" data-tool="dropper">Dropper</button>
@@ -168,6 +172,7 @@
       <button id="redoBtn">Redo</button>
       <span class="pill mono">History: <span id="histLabel">0</span></span>
       <span class="pill mono">Ctrl/Cmd+Z / Ctrl/Cmd+Y</span>
+      <span class="pill mono">Ctrl/Cmd+C = copy scaled</span>
     </div>
 
     <div class="sep"></div>
@@ -193,9 +198,9 @@
   <div class="card">
     <h2>Canvas</h2>
     <div class="row">
-      <span class="pill mono">Native: <span id="nativeLabel">32×32</span></span>
-      <span class="pill mono">Blocks: <span id="blocksLabel">8×8</span></span>
-      <span class="pill mono">ppb: <span id="ppbLabel">4</span></span>
+      <span class="pill mono">Native: <span id="nativeLabel">14×14</span></span>
+      <span class="pill mono">Blocks: <span id="blocksLabel">2×2</span></span>
+      <span class="pill mono">ppb: <span id="ppbLabel">7</span></span>
       <span class="pill mono">Active layer: <span id="activeLabel">1</span></span>
       <span class="pill mono">Pointer: <span id="ptrLabel">—</span></span>
       <span class="pill mono">Seed: <span id="seedLabel">—</span></span>
@@ -209,7 +214,6 @@
       </div>
     </div>
 
-    <!-- BELOW CANVAS: colour adjustments + everything below it -->
     <div class="belowCanvas">
       <div class="subCard">
         <h3>Colour adjustments (preview)</h3>
@@ -310,9 +314,7 @@
   }
 
   async function copyBlobToClipboard(blob){
-    if (!navigator.clipboard || !window.ClipboardItem) {
-      throw new Error("Clipboard API not available in this context.");
-    }
+    if (!navigator.clipboard || !window.ClipboardItem) throw new Error("Clipboard API not available.");
     const item = new ClipboardItem({ [blob.type]: blob });
     await navigator.clipboard.write([item]);
   }
@@ -382,16 +384,13 @@
     };
   }
 
-  // brightness + contrast on RGB
   function applyBrightnessContrastRGB(r,g,b, brightnessVal, contrastVal){
-    // brightnessVal in [-100,100] -> add [-255,255] scaled moderately
     const br = (brightnessVal * 255) / 100;
     let rr = r + br;
     let gg = g + br;
     let bb = b + br;
 
-    // contrastVal in [-100,100], classic formula
-    const c = (contrastVal * 255) / 100; // [-255,255]
+    const c = (contrastVal * 255) / 100;
     const factor = (259 * (c + 255)) / (255 * (259 - c));
     rr = factor * (rr - 128) + 128;
     gg = factor * (gg - 128) + 128;
@@ -417,7 +416,6 @@
     ptrLabel: document.getElementById("ptrLabel"),
     seedLabel: document.getElementById("seedLabel"),
 
-    stage: document.getElementById("canvasStage"),
     renderCanvas: document.getElementById("renderCanvas"),
     gridCanvas: document.getElementById("gridCanvas"),
 
@@ -459,11 +457,11 @@
 
   // ---------- state ----------
   const state = {
-    blocksW: 8,
-    blocksH: 8,
-    ppb: 4,
-    pxW: 32,
-    pxH: 32,
+    blocksW: 2,
+    blocksH: 2,
+    ppb: 7,
+    pxW: 14,
+    pxH: 14,
     zoom: 24,
     showGrid: true,
     showOnlyActive: false,
@@ -471,7 +469,11 @@
     colourHex: "#ff7300",
     activeLayerId: 0,
     seed: (Math.random()*1e9)|0,
+
+    // pointer
     isPointerDown: false,
+    strokeChanged: false,
+    pendingUndo: false,
     lastPaintKey: null,
 
     // preview adjustments
@@ -480,7 +482,7 @@
     // layers[0] = frontmost
     layers: [],
 
-    // undo/redo
+    // global undo/redo
     history: [],
     histIndex: -1,
     histMax: 120,
@@ -491,8 +493,8 @@
       id,
       name: `Layer ${id+1}`,
       visible: true,
-      noise: 0,     // 0..1
-      opacity: 1.0, // 0..1 (procedural)
+      noise: 0,
+      opacity: 1.0,
       data: new Uint32Array(pxW * pxH), // ARGB
     };
   }
@@ -503,7 +505,7 @@
     state.activeLayerId = 0;
   }
 
-  // ---------- undo/redo ----------
+  // ---------- undo/redo (GLOBAL; only commit if something changed) ----------
   function snapshot(){
     const w = state.pxW, h = state.pxH;
     return {
@@ -514,6 +516,7 @@
         ppb: state.ppb,
         pxW: w,
         pxH: h,
+        zoom: state.zoom,
         seed: state.seed,
         adj: { ...state.adj },
         activeLayerId: state.activeLayerId,
@@ -533,16 +536,17 @@
   function restoreSnap(snap){
     if (!snap || !snap.meta || !Array.isArray(snap.layers)) return;
 
-    // size
     el.blocksW.value = snap.meta.blocksW;
     el.blocksH.value = snap.meta.blocksH;
     el.ppb.value = snap.meta.ppb;
-    setSizeFromInputs(false); // do not reset layers/history here; we rebuild from snap below
+    el.zoom.value = String(snap.meta.zoom ?? state.zoom);
+
+    setSizeFromInputs(false); // do not reset layers
+    state.zoom = parseInt(el.zoom.value,10) || state.zoom;
 
     state.seed = (snap.meta.seed|0) || state.seed;
     state.adj = snap.meta.adj ? { ...state.adj, ...snap.meta.adj } : state.adj;
 
-    // layers
     const w = state.pxW, h = state.pxH;
     const byId = new Map();
     for (const Ls of snap.layers){
@@ -561,9 +565,7 @@
 
     const order = Array.isArray(snap.meta.layerOrder) ? snap.meta.layerOrder : [...byId.keys()];
     const rebuilt = [];
-    for (const id of order){
-      if (byId.has(id)) rebuilt.push(byId.get(id));
-    }
+    for (const id of order) if (byId.has(id)) rebuilt.push(byId.get(id));
     while (rebuilt.length < 5) rebuilt.push(makeEmptyLayer(rebuilt.length, w, h));
     state.layers = rebuilt.slice(0,5);
 
@@ -582,6 +584,7 @@
   }
 
   function pushHistory(){
+    // discard redo tail
     if (state.histIndex < state.history.length - 1){
       state.history = state.history.slice(0, state.histIndex + 1);
     }
@@ -616,6 +619,28 @@
     el.histLabel.textContent = `${state.histIndex+1}/${state.history.length}`;
   }
 
+  // Action wrapper: snapshot only when needed; drop if no changes
+  function beginUndoableAction(){
+    state.strokeChanged = false;
+    state.pendingUndo = true;
+    pushHistory();
+  }
+  function markChanged(){
+    state.strokeChanged = true;
+  }
+  function endUndoableAction(){
+    if (!state.pendingUndo) return;
+    state.pendingUndo = false;
+    if (!state.strokeChanged){
+      // remove the snapshot we just pushed
+      if (state.history.length > 0 && state.histIndex === state.history.length - 1){
+        state.history.pop();
+        state.histIndex = state.history.length - 1;
+        updateHistButtons();
+      }
+    }
+  }
+
   // ---------- sizing ----------
   function setSizeFromInputs(resetLayers){
     const bw = Math.max(1, Math.min(256, parseInt(el.blocksW.value,10)||1));
@@ -634,8 +659,6 @@
 
     el.renderCanvas.width = state.pxW;
     el.renderCanvas.height = state.pxH;
-
-    // grid canvas is drawn in *display pixels*
     resizeStageAndGridCanvas();
 
     if (resetLayers){
@@ -651,9 +674,6 @@
     const z = state.zoom|0;
     el.renderCanvas.style.width = (state.pxW * z) + "px";
     el.renderCanvas.style.height = (state.pxH * z) + "px";
-
-    // stage size driven by renderCanvas CSS size
-    // grid canvas internal resolution set to CSS pixels for 1px-thin lines
     el.gridCanvas.width = state.pxW * z;
     el.gridCanvas.height = state.pxH * z;
   }
@@ -674,7 +694,6 @@
     const w = state.pxW, h = state.pxH;
     const out = new Uint32Array(w*h);
 
-    // Compose back-to-front: reverse of state.layers
     for (let li = state.layers.length - 1; li >= 0; li--){
       const L = state.layers[li];
       if (onlyActive && L.id !== state.activeLayerId) continue;
@@ -722,7 +741,6 @@
       }
     }
 
-    // Apply preview adjustments to flattened result
     if (state.adj.brightness !== 0 || state.adj.contrast !== 0 || state.adj.hue !== 0 || state.adj.sat !== 1){
       for (let p=0;p<out.length;p++){
         const u = out[p]>>>0;
@@ -748,10 +766,7 @@
       const g = (u>>>8)&255;
       const b = u&255;
       const j = i*4;
-      d[j] = r;
-      d[j+1] = g;
-      d[j+2] = b;
-      d[j+3] = a;
+      d[j] = r; d[j+1] = g; d[j+2] = b; d[j+3] = a;
     }
     rctx.putImageData(img,0,0);
   }
@@ -761,7 +776,6 @@
     gctx.clearRect(0,0, el.gridCanvas.width, el.gridCanvas.height);
     if (!state.showGrid) return;
 
-    // thin 1px lines in display space
     const wPx = state.pxW * z;
     const hPx = state.pxH * z;
 
@@ -769,7 +783,7 @@
     gctx.translate(0.5, 0.5);
     gctx.lineWidth = 1;
 
-    // Pixel boundaries (thin/light): between pixels at multiples of zoom
+    // pixel boundaries
     gctx.strokeStyle = "rgba(255,255,255,0.18)";
     gctx.beginPath();
     for (let x=1; x<state.pxW; x++){
@@ -784,7 +798,7 @@
     }
     gctx.stroke();
 
-    // Block boundaries (stronger): every ppb pixels
+    // block boundaries
     gctx.strokeStyle = "rgba(255,255,255,0.45)";
     gctx.beginPath();
     const step = state.ppb;
@@ -806,11 +820,9 @@
   function render(){
     resizeStageAndGridCanvas();
     el.zoomLabel.textContent = `${state.zoom|0}×`;
-
     const flat = compositeFlattened({ onlyActive: state.showOnlyActive });
     drawToRenderCanvas(flat);
     drawGridOverlay();
-
     el.seedLabel.textContent = String(state.seed);
     el.activeLabel.textContent = String(state.activeLayerId+1);
   }
@@ -848,41 +860,48 @@
       const vis = document.createElement("label");
       vis.innerHTML = `<input type="checkbox" ${L.visible ? "checked" : ""}> Visible`;
       vis.querySelector("input").addEventListener("change", (e) => {
+        beginUndoableAction();
         L.visible = e.target.checked;
+        markChanged();
+        endUndoableAction();
         render();
       });
 
-      // Noise slider
       const noiseLab = document.createElement("label");
       noiseLab.textContent = "Noise";
       const noise = document.createElement("input");
       noise.type = "range";
-      noise.min = "0";
-      noise.max = "100";
+      noise.min = "0"; noise.max = "100";
       noise.value = String(Math.round(L.noise * 100));
       const noisePill = document.createElement("span");
       noisePill.className = "pill mono";
       noisePill.textContent = `${Math.round(L.noise*100)}%`;
       noise.addEventListener("input", () => {
+        beginUndoableAction();
+        const prev = L.noise;
         L.noise = (parseInt(noise.value,10)||0) / 100;
         noisePill.textContent = `${Math.round(L.noise*100)}%`;
+        if (L.noise !== prev) markChanged();
+        endUndoableAction();
         render();
       });
 
-      // Opacity slider
       const opLab = document.createElement("label");
       opLab.textContent = "Opacity";
       const op = document.createElement("input");
       op.type = "range";
-      op.min = "0";
-      op.max = "100";
+      op.min = "0"; op.max = "100";
       op.value = String(Math.round(L.opacity * 100));
       const opPill = document.createElement("span");
       opPill.className = "pill mono";
       opPill.textContent = `${Math.round(L.opacity*100)}%`;
       op.addEventListener("input", () => {
+        beginUndoableAction();
+        const prev = L.opacity;
         L.opacity = (parseInt(op.value,10)||0) / 100;
         opPill.textContent = `${Math.round(L.opacity*100)}%`;
+        if (L.opacity !== prev) markChanged();
+        endUndoableAction();
         render();
       });
 
@@ -905,10 +924,12 @@
       up.addEventListener("click", (evt) => {
         evt.stopPropagation();
         if (i <= 0) return;
-        pushHistory();
+        beginUndoableAction();
         const tmp = state.layers[i-1];
         state.layers[i-1] = state.layers[i];
         state.layers[i] = tmp;
+        markChanged();
+        endUndoableAction();
         renderLayerList();
         render();
       });
@@ -918,10 +939,12 @@
       down.addEventListener("click", (evt) => {
         evt.stopPropagation();
         if (i >= state.layers.length-1) return;
-        pushHistory();
+        beginUndoableAction();
         const tmp = state.layers[i+1];
         state.layers[i+1] = state.layers[i];
         state.layers[i] = tmp;
+        markChanged();
+        endUndoableAction();
         renderLayerList();
         render();
       });
@@ -967,58 +990,94 @@
     return {x:px, y:py, i:py*state.pxW + px};
   }
 
-  function paintAt(pi){
+  function paintPixelAt(pi){
     const L = getActiveLayer();
-    if (!L) return;
+    if (!L) return false;
 
     const key = `${state.activeLayerId}:${pi.i}:${state.tool}:${state.colourHex}`;
-    if (state.lastPaintKey === key) return;
+    if (state.lastPaintKey === key) return false;
     state.lastPaintKey = key;
 
     if (state.tool === "draw"){
       const {r,g,b} = hexToRgb(state.colourHex);
-      L.data[pi.i] = packARGB(255, r, g, b) >>> 0;
-      render();
-    } else if (state.tool === "erase"){
+      const next = packARGB(255, r, g, b) >>> 0;
+      const prev = L.data[pi.i]>>>0;
+      if (prev === next) return false;
+      L.data[pi.i] = next;
+      return true;
+    }
+    if (state.tool === "erase"){
+      const prev = L.data[pi.i]>>>0;
+      if (prev === 0) return false;
       L.data[pi.i] = 0;
-      render();
-    } else if (state.tool === "dropper"){
+      return true;
+    }
+    if (state.tool === "dropper"){
       const flat = compositeFlattened({ onlyActive: false });
       const u = flat[pi.i] >>> 0;
       const a = (u>>>24)&255;
-      if (a === 0) return;
+      if (a === 0) return false;
       const r = (u>>>16)&255, g=(u>>>8)&255, b=u&255;
       setColour(rgbToHex(r,g,b));
-      setTool("draw"); // dropper returns to draw
-      render();
+      setTool("draw");
+      return true;
     }
+    return false;
+  }
+
+  // Brush: paint ONLY within the clicked block (ppb×ppb); never spill across blocks
+  function brushBlockAt(pi){
+    const L = getActiveLayer();
+    if (!L) return false;
+
+    const {r,g,b} = hexToRgb(state.colourHex);
+    const next = packARGB(255, r, g, b) >>> 0;
+
+    const bx = Math.floor(pi.x / state.ppb);
+    const by = Math.floor(pi.y / state.ppb);
+    const x0 = bx * state.ppb;
+    const y0 = by * state.ppb;
+
+    let changed = false;
+    for (let y=y0; y<y0+state.ppb; y++){
+      for (let x=x0; x<x0+state.ppb; x++){
+        const idx = y*state.pxW + x;
+        if ((L.data[idx]>>>0) !== next){
+          L.data[idx] = next;
+          changed = true;
+        }
+      }
+    }
+    return changed;
   }
 
   function floodFill(startPi){
     const L = getActiveLayer();
-    if (!L) return;
+    if (!L) return false;
 
     const w = state.pxW;
     const target = L.data[startPi.i] >>> 0;
-    const tool = state.tool;
 
     let replacement = 0;
-    if (tool === "fill" || tool === "draw"){
+    if (state.tool === "fill" || state.tool === "draw"){
       const {r,g,b} = hexToRgb(state.colourHex);
       replacement = packARGB(255, r, g, b) >>> 0;
-    } else if (tool === "erase"){
+    } else if (state.tool === "erase"){
       replacement = 0;
     } else {
-      return;
+      return false;
     }
 
-    if (target === replacement) return;
+    if (target === replacement) return false;
 
     const stack = [startPi.i];
+    let changed = false;
+
     while (stack.length){
       const idx = stack.pop();
       if ((L.data[idx]>>>0) !== target) continue;
       L.data[idx] = replacement;
+      changed = true;
 
       const x = idx % w;
       const y = (idx / w) | 0;
@@ -1027,7 +1086,7 @@
       if (y > 0) stack.push(idx-w);
       if (y < state.pxH-1) stack.push(idx+w);
     }
-    render();
+    return changed;
   }
 
   // ---------- adjustments UI ----------
@@ -1044,7 +1103,7 @@
 
   function applyAdjustmentsToLayers(){
     const { brightness, contrast, hue, sat } = state.adj;
-    if (brightness === 0 && contrast === 0 && hue === 0 && sat === 1) return;
+    if (brightness === 0 && contrast === 0 && hue === 0 && sat === 1) return false;
 
     for (const L of state.layers){
       const d = L.data;
@@ -1061,6 +1120,7 @@
         d[i] = packARGB(a, rgb.r, rgb.g, rgb.b)>>>0;
       }
     }
+    return true;
   }
 
   // ---------- clipboard paste ----------
@@ -1079,9 +1139,8 @@
 
   async function pasteImageBitmapToActiveLayer(bmp){
     const L = getActiveLayer();
-    if (!L) return;
+    if (!L) return false;
 
-    // Draw scaled to native size
     const oc = document.createElement("canvas");
     oc.width = state.pxW;
     oc.height = state.pxH;
@@ -1093,33 +1152,36 @@
 
     const img = octx.getImageData(0,0,oc.width,oc.height).data;
 
-    pushHistory();
+    let changed = false;
     for (let y=0;y<state.pxH;y++){
       for (let x=0;x<state.pxW;x++){
         const i = (y*state.pxW + x);
         const j = i*4;
         const R = img[j], G = img[j+1], B = img[j+2], A = img[j+3];
-        if (A === 0){
-          L.data[i] = 0;
-        } else {
-          L.data[i] = packARGB(A, R, G, B) >>> 0;
+        const next = (A === 0) ? 0 : (packARGB(A, R, G, B) >>> 0);
+        if ((L.data[i]>>>0) !== next){
+          L.data[i] = next;
+          changed = true;
         }
       }
     }
-    render();
+    return changed;
   }
 
   async function handlePasteButton(){
     try{
       const bmp = await getClipboardImageBitmap();
-      if (!bmp) return; // no popup
-      await pasteImageBitmapToActiveLayer(bmp);
+      if (!bmp) return;
+      beginUndoableAction();
+      const changed = await pasteImageBitmapToActiveLayer(bmp);
+      if (changed) markChanged();
+      endUndoableAction();
+      render();
     } catch {
-      // no popup
+      endUndoableAction();
     }
   }
 
-  // Paste event (Ctrl/Cmd+V) path
   window.addEventListener("paste", async (e) => {
     try{
       const items = e.clipboardData?.items;
@@ -1129,14 +1191,18 @@
       const blob = imgItem.getAsFile();
       if (!blob) return;
       const bmp = await createImageBitmap(blob);
-      await pasteImageBitmapToActiveLayer(bmp);
+      beginUndoableAction();
+      const changed = await pasteImageBitmapToActiveLayer(bmp);
+      if (changed) markChanged();
+      endUndoableAction();
+      render();
       e.preventDefault();
     } catch {
-      // ignore
+      endUndoableAction();
     }
   });
 
-  // ---------- export ----------
+  // ---------- export helpers ----------
   async function flattenedImageBlob(scale){
     const w = state.pxW, h = state.pxH;
     const flat = compositeFlattened({ onlyActive: false });
@@ -1178,6 +1244,7 @@
         ppb: state.ppb,
         pxW: w,
         pxH: h,
+        zoom: state.zoom,
         seed: state.seed,
         adj: { ...state.adj },
         activeLayerId: state.activeLayerId,
@@ -1202,10 +1269,12 @@
     el.blocksW.value = obj.meta.blocksW;
     el.blocksH.value = obj.meta.blocksH;
     el.ppb.value = obj.meta.ppb;
+    el.zoom.value = String(obj.meta.zoom ?? el.zoom.value);
 
     setSizeFromInputs(true);
     resetHistory();
 
+    state.zoom = parseInt(el.zoom.value,10) || state.zoom;
     state.seed = (obj.meta.seed|0) || state.seed;
     state.adj = obj.meta.adj ? { ...state.adj, ...obj.meta.adj } : state.adj;
 
@@ -1234,9 +1303,7 @@
 
     const order = Array.isArray(obj.meta.layerOrder) ? obj.meta.layerOrder : [...byId.keys()];
     const rebuilt = [];
-    for (const id of order){
-      if (byId.has(id)) rebuilt.push(byId.get(id));
-    }
+    for (const id of order) if (byId.has(id)) rebuilt.push(byId.get(id));
     while (rebuilt.length < 5) rebuilt.push(makeEmptyLayer(rebuilt.length, w, h));
     state.layers = rebuilt.slice(0,5);
 
@@ -1259,7 +1326,7 @@
         const u = flat[y*w+x]>>>0;
         const a = (u>>>24)&255;
         if (a === 0){
-          row.push("''"); // empty string for blank pixels
+          row.push("''");
         } else {
           const r=(u>>>16)&255, g=(u>>>8)&255, b=u&255;
           row.push(`'${rgbToHex(r,g,b)}'`);
@@ -1270,22 +1337,33 @@
     return `[${rows.join(",\n ")}],`;
   }
 
-  // ---------- wire up UI ----------
+  // ---------- UI wiring ----------
   el.applySize.addEventListener("click", () => {
-    // no popups; reset is undoable (size is included in snapshot)
-    pushHistory();
+    beginUndoableAction();
+    const prevW = state.blocksW, prevH = state.blocksH, prevP = state.ppb;
     setSizeFromInputs(true);
-    pushHistory();
+    if (state.blocksW !== prevW || state.blocksH !== prevH || state.ppb !== prevP) markChanged();
+    endUndoableAction();
     render();
   });
 
   el.zoom.addEventListener("input", () => {
-    state.zoom = parseInt(el.zoom.value,10) || 24;
+    const next = parseInt(el.zoom.value,10) || 24;
+    if (next === state.zoom) return;
+    beginUndoableAction();
+    state.zoom = next;
+    markChanged();
+    endUndoableAction();
     render();
   });
 
   el.showGrid.addEventListener("change", () => {
-    state.showGrid = el.showGrid.checked;
+    const next = el.showGrid.checked;
+    if (next === state.showGrid) return;
+    beginUndoableAction();
+    state.showGrid = next;
+    markChanged();
+    endUndoableAction();
     render();
   });
 
@@ -1307,34 +1385,53 @@
   el.clearActive.addEventListener("click", () => {
     const L = getActiveLayer();
     if (!L) return;
-    pushHistory();
-    L.data.fill(0);
+    beginUndoableAction();
+    let any = false;
+    for (let i=0;i<L.data.length;i++){
+      if ((L.data[i]>>>0) !== 0){ any = true; break; }
+    }
+    if (any){
+      L.data.fill(0);
+      markChanged();
+    }
+    endUndoableAction();
     render();
   });
 
   el.undoBtn.addEventListener("click", undo);
   el.redoBtn.addEventListener("click", redo);
 
-  // keyboard shortcuts: Ctrl/Cmd+Z (undo), Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z (redo)
-  window.addEventListener("keydown", (e) => {
+  // Ctrl/Cmd shortcuts:
+  // - Z / Y for undo/redo
+  // - C default copy scaled image
+  window.addEventListener("keydown", async (e) => {
     const mod = e.ctrlKey || e.metaKey;
     if (!mod) return;
-    const k = String(e.key || "").toLowerCase();
 
-    // avoid interfering with typing in inputs
     const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
     const typing = tag === "input" || tag === "textarea";
     if (typing) return;
 
+    const k = String(e.key || "").toLowerCase();
+
     if (k === "z" && !e.shiftKey){
       e.preventDefault();
       undo();
-    } else if (k === "y" || (k === "z" && e.shiftKey)){
+      return;
+    }
+    if (k === "y" || (k === "z" && e.shiftKey)){
       e.preventDefault();
       redo();
-    } else if (k === "v"){
-      // allow native paste event; do not preventDefault here
-      // (button-based clipboard read is handled separately)
+      return;
+    }
+    if (k === "c"){
+      e.preventDefault();
+      try{
+        const scale = Math.max(1, Math.round(state.zoom));
+        const blob = await flattenedImageBlob(scale);
+        await copyBlobToClipboard(blob);
+      } catch {}
+      return;
     }
   });
 
@@ -1361,21 +1458,26 @@
   });
 
   el.applyAdjustments.addEventListener("click", () => {
-    if (state.adj.brightness === 0 && state.adj.contrast === 0 && state.adj.hue === 0 && state.adj.sat === 1) return;
-    pushHistory();
-    applyAdjustmentsToLayers();
+    beginUndoableAction();
+    const changed = applyAdjustmentsToLayers();
+    if (changed) markChanged();
+    endUndoableAction();
     render();
   });
 
   el.resetAdjustments.addEventListener("click", () => {
+    const prev = JSON.stringify(state.adj);
     state.adj = { brightness:0, contrast:0, hue:0, sat:1.0 };
     syncAdjustmentUI();
-    render();
+    if (JSON.stringify(state.adj) !== prev) render();
   });
 
-  // seed reroll
+  // seed reroll (procedural; undoable because it changes appearance)
   el.rerollSeed.addEventListener("click", () => {
+    beginUndoableAction();
     state.seed = (Math.random()*1e9)|0;
+    markChanged();
+    endUndoableAction();
     render();
   });
 
@@ -1389,15 +1491,41 @@
     const pi = pointerToPixel(evt);
     if (!pi) return;
 
-    if (state.tool === "fill"){
-      pushHistory();
-      floodFill(pi);
-    } else if (state.tool === "draw" || state.tool === "erase"){
-      pushHistory();
-      paintAt(pi);
-    } else if (state.tool === "dropper"){
-      paintAt(pi); // dropper switches to draw inside paintAt()
+    if (state.tool === "dropper"){
+      // dropper is not undoable; it doesn't change image
+      paintPixelAt(pi);
+      render();
+      state.isPointerDown = false;
+      try { el.renderCanvas.releasePointerCapture(evt.pointerId); } catch {}
+      return;
     }
+
+    beginUndoableAction();
+
+    if (state.tool === "fill"){
+      const changed = floodFill(pi);
+      if (changed) markChanged();
+      endUndoableAction();
+      render();
+      state.isPointerDown = false;
+      try { el.renderCanvas.releasePointerCapture(evt.pointerId); } catch {}
+      return;
+    }
+
+    if (state.tool === "brush"){
+      const changed = brushBlockAt(pi);
+      if (changed) markChanged();
+      endUndoableAction();
+      render();
+      state.isPointerDown = false;
+      try { el.renderCanvas.releasePointerCapture(evt.pointerId); } catch {}
+      return;
+    }
+
+    // draw / erase continuous stroke
+    const changed = paintPixelAt(pi);
+    if (changed) markChanged();
+    render();
   });
 
   el.renderCanvas.addEventListener("pointermove", (evt) => {
@@ -1407,13 +1535,19 @@
     if (!state.isPointerDown) return;
 
     if (state.tool === "draw" || state.tool === "erase"){
-      paintAt(pi);
+      const changed = paintPixelAt(pi);
+      if (changed) markChanged();
+      render();
     }
   });
 
   el.renderCanvas.addEventListener("pointerup", (evt) => {
-    state.isPointerDown = false;
-    state.lastPaintKey = null;
+    if (state.isPointerDown){
+      state.isPointerDown = false;
+      state.lastPaintKey = null;
+      // commit/drop snapshot depending on whether stroke changed
+      endUndoableAction();
+    }
     try { el.renderCanvas.releasePointerCapture(evt.pointerId); } catch {}
   });
 
@@ -1476,10 +1610,7 @@
       }
     }
 
-    if (!obj){
-      el.loadJsFile.value = "";
-      return;
-    }
+    if (!obj){ el.loadJsFile.value = ""; return; }
 
     try{
       loadProjectObject(obj);
@@ -1501,12 +1632,24 @@
   });
 
   // ---------- init ----------
-  el.blocksW.value = String(state.blocksW);
-  el.blocksH.value = String(state.blocksH);
-  el.ppb.value = String(state.ppb);
-  el.zoom.value = String(state.zoom);
-  el.showGrid.checked = state.showGrid;
-  el.showOnlyActive.checked = state.showOnlyActive;
+  function syncAdjustmentUI(){
+    el.brightness.value = String(state.adj.brightness);
+    el.contrast.value = String(state.adj.contrast);
+    el.hue.value = String(state.adj.hue);
+    el.sat.value = String(Math.round(state.adj.sat * 100));
+    el.brightnessPill.textContent = String(state.adj.brightness);
+    el.contrastPill.textContent = String(state.adj.contrast);
+    el.huePill.textContent = `${state.adj.hue}°`;
+    el.satPill.textContent = `${Math.round(state.adj.sat * 100)}%`;
+  }
+
+  el.blocksW.value = "2";
+  el.blocksH.value = "2";
+  el.ppb.value = "7";
+
+  state.zoom = parseInt(el.zoom.value,10) || 24;
+  state.showGrid = el.showGrid.checked;
+  state.showOnlyActive = el.showOnlyActive.checked;
 
   setColour(state.colourHex);
   setTool(state.tool);

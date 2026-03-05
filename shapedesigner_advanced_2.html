@@ -124,6 +124,7 @@
               <option value="2" selected>2</option>
               <option value="3">3</option>
               <option value="4">4</option>
+              <option value="5">5</option>
             </select>
             <div class="muted">0–4 (default 2).</div>
           </div>
@@ -916,7 +917,7 @@
       lines.push(`    name: ${jsString(s.name)},`);
       lines.push(`    grid: ${jsValue(s.grid)},`);
       lines.push(`    color: ${jsValue(s.color)},`);
-      lines.push(`    difficulty: ${clamp(parseInt(s.difficulty ?? 2, 10), 0, 4)},`);
+      lines.push(`    difficulty: ${clamp(parseInt(s.difficulty ?? 2, 10), 0, 5)},`);
       lines.push(`    rotation: ${jsValue(s.rotation || { mode: "any" })},`);
       lines.push(`    frequency: ${clamp(Number(s.frequency ?? 1), 0, 1).toFixed(2)},`);
       lines.push("  },");
@@ -1096,7 +1097,7 @@
 
     const grid = maskToGridStrings();
     const freq = clamp(Number(currentFreq), 0, 1);
-    const diff = clamp(parseInt($("shapeDifficulty").value, 10), 0, 4);
+    const diff = clamp(parseInt($("shapeDifficulty").value, 10), 0, 5);
 
     let colorOut;
     if (shading === "solid") colorOut = $("paintColor").value.toLowerCase();
@@ -1304,7 +1305,7 @@
     $("shapeName").value = shape.name ?? "";
     $("shapeId").value = shape.id ?? "";
 
-    const diff = clamp(parseInt(shape.difficulty ?? 2, 10), 0, 4);
+    const diff = clamp(parseInt(shape.difficulty ?? 2, 10), 0, 5);
     $("shapeDifficulty").value = String(diff);
 
     const freq = clamp(Number(shape.frequency ?? 1), 0, 1);
