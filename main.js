@@ -98,6 +98,46 @@ const CONFIG = {
       },
     },
   },
+  fx: {
+    quake: {
+      enabled: true,
+      maxOffsetPx: 8,
+      traumaDecayPerSecond: 2.8,
+      rotationalDegrees: 0.8,
+    },
+
+    lineClear: {
+      enabled: true,
+      particleSizePx: 3,
+      particlesPerPixel: 0.35,
+      maxParticlesPerCell: 24,
+      speedMin: 35,
+      speedMax: 180,
+      upwardBias: 0.18,
+      lifeMinMs: 220,
+      lifeMaxMs: 520,
+      gravityPxPerSec2: 260,
+      dragPerSecond: 2.4,
+      boardFallAnimMs: 60,
+      boardFallPxPerRow: 18,
+      quakePerClearedLine: 0.3,
+    },
+
+    largePieceLock: {
+      quakePerCell: 0.03,
+      minDifficulty: 4,
+    },
+
+    gameOverBackdrop: {
+      enabled: true,
+      scale: 1.9,
+      alpha: 0.95,
+      cutEveryMs: 5000,
+      movePxPerSec: 24,
+      rotationDeg: 18,
+    },
+  },
+
 };
 
 
@@ -657,28 +697,51 @@ function createGameState(shapes) {
     dropMs: CONFIG.timing.baseDropMs,
     dropAccum: 0,
 
-    // NEW: soft drop state
     softDropping: false,
 
-    debug: false,               // NEW
-    touch: {                    // NEW
+    debug: false,
+    touch: {
       active: false,
       startX: 0,
       startY: 0,
       startT: 0,
       lastTapT: 0,
     },
-    // NEW: lock grace
+
     locking: false,
     lockElapsed: 0,
 
-    // NEW: input typing (for choosing lock delay)
-    lastInputType: "keyboard",   // "keyboard" | "touch"
+    lastInputType: "keyboard",
     lastInputAt: 0,
 
-    // NEW: tap-hold repeat handle
     tapRepeatTimer: null,
     tapRepeatInterval: null,
+
+    fx: {
+      particles: [],
+      rowFall: {
+        active: false,
+        elapsedMs: 0,
+        durationMs: CONFIG.fx.lineClear.boardFallAnimMs,
+        rowDropDistances: Array(CONFIG.board.rows).fill(0),
+      },
+      quake: {
+        trauma: 0,
+        x: 0,
+        y: 0,
+        rot: 0,
+        seed: Math.random() * 1000,
+      },
+      gameOverBackdrop: {
+        snapshotCanvas: null,
+        elapsedMs: 0,
+        currentAngle: 0,
+        dirX: 1,
+        dirY: 0.3,
+        offsetX: 0,
+        offsetY: 0,
+      },
+    },
   };
 }
 
@@ -897,8 +960,8 @@ function normaliseWeights(w) {
   }
   const out = {};
   for (const k of Object.keys(w)) out[k] = Math.max(0, w[k] ?? 0) / total;
-  // Ensure all five keys exist.
-  for (const k of [0, 1, 2, 3, 4]) out[k] = out[k] ?? 0;
+  // Ensure all  keys exist.
+  for (const k of [0, 1, 2, 3, 4, 5]) out[k] = out[k] ?? 0;
   return out;
 }
 
@@ -1039,6 +1102,7 @@ function lockPiece(state) {
   const shape = state.active.shape;
 
   let lockedAboveTop = false;
+  let lockedCellCount = 0;
 
   for (let y = 0; y < mat.length; y++) {
     for (let x = 0; x < mat[0].length; x++) {
@@ -1053,49 +1117,268 @@ function lockPiece(state) {
       }
 
       const paint = getActivePaintForBlock(state, x, y);
-
-      // Store paint + style per locked block
       state.board[by][bx] = { paint, style: shape.style };
+      lockedCellCount++;
     }
+  }
+
+  if ((shape.difficulty ?? 0) >= (CONFIG.fx.largePieceLock.minDifficulty ?? 5)) {
+    addQuake(state, lockedCellCount * (CONFIG.fx.largePieceLock.quakePerCell ?? 0.03));
   }
 
   if (lockedAboveTop) {
     state.gameOver = true;
     state.running = false;
+    state.fx.gameOverBackdrop.snapshotCanvas = makeBoardSnapshotCanvas(state);
+    state.fx.gameOverBackdrop.elapsedMs = 0;
   }
 }
 
 function clearFullLines(state) {
   const rows = CONFIG.board.rows;
   const cols = CONFIG.board.cols;
-  const newBoard = [];
-  let cleared = 0;
 
+  const fullRows = [];
   for (let y = 0; y < rows; y++) {
-    if (state.board[y].every((c) => c !== null)) cleared++;
-    else newBoard.push(state.board[y]);
+    if (state.board[y].every((c) => c !== null)) fullRows.push(y);
+  }
+
+  const cleared = fullRows.length;
+  if (cleared === 0) return 0;
+
+  const oldBoard = state.board.map(row => row.slice());
+  const fullRowsSet = new Set(fullRows);
+
+  const clearedRowsInfo = fullRows.map(y => ({
+    y,
+    cells: oldBoard[y].slice(),
+  }));
+
+  spawnLineClearParticles(state, clearedRowsInfo);
+
+  const newBoard = [];
+  for (let y = 0; y < rows; y++) {
+    if (!fullRowsSet.has(y)) newBoard.push(oldBoard[y]);
   }
   while (newBoard.length < rows) newBoard.unshift(Array(cols).fill(null));
+  state.board = newBoard;
 
-  if (cleared > 0) {
-    state.board = newBoard;
-    state.lines += cleared;
+  state.fx.rowFall.active = true;
+  state.fx.rowFall.elapsedMs = 0;
+  state.fx.rowFall.durationMs = CONFIG.fx.lineClear.boardFallAnimMs;
+  state.fx.rowFall.rowDropDistances = buildRowDropDistancesAfterClear(oldBoard, fullRowsSet);
 
-    const base = CONFIG.scoring.lineClear[cleared] ?? (cleared * 100);
-    state.score += base * state.level;
+  state.lines += cleared;
 
-    const newLevel = 1 + Math.floor(state.lines / CONFIG.timing.levelEveryLines);
-    if (newLevel !== state.level) {
-      state.level = newLevel;
-      recomputeSpeed(state);
-    }
+  const base = CONFIG.scoring.lineClear[cleared] ?? (cleared * 100);
+  state.score += base * state.level;
+
+  const newLevel = 1 + Math.floor(state.lines / CONFIG.timing.levelEveryLines);
+  if (newLevel !== state.level) {
+    state.level = newLevel;
+    recomputeSpeed(state);
   }
+
+  addQuake(state, cleared * (CONFIG.fx.lineClear.quakePerClearedLine ?? 0.16));
+
   return cleared;
 }
 
 function recomputeSpeed(state) {
   const mult = Math.pow(CONFIG.timing.speedMultiplierPerLevel, state.level - 1);
   state.dropMs = Math.max(CONFIG.timing.minDropMs, Math.floor(CONFIG.timing.baseDropMs * mult));
+}
+
+/// FX HELPERS
+
+function addQuake(state, amount) {
+  if (!CONFIG.fx.quake.enabled) return;
+  state.fx.quake.trauma = clamp01((state.fx.quake.trauma ?? 0) + amount);
+}
+
+function makeBoardSnapshotCanvas(state) {
+  const cell = CONFIG.render.cellPx;
+  const w = CONFIG.board.cols * cell;
+  const h = CONFIG.board.rows * cell;
+  const cvs = document.createElement("canvas");
+  cvs.width = w;
+  cvs.height = h;
+  const ctx = cvs.getContext("2d");
+
+  for (let y = 0; y < CONFIG.board.rows; y++) {
+    for (let x = 0; x < CONFIG.board.cols; x++) {
+      const cellObj = state.board[y][x];
+      if (!cellObj) continue;
+      drawBlockWithPaintStatic(ctx, x * cell, y * cell, cell, cellObj.paint, cellObj.style);
+    }
+  }
+
+  return cvs;
+}
+
+function drawBlockWithPaintStatic(ctx, px, py, cellSize, paint, style = {}) {
+  if (typeof paint === "string") {
+    ctx.fillStyle = paint;
+    ctx.fillRect(px, py, cellSize, cellSize);
+  } else if (paint && typeof paint === "object" && paint.pixels && paint.k) {
+    const k = paint.k;
+    const xb = new Array(k + 1);
+    const yb = new Array(k + 1);
+    for (let i = 0; i <= k; i++) {
+      xb[i] = px + Math.round((i * cellSize) / k);
+      yb[i] = py + Math.round((i * cellSize) / k);
+    }
+    for (let sy = 0; sy < k; sy++) {
+      for (let sx = 0; sx < k; sx++) {
+        const x0 = xb[sx], x1 = xb[sx + 1];
+        const y0 = yb[sy], y1 = yb[sy + 1];
+        const c = paint.pixels?.[sy]?.[sx];
+        ctx.fillStyle = (typeof c === "string" && isHexColour(c)) ? c : (style.baseColor ?? "#FFFFFF");
+        ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+      }
+    }
+  } else {
+    ctx.fillStyle = style.baseColor ?? "#FFFFFF";
+    ctx.fillRect(px, py, cellSize, cellSize);
+  }
+}
+
+function spawnLineClearParticles(state, clearedRowsInfo) {
+  if (!CONFIG.fx.lineClear.enabled) return;
+
+  const cfg = CONFIG.fx.lineClear;
+  const cell = CONFIG.render.cellPx;
+
+  for (const rowInfo of clearedRowsInfo) {
+    const boardY = rowInfo.y;
+
+    for (let x = 0; x < rowInfo.cells.length; x++) {
+      const cellObj = rowInfo.cells[x];
+      if (!cellObj) continue;
+
+      const paint = cellObj.paint;
+      const px = x * cell;
+      const py = boardY * cell;
+
+      let colours = [];
+      if (typeof paint === "string") {
+        colours = [paint];
+      } else if (paint?.pixels) {
+        for (const row of paint.pixels) {
+          for (const c of row) {
+            if (typeof c === "string") colours.push(c);
+          }
+        }
+      }
+      if (colours.length === 0) colours = [cellObj.style?.baseColor ?? "#FFFFFF"];
+
+      const targetCount = Math.min(
+        cfg.maxParticlesPerCell,
+        Math.max(6, Math.round(colours.length * (cfg.particlesPerPixel ?? 0.35)))
+      );
+
+      for (let i = 0; i < targetCount; i++) {
+        const angle = state.rng() * Math.PI * 2;
+        const speed = lerp(cfg.speedMin, cfg.speedMax, state.rng());
+        const vx = Math.cos(angle) * speed;
+        const vy = Math.sin(angle) * speed - speed * (cfg.upwardBias ?? 0.18);
+        const lifeMs = lerp(cfg.lifeMinMs, cfg.lifeMaxMs, state.rng());
+        const size = cfg.particleSizePx;
+
+        state.fx.particles.push({
+          x: px + state.rng() * cell,
+          y: py + state.rng() * cell,
+          vx,
+          vy,
+          lifeMs,
+          maxLifeMs: lifeMs,
+          size,
+          color: colours[Math.floor(state.rng() * colours.length)],
+        });
+      }
+    }
+  }
+}
+
+function buildRowDropDistancesAfterClear(oldBoard, fullRowsSet) {
+  const rows = CONFIG.board.rows;
+  const distances = Array(rows).fill(0);
+
+  for (let oldY = 0; oldY < rows; oldY++) {
+    if (fullRowsSet.has(oldY)) continue;
+
+    let clearedBelow = 0;
+    for (let y = oldY + 1; y < rows; y++) {
+      if (fullRowsSet.has(y)) clearedBelow++;
+    }
+
+    const newY = oldY + clearedBelow;
+    if (newY >= 0 && newY < rows) {
+      distances[newY] = clearedBelow;
+    }
+  }
+
+  return distances;
+}
+
+function updateFX(state, dt) {
+  const dtSec = dt / 1000;
+
+  if (state.fx?.particles?.length) {
+    const cfg = CONFIG.fx.lineClear;
+    const out = [];
+    for (const p of state.fx.particles) {
+      p.lifeMs -= dt;
+      if (p.lifeMs <= 0) continue;
+
+      const drag = Math.max(0, 1 - cfg.dragPerSecond * dtSec);
+      p.vx *= drag;
+      p.vy = p.vy * drag + cfg.gravityPxPerSec2 * dtSec;
+      p.x += p.vx * dtSec;
+      p.y += p.vy * dtSec;
+
+      out.push(p);
+    }
+    state.fx.particles = out;
+  }
+
+  if (state.fx?.rowFall?.active) {
+    state.fx.rowFall.elapsedMs += dt;
+    if (state.fx.rowFall.elapsedMs >= state.fx.rowFall.durationMs) {
+      state.fx.rowFall.active = false;
+      state.fx.rowFall.elapsedMs = 0;
+      state.fx.rowFall.rowDropDistances.fill(0);
+    }
+  }
+
+  if (state.fx?.quake) {
+    const q = state.fx.quake;
+    q.trauma = Math.max(0, q.trauma - CONFIG.fx.quake.traumaDecayPerSecond * dtSec);
+    q.seed += dtSec * 11.7;
+  }
+
+  if (state.gameOver && state.fx?.gameOverBackdrop) {
+    const bg = state.fx.gameOverBackdrop;
+    bg.elapsedMs += dt;
+
+    if (
+      !bg.snapshotCanvas ||
+      bg.elapsedMs >= CONFIG.fx.gameOverBackdrop.cutEveryMs
+    ) {
+      bg.snapshotCanvas = makeBoardSnapshotCanvas(state);
+      bg.elapsedMs = 0;
+      bg.currentAngle = (state.rng() * 2 - 1) * CONFIG.fx.gameOverBackdrop.rotationDeg;
+      const a = state.rng() * Math.PI * 2;
+      bg.dirX = Math.cos(a);
+      bg.dirY = Math.sin(a);
+      bg.offsetX = 0;
+      bg.offsetY = 0;
+    }
+
+    const speed = CONFIG.fx.gameOverBackdrop.movePxPerSec;
+    bg.offsetX += bg.dirX * speed * dtSec;
+    bg.offsetY += bg.dirY * speed * dtSec;
+  }
 }
 
 // ============================================================
@@ -1123,6 +1406,38 @@ function createRenderer(boardCanvas, nextCanvas) {
   const nctx = nextCanvas.getContext("2d");
   nctx.setTransform(1, 0, 0, 1, 0, 0);
   nctx.scale(dpr, dpr);
+
+  function rowFallOffsetForRow(state, y) {
+    if (!state.fx?.rowFall?.active) return 0;
+    const dist = state.fx.rowFall.rowDropDistances?.[y] ?? 0;
+    if (!dist) return 0;
+
+    const t = clamp01(state.fx.rowFall.elapsedMs / state.fx.rowFall.durationMs);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const startOffset = dist * (CONFIG.fx.lineClear.boardFallPxPerRow ?? 18);
+    return startOffset * (1 - eased);
+  }
+
+  function quakeTransform(ctx, state) {
+    const q = state.fx?.quake;
+    if (!q || q.trauma <= 0.0001) return;
+
+    const trauma2 = q.trauma * q.trauma;
+    const maxOffset = CONFIG.fx.quake.maxOffsetPx * trauma2;
+    const maxRot = (CONFIG.fx.quake.rotationalDegrees * Math.PI / 180) * trauma2;
+
+    const sx = Math.sin(q.seed * 2.31);
+    const sy = Math.sin(q.seed * 3.77 + 1.7);
+    const sr = Math.sin(q.seed * 2.91 + 4.2);
+
+    const ox = sx * maxOffset;
+    const oy = sy * maxOffset;
+    const rot = sr * maxRot;
+
+    ctx.translate(bw / 2, bh / 2);
+    ctx.rotate(rot);
+    ctx.translate(-bw / 2 + ox, -bh / 2 + oy);
+  }
 
   function drawGhostPiece(state) {
     if (!CONFIG.render.ghost?.enabled) return;
@@ -1161,22 +1476,82 @@ function createRenderer(boardCanvas, nextCanvas) {
     bctx.restore();
   }
 
+  function drawGameOverBackdrop(state) {
+    const bg = state.fx?.gameOverBackdrop;
+    if (!state.gameOver || !CONFIG.fx.gameOverBackdrop.enabled) return;
+    if (!bg?.snapshotCanvas) return;
+
+    bctx.save();
+    bctx.beginPath();
+    bctx.rect(0, 0, bw, bh);
+    bctx.clip();
+
+    bctx.globalAlpha = CONFIG.fx.gameOverBackdrop.alpha ?? 0.95;
+
+    const patternCanvas = bg.snapshotCanvas;
+    const scale = CONFIG.fx.gameOverBackdrop.scale ?? 1.9;
+    const scaledW = patternCanvas.width * scale;
+    const scaledH = patternCanvas.height * scale;
+    const angle = bg.currentAngle * Math.PI / 180;
+
+    bctx.translate(bw / 2, bh / 2);
+    bctx.rotate(angle);
+    bctx.translate(-bw / 2, -bh / 2);
+
+    for (let yy = -scaledH * 2; yy < bh + scaledH * 2; yy += scaledH) {
+      for (let xx = -scaledW * 2; xx < bw + scaledW * 2; xx += scaledW) {
+        bctx.drawImage(
+          patternCanvas,
+          xx + bg.offsetX,
+          yy + bg.offsetY,
+          scaledW,
+          scaledH
+        );
+      }
+    }
+
+    bctx.restore();
+  }
+
+  function drawParticles(state) {
+    const parts = state.fx?.particles ?? [];
+    if (!parts.length) return;
+
+    bctx.save();
+    for (const p of parts) {
+      const a = clamp01(p.lifeMs / p.maxLifeMs);
+      bctx.globalAlpha = a;
+      bctx.fillStyle = p.color;
+      bctx.fillRect(p.x, p.y, p.size, p.size);
+    }
+    bctx.restore();
+  }
+
   function draw(state) {
     bctx.clearRect(0, 0, bw, bh);
     bctx.fillStyle = CONFIG.render.bg;
     bctx.fillRect(0, 0, bw, bh);
+
+    if (state.gameOver) {
+      drawGameOverBackdrop(state);
+    }
+
+    bctx.save();
+    quakeTransform(bctx, state);
 
     const hide = state.paused && CONFIG.pause.hideShapes;
     const cellSize = cell;
 
     if (!hide) {
       for (let y = 0; y < CONFIG.board.rows; y++) {
+        const rowOffset = rowFallOffsetForRow(state, y);
+
         for (let x = 0; x < CONFIG.board.cols; x++) {
           const cellObj = state.board[y][x];
           if (!cellObj) continue;
 
           const px = x * cellSize;
-          const py = y * cellSize;
+          const py = y * cellSize - rowOffset;
 
           drawBlockWithPaint(bctx, px, py, cellSize, cellObj.paint, cellObj.style);
         }
@@ -1197,14 +1572,12 @@ function createRenderer(boardCanvas, nextCanvas) {
 
           const bx = state.active.x + x;
           const by = state.active.y + y;
-
           if (by < 0) continue;
 
           const px = bx * cellSize;
           const py = by * cellSize;
 
           const paint = getActivePaintForBlock(state, x, y);
-
           drawBlockWithPaint(bctx, px, py, cellSize, paint, shape.style);
         }
       }
@@ -1214,8 +1587,11 @@ function createRenderer(boardCanvas, nextCanvas) {
       drawGhostPiece(state);
     }
 
+    drawParticles(state);
     drawGrid(bctx, bw, bh, cell, CONFIG.render.gridLineAlpha);
     drawScreenFX(bctx, bw, bh);
+
+    bctx.restore();
   }
 
   function drawNextSilhouette(shape) {
@@ -1224,7 +1600,6 @@ function createRenderer(boardCanvas, nextCanvas) {
     const h = Math.max(1, Math.round(rect.height));
 
     nctx.clearRect(0, 0, w, h);
-
     if (!shape) return;
 
     const mat = shape.rotations[0];
@@ -1249,9 +1624,7 @@ function createRenderer(boardCanvas, nextCanvas) {
     for (let y = 0; y < ph; y++) {
       for (let x = 0; x < pw; x++) {
         if (!mat[y][x]) continue;
-        const rx = ox + x * pcell;
-        const ry = oy + y * pcell;
-        nctx.rect(rx, ry, pcell, pcell);
+        nctx.rect(ox + x * pcell, oy + y * pcell, pcell, pcell);
       }
     }
     nctx.fill();
@@ -1298,7 +1671,6 @@ function createRenderer(boardCanvas, nextCanvas) {
       ctx.fillRect(px, py, cellSize, cellSize);
     } else if (paint && typeof paint === "object" && paint.pixels && paint.k) {
       const k = paint.k;
-
       const xb = new Array(k + 1);
       const yb = new Array(k + 1);
       for (let i = 0; i <= k; i++) {
@@ -1391,7 +1763,6 @@ function createRenderer(boardCanvas, nextCanvas) {
       ctx.globalCompositeOperation = "source-over";
       ctx.strokeStyle = `rgba(${outlineRGB[0]},${outlineRGB[1]},${outlineRGB[2]},${outlineAlpha})`;
       ctx.lineWidth = outlineWidth;
-
       const half = (outlineWidth % 2) ? 0.5 : 0;
       ctx.strokeRect(px + half, py + half, cellSize - outlineWidth, cellSize - outlineWidth);
       ctx.restore();
@@ -1747,6 +2118,7 @@ function bindUI(state, renderer, nameLayer) {
 
   return { updateHUD, showOverlay };
 }
+
 function resetGame(state, renderer, nameLayer, updateHUD, showOverlay) {
   state.board = createEmptyBoard(CONFIG.board.cols, CONFIG.board.rows);
   state.active = null;
@@ -1760,6 +2132,19 @@ function resetGame(state, renderer, nameLayer, updateHUD, showOverlay) {
   state.dropMs = CONFIG.timing.baseDropMs;
   state.dropAccum = 0;
   state.softDropping = false;
+
+  state.fx.particles = [];
+  state.fx.rowFall.active = false;
+  state.fx.rowFall.elapsedMs = 0;
+  state.fx.rowFall.rowDropDistances = Array(CONFIG.board.rows).fill(0);
+  state.fx.quake.trauma = 0;
+  state.fx.quake.x = 0;
+  state.fx.quake.y = 0;
+  state.fx.quake.rot = 0;
+  state.fx.gameOverBackdrop.snapshotCanvas = null;
+  state.fx.gameOverBackdrop.elapsedMs = 0;
+  state.fx.gameOverBackdrop.offsetX = 0;
+  state.fx.gameOverBackdrop.offsetY = 0;
 
   const ok = spawnPiece(state);
   if (!ok) state.gameOver = true;
@@ -1796,28 +2181,26 @@ function stepLockAndSpawn(state, renderer, nameLayer, updateHUD, showOverlay) {
 }
 
 function updateGame(state, dt, renderer, nameLayer, updateHUD, showOverlay) {
+  updateFX(state, dt);
+
   if (!state.running || state.gameOver) return;
   if (state.paused) return;
 
-  // --- Gravity timing (base vs soft drop) ---
   const baseDropMs = state.dropMs;
   const effectiveDropMs = state.softDropping
     ? Math.max(16, Math.floor(baseDropMs * CONFIG.timing.softDropFactor))
     : baseDropMs;
 
-  // Accumulate time; cap backlog to avoid bursts.
   state.dropAccum += dt;
   const maxBacklog = effectiveDropMs * (CONFIG.timing.maxAccumulatedSteps ?? 2);
   if (state.dropAccum > maxBacklog) state.dropAccum = maxBacklog;
 
-  // Process at most N fall steps per frame (prevents “teleport” feel).
   const maxSteps = CONFIG.timing.maxFallStepsPerFrame ?? 1;
   let steps = 0;
 
   while (state.dropAccum >= effectiveDropMs && steps < maxSteps) {
     state.dropAccum -= effectiveDropMs;
 
-    // If already in lock grace, do NOT keep trying to drop; lock grace handles it.
     if (state.locking) break;
 
     const moved = tryMove(state, 0, 1);
@@ -1826,7 +2209,6 @@ function updateGame(state, dt, renderer, nameLayer, updateHUD, showOverlay) {
         state.score += CONFIG.scoring.softDropPerCell;
       }
     } else {
-      // Touching down: start lock grace (do not lock immediately).
       beginLockIfNeeded(state);
       break;
     }
@@ -1834,12 +2216,9 @@ function updateGame(state, dt, renderer, nameLayer, updateHUD, showOverlay) {
     steps++;
   }
 
-  // --- Lock grace countdown ---
   if (state.locking && state.active && !state.gameOver) {
     state.lockElapsed += dt;
 
-    // If piece can move down again (e.g., after a slide), cancel lock grace.
-    // This prevents “sticking” if the player shifts into a gap.
     const mat = getActiveMatrix(state);
     if (!collides(state, state.active.x, state.active.y + 1, mat)) {
       cancelLock(state);
