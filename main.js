@@ -2012,7 +2012,7 @@ function bindUI(state, renderer, nameLayer) {
     }
 
     overlayTitle.textContent = title ?? "Extris";
-    overlaySubtitle.innerHTML = subtitle ?? "Destroy blocks. Keep the board alive.";
+    overlaySubtitle.innerHTML = subtitle ?? "alpha version 20260306";
     controlsBlock.style.display = "block";
     overlayBtns.style.display = "flex";
     overlayPlayBtn.style.display = "inline-block";
@@ -2233,7 +2233,7 @@ function bindUI(state, renderer, nameLayer) {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       document.querySelector(".app")?.classList.add("ready");
-      showOverlay(true, "Extris", "Destroy blocks. Keep the board alive.", "start");
+      showOverlay(true, "Extris", "alpha version 20260306", "start");
     });
   });
 
@@ -2278,7 +2278,7 @@ function resetGame(state, renderer, nameLayer, updateHUD, showOverlay) {
   renderer.drawNextSilhouette(state.next);
 
   updateHUD();
-  showOverlay(true, "Contortris", "Press Play. Space pauses.");
+  showOverlay(true, "Extris", " ");
 }
 
 // ============================================================
