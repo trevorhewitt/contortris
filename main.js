@@ -30,6 +30,15 @@ const CONFIG = {
     silhouetteColor: "rgba(240,240,255,0.16)",
     silhouetteStroke: "rgba(240,240,255,0.20)",
     pixelArtJitter: 0,
+
+    ghost: {
+      enabled: true,
+      fill: "rgba(255,255,255,0.07)",
+      stroke: "rgba(255,255,255,0.40)",
+      lineWidth: 0.1,
+      insetPx: 0.0,
+      drawBehindActive: true,
+    },
   },
 
   assist: {
@@ -912,6 +921,19 @@ function getActiveMatrix(state) {
   return state.active.shape.rotations[state.active.rotIdx];
 }
 
+function getGhostDropY(state) {
+  if (!state.active) return null;
+
+  const mat = getActiveMatrix(state);
+  let ghostY = state.active.y;
+
+  while (!collides(state, state.active.x, ghostY + 1, mat)) {
+    ghostY += 1;
+  }
+
+  return ghostY;
+}
+
 function spawnPiece(state) {
   if (!state.next) state.next = selectPiece(state);
   const shape = state.next;
@@ -1090,8 +1112,7 @@ function createRenderer(boardCanvas, nextCanvas) {
   boardCanvas.height = bh * dpr;
   const bctx = boardCanvas.getContext("2d");
   bctx.scale(dpr, dpr);
-  
-  // Size nextCanvas to its *actual* CSS size to avoid stretching
+
   const nextRect = nextCanvas.getBoundingClientRect();
   const nextW = Math.max(1, Math.round(nextRect.width));
   const nextH = Math.max(1, Math.round(nextRect.height));
@@ -1103,95 +1124,127 @@ function createRenderer(boardCanvas, nextCanvas) {
   nctx.setTransform(1, 0, 0, 1, 0, 0);
   nctx.scale(dpr, dpr);
 
+  function drawGhostPiece(state) {
+    if (!CONFIG.render.ghost?.enabled) return;
+    if (!state.active) return;
+    if (state.gameOver) return;
+
+    const ghostY = getGhostDropY(state);
+    if (ghostY == null) return;
+    if (ghostY === state.active.y) return;
+
+    const mat = getActiveMatrix(state);
+    const g = CONFIG.render.ghost;
+    const inset = g.insetPx ?? 1.5;
+
+    bctx.save();
+    bctx.fillStyle = g.fill ?? "rgba(255,255,255,0.07)";
+    bctx.strokeStyle = g.stroke ?? "rgba(255,255,255,0.40)";
+    bctx.lineWidth = g.lineWidth ?? 2;
+
+    for (let y = 0; y < mat.length; y++) {
+      for (let x = 0; x < mat[0].length; x++) {
+        if (!mat[y][x]) continue;
+
+        const bx = state.active.x + x;
+        const by = ghostY + y;
+        if (by < 0) continue;
+
+        const px = bx * cell;
+        const py = by * cell;
+
+        bctx.fillRect(px + inset, py + inset, cell - inset * 2, cell - inset * 2);
+        bctx.strokeRect(px + inset, py + inset, cell - inset * 2, cell - inset * 2);
+      }
+    }
+
+    bctx.restore();
+  }
+
   function draw(state) {
     bctx.clearRect(0, 0, bw, bh);
     bctx.fillStyle = CONFIG.render.bg;
     bctx.fillRect(0, 0, bw, bh);
-  
+
     const hide = state.paused && CONFIG.pause.hideShapes;
-    const cellSize = cell; // alias for clarity
-  
-    // ---- Locked blocks ----
+    const cellSize = cell;
+
     if (!hide) {
       for (let y = 0; y < CONFIG.board.rows; y++) {
         for (let x = 0; x < CONFIG.board.cols; x++) {
           const cellObj = state.board[y][x];
           if (!cellObj) continue;
-  
+
           const px = x * cellSize;
           const py = y * cellSize;
-  
-          // cellObj is { paint, style }
+
           drawBlockWithPaint(bctx, px, py, cellSize, cellObj.paint, cellObj.style);
         }
       }
     }
-  
-    // ---- Active piece ----
+
+    if (!hide && state.active && (CONFIG.render.ghost?.drawBehindActive ?? true)) {
+      drawGhostPiece(state);
+    }
+
     if (!hide && state.active) {
       const shape = state.active.shape;
       const mat = getActiveMatrix(state);
-  
+
       for (let y = 0; y < mat.length; y++) {
         for (let x = 0; x < mat[0].length; x++) {
           if (!mat[y][x]) continue;
-  
+
           const bx = state.active.x + x;
           const by = state.active.y + y;
-  
-          // still entering from above
+
           if (by < 0) continue;
-  
+
           const px = bx * cellSize;
           const py = by * cellSize;
-  
-          // NEW: compute paint for this block of the active piece
+
           const paint = getActivePaintForBlock(state, x, y);
-  
+
           drawBlockWithPaint(bctx, px, py, cellSize, paint, shape.style);
         }
       }
     }
-  
+
+    if (!hide && state.active && !(CONFIG.render.ghost?.drawBehindActive ?? true)) {
+      drawGhostPiece(state);
+    }
+
     drawGrid(bctx, bw, bh, cell, CONFIG.render.gridLineAlpha);
     drawScreenFX(bctx, bw, bh);
   }
-  
+
   function drawNextSilhouette(shape) {
-    // Use actual on-screen size to avoid stretching.
     const rect = nextCanvas.getBoundingClientRect();
     const w = Math.max(1, Math.round(rect.width));
     const h = Math.max(1, Math.round(rect.height));
-  
-    // Clear in CSS-pixel coords (nctx is scaled by dpr in createRenderer)
+
     nctx.clearRect(0, 0, w, h);
-  
+
     if (!shape) return;
-  
+
     const mat = shape.rotations[0];
     const ph = mat.length;
     const pw = mat[0].length;
-  
-    // Uniform scaling (no stretch)
+
     const pad = 18;
     const availW = Math.max(1, w - pad * 2);
     const availH = Math.max(1, h - pad * 2);
     const pcell = Math.max(6, Math.floor(Math.min(availW / pw, availH / ph)));
-  
+
     const drawW = pw * pcell;
     const drawH = ph * pcell;
     const ox = Math.floor((w - drawW) / 2);
     const oy = Math.floor((h - drawH) / 2);
-  
-    // Solid silhouette: build ONE path that is the union of all occupied cells,
-    // then fill it ONCE at full opacity. This avoids any overlap seams.
+
     nctx.save();
     nctx.globalAlpha = 1;
-  
-    // If you want colourless: use a solid opaque colour here.
-    // (Avoid rgba/alpha to prevent any blending artefacts.)
-    nctx.fillStyle = "#a83deb"; // opaque "silhouette ink" (edit if desired)
-  
+    nctx.fillStyle = "#a83deb";
+
     nctx.beginPath();
     for (let y = 0; y < ph; y++) {
       for (let x = 0; x < pw; x++) {
@@ -1207,70 +1260,62 @@ function createRenderer(boardCanvas, nextCanvas) {
 
   function drawBlockWithPaint(ctx, px, py, cellSize, paint, style = {}) {
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-  
-    // ---------- Tunables ----------
+
     const shadeWidthRatio = style.shadeWidthRatio ?? 0.14;
     const shadeWidthMinPx = style.shadeWidthMinPx ?? 1;
     const shadeWidthMaxPx = style.shadeWidthMaxPx ?? 10;
-  
+
     const w = clamp(
       Math.round(cellSize * shadeWidthRatio),
       shadeWidthMinPx,
       Math.min(shadeWidthMaxPx, Math.floor(cellSize / 2) - 1)
     );
-  
+
     const darkAlpha = clamp(style.shadeDarkAlpha ?? 0.0, 0, 1);
     const lightAlpha = clamp(style.shadeLightAlpha ?? 0.0, 0, 1);
-  
+
     const darkRGB = style.shadeDarkRGB ?? [0, 0, 0];
     const lightRGB = style.shadeLightRGB ?? [255, 255, 255];
-  
+
     const darkComposite = style.shadeDarkComposite ?? "multiply";
     const lightComposite = style.shadeLightComposite ?? "screen";
-  
+
     const tintWarmAlpha = clamp(style.shadeWarmTintAlpha ?? 0.0, 0, 1);
     const tintCoolAlpha = clamp(style.shadeCoolTintAlpha ?? 0.0, 0, 1);
     const warmRGB = style.shadeWarmTintRGB ?? [255, 230, 120];
     const coolRGB = style.shadeCoolTintRGB ?? [70, 120, 255];
-  
+
     const outlineAlpha = clamp(style.outlineAlpha ?? 0.55, 0, 1);
     const outlineWidth = style.outlineWidth ?? 0.5;
     const outlineRGB = style.outlineRGB ?? [0, 0, 0];
-  
-    // Corner handling:
-    // - No *double* blending (prevents corner artefacts)
-    // - BUT bottom-left should be dark, top-right should be light
-    // Achieve this by: excluding corners from strips, then filling those two corners once.
-    const cornerMode = style.cornerMode ?? "single"; // "single" or "none"
-    // If you ever want all four corners shaded, change these flags:
+
+    const cornerMode = style.cornerMode ?? "single";
     const shadeBottomLeftCorner = style.shadeBottomLeftCorner ?? true;
     const shadeTopRightCorner = style.shadeTopRightCorner ?? true;
-  
-    // ---------- 1) Fill interior ----------
+
     if (typeof paint === "string") {
       ctx.fillStyle = paint;
       ctx.fillRect(px, py, cellSize, cellSize);
     } else if (paint && typeof paint === "object" && paint.pixels && paint.k) {
       const k = paint.k;
-    
-      // Build integer boundaries so the grid always fits perfectly in [px, px+cellSize]
+
       const xb = new Array(k + 1);
       const yb = new Array(k + 1);
       for (let i = 0; i <= k; i++) {
         xb[i] = px + Math.round((i * cellSize) / k);
         yb[i] = py + Math.round((i * cellSize) / k);
       }
-    
+
       for (let sy = 0; sy < k; sy++) {
         const y0 = yb[sy], y1 = yb[sy + 1];
         const h = y1 - y0;
         if (h <= 0) continue;
-    
+
         for (let sx = 0; sx < k; sx++) {
           const x0 = xb[sx], x1 = xb[sx + 1];
           const w = x1 - x0;
           if (w <= 0) continue;
-    
+
           const c = paint.pixels?.[sy]?.[sx];
           ctx.fillStyle = (typeof c === "string" && isHexColour(c)) ? c : (style.baseColor ?? "#FFFFFF");
           ctx.fillRect(x0, y0, w, h);
@@ -1280,31 +1325,26 @@ function createRenderer(boardCanvas, nextCanvas) {
       ctx.fillStyle = style.baseColor ?? "#FFFFFF";
       ctx.fillRect(px, py, cellSize, cellSize);
     }
-  
-    // ---------- 2) Shading ----------
+
     if (w > 0 && (darkAlpha > 0 || lightAlpha > 0 || tintWarmAlpha > 0 || tintCoolAlpha > 0)) {
       ctx.save();
-  
-      // Dark: bottom + left, excluding bottom-left so it can be filled exactly once.
+
       if (darkAlpha > 0 || tintCoolAlpha > 0) {
         ctx.globalCompositeOperation = darkComposite;
-  
+
         if (darkAlpha > 0) {
           ctx.fillStyle = `rgba(${darkRGB[0]},${darkRGB[1]},${darkRGB[2]},${darkAlpha})`;
-          // bottom: exclude bottom-left corner area
           ctx.fillRect(px + w, py + cellSize - w, cellSize - w, w);
-          // left: exclude bottom-left corner area
           ctx.fillRect(px, py, w, cellSize - w);
         }
-  
+
         if (tintCoolAlpha > 0) {
           ctx.fillStyle = `rgba(${coolRGB[0]},${coolRGB[1]},${coolRGB[2]},${tintCoolAlpha})`;
           ctx.fillRect(px + w, py + cellSize - w, cellSize - w, w);
           ctx.fillRect(px, py, w, cellSize - w);
         }
-  
+
         if (cornerMode === "single" && shadeBottomLeftCorner) {
-          // bottom-left corner shaded ONCE (dark variant)
           if (darkAlpha > 0) {
             ctx.fillStyle = `rgba(${darkRGB[0]},${darkRGB[1]},${darkRGB[2]},${darkAlpha})`;
             ctx.fillRect(px, py + cellSize - w, w, w);
@@ -1315,27 +1355,23 @@ function createRenderer(boardCanvas, nextCanvas) {
           }
         }
       }
-  
-      // Light: top + right, excluding top-right so it can be filled exactly once.
+
       if (lightAlpha > 0 || tintWarmAlpha > 0) {
         ctx.globalCompositeOperation = lightComposite;
-  
+
         if (lightAlpha > 0) {
           ctx.fillStyle = `rgba(${lightRGB[0]},${lightRGB[1]},${lightRGB[2]},${lightAlpha})`;
-          // top: exclude top-right corner area
           ctx.fillRect(px, py, cellSize - w, w);
-          // right: exclude top-right corner area
           ctx.fillRect(px + cellSize - w, py + w, w, cellSize - w);
         }
-  
+
         if (tintWarmAlpha > 0) {
           ctx.fillStyle = `rgba(${warmRGB[0]},${warmRGB[1]},${warmRGB[2]},${tintWarmAlpha})`;
           ctx.fillRect(px, py, cellSize - w, w);
           ctx.fillRect(px + cellSize - w, py + w, w, cellSize - w);
         }
-  
+
         if (cornerMode === "single" && shadeTopRightCorner) {
-          // top-right corner shaded ONCE (light variant)
           if (lightAlpha > 0) {
             ctx.fillStyle = `rgba(${lightRGB[0]},${lightRGB[1]},${lightRGB[2]},${lightAlpha})`;
             ctx.fillRect(px + cellSize - w, py, w, w);
@@ -1346,17 +1382,16 @@ function createRenderer(boardCanvas, nextCanvas) {
           }
         }
       }
-  
+
       ctx.restore();
     }
-  
-    // ---------- 3) Thin black outline ----------
+
     if (outlineAlpha > 0 && outlineWidth > 0) {
       ctx.save();
       ctx.globalCompositeOperation = "source-over";
       ctx.strokeStyle = `rgba(${outlineRGB[0]},${outlineRGB[1]},${outlineRGB[2]},${outlineAlpha})`;
       ctx.lineWidth = outlineWidth;
-  
+
       const half = (outlineWidth % 2) ? 0.5 : 0;
       ctx.strokeRect(px + half, py + half, cellSize - outlineWidth, cellSize - outlineWidth);
       ctx.restore();
