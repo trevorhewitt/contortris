@@ -459,17 +459,6 @@ function loadAndNormaliseShapes(rawShapes, defaults = {}) {
   });
 }
 
-function parseGridToBoolMatrix(gridRows) {
-  if (!Array.isArray(gridRows) || gridRows.length === 0) throw new Error("grid must be a non-empty string[]");
-  const rows = gridRows.map((r) => String(r));
-  const w = Math.max(...rows.map((r) => r.length));
-  const mat = rows.map((r) => {
-    const padded = r.padEnd(w, ".");
-    return [...padded].map((ch) => ch === "X");
-  });
-  return trimBoolMatrix(mat);
-}
-
 function trimBoolMatrix(mat) {
   const h = mat.length, w = mat[0].length;
   let top = 0, bottom = h - 1, left = 0, right = w - 1;
@@ -482,56 +471,6 @@ function trimBoolMatrix(mat) {
   const out = [];
   for (let y = top; y <= bottom; y++) out.push(mat[y].slice(left, right + 1));
   return out.length ? out : [[true]];
-}
-
-function computeAllRotations(base) {
-  const r0 = base;
-  const r1 = rotateCW(r0);
-  const r2 = rotateCW(r1);
-  const r3 = rotateCW(r2);
-  return [r0, r1, r2, r3].map(trimBoolMatrix);
-}
-
-function filterAllowedRotations(rotationsAll, rotationSpec) {
-  const mode = rotationSpec?.mode ?? "any";
-  if (mode === "none") return [rotationsAll[0]];
-  if (mode === "custom") {
-    const allowed = Array.isArray(rotationSpec.allowed) ? rotationSpec.allowed : [0];
-    const unique = [...new Set(allowed.map((n) => ((n % 4) + 4) % 4))];
-    return unique.map((i) => rotationsAll[i]);
-  }
-  const uniq = [];
-  const seen = new Set();
-  for (const m of rotationsAll) {
-    const key = m.map((row) => row.map((b) => (b ? "1" : "0")).join("")).join("|");
-    if (!seen.has(key)) { seen.add(key); uniq.push(m); }
-  }
-  return uniq;
-}
-
-function rotateCW(mat) {
-  const h = mat.length, w = mat[0].length;
-  const out = Array.from({ length: w }, () => Array(h).fill(false));
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) out[x][h - 1 - y] = mat[y][x];
-  return out;
-}
-
-function normaliseStyle(baseHex, style = {}) {
-  const base = parseHex(baseHex);
-  const shadeTopRight = style.shadeTopRight ?? toHex(adjustColour(base, { l: +0.18, s: +0.10, h: +10 }));
-  const shadeBottomLeft = style.shadeBottomLeft ?? toHex(adjustColour(base, { l: -0.22, s: +0.05, h: -12 }));
-  return {
-    shadeTopRight,
-    shadeBottomLeft,
-    glow: style.glow ?? { enabled: true, strength: 0.35 },
-  };
-}
-
-function parseHex(hex) {
-  const h = hex.replace("#", "").trim();
-  const s = h.length === 3 ? [...h].map((c) => c + c).join("") : h;
-  if (s.length !== 6) return { r: 255, g: 255, b: 255 };
-  return { r: parseInt(s.slice(0, 2), 16), g: parseInt(s.slice(2, 4), 16), b: parseInt(s.slice(4, 6), 16) };
 }
 
 function rgbToHsl({ r, g, b }) {
@@ -564,14 +503,6 @@ function hslToRgb({ h, s, l }) {
   else if (240 <= h && h < 300) [rp, gp, bp] = [X, 0, C];
   else [rp, gp, bp] = [C, 0, X];
   return { r: Math.round((rp + m) * 255), g: Math.round((gp + m) * 255), b: Math.round((bp + m) * 255) };
-}
-function adjustColour(rgb, { h = 0, s = 0, l = 0 }) {
-  const hsl = rgbToHsl(rgb);
-  return hslToRgb({ h: (hsl.h + h + 360) % 360, s: clamp01(hsl.s + s), l: clamp01(hsl.l + l) });
-}
-function toHex({ r, g, b }) {
-  const f = (n) => n.toString(16).padStart(2, "0");
-  return `#${f(r)}${f(g)}${f(b)}`;
 }
 
 // ===============================
@@ -670,39 +601,7 @@ function getActivePaintForBlock(state, bx, by) {
   };
 }
 
-function hexToRgb(hex){
-  const h = hex.replace("#","").trim();
-  const v = h.length === 3
-    ? h.split("").map(ch => ch + ch).join("")
-    : h;
-  const n = parseInt(v, 16);
-  return { r: (n>>16)&255, g: (n>>8)&255, b: n&255 };
-}
 
-function rgbToHex(r,g,b){
-  const to = (x)=>x.toString(16).padStart(2,"0");
-  return `#${to(r)}${to(g)}${to(b)}`;
-}
-
-// Slightly lighter + yellower
-function lightenTowardsYellow(hex){
-  const {r,g,b} = hexToRgb(hex);
-  const rr = Math.round(r + (255 - r) * 0.22);
-  const gg = Math.round(g + (255 - g) * 0.18);
-  const bb = Math.round(b + (50  - b) * 0.10);
-  return rgbToHex(rr, gg, clampByte(bb));
-}
-
-// Slightly darker + bluer
-function darkenTowardsBlue(hex){
-  const {r,g,b} = hexToRgb(hex);
-  const rr = Math.round(r * 0.72);
-  const gg = Math.round(g * 0.72);
-  const bb = Math.round(b + (255 - b) * 0.12);
-  return rgbToHex(clampByte(rr), clampByte(gg), clampByte(bb));
-}
-
-function clampByte(x){ return Math.max(0, Math.min(255, x)); }
 
 // ============================================================
 // GAME CORE
@@ -1007,19 +906,6 @@ function sampleDiscrete(probByKey, rng) {
     if (r <= 0) return k;
   }
   return keys[keys.length - 1];
-}
-
-function sampleByFrequency(candidates, rng) {
-  let total = 0;
-  for (const s of candidates) total += (s.frequency ?? 1);
-  if (total <= 0) return candidates[Math.floor(rng() * candidates.length)];
-
-  let r = rng() * total;
-  for (const s of candidates) {
-    r -= (s.frequency ?? 1);
-    if (r <= 0) return s;
-  }
-  return candidates[candidates.length - 1];
 }
 
 function getActiveMatrix(state) {

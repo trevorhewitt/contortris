@@ -244,7 +244,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0.2,
     nextShapeProbs: [
         0.8
       ],
@@ -411,7 +411,7 @@ export const SHAPES = [
   },
   {
     id: "there",
-    name: "over there",
+    name: "finger pointy",
     grid: [
         "XXXXX",
         "XXXXX"
@@ -506,6 +506,7 @@ export const SHAPES = [
       },
     frequency: 1,
   },
+  /*
   {
     id: "beefyarm",
     name: "a big beefy arm",
@@ -524,6 +525,7 @@ export const SHAPES = [
       },
     frequency: 1,
   },
+  */
   {
     id: "paino",
     name: "a grand paino",
@@ -1018,7 +1020,7 @@ export const SHAPES = [
   },
   {
     id: "mirrormean",
-    name: "a mirror that tells you if you are pretty or not",
+    name: "a mirror that says if you are pretty",
     grid: [
         "XX",
         "XX"
@@ -1130,12 +1132,12 @@ export const SHAPES = [
   },
   {
     id: "square",
-    name: "square pizza",
+    name: "rectangular pizza",
     grid: [
         "XXXX",
         "XXXX"
       ],
-    color: [["#e6a800","#e6a800","#e6a800","#e6a800","#e6a800","#e6a800","#e6a800","#e6a800"],["#e6a800","#9e0000","#e60f00","#ffa200","#9e0000","#ffa200","#ffe433","#e6a800"],["#e6a800","#ffa200","#ffa200","#e60f00","#ffe433","#e60f00","#ffa200","#e6a800"],["#e6a800","#e6a800","#e6a800","#e6a800","#e6a800","#e6a800","#e6a800","#e6a800"]],
+    color: [["#e4ae3b","#c67f28","#e8b13e","#e6b03d","#c3832a","#e4ae3b","#e4ae3b","#c3832a","#c3832a","#c3832a","#e4ae3b","#e4ae3b","#e4ae3b","#e6b039","#c3832a","#e4ae3b"],["#d18f2f","#bb5111","#e7d7ba","#a92e15","#b72c10","#e4ddc3","#e6dcbf","#e6dcbf","#b12f12","#e6dcc2","#b3310c","#b92c10","#ebdbbd","#e3ddc2","#b72b0d","#cb7d2d"],["#e7b13d","#b92d10","#fdd9b4","#c65317","#bf4514","#b82c0f","#fcbfa5","#b92b0f","#b92c10","#d1711d","#e6dcc0","#e7dbc1","#b92c10","#b92c10","#b92c10","#c67f2e"],["#e4ae3a","#b92c10","#b92c10","#f3ddbd","#b32c12","#a33b1f","#e5dcc0","#b92c10","#af2f11","#e6ddc3","#b92c10","#b92c10","#e8dabf","#e5dcc2","#b42d11","#c3832a"],["#e5af3f","#b92c13","#e6dcc2","#b92c10","#b92c10","#b92c10","#b92c10","#bb2a0f","#4d6a29","#526a2b","#6d6625","#e6dcc2","#aa391b","#b92c10","#b92c10","#ca7d2f"],["#ecb141","#b92b10","#eadbc1","#b92c10","#e9d9c4","#f8c9af","#e3debc","#b92c10","#b92c10","#b92b10","#5d6426","#c54814","#b92b0f","#bb2a10","#b92c10","#c97d32"],["#c87e35","#b12e0a","#e5dcbf","#ead9bf","#b92c10","#b92c10","#a73012","#e3ddc2","#b52a0d","#e6dcc2","#e6dac0","#b92c10","#e4dbc1","#e6dcc2","#b72711","#c78036"],["#e4ae3b","#e09e38","#e6b03e","#e5af3b","#ecb23f","#e8b03c","#e9b03f","#ebaf40","#e5af3b","#e5af3b","#e6b03c","#e6b03c","#e5b03d","#e7af3c","#c77e34","#e4ae3b"]],
     difficulty: 2,
     rotation: {
         "mode": "any"
@@ -1184,7 +1186,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-  },
+  }, /*
   {
     id: "tac",
     name: "a tic tac",
@@ -1219,6 +1221,7 @@ export const SHAPES = [
       },
     frequency: 0,
   },
+  */
   {
     id: "north",
     name: "the north star",
@@ -1252,7 +1255,7 @@ export const SHAPES = [
   },
   {
     id: "hellfire",
-    name: "an eternal flame of hellfire",
+    name: "an eternal flame of damnation",
     grid: [
         ".X.",
         "XX.",
@@ -1261,7 +1264,7 @@ export const SHAPES = [
         ".X."
       ],
     color: [["","","","#9f4009","#e36e17","#a30500","","",""],["","","","#ca2c09","#ef831f","#9a1e04","","",""],["","","","#f38d27","#fbaa33","#c0210f","","",""],["#a30500","#b10501","#d94408","#feab32","#feb53a","#c52307","","",""],["#940f00","#cc430b","#f99324","#fecc55","#fcc962","#dd5b0e","","",""],["#b40700","#e26810","#f9b43d","#fcf5b7","#edd480","#ce4f0d","","",""],["#de4f0d","#fa9924","#fdc64b","#fcfece","#f8e093","#f7a22c","#f48b1a","#c72305","#7f1202"],["#d84d0b","#f5a832","#f5d774","#f3fbc8","#f9fbdd","#fae795","#fcab36","#dc540b","#930b00"],["#d14506","#f89e26","#facc5b","#fcfecb","#faffd1","#f8d471","#ffab33","#e56f14","#b60b02"],["#b20900","#df6212","#fc9728","#f8c858","#f9d882","#f6bb44","#f38f22","#ce3902","#af0c06"],["#9d1a03","#c82c01","#db5f0d","#feb337","#fbbd43","#fb9c26","#d03b05","#a61604","#721102"],["#a30500","#b60803","#b20b01","#ffab2f","#f8ac35","#e25b0b","#a70b01","#6d0c00","#a30500"],["","","","#b91403","#f7921d","#b51d06","","",""],["","","","#b81908","#f4831c","#a8280a","","",""],["","","","#a30500","#e56b16","#a30500","","",""]],
-    difficulty: 2,
+    difficulty: 3,
     rotation: {
         "mode": "any"
       },
@@ -1418,7 +1421,7 @@ export const SHAPES = [
         "X",
         "X"
       ],
-    color: [["#2f4a50","#00941e","#00941e","#006b15","#2f4a50"],["#2f4a50","#2f4a50","#00941e","#2f4a50","#2f4a50"],["#2f4a50","#00941e","#00941e","#006b15","#2f4a50"],["#2f4a50","#00941e","#00941e","#006b15","#2f4a50"],["#2f4a50","#00941e","#006b15","#006b15","#2f4a50"],["#575757","#575757","#575757","#575757","#575757"],["#cccccc","#cccccc","#cccccc","#cccccc","#cccccc"],["#7a7a7a","#575757","#575757","#575757","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#575757","#575757","#575757","#7a7a7a"],["#7a7a7a","#cccccc","#cccccc","#cccccc","#7a7a7a"],["#575757","#575757","#575757","#575757","#575757"]],
+    color: [["#182f34","#00941e","#00941e","#006b15","#182f34"],["#182f34","#182f34","#00941e","#182f34","#182f34"],["#182f34","#00941e","#00941e","#006b15","#182f34"],["#182f34","#00941e","#00941e","#006b15","#182f34"],["#182f34","#00941e","#006b15","#006b15","#182f34"],["#575757","#575757","#575757","#575757","#575757"],["#cccccc","#cccccc","#cccccc","#cccccc","#cccccc"],["#7a7a7a","#575757","#575757","#575757","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#cccccc","#7a7a7a","#cccccc","#7a7a7a"],["#7a7a7a","#575757","#575757","#575757","#7a7a7a"],["#7a7a7a","#cccccc","#cccccc","#cccccc","#7a7a7a"],["#575757","#575757","#575757","#575757","#575757"]],
     difficulty: 2,
     rotation: {
         "mode": "any"
@@ -1438,8 +1441,12 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.25,
-    nextShapes: ["twofish"],
-    nextShapeProbs: [1.0],
+    nextShapeProbs: [
+        1
+      ],
+    nextShapes: [
+        "twofish"
+      ],
   },
   {
     id: "twofish",
@@ -1453,9 +1460,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.0,
-    nextShapes: ["redfish"],
-    nextShapeProbs: [1.0],
+    frequency: 0,
+    nextShapeProbs: [
+        1
+      ],
+    nextShapes: [
+        "redfish"
+      ],
   },
   {
     id: "redfish",
@@ -1469,9 +1480,15 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.0,
-    nextShapes: ["bluefish", "bluefishbig"],
-    nextShapeProbs: [0.5, 0.5],
+    frequency: 0,
+    nextShapeProbs: [
+        0.5,
+        0.5
+      ],
+    nextShapes: [
+        "bluefish",
+        "bluefishbig"
+      ],
   },
   {
     id: "bluefish",
@@ -1485,7 +1502,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.0,
+    frequency: 0,
   },
   {
     id: "bluefishbig",
@@ -1506,6 +1523,21 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.0,
+    frequency: 0,
+  },
+  {
+    id: "thats",
+    name: "a flower with a face that's sad",
+    grid: [
+        "XXX",
+        "XXX",
+        "XXX"
+      ],
+    color: [["#40004c","#330042","#72007f","#740085","#72007f","#3b0045","#340042","#390045","#41004c","#6e007d","#6e007b","#6e007f","#3d0047","#3e0047","#3d0049","#3e0045","#710082","#710081","#6f0081","#390040","#34003f"],["#36003f","#e319fb","#fb86ff","#ef25ff","#6f007b","#760086","#3d0045","#720084","#720084","#fb84ff","#fb81ff","#fb80ff","#770086","#770087","#40004d","#6c007a","#6e0080","#e81eff","#fc7dff","#e71afe","#3d004a"],["#6e007b","#ff7afb","#ffb5fc","#ff7afb","#ee24ff","#71007f","#6d007d","#6d007b","#e91cfc","#fb84ff","#ffaef4","#fc80ff","#e41af6","#6a0078","#710080","#6a007c","#e71cff","#ff7bf6","#ffb5fc","#ff7bf9","#6c007c"],["#6e007b","#df16f9","#fb87ff","#ffb7fc","#fe81ff","#ef25ff","#6d007d","#e117f2","#fb84ff","#ff7dfb","#fdb7ff","#fc82ff","#ff7cff","#e417fb","#6f0080","#df17fa","#ff81ff","#ffb2f7","#ff7ffe","#e51afc","#760082"],["#73007f","#760082","#df15f9","#fb84ff","#ffb4fd","#fb82ff","#680077","#ee21ff","#fb86ff","#ff7af8","#ffaffa","#ff7cf9","#ff77fa","#ed20ff","#6f007f","#fb85ff","#ffaaf3","#ff7cfe","#e31af9","#6f007b","#68007a"],["#340040","#6a007d","#790086","#df19f9","#ff7dfa","#ffaffa","#6a007b","#6e007b","#ee20ff","#ff7bfd","#ffa8f2","#fb89ff","#de16f6","#770084","#720082","#ffaaf3","#fb85ff","#e61efc","#730080","#770087","#3c0047"],["#370043","#410048","#6e0080","#6a007a","#740081","#760084","#ffadf4","#760085","#730080","#fffa6c","#fffa69","#fffa6e","#740081","#68007a","#ffb3fa","#720084","#690077","#780085","#6e0080","#40004f","#400048"],["#3c0049","#6f0081","#6d007b","#e71cff","#ed24ff","#6c0078","#6e007f","#fffa67","#fffa67","#fffa70","#fffc9f","#fff966","#fffa71","#fffa6c","#710081","#6c007a","#e41cfb","#ed21ff","#780084","#6f007d","#38003f"],["#3d0047","#780085","#e11afa","#ff77f9","#ff7ffe","#e91efc","#6e0080","#fffa6b","#fffc9d","#fffc9b","#fffca1","#fffc9f","#fffc9d","#fffc9d","#6f007d","#e91eff","#fc7fff","#ff7ffb","#df14f6","#6e007d","#760086"],["#710082","#fb85ff","#fb87ff","#fb82ff","#fb87ff","#fb84ff","#fffa71","#fffa6c","#fffc9d","#b20a00","#fffdc6","#b20a00","#fffc9d","#fffa67","#fffa69","#ff7dff","#fb85ff","#ff7bfd","#ff7cfe","#ff7af9","#740080"],["#6a007a","#fc82ff","#ffadf8","#ffb5fb","#ffaef4","#ffb2fd","#fffa66","#fffca0","#fffc9e","#fffdc1","#fffdc6","#fffdc2","#fffc99","#fffc9d","#fffa70","#ffadf8","#ffaef5","#ffb0fa","#feb7ff","#ff7cfa","#720084"],["#720082","#fb80ff","#fe82ff","#fb86ff","#fb82ff","#fb85ff","#fffa72","#fffa63","#b20a00","#b20a00","#b20a00","#b20a00","#b20a00","#fffa72","#fffa6c","#fb86ff","#fb86ff","#ff7cfb","#ff7dfb","#ff7dfb","#69007a"],["#3c0042","#710080","#e119f6","#ff7cfd","#ff7bff","#e116f6","#68007a","#fffa73","#b20a00","#fffc98","#fffa94","#fffc9a","#b20a00","#fffa72","#6a007c","#ea1eff","#fb82ff","#fc7fff","#e416f6","#730082","#36003f"],["#37003d","#6f007f","#6d007d","#ea1eff","#ec1eff","#6a0077","#770084","#fffa6b","#fffa67","#fffa6b","#fffca0","#fffa6d","#fffa73","#fffa68","#740086","#73007f","#df16f6","#e319fb","#760082","#730084","#390043"],["#3d0047","#3d004c","#760080","#6d007a","#73007f","#680078","#ffaaf5","#71007f","#690078","#fffa6d","#fffa64","#fffa71","#720084","#6e0081","#ffb8fd","#6f007d","#780085","#720084","#790086","#400047","#40004a"],["#41004a","#6c0078","#6f0081","#e015f4","#fb87ff","#fdb8ff","#6c0078","#68007b","#e91ffb","#fb89ff","#ffb0fc","#fb82ff","#df1af7","#69007a","#6c0077","#ffb7fc","#fe82ff","#e019fb","#71007f","#6e007a","#3f004c"],["#68007b","#760085","#e81afc","#fc85ff","#ffb3fe","#fc84ff","#710080","#ea1eff","#ff77f9","#fb82ff","#ffb8fe","#fc80ff","#ff7cf9","#e51cfc","#720082","#fc80ff","#ffaff9","#fb82ff","#ea20ff","#740082","#71007d"],["#670078","#e014f5","#ff7dff","#ffaefa","#ff7af9","#e016f9","#6e0078","#e91ffc","#ff82ff","#ff7cf9","#ffb2f9","#ff77fc","#ff80fe","#dd12f6","#740086","#e81efc","#fb84ff","#ffb0f9","#ff7dfd","#e214f6","#6f0080"],["#720084","#fe7fff","#ffb3f8","#ff7cf9","#ea21fe","#73007f","#68007c","#760084","#ed23ff","#fb87ff","#ffadf4","#ff7cff","#eb20ff","#680078","#68007b","#730081","#e017f4","#ff78fb","#ffaff8","#ff77fc","#710082"],["#3d0044","#dc17f5","#ff78f9","#ea24ff","#6e0080","#670077","#400048","#6c007b","#730085","#fe7fff","#fb85ff","#fb86ff","#740082","#740081","#41004c","#68007a","#690078","#e921ff","#fb80ff","#e41afb","#3e0045"],["#37003e","#3c0047","#6f007d","#72007d","#6e007c","#46004d","#3c0045","#3b0040","#750087","#730080","#730080","#740086","#3f004c","#37003e","#380043","#40004d","#790086","#6e0080","#6e007b","#390040","#3d0045"]],
+    difficulty: 3,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
   },
 ];
