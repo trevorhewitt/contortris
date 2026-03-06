@@ -14,63 +14,68 @@
       font-style: normal;
       font-display: block;
     }
+  
     :root{
       --bg: #0f1020;
       --bg2: #070714;
-
+  
       --text: rgba(245,245,255,0.92);
       --muted: rgba(245,245,255,0.70);
-
+  
       /* Natural board geometry (used for fit calculations) */
       --cols: 14;
       --rows: 28;
       --cell: 18px;
       --natural-board-w: calc(var(--cols) * var(--cell));
       --natural-board-h: calc(var(--rows) * var(--cell));
-
+  
       /* Bottom bar fixed height (plus safe-area inset) */
       --bottom-bar-h: 96px;
-
+  
       /* Contrast */
       --grid: rgba(230,230,245,0.22);
       --boardEdge: rgba(245,245,255,0.26);
       --boardEdgeInner: rgba(245,245,255,0.10);
-
-      /* NEW: typography */
-      --font-body: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  
+      /* Typography */
+      --font-body: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       --font-display: "PressStart2P", ui-monospace, monospace;
       --font-numbers: "PressStart2P", ui-monospace, monospace;
-
-      /* NEW: retro styling controls */
+  
+      /* Retro styling controls */
       --ui-radius: 0px;
       --ui-border: rgba(255,255,255,0.18);
       --ui-panel-bg: rgba(8,8,16,0.84);
-
-      /* NEW: RGB / glow toggles
-         Set these to 0 to effectively turn the effects off. */
+  
+      /* Glow / RGB controls */
       --display-glow-a: 0.24;
       --display-glow-b: 0.14;
       --display-rgb-shift: 2px;
-
+      --display-rgb-a1: 0.22;
+      --display-rgb-a2: 0.18;
+      --display-rgb-a3: 0.18;
+      --display-rgb-a4: 0.14;
+  
       --name-glow-a: 0.35;
       --name-glow-b: 0.22;
       --name-rgb-shift: 2px;
+      --name-rgb-a1: 0.22;
+      --name-rgb-a2: 0.18;
     }
-
-    /* HARD scroll disable */
-    html, body{
+  
+    html,
+    body{
       height: 100%;
       width: 100%;
       margin: 0;
       overflow: hidden;
       overscroll-behavior: none;
-      touch-action: none; /* critical for swipes */
+      touch-action: none;
       background: radial-gradient(1200px 900px at 30% 10%, #2a2550 0%, var(--bg) 45%, var(--bg2) 100%);
       color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      font-family: var(--font-body);
     }
-
-    /* Use dynamic viewport units to avoid mobile browser chrome issues */
+  
     .app{
       width: 100vw;
       height: 100dvh;
@@ -80,7 +85,7 @@
       align-items: stretch;
       justify-items: center;
     }
-
+  
     .boardRegion{
       width: 100%;
       height: 100%;
@@ -88,33 +93,26 @@
       place-items: center;
       box-sizing: border-box;
       padding: 8px;
-      min-height: 0; /* IMPORTANT: allow shrinking in grid */
+      min-height: 0;
     }
-
+  
     .boardShell{
       position: relative;
       background: #000;
       border-radius: 12px;
       overflow: hidden;
-
       box-shadow:
         0 18px 60px rgba(0,0,0,0.55),
-
-        /* base board edge */
         0 0 0 2px var(--boardEdge),
         0 0 0 1px var(--boardEdgeInner) inset,
-
-        /* ALWAYS-ON faint edge glows */
-        -6px 0 18px rgba(255, 220, 90, 0.12),   /* left yellow */
-        6px 0 18px rgba( 90, 200,255, 0.12),   /* right blue */
-        0 -6px 18px rgba(110, 255,140, 0.10),  /* top green */
-        0  6px 18px rgba(255,  90, 90, 0.10);  /* bottom red */
-
-      /* These are set by JS to fit the viewport exactly */
+        -6px 0 18px rgba(255,220,90,0.12),
+        6px 0 18px rgba(90,200,255,0.12),
+        0 -6px 18px rgba(110,255,140,0.10),
+        0 6px 18px rgba(255,90,90,0.10);
       width: var(--natural-board-w);
       height: var(--natural-board-h);
     }
-
+  
     canvas{
       width: var(--natural-board-w);
       height: var(--natural-board-h);
@@ -122,69 +120,62 @@
       image-rendering: crisp-edges;
       display: block;
     }
-
+  
     .nameLayer{
-      position:absolute;
+      position: absolute;
       inset: 0;
-      pointer-events:none;
-      overflow:hidden;
-      opacity: 1.0;
+      pointer-events: none;
+      overflow: hidden;
+      opacity: 1;
       mix-blend-mode: screen;
       filter:
         drop-shadow(0 0 10px rgba(123,247,255,0.35))
         drop-shadow(0 0 34px rgba(255,80,220,0.22));
     }
-
+  
     .nameText{
       position: absolute;
       left: 0;
       right: 0;
       top: 42px;
-
       width: 100%;
       padding: 0 10px;
       box-sizing: border-box;
-
       font-family: var(--font-display);
       font-size: 18px;
       line-height: 1.5;
       font-weight: 400;
       letter-spacing: 0.04em;
-
       color: rgba(245,245,255,0.68);
       text-align: center;
       text-transform: uppercase;
-
       white-space: normal;
       overflow-wrap: anywhere;
       word-break: break-word;
       overflow: hidden;
       text-overflow: clip;
-
       user-select: none;
-
       text-shadow:
-        var(--name-rgb-shift) 0 0 rgba(255,0,140,calc(var(--name-rgb-shift) > 0 ? 0.22 : 0)),
-        calc(var(--name-rgb-shift) * -1) 0 0 rgba(0,255,255,calc(var(--name-rgb-shift) > 0 ? 0.18 : 0)),
+        var(--name-rgb-shift) 0 0 rgba(255,0,140,var(--name-rgb-a1)),
+        calc(var(--name-rgb-shift) * -1) 0 0 rgba(0,255,255,var(--name-rgb-a2)),
         0 0 10px rgba(180,180,255,var(--name-glow-a)),
         0 0 22px rgba(255,80,220,var(--name-glow-b));
-
       image-rendering: pixelated;
       transform: translateX(0);
       opacity: 1;
       transition: transform 260ms steps(6, end), opacity 180ms linear;
     }
-
+  
     .nameText.enterFromRight{ transform: translateX(110%); opacity: 0; }
     .nameText.enterToCenter{ transform: translateX(0); opacity: 1; }
     .nameText.exitToLeft{ transform: translateX(-120%); opacity: 0; }
-
+  
     .overlay{
-      position:absolute;
+      position: absolute;
       inset: 0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background:
         linear-gradient(rgba(0,0,0,0.70), rgba(0,0,0,0.70)),
         repeating-linear-gradient(
@@ -195,15 +186,17 @@
           transparent 4px
         );
       opacity: 0;
-      pointer-events:none;
+      pointer-events: none;
       transition: opacity 120ms linear;
     }
+  
     .overlay.show{
       opacity: 1;
-      pointer-events:auto;
+      pointer-events: auto;
     }
+  
     .overlay .msg{
-      padding: 18px 18px;
+      padding: 18px;
       border-radius: var(--ui-radius);
       background: var(--ui-panel-bg);
       border: 2px solid var(--ui-border);
@@ -211,9 +204,10 @@
         0 0 0 2px rgba(0,0,0,0.85) inset,
         0 18px 60px rgba(0,0,0,0.55),
         0 0 18px rgba(120,180,255,0.08);
-      text-align:center;
+      text-align: center;
       max-width: min(560px, calc(100vw - 24px));
     }
+  
     .overlay .msg .big{
       font-family: var(--font-display);
       font-size: 18px;
@@ -224,27 +218,29 @@
       text-transform: uppercase;
       color: rgba(245,245,255,0.94);
       text-shadow:
-        var(--display-rgb-shift) 0 0 rgba(255,0,140,calc(var(--display-rgb-shift) > 0 ? 0.22 : 0)),
-        calc(var(--display-rgb-shift) * -1) 0 0 rgba(0,255,255,calc(var(--display-rgb-shift) > 0 ? 0.18 : 0)),
+        var(--display-rgb-shift) 0 0 rgba(255,0,140,var(--display-rgb-a1)),
+        calc(var(--display-rgb-shift) * -1) 0 0 rgba(0,255,255,var(--display-rgb-a2)),
         0 0 10px rgba(123,247,255,var(--display-glow-a)),
         0 0 24px rgba(255,80,220,var(--display-glow-b));
     }
+  
     .overlay .msg .small{
       font-family: var(--font-body);
       font-size: 12px;
       line-height: 1.45;
       color: var(--muted);
     }
-    
+  
     .controlsBlock{
       margin-top: 12px;
-      text-align:left;
+      text-align: left;
       padding: 12px 14px;
       border-radius: var(--ui-radius);
       background: rgba(255,255,255,0.05);
       border: 2px solid rgba(255,255,255,0.10);
       box-shadow: 0 0 0 2px rgba(0,0,0,0.55) inset;
     }
+  
     .controlsHeader{
       font-family: var(--font-display);
       font-size: 10px;
@@ -254,27 +250,28 @@
       text-transform: uppercase;
       color: rgba(245,245,255,0.92);
     }
+  
     .controlsText{
       font-family: var(--font-body);
       font-size: 12px;
       color: var(--muted);
       line-height: 1.45;
     }
+  
     .overlayBtns{
-      display:flex;
+      display: flex;
       gap: 10px;
       margin-top: 12px;
-      justify-content:center;
+      justify-content: center;
       flex-wrap: wrap;
     }
-
-        button{
+  
+    button{
       border: 2px solid rgba(255,255,255,0.18);
       border-radius: var(--ui-radius);
       padding: 12px 14px;
       color: rgba(245,245,255,0.96);
-      background:
-        linear-gradient(to bottom, rgba(80,90,130,0.95), rgba(36,40,68,0.98));
+      background: linear-gradient(to bottom, rgba(80,90,130,0.95), rgba(36,40,68,0.98));
       box-shadow:
         0 0 0 2px rgba(0,0,0,0.75) inset,
         0 6px 0 rgba(0,0,0,0.45),
@@ -287,13 +284,15 @@
       cursor: pointer;
       image-rendering: pixelated;
       text-shadow:
-        var(--display-rgb-shift) 0 0 rgba(255,0,140,calc(var(--display-rgb-shift) > 0 ? 0.18 : 0)),
-        calc(var(--display-rgb-shift) * -1) 0 0 rgba(0,255,255,calc(var(--display-rgb-shift) > 0 ? 0.14 : 0)),
+        var(--display-rgb-shift) 0 0 rgba(255,0,140,var(--display-rgb-a3)),
+        calc(var(--display-rgb-shift) * -1) 0 0 rgba(0,255,255,var(--display-rgb-a4)),
         0 0 10px rgba(123,247,255,var(--display-glow-a));
     }
+  
     button:hover{
       filter: brightness(1.06);
     }
+  
     button:active{
       transform: translateY(3px);
       box-shadow:
@@ -301,32 +300,45 @@
         0 2px 0 rgba(0,0,0,0.45),
         0 6px 14px rgba(0,0,0,0.28);
     }
+  
     button.secondary{
-      background:
-        linear-gradient(to bottom, rgba(44,44,58,0.95), rgba(24,24,34,0.98));
+      background: linear-gradient(to bottom, rgba(44,44,58,0.95), rgba(24,24,34,0.98));
       color: var(--text);
       border: 2px solid rgba(255,255,255,0.14);
     }
-
-    /* Bottom bar pinned inside grid (no overflow) */
+  
     .bottomBar{
-      width: 100%;
+      width: min(100vw, calc(var(--natural-board-w) * 2));
       height: var(--bottom-bar-h);
       padding: 8px 10px calc(10px + env(safe-area-inset-bottom)) 10px;
       box-sizing: border-box;
-
       display: grid;
-      grid-template-columns: 110px 1fr;
+      grid-template-columns: 1fr auto 1fr;
       gap: 10px;
       align-items: center;
-
+      justify-self: center;
       background: rgba(0,0,0,0.30);
       border-top: 1px solid rgba(255,255,255,0.10);
       backdrop-filter: blur(10px);
-
-      overflow: hidden; /* guarantees it cannot be cut off by internal overflow */
+      overflow: hidden;
     }
-
+  
+    .bottomLeft{
+      display: flex;
+      justify-content: flex-start;
+    }
+  
+    .bottomCenter{
+      display: flex;
+      justify-content: center;
+    }
+  
+    .bottomRight{
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+  
     .nextMiniShell{
       width: 110px;
       height: 74px;
@@ -336,31 +348,51 @@
       overflow: hidden;
       position: relative;
     }
+  
     #nextCanvas{
       width: 110px;
       height: 74px;
       display: block;
       image-rendering: pixelated;
     }
-
+  
     .statsMini{
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       align-items: center;
     }
-    .statPill{
+  
+    .pauseBtn{
+      width: 62px;
+      height: 62px;
       border-radius: var(--ui-radius);
-      padding: 8px 8px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1;
+      user-select: none;
+    }
+  
+    .statPill{
+      width: 118px;
+      min-height: 58px;
+      padding: 8px;
+      border-radius: var(--ui-radius);
       background: rgba(255,255,255,0.06);
       border: 2px solid rgba(255,255,255,0.10);
       box-shadow: 0 0 0 2px rgba(0,0,0,0.55) inset;
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 10px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
       min-width: 0;
     }
+  
     .statPill .k{
       font-family: var(--font-display);
       font-size: 8px;
@@ -370,9 +402,10 @@
       text-transform: uppercase;
       text-align: center;
     }
+  
     .statPill .v{
       font-family: var(--font-numbers);
-      font-size: 14px;
+      font-size: 12px;
       line-height: 1.4;
       font-weight: 400;
       letter-spacing: 0.04em;
@@ -380,12 +413,11 @@
       text-align: center;
       color: rgba(245,245,255,0.96);
       text-shadow:
-        var(--display-rgb-shift) 0 0 rgba(255,0,140,calc(var(--display-rgb-shift) > 0 ? 0.14 : 0)),
-        calc(var(--display-rgb-shift) * -1) 0 0 rgba(0,255,255,calc(var(--display-rgb-shift) > 0 ? 0.10 : 0)),
+        var(--display-rgb-shift) 0 0 rgba(255,0,140,var(--display-rgb-a4)),
+        calc(var(--display-rgb-shift) * -1) 0 0 rgba(0,255,255,0.10),
         0 0 8px rgba(123,247,255,var(--display-glow-a));
     }
-
-    /* Debug panel overlays board area; not part of layout */
+  
     .debugPanel{
       position: absolute;
       left: 8px;
@@ -400,120 +432,68 @@
       pointer-events: none;
       display: none;
     }
+  
     .debugPanel .k{
       color: rgba(245,245,255,0.70);
-      display:inline-block;
+      display: inline-block;
       width: 140px;
     }
+  
     .debugPanel .v{
       color: rgba(245,245,255,0.95);
       font-weight: 900;
     }
-    .bottomBar{
-      display: grid;
-      grid-template-columns: 1fr auto 1fr; /* left / pause / right */
-      gap: 10px;
-      align-items: center;
-      width: min(100vw, calc(var(--natural-board-w) * 2));
-      justify-self: center;
-    }
-
-    .bottomLeft{ display:flex; justify-content:flex-start; }
-    .bottomCenter{ display:flex; justify-content:center; }
-    .bottomRight{
-      display:flex;
-      justify-content:flex-end;
-      gap: 10px;
-    }
-
-    .pauseBtn{
-      width: 62px;
-      height: 62px;
-      border-radius: var(--ui-radius);
-      padding: 0;
-      display:grid;
-      place-items:center;
-      font-family: var(--font-display);
-      font-weight: 400;
-      font-size: 14px;
-      line-height: 1;
-      user-select: none;
-    }
-
-    .statPill{
-      width: 118px;
-      min-height: 58px;
-      padding: 8px 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .statPill .k{ font-size: 8px; }
-    .statPill .v{ font-size: 12px; }
-
-    /* Board-edge glow feedback for tap zones */
+  
     #boardShell.glow-left{
       box-shadow:
         0 18px 60px rgba(0,0,0,0.55),
         0 0 0 2px var(--boardEdge),
         0 0 0 1px var(--boardEdgeInner) inset,
-
-        -6px 0 18px rgba(255, 220, 90, 0.12),
-        6px 0 18px rgba( 90, 200,255, 0.12),
-        0 -6px 18px rgba(110, 255,140, 0.10),
-        0  6px 18px rgba(255,  90, 90, 0.10),
-
-        /* BOOST */
-        -10px 0 30px rgba(255, 220, 90, 0.45),
-        -3px 0 0 rgba(255, 220, 90, 0.90) inset;
+        -6px 0 18px rgba(255,220,90,0.12),
+        6px 0 18px rgba(90,200,255,0.12),
+        0 -6px 18px rgba(110,255,140,0.10),
+        0 6px 18px rgba(255,90,90,0.10),
+        -10px 0 30px rgba(255,220,90,0.45),
+        -3px 0 0 rgba(255,220,90,0.90) inset;
     }
+  
     #boardShell.glow-right{
       box-shadow:
         0 18px 60px rgba(0,0,0,0.55),
         0 0 0 2px var(--boardEdge),
         0 0 0 1px var(--boardEdgeInner) inset,
-
-        -6px 0 18px rgba(255, 220, 90, 0.12),
-        6px 0 18px rgba( 90, 200,255, 0.12),
-        0 -6px 18px rgba(110, 255,140, 0.10),
-        0  6px 18px rgba(255,  90, 90, 0.10),
-
-        /* BOOST */
-        10px 0 30px rgba( 90, 200,255, 0.45),
-        3px 0 0 rgba( 90, 200,255, 0.90) inset;
+        -6px 0 18px rgba(255,220,90,0.12),
+        6px 0 18px rgba(90,200,255,0.12),
+        0 -6px 18px rgba(110,255,140,0.10),
+        0 6px 18px rgba(255,90,90,0.10),
+        10px 0 30px rgba(90,200,255,0.45),
+        3px 0 0 rgba(90,200,255,0.90) inset;
     }
+  
     #boardShell.glow-top{
       box-shadow:
         0 18px 60px rgba(0,0,0,0.55),
         0 0 0 2px var(--boardEdge),
         0 0 0 1px var(--boardEdgeInner) inset,
-
-        -6px 0 18px rgba(255, 220, 90, 0.12),
-        6px 0 18px rgba( 90, 200,255, 0.12),
-        0 -6px 18px rgba(110, 255,140, 0.10),
-        0  6px 18px rgba(255,  90, 90, 0.10),
-
-        /* BOOST */
-        0 -10px 30px rgba(110, 255,140, 0.40),
-        0 3px 0 rgba(110, 255,140, 0.90) inset;
+        -6px 0 18px rgba(255,220,90,0.12),
+        6px 0 18px rgba(90,200,255,0.12),
+        0 -6px 18px rgba(110,255,140,0.10),
+        0 6px 18px rgba(255,90,90,0.10),
+        0 -10px 30px rgba(110,255,140,0.40),
+        0 3px 0 rgba(110,255,140,0.90) inset;
     }
+  
     #boardShell.glow-bottom{
       box-shadow:
         0 18px 60px rgba(0,0,0,0.55),
         0 0 0 2px var(--boardEdge),
         0 0 0 1px var(--boardEdgeInner) inset,
-
-        -6px 0 18px rgba(255, 220, 90, 0.12),
-        6px 0 18px rgba( 90, 200,255, 0.12),
-        0 -6px 18px rgba(110, 255,140, 0.10),
-        0  6px 18px rgba(255,  90, 90, 0.10),
-
-        /* BOOST */
-        0 10px 30px rgba(255,  90, 90, 0.40),
-        0 -3px 0 rgba(255,  90, 90, 0.90) inset;
+        -6px 0 18px rgba(255,220,90,0.12),
+        6px 0 18px rgba(90,200,255,0.12),
+        0 -6px 18px rgba(110,255,140,0.10),
+        0 6px 18px rgba(255,90,90,0.10),
+        0 10px 30px rgba(255,90,90,0.40),
+        0 -3px 0 rgba(255,90,90,0.90) inset;
     }
   </style>
 </head>
