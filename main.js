@@ -48,10 +48,10 @@ const CONFIG = {
 
     pieceMix: {
       // Baseline level weights (0–5). Keep 4/5 at 0: they’re injected via the “hard” scheduler below.
-      baseLevelWeight:    { 0: 0.18, 1: 0.52, 2: 0.22, 3: 0.08, 4: 0.00, 5: 0.00 },
+      baseLevelWeight:    { 0: 0.1, 1: 0.45, 2: 0.33, 3: 0.1, 4: 0.00, 5: 0.00 },
 
       // Opening blend (first N drops), then fades into baseLevelWeight.
-      openingDrops: 7,
+      openingDrops: 10,
       openingLevelWeight: { 0: 0.00, 1: 0.42, 2: 0.38, 3: 0.20, 4: 0.00, 5: 0.00 },
 
       // Soft danger bias: blends level weights towards dangerTargetMix as danger rises.
@@ -76,7 +76,7 @@ const CONFIG = {
         softWindowEnd: 25,
 
         // Urge accumulator (shared for 4+5). When a 4 or 5 drops: urge -> 0 and cooldown starts.
-        rechargePerDrop: 0.005,
+        rechargePerDrop: 0.01,
         maxUrge: 0.95,
         cooldownDrops: 9,
 
