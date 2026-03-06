@@ -101,11 +101,18 @@ const CONFIG = {
   fx: {
     quake: {
       enabled: true,
+
+      // Visual behaviour of the shake itself
       maxOffsetPx: 8,
       traumaDecayPerSecond: 2.8,
       rotationalDegrees: 0.8,
-    },
 
+      // NEW: scaling of triggered shake intensity
+      minTrauma: 0.10,        // smallest visible shake if triggered at all
+      maxTrauma: 0.38,        // largest allowed shake from any single trigger
+      blocksForMax: 28,       // how many blocks correspond to maxTrauma
+      blockScalePower: 0.85,  // <1 = ramps up faster early, >1 = slower early
+    },
     lineClear: {
       enabled: true,
       particleSizePx: 3,
@@ -717,6 +724,13 @@ function createGameState(shapes) {
     tapRepeatTimer: null,
     tapRepeatInterval: null,
 
+    // NEW
+    lastLockedShape: null,
+    gameOverInfo: {
+      pieceName: "",
+      shape: null,
+    },
+
     fx: {
       particles: [],
       rowFall: {
@@ -1122,18 +1136,21 @@ function lockPiece(state) {
     }
   }
 
+  state.lastLockedShape = shape;
+
   if ((shape.difficulty ?? 0) >= (CONFIG.fx.largePieceLock.minDifficulty ?? 5)) {
-    addQuake(state, lockedCellCount * (CONFIG.fx.largePieceLock.quakePerCell ?? 0.03));
+    addQuakeFromBlocks(state, lockedCellCount);
   }
 
   if (lockedAboveTop) {
     state.gameOver = true;
     state.running = false;
+    state.gameOverInfo.pieceName = shape.name;
+    state.gameOverInfo.shape = shape;
     state.fx.gameOverBackdrop.snapshotCanvas = makeBoardSnapshotCanvas(state);
     state.fx.gameOverBackdrop.elapsedMs = 0;
   }
 }
-
 function clearFullLines(state) {
   const rows = CONFIG.board.rows;
   const cols = CONFIG.board.cols;
@@ -1179,7 +1196,7 @@ function clearFullLines(state) {
     recomputeSpeed(state);
   }
 
-  addQuake(state, cleared * (CONFIG.fx.lineClear.quakePerClearedLine ?? 0.16));
+  addQuakeFromBlocks(state, cleared * CONFIG.board.cols);
 
   return cleared;
 }
@@ -1191,9 +1208,20 @@ function recomputeSpeed(state) {
 
 /// FX HELPERS
 
-function addQuake(state, amount) {
-  if (!CONFIG.fx.quake.enabled) return;
-  state.fx.quake.trauma = clamp01((state.fx.quake.trauma ?? 0) + amount);
+function addQuakeFromBlocks(state, blockCount) {
+  const cfg = CONFIG.fx.quake;
+  if (!cfg.enabled) return;
+
+  const n = Math.max(0, Number(blockCount) || 0);
+  if (n <= 0) return;
+
+  const t = clamp01(n / Math.max(1, cfg.blocksForMax ?? 28));
+  const scaled = Math.pow(t, cfg.blockScalePower ?? 0.85);
+  const trauma = lerp(cfg.minTrauma ?? 0.10, cfg.maxTrauma ?? 0.38, scaled);
+
+  // Use the stronger of the current quake and the new trigger,
+  // rather than stacking to disruptive levels.
+  state.fx.quake.trauma = Math.max(state.fx.quake.trauma ?? 0, trauma);
 }
 
 function makeBoardSnapshotCanvas(state) {
@@ -1534,6 +1562,8 @@ function createRenderer(boardCanvas, nextCanvas) {
 
     if (state.gameOver) {
       drawGameOverBackdrop(state);
+      drawScreenFX(bctx, bw, bh);
+      return;
     }
 
     bctx.save();
@@ -1810,7 +1840,20 @@ function createRenderer(boardCanvas, nextCanvas) {
 function createNameLayer(nameLayerEl) {
   let currentEl = null;
 
+  function clear() {
+    if (currentEl) {
+      currentEl.remove();
+      currentEl = null;
+    }
+    nameLayerEl.innerHTML = "";
+  }
+
   function setName(name) {
+    if (!name) {
+      clear();
+      return;
+    }
+
     const nextEl = document.createElement("div");
     nextEl.className = "nameText enterFromRight";
     nextEl.textContent = name;
@@ -1829,18 +1872,16 @@ function createNameLayer(nameLayerEl) {
     currentEl = nextEl;
   }
 
-  return { setName };
+  return { setName, clear };
 }
 
 // ============================================================
 // UI + INPUT (soft drop)
 // ============================================================
 function bindUI(state, renderer, nameLayer) {
-  // HUD
   const scoreText = document.getElementById("scoreText");
   const linesText = document.getElementById("linesText");
 
-  // Overlay + overlay buttons
   const overlay = document.getElementById("overlay");
   const overlayTitle = document.getElementById("overlayTitle");
   const overlaySubtitle = document.getElementById("overlaySubtitle");
@@ -1848,29 +1889,106 @@ function bindUI(state, renderer, nameLayer) {
   const overlayResumeBtn = document.getElementById("overlayResumeBtn");
   const overlayNewBtn = document.getElementById("overlayNewBtn");
 
-  // Pause button (bottom bar)
   const pauseBtn = document.getElementById("pauseBtn");
 
-  // Debug panel
   const debugPanel = document.getElementById("debugPanel");
   const dbgZone = document.getElementById("dbgZone");
   const dbgPieceDiff = document.getElementById("dbgPieceDiff");
   const dbgBaseSpeed = document.getElementById("dbgBaseSpeed");
 
   const boardShellEl = document.getElementById("boardShell");
-  const targetEl = document.body; // IMPORTANT: controls work even off-board
+  const targetEl = document.body;
+
+  // NEW: dynamic game-over piece preview container
+  const overlayPieceWrap = document.createElement("div");
+  overlayPieceWrap.style.marginTop = "16px";
+  overlayPieceWrap.style.display = "flex";
+  overlayPieceWrap.style.justifyContent = "center";
+  overlayPieceWrap.style.alignItems = "center";
+  overlaySubtitle.insertAdjacentElement("afterend", overlayPieceWrap);
+
+  function getShapePaintForPreview(shape, rotIdx, bx, by) {
+    if (!shape.colorRotations) {
+      return shape.style?.baseColor ?? "#FFFFFF";
+    }
+
+    const k = shape.pixelK ?? 1;
+    const grid = shape.colorRotations[rotIdx];
+
+    if (k === 1) return grid[by][bx];
+
+    return {
+      k,
+      pixels: sliceBlockPixels(grid, k, bx, by),
+    };
+  }
+
+  function makeShapePreviewCanvas(shape) {
+    if (!shape) return null;
+
+    const mat = shape.rotations[0];
+    const cell = 18;
+    const pad = 6;
+    const w = mat[0].length * cell + pad * 2;
+    const h = mat.length * cell + pad * 2;
+
+    const cvs = document.createElement("canvas");
+    cvs.width = w;
+    cvs.height = h;
+    cvs.style.width = `${w}px`;
+    cvs.style.height = `${h}px`;
+    cvs.style.imageRendering = "pixelated";
+
+    const ctx = cvs.getContext("2d");
+    ctx.clearRect(0, 0, w, h);
+
+    for (let y = 0; y < mat.length; y++) {
+      for (let x = 0; x < mat[0].length; x++) {
+        if (!mat[y][x]) continue;
+        const paint = getShapePaintForPreview(shape, 0, x, y);
+        drawBlockWithPaintStatic(ctx, pad + x * cell, pad + y * cell, cell, paint, shape.style ?? {});
+      }
+    }
+
+    return cvs;
+  }
+
+  function setOverlayPiece(shape) {
+    overlayPieceWrap.innerHTML = "";
+    if (!shape) return;
+
+    const cvs = makeShapePreviewCanvas(shape);
+    if (cvs) overlayPieceWrap.appendChild(cvs);
+  }
 
   function showOverlay(show, title, subtitle, mode) {
     overlay.classList.toggle("show", show);
     if (!show) return;
 
-    overlayTitle.textContent = title ?? "Contortris";
-    overlaySubtitle.textContent = subtitle ?? "";
-
     const m = mode ?? "start";
+
     overlayPlayBtn.style.display = (m === "start") ? "inline-block" : "none";
     overlayResumeBtn.style.display = (m === "pause") ? "inline-block" : "none";
     overlayNewBtn.style.display = (m === "pause" || m === "gameover") ? "inline-block" : "none";
+
+    if (m === "gameover") {
+      const killerShape = state.gameOverInfo.shape;
+      const killerName = state.gameOverInfo.pieceName || "Unknown";
+      const blocksDestroyed = state.lines * CONFIG.board.cols;
+
+      overlayTitle.textContent = "GAME OVER";
+      overlaySubtitle.innerHTML =
+        `Final score: ${state.score}<br>` +
+        `Blocks destroyed: ${blocksDestroyed}<br>` +
+        `The piece that killed you: ${killerName}`;
+
+      setOverlayPiece(killerShape);
+      return;
+    }
+
+    overlayTitle.textContent = title ?? "Contortris";
+    overlaySubtitle.innerHTML = subtitle ?? "";
+    setOverlayPiece(null);
   }
 
   function updateHUD() {
@@ -1919,18 +2037,15 @@ function bindUI(state, renderer, nameLayer) {
     else pauseGame();
   }
 
-  // Overlay buttons
   overlayPlayBtn.addEventListener("click", () => startGame());
   overlayResumeBtn.addEventListener("click", () => resumeGame());
   overlayNewBtn.addEventListener("click", () => resetGame(state, renderer, nameLayer, updateHUD, showOverlay));
 
-  // Pause button (always ▶)
   pauseBtn.addEventListener("click", (e) => {
     e.preventDefault();
     togglePause();
   });
 
-  // Debug toggle
   window.addEventListener("keydown", (e) => {
     if (e.code === "KeyD") {
       state.debug = !state.debug;
@@ -1945,7 +2060,6 @@ function bindUI(state, renderer, nameLayer) {
     }
   });
 
-  // Keyboard gameplay (optional)
   window.addEventListener("keydown", (e) => {
     if (!state.running && e.code !== "Enter") return;
     if (state.gameOver || state.paused) return;
@@ -1980,14 +2094,10 @@ function bindUI(state, renderer, nameLayer) {
     if (e.code === "ArrowDown") state.softDropping = false;
   });
 
-  // ----- Tap zones -----
-  // Zones are based on viewport:
-  // top 22% rotate, bottom 28% step down, left 25% move left, right 25% move right.
-  const Z = { top: 0.22, bottom: 0.28, side: 0.25 };
-
   function clearGlows() {
     boardShellEl.classList.remove("glow-left", "glow-right", "glow-top", "glow-bottom");
   }
+
   function applyGlow(zone) {
     clearGlows();
     if (zone === "left") boardShellEl.classList.add("glow-left");
@@ -1997,33 +2107,17 @@ function bindUI(state, renderer, nameLayer) {
   }
 
   function getZone(x, y) {
-    // Zones are defined relative to the board rectangle (not the viewport).
-    // Anything outside the board inherits the closest edge’s zone:
-    // - far left of board => left
-    // - far right => right
-    // - above => top
-    // - below => bottom
-    //
-    // If inside the board:
-    // - top band rotates
-    // - bottom band steps down
-    // - else left/right halves move left/right
     const r = boardShellEl.getBoundingClientRect();
-  
+
     const relX = x - r.left;
     const relY = y - r.top;
-  
-    // Outside board: choose by closest direction first (strong intent).
+
     if (relX < 0) return "left";
     if (relX > r.width) return "right";
     if (relY < 0) return "top";
     if (relY > r.height) return "bottom";
-  
-    // Inside board: define bands by board-space fractions
-    const topBand = r.height * 0.22;
 
-    // Bottom zone should be CENTERED and narrower to avoid accidental smashes.
-    // Example: bottom 28% of height, but only middle 50% of width.
+    const topBand = r.height * 0.22;
     const bottomBand = r.height * 0.28;
     const bottomCenterWidthFrac = 0.50;
 
@@ -2034,13 +2128,12 @@ function bindUI(state, renderer, nameLayer) {
       const rightBound = r.width * (0.5 + bottomCenterWidthFrac / 2);
 
       if (relX >= leftBound && relX <= rightBound) return "bottom";
-      // Bottom corners behave as left/right instead.
       return (relX < r.width * 0.5) ? "left" : "right";
     }
 
-    // Middle region: left/right halves
     return (relX <= r.width * 0.5) ? "left" : "right";
   }
+
   function canAct() {
     return state.running && !state.gameOver && !state.paused && state.active;
   }
@@ -2072,21 +2165,15 @@ function bindUI(state, renderer, nameLayer) {
     }, CONFIG.timing.tapRepeatStartMs);
   }
 
-  // Pointer events: reliable tap/hold everywhere
   targetEl.addEventListener("pointerdown", (e) => {
-    // only primary contact
     if (!e.isPrimary) return;
-
-    // stop browser gestures
     e.preventDefault();
 
-    // Start game if not running
     if (!state.running && !state.gameOver) {
       startGame();
       return;
     }
 
-    // Ignore taps while overlay is up (paused etc.)
     if (state.paused) return;
 
     const zone = getZone(e.clientX, e.clientY);
@@ -2112,7 +2199,6 @@ function bindUI(state, renderer, nameLayer) {
     clearGlows();
   });
 
-  // Initial overlay
   showOverlay(true, "EXTRIS", "", "start");
   updateHUD();
 
@@ -2133,6 +2219,10 @@ function resetGame(state, renderer, nameLayer, updateHUD, showOverlay) {
   state.dropAccum = 0;
   state.softDropping = false;
 
+  state.lastLockedShape = null;
+  state.gameOverInfo.pieceName = "";
+  state.gameOverInfo.shape = null;
+
   state.fx.particles = [];
   state.fx.rowFall.active = false;
   state.fx.rowFall.elapsedMs = 0;
@@ -2140,11 +2230,12 @@ function resetGame(state, renderer, nameLayer, updateHUD, showOverlay) {
   state.fx.quake.trauma = 0;
   state.fx.quake.x = 0;
   state.fx.quake.y = 0;
-  state.fx.quake.rot = 0;
   state.fx.gameOverBackdrop.snapshotCanvas = null;
   state.fx.gameOverBackdrop.elapsedMs = 0;
   state.fx.gameOverBackdrop.offsetX = 0;
   state.fx.gameOverBackdrop.offsetY = 0;
+
+  nameLayer.clear();
 
   const ok = spawnPiece(state);
   if (!ok) state.gameOver = true;
@@ -2161,22 +2252,33 @@ function resetGame(state, renderer, nameLayer, updateHUD, showOverlay) {
 
 function stepLockAndSpawn(state, renderer, nameLayer, updateHUD, showOverlay) {
   lockPiece(state);
+
   if (state.gameOver) {
-    showOverlay(true, "Game over", "Reset to try again");
+    nameLayer.clear();
+    showOverlay(true, "", "", "gameover");
     updateHUD();
     return;
   }
+
   clearFullLines(state);
 
   const ok = spawnPiece(state);
   if (!ok) {
     state.gameOver = true;
     state.running = false;
-    showOverlay(true, "Game over", "Reset to try again");
+
+    state.gameOverInfo.pieceName = state.lastLockedShape?.name ?? "";
+    state.gameOverInfo.shape = state.lastLockedShape ?? null;
+    state.fx.gameOverBackdrop.snapshotCanvas = makeBoardSnapshotCanvas(state);
+    state.fx.gameOverBackdrop.elapsedMs = 0;
+
+    nameLayer.clear();
+    showOverlay(true, "", "", "gameover");
   } else {
     nameLayer.setName(state.active.shape.name);
     renderer.drawNextSilhouette(state.next);
   }
+
   updateHUD();
 }
 
