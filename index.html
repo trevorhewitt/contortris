@@ -427,14 +427,15 @@
     }
 
     .pauseBtn{
-      width: 54px;
-      height: 54px;
-      border-radius: 14px;
+      width: 62px;
+      height: 62px;
+      border-radius: var(--ui-radius);
       padding: 0;
       display:grid;
       place-items:center;
-      font-weight: 950;
-      font-size: 20px;
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 14px;
       line-height: 1;
       user-select: none;
     }
@@ -526,11 +527,11 @@
 
         <div id="overlay" class="overlay show">
           <div class="msg">
-            <div class="big" id="overlayTitle">Extris</div>
-            <div class="small" id="overlaySubtitle">Press Play.</div>
+            <div class="big" id="overlayTitle">Loading…</div>
+            <div class="small" id="overlaySubtitle"></div>
 
-            <div class="controlsBlock" id="controlsBlock">
-              <div class="controlsHeader"> </div>
+            <div class="controlsBlock" id="controlsBlock" style="display:none;">
+              <div class="controlsHeader">Controls</div>
               <div class="controlsText">
                 Swipe or tap left to move left. <br>
                 Swipe or tap right to move right. <br>
@@ -540,7 +541,7 @@
               </div>
             </div>
 
-            <div class="overlayBtns">
+            <div class="overlayBtns" id="overlayBtns" style="display:none;">
               <button id="overlayPlayBtn">Play</button>
               <button id="overlayResumeBtn" class="secondary">Resume</button>
               <button id="overlayNewBtn" class="secondary">New game</button>
@@ -573,7 +574,7 @@
           <div class="v" id="scoreText">0</div>
         </div>
         <div class="statPill">
-          <div class="k">Lines</div>
+          <div class="k">Blocks destroyed</div>
           <div class="v" id="linesText">0</div>
         </div>
       </div>
@@ -588,8 +589,8 @@
       const boardCanvas = document.getElementById("boardCanvas");
       const bottomBar = document.querySelector(".bottomBar");
 
-      const NAT_W = 10 * 24; // must match --cols * --cell
-      const NAT_H = 20 * 24; // must match --rows * --cell
+      const NAT_W = 14 * 18; // must match --cols * --cell
+      const NAT_H = 28 * 18; // must match --rows * --cell
 
       function viewportSize(){
         if (window.visualViewport) {

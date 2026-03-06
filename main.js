@@ -1962,38 +1962,66 @@ function bindUI(state, renderer, nameLayer) {
   }
 
   function showOverlay(show, title, subtitle, mode) {
+    const controlsBlock = document.getElementById("controlsBlock");
+    const overlayBtns = document.getElementById("overlayBtns");
+
     overlay.classList.toggle("show", show);
     if (!show) return;
 
     const m = mode ?? "start";
 
-    overlayPlayBtn.style.display = (m === "start") ? "inline-block" : "none";
-    overlayResumeBtn.style.display = (m === "pause") ? "inline-block" : "none";
-    overlayNewBtn.style.display = (m === "pause" || m === "gameover") ? "inline-block" : "none";
+    controlsBlock.style.display = "none";
+    overlayBtns.style.display = "none";
+
+    overlayPlayBtn.style.display = "none";
+    overlayResumeBtn.style.display = "none";
+    overlayNewBtn.style.display = "none";
+
+    if (m === "loading") {
+      overlayTitle.textContent = title ?? "Loading…";
+      overlaySubtitle.innerHTML = subtitle ?? "";
+      setOverlayPiece(null);
+      return;
+    }
 
     if (m === "gameover") {
       const killerShape = state.gameOverInfo.shape;
       const killerName = state.gameOverInfo.pieceName || "Unknown";
       const blocksDestroyed = state.lines * CONFIG.board.cols;
 
-      overlayTitle.textContent = "GAME OVER";
+      overlayTitle.textContent = "Game Over";
       overlaySubtitle.innerHTML =
         `Final score: ${state.score}<br>` +
         `Blocks destroyed: ${blocksDestroyed}<br>` +
         `The piece that killed you: ${killerName}`;
 
+      overlayBtns.style.display = "flex";
+      overlayNewBtn.style.display = "inline-block";
       setOverlayPiece(killerShape);
       return;
     }
 
-    overlayTitle.textContent = title ?? "Contortris";
-    overlaySubtitle.innerHTML = subtitle ?? "";
+    if (m === "pause") {
+      overlayTitle.textContent = title ?? "Paused";
+      overlaySubtitle.innerHTML = subtitle ?? "";
+      overlayBtns.style.display = "flex";
+      overlayResumeBtn.style.display = "inline-block";
+      overlayNewBtn.style.display = "inline-block";
+      setOverlayPiece(null);
+      return;
+    }
+
+    overlayTitle.textContent = title ?? "Extris";
+    overlaySubtitle.innerHTML = subtitle ?? "Destroy blocks. Keep the board alive.";
+    controlsBlock.style.display = "block";
+    overlayBtns.style.display = "flex";
+    overlayPlayBtn.style.display = "inline-block";
     setOverlayPiece(null);
   }
 
   function updateHUD() {
     scoreText.textContent = String(state.score);
-    linesText.textContent = String(state.lines);
+    linesText.textContent = String(state.lines * CONFIG.board.cols);
 
     if (state.debug) {
       const z = getDifficultyZone(state);
@@ -2199,8 +2227,15 @@ function bindUI(state, renderer, nameLayer) {
     clearGlows();
   });
 
-  showOverlay(true, "EXTRIS", "", "start");
+  showOverlay(true, "Loading…", "", "loading");
   updateHUD();
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.querySelector(".app")?.classList.add("ready");
+      showOverlay(true, "Extris", "Destroy blocks. Keep the board alive.", "start");
+    });
+  });
 
   return { updateHUD, showOverlay };
 }
