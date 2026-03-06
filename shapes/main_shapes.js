@@ -1386,6 +1386,8 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.25,
+    nextShapes: ["twofish"],
+    nextShapeProbs: [1.0]
   },
   {
     id: "twofish",
@@ -1400,6 +1402,8 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    nextShapes: ["redfish"],
+    nextShapeProbs: [1.0]
   },
   {
     id: "redfish",
@@ -1414,6 +1418,8 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    nextShapes: ["bluefish", "bluefishbig"],
+    nextShapeProbs: [0.5, 0.5]
   },
   {
     id: "bluefish",
