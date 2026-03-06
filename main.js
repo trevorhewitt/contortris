@@ -42,13 +42,15 @@ const CONFIG = {
   },
 
   assist: {
+    openingNoLevel0UntilDrop: 17,
+
     // “Danger” bands (rows-from-top). Higher = assistance kicks in earlier.
     topRowsForDiff2Only: 22,
     topRowsForDiff1Only: 12,
 
     pieceMix: {
       // Baseline level weights (0–5). Keep 4/5 at 0: they’re injected via the “hard” scheduler below.
-      baseLevelWeight:    { 0: 0.1, 1: 0.45, 2: 0.33, 3: 0.1, 4: 0.00, 5: 0.00 },
+      baseLevelWeight:    { 0: 0.1, 1: 0.5, 2: 0.3, 3: 0.08, 4: 0.00, 5: 0.00 },
 
       // Opening blend (first N drops), then fades into baseLevelWeight.
       openingDrops: 10,
@@ -76,7 +78,7 @@ const CONFIG = {
         softWindowEnd: 25,
 
         // Urge accumulator (shared for 4+5). When a 4 or 5 drops: urge -> 0 and cooldown starts.
-        rechargePerDrop: 0.01,
+        rechargePerDrop: 0.0075,
         maxUrge: 0.95,
         cooldownDrops: 9,
 
@@ -108,9 +110,9 @@ const CONFIG = {
       rotationalDegrees: 0.8,
 
       // NEW: scaling of triggered shake intensity
-      minTrauma: 0.10,        // smallest visible shake if triggered at all
-      maxTrauma: 0.38,        // largest allowed shake from any single trigger
-      blocksForMax: 28,       // how many blocks correspond to maxTrauma
+      minTrauma: 0.025,        // smallest visible shake if triggered at all
+      maxTrauma: 0.5,        // largest allowed shake from any single trigger
+      blocksForMax: 100,       // how many blocks correspond to maxTrauma
       blockScalePower: 0.85,  // <1 = ramps up faster early, >1 = slower early
     },
     lineClear: {
@@ -789,7 +791,7 @@ function selectPiece(state) {
   // Cooldowns tick down.
   if (sel.cooldown.hard > 0) sel.cooldown.hard -= 1;
 
-  const DEBUG_LINK = false; 
+  const DEBUG_LINK = true; 
 
   const idToShape = buildIdToShapeMap(state.shapes);
   
@@ -893,6 +895,11 @@ function selectPiece(state) {
 
   // Softly suppress level 3 in danger to prevent “still awkward at the top”.
   levelW[3] *= (1 - 0.65 * danger);
+
+  // Hard-ban level 0 for the first few drops.
+  if (sel.dropIndex <= (mixCfg.openingNoLevel0UntilDrop ?? 0)) {
+    levelW[0] = 0;
+  }
 
   levelW = normaliseWeights(levelW, LEVELS);
 
@@ -1196,7 +1203,8 @@ function clearFullLines(state) {
     recomputeSpeed(state);
   }
 
-  addQuakeFromBlocks(state, cleared * CONFIG.board.cols);
+  const fallingBlocks = countFallingBlocksAfterClear(oldBoard, fullRowsSet);
+  addQuakeFromBlocks(state, fallingBlocks);
 
   return cleared;
 }
@@ -1347,6 +1355,30 @@ function buildRowDropDistancesAfterClear(oldBoard, fullRowsSet) {
   }
 
   return distances;
+}
+
+function countFallingBlocksAfterClear(oldBoard, fullRowsSet) {
+  const rows = CONFIG.board.rows;
+  const cols = CONFIG.board.cols;
+  let fallingBlocks = 0;
+
+  for (let y = 0; y < rows; y++) {
+    if (fullRowsSet.has(y)) continue;
+
+    let clearedBelow = 0;
+    for (let yy = y + 1; yy < rows; yy++) {
+      if (fullRowsSet.has(yy)) clearedBelow++;
+    }
+
+    // This row only contributes if it actually drops.
+    if (clearedBelow <= 0) continue;
+
+    for (let x = 0; x < cols; x++) {
+      if (oldBoard[y][x] !== null) fallingBlocks++;
+    }
+  }
+
+  return fallingBlocks;
 }
 
 function updateFX(state, dt) {
