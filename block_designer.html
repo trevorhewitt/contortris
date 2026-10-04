@@ -1,0 +1,3263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Extris Block Designer</title>
+  <style>
+    :root{
+      --bg:#0b0b0b; --panel:#111; --panel2:#151515; --text:#eaeaea; --muted:#a8a8a8;
+      --line:#2a2a2a; --btn:#1b1b1b; --btn2:#232323;
+      --accent:#6aa6ff; --warn:#ffcf6a; --bad:#ff6a6a; --good:#7be0a5;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    *{ box-sizing:border-box; }
+    body{ margin:0; padding:12px 14px 40px; background:var(--bg); color:var(--text); }
+
+    /* ---------- top bar ---------- */
+    .topbar{ display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:12px; }
+    .brand{ font-size:16px; font-weight:750; letter-spacing:.3px; }
+    .brand small{ color:var(--muted); font-weight:500; margin-left:8px; font-size:12px; }
+
+    /* ---------- three-column layout ---------- */
+    .app{ display:grid; grid-template-columns: 390px minmax(0,1fr) 340px; gap:14px; align-items:start; }
+    .col{ display:flex; flex-direction:column; gap:12px; min-width:0; }
+    @media (max-width: 1350px){
+      .app{ grid-template-columns: 380px minmax(0,1fr); }
+      .col.right{ grid-column: 1 / -1; display:grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); }
+    }
+    @media (max-width: 860px){
+      .app{ grid-template-columns: 1fr; }
+    }
+
+    .card{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px; min-width:0; }
+    .card h2{ font-size:14px; margin:0 0 10px 0; color:#fff; font-weight:650; letter-spacing:.2px; display:flex; align-items:center; gap:8px; justify-content:space-between; }
+    .card h3{ font-size:13px; margin:0 0 8px 0; color:#fff; font-weight:650; }
+
+    .row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .row + .row{ margin-top:8px; }
+    label{ font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+    .field{ display:grid; grid-template-columns: 92px 1fr; gap:8px; align-items:center; margin-top:8px; }
+    .field > span{ font-size:12px; color:var(--muted); }
+    .field .grow{ display:flex; gap:8px; align-items:center; min-width:0; }
+    .field .grow > select, .field .grow > input{ flex-shrink:0; }
+
+    input[type="number"]{ width:68px; background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:8px; padding:6px 8px; }
+    input[type="text"], select{ width:100%; min-width:0; background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-size:13px; }
+    select{ width:auto; }
+    input[type="range"]{ width:150px; accent-color: var(--accent); }
+    input[type="checkbox"]{ accent-color: var(--accent); }
+    input[type="color"]{ width:40px; height:30px; padding:0; border-radius:8px; border:1px solid var(--line); background:var(--panel2); }
+    button{
+      background:var(--btn); color:var(--text); border:1px solid var(--line);
+      border-radius:10px; padding:7px 10px; cursor:pointer; font-size:12px;
+    }
+    button:hover{ background:var(--btn2); }
+    button.primary{ border-color:rgba(106,166,255,.55); }
+    button.big{ padding:9px 14px; font-size:13px; font-weight:650; }
+    button.danger{ border-color:rgba(255,106,106,.6); }
+    button.small{ padding:4px 7px; font-size:11px; border-radius:8px; }
+    button:disabled{ opacity:.45; cursor:not-allowed; }
+    button.active{ outline:2px solid rgba(106,166,255,.6); background:#1d2433; }
+    .sep{ height:1px; background:var(--line); margin:10px 0; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    .pill{
+      font-size:11px; color:var(--muted);
+      border:1px solid var(--line); border-radius:999px;
+      padding:3px 8px; background:#0f0f0f; white-space:nowrap;
+    }
+    .pill.warn{ color:var(--warn); border-color:rgba(255,207,106,.4); }
+    .pill.good{ color:var(--good); border-color:rgba(123,224,165,.35); }
+    .pill.bad{ color:var(--bad); border-color:rgba(255,106,106,.45); }
+    .pill.accent{ color:#cfe0ff; border-color:rgba(106,166,255,.45); }
+    .hint{ color:var(--muted); font-size:12px; line-height:1.4; }
+    .hidden{ display:none !important; }
+
+    /* segmented control */
+    .seg{ display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+    .seg button{ border:none; border-radius:0; padding:6px 12px; background:var(--btn); }
+    .seg button + button{ border-left:1px solid var(--line); }
+    .seg button.on{ background:#1d2a40; color:#fff; outline:none; }
+
+    /* tabs */
+    .tabs{ display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; align-items:center; }
+    .tabs button{ border-radius:10px 10px 0 0; border-bottom-color:transparent; padding:8px 14px; font-size:13px; }
+    .tabs button.on{ background:#1d2a40; color:#fff; border-color:rgba(106,166,255,.55); }
+
+    /* canvas area */
+    .canvasWrap{
+      background:#050505; border:1px solid var(--line); border-radius:12px;
+      padding:10px; overflow:auto; max-height: calc(100vh - 150px); min-height:160px;
+    }
+    .canvasStage{ position:relative; display:inline-block; border-radius:6px; background:#000; line-height:0; }
+    canvas.renderCanvas{ display:block; image-rendering: pixelated; image-rendering: crisp-edges; touch-action:none; cursor:crosshair; }
+    canvas.overlayCanvas{ position:absolute; left:0; top:0; pointer-events:none; }
+    canvas.pixel{ image-rendering: pixelated; image-rendering: crisp-edges; }
+    .modeBanner{ margin:8px 0 0; font-size:12px; color:var(--warn); }
+
+    /* layers */
+    .layerList{ display:flex; flex-direction:column; gap:6px; }
+    .layer{
+      background:var(--panel2); border:1px solid var(--line); border-radius:10px;
+      padding:7px 8px; cursor:pointer; user-select:none; display:flex; flex-direction:column; gap:5px;
+    }
+    .layer:hover{ border-color: rgba(106,166,255,.35); }
+    .layer.active{ border-color: rgba(106,166,255,.8); background:#141a24; }
+    .layerTop{ display:flex; gap:8px; align-items:center; justify-content:space-between; }
+    .layerName{ font-size:12px; font-weight:650; color:#fff; }
+    .layerSliders{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .layerSliders input[type="range"]{ width:72px; }
+    .layerSliders .pill{ min-width:38px; text-align:center; padding:2px 5px; }
+    .layerSliders label{ gap:4px; }
+
+    /* palette */
+    .palette{ display:flex; gap:3px; flex-wrap:wrap; margin-top:8px; }
+    .swatch{ width:16px; height:16px; border-radius:4px; border:1px solid rgba(255,255,255,.18); cursor:pointer; padding:0; }
+    .swatch:hover{ outline:2px solid rgba(255,255,255,.6); }
+
+    /* links */
+    .linkRow{ display:grid; grid-template-columns: 1fr 70px auto; gap:6px; margin-top:6px; align-items:center; }
+    .linkRow input[type="number"]{ width:100%; }
+
+    /* below canvas cards */
+    .belowCanvas{ display:flex; gap:12px; flex-wrap:wrap; align-items:stretch; }
+    .subCard{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px; flex: 1 1 300px; min-width: 280px; }
+    textarea.out{
+      width:100%; min-height:130px; resize:vertical; background:var(--panel2); color:var(--text);
+      border:1px solid var(--line); border-radius:10px; padding:8px; font-size:11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+    .adjRow{ display:flex; gap:8px; align-items:center; }
+    .adjRow + .adjRow{ margin-top:4px; }
+    .adjRow label{ width:90px; }
+    .adjRow .pill{ min-width:52px; text-align:center; }
+
+    /* powerup tab */
+    .puGrid{ display:grid; grid-template-columns: 300px minmax(0,1fr); gap:12px; align-items:start; }
+    @media (max-width: 1100px){ .puGrid{ grid-template-columns: 1fr; } }
+    .puSide{ display:flex; flex-direction:column; gap:10px; }
+    .box{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:10px; }
+    .box h3{ margin-bottom:6px; }
+    .areaWrap{ background:#050505; border:1px solid var(--line); border-radius:12px; padding:10px; overflow:auto; max-height: calc(100vh - 150px); }
+    #areaCanvas{ display:block; touch-action:none; cursor:crosshair; }
+    .areaTools button{ min-width:40px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size:13px; }
+    #fillCanvas{ display:block; touch-action:none; cursor:crosshair; border-radius:6px; }
+    #gameCanvas{ display:block; cursor:pointer; border:1px solid #222; border-radius:4px; image-rendering: pixelated; }
+
+    /* right column: files + list */
+    .slot{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:9px; }
+    .slot + .slot{ margin-top:8px; }
+    .slotHead{ display:flex; justify-content:space-between; align-items:center; gap:6px; }
+    .slotName{ font-weight:650; font-size:13px; }
+    .slotInfo{ font-size:11px; color:var(--muted); margin:5px 0 7px; line-height:1.4; word-break:break-all; }
+    .issues{ margin:8px 0 0; padding:0; list-style:none; font-size:12px; line-height:1.4; }
+    .issues li{ padding:2px 0 2px 16px; position:relative; }
+    .issues li::before{ position:absolute; left:2px; top:2px; }
+    .issues li.err{ color:#ffb3b3; } .issues li.err::before{ content:"✕"; color:var(--bad); }
+    .issues li.warn{ color:#ffe3a6; } .issues li.warn::before{ content:"!"; color:var(--warn); font-weight:800; left:5px; }
+    .issues li.ok{ color:var(--good); } .issues li.ok::before{ content:"✓"; }
+
+    .listTabs{ display:flex; gap:6px; }
+    .listTabs button.on{ background:#1d2a40; border-color:rgba(106,166,255,.55); color:#fff; }
+    .recentList{ display:grid; gap:8px; margin-top:10px; max-height:calc(100vh - 140px); overflow:auto; padding-right:2px; }
+    .item{ border:1px solid #232323; border-radius:10px; padding:8px; background:#0f0f0f; display:grid; gap:6px; cursor:pointer; }
+    .item:hover{ border-color:#3a3a3a; }
+    .item.current{ border-color:rgba(106,166,255,.8); background:#111722; }
+    .itemHead{ display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:start; }
+    .itemName{ font-weight:700; font-size:13px; }
+    .itemMeta{ color:#9a9a9a; font-size:11px; }
+    .itemStats{ color:#bdbdbd; font-size:11px; text-align:right; line-height:1.35; }
+    .miniCanvas{ width:100%; height:auto; image-rendering: pixelated; border-radius:6px; display:block; background:#000; }
+
+    /* modal + toast */
+    dialog#modal{ background:#141414; color:var(--text); border:1px solid #333; border-radius:14px; padding:16px; max-width:520px; width:calc(100% - 40px); }
+    dialog#modal::backdrop{ background:rgba(0,0,0,.6); }
+    .modalTitle{ font-weight:700; font-size:15px; margin-bottom:8px; }
+    .modalBody{ font-size:13px; color:#cfcfcf; white-space:pre-wrap; line-height:1.45; }
+    .modalBtns{ display:flex; gap:8px; justify-content:flex-end; margin-top:14px; flex-wrap:wrap; }
+    #toast{ position:fixed; left:50%; bottom:18px; transform:translateX(-50%); background:#1b1b1b; border:1px solid #3a3a3a; color:#fff; padding:9px 14px; border-radius:10px; font-size:13px; opacity:0; pointer-events:none; transition:opacity .2s; max-width:80vw; z-index:20; }
+    #toast.show{ opacity:1; }
+    #toast.bad{ border-color:rgba(255,106,106,.7); }
+    #toast.good{ border-color:rgba(123,224,165,.6); }
+  </style>
+</head>
+
+<body>
+<div class="topbar">
+  <div class="brand">Extris Block Designer <small>shapes + powerups</small></div>
+  <div class="row">
+    <span id="sourcePill" class="pill mono">new block</span>
+    <span id="dirtyPill" class="pill">no changes</span>
+    <button id="newBtn">New block</button>
+    <button id="revertBtn" disabled title="Reload the loaded entry, discarding edits">Revert</button>
+  </div>
+</div>
+
+<div class="app">
+  <!-- =============================== LEFT =============================== -->
+  <aside class="col left">
+    <div class="card">
+      <h2>Block</h2>
+      <div class="field"><span>Kind</span>
+        <div class="seg" id="kindSeg">
+          <button data-kind="regular" class="on">Regular</button>
+          <button data-kind="powerup">Powerup</button>
+        </div>
+      </div>
+      <div class="field"><span>Name</span><input id="shapeName" type="text" placeholder="e.g. a can of beans" spellcheck="false"></div>
+      <div class="field"><span>Id</span><input id="shapeId" type="text" class="mono" placeholder="(auto-suggested from name)" spellcheck="false"></div>
+      <div class="field" style="margin-top:4px;"><span></span><div id="idHint" class="hint"></div></div>
+      <div class="field" id="difficultyField"><span>Difficulty</span>
+        <div class="grow">
+          <select id="difficulty">
+            <option value="0">0</option><option value="1">1</option><option value="2" selected>2</option>
+            <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+          </select>
+          <span class="hint">0 (easy) – 5 (nasty)</span>
+        </div>
+      </div>
+      <div class="field"><span>Frequency</span>
+        <div class="grow">
+          <input id="freqRange" type="range" min="0" max="1" step="0.01" value="1">
+          <input id="freqNum" type="number" min="0" max="1" step="0.05" value="1">
+        </div>
+      </div>
+      <div class="field"><span>Rotation</span>
+        <div class="grow">
+          <select id="rotationMode"><option value="any">any</option><option value="none">none</option></select>
+          <span id="rotationHint" class="hint"></span>
+        </div>
+      </div>
+      <div class="field"><span>Colour mode</span>
+        <div class="seg" id="colourModeSeg">
+          <button data-mode="pixel" class="on">Pixel art</button>
+          <button data-mode="solid">Solid colour</button>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+      <h3>Linked next shapes</h3>
+      <div class="hint">After this block, the game may serve one of these ids next (probability 0–1 each).</div>
+      <div id="linkList"></div>
+      <div class="row" style="margin-top:8px;">
+        <button id="addLinkBtn" class="small">+ Add link</button>
+        <span id="linkSum" class="pill mono">Σ 0</span>
+      </div>
+      <datalist id="allIds"></datalist>
+      <div id="extrasRow" class="hint" style="margin-top:8px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>Canvas</h2>
+      <div class="row">
+        <label>Blocks W <input id="blocksW" type="number" min="1" max="64" value="2"></label>
+        <label>H <input id="blocksH" type="number" min="1" max="64" value="2"></label>
+        <label>Px / block <input id="ppb" type="number" min="1" max="7" value="7"></label>
+      </div>
+      <div class="row">
+        <button id="applySize" class="primary">Apply size</button>
+        <button id="resetCanvas" class="danger" title="Clear all layers and refill the mask (undoable)">Reset canvas</button>
+        <span class="hint">Resizing keeps art (resampled per block).</span>
+      </div>
+      <div class="row">
+        <label>Zoom <input id="zoom" type="range" min="2" max="60" value="24"></label>
+        <span id="zoomLabel" class="pill mono">24×</span>
+        <button id="fitZoom" class="small">Fit</button>
+      </div>
+      <div class="row">
+        <label><input id="showGrid" type="checkbox" checked> Grid</label>
+        <label><input id="showOnlyActive" type="checkbox"> Preview only active layer</label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Tools <span class="pill mono">D B F E I M</span></h2>
+      <div class="row tools">
+        <button class="toolBtn active" data-tool="draw" title="Draw pixels (D). Right-click erases.">Draw</button>
+        <button class="toolBtn" data-tool="brush" title="Paint a whole block (B). Right-click erases the block.">Brush</button>
+        <button class="toolBtn" data-tool="fill" title="Flood fill (F)">Fill</button>
+        <button class="toolBtn" data-tool="erase" title="Erase pixels (E)">Erase</button>
+        <button class="toolBtn" data-tool="dropper" title="Pick a colour (I)">Dropper</button>
+        <button class="toolBtn" data-tool="mask" title="Toggle filled/empty blocks (M). Drag to paint; right-click empties.">Mask</button>
+        <button id="pasteBtn" class="primary" title="Paste image from clipboard onto active layer (Ctrl/Cmd+V)">Paste</button>
+      </div>
+      <div class="row">
+        <label>Colour <input id="colour" type="color" value="#ff7300"></label>
+        <label>Hex <input id="hexText" type="text" value="#ff7300" class="mono" spellcheck="false" style="width:90px;"></label>
+        <button id="clearActive" class="danger small">Clear active layer</button>
+      </div>
+      <div id="palette" class="palette" title="Colours used in the art"></div>
+
+      <div class="sep"></div>
+      <h3>Block mask</h3>
+      <div class="row">
+        <button id="maskFill">Fill mask</button>
+        <button id="maskClear">Clear mask</button>
+        <button id="maskFromArt" title="A block is filled if any visible pixel in it is non-transparent">Mask from art</button>
+        <span id="maskCount" class="pill mono">4/4</span>
+      </div>
+      <div class="hint" style="margin-top:6px;">Empty blocks are hatched. Their art is kept in the layers but saved as <span class="mono">""</span>.</div>
+
+      <div class="sep"></div>
+      <div class="row">
+        <button id="undoBtn">Undo</button>
+        <button id="redoBtn">Redo</button>
+        <span class="pill mono">History <span id="histLabel">0/0</span></span>
+        <span class="pill mono">Ctrl/Cmd+Z / Y · Ctrl/Cmd+S save</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Layers (5)</h2>
+      <div class="hint" style="margin-bottom:8px;">Top = front. Noise + opacity are procedural and baked in when saved/exported.</div>
+      <div id="layerList" class="layerList"></div>
+    </div>
+  </aside>
+
+  <!-- =============================== CENTRE =============================== -->
+  <main class="col centre">
+    <div class="card">
+      <div class="tabs" id="centreTabs">
+        <button data-tab="art" class="on">Art</button>
+        <button data-tab="powerup">Powerup</button>
+        <span style="flex:1"></span>
+        <span class="pill mono">Native <span id="nativeLabel">14×14</span></span>
+        <span class="pill mono">Blocks <span id="blocksLabel">2×2</span></span>
+        <span class="pill mono">ppb <span id="ppbLabel">7</span></span>
+        <span class="pill mono">Layer <span id="activeLabel">1</span></span>
+        <span class="pill mono">Ptr <span id="ptrLabel">—</span></span>
+      </div>
+
+      <!-- ART TAB -->
+      <div id="tabArt">
+        <div class="canvasWrap" id="canvasWrap">
+          <div id="canvasStage" class="canvasStage">
+            <canvas id="renderCanvas" class="renderCanvas"></canvas>
+            <canvas id="overlayCanvas" class="overlayCanvas"></canvas>
+          </div>
+        </div>
+        <div id="solidBanner" class="modeBanner hidden">Solid colour mode: filled blocks show (and save as) the current colour. Art layers are kept but not saved. Mask + dropper still work.</div>
+      </div>
+
+      <!-- POWERUP TAB -->
+      <div id="tabPowerup" class="hidden">
+        <div id="puDisabled" class="box">
+          <div class="hint" style="margin-bottom:8px;">This block is a <b>regular</b> shape. Switch the block kind to Powerup to design its effect, highlighted area and fill art.</div>
+          <button id="makePowerupBtn" class="primary">Make this a powerup</button>
+        </div>
+        <div id="puEditor" class="puGrid hidden">
+          <div class="puSide">
+            <div class="box">
+              <h3>Effect</h3>
+              <div class="field"><span>Type</span>
+                <select id="puType"><option value="destroyer">destroyer</option><option value="gravity">gravity</option><option value="expander">expander</option></select>
+              </div>
+              <div class="field" id="puDirectionField"><span>Direction</span>
+                <select id="puDirection"><option value="down">down</option><option value="left">left</option><option value="right">right</option><option value="up">up</option></select>
+              </div>
+              <div class="field"><span>Tier</span>
+                <div class="grow">
+                  <select id="puTier"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+                  <span class="hint">1 gentle · 2 strong · 3 very strong</span>
+                </div>
+              </div>
+              <div class="field"><span>Description</span><input id="puDescription" type="text" spellcheck="false"></div>
+              <div class="field"><span></span><label><input id="puConsume" type="checkbox"> Consume <span id="puConsumeNote" class="pill">default</span></label></div>
+              <div class="field" id="puCollapseField"><span></span><label title="Rows wiped wall-to-wall collapse like a line clear"><input id="puCollapse" type="checkbox"> Collapse wiped rows</label></div>
+            </div>
+
+            <div class="box">
+              <h3>Highlighted area</h3>
+              <div class="row areaTools" id="areaTools">
+                <button data-ach="#" class="active" title="This cell">#</button>
+                <button data-ach="-" title="This cell's whole board row">-</button>
+                <button data-ach="|" title="This cell's whole board column">|</button>
+                <button data-ach="+" title="Whole row and whole column">+</button>
+                <button data-ach="." title="Erase (right-click also erases)">.</button>
+              </div>
+              <div class="row">
+                <label>Margin <input id="areaMargin" type="number" min="0" max="30" value="3"></label>
+                <span id="areaInfo" class="pill mono">0 cells</span>
+              </div>
+              <div class="sep"></div>
+              <div class="row">
+                <label>r <input id="genRadius" type="number" min="0" max="20" step="0.5" value="2"></label>
+                <button id="genCircle" class="small">Circle</button>
+                <button id="genSquare" class="small">Square</button>
+              </div>
+              <div class="row">
+                <button id="genRows" class="small">Piece rows (-)</button>
+                <button id="genCols" class="small">Piece columns (|)</button>
+                <button id="genClear" class="small danger">Clear area</button>
+              </div>
+              <div class="hint" style="margin-top:6px;">Generators are centred on the piece and add to the current area. Circle/square include cells whose centre is within r + ½ blocks.</div>
+            </div>
+
+            <div class="box" id="fillBox">
+              <h3>Expander fill art</h3>
+              <div class="row">
+                <div class="seg" id="fillModeSeg">
+                  <button data-fmode="pixel">Pixel art</button>
+                  <button data-fmode="solid" class="on">Solid</button>
+                </div>
+                <label>k <input id="fillK" type="number" min="1" max="7" value="7"></label>
+              </div>
+              <div class="row" id="fillSolidRow">
+                <label>Solid <input id="fillSolid" type="color" value="#ffffff"></label>
+                <span id="fillSolidHex" class="pill mono">#ffffff</span>
+                <button id="fillSolidFromCurrent" class="small">= current colour</button>
+              </div>
+              <div id="fillPixelTools">
+                <div class="row fillTools">
+                  <button class="small fillToolBtn active" data-ftool="draw">Draw</button>
+                  <button class="small fillToolBtn" data-ftool="erase">Erase</button>
+                  <button class="small fillToolBtn" data-ftool="fill">Fill</button>
+                  <button class="small fillToolBtn" data-ftool="dropper">Dropper</button>
+                </div>
+                <div class="row">
+                  <button id="fillAll" class="small">Fill all</button>
+                  <button id="fillFromPiece" class="small" title="Copy the art of the piece's first filled block">From piece block</button>
+                  <button id="fillClear" class="small danger">Clear</button>
+                </div>
+              </div>
+              <div style="margin-top:8px;"><canvas id="fillCanvas" width="168" height="168"></canvas></div>
+            </div>
+          </div>
+
+          <div class="areaWrap" id="areaWrap">
+            <canvas id="areaCanvas" width="300" height="300"></canvas>
+            <div class="hint" style="margin-top:8px;">Drag to paint with the selected marker; right-click erases. Bands show rows/columns that extend across the whole board. The rainbow shows what the game highlights.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="belowCanvas">
+      <div class="subCard" style="flex:0 1 auto;">
+        <h3>In-game preview</h3>
+        <canvas id="gameCanvas" width="252" height="216"></canvas>
+        <div class="row" style="margin-top:8px;">
+          <label><input id="previewStack" type="checkbox" checked> Sample stack</label>
+          <label><input id="previewBig" type="checkbox" checked> 2×</label>
+          <button id="previewCentre" class="small">Centre</button>
+        </div>
+        <div class="hint" style="margin-top:4px;">18px cells, 14×12 board. Click to move the piece.</div>
+      </div>
+
+      <div class="subCard">
+        <h3>Colour adjustments (preview)</h3>
+        <div class="hint" style="margin-bottom:8px;">Preview only until you click Apply (they are included in saves/exports).</div>
+        <div class="adjRow"><label>Brightness</label><input id="brightness" type="range" min="-100" max="100" value="0"><span id="brightnessPill" class="pill mono">0</span></div>
+        <div class="adjRow"><label>Contrast</label><input id="contrast" type="range" min="-100" max="100" value="0"><span id="contrastPill" class="pill mono">0</span></div>
+        <div class="adjRow"><label>Hue</label><input id="hue" type="range" min="-180" max="180" value="0"><span id="huePill" class="pill mono">0°</span></div>
+        <div class="adjRow"><label>Saturation</label><input id="sat" type="range" min="0" max="200" value="100"><span id="satPill" class="pill mono">100%</span></div>
+        <div class="row" style="margin-top:8px;">
+          <button id="applyAdjustments" class="primary">Apply to layers</button>
+          <button id="resetAdjustments">Reset</button>
+          <button id="rerollSeed" title="Re-randomise the procedural noise seed">Reroll noise seed</button>
+          <span class="pill mono">seed <span id="seedLabel">—</span></span>
+        </div>
+      </div>
+
+      <div class="subCard">
+        <h3>Export / import</h3>
+        <div class="row">
+          <button id="dlPngNative" class="primary">PNG (native)</button>
+          <button id="dlPngScaled">PNG (scaled)</button>
+          <button id="copyNative">Copy PNG</button>
+          <button id="copyScaled">Copy scaled</button>
+        </div>
+        <div class="row">
+          <button id="dlProject">Save project file</button>
+          <button id="loadProjectBtn">Load project file</button>
+          <input id="loadProjectFile" type="file" accept=".js,.json" style="display:none;">
+        </div>
+        <div class="sep"></div>
+        <div class="row">
+          <button id="genColourGrid" class="primary">Colour grid</button>
+          <button id="genEntry">Shape entry</button>
+          <button id="copyOut">Copy</button>
+          <button id="dlOut">Download .js</button>
+        </div>
+        <textarea id="textOut" class="out" spellcheck="false" placeholder="Generate the saved colour grid or the full shape entry here."></textarea>
+      </div>
+    </div>
+  </main>
+
+  <!-- =============================== RIGHT =============================== -->
+  <aside class="col right">
+    <div class="card">
+      <h2>Save</h2>
+      <div class="row">
+        <label>Target
+          <select id="targetSlot"><option value="shapes">Shapes file</option><option value="powerups">Powerups file</option></select>
+        </label>
+        <button id="saveBtn" class="primary big">Save block</button>
+      </div>
+      <div class="row">
+        <button id="deleteBtn" class="danger small" disabled>Delete loaded entry</button>
+        <span id="saveModeHint" class="hint"></span>
+      </div>
+      <ul id="issues" class="issues"></ul>
+    </div>
+
+    <div class="card">
+      <h2>Files</h2>
+      <div id="slotList"></div>
+      <input id="fallbackFile" type="file" accept=".js" style="display:none;">
+      <div class="hint" style="margin-top:8px;">Pick a file (Chrome/Edge) for in-place saving; the handle is remembered. Otherwise the files are fetched for browsing when served over http, and saving downloads the updated file.</div>
+    </div>
+
+    <div class="card">
+      <h2>Library <span id="listCount" class="pill mono">0</span></h2>
+      <div class="listTabs" id="listTabs">
+        <button data-lslot="shapes" class="on">Shapes</button>
+        <button data-lslot="powerups">Powerups</button>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <input id="listFilter" type="text" placeholder="Filter by name or id" spellcheck="false">
+      </div>
+      <div class="row">
+        <label>Show <input id="pageSize" type="number" min="5" max="200" step="5" value="20"></label>
+        <button id="prevPage" class="small">Prev</button>
+        <button id="nextPage" class="small">Next</button>
+        <span id="pageLabel" class="pill mono">1/1</span>
+      </div>
+      <div class="hint" style="margin-top:4px;">Newest first. Click an entry to load it into the editor.</div>
+      <div id="recentList" class="recentList"></div>
+    </div>
+  </aside>
+</div>
+
+<dialog id="modal">
+  <div id="modalTitle" class="modalTitle"></div>
+  <div id="modalBody" class="modalBody"></div>
+  <div id="modalBtns" class="modalBtns"></div>
+</dialog>
+<div id="toast"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ============================================================
+  // Constants
+  // ============================================================
+  const LAYER_COUNT = 5;
+  const MAX_BLOCKS = 64;
+  const ID_RE = /^[a-z0-9_]+$/;
+  const AREA_CHARS = new Set(["#", "-", "|", "+"]);
+  const PU_TYPES = ["destroyer", "gravity", "expander"];
+  const PU_DEFAULT_DESC = {
+    destroyer: "destroys highlighted blocks",
+    gravity: "gravitates highlighted blocks",
+    expander: "fills highlighted blocks",
+  };
+  const PU_DEFAULT_CONSUME = { destroyer: true, gravity: true, expander: false };
+  // Keys the editor manages itself; everything else on a loaded shape is preserved as-is.
+  const MANAGED_KEYS = ["id", "name", "grid", "color", "powerup", "difficulty", "rotation", "frequency", "nextShapes", "nextShapeProbs"];
+  const MANAGED_PU_KEYS = ["type", "direction", "tier", "description", "area", "fill", "consume", "collapse"];
+  // Serialisation key order (rest sorted alphabetically, like shape_encoder)
+  const PREFERRED_KEYS = ["id", "name", "grid", "color", "powerup", "difficulty", "rotation", "frequency"];
+  // In-game preview
+  const GAME = { cols: 14, rows: 12, cell: 18 };
+
+  // ============================================================
+  // Utilities
+  // ============================================================
+  const el = {};
+  document.querySelectorAll("[id]").forEach(n => { el[n.id] = n; });
+
+  const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
+  const clamp255 = (x) => Math.max(0, Math.min(255, x | 0));
+  const clamp01 = (x) => Math.max(0, Math.min(1, x));
+  const isHex6 = (s) => typeof s === "string" && /^#[0-9a-fA-F]{6}$/.test(s.trim());
+
+  // Normalise "#abc" / "#AABBCC" -> "#aabbcc"; anything else -> null
+  function normHex(s){
+    if (typeof s !== "string") return null;
+    s = s.trim();
+    if (/^#[0-9a-fA-F]{3}$/.test(s)) s = "#" + s[1] + s[1] + s[2] + s[2] + s[3] + s[3];
+    return /^#[0-9a-fA-F]{6}$/.test(s) ? s.toLowerCase() : null;
+  }
+  const hexToRgb = (hex) => {
+    const h = normHex(hex);
+    if (!h) return { r: 255, g: 0, b: 255 };
+    const n = parseInt(h.slice(1), 16);
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+  };
+  const rgbToHex = (r, g, b) => "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("");
+  const packARGB = (a, r, g, b) => (((a & 255) << 24) | ((r & 255) << 16) | ((g & 255) << 8) | (b & 255)) >>> 0;
+  const unpackARGB = (u) => ({ a: (u >>> 24) & 255, r: (u >>> 16) & 255, g: (u >>> 8) & 255, b: u & 255 });
+  function argbFromHex(hex){
+    const h = normHex(hex);
+    if (!h) return 0;
+    const { r, g, b } = hexToRgb(h);
+    return packARGB(255, r, g, b);
+  }
+  function hexFromARGB(u){
+    u = u >>> 0;
+    if (((u >>> 24) & 255) === 0) return "";
+    return rgbToHex((u >>> 16) & 255, (u >>> 8) & 255, u & 255);
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m]));
+  }
+  const normaliseNewlines = (s) => String(s).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const basename = (p) => String(p).split(/[\\/]/).pop();
+  const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
+
+  // Key-order-insensitive deep equality for plain data
+  function deepEqual(a, b){
+    if (a === b) return true;
+    if (typeof a !== typeof b) return false;
+    if (a === null || b === null || typeof a !== "object") return Number.isNaN(a) && Number.isNaN(b);
+    if (Array.isArray(a) !== Array.isArray(b)) return false;
+    if (Array.isArray(a)){
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) if (!deepEqual(a[i], b[i])) return false;
+      return true;
+    }
+    const ka = Object.keys(a).filter(k => a[k] !== undefined);
+    const kb = Object.keys(b).filter(k => b[k] !== undefined);
+    if (ka.length !== kb.length) return false;
+    for (const k of ka) if (!Object.prototype.hasOwnProperty.call(b, k) || !deepEqual(a[k], b[k])) return false;
+    return true;
+  }
+
+  function downloadBlob(blob, filename){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  const downloadText = (text, filename) => downloadBlob(new Blob([text], { type: "text/javascript;charset=utf-8" }), filename);
+
+  async function copyBlobToClipboard(blob){
+    if (!navigator.clipboard || !window.ClipboardItem) throw new Error("Clipboard API not available.");
+    await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+  }
+
+  // Same rule as shape_encoder: longest word in the name (later words win ties), lowercased.
+  function suggestIdFromName(name){
+    const parts = String(name).trim().split(/\s+/).filter(Boolean)
+      .map(w => w.replace(/[^A-Za-z0-9_'-]/g, "")).filter(Boolean);
+    if (parts.length === 0) return "";
+    let best = parts[0];
+    for (const w of parts){ if (w.length >= best.length) best = w; }
+    return best.toLowerCase().replace(/['-]/g, "").replace(/[^a-z0-9_]/g, "_");
+  }
+
+  let toastTimer = 0;
+  function toast(msg, kind = ""){
+    el.toast.textContent = msg;
+    el.toast.className = "show " + kind;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.toast.className = kind; }, kind === "bad" ? 5000 : 2600);
+  }
+
+  // Promise-based modal. buttons: [{key, label, cls}]
+  function ask(title, body, buttons){
+    return new Promise((resolve) => {
+      el.modalTitle.textContent = title;
+      el.modalBody.textContent = body;
+      el.modalBtns.innerHTML = "";
+      let done = false;
+      const finish = (key) => { if (done) return; done = true; try { el.modal.close(); } catch {} resolve(key); };
+      for (const b of buttons){
+        const btn = document.createElement("button");
+        btn.textContent = b.label;
+        if (b.cls) btn.className = b.cls;
+        btn.addEventListener("click", () => finish(b.key));
+        el.modalBtns.appendChild(btn);
+      }
+      el.modal.oncancel = (e) => { e.preventDefault(); finish("cancel"); };
+      el.modal.showModal();
+    });
+  }
+
+  // deterministic hash -> [0,1)
+  function hash01(x, y, layer, seed){
+    let n = (x | 0) * 374761393 ^ (y | 0) * 668265263 ^ (layer | 0) * 1442695041 ^ (seed | 0) * 1597334677;
+    n = (n ^ (n >>> 13)) >>> 0;
+    n = (n * 1274126177) >>> 0;
+    n = (n ^ (n >>> 16)) >>> 0;
+    return (n >>> 0) / 4294967296;
+  }
+
+  // ============================================================
+  // Colour maths (noise, HSL, brightness/contrast) — from shape_drawer
+  // ============================================================
+  function applyNoiseToRGB(r, g, b, amount01, x, y, layerIndex, seed){
+    if (amount01 <= 0) return { r, g, b };
+    const n1 = hash01(x, y, layerIndex, seed);
+    const n2 = hash01(x + 19, y - 7, layerIndex, seed);
+    const n3 = hash01(x - 11, y + 23, layerIndex, seed);
+    const db = (n1 * 2 - 1) * (amount01 * 40);
+    const dr = (n2 * 2 - 1) * (amount01 * 14);
+    const dg = (n3 * 2 - 1) * (amount01 * 14);
+    return { r: clamp255(r + db + dr), g: clamp255(g + db + dg), b: clamp255(b + db - (dr + dg) * 0.35) };
+  }
+  function rgbToHsl(r, g, b){
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h = 0, s = 0; const l = (max + min) / 2; const d = max - min;
+    if (d !== 0){
+      s = d / (1 - Math.abs(2 * l - 1));
+      switch (max){
+        case r: h = ((g - b) / d) % 6; break;
+        case g: h = (b - r) / d + 2; break;
+        default: h = (r - g) / d + 4; break;
+      }
+      h *= 60; if (h < 0) h += 360;
+    }
+    return { h, s, l };
+  }
+  function hslToRgb(h, s, l){
+    h = ((h % 360) + 360) % 360;
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = l - c / 2;
+    let r = 0, g = 0, b = 0;
+    if (h < 60){ r = c; g = x; } else if (h < 120){ r = x; g = c; } else if (h < 180){ g = c; b = x; }
+    else if (h < 240){ g = x; b = c; } else if (h < 300){ r = x; b = c; } else { r = c; b = x; }
+    return { r: clamp255(Math.round((r + m) * 255)), g: clamp255(Math.round((g + m) * 255)), b: clamp255(Math.round((b + m) * 255)) };
+  }
+  function applyBrightnessContrastRGB(r, g, b, brightnessVal, contrastVal){
+    const br = (brightnessVal * 255) / 100;
+    let rr = r + br, gg = g + br, bb = b + br;
+    const c = (contrastVal * 255) / 100;
+    const factor = (259 * (c + 255)) / (255 * (259 - c));
+    rr = factor * (rr - 128) + 128; gg = factor * (gg - 128) + 128; bb = factor * (bb - 128) + 128;
+    return { r: clamp255(Math.round(rr)), g: clamp255(Math.round(gg)), b: clamp255(Math.round(bb)) };
+  }
+
+  // ============================================================
+  // State
+  // ============================================================
+  const state = {
+    // art
+    blocksW: 2, blocksH: 2, ppb: 7, pxW: 14, pxH: 14,
+    zoom: 24, showGrid: true, showOnlyActive: false,
+    tool: "draw", colourHex: "#ff7300", activeLayerId: 0,
+    seed: (Math.random() * 1e9) | 0,
+    adj: { brightness: 0, contrast: 0, hue: 0, sat: 1 },
+    layers: [],                    // layers[0] = frontmost; data = Uint32Array ARGB
+    mask: new Uint8Array(4).fill(1), // blocksW*blocksH, 1 = filled ("X")
+    colourMode: "pixel",           // "pixel" | "solid"
+
+    // shape metadata
+    kind: "regular",               // "regular" | "powerup"
+    name: "", id: "",
+    difficulty: 2, frequency: 1,
+    rotationMode: "any", rotationExtras: {},
+    links: [],                     // [{ id, prob|null }]
+    extras: {},                    // unknown properties of a loaded shape (preserved)
+
+    // powerup
+    pu: { type: "destroyer", direction: "down", tier: 1, description: "", consume: null, collapse: false, extras: {} },
+    area: { cells: {}, margin: 3, tool: "#" },   // cells: "x,y" (editor block coords) -> "#"|"-"|"|"|"+"
+    fill: { mode: "solid", solidHex: "#ffffff", k: 7, data: new Uint32Array(49), tool: "draw" },
+
+    // session
+    source: null,                  // { slot, id, original }
+    dirty: false,
+    centreTab: "art",
+    targetSlot: "shapes",
+    list: { slot: "shapes", page: 0, pageSize: 20, filter: "" },
+    previewPos: null, previewStack: true, previewModel: null,
+    lastBuild: null,
+  };
+
+  // ============================================================
+  // Layers
+  // ============================================================
+  function makeEmptyLayer(id, n){
+    return { id, name: `Layer ${id + 1}`, visible: true, noise: 0, opacity: 1, data: new Uint32Array(n) };
+  }
+  function initLayers(){
+    state.layers = [];
+    for (let i = 0; i < LAYER_COUNT; i++) state.layers.push(makeEmptyLayer(i, state.pxW * state.pxH));
+    state.activeLayerId = 0;
+  }
+  const getActiveLayer = () => state.layers.find(l => l.id === state.activeLayerId) || state.layers[0];
+
+  // ============================================================
+  // Undo / redo (global: art, mask, area, fill art, sizes)
+  // ============================================================
+  const hist = { undo: [], redo: [], max: 150, pending: null, changed: false };
+
+  function snapshot(){
+    return {
+      blocksW: state.blocksW, blocksH: state.blocksH, ppb: state.ppb,
+      activeLayerId: state.activeLayerId, seed: state.seed, colourMode: state.colourMode,
+      layers: state.layers.map(L => ({ id: L.id, name: L.name, visible: L.visible, noise: L.noise, opacity: L.opacity, data: L.data.slice() })),
+      mask: state.mask.slice(),
+      areaCells: { ...state.area.cells },
+      fill: { mode: state.fill.mode, solidHex: state.fill.solidHex, k: state.fill.k, data: state.fill.data.slice() },
+    };
+  }
+  function restoreSnapshot(s){
+    state.blocksW = s.blocksW; state.blocksH = s.blocksH; state.ppb = s.ppb;
+    state.pxW = s.blocksW * s.ppb; state.pxH = s.blocksH * s.ppb;
+    state.activeLayerId = s.activeLayerId; state.seed = s.seed; state.colourMode = s.colourMode;
+    state.layers = s.layers.map(L => ({ ...L, data: L.data.slice() }));
+    state.mask = s.mask.slice();
+    state.area.cells = { ...s.areaCells };
+    state.fill.mode = s.fill.mode; state.fill.solidHex = s.fill.solidHex; state.fill.k = s.fill.k; state.fill.data = s.fill.data.slice();
+    syncAllUI();
+  }
+  function beginAction(){
+    if (hist.pending) return;
+    hist.pending = snapshot();
+    hist.changed = false;
+  }
+  function markChanged(){ hist.changed = true; }
+  function endAction(){
+    if (!hist.pending) return;
+    if (hist.changed){
+      hist.undo.push(hist.pending);
+      if (hist.undo.length > hist.max) hist.undo.shift();
+      hist.redo.length = 0;
+      setDirty(true);
+    }
+    hist.pending = null;
+    hist.changed = false;
+    updateHistUI();
+  }
+  // Run fn as one undoable step; fn returns true if it changed something.
+  function commit(fn){
+    beginAction();
+    if (fn()) markChanged();
+    endAction();
+    scheduleRender();
+  }
+  function undo(){
+    endAction();
+    if (!hist.undo.length) return;
+    hist.redo.push(snapshot());
+    restoreSnapshot(hist.undo.pop());
+    setDirty(true); updateHistUI();
+  }
+  function redo(){
+    endAction();
+    if (!hist.redo.length) return;
+    hist.undo.push(snapshot());
+    restoreSnapshot(hist.redo.pop());
+    setDirty(true); updateHistUI();
+  }
+  function resetHistory(){
+    hist.undo.length = 0; hist.redo.length = 0; hist.pending = null; hist.changed = false;
+    updateHistUI();
+  }
+  function updateHistUI(){
+    el.undoBtn.disabled = hist.undo.length === 0;
+    el.redoBtn.disabled = hist.redo.length === 0;
+    el.histLabel.textContent = `${hist.undo.length}/${hist.undo.length + hist.redo.length}`;
+  }
+
+  function setDirty(v){
+    state.dirty = !!v;
+    el.dirtyPill.textContent = state.dirty ? "unsaved changes" : "no changes";
+    el.dirtyPill.className = "pill " + (state.dirty ? "warn" : "");
+  }
+
+  // ============================================================
+  // Sizing (resize keeps art, resampled per block when ppb changes)
+  // ============================================================
+  function resizeCanvas(newW, newH, newP){
+    const oldW = state.blocksW, oldH = state.blocksH, oldP = state.ppb, oldPxW = state.pxW;
+    const nPxW = newW * newP, nPxH = newH * newP;
+    for (const L of state.layers){
+      const nd = new Uint32Array(nPxW * nPxH);
+      for (let y = 0; y < nPxH; y++){
+        const by = Math.floor(y / newP); if (by >= oldH) continue;
+        const oy = by * oldP + Math.floor((y % newP) * oldP / newP);
+        for (let x = 0; x < nPxW; x++){
+          const bx = Math.floor(x / newP); if (bx >= oldW) continue;
+          const ox = bx * oldP + Math.floor((x % newP) * oldP / newP);
+          nd[y * nPxW + x] = L.data[oy * oldPxW + ox];
+        }
+      }
+      L.data = nd;
+    }
+    const nm = new Uint8Array(newW * newH).fill(1);
+    for (let y = 0; y < Math.min(oldH, newH); y++)
+      for (let x = 0; x < Math.min(oldW, newW); x++) nm[y * newW + x] = state.mask[y * oldW + x];
+    state.mask = nm;
+    state.blocksW = newW; state.blocksH = newH; state.ppb = newP;
+    state.pxW = nPxW; state.pxH = nPxH;
+  }
+
+  function syncSizeUI(){
+    el.blocksW.value = String(state.blocksW);
+    el.blocksH.value = String(state.blocksH);
+    el.ppb.value = String(state.ppb);
+    el.nativeLabel.textContent = `${state.pxW}×${state.pxH}`;
+    el.blocksLabel.textContent = `${state.blocksW}×${state.blocksH}`;
+    el.ppbLabel.textContent = String(state.ppb);
+  }
+
+  function fitZoom(){
+    const wrapW = Math.max(200, el.canvasWrap.clientWidth - 24);
+    const availH = Math.max(240, window.innerHeight - 230);
+    const z = Math.floor(Math.min(wrapW / state.pxW, availH / state.pxH));
+    state.zoom = clamp(z, 2, 60);
+    el.zoom.value = String(state.zoom);
+  }
+
+  // ============================================================
+  // Compositing (layers -> flattened ARGB) and mask helpers
+  // ============================================================
+  function applyPreviewAdjustmentsToRGB(r, g, b){
+    const bc = applyBrightnessContrastRGB(r, g, b, state.adj.brightness, state.adj.contrast);
+    const hsl = rgbToHsl(bc.r, bc.g, bc.b);
+    return hslToRgb(hsl.h + state.adj.hue, clamp01(hsl.s * state.adj.sat), hsl.l);
+  }
+
+  function compositeFlattened({ onlyActive = false } = {}){
+    const w = state.pxW, n = state.pxW * state.pxH;
+    const out = new Uint32Array(n);
+    for (let li = state.layers.length - 1; li >= 0; li--){
+      const L = state.layers[li];
+      if (onlyActive && L.id !== state.activeLayerId) continue;
+      if (!L.visible) continue;
+      const noiseAmt = L.noise, op = clamp01(L.opacity);
+      for (let p = 0; p < n; p++){
+        const src = L.data[p] >>> 0;
+        let sa = (src >>> 24) & 255;
+        if (sa === 0) continue;
+        sa = Math.round(sa * op);
+        if (sa === 0) continue;
+        let rr = (src >>> 16) & 255, gg = (src >>> 8) & 255, bb = src & 255;
+        if (noiseAmt > 0){
+          const nz = applyNoiseToRGB(rr, gg, bb, noiseAmt, p % w, (p / w) | 0, L.id, state.seed);
+          rr = nz.r; gg = nz.g; bb = nz.b;
+        }
+        const dst = out[p] >>> 0;
+        const da = (dst >>> 24) & 255;
+        if (da === 0){ out[p] = packARGB(sa, rr, gg, bb); continue; }
+        const dr = (dst >>> 16) & 255, dg = (dst >>> 8) & 255, db = dst & 255;
+        const sa01 = sa / 255, da01 = da / 255;
+        const oa01 = sa01 + da01 * (1 - sa01);
+        if (oa01 <= 0){ out[p] = 0; continue; }
+        out[p] = packARGB(Math.round(oa01 * 255),
+          Math.round((rr * sa01 + dr * da01 * (1 - sa01)) / oa01),
+          Math.round((gg * sa01 + dg * da01 * (1 - sa01)) / oa01),
+          Math.round((bb * sa01 + db * da01 * (1 - sa01)) / oa01));
+      }
+    }
+    const a = state.adj;
+    if (a.brightness !== 0 || a.contrast !== 0 || a.hue !== 0 || a.sat !== 1){
+      for (let p = 0; p < n; p++){
+        const u = out[p] >>> 0, al = (u >>> 24) & 255;
+        if (al === 0) continue;
+        const c = applyPreviewAdjustmentsToRGB((u >>> 16) & 255, (u >>> 8) & 255, u & 255);
+        out[p] = packARGB(al, c.r, c.g, c.b);
+      }
+    }
+    return out;
+  }
+
+  const maskAt = (bx, by) => state.mask[by * state.blocksW + bx] === 1;
+  function maskBounds(){
+    let x0 = Infinity, y0 = Infinity, x1 = -1, y1 = -1;
+    for (let y = 0; y < state.blocksH; y++) for (let x = 0; x < state.blocksW; x++){
+      if (!maskAt(x, y)) continue;
+      x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
+    }
+    return x1 < 0 ? null : { x0, y0, x1, y1 };
+  }
+  const fullBounds = () => ({ x0: 0, y0: 0, x1: state.blocksW - 1, y1: state.blocksH - 1 });
+  function filledCount(){ let n = 0; for (const v of state.mask) n += v; return n; }
+
+  // Flattened art with the mask applied (empty blocks transparent) / solid mode honoured
+  function maskedFlat(flat){
+    const out = new Uint32Array(flat.length);
+    const solid = argbFromHex(state.colourHex);
+    const P = state.ppb, W = state.pxW;
+    for (let y = 0; y < state.pxH; y++){
+      for (let x = 0; x < W; x++){
+        if (!maskAt(Math.floor(x / P), Math.floor(y / P))) continue;
+        const i = y * W + x;
+        out[i] = state.colourMode === "solid" ? solid : flat[i];
+      }
+    }
+    return out;
+  }
+
+  // ============================================================
+  // Main art canvas rendering
+  // ============================================================
+  const rctx = el.renderCanvas.getContext("2d", { willReadFrequently: true });
+  const octx = el.overlayCanvas.getContext("2d");
+  const pieceCanvas = document.createElement("canvas"); // native-size masked art (area editor + PNG)
+  const pieceCtx = pieceCanvas.getContext("2d", { willReadFrequently: true });
+
+  const hatchPattern = (() => {
+    const c = document.createElement("canvas"); c.width = 8; c.height = 8;
+    const x = c.getContext("2d");
+    x.fillStyle = "rgba(0,0,0,0.62)"; x.fillRect(0, 0, 8, 8);
+    x.strokeStyle = "rgba(255,255,255,0.16)"; x.lineWidth = 1.2;
+    x.beginPath(); x.moveTo(-2, 10); x.lineTo(10, -2); x.moveTo(-2, 2); x.lineTo(2, -2); x.moveTo(6, 10); x.lineTo(10, 6); x.stroke();
+    return octx.createPattern(c, "repeat");
+  })();
+
+  function putFlat(ctx, flat, w, h){
+    const img = ctx.createImageData(w, h);
+    const d = img.data;
+    for (let i = 0; i < flat.length; i++){
+      const u = flat[i] >>> 0, j = i * 4;
+      d[j] = (u >>> 16) & 255; d[j + 1] = (u >>> 8) & 255; d[j + 2] = u & 255; d[j + 3] = (u >>> 24) & 255;
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  function renderArt(flatAll){
+    const z = state.zoom | 0, W = state.pxW, H = state.pxH;
+    if (el.renderCanvas.width !== W) el.renderCanvas.width = W;
+    if (el.renderCanvas.height !== H) el.renderCanvas.height = H;
+    el.renderCanvas.style.width = (W * z) + "px";
+    el.renderCanvas.style.height = (H * z) + "px";
+    if (el.overlayCanvas.width !== W * z) el.overlayCanvas.width = W * z;
+    if (el.overlayCanvas.height !== H * z) el.overlayCanvas.height = H * z;
+    // checkerboard behind transparent pixels
+    el.canvasStage.style.background = `repeating-conic-gradient(#151515 0 25%, #0b0b0b 0 50%) 0 0 / ${z * 2}px ${z * 2}px`;
+
+    let flat = state.showOnlyActive ? compositeFlattened({ onlyActive: true }) : flatAll;
+    if (state.colourMode === "solid") flat = maskedFlat(flatAll);
+    putFlat(rctx, flat, W, H);
+
+    // overlay: empty blocks + grid
+    const P = state.ppb;
+    octx.clearRect(0, 0, W * z, H * z);
+    octx.fillStyle = hatchPattern;
+    for (let by = 0; by < state.blocksH; by++) for (let bx = 0; bx < state.blocksW; bx++){
+      if (!maskAt(bx, by)) octx.fillRect(bx * P * z, by * P * z, P * z, P * z);
+    }
+    if (state.showGrid){
+      octx.save(); octx.translate(0.5, 0.5); octx.lineWidth = 1;
+      if (z >= 5){
+        octx.strokeStyle = "rgba(255,255,255,0.14)";
+        octx.beginPath();
+        for (let x = 1; x < W; x++){ if (x % P) { octx.moveTo(x * z, 0); octx.lineTo(x * z, H * z); } }
+        for (let y = 1; y < H; y++){ if (y % P) { octx.moveTo(0, y * z); octx.lineTo(W * z, y * z); } }
+        octx.stroke();
+      }
+      octx.strokeStyle = "rgba(255,255,255,0.45)";
+      octx.beginPath();
+      for (let x = P; x < W; x += P){ octx.moveTo(x * z, 0); octx.lineTo(x * z, H * z); }
+      for (let y = P; y < H; y += P){ octx.moveTo(0, y * z); octx.lineTo(W * z, y * z); }
+      octx.stroke();
+      octx.restore();
+    }
+    if (state.tool === "mask"){
+      // outline filled blocks in mask mode
+      octx.save(); octx.strokeStyle = "rgba(106,166,255,0.85)"; octx.lineWidth = 2;
+      for (let by = 0; by < state.blocksH; by++) for (let bx = 0; bx < state.blocksW; bx++){
+        if (maskAt(bx, by)) octx.strokeRect(bx * P * z + 2, by * P * z + 2, P * z - 4, P * z - 4);
+      }
+      octx.restore();
+    }
+    el.solidBanner.classList.toggle("hidden", state.colourMode !== "solid");
+  }
+
+  function rebuildPieceCanvas(flatAll){
+    if (pieceCanvas.width !== state.pxW) pieceCanvas.width = state.pxW;
+    if (pieceCanvas.height !== state.pxH) pieceCanvas.height = state.pxH;
+    putFlat(pieceCtx, maskedFlat(flatAll), state.pxW, state.pxH);
+  }
+
+  // ============================================================
+  // Scheduled rendering (coalesced into one animation frame)
+  // ============================================================
+  let renderQueued = false;
+  function scheduleRender(){
+    if (renderQueued) return;
+    renderQueued = true;
+    requestAnimationFrame(() => { renderQueued = false; renderNow(); });
+  }
+  function renderNow(){
+    const flatAll = compositeFlattened();
+    renderArt(flatAll);
+    rebuildPieceCanvas(flatAll);
+    const built = buildShapeFromEditor(flatAll);
+    state.lastBuild = built;
+    state.previewModel = shapeModel(built.shape);
+    renderIssues(built);
+    renderFillCanvas();
+    const t = performance.now();
+    drawAreaCanvas(t);
+    drawGamePreview(t);
+    renderPalette(flatAll);
+    el.zoomLabel.textContent = `${state.zoom}×`;
+    el.seedLabel.textContent = String(state.seed);
+    el.activeLabel.textContent = String(state.layers.findIndex(l => l.id === state.activeLayerId) + 1);
+    el.maskCount.textContent = `${filledCount()}/${state.blocksW * state.blocksH}`;
+    renderIdHint(built);
+    ensureAnimation();
+  }
+
+  // ============================================================
+  // Layer list UI
+  // ============================================================
+  function bindSliderUndo(input, apply){
+    input.addEventListener("input", () => { beginAction(); if (apply()) markChanged(); scheduleRender(); });
+    input.addEventListener("change", () => endAction());
+  }
+
+  function renderLayerList(){
+    el.layerList.innerHTML = "";
+    state.layers.forEach((L, i) => {
+      const div = document.createElement("div");
+      div.className = "layer" + (L.id === state.activeLayerId ? " active" : "");
+      div.addEventListener("click", (evt) => {
+        const tag = (evt.target.tagName || "").toLowerCase();
+        if (tag === "input" || tag === "button" || tag === "label") return;
+        state.activeLayerId = L.id;
+        renderLayerList(); scheduleRender();
+      });
+
+      const top = document.createElement("div");
+      top.className = "layerTop";
+      top.innerHTML = `<span class="layerName">${escapeHtml(L.name)}</span>`;
+      const right = document.createElement("div");
+      right.className = "row";
+      const vis = document.createElement("label");
+      vis.innerHTML = `<input type="checkbox" ${L.visible ? "checked" : ""}> Visible`;
+      vis.querySelector("input").addEventListener("change", (e) => {
+        commit(() => { L.visible = e.target.checked; return true; });
+      });
+      const up = document.createElement("button");
+      up.className = "small"; up.textContent = "Up"; up.disabled = i === 0;
+      up.addEventListener("click", (e) => {
+        e.stopPropagation();
+        commit(() => { [state.layers[i - 1], state.layers[i]] = [state.layers[i], state.layers[i - 1]]; return true; });
+        renderLayerList();
+      });
+      const down = document.createElement("button");
+      down.className = "small"; down.textContent = "Down"; down.disabled = i === state.layers.length - 1;
+      down.addEventListener("click", (e) => {
+        e.stopPropagation();
+        commit(() => { [state.layers[i + 1], state.layers[i]] = [state.layers[i], state.layers[i + 1]]; return true; });
+        renderLayerList();
+      });
+      right.append(vis, up, down);
+      top.appendChild(right);
+
+      const sliders = document.createElement("div");
+      sliders.className = "layerSliders";
+      const mk = (label, get, set) => {
+        const lab = document.createElement("label"); lab.textContent = label;
+        const r = document.createElement("input"); r.type = "range"; r.min = "0"; r.max = "100"; r.value = String(Math.round(get() * 100));
+        const pill = document.createElement("span"); pill.className = "pill mono"; pill.textContent = `${Math.round(get() * 100)}%`;
+        bindSliderUndo(r, () => {
+          const prev = get(); set((parseInt(r.value, 10) || 0) / 100);
+          pill.textContent = `${Math.round(get() * 100)}%`;
+          return prev !== get();
+        });
+        lab.appendChild(r);
+        sliders.append(lab, pill);
+      };
+      mk("Noise", () => L.noise, (v) => { L.noise = v; });
+      mk("Opacity", () => L.opacity, (v) => { L.opacity = v; });
+
+      div.append(top, sliders);
+      el.layerList.appendChild(div);
+    });
+  }
+
+  // ============================================================
+  // Art tools
+  // ============================================================
+  function setTool(tool){
+    state.tool = tool;
+    document.querySelectorAll(".toolBtn").forEach(b => b.classList.toggle("active", b.dataset.tool === tool));
+    scheduleRender();
+  }
+  function setColour(hex){
+    const h = normHex(hex);
+    if (!h) return;
+    state.colourHex = h;
+    el.hexText.value = h;
+    el.colour.value = h;
+    if (state.colourMode === "solid") setDirty(true);
+    scheduleRender();
+  }
+
+  function artPixelFromEvent(evt){
+    const rect = el.renderCanvas.getBoundingClientRect();
+    const x = Math.floor((evt.clientX - rect.left) / rect.width * state.pxW);
+    const y = Math.floor((evt.clientY - rect.top) / rect.height * state.pxH);
+    if (x < 0 || y < 0 || x >= state.pxW || y >= state.pxH) return null;
+    return { x, y };
+  }
+
+  function setPixel(L, x, y, val){
+    const i = y * state.pxW + x;
+    if ((L.data[i] >>> 0) === val) return false;
+    L.data[i] = val;
+    return true;
+  }
+  function paintBlock(L, x, y, val){
+    const P = state.ppb, x0 = Math.floor(x / P) * P, y0 = Math.floor(y / P) * P;
+    let changed = false;
+    for (let yy = y0; yy < y0 + P; yy++) for (let xx = x0; xx < x0 + P; xx++) changed = setPixel(L, xx, yy, val) || changed;
+    return changed;
+  }
+  function floodFillData(data, w, h, start, replacement){
+    const target = data[start] >>> 0;
+    if (target === replacement) return false;
+    const stack = [start];
+    while (stack.length){
+      const idx = stack.pop();
+      if ((data[idx] >>> 0) !== target) continue;
+      data[idx] = replacement;
+      const x = idx % w, y = (idx / w) | 0;
+      if (x > 0) stack.push(idx - 1);
+      if (x < w - 1) stack.push(idx + 1);
+      if (y > 0) stack.push(idx - w);
+      if (y < h - 1) stack.push(idx + w);
+    }
+    return true;
+  }
+  // Bresenham between two cells, calling fn(x,y)
+  function lineCells(x0, y0, x1, y1, fn){
+    const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0);
+    const sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+    let err = dx + dy;
+    for (;;){
+      fn(x0, y0);
+      if (x0 === x1 && y0 === y1) break;
+      const e2 = 2 * err;
+      if (e2 >= dy){ err += dy; x0 += sx; }
+      if (e2 <= dx){ err += dx; y0 += sy; }
+    }
+  }
+
+  // canvases preventDefault on pointerdown, so drop focus from text fields manually
+  // (otherwise Ctrl/Cmd+Z after a stroke would go to the focused input)
+  function blurFields(){
+    const a = document.activeElement;
+    if (a && a !== document.body && /^(input|textarea|select)$/i.test(a.tagName)) a.blur();
+  }
+
+  const artPtr = { down: false, tool: null, last: null, maskValue: 1 };
+
+  function applyArtTool(tool, x, y){
+    const L = getActiveLayer();
+    const colour = argbFromHex(state.colourHex);
+    switch (tool){
+      case "draw": return setPixel(L, x, y, colour);
+      case "erase": return setPixel(L, x, y, 0);
+      case "brush": return paintBlock(L, x, y, colour);
+      case "brushErase": return paintBlock(L, x, y, 0);
+      case "mask": {
+        const bx = Math.floor(x / state.ppb), by = Math.floor(y / state.ppb), i = by * state.blocksW + bx;
+        if (state.mask[i] === artPtr.maskValue) return false;
+        state.mask[i] = artPtr.maskValue;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  el.renderCanvas.addEventListener("pointerdown", (evt) => {
+    evt.preventDefault();
+    blurFields();
+    const p = artPixelFromEvent(evt);
+    if (!p) return;
+    let tool = state.tool;
+    const right = evt.button === 2;
+    if (tool === "dropper"){
+      const u = compositeFlattened()[p.y * state.pxW + p.x] >>> 0;
+      if (((u >>> 24) & 255) !== 0){ setColour(hexFromARGB(u)); setTool("draw"); }
+      return;
+    }
+    if (state.colourMode === "solid" && tool !== "mask"){
+      toast("Solid colour mode: switch Colour mode to Pixel art to draw (mask tool still works).");
+      return;
+    }
+    if (right && tool === "draw") tool = "erase";
+    if (right && tool === "brush") tool = "brushErase";
+    if (tool === "mask"){
+      const bx = Math.floor(p.x / state.ppb), by = Math.floor(p.y / state.ppb);
+      artPtr.maskValue = right ? 0 : (maskAt(bx, by) ? 0 : 1);
+    }
+    beginAction();
+    if (tool === "fill"){
+      const L = getActiveLayer();
+      const repl = right ? 0 : argbFromHex(state.colourHex);
+      if (floodFillData(L.data, state.pxW, state.pxH, p.y * state.pxW + p.x, repl)) markChanged();
+      endAction(); scheduleRender();
+      return;
+    }
+    try { el.renderCanvas.setPointerCapture(evt.pointerId); } catch {}
+    artPtr.down = true; artPtr.tool = tool; artPtr.last = p;
+    if (applyArtTool(tool, p.x, p.y)) markChanged();
+    scheduleRender();
+  });
+  el.renderCanvas.addEventListener("pointermove", (evt) => {
+    const p = artPixelFromEvent(evt);
+    el.ptrLabel.textContent = p ? `${p.x},${p.y} · b${Math.floor(p.x / state.ppb)},${Math.floor(p.y / state.ppb)}` : "—";
+    if (!artPtr.down || !p) return;
+    const last = artPtr.last || p;
+    let changed = false;
+    lineCells(last.x, last.y, p.x, p.y, (x, y) => { changed = applyArtTool(artPtr.tool, x, y) || changed; });
+    artPtr.last = p;
+    if (changed){ markChanged(); scheduleRender(); }
+  });
+  const endArtStroke = (evt) => {
+    if (!artPtr.down) return;
+    artPtr.down = false; artPtr.last = null;
+    endAction(); scheduleRender();
+    try { el.renderCanvas.releasePointerCapture(evt.pointerId); } catch {}
+  };
+  el.renderCanvas.addEventListener("pointerup", endArtStroke);
+  el.renderCanvas.addEventListener("pointercancel", endArtStroke);
+  el.renderCanvas.addEventListener("pointerleave", () => { el.ptrLabel.textContent = "—"; });
+  el.renderCanvas.addEventListener("contextmenu", (e) => e.preventDefault());
+
+  // palette of colours used in the art
+  let lastPaletteKey = "";
+  function renderPalette(flatAll){
+    const counts = new Map();
+    for (let i = 0; i < flatAll.length; i++){
+      const u = flatAll[i] >>> 0;
+      if (((u >>> 24) & 255) === 0) continue;
+      const k = u & 0xffffff;
+      counts.set(k, (counts.get(k) || 0) + 1);
+      if (counts.size > 400) break;
+    }
+    const cols = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 48)
+      .map(([k]) => "#" + k.toString(16).padStart(6, "0"));
+    const key = cols.join(",");
+    if (key === lastPaletteKey) return;
+    lastPaletteKey = key;
+    el.palette.innerHTML = "";
+    for (const c of cols){
+      const b = document.createElement("button");
+      b.className = "swatch"; b.style.background = c; b.title = c;
+      b.addEventListener("click", () => setColour(c));
+      el.palette.appendChild(b);
+    }
+  }
+
+  // ============================================================
+  // Clipboard paste (image -> active layer)
+  // ============================================================
+  async function pasteBitmapToActiveLayer(bmp){
+    const L = getActiveLayer();
+    const oc = document.createElement("canvas");
+    oc.width = state.pxW; oc.height = state.pxH;
+    const c = oc.getContext("2d", { willReadFrequently: true });
+    c.imageSmoothingEnabled = true;
+    c.drawImage(bmp, 0, 0, oc.width, oc.height);
+    const img = c.getImageData(0, 0, oc.width, oc.height).data;
+    let changed = false;
+    for (let i = 0; i < state.pxW * state.pxH; i++){
+      const j = i * 4, A = img[j + 3];
+      const next = A === 0 ? 0 : packARGB(A, img[j], img[j + 1], img[j + 2]);
+      if ((L.data[i] >>> 0) !== next){ L.data[i] = next; changed = true; }
+    }
+    return changed;
+  }
+  async function pasteBitmap(bmp){
+    beginAction();
+    try { if (await pasteBitmapToActiveLayer(bmp)) markChanged(); }
+    finally { endAction(); scheduleRender(); }
+  }
+  el.pasteBtn.addEventListener("click", async () => {
+    try {
+      if (!navigator.clipboard || !navigator.clipboard.read) throw new Error("Clipboard read API not available.");
+      const items = await navigator.clipboard.read();
+      for (const item of items){
+        const type = item.types.find(t => t.startsWith("image/"));
+        if (!type) continue;
+        await pasteBitmap(await createImageBitmap(await item.getType(type)));
+        return;
+      }
+      toast("No image found in the clipboard.");
+    } catch (e){
+      toast("Paste failed (clipboard needs http://localhost or https): " + (e.message || e), "bad");
+    }
+  });
+  window.addEventListener("paste", async (e) => {
+    const tag = (e.target && e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea") return;
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    const imgItem = Array.from(items).find(it => it.type && it.type.startsWith("image/"));
+    if (!imgItem) return;
+    e.preventDefault();
+    const blob = imgItem.getAsFile();
+    if (!blob) return;
+    try { await pasteBitmap(await createImageBitmap(blob)); } catch {}
+  });
+
+  // ============================================================
+  // Mask actions
+  // ============================================================
+  el.maskFill.addEventListener("click", () => commit(() => {
+    if (state.mask.every(v => v === 1)) return false;
+    state.mask.fill(1); return true;
+  }));
+  el.maskClear.addEventListener("click", () => commit(() => {
+    if (state.mask.every(v => v === 0)) return false;
+    state.mask.fill(0); return true;
+  }));
+  el.maskFromArt.addEventListener("click", () => commit(() => {
+    const flat = compositeFlattened();
+    const P = state.ppb, next = new Uint8Array(state.blocksW * state.blocksH);
+    for (let y = 0; y < state.pxH; y++) for (let x = 0; x < state.pxW; x++){
+      if (((flat[y * state.pxW + x] >>> 24) & 255) !== 0) next[Math.floor(y / P) * state.blocksW + Math.floor(x / P)] = 1;
+    }
+    let changed = false;
+    for (let i = 0; i < next.length; i++) if (next[i] !== state.mask[i]) changed = true;
+    state.mask = next;
+    return changed;
+  }));
+
+  // ============================================================
+  // Shape metadata form
+  // ============================================================
+  function syncMetaUI(){
+    el.shapeName.value = state.name;
+    el.shapeId.value = state.id;
+    el.shapeId.placeholder = suggestIdFromName(state.name) || "(auto-suggested from name)";
+    el.difficulty.value = String(state.difficulty);
+    el.freqRange.value = String(state.frequency);
+    el.freqNum.value = String(state.frequency);
+    ensureOption(el.rotationMode, state.rotationMode);
+    el.rotationMode.value = state.rotationMode;
+    el.rotationHint.textContent = state.kind === "powerup" && state.rotationMode !== "none" ? "area rotates with the piece" : "";
+    document.querySelectorAll("#kindSeg button").forEach(b => b.classList.toggle("on", b.dataset.kind === state.kind));
+    document.querySelectorAll("#colourModeSeg button").forEach(b => b.classList.toggle("on", b.dataset.mode === state.colourMode));
+    el.difficultyField.classList.toggle("hidden", state.kind !== "regular");
+    const extraKeys = Object.keys(state.extras);
+    el.extrasRow.innerHTML = extraKeys.length
+      ? `Preserved on save: ${extraKeys.map(k => `<span class="pill mono">${escapeHtml(k)}</span>`).join(" ")}`
+      : "";
+    renderLinks();
+    syncPowerupUI();
+  }
+  function ensureOption(select, value){
+    if ([...select.options].some(o => o.value === value)) return;
+    const o = document.createElement("option");
+    o.value = value; o.textContent = value;
+    select.appendChild(o);
+  }
+
+  el.shapeName.addEventListener("input", () => {
+    state.name = el.shapeName.value;
+    el.shapeId.placeholder = suggestIdFromName(state.name) || "(auto-suggested from name)";
+    setDirty(true); scheduleRender();
+  });
+  el.shapeId.addEventListener("input", () => { state.id = el.shapeId.value; setDirty(true); scheduleRender(); });
+  el.difficulty.addEventListener("change", () => { state.difficulty = clamp(parseInt(el.difficulty.value, 10) || 0, 0, 5); setDirty(true); scheduleRender(); });
+  el.freqRange.addEventListener("input", () => {
+    state.frequency = clamp(Number(el.freqRange.value), 0, 1);
+    el.freqNum.value = String(state.frequency);
+    setDirty(true); scheduleRender();
+  });
+  el.freqNum.addEventListener("input", () => {
+    const v = Number(el.freqNum.value);
+    if (!Number.isFinite(v)) return;
+    state.frequency = clamp(v, 0, 1);
+    el.freqRange.value = String(state.frequency);
+    setDirty(true); scheduleRender();
+  });
+  el.rotationMode.addEventListener("change", () => { state.rotationMode = el.rotationMode.value; setDirty(true); syncMetaUI(); scheduleRender(); });
+
+  document.querySelectorAll("#kindSeg button").forEach(b => b.addEventListener("click", () => setKind(b.dataset.kind)));
+  el.makePowerupBtn.addEventListener("click", () => setKind("powerup"));
+
+  function setKind(kind){
+    if (kind === state.kind) return;
+    state.kind = kind;
+    if (kind === "regular"){
+      // a difficulty preserved from a loaded powerup becomes the managed difficulty again
+      if (Object.prototype.hasOwnProperty.call(state.extras, "difficulty")){
+        const d = parseInt(state.extras.difficulty, 10);
+        if (Number.isFinite(d)) state.difficulty = clamp(d, 0, 5);
+        delete state.extras.difficulty;
+      }
+      state.targetSlot = "shapes";
+    } else {
+      // new powerups default to no rotation
+      if (!(state.source && state.source.original && state.source.original.powerup)) state.rotationMode = "none";
+      state.targetSlot = "powerups";
+    }
+    el.targetSlot.value = state.targetSlot;
+    setDirty(true);
+    syncMetaUI(); renderSaveHint(); scheduleRender();
+  }
+
+  document.querySelectorAll("#colourModeSeg button").forEach(b => b.addEventListener("click", () => {
+    const mode = b.dataset.mode;
+    commit(() => {
+      if (mode === state.colourMode) return false;
+      state.colourMode = mode;
+      return true;
+    });
+    syncMetaUI();
+  }));
+
+  // ---------- links editor ----------
+  function renderLinks(){
+    el.linkList.innerHTML = "";
+    state.links.forEach((row, i) => {
+      const div = document.createElement("div");
+      div.className = "linkRow";
+      const idIn = document.createElement("input");
+      idIn.type = "text"; idIn.className = "mono"; idIn.value = row.id; idIn.placeholder = "shape id"; idIn.setAttribute("list", "allIds"); idIn.spellcheck = false;
+      idIn.addEventListener("input", () => { row.id = idIn.value; setDirty(true); updateLinkSum(); scheduleRender(); });
+      const pIn = document.createElement("input");
+      pIn.type = "number"; pIn.min = "0"; pIn.max = "1"; pIn.step = "0.05";
+      pIn.value = row.prob == null ? "" : String(row.prob); pIn.placeholder = "prob";
+      pIn.addEventListener("input", () => {
+        const v = Number(pIn.value);
+        row.prob = pIn.value.trim() === "" || !Number.isFinite(v) ? null : clamp(v, 0, 1);
+        setDirty(true); updateLinkSum(); scheduleRender();
+      });
+      const del = document.createElement("button");
+      del.className = "small danger"; del.textContent = "×"; del.title = "Remove link";
+      del.addEventListener("click", () => { state.links.splice(i, 1); setDirty(true); renderLinks(); scheduleRender(); });
+      div.append(idIn, pIn, del);
+      el.linkList.appendChild(div);
+    });
+    updateLinkSum();
+  }
+  function updateLinkSum(){
+    const s = state.links.reduce((a, r) => a + (Number(r.prob) || 0), 0);
+    el.linkSum.textContent = `Σ ${Math.round(s * 1000) / 1000}`;
+    el.linkSum.className = "pill mono " + (s > 1.0001 ? "warn" : "");
+  }
+  el.addLinkBtn.addEventListener("click", () => { state.links.push({ id: "", prob: 0.5 }); setDirty(true); renderLinks(); scheduleRender(); });
+
+  // ============================================================
+  // Powerup settings UI
+  // ============================================================
+  function puConsumeEffective(){
+    const def = PU_DEFAULT_CONSUME[state.pu.type] ?? true;
+    return state.pu.consume === null ? def : state.pu.consume;
+  }
+  function syncPowerupUI(){
+    const isPu = state.kind === "powerup";
+    el.puDisabled.classList.toggle("hidden", isPu);
+    el.puEditor.classList.toggle("hidden", !isPu);
+    ensureOption(el.puType, state.pu.type);
+    el.puType.value = state.pu.type;
+    ensureOption(el.puDirection, state.pu.direction);
+    el.puDirection.value = state.pu.direction;
+    el.puTier.value = String(state.pu.tier);
+    el.puDescription.value = state.pu.description;
+    el.puDescription.placeholder = PU_DEFAULT_DESC[state.pu.type] || "(description)";
+    el.puConsume.checked = puConsumeEffective();
+    el.puConsumeNote.textContent = state.pu.consume === null ? "default" : "custom";
+    el.puConsumeNote.className = "pill " + (state.pu.consume === null ? "" : "accent");
+    el.puDirectionField.classList.toggle("hidden", state.pu.type !== "gravity");
+    el.puCollapseField.classList.toggle("hidden", state.pu.type !== "destroyer");
+    el.puCollapse.checked = !!state.pu.collapse;
+    el.fillBox.classList.toggle("hidden", state.pu.type !== "expander");
+    el.areaMargin.value = String(state.area.margin);
+    document.querySelectorAll("#areaTools button").forEach(b => b.classList.toggle("active", b.dataset.ach === state.area.tool));
+    syncFillUI();
+  }
+  el.puType.addEventListener("change", () => { state.pu.type = el.puType.value; setDirty(true); syncPowerupUI(); scheduleRender(); });
+  el.puDirection.addEventListener("change", () => { state.pu.direction = el.puDirection.value; setDirty(true); scheduleRender(); });
+  el.puTier.addEventListener("change", () => { state.pu.tier = clamp(parseInt(el.puTier.value, 10) || 1, 1, 3); setDirty(true); scheduleRender(); });
+  el.puDescription.addEventListener("input", () => { state.pu.description = el.puDescription.value; setDirty(true); scheduleRender(); });
+  el.puConsume.addEventListener("change", () => {
+    const def = PU_DEFAULT_CONSUME[state.pu.type] ?? true;
+    state.pu.consume = el.puConsume.checked === def ? null : el.puConsume.checked;
+    setDirty(true); syncPowerupUI(); scheduleRender();
+  });
+  el.puCollapse.addEventListener("change", () => { state.pu.collapse = el.puCollapse.checked; setDirty(true); scheduleRender(); });
+
+  // ============================================================
+  // Area editor (highlighted cells around the piece)
+  // ============================================================
+  const actx = el.areaCanvas.getContext("2d");
+  const areaKey = (x, y) => `${x},${y}`;
+  const parseKey = (k) => k.split(",").map(Number);
+  const areaPtr = { down: false, ch: "#", last: null, hover: null };
+
+  function areaView(){
+    const m = state.area.margin;
+    return { x0: -m, y0: -m, cols: state.blocksW + 2 * m, rows: state.blocksH + 2 * m };
+  }
+  function areaCellSize(v){
+    const availW = Math.max(220, el.areaWrap.clientWidth - 22);
+    const availH = Math.max(280, window.innerHeight - 200);
+    return clamp(Math.floor(Math.min(availW / v.cols, availH / v.rows)), 8, 44);
+  }
+  function areaCellFromEvent(evt){
+    const v = areaView(), cs = areaCellSize(v);
+    const rect = el.areaCanvas.getBoundingClientRect();
+    const x = Math.floor((evt.clientX - rect.left) / rect.width * (v.cols * cs) / cs) + v.x0;
+    const y = Math.floor((evt.clientY - rect.top) / rect.height * (v.rows * cs) / cs) + v.y0;
+    if (x < v.x0 || y < v.y0 || x >= v.x0 + v.cols || y >= v.y0 + v.rows) return null;
+    return { x, y };
+  }
+  function setAreaCell(x, y, ch){
+    const k = areaKey(x, y), prev = state.area.cells[k] || ".";
+    if (prev === ch) return false;
+    if (ch === ".") delete state.area.cells[k]; else state.area.cells[k] = ch;
+    return true;
+  }
+  // generators merge: '-' + '|' = '+', '#' never downgrades a row/column marker
+  function mergeAreaCell(x, y, ch){
+    const prev = state.area.cells[areaKey(x, y)] || ".";
+    let next = ch;
+    if (prev === "+") next = "+";
+    else if (ch === "#" && (prev === "-" || prev === "|")) next = prev;
+    else if ((prev === "-" && ch === "|") || (prev === "|" && ch === "-")) next = "+";
+    return setAreaCell(x, y, next);
+  }
+
+  el.areaCanvas.addEventListener("pointerdown", (evt) => {
+    evt.preventDefault();
+    blurFields();
+    const c = areaCellFromEvent(evt);
+    if (!c) return;
+    areaPtr.ch = evt.button === 2 ? "." : state.area.tool;
+    areaPtr.down = true; areaPtr.last = c;
+    try { el.areaCanvas.setPointerCapture(evt.pointerId); } catch {}
+    beginAction();
+    if (setAreaCell(c.x, c.y, areaPtr.ch)) markChanged();
+    scheduleRender();
+  });
+  el.areaCanvas.addEventListener("pointermove", (evt) => {
+    const c = areaCellFromEvent(evt);
+    areaPtr.hover = c;
+    if (c) el.ptrLabel.textContent = `area ${c.x},${c.y}`;
+    if (areaPtr.down && c){
+      let changed = false;
+      const l = areaPtr.last || c;
+      lineCells(l.x, l.y, c.x, c.y, (x, y) => { changed = setAreaCell(x, y, areaPtr.ch) || changed; });
+      areaPtr.last = c;
+      if (changed) markChanged();
+    }
+    if (!animationRunning()) scheduleRender();
+  });
+  const endAreaStroke = (evt) => {
+    if (!areaPtr.down) return;
+    areaPtr.down = false; areaPtr.last = null;
+    endAction(); scheduleRender();
+    try { el.areaCanvas.releasePointerCapture(evt.pointerId); } catch {}
+  };
+  el.areaCanvas.addEventListener("pointerup", endAreaStroke);
+  el.areaCanvas.addEventListener("pointercancel", endAreaStroke);
+  el.areaCanvas.addEventListener("pointerleave", () => { areaPtr.hover = null; if (!animationRunning()) scheduleRender(); });
+  el.areaCanvas.addEventListener("contextmenu", (e) => e.preventDefault());
+
+  document.querySelectorAll("#areaTools button").forEach(b => b.addEventListener("click", () => {
+    state.area.tool = b.dataset.ach;
+    syncPowerupUI();
+  }));
+  el.areaMargin.addEventListener("input", () => {
+    state.area.margin = clamp(parseInt(el.areaMargin.value, 10) || 0, 0, 30);
+    scheduleRender();
+  });
+
+  // piece box / centre in editor block coords
+  function pieceBox(){ return maskBounds() || fullBounds(); }
+  function generate(kind){
+    const r = Math.max(0, Number(el.genRadius.value) || 0);
+    const b = pieceBox();
+    const cx = (b.x0 + b.x1 + 1) / 2, cy = (b.y0 + b.y1 + 1) / 2;
+    commit(() => {
+      let changed = false;
+      if (kind === "clear"){
+        changed = Object.keys(state.area.cells).length > 0;
+        state.area.cells = {};
+        return changed;
+      }
+      if (kind === "circle" || kind === "square"){
+        const R = Math.ceil(r + 1);
+        for (let y = Math.floor(cy - R); y <= Math.ceil(cy + R); y++){
+          for (let x = Math.floor(cx - R); x <= Math.ceil(cx + R); x++){
+            const dx = x + 0.5 - cx, dy = y + 0.5 - cy;
+            const inside = kind === "circle"
+              ? Math.hypot(dx, dy) <= r + 0.5 + 1e-9
+              : Math.abs(dx) <= r + 0.5 + 1e-9 && Math.abs(dy) <= r + 0.5 + 1e-9;
+            if (inside) changed = mergeAreaCell(x, y, "#") || changed;
+          }
+        }
+      }
+      if (kind === "rows" || kind === "cols"){
+        for (let y = b.y0; y <= b.y1; y++) for (let x = b.x0; x <= b.x1; x++){
+          changed = mergeAreaCell(x, y, kind === "rows" ? "-" : "|") || changed;
+        }
+      }
+      return changed;
+    });
+    // grow the view if the generator went past the margin
+    let need = 0;
+    for (const k of Object.keys(state.area.cells)){
+      const [x, y] = parseKey(k);
+      need = Math.max(need, -x, -y, x - (state.blocksW - 1), y - (state.blocksH - 1));
+    }
+    if (need > state.area.margin){ state.area.margin = clamp(need, 0, 30); el.areaMargin.value = String(state.area.margin); }
+    scheduleRender();
+  }
+  el.genCircle.addEventListener("click", () => generate("circle"));
+  el.genSquare.addEventListener("click", () => generate("square"));
+  el.genRows.addEventListener("click", () => generate("rows"));
+  el.genCols.addEventListener("click", () => generate("cols"));
+  el.genClear.addEventListener("click", () => generate("clear"));
+
+  // Affected cells inside a rectangular view, given cells [{x,y,ch}]
+  function affectedCells(cells, vx0, vy0, cols, rows){
+    const set = new Set();
+    const add = (x, y) => { if (x >= vx0 && y >= vy0 && x < vx0 + cols && y < vy0 + rows) set.add(areaKey(x, y)); };
+    for (const c of cells){
+      if (c.ch === "#") add(c.x, c.y);
+      if (c.ch === "-" || c.ch === "+") for (let x = vx0; x < vx0 + cols; x++) add(x, c.y);
+      if (c.ch === "|" || c.ch === "+") for (let y = vy0; y < vy0 + rows; y++) add(c.x, y);
+    }
+    return set;
+  }
+  const editorAreaCells = () => Object.entries(state.area.cells).map(([k, ch]) => { const [x, y] = parseKey(k); return { x, y, ch }; });
+
+  function drawAreaCanvas(t){
+    if (state.centreTab !== "powerup" || state.kind !== "powerup") return;
+    const v = areaView(), cs = areaCellSize(v);
+    const W = v.cols * cs, H = v.rows * cs;
+    if (el.areaCanvas.width !== W) el.areaCanvas.width = W;
+    if (el.areaCanvas.height !== H) el.areaCanvas.height = H;
+    const ctx = actx;
+    ctx.fillStyle = "#050505"; ctx.fillRect(0, 0, W, H);
+    const cells = editorAreaCells();
+
+    // row / column bands
+    ctx.fillStyle = "rgba(255,207,106,0.07)";
+    for (const c of cells){
+      if (c.ch === "-" || c.ch === "+") ctx.fillRect(0, (c.y - v.y0) * cs, W, cs);
+      if (c.ch === "|" || c.ch === "+") ctx.fillRect((c.x - v.x0) * cs, 0, cs, H);
+    }
+    // grid
+    ctx.save(); ctx.translate(0.5, 0.5);
+    ctx.strokeStyle = "rgba(255,255,255,0.07)"; ctx.lineWidth = 1; ctx.beginPath();
+    for (let x = 1; x < v.cols; x++){ ctx.moveTo(x * cs, 0); ctx.lineTo(x * cs, H); }
+    for (let y = 1; y < v.rows; y++){ ctx.moveTo(0, y * cs); ctx.lineTo(W, y * cs); }
+    ctx.stroke(); ctx.restore();
+
+    // piece art
+    const px0 = -v.x0 * cs, py0 = -v.y0 * cs;
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(pieceCanvas, 0, 0, state.pxW, state.pxH, px0, py0, state.blocksW * cs, state.blocksH * cs);
+    ctx.save();
+    ctx.setLineDash([4, 3]); ctx.strokeStyle = "rgba(106,166,255,0.55)"; ctx.lineWidth = 1;
+    ctx.strokeRect(px0 + 0.5, py0 + 0.5, state.blocksW * cs - 1, state.blocksH * cs - 1);
+    ctx.restore();
+
+    // rainbow highlight (what the game shows)
+    const aff = affectedCells(cells, v.x0, v.y0, v.cols, v.rows);
+    for (const k of aff){
+      const [x, y] = parseKey(k);
+      drawRainbowCell(ctx, (x - v.x0) * cs, (y - v.y0) * cs, cs, x, y, state.pu.type, state.pu.direction, t);
+    }
+
+    // markers
+    for (const c of cells){
+      if (c.x < v.x0 || c.y < v.y0 || c.x >= v.x0 + v.cols || c.y >= v.y0 + v.rows) continue;
+      drawMarker(ctx, (c.x - v.x0) * cs, (c.y - v.y0) * cs, cs, c.ch);
+    }
+    // hover
+    if (areaPtr.hover){
+      ctx.strokeStyle = "rgba(106,166,255,0.9)"; ctx.lineWidth = 2;
+      ctx.strokeRect((areaPtr.hover.x - v.x0) * cs + 1, (areaPtr.hover.y - v.y0) * cs + 1, cs - 2, cs - 2);
+    }
+
+    // info pill
+    let outside = 0;
+    for (const c of cells) if (c.x < v.x0 || c.y < v.y0 || c.x >= v.x0 + v.cols || c.y >= v.y0 + v.rows) outside++;
+    el.areaInfo.textContent = `${cells.length} marked` + (outside ? ` · ${outside} outside view` : "");
+    el.areaInfo.className = "pill mono " + (outside ? "warn" : "");
+  }
+
+  function drawMarker(ctx, px, py, cs, ch){
+    const th = Math.max(2, Math.round(cs * 0.14));
+    const mid = Math.round(cs / 2);
+    const paint = (col, grow) => {
+      ctx.fillStyle = col;
+      if (ch === "#"){
+        ctx.strokeStyle = col; ctx.lineWidth = 2 + grow * 2;
+        ctx.strokeRect(px + 2.5, py + 2.5, cs - 5, cs - 5);
+      }
+      if (ch === "-" || ch === "+") ctx.fillRect(px + 3 - grow, py + mid - th / 2 - grow, cs - 6 + grow * 2, th + grow * 2);
+      if (ch === "|" || ch === "+") ctx.fillRect(px + mid - th / 2 - grow, py + 3 - grow, th + grow * 2, cs - 6 + grow * 2);
+    };
+    paint("rgba(0,0,0,0.75)", 1);
+    paint(ch === "#" ? "rgba(255,255,255,0.9)" : "rgba(255,207,106,0.95)", 0);
+  }
+
+  // ============================================================
+  // Rainbow highlight animation (shared by area editor + in-game preview)
+  //   destroyer: a square shrinking inside each cell (loop)
+  //   expander:  a square growing inside each cell (loop)
+  //   gravity:   a short line moving through each cell in the gravity direction (loop)
+  // ============================================================
+  const RAINBOW_PERIOD_MS = 1100;
+  function drawRainbowCell(ctx, px, py, size, gx, gy, type, dir, t){
+    const p = ((t / RAINBOW_PERIOD_MS) % 1 + 1) % 1;
+    const hue = ((t * 0.12) + (gx + gy) * 28) % 360;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(px, py, size, size); ctx.clip();
+    ctx.fillStyle = `hsla(${hue},100%,60%,0.14)`;
+    ctx.fillRect(px, py, size, size);
+    ctx.fillStyle = `hsla(${hue},100%,62%,0.42)`;
+    if (type === "gravity"){
+      const len = size * 0.45, th = Math.max(2, size * 0.14);
+      const travel = -len + p * (size + len);
+      const c = size / 2;
+      if (dir === "left") ctx.fillRect(px + size - travel - len, py + c - th / 2, len, th);
+      else if (dir === "right") ctx.fillRect(px + travel, py + c - th / 2, len, th);
+      else if (dir === "up") ctx.fillRect(px + c - th / 2, py + size - travel - len, th, len);
+      else ctx.fillRect(px + c - th / 2, py + travel, th, len);
+    } else {
+      const f = type === "expander" ? p : 1 - p;
+      const s = size * 0.92 * f;
+      ctx.fillRect(px + (size - s) / 2, py + (size - s) / 2, s, s);
+    }
+    ctx.restore();
+  }
+
+  let rafId = 0;
+  const animationWanted = () => state.kind === "powerup" && state.centreTab === "powerup" && document.visibilityState === "visible";
+  const animationRunning = () => rafId !== 0;
+  function ensureAnimation(){
+    if (animationWanted() && !rafId) rafId = requestAnimationFrame(animFrame);
+  }
+  function animFrame(t){
+    rafId = 0;
+    if (!animationWanted()) return;
+    drawAreaCanvas(t);
+    drawGamePreview(t);
+    rafId = requestAnimationFrame(animFrame);
+  }
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") scheduleRender(); });
+
+  // ============================================================
+  // Expander fill-art editor (one block of k×k pixels, or solid)
+  // ============================================================
+  const fctx = el.fillCanvas.getContext("2d");
+  const fillPtr = { down: false, tool: "draw", last: null };
+  const fillCellSize = () => Math.max(12, Math.floor(168 / state.fill.k));
+
+  function syncFillUI(){
+    const f = state.fill;
+    document.querySelectorAll("#fillModeSeg button").forEach(b => b.classList.toggle("on", b.dataset.fmode === f.mode));
+    el.fillK.value = String(f.k);
+    el.fillSolid.value = f.solidHex;
+    el.fillSolidHex.textContent = f.solidHex;
+    el.fillSolidRow.classList.toggle("hidden", f.mode !== "solid");
+    el.fillPixelTools.classList.toggle("hidden", f.mode !== "pixel");
+    el.fillK.disabled = f.mode !== "pixel";
+    document.querySelectorAll(".fillToolBtn").forEach(b => b.classList.toggle("active", b.dataset.ftool === f.tool));
+  }
+  function renderFillCanvas(){
+    if (state.kind !== "powerup" || state.pu.type !== "expander" || state.centreTab !== "powerup") return;
+    const f = state.fill, cs = fillCellSize(), S = f.k * cs;
+    if (el.fillCanvas.width !== S) el.fillCanvas.width = S;
+    if (el.fillCanvas.height !== S) el.fillCanvas.height = S;
+    for (let y = 0; y < f.k; y++) for (let x = 0; x < f.k; x++){
+      const hex = f.mode === "solid" ? f.solidHex : hexFromARGB(f.data[y * f.k + x]);
+      if (hex){ fctx.fillStyle = hex; fctx.fillRect(x * cs, y * cs, cs, cs); }
+      else {
+        fctx.fillStyle = "#101010"; fctx.fillRect(x * cs, y * cs, cs, cs);
+        fctx.fillStyle = "#1c1c1c"; fctx.fillRect(x * cs, y * cs, cs / 2, cs / 2); fctx.fillRect(x * cs + cs / 2, y * cs + cs / 2, cs / 2, cs / 2);
+      }
+    }
+    if (f.mode === "pixel"){
+      fctx.save(); fctx.translate(0.5, 0.5); fctx.strokeStyle = "rgba(255,255,255,0.18)"; fctx.beginPath();
+      for (let i = 1; i < f.k; i++){ fctx.moveTo(i * cs, 0); fctx.lineTo(i * cs, S); fctx.moveTo(0, i * cs); fctx.lineTo(S, i * cs); }
+      fctx.stroke(); fctx.restore();
+    }
+  }
+  function fillPixelFromEvent(evt){
+    const rect = el.fillCanvas.getBoundingClientRect(), k = state.fill.k;
+    const x = Math.floor((evt.clientX - rect.left) / rect.width * k);
+    const y = Math.floor((evt.clientY - rect.top) / rect.height * k);
+    return x < 0 || y < 0 || x >= k || y >= k ? null : { x, y };
+  }
+  function applyFillTool(tool, x, y){
+    const f = state.fill, i = y * f.k + x;
+    const val = tool === "erase" ? 0 : argbFromHex(state.colourHex);
+    if ((f.data[i] >>> 0) === val) return false;
+    f.data[i] = val;
+    return true;
+  }
+  el.fillCanvas.addEventListener("pointerdown", (evt) => {
+    evt.preventDefault();
+    blurFields();
+    if (state.fill.mode !== "pixel"){ toast("Fill art is solid. Switch it to Pixel art to draw."); return; }
+    const p = fillPixelFromEvent(evt);
+    if (!p) return;
+    let tool = state.fill.tool;
+    if (evt.button === 2) tool = "erase";
+    if (tool === "dropper"){
+      const hex = hexFromARGB(state.fill.data[p.y * state.fill.k + p.x]);
+      if (hex){ setColour(hex); state.fill.tool = "draw"; syncFillUI(); }
+      return;
+    }
+    beginAction();
+    if (tool === "fill"){
+      if (floodFillData(state.fill.data, state.fill.k, state.fill.k, p.y * state.fill.k + p.x, argbFromHex(state.colourHex))) markChanged();
+      endAction(); scheduleRender();
+      return;
+    }
+    fillPtr.down = true; fillPtr.tool = tool; fillPtr.last = p;
+    try { el.fillCanvas.setPointerCapture(evt.pointerId); } catch {}
+    if (applyFillTool(tool, p.x, p.y)) markChanged();
+    scheduleRender();
+  });
+  el.fillCanvas.addEventListener("pointermove", (evt) => {
+    if (!fillPtr.down) return;
+    const p = fillPixelFromEvent(evt);
+    if (!p) return;
+    let changed = false;
+    const l = fillPtr.last || p;
+    lineCells(l.x, l.y, p.x, p.y, (x, y) => { changed = applyFillTool(fillPtr.tool, x, y) || changed; });
+    fillPtr.last = p;
+    if (changed){ markChanged(); scheduleRender(); }
+  });
+  const endFillStroke = (evt) => {
+    if (!fillPtr.down) return;
+    fillPtr.down = false;
+    endAction(); scheduleRender();
+    try { el.fillCanvas.releasePointerCapture(evt.pointerId); } catch {}
+  };
+  el.fillCanvas.addEventListener("pointerup", endFillStroke);
+  el.fillCanvas.addEventListener("pointercancel", endFillStroke);
+  el.fillCanvas.addEventListener("contextmenu", (e) => e.preventDefault());
+
+  document.querySelectorAll("#fillModeSeg button").forEach(b => b.addEventListener("click", () => {
+    const mode = b.dataset.fmode;
+    commit(() => {
+      if (state.fill.mode === mode) return false;
+      state.fill.mode = mode;
+      // starting pixel art from an empty block: seed it with the solid colour
+      if (mode === "pixel" && state.fill.data.every(u => u === 0)) state.fill.data.fill(argbFromHex(state.fill.solidHex));
+      return true;
+    });
+    syncFillUI();
+  }));
+  document.querySelectorAll(".fillToolBtn").forEach(b => b.addEventListener("click", () => { state.fill.tool = b.dataset.ftool; syncFillUI(); }));
+  el.fillK.addEventListener("change", () => {
+    const k = clamp(parseInt(el.fillK.value, 10) || 1, 1, 7);
+    commit(() => {
+      const f = state.fill;
+      if (k === f.k) return false;
+      const nd = new Uint32Array(k * k);
+      for (let y = 0; y < k; y++) for (let x = 0; x < k; x++) nd[y * k + x] = f.data[Math.floor(y * f.k / k) * f.k + Math.floor(x * f.k / k)];
+      f.k = k; f.data = nd;
+      return true;
+    });
+    syncFillUI();
+  });
+  el.fillSolid.addEventListener("input", () => {
+    commit(() => { const h = normHex(el.fillSolid.value); if (!h || h === state.fill.solidHex) return false; state.fill.solidHex = h; return true; });
+    el.fillSolidHex.textContent = state.fill.solidHex;
+  });
+  el.fillSolidFromCurrent.addEventListener("click", () => {
+    commit(() => { if (state.fill.solidHex === state.colourHex) return false; state.fill.solidHex = state.colourHex; return true; });
+    syncFillUI();
+  });
+  el.fillAll.addEventListener("click", () => commit(() => {
+    const v = argbFromHex(state.colourHex);
+    if (state.fill.data.every(u => u === v)) return false;
+    state.fill.data.fill(v); return true;
+  }));
+  el.fillClear.addEventListener("click", () => commit(() => {
+    if (state.fill.data.every(u => u === 0)) return false;
+    state.fill.data.fill(0); return true;
+  }));
+  el.fillFromPiece.addEventListener("click", () => {
+    const b = maskBounds();
+    if (!b){ toast("The piece has no filled blocks."); return; }
+    let bx = b.x0, by = b.y0;
+    outer: for (let y = b.y0; y <= b.y1; y++) for (let x = b.x0; x <= b.x1; x++) if (maskAt(x, y)){ bx = x; by = y; break outer; }
+    const flat = maskedFlat(compositeFlattened());
+    commit(() => {
+      const f = state.fill, P = state.ppb;
+      const nd = new Uint32Array(f.k * f.k);
+      for (let y = 0; y < f.k; y++) for (let x = 0; x < f.k; x++){
+        nd[y * f.k + x] = flat[(by * P + Math.floor(y * P / f.k)) * state.pxW + bx * P + Math.floor(x * P / f.k)];
+      }
+      f.data = nd; f.mode = "pixel";
+      return true;
+    });
+    syncFillUI();
+  });
+
+  // ============================================================
+  // Shape model: a render-ready view of a shape object
+  // (used by the list thumbnails and the in-game preview)
+  // ============================================================
+  function gridLines(g){
+    const lines = Array.isArray(g) ? g.map(String) : (typeof g === "string" ? g.split("\n") : []);
+    return lines.map(s => s.trimEnd()).filter(s => s.trim().length > 0);
+  }
+  function inferK(h, w, ch, cw){
+    if (!ch || !cw || ch % h || cw % w) return null;
+    const k = ch / h;
+    return (k === cw / w && k >= 1 && k <= 7) ? k : null;
+  }
+  function shapeModel(shape){
+    const lines = gridLines(shape && shape.grid);
+    const h = Math.max(1, lines.length), w = Math.max(1, ...lines.map(l => l.length), 1);
+    const mask = [];
+    for (let y = 0; y < h; y++){ const row = []; for (let x = 0; x < w; x++) row.push((lines[y] || "")[x] === "X"); mask.push(row); }
+    let tx0 = Infinity, ty0 = Infinity, tx1 = -1, ty1 = -1;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (mask[y][x]){ tx0 = Math.min(tx0, x); ty0 = Math.min(ty0, y); tx1 = Math.max(tx1, x); ty1 = Math.max(ty1, y); }
+    if (tx1 < 0){ tx0 = 0; ty0 = 0; tx1 = -1; ty1 = -1; }
+    const col = shape ? shape.color : null;
+    let solid = null, pix = null, k = 1, base = "#ffffff";
+    if (typeof col === "string"){ solid = normHex(col) || "#ffffff"; base = solid; }
+    else if (Array.isArray(col) && Array.isArray(col[0])){
+      // first non-empty colour in reading order (the game's baseColor)
+      base = (() => { for (const r of col) for (const c of r){ const hx = normHex(c); if (hx) return hx; } return "#ffffff"; })();
+      k = inferK(h, w, col.length, col[0].length);
+      if (k) pix = col; else { solid = base; k = 1; }
+    } else solid = "#ffffff";
+    const blocks = [];
+    for (let y = ty0; y <= ty1; y++) for (let x = tx0; x <= tx1; x++) if (mask[y][x]) blocks.push({ x: x - tx0, y: y - ty0, gx: x, gy: y });
+
+    let area = null, powerup = null;
+    if (shape && shape.powerup && typeof shape.powerup === "object"){
+      powerup = shape.powerup;
+      area = [];
+      const a = powerup.area;
+      if (a && Array.isArray(a.grid)){
+        const o = Array.isArray(a.origin) ? a.origin : [0, 0];
+        const ox = Number(o[0]) || 0, oy = Number(o[1]) || 0;
+        a.grid.forEach((line, gy) => {
+          String(line).split("").forEach((ch, gx) => { if (AREA_CHARS.has(ch)) area.push({ x: gx - ox, y: gy - oy, ch }); });
+        });
+      }
+    }
+    return { w: tx1 - tx0 + 1, h: ty1 - ty0 + 1, blocks, solid, pix, k, base, area, powerup };
+  }
+  function blockPixelColour(m, b, sx, sy){
+    if (!m.pix) return m.solid;
+    const c = m.pix[b.gy * m.k + sy] && m.pix[b.gy * m.k + sy][b.gx * m.k + sx];
+    return normHex(c) || m.base;
+  }
+  // Draw one game block (pixel boundaries rounded exactly like the game)
+  function drawModelBlock(ctx, px, py, size, m, b, outline){
+    if (!m.pix){ ctx.fillStyle = m.solid; ctx.fillRect(px, py, size, size); }
+    else {
+      const k = m.k;
+      for (let sy = 0; sy < k; sy++){
+        const y0 = py + Math.round(sy * size / k), y1 = py + Math.round((sy + 1) * size / k);
+        for (let sx = 0; sx < k; sx++){
+          const x0 = px + Math.round(sx * size / k), x1 = px + Math.round((sx + 1) * size / k);
+          if (x1 <= x0 || y1 <= y0) continue;
+          ctx.fillStyle = blockPixelColour(m, b, sx, sy);
+          ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+        }
+      }
+    }
+    if (outline){
+      ctx.strokeStyle = "rgba(0,0,0,0.55)"; ctx.lineWidth = 0.5;
+      ctx.strokeRect(px, py, size - 0.5, size - 0.5);
+    }
+  }
+  function drawFillBlock(ctx, px, py, size, fill){
+    if (typeof fill === "string"){ ctx.fillStyle = normHex(fill) || "#ffffff"; ctx.fillRect(px, py, size, size); return; }
+    if (!Array.isArray(fill) || !fill.length) return;
+    const k = fill.length;
+    for (let sy = 0; sy < k; sy++){
+      const y0 = py + Math.round(sy * size / k), y1 = py + Math.round((sy + 1) * size / k);
+      for (let sx = 0; sx < k; sx++){
+        const hx = normHex(fill[sy] && fill[sy][sx]);
+        if (!hx) continue;
+        const x0 = px + Math.round(sx * size / k), x1 = px + Math.round((sx + 1) * size / k);
+        ctx.fillStyle = hx; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+      }
+    }
+  }
+
+  // ============================================================
+  // In-game preview (18px cells on a 14×12 black board)
+  // ============================================================
+  const gctx = el.gameCanvas.getContext("2d");
+  const STACK_COLOURS = ["#3c4252", "#4a3f52", "#52473c", "#3c5247", "#46464e"];
+  function previewPos(m){
+    if (state.previewPos) return state.previewPos;
+    return { x: Math.floor((GAME.cols - m.w) / 2), y: Math.max(0, Math.floor((GAME.rows - m.h) / 2) - 1) };
+  }
+  function drawGamePreview(t){
+    const C = GAME.cell, W = GAME.cols * C, H = GAME.rows * C;
+    const ctx = gctx;
+    ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
+    const m = state.previewModel;
+    if (!m) return;
+    const pos = previewPos(m);
+    const occupied = new Set();
+    // sample stack
+    if (state.previewStack){
+      for (let y = GAME.rows - 4; y < GAME.rows; y++) for (let x = 0; x < GAME.cols; x++){
+        if (hash01(x, y, 7, 99) < 0.28 + (y - (GAME.rows - 4)) * 0.05) continue;
+        occupied.add(areaKey(x, y));
+        ctx.fillStyle = STACK_COLOURS[Math.floor(hash01(x, y, 3, 5) * STACK_COLOURS.length)];
+        ctx.fillRect(x * C, y * C, C, C);
+        ctx.strokeStyle = "rgba(0,0,0,0.55)"; ctx.lineWidth = 0.5; ctx.strokeRect(x * C, y * C, C - 0.5, C - 0.5);
+      }
+    }
+    // piece
+    for (const b of m.blocks){
+      const bx = pos.x + b.x, by = pos.y + b.y;
+      if (bx < 0 || by < 0 || bx >= GAME.cols || by >= GAME.rows) continue;
+      occupied.add(areaKey(bx, by));
+      drawModelBlock(ctx, bx * C, by * C, C, m, b, true);
+    }
+    // highlighted area
+    if (m.powerup && m.area){
+      const cells = m.area.map(c => ({ x: c.x + pos.x, y: c.y + pos.y, ch: c.ch }));
+      const aff = affectedCells(cells, 0, 0, GAME.cols, GAME.rows);
+      const type = m.powerup.type, dir = m.powerup.direction || "down";
+      for (const k of aff){
+        const [x, y] = parseKey(k);
+        if (type === "expander" && m.powerup.fill != null && !occupied.has(k)){
+          ctx.save(); ctx.globalAlpha = 0.35; drawFillBlock(ctx, x * C, y * C, C, m.powerup.fill); ctx.restore();
+        }
+        drawRainbowCell(ctx, x * C, y * C, C, x, y, type, dir, t);
+      }
+    }
+    // grid like the game
+    ctx.save(); ctx.globalAlpha = 0.22; ctx.strokeStyle = "rgba(220,220,235,0.45)"; ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let x = 0; x <= W; x += C){ ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, H); }
+    for (let y = 0; y <= H; y += C){ ctx.moveTo(0, y + 0.5); ctx.lineTo(W, y + 0.5); }
+    ctx.stroke(); ctx.restore();
+  }
+  el.gameCanvas.addEventListener("click", (evt) => {
+    const m = state.previewModel;
+    if (!m) return;
+    const rect = el.gameCanvas.getBoundingClientRect();
+    const cx = Math.floor((evt.clientX - rect.left) / rect.width * GAME.cols);
+    const cy = Math.floor((evt.clientY - rect.top) / rect.height * GAME.rows);
+    state.previewPos = { x: cx - Math.floor((m.w - 1) / 2), y: cy - Math.floor((m.h - 1) / 2) };
+    scheduleRender();
+  });
+  el.previewCentre.addEventListener("click", () => { state.previewPos = null; scheduleRender(); });
+  el.previewStack.addEventListener("change", () => { state.previewStack = el.previewStack.checked; scheduleRender(); });
+  function syncPreviewScale(){
+    const s = el.previewBig.checked ? 2 : 1;
+    el.gameCanvas.style.width = (GAME.cols * GAME.cell * s) + "px";
+    el.gameCanvas.style.height = (GAME.rows * GAME.cell * s) + "px";
+  }
+  el.previewBig.addEventListener("change", syncPreviewScale);
+
+  // ============================================================
+  // Build a shape object from the editor (what gets saved)
+  // ============================================================
+  function colourGridFor(b, flat){
+    const P = state.ppb, rows = [];
+    for (let py = b.y0 * P; py < (b.y1 + 1) * P; py++){
+      const row = [];
+      for (let px = b.x0 * P; px < (b.x1 + 1) * P; px++){
+        row.push(maskAt(Math.floor(px / P), Math.floor(py / P)) ? hexFromARGB(flat[py * state.pxW + px]) : "");
+      }
+      rows.push(row);
+    }
+    return rows;
+  }
+  function maskStringsFor(b){
+    const rows = [];
+    for (let y = b.y0; y <= b.y1; y++){ let s = ""; for (let x = b.x0; x <= b.x1; x++) s += maskAt(x, y) ? "X" : "."; rows.push(s); }
+    return rows;
+  }
+  // area trimmed to the bounding box of marked cells ∪ piece box; origin = piece top-left inside it
+  function exportArea(b){
+    let x0 = b.x0, y0 = b.y0, x1 = b.x1, y1 = b.y1;
+    const cells = editorAreaCells();
+    for (const c of cells){ x0 = Math.min(x0, c.x); y0 = Math.min(y0, c.y); x1 = Math.max(x1, c.x); y1 = Math.max(y1, c.y); }
+    const grid = [];
+    for (let y = y0; y <= y1; y++){ let s = ""; for (let x = x0; x <= x1; x++) s += state.area.cells[areaKey(x, y)] || "."; grid.push(s); }
+    return { origin: [b.x0 - x0, b.y0 - y0], grid };
+  }
+  function exportFill(){
+    const f = state.fill;
+    if (f.mode === "solid") return f.solidHex;
+    const rows = [];
+    for (let y = 0; y < f.k; y++){ const r = []; for (let x = 0; x < f.k; x++) r.push(hexFromARGB(f.data[y * f.k + x])); rows.push(r); }
+    return rows;
+  }
+
+  function buildShapeFromEditor(flatAll){
+    const errors = [], warnings = [];
+    const flat = flatAll || compositeFlattened();
+    const orig = state.source ? state.source.original : null;
+
+    const name = state.name.trim();
+    if (!name) errors.push("Name is empty.");
+    let id = state.id.trim();
+    if (!id){
+      id = suggestIdFromName(name);
+      if (id) warnings.push(`Id is blank: the suggested id "${id}" will be used.`);
+      else errors.push("Id is empty.");
+    }
+    if (id && !ID_RE.test(id)) errors.push("Id may only contain lowercase letters, digits and underscores.");
+
+    const mb = maskBounds();
+    if (!mb) errors.push("The block mask is empty. Fill at least one block.");
+    const b = mb || fullBounds();
+    if (mb && (mb.x0 > 0 || mb.y0 > 0 || mb.x1 < state.blocksW - 1 || mb.y1 < state.blocksH - 1)){
+      warnings.push(`Saved grid is trimmed to the filled blocks (${mb.x1 - mb.x0 + 1}×${mb.y1 - mb.y0 + 1}).`);
+    }
+
+    let color;
+    if (state.colourMode === "solid"){
+      color = state.colourHex;
+      if (orig && typeof orig.color === "string" && normHex(orig.color) === color) color = orig.color;
+    } else {
+      color = colourGridFor(b, flat);
+      if (mb){
+        let emptyBlocks = 0, anyPixel = false;
+        const P = state.ppb;
+        for (let by = b.y0; by <= b.y1; by++) for (let bx = b.x0; bx <= b.x1; bx++){
+          if (!maskAt(bx, by)) continue;
+          let any = false;
+          for (let y = 0; y < P && !any; y++) for (let x = 0; x < P; x++){ if (color[(by - b.y0) * P + y][(bx - b.x0) * P + x]){ any = true; break; } }
+          if (any) anyPixel = true; else emptyBlocks++;
+        }
+        if (!anyPixel) warnings.push("The pixel art is empty (the game would draw it white). Draw something or use Solid colour.");
+        else if (emptyBlocks) warnings.push(`${emptyBlocks} filled block(s) have no art; the game paints transparent pixels with the first colour.`);
+      }
+    }
+
+    const out = { ...clone(state.extras) };
+    out.id = id;
+    out.name = name || "(unnamed)";
+    out.grid = maskStringsFor(b);
+    out.color = color;
+    if (state.kind === "powerup"){
+      const p = state.pu, pu = { ...clone(p.extras) };
+      pu.type = p.type;
+      if (!PU_TYPES.includes(p.type)) warnings.push(`Unknown powerup type "${p.type}".`);
+      if (p.type === "gravity") pu.direction = p.direction;
+      pu.tier = p.tier;
+      if (p.description.trim()) pu.description = p.description.trim();
+      pu.area = exportArea(b);
+      if (!Object.keys(state.area.cells).length) warnings.push("The highlighted area is empty: the powerup would affect nothing.");
+      if (p.type === "expander"){
+        pu.fill = exportFill();
+        if (Array.isArray(pu.fill) && pu.fill.some(r => r.some(c => !c))) warnings.push("Fill art has transparent pixels.");
+      }
+      const def = PU_DEFAULT_CONSUME[p.type] ?? true;
+      if (p.consume !== null && p.consume !== def) pu.consume = p.consume;
+      if (p.type === "destroyer" && p.collapse) pu.collapse = true;
+      out.powerup = pu;
+    } else {
+      out.difficulty = state.difficulty;
+    }
+    out.rotation = { ...clone(state.rotationExtras), mode: state.rotationMode };
+    out.frequency = state.frequency;
+
+    const rows = state.links.filter(r => r.id.trim());
+    if (rows.length){
+      out.nextShapes = rows.map(r => r.id.trim());
+      if (rows.some(r => r.prob != null)) out.nextShapeProbs = rows.map(r => r.prob == null ? 0 : r.prob);
+      else warnings.push("Linked shapes have no probabilities; the game ignores links without nextShapeProbs.");
+      const known = allKnownIds();
+      const unknown = out.nextShapes.filter(x => known.size && !known.has(x) && x !== id);
+      if (unknown.length) warnings.push(`Linked id(s) not found in the loaded files: ${unknown.join(", ")}.`);
+      const sum = (out.nextShapeProbs || []).reduce((a, x) => a + x, 0);
+      if (sum > 1.0001) warnings.push(`Link probabilities add up to ${Math.round(sum * 100) / 100} (> 1).`);
+    }
+    if (state.links.some(r => !r.id.trim())) warnings.push("Link rows with an empty id are ignored.");
+    if (state.kind === "powerup" && state.targetSlot !== "powerups") warnings.push("This is a powerup but the target is the Shapes file.");
+    if (state.kind === "regular" && state.targetSlot === "powerups") warnings.push("This is a regular shape but the target is the Powerups file.");
+    return { shape: out, errors, warnings };
+  }
+
+  function renderIssues(built){
+    const items = [
+      ...built.errors.map(t => `<li class="err">${escapeHtml(t)}</li>`),
+      ...built.warnings.map(t => `<li class="warn">${escapeHtml(t)}</li>`),
+    ];
+    if (!items.length) items.push(`<li class="ok">Ready to save.</li>`);
+    el.issues.innerHTML = items.join("");
+    el.saveBtn.disabled = built.errors.length > 0;
+  }
+
+  function renderIdHint(built){
+    const id = built.shape.id;
+    const slot = SLOTS[state.targetSlot];
+    let txt = "", cls = "";
+    if (!id){ txt = ""; }
+    else if (state.source && state.source.slot === slot.key && state.source.id === id) { txt = `updates "${id}" in ${slot.label}`; cls = "good"; }
+    else if (slot.items.some(s => s && s.id === id)) { txt = `"${id}" already exists in ${slot.label} — saving will ask`; cls = "warn"; }
+    else txt = `new id in ${slot.label}`;
+    el.idHint.innerHTML = txt ? `<span class="pill ${cls}">${escapeHtml(txt)}</span>` : "";
+  }
+
+  // ============================================================
+  // Load a shape object into the editor
+  // ============================================================
+  function loadShapeIntoEditor(shape, slotKey){
+    const lines = gridLines(shape.grid);
+    const h = clamp(lines.length || 1, 1, MAX_BLOCKS);
+    const w = clamp(Math.max(1, ...lines.map(l => l.length)), 1, MAX_BLOCKS);
+    const col = shape.color;
+
+    // pixels per block
+    let P = state.ppb, pixelGrid = null;
+    if (Array.isArray(col) && Array.isArray(col[0])){
+      const k = inferK(h, w, col.length, col[0].length);
+      P = k || clamp(Math.round(Math.min(col.length / h, col[0].length / w)) || 1, 1, 7);
+      pixelGrid = col;
+    }
+    state.blocksW = w; state.blocksH = h; state.ppb = P;
+    state.pxW = w * P; state.pxH = h * P;
+    initLayers();
+    state.adj = { brightness: 0, contrast: 0, hue: 0, sat: 1 };
+    state.mask = new Uint8Array(w * h);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) state.mask[y * w + x] = (lines[y] || "")[x] === "X" ? 1 : 0;
+
+    const L = state.layers[0];
+    if (pixelGrid){
+      state.colourMode = "pixel";
+      for (let y = 0; y < state.pxH; y++) for (let x = 0; x < state.pxW; x++){
+        L.data[y * state.pxW + x] = argbFromHex(pixelGrid[y] && pixelGrid[y][x]);
+      }
+      const base = (() => { for (const r of pixelGrid) for (const c of r){ const hx = normHex(c); if (hx) return hx; } return null; })();
+      if (base) setColour(base);
+    } else {
+      state.colourMode = "solid";
+      const hex = normHex(col) || "#ffffff";
+      setColour(hex);
+      // seed layer 1 with the solid colour so switching to pixel art starts from it
+      const v = argbFromHex(hex);
+      for (let y = 0; y < state.pxH; y++) for (let x = 0; x < state.pxW; x++){
+        if (state.mask[Math.floor(y / P) * w + Math.floor(x / P)]) L.data[y * state.pxW + x] = v;
+      }
+    }
+
+    // metadata
+    const isPu = !!(shape.powerup && typeof shape.powerup === "object" && !Array.isArray(shape.powerup));
+    state.kind = isPu ? "powerup" : "regular";
+    state.name = String(shape.name ?? "");
+    state.id = String(shape.id ?? "");
+    const d = parseInt(shape.difficulty, 10);
+    state.difficulty = Number.isFinite(d) ? clamp(d, 0, 5) : 2;
+    const f = Number(shape.frequency);
+    state.frequency = Number.isFinite(f) ? clamp(f, 0, 1) : 1;
+    const rot = (shape.rotation && typeof shape.rotation === "object" && !Array.isArray(shape.rotation)) ? shape.rotation : {};
+    state.rotationMode = typeof rot.mode === "string" ? rot.mode : (isPu ? "none" : "any");
+    state.rotationExtras = clone(Object.fromEntries(Object.entries(rot).filter(([k]) => k !== "mode")));
+    const ids = Array.isArray(shape.nextShapes) ? shape.nextShapes : [];
+    const probs = Array.isArray(shape.nextShapeProbs) ? shape.nextShapeProbs : null;
+    state.links = ids.map((x, i) => ({ id: String(x), prob: probs && Number.isFinite(Number(probs[i])) ? Number(probs[i]) : null }));
+    state.extras = {};
+    for (const [k, v] of Object.entries(shape)){
+      if (MANAGED_KEYS.includes(k) && !(k === "difficulty" && isPu)) continue;
+      state.extras[k] = clone(v);
+    }
+
+    // powerup
+    const mb = maskBounds() || fullBounds();
+    state.area.cells = {};
+    if (isPu){
+      const pu = shape.powerup;
+      state.pu = {
+        type: String(pu.type || "destroyer"),
+        direction: typeof pu.direction === "string" ? pu.direction : "down",
+        tier: clamp(parseInt(pu.tier, 10) || 1, 1, 3),
+        description: typeof pu.description === "string" ? pu.description : "",
+        consume: null,
+        collapse: pu.collapse === true,
+        extras: clone(Object.fromEntries(Object.entries(pu).filter(([k]) => !MANAGED_PU_KEYS.includes(k)))),
+      };
+      if (typeof pu.consume === "boolean"){
+        const def = PU_DEFAULT_CONSUME[state.pu.type] ?? true;
+        state.pu.consume = pu.consume === def ? null : pu.consume;
+      }
+      const a = pu.area;
+      let need = 0;
+      if (a && Array.isArray(a.grid)){
+        const o = Array.isArray(a.origin) ? a.origin : [0, 0];
+        const ox = Number(o[0]) || 0, oy = Number(o[1]) || 0;
+        a.grid.forEach((line, gy) => String(line).split("").forEach((ch, gx) => {
+          if (!AREA_CHARS.has(ch)) return;
+          const x = gx - ox + mb.x0, y = gy - oy + mb.y0;
+          state.area.cells[areaKey(x, y)] = ch;
+          need = Math.max(need, -x, -y, x - (w - 1), y - (h - 1));
+        }));
+      }
+      state.area.margin = clamp(Math.max(3, need), 0, 30);
+      // fill art
+      const fill = pu.fill;
+      if (Array.isArray(fill) && Array.isArray(fill[0])){
+        const k = clamp(fill.length, 1, 7);
+        state.fill = { ...state.fill, mode: "pixel", k, data: new Uint32Array(k * k), solidHex: normHex(fill[0][0]) || "#ffffff" };
+        for (let y = 0; y < k; y++) for (let x = 0; x < k; x++) state.fill.data[y * k + x] = argbFromHex(fill[y] && fill[y][x]);
+      } else {
+        const hx = normHex(fill) || state.colourHex;
+        state.fill = { ...state.fill, mode: "solid", solidHex: hx, k: P, data: new Uint32Array(P * P).fill(argbFromHex(hx)) };
+      }
+    } else {
+      state.pu = { type: "destroyer", direction: "down", tier: 1, description: "", consume: null, collapse: false, extras: {} };
+      state.area.margin = 3;
+      state.fill = { ...state.fill, mode: "solid", solidHex: "#ffffff", k: P, data: new Uint32Array(P * P) };
+    }
+
+    state.source = slotKey ? { slot: slotKey, id: state.id, original: clone(shape) } : null;
+    state.targetSlot = slotKey || (isPu ? "powerups" : "shapes");
+    state.previewPos = null;
+    resetHistory();
+    setDirty(false);
+    syncAllUI();
+    fitZoom();
+    renderList();
+  }
+
+  function newBlock(){
+    state.blocksW = 2; state.blocksH = 2; state.ppb = 7; state.pxW = 14; state.pxH = 14;
+    initLayers();
+    state.mask = new Uint8Array(4).fill(1);
+    state.colourMode = "pixel";
+    state.adj = { brightness: 0, contrast: 0, hue: 0, sat: 1 };
+    state.kind = "regular"; state.name = ""; state.id = ""; state.difficulty = 2; state.frequency = 1;
+    state.rotationMode = "any"; state.rotationExtras = {}; state.links = []; state.extras = {};
+    state.pu = { type: "destroyer", direction: "down", tier: 1, description: "", consume: null, collapse: false, extras: {} };
+    state.area.cells = {}; state.area.margin = 3;
+    state.fill = { mode: "solid", solidHex: "#ffffff", k: 7, data: new Uint32Array(49), tool: state.fill.tool || "draw" };
+    state.source = null; state.targetSlot = "shapes"; state.previewPos = null;
+    resetHistory(); setDirty(false);
+    state.zoom = 24; el.zoom.value = "24";
+    syncAllUI(); renderList();
+  }
+
+  function syncAdjustmentUI(){
+    el.brightness.value = String(state.adj.brightness);
+    el.contrast.value = String(state.adj.contrast);
+    el.hue.value = String(state.adj.hue);
+    el.sat.value = String(Math.round(state.adj.sat * 100));
+    el.brightnessPill.textContent = String(state.adj.brightness);
+    el.contrastPill.textContent = String(state.adj.contrast);
+    el.huePill.textContent = `${state.adj.hue}°`;
+    el.satPill.textContent = `${Math.round(state.adj.sat * 100)}%`;
+  }
+  function syncAllUI(){
+    syncSizeUI();
+    syncAdjustmentUI();
+    syncMetaUI();
+    renderLayerList();
+    el.targetSlot.value = state.targetSlot;
+    el.sourcePill.textContent = state.source ? `${SLOTS[state.source.slot].label}: ${state.source.id}` : "new block";
+    el.sourcePill.className = "pill mono " + (state.source ? "accent" : "");
+    el.revertBtn.disabled = !state.source;
+    el.deleteBtn.disabled = !state.source;
+    renderSaveHint();
+    updateHistUI();
+    scheduleRender();
+  }
+
+  // ============================================================
+  // File parsing / serialisation
+  // ============================================================
+  // Ranges of strings and comments, so we can find code-level tokens.
+  function skipString(s, i){
+    const q = s[i]; i++;
+    while (i < s.length){
+      const c = s[i];
+      if (c === "\\"){ i += 2; continue; }
+      if (c === q) return i + 1;
+      i++;
+    }
+    return s.length;
+  }
+  // Scan from `from`; calls onComment(start,end) for comments. Returns index of the matching close bracket or -1.
+  function scanCode(s, from, onComment, bracket){
+    let depth = 0, i = from;
+    while (i < s.length){
+      const c = s[i];
+      if (c === '"' || c === "'" || c === "`"){ i = skipString(s, i); continue; }
+      if (c === "/" && s[i + 1] === "/"){
+        let e = s.indexOf("\n", i); if (e < 0) e = s.length;
+        if (onComment) onComment(i, e);
+        i = e; continue;
+      }
+      if (c === "/" && s[i + 1] === "*"){
+        let e = s.indexOf("*/", i + 2); e = e < 0 ? s.length : e + 2;
+        if (onComment) onComment(i, e);
+        i = e; continue;
+      }
+      if (bracket){
+        if (c === bracket[0]) depth++;
+        else if (c === bracket[1]){ depth--; if (depth === 0) return i; }
+      }
+      i++;
+    }
+    return -1;
+  }
+  // String-aware (and comment-aware) bracket matcher, like shape_encoder's findMatchingBracket.
+  const findMatchingBracket = (s, openPos, openCh, closeCh) => scanCode(s, openPos, null, [openCh, closeCh]);
+
+  function parseArrayFile(rawText){
+    const text = normaliseNewlines(rawText);
+    const comments = [];
+    scanCode(text, 0, (a, b) => comments.push([a, b]), null);
+    const inComment = (pos) => comments.some(([a, b]) => pos >= a && pos < b);
+    const re = /export\s+const\s+([A-Za-z_$][\w$]*)\s*=\s*\[/g;
+    let m;
+    while ((m = re.exec(text)) && inComment(m.index)) { /* skip matches inside comments */ }
+    if (!m) throw new Error("Could not find `export const NAME = [` in the file.");
+    const open = m.index + m[0].length - 1;
+    const close = findMatchingBracket(text, open, "[", "]");
+    if (close < 0) throw new Error(`Could not find the end of the ${m[1]} array.`);
+    const literal = text.slice(open, close + 1);
+    let items;
+    try { items = (new Function(`"use strict"; return (${literal});`))(); }
+    catch (e){ throw new Error(`${m[1]} exists but could not be evaluated: ${e.message}`); }
+    if (!Array.isArray(items)) throw new Error(`${m[1]} is not an array.`);
+    // statement end: optional spaces, optional ';', optional one newline
+    let end = close + 1;
+    while (text[end] === " " || text[end] === "\t") end++;
+    if (text[end] === ";") end++;
+    while (text[end] === " " || text[end] === "\t") end++;
+    if (text[end] === "\n") end++;
+    const commentCount = comments.filter(([a]) => a > open && a < close).length;
+    return { text, exportName: m[1], items, start: m.index, end, commentCount };
+  }
+  const replaceArrayInText = (parsed, block) => parsed.text.slice(0, parsed.start) + block + parsed.text.slice(parsed.end);
+
+  function toJsonCompatible(v){
+    if (v === undefined || v === null) return null;
+    const t = typeof v;
+    if (t === "number") return Number.isFinite(v) ? v : null;
+    if (t === "string" || t === "boolean") return v;
+    if (Array.isArray(v)) return v.map(toJsonCompatible);
+    if (t === "object"){
+      const out = {};
+      for (const k of Object.keys(v)) if (v[k] !== undefined) out[k] = toJsonCompatible(v[k]);
+      return out;
+    }
+    return String(v);
+  }
+  function orderedKeys(obj){
+    const keys = Object.keys(obj).filter(k => obj[k] !== undefined);
+    const head = PREFERRED_KEYS.filter(k => keys.includes(k));
+    const rest = keys.filter(k => !PREFERRED_KEYS.includes(k)).sort((a, b) => a.localeCompare(b));
+    return head.concat(rest);
+  }
+  // One array entry, in shape_encoder's style: preferred key order, colour arrays on one line,
+  // everything else JSON-pretty with 2-space indent.
+  function serialiseEntry(s){
+    if (!s || typeof s !== "object" || Array.isArray(s)) return [`  ${JSON.stringify(toJsonCompatible(s))},`];
+    const lines = ["  {"];
+    for (const k of orderedKeys(s)){
+      const key = /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(k) ? k : JSON.stringify(k);
+      const v = toJsonCompatible(s[k]);
+      if (k === "color"){ lines.push(`    ${key}: ${JSON.stringify(v)},`); continue; }
+      const json = JSON.stringify(v, null, 2);
+      if (json.includes("\n")){
+        lines.push(json.split("\n").map((ln, i) => (i === 0 ? `    ${key}: ${ln}` : `      ${ln}`)).join("\n") + ",");
+      } else lines.push(`    ${key}: ${json},`);
+    }
+    lines.push("  },");
+    return lines;
+  }
+  function serialiseArray(exportName, items){
+    const lines = [`export const ${exportName} = [`];
+    for (const s of items) lines.push(...serialiseEntry(s));
+    lines.push("];", "");
+    return lines.join("\n");
+  }
+
+  // ============================================================
+  // File slots (Shapes / Powerups), File System Access + IndexedDB
+  // ============================================================
+  function makeSlot(key, label, defaultPath, defaultExport){
+    return { key, label, defaultPath, defaultExport, handle: null, pendingHandle: null, text: null, parsed: null, items: [], origin: "none", fileName: "", error: "" };
+  }
+  const SLOTS = {
+    shapes: makeSlot("shapes", "Shapes", "shapes/main_shapes.js", "SHAPES"),
+    powerups: makeSlot("powerups", "Powerups", "shapes/powerup_shapes.js", "POWERUPS"),
+  };
+  const HANDLE_DB = "extris_block_designer_handles", HANDLE_STORE = "handles";
+  const isServed = () => /^https?:$/.test(location.protocol);
+
+  function setSlotText(slot, text, origin, fileName){
+    try {
+      const parsed = parseArrayFile(text);
+      slot.text = parsed.text; slot.parsed = parsed; slot.items = parsed.items;
+      slot.origin = origin; slot.fileName = fileName; slot.error = "";
+    } catch (e){
+      slot.error = e.message || String(e);
+      if (!slot.parsed){ slot.items = []; }
+    }
+    renderSlots(); renderList(); updateIdDatalist(); scheduleRender();
+  }
+
+  function openHandleDb(){
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(HANDLE_DB, 1);
+      req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains(HANDLE_STORE)) req.result.createObjectStore(HANDLE_STORE); };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+  async function idb(mode, fn){
+    const db = await openHandleDb();
+    try {
+      return await new Promise((resolve, reject) => {
+        const tx = db.transaction(HANDLE_STORE, mode);
+        const req = fn(tx.objectStore(HANDLE_STORE));
+        tx.oncomplete = () => resolve(req ? req.result : undefined);
+        tx.onerror = () => reject(tx.error);
+      });
+    } finally { db.close(); }
+  }
+  const persistHandle = (slot, handle) => idb("readwrite", s => (handle ? s.put(handle, "slot_" + slot.key) : s.delete("slot_" + slot.key))).catch(() => {});
+  const loadPersistedHandle = (slot) => idb("readonly", s => s.get("slot_" + slot.key)).catch(() => null);
+
+  async function loadFromHandle(slot){
+    const file = await slot.handle.getFile();
+    setSlotText(slot, await file.text(), "handle", file.name);
+  }
+  async function fetchDefault(slot){
+    try {
+      const res = await fetch(slot.defaultPath, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setSlotText(slot, await res.text(), "fetch", slot.defaultPath);
+    } catch (e){
+      slot.error = `Could not fetch ${slot.defaultPath} (${e.message || e}).`;
+      renderSlots();
+    }
+  }
+  async function restoreHandle(slot){
+    if (!window.showOpenFilePicker) return false;
+    const handle = await loadPersistedHandle(slot);
+    if (!handle) return false;
+    try {
+      const perm = await handle.queryPermission({ mode: "readwrite" });
+      if (perm === "granted"){ slot.handle = handle; await loadFromHandle(slot); return true; }
+      slot.pendingHandle = handle; // needs a click to re-grant
+    } catch {}
+    return false;
+  }
+  async function reconnectSlot(slot){
+    const handle = slot.pendingHandle;
+    if (!handle) return;
+    try {
+      const perm = await handle.requestPermission({ mode: "readwrite" });
+      if (perm !== "granted") throw new Error("Permission not granted.");
+      slot.handle = handle; slot.pendingHandle = null;
+      await loadFromHandle(slot);
+      toast(`Reconnected ${handle.name}`, "good");
+    } catch (e){ toast("Reconnect failed: " + (e.message || e), "bad"); }
+    renderSlots();
+  }
+  let fallbackSlot = null;
+  async function pickFileForSlot(slot){
+    if (!window.showOpenFilePicker){
+      fallbackSlot = slot;
+      el.fallbackFile.click();
+      return;
+    }
+    try {
+      const [handle] = await window.showOpenFilePicker({
+        id: "extris_" + slot.key, multiple: false,
+        types: [{ description: "JavaScript files", accept: { "text/javascript": [".js"] } }],
+      });
+      try { await handle.requestPermission({ mode: "readwrite" }); } catch {}
+      slot.handle = handle; slot.pendingHandle = null;
+      await persistHandle(slot, handle);
+      await loadFromHandle(slot);
+      toast(`Loaded ${handle.name} (${slot.items.length} entries)`, "good");
+    } catch (e){
+      if (e && e.name === "AbortError") return;
+      toast("Could not open file: " + (e.message || e), "bad");
+    }
+    renderSlots(); renderSaveHint();
+  }
+  el.fallbackFile.addEventListener("change", async () => {
+    const f = el.fallbackFile.files && el.fallbackFile.files[0];
+    el.fallbackFile.value = "";
+    if (!f || !fallbackSlot) return;
+    setSlotText(fallbackSlot, await f.text(), "upload", f.name);
+    renderSaveHint();
+  });
+  async function reloadSlot(slot){
+    if (slot.handle) await loadFromHandle(slot);
+    else if (isServed()) await fetchDefault(slot);
+    toast(`Reloaded ${slot.label} (${slot.items.length} entries)`);
+  }
+  async function forgetSlot(slot){
+    slot.handle = null; slot.pendingHandle = null;
+    await persistHandle(slot, null);
+    renderSlots(); renderSaveHint();
+  }
+
+  function slotModeText(slot){
+    if (slot.handle) return "saves in place";
+    if (slot.text != null) return "saves by download";
+    return "not loaded";
+  }
+  function renderSlots(){
+    el.slotList.innerHTML = "";
+    for (const slot of Object.values(SLOTS)){
+      const div = document.createElement("div");
+      div.className = "slot";
+      const loaded = slot.text != null;
+      const src = slot.origin === "handle" ? "picked file" : slot.origin === "fetch" ? "fetched (browse)" : slot.origin === "upload" ? "opened copy" : "—";
+      div.innerHTML = `
+        <div class="slotHead">
+          <span class="slotName">${escapeHtml(slot.label)}</span>
+          <span class="pill ${slot.handle ? "good" : loaded ? "warn" : ""}">${escapeHtml(slotModeText(slot))}</span>
+        </div>
+        <div class="slotInfo">
+          <span class="mono">${escapeHtml(slot.fileName || slot.defaultPath)}</span><br>
+          ${loaded ? `<span class="mono">export const ${escapeHtml(slot.parsed.exportName)}</span> · ${slot.items.length} entries · ${src}` : "not loaded"}
+          ${slot.parsed && slot.parsed.commentCount ? `<br><span style="color:var(--warn)">${slot.parsed.commentCount} comment(s) inside the array will be dropped on save.</span>` : ""}
+          ${slot.error ? `<br><span style="color:var(--bad)">${escapeHtml(slot.error)}</span>` : ""}
+        </div>`;
+      const row = document.createElement("div");
+      row.className = "row";
+      const pick = document.createElement("button"); pick.className = "small primary"; pick.textContent = "Pick file…";
+      pick.addEventListener("click", () => pickFileForSlot(slot));
+      const reload = document.createElement("button"); reload.className = "small"; reload.textContent = "Reload";
+      reload.disabled = !slot.handle && !isServed();
+      reload.addEventListener("click", () => reloadSlot(slot).catch(e => toast(e.message || String(e), "bad")));
+      row.append(pick, reload);
+      if (slot.pendingHandle){
+        const rc = document.createElement("button"); rc.className = "small primary"; rc.textContent = `Reconnect ${slot.pendingHandle.name}`;
+        rc.addEventListener("click", () => reconnectSlot(slot));
+        row.appendChild(rc);
+      }
+      if (slot.handle || slot.pendingHandle){
+        const fg = document.createElement("button"); fg.className = "small"; fg.textContent = "Forget";
+        fg.title = "Forget the remembered file handle";
+        fg.addEventListener("click", () => forgetSlot(slot));
+        row.appendChild(fg);
+      }
+      div.appendChild(row);
+      el.slotList.appendChild(div);
+    }
+  }
+
+  function allKnownIds(){
+    const s = new Set();
+    for (const slot of Object.values(SLOTS)) for (const it of slot.items) if (it && typeof it.id === "string") s.add(it.id);
+    return s;
+  }
+  function updateIdDatalist(){
+    el.allIds.innerHTML = [...allKnownIds()].sort().map(id => `<option value="${escapeHtml(id)}"></option>`).join("");
+  }
+
+  async function writeSlot(slot, text){
+    if (slot.handle){
+      try {
+        let perm = await slot.handle.queryPermission({ mode: "readwrite" });
+        if (perm !== "granted") perm = await slot.handle.requestPermission({ mode: "readwrite" });
+        if (perm === "granted"){
+          const w = await slot.handle.createWritable();
+          await w.write(text);
+          await w.close();
+          return "written";
+        }
+      } catch (e){
+        toast("In-place write failed, downloading instead: " + (e.message || e), "bad");
+      }
+    }
+    downloadText(text, slot.handle ? slot.handle.name : basename(slot.fileName || slot.defaultPath));
+    return "downloaded";
+  }
+
+  function renderSaveHint(){
+    const slot = SLOTS[state.targetSlot];
+    el.saveModeHint.textContent = slot.handle ? `writes ${slot.handle.name} in place`
+      : slot.text != null ? "downloads the updated file" : "no file loaded: downloads a new file";
+  }
+
+  // ============================================================
+  // Save / delete flow
+  // ============================================================
+  async function freshParsed(slot){
+    if (slot.handle){
+      try { const f = await slot.handle.getFile(); return parseArrayFile(await f.text()); } catch {}
+    }
+    if (slot.text != null) return parseArrayFile(slot.text);
+    return null;
+  }
+
+  async function writeItems(slot, parsed, items){
+    const block = serialiseArray(parsed.exportName, items);
+    const newText = replaceArrayInText(parsed, block);
+    // safety net: the written file must parse back to exactly the intended data
+    const check = parseArrayFile(newText);
+    if (!deepEqual(check.items, toJsonCompatible(items))) throw new Error("Internal check failed: serialised data does not round-trip. Nothing was written.");
+    const how = await writeSlot(slot, newText);
+    setSlotText(slot, newText, slot.handle ? "handle" : (slot.origin === "none" ? "upload" : slot.origin), slot.handle ? slot.handle.name : (slot.fileName || slot.defaultPath));
+    return how;
+  }
+
+  async function saveCurrent(){
+    endAction();
+    const built = buildShapeFromEditor();
+    if (built.errors.length){ toast(built.errors[0], "bad"); return; }
+    const shape = built.shape;
+    const slot = SLOTS[state.targetSlot];
+    let parsed;
+    try { parsed = await freshParsed(slot); }
+    catch (e){ toast(`Cannot parse ${slot.label} file: ${e.message}`, "bad"); return; }
+    if (!parsed){
+      const k = await ask("No file loaded", `No ${slot.label} file is loaded. Create a new file containing only this entry? It will be downloaded as ${basename(slot.defaultPath)}.`,
+        [{ key: "new", label: "Create new file", cls: "primary" }, { key: "cancel", label: "Cancel" }]);
+      if (k !== "new") return;
+      parsed = parseArrayFile(`export const ${slot.defaultExport} = [\n];\n`);
+    }
+    if (parsed.commentCount){
+      const k = await ask("Comments will be removed", `The ${parsed.exportName} array in ${slot.label} contains ${parsed.commentCount} comment(s). Rewriting the array drops comments inside it (text before the export, like the doc comment, is kept).`,
+        [{ key: "go", label: "Save anyway", cls: "primary" }, { key: "cancel", label: "Cancel" }]);
+      if (k !== "go") return;
+    }
+
+    const items = parsed.items.slice();
+    const src = state.source && state.source.slot === slot.key ? state.source : null;
+    const idIdx = items.findIndex(s => s && s.id === shape.id);
+    const nameIdx = items.findIndex(s => s && s.name === shape.name);
+    const srcIdx = src ? items.findIndex(s => s && s.id === src.id) : -1;
+    let action = "add", index = -1;
+
+    if (src && src.id === shape.id && idIdx >= 0){
+      action = "replace"; index = idIdx;
+      if (nameIdx >= 0 && nameIdx !== idIdx) toast(`Note: the name is also used by "${items[nameIdx].id}".`);
+    } else if (idIdx >= 0 || nameIdx >= 0){
+      const target = idIdx >= 0 ? idIdx : nameIdx;
+      const parts = [];
+      if (idIdx >= 0) parts.push(`• id "${shape.id}" already exists (${items[idIdx].name})`);
+      if (nameIdx >= 0) parts.push(`• name "${shape.name}" already exists (id ${items[nameIdx].id})`);
+      const k = await ask("Conflict", `${parts.join("\n")}\n\nOverride replaces "${items[target].id}" in place. Add anyway appends a new entry.`,
+        [{ key: "override", label: `Override "${items[target].id}"`, cls: "danger" }, { key: "add", label: "Add anyway" }, { key: "cancel", label: "Cancel" }]);
+      if (k === "cancel") return;
+      if (k === "override"){ action = "replace"; index = target; }
+    } else if (src && srcIdx >= 0 && src.id !== shape.id){
+      const k = await ask("Id changed", `You loaded "${src.id}" and changed the id to "${shape.id}".`,
+        [{ key: "rename", label: `Replace "${src.id}" (rename)`, cls: "primary" }, { key: "add", label: "Add as new entry" }, { key: "cancel", label: "Cancel" }]);
+      if (k === "cancel") return;
+      if (k === "rename"){ action = "replace"; index = srcIdx; }
+    }
+
+    if (action === "replace") items[index] = shape; else items.push(shape);
+    try {
+      const how = await writeItems(slot, parsed, items);
+      state.source = { slot: slot.key, id: shape.id, original: clone(shape) };
+      if (!state.id.trim()){ state.id = shape.id; }
+      setDirty(false);
+      state.list.slot = slot.key;
+      if (action === "add") state.list.page = 0;
+      syncAllUI(); renderList();
+      toast(`${action === "replace" ? "Updated" : "Added"} "${shape.id}" — ${how === "written" ? "saved to " + slot.handle.name : "file downloaded"}`, "good");
+    } catch (e){
+      toast(e.message || String(e), "bad");
+    }
+  }
+
+  async function deleteLoaded(){
+    if (!state.source) return;
+    const slot = SLOTS[state.source.slot];
+    let parsed;
+    try { parsed = await freshParsed(slot); } catch (e){ toast(e.message, "bad"); return; }
+    if (!parsed){ toast("File not loaded.", "bad"); return; }
+    const idx = parsed.items.findIndex(s => s && s.id === state.source.id);
+    if (idx < 0){ toast(`"${state.source.id}" not found in ${slot.label}.`, "bad"); return; }
+    const k = await ask("Delete entry", `Delete "${state.source.id}" (${parsed.items[idx].name}) from ${slot.label}? The editor keeps its contents.`,
+      [{ key: "del", label: "Delete", cls: "danger" }, { key: "cancel", label: "Cancel" }]);
+    if (k !== "del") return;
+    const items = parsed.items.slice(); items.splice(idx, 1);
+    try {
+      const how = await writeItems(slot, parsed, items);
+      const id = state.source.id;
+      state.source = null; setDirty(true); syncAllUI(); renderList();
+      toast(`Deleted "${id}" — ${how === "written" ? "saved" : "file downloaded"}`, "good");
+    } catch (e){ toast(e.message || String(e), "bad"); }
+  }
+
+  el.saveBtn.addEventListener("click", saveCurrent);
+  el.deleteBtn.addEventListener("click", deleteLoaded);
+  el.targetSlot.addEventListener("change", () => { state.targetSlot = el.targetSlot.value; renderSaveHint(); scheduleRender(); });
+
+  async function confirmDiscard(){
+    if (!state.dirty) return true;
+    const k = await ask("Unsaved changes", "Discard the changes in the editor?", [{ key: "discard", label: "Discard", cls: "danger" }, { key: "cancel", label: "Cancel" }]);
+    return k === "discard";
+  }
+  el.newBtn.addEventListener("click", async () => { if (await confirmDiscard()) newBlock(); });
+  el.revertBtn.addEventListener("click", async () => {
+    if (!state.source || !(await confirmDiscard())) return;
+    loadShapeIntoEditor(clone(state.source.original), state.source.slot);
+  });
+  window.addEventListener("beforeunload", (e) => { if (state.dirty){ e.preventDefault(); e.returnValue = ""; } });
+
+  // ============================================================
+  // Library list (newest first, paginated, mini previews)
+  // ============================================================
+  function drawThumb(canvas, shape){
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width, H = canvas.height;
+    ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
+    let m;
+    try { m = shapeModel(shape); } catch { return; }
+    let x0 = 0, y0 = 0, x1 = m.w - 1, y1 = m.h - 1, lines = false;
+    for (const c of (m.area || [])){
+      x0 = Math.min(x0, c.x); y0 = Math.min(y0, c.y); x1 = Math.max(x1, c.x); y1 = Math.max(y1, c.y);
+      if (c.ch !== "#") lines = true;
+    }
+    if (lines){ x0--; y0--; x1++; y1++; }
+    const rw = x1 - x0 + 1, rh = y1 - y0 + 1;
+    const cell = Math.max(1, Math.floor(Math.min((W - 8) / rw, (H - 8) / rh)));
+    const ox = Math.floor((W - cell * rw) / 2) - x0 * cell, oy = Math.floor((H - cell * rh) / 2) - y0 * cell;
+    if (m.area){
+      const aff = affectedCells(m.area, x0, y0, rw, rh);
+      ctx.fillStyle = "rgba(255,255,255,0.13)";
+      for (const k of aff){ const [x, y] = parseKey(k); ctx.fillRect(ox + x * cell, oy + y * cell, cell, cell); }
+      ctx.strokeStyle = "rgba(255,255,255,0.10)"; ctx.lineWidth = 1;
+      ctx.strokeRect(ox + x0 * cell + 0.5, oy + y0 * cell + 0.5, rw * cell - 1, rh * cell - 1);
+    }
+    for (const b of m.blocks) drawModelBlock(ctx, ox + b.x * cell, oy + b.y * cell, cell, m, b, false);
+  }
+
+  function listEntries(){
+    const slot = SLOTS[state.list.slot];
+    const f = state.list.filter.trim().toLowerCase();
+    const all = slot.items.map((s, i) => ({ s, i })).reverse();
+    return f ? all.filter(({ s }) => s && (String(s.name || "").toLowerCase().includes(f) || String(s.id || "").toLowerCase().includes(f))) : all;
+  }
+  function renderList(){
+    document.querySelectorAll("#listTabs button").forEach(b => {
+      const slot = SLOTS[b.dataset.lslot];
+      b.classList.toggle("on", b.dataset.lslot === state.list.slot);
+      b.textContent = `${slot.label} (${slot.items.length})`;
+    });
+    const entries = listEntries();
+    const ps = state.list.pageSize;
+    const pages = Math.max(1, Math.ceil(entries.length / ps));
+    state.list.page = clamp(state.list.page, 0, pages - 1);
+    el.pageLabel.textContent = `${state.list.page + 1}/${pages}`;
+    el.prevPage.disabled = state.list.page === 0;
+    el.nextPage.disabled = state.list.page >= pages - 1;
+    el.listCount.textContent = String(entries.length);
+    el.recentList.innerHTML = "";
+    const slot = SLOTS[state.list.slot];
+    if (!entries.length){
+      el.recentList.innerHTML = `<div class="hint">${slot.text == null ? "File not loaded. Pick it in Files (or serve the repo over http)." : "No entries."}</div>`;
+      return;
+    }
+    for (const { s } of entries.slice(state.list.page * ps, (state.list.page + 1) * ps)){
+      if (!s || typeof s !== "object") continue;
+      const item = document.createElement("div");
+      item.className = "item" + (state.source && state.source.slot === slot.key && state.source.id === s.id ? " current" : "");
+      item.title = "Click to load into the editor";
+      const pu = s.powerup && typeof s.powerup === "object" ? s.powerup : null;
+      const freq = Number(s.frequency);
+      const mode = typeof s.color === "string" ? "solid" : (Array.isArray(s.color) && Array.isArray(s.color[0]) ? `${Math.round(s.color.length / Math.max(1, gridLines(s.grid).length))}×` : "?");
+      const stats = pu
+        ? `${escapeHtml(pu.type || "?")}${pu.type === "gravity" ? " " + escapeHtml(pu.direction || "down") : ""}<br>tier ${escapeHtml(pu.tier ?? "?")} · f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>${mode}`
+        : `f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>d=${escapeHtml(s.difficulty ?? "—")}<br>${mode}`;
+      const links = Array.isArray(s.nextShapes) && s.nextShapes.length ? ` · → ${s.nextShapes.map(escapeHtml).join(", ")}` : "";
+      item.innerHTML = `
+        <div class="itemHead">
+          <div><div class="itemName">${escapeHtml(s.name || "(unnamed)")}</div><div class="itemMeta mono">${escapeHtml(s.id || "(no id)")}${links}</div></div>
+          <div class="itemStats mono">${stats}</div>
+        </div>`;
+      const mini = document.createElement("canvas");
+      mini.className = "miniCanvas"; mini.width = 300; mini.height = 110;
+      item.appendChild(mini);
+      drawThumb(mini, s);
+      item.addEventListener("click", async () => {
+        if (!(await confirmDiscard())) return;
+        loadShapeIntoEditor(clone(s), slot.key);
+      });
+      el.recentList.appendChild(item);
+    }
+  }
+  document.querySelectorAll("#listTabs button").forEach(b => b.addEventListener("click", () => { state.list.slot = b.dataset.lslot; state.list.page = 0; renderList(); }));
+  el.listFilter.addEventListener("input", () => { state.list.filter = el.listFilter.value; state.list.page = 0; renderList(); });
+  el.pageSize.addEventListener("change", () => {
+    state.list.pageSize = clamp(parseInt(el.pageSize.value, 10) || 20, 5, 200);
+    el.pageSize.value = String(state.list.pageSize);
+    state.list.page = 0; renderList();
+  });
+  el.prevPage.addEventListener("click", () => { state.list.page--; renderList(); });
+  el.nextPage.addEventListener("click", () => { state.list.page++; renderList(); });
+
+  // ============================================================
+  // PNG / project / text exports
+  // ============================================================
+  async function flattenedImageBlob(scale){
+    rebuildPieceCanvas(compositeFlattened());
+    const off = document.createElement("canvas");
+    off.width = state.pxW * scale; off.height = state.pxH * scale;
+    const c = off.getContext("2d");
+    c.imageSmoothingEnabled = false;
+    c.drawImage(pieceCanvas, 0, 0, off.width, off.height);
+    return new Promise((resolve) => off.toBlob(resolve, "image/png"));
+  }
+  const fileStem = () => (state.lastBuild && state.lastBuild.shape.id) || "block";
+  el.dlPngNative.addEventListener("click", async () => downloadBlob(await flattenedImageBlob(1), `${fileStem()}_native.png`));
+  el.dlPngScaled.addEventListener("click", async () => { const s = Math.max(1, state.zoom); downloadBlob(await flattenedImageBlob(s), `${fileStem()}_${s}x.png`); });
+  el.copyNative.addEventListener("click", async () => { try { await copyBlobToClipboard(await flattenedImageBlob(1)); toast("PNG copied"); } catch (e){ toast(e.message || String(e), "bad"); } });
+  el.copyScaled.addEventListener("click", async () => { try { await copyBlobToClipboard(await flattenedImageBlob(Math.max(1, state.zoom))); toast("Scaled PNG copied"); } catch (e){ toast(e.message || String(e), "bad"); } });
+
+  function makeProjectObject(){
+    const hex = (d) => Array.from(d, u => "0x" + (u >>> 0).toString(16).padStart(8, "0"));
+    return {
+      version: 3, app: "extris_block_designer",
+      meta: {
+        blocksW: state.blocksW, blocksH: state.blocksH, ppb: state.ppb, pxW: state.pxW, pxH: state.pxH,
+        zoom: state.zoom, seed: state.seed, adj: { ...state.adj }, activeLayerId: state.activeLayerId,
+        layerOrder: state.layers.map(L => L.id),
+      },
+      layers: state.layers.map(L => ({ id: L.id, name: L.name, visible: L.visible, noise: L.noise, opacity: L.opacity, data: hex(L.data) })),
+      mask: Array.from(state.mask),
+      colourMode: state.colourMode, colourHex: state.colourHex,
+      shape: {
+        kind: state.kind, name: state.name, id: state.id, difficulty: state.difficulty, frequency: state.frequency,
+        rotationMode: state.rotationMode, rotationExtras: state.rotationExtras, links: state.links, extras: state.extras,
+        pu: state.pu, areaCells: state.area.cells, areaMargin: state.area.margin,
+        fill: { mode: state.fill.mode, solidHex: state.fill.solidHex, k: state.fill.k, data: hex(state.fill.data) },
+        targetSlot: state.targetSlot,
+      },
+    };
+  }
+  function parseHexWords(arr, n){
+    const u = new Uint32Array(n);
+    if (!Array.isArray(arr) || arr.length !== n) return u;
+    for (let i = 0; i < n; i++){
+      const v = arr[i];
+      u[i] = typeof v === "number" ? (v >>> 0) : (/^0x[0-9a-fA-F]{8}$/.test(String(v).trim()) ? parseInt(String(v).trim(), 16) >>> 0 : 0);
+    }
+    return u;
+  }
+  // Accepts this tool's projects (v3) and shape_drawer projects (v1/v2, no mask -> all filled)
+  function loadProjectObject(obj){
+    if (!obj || !obj.meta || !Array.isArray(obj.layers)) throw new Error("Invalid project file.");
+    const m = obj.meta;
+    state.blocksW = clamp(parseInt(m.blocksW, 10) || 1, 1, MAX_BLOCKS);
+    state.blocksH = clamp(parseInt(m.blocksH, 10) || 1, 1, MAX_BLOCKS);
+    state.ppb = clamp(parseInt(m.ppb, 10) || 1, 1, 7);
+    state.pxW = state.blocksW * state.ppb; state.pxH = state.blocksH * state.ppb;
+    const n = state.pxW * state.pxH;
+    state.zoom = clamp(parseInt(m.zoom, 10) || state.zoom, 2, 60); el.zoom.value = String(state.zoom);
+    state.seed = (m.seed | 0) || state.seed;
+    state.adj = m.adj ? { ...state.adj, ...m.adj } : { brightness: 0, contrast: 0, hue: 0, sat: 1 };
+    const byId = new Map();
+    for (const Ls of obj.layers){
+      const L = makeEmptyLayer(Ls.id ?? byId.size, n);
+      L.name = String(Ls.name ?? L.name); L.visible = Ls.visible !== false;
+      L.noise = clamp01(Number(Ls.noise) || 0); L.opacity = clamp01(Number(Ls.opacity ?? 1));
+      L.data = parseHexWords(Ls.data, n);
+      byId.set(L.id, L);
+    }
+    const order = Array.isArray(m.layerOrder) ? m.layerOrder : [...byId.keys()];
+    const rebuilt = [];
+    for (const id of order) if (byId.has(id)) rebuilt.push(byId.get(id));
+    for (const L of byId.values()) if (!rebuilt.includes(L)) rebuilt.push(L);
+    let nextId = Math.max(-1, ...rebuilt.map(L => L.id)) + 1;
+    while (rebuilt.length < LAYER_COUNT) rebuilt.push(makeEmptyLayer(nextId++, n));
+    state.layers = rebuilt.slice(0, LAYER_COUNT);
+    state.activeLayerId = state.layers.some(L => L.id === m.activeLayerId) ? m.activeLayerId : state.layers[0].id;
+    const nb = state.blocksW * state.blocksH;
+    state.mask = new Uint8Array(nb).fill(1);
+    if (Array.isArray(obj.mask) && obj.mask.length === nb) obj.mask.forEach((v, i) => { state.mask[i] = v ? 1 : 0; });
+    if (obj.colourMode === "solid" || obj.colourMode === "pixel") state.colourMode = obj.colourMode;
+    if (obj.colourHex) setColour(obj.colourHex);
+    const s = obj.shape;
+    if (s && typeof s === "object"){
+      state.kind = s.kind === "powerup" ? "powerup" : "regular";
+      state.name = String(s.name ?? ""); state.id = String(s.id ?? "");
+      state.difficulty = clamp(parseInt(s.difficulty, 10) || 0, 0, 5);
+      state.frequency = clamp(Number(s.frequency ?? 1), 0, 1);
+      state.rotationMode = String(s.rotationMode || "any");
+      state.rotationExtras = s.rotationExtras || {};
+      state.links = Array.isArray(s.links) ? s.links.map(r => ({ id: String(r.id || ""), prob: r.prob == null ? null : Number(r.prob) })) : [];
+      state.extras = s.extras || {};
+      if (s.pu) state.pu = { ...state.pu, ...s.pu, extras: s.pu.extras || {} };
+      state.area.cells = s.areaCells || {};
+      state.area.margin = clamp(parseInt(s.areaMargin, 10) || 3, 0, 30);
+      if (s.fill){
+        const k = clamp(parseInt(s.fill.k, 10) || 7, 1, 7);
+        state.fill = { ...state.fill, mode: s.fill.mode === "pixel" ? "pixel" : "solid", solidHex: normHex(s.fill.solidHex) || "#ffffff", k, data: parseHexWords(s.fill.data, k * k) };
+      }
+      if (s.targetSlot === "shapes" || s.targetSlot === "powerups") state.targetSlot = s.targetSlot;
+    }
+    state.source = null;
+    resetHistory(); setDirty(true); syncAllUI(); renderList();
+  }
+  el.dlProject.addEventListener("click", () => {
+    const txt = `// Extris Block Designer project file\n\nexport const BLOCK_DESIGNER_PROJECT = ${JSON.stringify(makeProjectObject(), null, 2)};\n`;
+    downloadText(txt, `${fileStem()}_project.js`);
+  });
+  el.loadProjectBtn.addEventListener("click", () => el.loadProjectFile.click());
+  el.loadProjectFile.addEventListener("change", async () => {
+    const f = el.loadProjectFile.files && el.loadProjectFile.files[0];
+    el.loadProjectFile.value = "";
+    if (!f) return;
+    const text = await f.text();
+    let obj = null;
+    try { obj = JSON.parse(text); }
+    catch {
+      const first = text.indexOf("{");
+      const end = first >= 0 ? findMatchingBracket(text, first, "{", "}") : -1;
+      if (end > first) { try { obj = JSON.parse(text.slice(first, end + 1)); } catch {} }
+    }
+    if (!obj){ toast("Could not read the project file.", "bad"); return; }
+    if (!(await confirmDiscard())) return;
+    try { loadProjectObject(obj); toast("Project loaded", "good"); } catch (e){ toast(e.message || String(e), "bad"); }
+  });
+
+  let lastOutKind = "grid";
+  function colourGridText(){
+    const b = buildShapeFromEditor().shape;
+    if (typeof b.color === "string") return JSON.stringify(b.color);
+    return "[" + b.color.map(r => JSON.stringify(r)).join(",\n ") + "]";
+  }
+  function entryText(){ return serialiseEntry(buildShapeFromEditor().shape).join("\n"); }
+  el.genColourGrid.addEventListener("click", () => { lastOutKind = "grid"; el.textOut.value = colourGridText(); });
+  el.genEntry.addEventListener("click", () => { lastOutKind = "entry"; el.textOut.value = entryText(); });
+  el.copyOut.addEventListener("click", async () => {
+    if (!el.textOut.value) el.textOut.value = lastOutKind === "entry" ? entryText() : colourGridText();
+    try { await navigator.clipboard.writeText(el.textOut.value); toast("Copied"); }
+    catch { el.textOut.select(); document.execCommand && document.execCommand("copy"); toast("Copied (fallback)"); }
+  });
+  el.dlOut.addEventListener("click", () => {
+    const txt = lastOutKind === "entry"
+      ? `export const ENTRY = ${entryText().replace(/^ {2}/gm, "").replace(/,\s*$/, "")};\n`
+      : `export const FLATTENED_HEX = ${colourGridText()};\n`;
+    downloadText(txt, `${fileStem()}_${lastOutKind}.js`);
+  });
+
+  // ============================================================
+  // Remaining UI wiring
+  // ============================================================
+  el.applySize.addEventListener("click", () => {
+    const w = clamp(parseInt(el.blocksW.value, 10) || 1, 1, MAX_BLOCKS);
+    const h = clamp(parseInt(el.blocksH.value, 10) || 1, 1, MAX_BLOCKS);
+    const p = clamp(parseInt(el.ppb.value, 10) || 1, 1, 7);
+    commit(() => {
+      if (w === state.blocksW && h === state.blocksH && p === state.ppb) return false;
+      resizeCanvas(w, h, p);
+      return true;
+    });
+    syncSizeUI();
+  });
+  el.resetCanvas.addEventListener("click", () => commit(() => {
+    for (const L of state.layers) L.data.fill(0);
+    state.mask.fill(1);
+    return true;
+  }));
+  el.zoom.addEventListener("input", () => { state.zoom = clamp(parseInt(el.zoom.value, 10) || 24, 2, 60); scheduleRender(); });
+  el.fitZoom.addEventListener("click", () => { fitZoom(); scheduleRender(); });
+  el.showGrid.addEventListener("change", () => { state.showGrid = el.showGrid.checked; scheduleRender(); });
+  el.showOnlyActive.addEventListener("change", () => { state.showOnlyActive = el.showOnlyActive.checked; scheduleRender(); });
+  document.querySelectorAll(".toolBtn").forEach(b => b.addEventListener("click", () => setTool(b.dataset.tool)));
+  el.colour.addEventListener("input", () => setColour(el.colour.value));
+  el.hexText.addEventListener("input", () => { if (normHex(el.hexText.value)) setColour(el.hexText.value); });
+  el.clearActive.addEventListener("click", () => commit(() => {
+    const L = getActiveLayer();
+    if (L.data.every(u => u === 0)) return false;
+    L.data.fill(0); return true;
+  }));
+  el.undoBtn.addEventListener("click", undo);
+  el.redoBtn.addEventListener("click", redo);
+
+  // adjustments (preview only until applied)
+  const adjInput = (input, key, conv, pill, fmt) => input.addEventListener("input", () => {
+    state.adj[key] = conv(input.value); pill.textContent = fmt(state.adj[key]); scheduleRender();
+  });
+  adjInput(el.brightness, "brightness", v => parseInt(v, 10) || 0, el.brightnessPill, v => String(v));
+  adjInput(el.contrast, "contrast", v => parseInt(v, 10) || 0, el.contrastPill, v => String(v));
+  adjInput(el.hue, "hue", v => parseInt(v, 10) || 0, el.huePill, v => `${v}°`);
+  adjInput(el.sat, "sat", v => (parseInt(v, 10) || 0) / 100, el.satPill, v => `${Math.round(v * 100)}%`);
+  el.applyAdjustments.addEventListener("click", () => {
+    const { brightness, contrast, hue, sat } = state.adj;
+    if (brightness === 0 && contrast === 0 && hue === 0 && sat === 1) return;
+    commit(() => {
+      for (const L of state.layers){
+        for (let i = 0; i < L.data.length; i++){
+          const u = L.data[i] >>> 0, a = (u >>> 24) & 255;
+          if (!a) continue;
+          const c = applyPreviewAdjustmentsToRGB((u >>> 16) & 255, (u >>> 8) & 255, u & 255);
+          L.data[i] = packARGB(a, c.r, c.g, c.b);
+        }
+      }
+      return true;
+    });
+    state.adj = { brightness: 0, contrast: 0, hue: 0, sat: 1 };
+    syncAdjustmentUI(); scheduleRender();
+  });
+  el.resetAdjustments.addEventListener("click", () => { state.adj = { brightness: 0, contrast: 0, hue: 0, sat: 1 }; syncAdjustmentUI(); scheduleRender(); });
+  el.rerollSeed.addEventListener("click", () => commit(() => { state.seed = (Math.random() * 1e9) | 0; return true; }));
+
+  // centre tabs
+  function setCentreTab(tab){
+    state.centreTab = tab;
+    document.querySelectorAll("#centreTabs button[data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
+    el.tabArt.classList.toggle("hidden", tab !== "art");
+    el.tabPowerup.classList.toggle("hidden", tab !== "powerup");
+    scheduleRender();
+  }
+  document.querySelectorAll("#centreTabs button[data-tab]").forEach(b => b.addEventListener("click", () => setCentreTab(b.dataset.tab)));
+
+  // keyboard shortcuts
+  window.addEventListener("keydown", async (e) => {
+    const tag = (e.target && e.target.tagName || "").toLowerCase();
+    const typing = tag === "input" || tag === "textarea" || tag === "select" || (e.target && e.target.isContentEditable);
+    if (el.modal.open) return;
+    const mod = e.ctrlKey || e.metaKey;
+    const k = String(e.key || "").toLowerCase();
+    if (mod && k === "s"){ e.preventDefault(); saveCurrent(); return; }
+    if (typing) return;
+    if (mod){
+      if (k === "z" && !e.shiftKey){ e.preventDefault(); undo(); return; }
+      if (k === "y" || (k === "z" && e.shiftKey)){ e.preventDefault(); redo(); return; }
+      if (k === "c" && !String(window.getSelection() || "")){
+        e.preventDefault();
+        try { await copyBlobToClipboard(await flattenedImageBlob(Math.max(1, state.zoom))); toast("Scaled PNG copied"); } catch {}
+      }
+      return;
+    }
+    if (e.altKey) return;
+    const toolKeys = { d: "draw", b: "brush", f: "fill", e: "erase", i: "dropper", m: "mask" };
+    if (toolKeys[k]){ setTool(toolKeys[k]); if (state.centreTab !== "art") setCentreTab("art"); }
+  });
+  window.addEventListener("resize", scheduleRender);
+
+  // test / debugging hook (used by automated checks; harmless otherwise)
+  window.__blockDesigner = {
+    state, SLOTS, parseArrayFile, serialiseArray, serialiseEntry, replaceArrayInText, findMatchingBracket,
+    buildShapeFromEditor, loadShapeIntoEditor, deepEqual, toJsonCompatible, renderNow, setKind, setCentreTab, generate,
+  };
+
+  // ============================================================
+  // Boot
+  // ============================================================
+  (async () => {
+    initLayers();
+    setColour(state.colourHex);
+    setTool(state.tool);
+    syncPreviewScale();
+    syncAllUI();
+    renderSlots();
+    renderList();
+    for (const slot of Object.values(SLOTS)){
+      let restored = false;
+      try { restored = await restoreHandle(slot); } catch {}
+      if (!restored && isServed()) await fetchDefault(slot);
+    }
+    renderSlots(); renderList(); renderSaveHint();
+  })();
+})();
+</script>
+</body>
+</html>

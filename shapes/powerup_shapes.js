@@ -44,6 +44,13 @@
  * `frequency` here is relative to the other powerups (how often THIS powerup
  * is chosen once the scheduler has decided a powerup is due).
  *
+ * Linking works as for regular shapes: "slide to the left" is usually followed
+ * by "slide to the right" (nextShapeProbs 0.75), and "slide to the right" has a
+ * low frequency of its own so it mostly arrives as the follow-up.
+ *
+ * Edit this file by hand or with block_designer.html (saving from the designer
+ * keeps this header comment but reformats the array).
+ *
  * Powerups are not rotatable by default (rotation.mode "none"). If you set
  * rotation to "any", the highlighted area rotates with the piece.
  */
@@ -90,7 +97,6 @@ export const POWERUPS = [
     },
     rotation: { mode: "none" },
     frequency: 0.8,
-    // Usually followed by its partner: slide to the left, then slide to the right.
     nextShapes: ["slide_right"],
     nextShapeProbs: [0.75],
   },
@@ -117,7 +123,6 @@ export const POWERUPS = [
       },
     },
     rotation: { mode: "none" },
-    // Rarely on its own: it mostly arrives straight after "slide to the left".
     frequency: 0.2,
   },
   {
