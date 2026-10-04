@@ -1,5 +1,24 @@
+import { SHAPES as RAW_SHAPES } from "./shapes/main_shapes.js";
+import { POWERUPS as RAW_POWERUPS } from "./shapes/powerup_shapes.js";
+import {
+  normalisePowerup,
+  resolveArea,
+  applyDestroy,
+  applyGravity,
+  applyExpand,
+  collapseRows,
+  analyseBoard,
+} from "./powerups.js";
+
 const CONFIG = {
   board: { cols: 14, rows: 28 },
+
+  // Game modes. Hard = the original game. Normal = the same game plus powerups.
+  modes: {
+    normal: { label: "Normal", tagline: "powerups help you out", powerups: true },
+    hard: { label: "Hard", tagline: "the original. no help.", powerups: false },
+  },
+  defaultMode: "normal",
 
   timing: {
     baseDropMs: 500,
@@ -19,12 +38,20 @@ const CONFIG = {
     lineClear: { 1: 100, 2: 250, 3: 450, 4: 700 },
     softDropPerCell: 1,
     hardDropPerCell: 2,
+    powerupDestroyPerBlock: 10, // × level, for blocks destroyed by a destroyer
   },
 
-  pause: { hideShapes: true },
+  pause: { hideShapes: true, pauseWhenHidden: true },
 
   render: {
+    // "enhanced" = new look (piece outlines + bevels, art not cut by grid lines,
+    //              soft shadows, tiled background).
+    // "classic"  = the original look.
+    // While debugging (press D), V toggles between them.
+    cellStyle: "enhanced",
+
     cellPx: 18,
+    maxScale: 3, // max backing-store pixels per board pixel (crispness vs cost)
     gridLineAlpha: 0.22,
     bg: "#000000",
     silhouetteColor: "rgba(240,240,255,0.16)",
@@ -38,6 +65,20 @@ const CONFIG = {
       lineWidth: 0.1,
       insetPx: 0.0,
       drawBehindActive: true,
+    },
+
+    enhanced: {
+      bgTop: "#06060f",
+      bgBottom: "#020206",
+      emptyCellFill: "rgba(255,255,255,0.028)",
+      emptyCellDot: "rgba(255,255,255,0.10)",
+      shadowOffsetPx: 2,
+      shadowColor: "rgba(0,0,0,0.55)",
+      outlineColor: "rgba(0,0,0,0.62)",
+      bevelLight: "rgba(255,255,255,0.22)",
+      bevelDark: "rgba(0,0,0,0.26)",
+      ghostFill: "rgba(255,255,255,0.05)",
+      ghostStroke: "rgba(255,255,255,0.45)",
     },
   },
 
@@ -99,7 +140,43 @@ const CONFIG = {
         baseProbLevel5WhenHard: 0.55,
       },
     },
+
+    // Powerup scheduler (Normal mode only). Runs before the regular level mix:
+    // once a powerup is "due", it replaces that drop's regular piece.
+    powerups: {
+      // No powerups in the first N drops of a run.
+      minDropIndex: 6,
+      // Drops to wait after a powerup before another one can appear.
+      cooldownDrops: 5,
+
+      // Chance per drop once eligible. Starts at baseChance and grows by
+      // chancePerDrop every drop without a powerup (reset when one drops).
+      baseChance: 0.05,
+      chancePerDrop: 0.035,
+      maxChance: 0.6,
+
+      // The chance is multiplied by (1 + dangerBoost*danger + holesBoost*holes01):
+      // you get more help when the stack is high or full of air pockets.
+      dangerBoost: 1.6,
+      holesBoost: 0.8,
+      holesForMax: 18, // this many air pockets counts as holes01 = 1
+
+      // Which tier to serve: blended from calm -> danger as the stack rises.
+      tierWeights: {
+        calm:   { 1: 1.00, 2: 0.45, 3: 0.12 },
+        danger: { 1: 0.45, 2: 1.00, 3: 0.90 },
+      },
+
+      // Which class is most useful right now (multipliers):
+      // gravity/expanders fix air pockets, destroyers fix height.
+      need: {
+        gravity:   { base: 0.6, holes: 1.2, danger: 0.0 },
+        expander:  { base: 0.6, holes: 0.8, danger: 0.0 },
+        destroyer: { base: 0.7, holes: 0.2, danger: 1.0 },
+      },
+    },
   },
+
   fx: {
     quake: {
       enabled: true,
@@ -109,11 +186,11 @@ const CONFIG = {
       traumaDecayPerSecond: 2.8,
       rotationalDegrees: 0.8,
 
-      // NEW: scaling of triggered shake intensity
+      // Scaling of triggered shake intensity
       minTrauma: 0.025,        // smallest visible shake if triggered at all
-      maxTrauma: 0.5,        // largest allowed shake from any single trigger
+      maxTrauma: 0.5,          // largest allowed shake from any single trigger
       blocksForMax: 100,       // how many blocks correspond to maxTrauma
-      blockScalePower: 0.85,  // <1 = ramps up faster early, >1 = slower early
+      blockScalePower: 0.85,   // <1 = ramps up faster early, >1 = slower early
     },
     lineClear: {
       enabled: true,
@@ -137,6 +214,39 @@ const CONFIG = {
       minDifficulty: 4,
     },
 
+    powerup: {
+      // Locked powerup glows for this long before it fires.
+      chargeMs: 260,
+
+      // Destroyer: pause after the blast before play continues.
+      destroySettleMs: 220,
+      destroyFlashMs: 160,
+      destroyQuakePerBlock: 1.5,
+
+      // Gravity: per-block slide time = base + perSqrtCell*sqrt(distance), capped.
+      gravityBaseMs: 60,
+      gravityMsPerSqrtCell: 70,
+      gravityMaxMs: 420,
+      gravityQuakePerBlock: 0.8,
+
+      // Expander: fill cells pop in rings outward from the powerup.
+      expandStaggerMsPerCell: 40,
+      expandGrowMs: 180,
+
+      // Highlighted cells overlay.
+      overlay: {
+        periodMs: 900,           // one loop of the square / line animation
+        hueDegPerMs: 0.12,       // rainbow scroll speed
+        hueStepPerCell: 18,      // rainbow spread across cells
+        fillAlpha: 0.30,         // cells the effect will change
+        idleFillAlpha: 0.11,     // highlighted cells it won't change (e.g. empty cells for a destroyer)
+        markAlpha: 0.95,
+        idleMarkAlpha: 0.45,
+        ripplePerCell: 0.12,     // destroyer/expander ripple offset per cell of distance
+      },
+      shimmerAlpha: 0.9,         // rainbow outline around powerup pieces
+    },
+
     gameOverBackdrop: {
       enabled: true,
       scale: 1.9,
@@ -148,6 +258,8 @@ const CONFIG = {
   },
 
 };
+
+const DEBUG_LINK = false; // verbose console logging for linked shapes
 
 
 /* =========================================
@@ -175,6 +287,14 @@ function initPieceSelectionState(state) {
 
     // whether we already produced the first hard drop in this run
     hasDroppedFirstHard: false,
+
+    // powerup scheduler (Normal mode)
+    powerup: {
+      chance: CONFIG.assist.powerups.baseChance,
+      cooldown: 0,
+      count: 0,
+      lastChance: 0, // for the debug panel
+    },
   };
 }
 
@@ -188,21 +308,9 @@ function initPieceSelectionState(state) {
 */
 function computeStackDanger01(state) {
   const rows = CONFIG.board.rows;
-  const cols = CONFIG.board.cols;
 
-  // Find the highest occupied row (0 = top, rows-1 = bottom).
-  // Assumes state.board[r][c] is truthy for locked blocks.
-  let highest = rows; // sentinel: none found
-  for (let r = 0; r < rows; r++) {
-    const row = state.board[r];
-    if (!row) continue;
-    for (let c = 0; c < cols; c++) {
-      if (row[c]) { highest = r; break; }
-    }
-    if (highest !== rows) break;
-  }
-
-  if (highest === rows) return 0; // empty board
+  const highest = highestLockedRowIndex(state);
+  if (highest === null) return 0; // empty board
 
   // Convert “highest occupied row” into “rows from top that are currently penetrated”.
   const topPenetration = (rows - highest); // bigger = closer to top / worse
@@ -278,69 +386,38 @@ function tryLinkedNextShape(state, prevShape, idToShape, debug = false) {
   const ids = prevShape.nextShapes;
   const ps = prevShape.nextShapeProbs;
 
-  if (!Array.isArray(ids) || !Array.isArray(ps)) {
-    if (debug) {
-      console.log("[LINK] prevShape has no nextShapes/nextShapeProbs", {
-        id: prevShape.id,
-        nextShapes: ids,
-        nextShapeProbs: ps,
-        keys: Object.keys(prevShape),
-      });
-    }
-    return null;
-  }
+  if (!Array.isArray(ids) || !Array.isArray(ps)) return null;
 
   if (ids.length === 0 || ids.length !== ps.length) {
     if (debug) console.log("[LINK] invalid arrays", { id: prevShape.id, ids, ps });
     return null;
   }
 
-  // Coerce probs to numbers safely.
-  const probs = ps.map(p => {
-    const x = Number(p);
-    return Number.isFinite(x) ? Math.max(0, Math.min(1, x)) : 0;
-  });
+  // Only consider targets that exist in this mode's pool (e.g. powerup links
+  // are ignored in Hard mode), so a missing target never "uses up" the roll.
+  const cand = [];
+  for (let i = 0; i < ids.length; i++) {
+    const shape = idToShape.get(ids[i]);
+    const x = Number(ps[i]);
+    const p = Number.isFinite(x) ? Math.max(0, Math.min(1, x)) : 0;
+    if (shape && p > 0) cand.push({ shape, p });
+    else if (!shape && debug) console.log("[LINK] id not in this mode's pool", ids[i]);
+  }
+  if (!cand.length) return null;
 
   let sumP = 0;
-  for (const p of probs) sumP += p;
+  for (const c of cand) sumP += c.p;
   sumP = Math.min(1, sumP);
 
-  if (debug) console.log("[LINK] candidates", { from: prevShape.id, ids, probs, sumP });
-
-  if (sumP <= 0) return null;
-
   const gate = state.rng();
-  if (debug) console.log("[LINK] gate roll", { gate, sumP, triggered: gate < sumP });
-
+  if (debug) console.log("[LINK] gate roll", { from: prevShape.id, gate, sumP, triggered: gate < sumP });
   if (gate >= sumP) return null;
 
   // Sample among linked targets using their probs (normalised within sumP mass).
-  const total = probs.reduce((a, b) => a + b, 0);
-  if (total <= 0) return null;
-
-  let r = state.rng() * total;
-  let chosenIdx = probs.length - 1;
-  for (let i = 0; i < probs.length; i++) {
-    r -= probs[i];
-    if (r <= 0) { chosenIdx = i; break; }
-  }
-
-  const chosenId = ids[chosenIdx];
-  const chosen = idToShape.get(chosenId) ?? null;
-
-  if (debug) console.log("[LINK] chose", { chosenId, existsInStateShapes: !!chosen });
-
-  if (!chosen && debug) {
-    // Dump a few known IDs to spot mismatches quickly.
-    const sampleIds = [];
-    for (const k of idToShape.keys()) { sampleIds.push(k); if (sampleIds.length >= 12) break; }
-    console.log("[LINK] id not found in state.shapes map", { chosenId, sampleIds });
-  }
-
+  const chosen = sampleByWeight(cand, c => c.p, state.rng).shape;
+  if (debug) console.log("[LINK] chose", chosen.id);
   return chosen;
 }
-
-import { SHAPES as RAW_SHAPES } from "./shapes/main_shapes.js";
 
 // ============================================================
 // SHAPES — normalisation
@@ -368,7 +445,8 @@ function loadAndNormaliseShapes(rawShapes, defaults = {}) {
     return out;
   }
 
-  // Trim empty rows/cols around a boolean matrix
+  // Trim empty rows/cols around a boolean matrix; also report what was cut
+  // off the top/left so other grids (colours, powerup areas) can line up.
   function trimMatrix(mat) {
     let top = 0, bottom = mat.length - 1;
     let left = 0, right = mat[0].length - 1;
@@ -385,7 +463,8 @@ function loadAndNormaliseShapes(rawShapes, defaults = {}) {
     for (let y = top; y <= bottom; y++) {
       out.push(mat[y].slice(left, right + 1));
     }
-    return out.length ? out : [[true]];
+    if (!out.length) return { mat: [[true]], top: 0, left: 0 };
+    return { mat: out, top, left };
   }
 
   function parseShapeGrid(shapeLines) {
@@ -408,12 +487,24 @@ function loadAndNormaliseShapes(rawShapes, defaults = {}) {
       return Array.from(padded).map(ch => ch === "X");
     });
 
-    return trimMatrix(mat);
+    const trimmed = trimMatrix(mat);
+    return { ...trimmed, rawH: mat.length, rawW: width };
   }
 
   function safeId(name, idx) {
     const base = (name ?? `shape_${idx}`).toString().toLowerCase();
     return base.replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  }
+
+  function allowedRotationIndices(rotation, isPowerup) {
+    // Powerups don't rotate unless their definition says so.
+    const mode = rotation?.mode ?? (isPowerup ? "none" : "any");
+    if (mode === "none") return [0];
+    if (mode === "custom" && Array.isArray(rotation.allowed)) {
+      const ok = [...new Set(rotation.allowed.map(n => n | 0).filter(n => n >= 0 && n <= 3))].sort();
+      return ok.length ? ok : [0];
+    }
+    return [0, 1, 2, 3];
   }
 
   return rawShapes.map((s, idx) => {
@@ -430,11 +521,14 @@ function loadAndNormaliseShapes(rawShapes, defaults = {}) {
       : (Number.isFinite(+defaults.frequency) ? +defaults.frequency : 1);
 
     // --- occupancy base matrix ---
-    const baseMat = parseShapeGrid(s.shape ?? s.grid ?? s.matrix);
+    const parsed = parseShapeGrid(s.shape ?? s.grid ?? s.matrix);
+    const baseMat = parsed.mat;
 
-    // --- generate 4 rotations (and optionally dedupe elsewhere if you do that) ---
-    const rotations = [baseMat];
-    for (let i = 1; i < 4; i++) rotations.push(rotateMatrix90CW(rotations[i - 1]));
+    // --- generate all 4 rotations, then keep the allowed ones ---
+    const allRotations = [baseMat];
+    for (let i = 1; i < 4; i++) allRotations.push(rotateMatrix90CW(allRotations[i - 1]));
+    const allowed = allowedRotationIndices(s.rotation, !!s.powerup);
+    const rotations = allowed.map(i => allRotations[i]);
 
     // --- style defaults + baseColor selection for shading ---
     const style = { ...(defaults.style ?? {}), ...(s.style ?? {}) };
@@ -452,19 +546,29 @@ function loadAndNormaliseShapes(rawShapes, defaults = {}) {
     }
     style.baseColor = style.baseColor ?? baseColor;
 
-    // --- NEW: colour rotations (optional) ---
+    // --- colour rotations (optional) ---
     let colorRotations = null;
     let pixelK = 1;
 
     if (!isHexColour(s.color)) {
-      const grid = normaliseGrid(s.color);
+      let grid = normaliseGrid(s.color);
       if (grid) {
-        const matH0 = rotations[0].length;
-        const matW0 = rotations[0][0].length;
+        const matH0 = baseMat.length;
+        const matW0 = baseMat[0].length;
         const gridH0 = grid.length;
         const gridW0 = grid[0].length;
 
-        const k = inferPixelScale(matH0, matW0, gridH0, gridW0);
+        let k = inferPixelScale(matH0, matW0, gridH0, gridW0);
+        if (!k && (parsed.top || parsed.left || parsed.rawH !== matH0 || parsed.rawW !== matW0)) {
+          // The colour grid was drawn for the untrimmed grid: crop it to match.
+          const kRaw = inferPixelScale(parsed.rawH, parsed.rawW, gridH0, gridW0);
+          if (kRaw) {
+            k = kRaw;
+            grid = grid
+              .slice(parsed.top * k, (parsed.top + matH0) * k)
+              .map(row => row.slice(parsed.left * k, (parsed.left + matW0) * k));
+          }
+        }
         if (k) {
           pixelK = k;
 
@@ -474,15 +578,34 @@ function loadAndNormaliseShapes(rawShapes, defaults = {}) {
           );
 
           // Rotate colour grid to match occupancy rotations
-          colorRotations = [cleaned];
-          for (let i = 1; i < rotations.length; i++) {
-            colorRotations.push(rotateGrid90CW(colorRotations[i - 1]));
+          const allColor = [cleaned];
+          for (let i = 1; i < 4; i++) {
+            allColor.push(rotateGrid90CW(allColor[i - 1]));
           }
+          colorRotations = allowed.map(i => allColor[i]);
         } else {
           console.warn(
             `[${id}] colour grid dims (${gridW0}×${gridH0}) do not match piece dims (${matW0}×${matH0}); falling back to solid baseColor.`
           );
         }
+      }
+    }
+
+    // Per-rotation, per-block paint (precomputed once so rendering and locking
+    // never have to slice pixel grids at runtime).
+    const cellPaints = rotations.map((mat, ri) =>
+      buildCellPaints(mat, colorRotations?.[ri] ?? null, pixelK, style.baseColor)
+    );
+
+    // --- powerup (optional) ---
+    let powerup = null;
+    if (s.powerup) {
+      powerup = normalisePowerup(s.powerup, allRotations, { top: parsed.top, left: parsed.left }, id);
+      if (powerup) {
+        powerup.areaRotations = allowed.map(i => powerup.areaRotations[i]);
+        const fill = normaliseFillPaint(powerup.fill, style.baseColor);
+        powerup.fillPaint = fill.paint;
+        powerup.fillStyle = { ...style, baseColor: fill.baseColor };
       }
     }
 
@@ -507,60 +630,40 @@ function loadAndNormaliseShapes(rawShapes, defaults = {}) {
       nextShapes,
       nextShapeProbs,
 
-      // New fields used by renderer/locking
+      // Used by renderer/locking
       colorRotations,
       pixelK,
+      cellPaints,
 
       // Rotations used for collision + placement
       rotations,
+
+      // Powerup behaviour (null for regular shapes)
+      powerup,
     };
   });
 }
 
-function trimBoolMatrix(mat) {
-  const h = mat.length, w = mat[0].length;
-  let top = 0, bottom = h - 1, left = 0, right = w - 1;
-  const rowHas = (y) => mat[y].some(Boolean);
-  const colHas = (x) => mat.some((row) => row[x]);
-  while (top <= bottom && !rowHas(top)) top++;
-  while (bottom >= top && !rowHas(bottom)) bottom--;
-  while (left <= right && !colHas(left)) left++;
-  while (right >= left && !colHas(right)) right--;
-  const out = [];
-  for (let y = top; y <= bottom; y++) out.push(mat[y].slice(left, right + 1));
-  return out.length ? out : [[true]];
+function buildCellPaints(mat, grid, k, baseColor) {
+  return mat.map((row, y) => row.map((filled, x) => {
+    if (!filled) return null;
+    if (!grid) return baseColor;
+    if (k === 1) return grid[y][x];
+    return { k, pixels: sliceBlockPixels(grid, k, x, y) };
+  }));
 }
 
-function rgbToHsl({ r, g, b }) {
-  const R = r / 255, G = g / 255, B = b / 255;
-  const max = Math.max(R, G, B), min = Math.min(R, G, B);
-  const d = max - min;
-  let h = 0, s = 0;
-  const l = (max + min) / 2;
-  if (d !== 0) {
-    s = d / (1 - Math.abs(2 * l - 1));
-    switch (max) {
-      case R: h = ((G - B) / d) % 6; break;
-      case G: h = (B - R) / d + 2; break;
-      case B: h = (R - G) / d + 4; break;
-    }
-    h *= 60;
-    if (h < 0) h += 360;
+// Expander fill art: "#hex" or a k×k grid of hex colours.
+function normaliseFillPaint(fill, fallback) {
+  if (isHexColour(fill)) return { paint: fill.trim(), baseColor: fill.trim() };
+  const grid = normaliseGrid(fill);
+  if (grid && grid.length === grid[0].length && grid.length <= 7) {
+    const base = firstNonEmptyColour(grid) ?? fallback;
+    const pixels = grid.map(row => row.map(v => (isHexColour(v) ? v.trim() : base)));
+    if (pixels.length === 1) return { paint: pixels[0][0], baseColor: base };
+    return { paint: { k: pixels.length, pixels }, baseColor: base };
   }
-  return { h, s, l };
-}
-function hslToRgb({ h, s, l }) {
-  const C = (1 - Math.abs(2 * l - 1)) * s;
-  const X = C * (1 - Math.abs(((h / 60) % 2) - 1));
-  const m = l - C / 2;
-  let rp = 0, gp = 0, bp = 0;
-  if (0 <= h && h < 60) [rp, gp, bp] = [C, X, 0];
-  else if (60 <= h && h < 120) [rp, gp, bp] = [X, C, 0];
-  else if (120 <= h && h < 180) [rp, gp, bp] = [0, C, X];
-  else if (180 <= h && h < 240) [rp, gp, bp] = [0, X, C];
-  else if (240 <= h && h < 300) [rp, gp, bp] = [X, 0, C];
-  else [rp, gp, bp] = [C, 0, X];
-  return { r: Math.round((rp + m) * 255), g: Math.round((gp + m) * 255), b: Math.round((bp + m) * 255) };
+  return { paint: fallback, baseColor: fallback };
 }
 
 // ===============================
@@ -593,7 +696,7 @@ function normaliseGrid(grid) {
 }
 
 // Infer pixel scale k such that grid is (k*h) x (k*w) for a given block matrix h x w.
-// Returns k in {1,2,3,4} or null.
+// Returns k in {1..7} or null.
 function inferPixelScale(matH, matW, gridH, gridW) {
   if (gridH % matH !== 0) return null;
   if (gridW % matW !== 0) return null;
@@ -632,33 +735,10 @@ function sliceBlockPixels(colorGridRot, k, bx, by) {
   }
   return pixels;
 }
-  
-function getActivePaintForBlock(state, bx, by) {
-  const shape = state.active.shape;
-  const rotIdx = state.active.rotIdx;
 
-  // Case 1: legacy solid colour
-  if (!shape.colorRotations) {
-    // If old code expects shape.color to be a string, baseColor is the safe choice.
-    return shape.style.baseColor;
-  }
-
-  // Case 2: grid-based colour (per-block or pixel art)
-  const k = shape.pixelK ?? 1;
-  const grid = shape.colorRotations[rotIdx];
-
-  if (k === 1) {
-    // Single colour per block cell
-    return grid[by][bx];
-  }
-
-  // k in {2,3,4}: return pixel art for this block
-  return {
-    k,
-    pixels: sliceBlockPixels(grid, k, bx, by),
-  };
+function getShapePaint(shape, rotIdx, bx, by) {
+  return shape.cellPaints[rotIdx][by][bx];
 }
-
 
 
 // ============================================================
@@ -673,8 +753,9 @@ function highestLockedRowIndex(state) {
   // Returns smallest y (closest to top) that contains ANY locked block.
   // If board empty, returns null.
   for (let y = 0; y < CONFIG.board.rows; y++) {
+    const row = state.board[y];
     for (let x = 0; x < CONFIG.board.cols; x++) {
-      if (state.board[y][x]) return y;
+      if (row[x]) return y;
     }
   }
   return null;
@@ -686,12 +767,27 @@ function isStackInTopRows(state, topRows) {
   return y < topRows; // e.g., y=0..(topRows-1)
 }
 
-function createGameState(shapes) {
-  return {
+// Every change to state.board must call this (the renderer caches the board).
+function markBoardDirty(state) {
+  state.boardVersion++;
+}
+
+function createGameState(shapes, powerups) {
+  const state = {
+    allShapes: shapes,
+    allPowerups: powerups,
+
+    // Pools for the current mode (see configureMode)
+    mode: CONFIG.defaultMode,
     shapes,
+    powerups: [],
+    idToShape: buildIdToShapeMap(shapes),
+
     rng: Math.random,
 
     board: createEmptyBoard(CONFIG.board.cols, CONFIG.board.rows),
+    boardVersion: 0,
+    nextPid: 1, // piece-instance id stored on each locked cell
 
     active: null,
     next: null,
@@ -701,6 +797,7 @@ function createGameState(shapes) {
 
     score: 0,
     lines: 0,
+    blocksDestroyed: 0,
     level: 1,
 
     dropMs: CONFIG.timing.baseDropMs,
@@ -726,7 +823,9 @@ function createGameState(shapes) {
     tapRepeatTimer: null,
     tapRepeatInterval: null,
 
-    // NEW
+    // A powerup that has locked and is playing its effect (no active piece meanwhile)
+    effect: null,
+
     lastLockedShape: null,
     gameOverInfo: {
       pieceName: "",
@@ -741,6 +840,12 @@ function createGameState(shapes) {
         durationMs: CONFIG.fx.lineClear.boardFallAnimMs,
         rowDropDistances: Array(CONFIG.board.rows).fill(0),
       },
+      // Gravity powerup: blocks slide from old to new positions
+      moveAnim: { active: false, elapsedMs: 0, durationMs: 0, byIndex: new Map() },
+      // Expander powerup: filled cells pop in
+      growAnim: { active: false, elapsedMs: 0, durationMs: 0, growMs: 0, byIndex: new Map() },
+      // Destroyer powerup: white flash where blocks were
+      flash: { active: false, elapsedMs: 0, durationMs: 0, cells: [] },
       quake: {
         trauma: 0,
         x: 0,
@@ -759,6 +864,15 @@ function createGameState(shapes) {
       },
     },
   };
+  configureMode(state, CONFIG.defaultMode);
+  return state;
+}
+
+function configureMode(state, modeId) {
+  state.mode = CONFIG.modes[modeId] ? modeId : CONFIG.defaultMode;
+  state.shapes = state.allShapes;
+  state.powerups = CONFIG.modes[state.mode].powerups ? state.allPowerups : [];
+  state.idToShape = buildIdToShapeMap([...state.shapes, ...state.powerups]);
 }
 
 function getDifficultyZone(state) {
@@ -771,11 +885,12 @@ function getDifficultyZone(state) {
 }
 
 /* =========================================
-   New piece selection (level-aware + soft)
+   Piece selection (level-aware + soft)
    =========================================
-   Notes for future linking/sequencing:
-   - This is deliberately split into: (1) chooseLevel, (2) chooseShapeWithinLevel.
-   - Later, a “linked piece” rule can override either step cleanly (e.g., force next id).
+   Order of precedence for each drop:
+   1. linked shapes (prev.nextShapes / nextShapeProbs)
+   2. powerup scheduler (Normal mode only)
+   3. regular level mix: (a) choose level, (b) choose shape within level
 */
 
 function selectPiece(state) {
@@ -790,50 +905,47 @@ function selectPiece(state) {
 
   // Cooldowns tick down.
   if (sel.cooldown.hard > 0) sel.cooldown.hard -= 1;
+  if (sel.powerup.cooldown > 0) sel.powerup.cooldown -= 1;
 
-  const DEBUG_LINK = true; 
-
-  const idToShape = buildIdToShapeMap(state.shapes);
-  
+  const idToShape = state.idToShape;
   const prevShape = sel.lastShapeId ? idToShape.get(sel.lastShapeId) : null;
-  
-  if (DEBUG_LINK) {
-    console.log("[LINK] lastShapeId", sel.lastShapeId);
-    if (prevShape) {
-      console.log("[LINK] prevShape found", {
-        id: prevShape.id,
-        hasNextShapes: Array.isArray(prevShape.nextShapes),
-        hasNextShapeProbs: Array.isArray(prevShape.nextShapeProbs),
-        nextShapes: prevShape.nextShapes,
-        nextShapeProbs: prevShape.nextShapeProbs,
-      });
-    } else {
-      console.log("[LINK] prevShape NOT found in state.shapes for lastShapeId");
-    }
-  }
-  
+
   const linked = tryLinkedNextShape(state, prevShape, idToShape, DEBUG_LINK);
-  
+
   if (linked) {
     if (DEBUG_LINK) console.log("[LINK] APPLY", { from: prevShape?.id, to: linked.id });
     commitSelectedShape(sel, linked);
-  
-    const lvl = (linked.difficulty ?? 1);
-    if (lvl === 4 || lvl === 5) {
-      const hardCfg = CONFIG.assist.pieceMix.hard;
-      sel.urge.hard = 0.0;
-      sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, hardCfg.cooldownDrops ?? 9);
-      sel.hasDroppedFirstHard = true;
+
+    if (linked.powerup) {
+      notePowerupDropped(sel);
+    } else {
+      const lvl = (linked.difficulty ?? 1);
+      if (lvl === 4 || lvl === 5) {
+        const hardCfg = CONFIG.assist.pieceMix.hard;
+        sel.urge.hard = 0.0;
+        sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, hardCfg.cooldownDrops ?? 9);
+        sel.hasDroppedFirstHard = true;
+      }
     }
     return linked;
+  }
+
+  // Powerups (Normal mode).
+  if (state.powerups.length) {
+    const pu = maybeSelectPowerup(state, danger01);
+    if (pu) {
+      commitSelectedShape(sel, pu);
+      notePowerupDropped(sel);
+      return pu;
+    }
   }
 
   // Keys for level weights (0–5).
   const LEVELS = [0, 1, 2, 3, 4, 5];
 
   // 1) Opening blend -> base.
-  const baseW = normaliseWeights({ ...mixCfg.baseLevelWeight }, LEVELS);
-  const openingW = normaliseWeights({ ...mixCfg.openingLevelWeight }, LEVELS);
+  const baseW = normaliseWeights({ ...mixCfg.baseLevelWeight });
+  const openingW = normaliseWeights({ ...mixCfg.openingLevelWeight });
 
   const openingDrops = Math.max(0, mixCfg.openingDrops | 0);
   const openingT = openingDrops > 0 ? clamp01(1 - (sel.dropIndex - 1) / openingDrops) : 0;
@@ -842,7 +954,7 @@ function selectPiece(state) {
   for (const k of LEVELS) levelW[k] = lerp(baseW[k] ?? 0, openingW[k] ?? 0, openingT);
 
   // 2) Danger blend towards assistance mix (never allocates to 4/5 directly).
-  const dangerTarget = normaliseWeights({ ...mixCfg.dangerTargetMix }, LEVELS);
+  const dangerTarget = normaliseWeights({ ...mixCfg.dangerTargetMix });
   for (const k of LEVELS) levelW[k] = lerp(levelW[k] ?? 0, dangerTarget[k] ?? 0, danger);
 
   // 3) Hard scheduler (4/5 share the same urge/cooldown).
@@ -897,14 +1009,17 @@ function selectPiece(state) {
   levelW[3] *= (1 - 0.65 * danger);
 
   // Hard-ban level 0 for the first few drops.
+  // NOTE: openingNoLevel0UntilDrop lives in CONFIG.assist, not pieceMix, so this
+  // reads undefined and the ban is currently off. Left as-is so the tuned
+  // balance doesn't change; point it at CONFIG.assist to switch the ban on.
   if (sel.dropIndex <= (mixCfg.openingNoLevel0UntilDrop ?? 0)) {
     levelW[0] = 0;
   }
 
-  levelW = normaliseWeights(levelW, LEVELS);
+  levelW = normaliseWeights(levelW);
 
   // Choose a level.
-  const chosenLevel = sampleDiscrete(levelW, state.rng, LEVELS);
+  const chosenLevel = sampleDiscrete(levelW, state.rng);
 
   // Candidate shapes in that level (frequency>0), then weighted by frequency * recency multiplier.
   let candidates = state.shapes.filter(s =>
@@ -919,21 +1034,10 @@ function selectPiece(state) {
     return state.shapes[Math.floor(state.rng() * state.shapes.length)];
   }
 
-  // (1) Soft anti-repeat within last K: multiply frequency by a recency factor (never zero).
-  const recCfg = mixCfg.recency ?? {};
-  const lastK = recCfg.lastK ?? 5;
-  const penaltyStrength = recCfg.penaltyStrength ?? 0.75;
-  const minMultiplier = recCfg.minMultiplier ?? 0.15;
-
+  // Soft anti-repeat within last K: multiply frequency by a recency factor (never zero).
   const chosenShape = sampleByWeight(
     candidates,
-    (s) => {
-      const freq = (s.frequency ?? 1);
-      const mult = (typeof s.id === "string")
-        ? getRecencyMultiplier(s.id, sel.recentShapeIds, lastK, penaltyStrength, minMultiplier)
-        : 1.0;
-      return freq * mult;
-    },
+    (s) => (s.frequency ?? 1) * recencyMultiplierFor(sel, s),
     state.rng
   );
 
@@ -951,14 +1055,79 @@ function selectPiece(state) {
   return chosenShape;
 }
 
-function commitSelectedShape(sel, shape) {
-  const lvl = (shape.difficulty ?? 1);
+function recencyMultiplierFor(sel, shape) {
+  const recCfg = CONFIG.assist.pieceMix.recency ?? {};
+  if (typeof shape.id !== "string") return 1.0;
+  return getRecencyMultiplier(
+    shape.id,
+    sel.recentShapeIds,
+    recCfg.lastK ?? 5,
+    recCfg.penaltyStrength ?? 0.75,
+    recCfg.minMultiplier ?? 0.15
+  );
+}
 
-  sel.lastLevel = lvl;
-  sel.lastWasHard = (lvl === 4 || lvl === 5);
+/* =========================================
+   Powerup scheduler (Normal mode)
+   =========================================
+   Decides IF a powerup is due (an accumulating chance, boosted by danger and
+   air pockets) and THEN WHICH one (frequency × tier-for-danger × class-need ×
+   recency).
+*/
+function maybeSelectPowerup(state, danger01) {
+  const cfg = CONFIG.assist.powerups;
+  const sel = state.pieceSel;
+  const ps = sel.powerup;
+
+  if (sel.dropIndex <= (cfg.minDropIndex ?? 0)) return null;
+  if (ps.cooldown > 0) return null;
+
+  const stats = analyseBoard(state.board);
+  const holes01 = clamp01(stats.holes / Math.max(1, cfg.holesForMax ?? 18));
+
+  const boost = 1 + (cfg.dangerBoost ?? 0) * danger01 + (cfg.holesBoost ?? 0) * holes01;
+  const chance = clamp01(ps.chance * boost);
+  ps.lastChance = chance;
+
+  if (state.rng() >= chance) {
+    ps.chance = Math.min(cfg.maxChance ?? 0.6, ps.chance + (cfg.chancePerDrop ?? 0.03));
+    return null;
+  }
+
+  const candidates = state.powerups.filter(p => (p.frequency ?? 1) > 0);
+  if (!candidates.length) return null;
+
+  const tw = cfg.tierWeights;
+  const need = cfg.need ?? {};
+
+  return sampleByWeight(candidates, (p) => {
+    const tier = p.powerup.tier;
+    const tierW = lerp(tw.calm[tier] ?? 1, tw.danger[tier] ?? 1, danger01);
+    const n = need[p.powerup.type] ?? { base: 1 };
+    const needW = (n.base ?? 1) + (n.holes ?? 0) * holes01 + (n.danger ?? 0) * danger01;
+    return (p.frequency ?? 1) * tierW * needW * recencyMultiplierFor(sel, p);
+  }, state.rng);
+}
+
+function notePowerupDropped(sel) {
+  const cfg = CONFIG.assist.powerups;
+  sel.powerup.chance = cfg.baseChance ?? 0.05;
+  sel.powerup.cooldown = cfg.cooldownDrops ?? 5;
+  sel.powerup.count++;
+}
+
+function commitSelectedShape(sel, shape) {
   sel.lastShapeId = (typeof shape.id === "string") ? shape.id : null;
 
-  sel.levelCounts[lvl] = (sel.levelCounts[lvl] ?? 0) + 1;
+  if (shape.powerup) {
+    // Powerups sit outside the 0–5 difficulty levels.
+    sel.lastWasHard = false;
+  } else {
+    const lvl = (shape.difficulty ?? 1);
+    sel.lastLevel = lvl;
+    sel.lastWasHard = (lvl === 4 || lvl === 5);
+    sel.levelCounts[lvl] = (sel.levelCounts[lvl] ?? 0) + 1;
+  }
 
   if (sel.lastShapeId) {
     sel.recentShapeIds.push(sel.lastShapeId);
@@ -977,7 +1146,7 @@ function normaliseWeights(w) {
   for (const k of Object.keys(w)) total += Math.max(0, w[k] ?? 0);
   if (total <= 0) {
     // Safe fallback: uniform over 0–3 (never 4) if everything went to zero.
-    return { 0: 0.25, 1: 0.25, 2: 0.25, 3: 0.25, 4: 0.0 };
+    return { 0: 0.25, 1: 0.25, 2: 0.25, 3: 0.25, 4: 0.0, 5: 0.0 };
   }
   const out = {};
   for (const k of Object.keys(w)) out[k] = Math.max(0, w[k] ?? 0) / total;
@@ -1032,8 +1201,7 @@ function spawnPiece(state) {
     rotIdx,
     x: Math.floor((CONFIG.board.cols - w) / 2),
 
-    // OLD: y: -2
-    // NEW: start fully above the board so entry is row-by-row, even for tall pieces
+    // Start fully above the board so entry is row-by-row, even for tall pieces
     y: -mat.length,
   };
 
@@ -1118,12 +1286,14 @@ function tryRotate(state) {
   return false;
 }
 
+// Locks the active piece into the board. Returns info about the placement.
 function lockPiece(state) {
+  const { shape, rotIdx } = state.active;
   const mat = getActiveMatrix(state);
-  const shape = state.active.shape;
+  const pid = state.nextPid++;
 
   let lockedAboveTop = false;
-  let lockedCellCount = 0;
+  const placed = [];
 
   for (let y = 0; y < mat.length; y++) {
     for (let x = 0; x < mat[0].length; x++) {
@@ -1137,27 +1307,37 @@ function lockPiece(state) {
         continue;
       }
 
-      const paint = getActivePaintForBlock(state, x, y);
-      state.board[by][bx] = { paint, style: shape.style };
-      lockedCellCount++;
+      state.board[by][bx] = { paint: getShapePaint(shape, rotIdx, x, y), style: shape.style, pid };
+      placed.push({ x: bx, y: by });
     }
   }
+  markBoardDirty(state);
 
   state.lastLockedShape = shape;
 
-  if ((shape.difficulty ?? 0) >= (CONFIG.fx.largePieceLock.minDifficulty ?? 5)) {
-    addQuakeFromBlocks(state, lockedCellCount);
+  if ((shape.difficulty ?? 0) >= (CONFIG.fx.largePieceLock.minDifficulty ?? 5) && !shape.powerup) {
+    addQuakeFromBlocks(state, placed.length);
   }
 
-  if (lockedAboveTop) {
-    state.gameOver = true;
-    state.running = false;
-    state.gameOverInfo.pieceName = shape.name;
-    state.gameOverInfo.shape = shape;
-    state.fx.gameOverBackdrop.snapshotCanvas = makeBoardSnapshotCanvas(state);
-    state.fx.gameOverBackdrop.elapsedMs = 0;
+  // A powerup that vanishes when it fires can't top you out.
+  const consumed = !!shape.powerup?.consume;
+  if (lockedAboveTop && !consumed) {
+    setGameOver(state, shape);
   }
+
+  return { shape, rotIdx, x: state.active.x, y: state.active.y, pid, placed };
 }
+
+function setGameOver(state, shape) {
+  state.gameOver = true;
+  state.running = false;
+  state.effect = null;
+  state.gameOverInfo.pieceName = shape?.name ?? "";
+  state.gameOverInfo.shape = shape ?? null;
+  state.fx.gameOverBackdrop.snapshotCanvas = makeBoardSnapshotCanvas(state);
+  state.fx.gameOverBackdrop.elapsedMs = 0;
+}
+
 function clearFullLines(state) {
   const rows = CONFIG.board.rows;
   const cols = CONFIG.board.cols;
@@ -1170,29 +1350,17 @@ function clearFullLines(state) {
   const cleared = fullRows.length;
   if (cleared === 0) return 0;
 
-  const oldBoard = state.board.map(row => row.slice());
   const fullRowsSet = new Set(fullRows);
+  const fallingBlocks = countFallingBlocksAfterClear(state.board, fullRowsSet);
 
-  const clearedRowsInfo = fullRows.map(y => ({
-    y,
-    cells: oldBoard[y].slice(),
-  }));
+  const { removed, dropDistances } = collapseRows(state.board, fullRows, cols);
+  markBoardDirty(state);
 
-  spawnLineClearParticles(state, clearedRowsInfo);
-
-  const newBoard = [];
-  for (let y = 0; y < rows; y++) {
-    if (!fullRowsSet.has(y)) newBoard.push(oldBoard[y]);
-  }
-  while (newBoard.length < rows) newBoard.unshift(Array(cols).fill(null));
-  state.board = newBoard;
-
-  state.fx.rowFall.active = true;
-  state.fx.rowFall.elapsedMs = 0;
-  state.fx.rowFall.durationMs = CONFIG.fx.lineClear.boardFallAnimMs;
-  state.fx.rowFall.rowDropDistances = buildRowDropDistancesAfterClear(oldBoard, fullRowsSet);
+  spawnCellParticles(state, rowsToCells(removed));
+  startRowFall(state, dropDistances);
 
   state.lines += cleared;
+  state.blocksDestroyed += cleared * cols;
 
   const base = CONFIG.scoring.lineClear[cleared] ?? (cleared * 100);
   state.score += base * state.level;
@@ -1203,15 +1371,178 @@ function clearFullLines(state) {
     recomputeSpeed(state);
   }
 
-  const fallingBlocks = countFallingBlocksAfterClear(oldBoard, fullRowsSet);
   addQuakeFromBlocks(state, fallingBlocks);
 
   return cleared;
 }
 
+function rowsToCells(removedRows) {
+  const out = [];
+  for (const { y, cells } of removedRows) {
+    for (let x = 0; x < cells.length; x++) {
+      if (cells[x]) out.push({ x, y, cell: cells[x] });
+    }
+  }
+  return out;
+}
+
+function startRowFall(state, dropDistances) {
+  const rf = state.fx.rowFall;
+  rf.active = dropDistances.some(d => d > 0);
+  rf.elapsedMs = 0;
+  rf.durationMs = CONFIG.fx.lineClear.boardFallAnimMs;
+  rf.rowDropDistances = dropDistances;
+}
+
 function recomputeSpeed(state) {
   const mult = Math.pow(CONFIG.timing.speedMultiplierPerLevel, state.level - 1);
   state.dropMs = Math.max(CONFIG.timing.minDropMs, Math.floor(CONFIG.timing.baseDropMs * mult));
+}
+
+// ============================================================
+// POWERUP EFFECTS
+// ============================================================
+// Sequence after a powerup locks:
+//   "charge" (piece + highlighted cells glow)  ->  fire the effect
+//   "settle" (blocks fly / slide / grow)       ->  line clears, next piece
+
+function beginPowerupEffect(state, lockInfo) {
+  const { shape, rotIdx, x, y } = lockInfo;
+  const pu = shape.powerup;
+  const mat = shape.rotations[rotIdx];
+
+  state.effect = {
+    ...lockInfo,
+    pu,
+    area: resolveArea(pu.areaRotations[rotIdx], x, y, CONFIG.board.cols, CONFIG.board.rows),
+    centre: { x: x + (mat[0].length - 1) / 2, y: y + (mat.length - 1) / 2 },
+    phase: "charge",
+    elapsedMs: 0,
+    durationMs: CONFIG.fx.powerup.chargeMs,
+    quakeOnSettle: 0,
+  };
+}
+
+function updatePowerupEffect(state, dt, ctx) {
+  const e = state.effect;
+  e.elapsedMs += dt;
+  if (e.elapsedMs < e.durationMs) return;
+
+  if (e.phase === "charge") {
+    e.durationMs = firePowerupEffect(state, e);
+    e.phase = "settle";
+    e.elapsedMs = 0;
+    return;
+  }
+
+  // settle finished
+  if (e.quakeOnSettle > 0) addQuakeFromBlocks(state, e.quakeOnSettle);
+  state.effect = null;
+  finishTurn(state, ctx);
+}
+
+// Applies the effect to the board. Returns how long to wait before continuing.
+function firePowerupEffect(state, e) {
+  const cfg = CONFIG.fx.powerup;
+  const cols = CONFIG.board.cols;
+  const rows = CONFIG.board.rows;
+  const board = state.board;
+  const pu = e.pu;
+  let settleMs = 0;
+
+  if (pu.consume) {
+    const gone = [];
+    for (const { x, y } of e.placed) {
+      const c = board[y][x];
+      if (c && c.pid === e.pid) {
+        gone.push({ x, y, cell: c });
+        board[y][x] = null;
+      }
+    }
+    spawnCellParticles(state, gone, 0.6);
+  }
+
+  if (pu.type === "destroyer") {
+    const destroyed = applyDestroy(board, e.area, cols);
+    spawnCellParticles(state, destroyed);
+    startFlash(state, destroyed, cfg.destroyFlashMs);
+
+    state.blocksDestroyed += destroyed.length;
+    state.score += destroyed.length * (CONFIG.scoring.powerupDestroyPerBlock ?? 0) * state.level;
+    addQuakeFromBlocks(state, destroyed.length * (cfg.destroyQuakePerBlock ?? 1));
+    settleMs = cfg.destroySettleMs;
+
+    if (pu.collapse && e.area.fullRows.length) {
+      const { dropDistances } = collapseRows(board, e.area.fullRows, cols);
+      startRowFall(state, dropDistances);
+      settleMs = Math.max(settleMs, CONFIG.fx.lineClear.boardFallAnimMs);
+    }
+  } else if (pu.type === "gravity") {
+    const moves = applyGravity(board, e.area, cols, rows, pu.direction);
+    settleMs = startMoveAnim(state, moves);
+    e.quakeOnSettle = moves.length * (cfg.gravityQuakePerBlock ?? 1);
+  } else if (pu.type === "expander") {
+    const fillPid = state.nextPid++;
+    const filled = applyExpand(board, e.area, cols, () => ({
+      paint: pu.fillPaint,
+      style: pu.fillStyle,
+      pid: fillPid,
+    }));
+    settleMs = startGrowAnim(state, filled, e.centre);
+  }
+
+  markBoardDirty(state);
+  return settleMs;
+}
+
+function startMoveAnim(state, moves) {
+  const cfg = CONFIG.fx.powerup;
+  const cols = CONFIG.board.cols;
+  const anim = state.fx.moveAnim;
+  anim.byIndex.clear();
+  anim.elapsedMs = 0;
+  let longest = 0;
+
+  for (const m of moves) {
+    const ox = m.fromX - m.toX;
+    const oy = m.fromY - m.toY;
+    const dist = Math.abs(ox) + Math.abs(oy);
+    const dur = Math.min(cfg.gravityMaxMs, cfg.gravityBaseMs + cfg.gravityMsPerSqrtCell * Math.sqrt(dist));
+    anim.byIndex.set(m.toY * cols + m.toX, { ox, oy, dur });
+    longest = Math.max(longest, dur);
+  }
+
+  anim.durationMs = longest;
+  anim.active = moves.length > 0;
+  return longest;
+}
+
+function startGrowAnim(state, filled, centre) {
+  const cfg = CONFIG.fx.powerup;
+  const cols = CONFIG.board.cols;
+  const anim = state.fx.growAnim;
+  anim.byIndex.clear();
+  anim.elapsedMs = 0;
+  anim.growMs = cfg.expandGrowMs;
+  let maxDelay = 0;
+
+  for (const { x, y } of filled) {
+    const delay = Math.hypot(x - centre.x, y - centre.y) * cfg.expandStaggerMsPerCell;
+    anim.byIndex.set(y * cols + x, delay);
+    maxDelay = Math.max(maxDelay, delay);
+  }
+
+  anim.durationMs = filled.length ? maxDelay + cfg.expandGrowMs : 0;
+  anim.active = filled.length > 0;
+  return anim.durationMs;
+}
+
+function startFlash(state, cells, durationMs) {
+  const f = state.fx.flash;
+  f.cells = cells.map(({ x, y }) => ({ x, y }));
+  f.elapsedMs = 0;
+  f.durationMs = durationMs;
+  f.active = cells.length > 0;
 }
 
 /// FX HELPERS
@@ -1279,99 +1610,69 @@ function drawBlockWithPaintStatic(ctx, px, py, cellSize, paint, style = {}) {
   }
 }
 
-function spawnLineClearParticles(state, clearedRowsInfo) {
+// Particles burst from cells [{x, y, cell}] (board coords). `mult` scales the count.
+function spawnCellParticles(state, cells, mult = 1) {
   if (!CONFIG.fx.lineClear.enabled) return;
 
   const cfg = CONFIG.fx.lineClear;
-  const cell = CONFIG.render.cellPx;
+  const cellPx = CONFIG.render.cellPx;
 
-  for (const rowInfo of clearedRowsInfo) {
-    const boardY = rowInfo.y;
+  for (const { x, y, cell: cellObj } of cells) {
+    if (!cellObj) continue;
 
-    for (let x = 0; x < rowInfo.cells.length; x++) {
-      const cellObj = rowInfo.cells[x];
-      if (!cellObj) continue;
+    const paint = cellObj.paint;
+    const px = x * cellPx;
+    const py = y * cellPx;
 
-      const paint = cellObj.paint;
-      const px = x * cell;
-      const py = boardY * cell;
-
-      let colours = [];
-      if (typeof paint === "string") {
-        colours = [paint];
-      } else if (paint?.pixels) {
-        for (const row of paint.pixels) {
-          for (const c of row) {
-            if (typeof c === "string") colours.push(c);
-          }
+    let colours = [];
+    if (typeof paint === "string") {
+      colours = [paint];
+    } else if (paint?.pixels) {
+      for (const row of paint.pixels) {
+        for (const c of row) {
+          if (typeof c === "string") colours.push(c);
         }
       }
-      if (colours.length === 0) colours = [cellObj.style?.baseColor ?? "#FFFFFF"];
+    }
+    if (colours.length === 0) colours = [cellObj.style?.baseColor ?? "#FFFFFF"];
 
-      const targetCount = Math.min(
-        cfg.maxParticlesPerCell,
-        Math.max(6, Math.round(colours.length * (cfg.particlesPerPixel ?? 0.35)))
-      );
+    const targetCount = Math.round(mult * Math.min(
+      cfg.maxParticlesPerCell,
+      Math.max(6, Math.round(colours.length * (cfg.particlesPerPixel ?? 0.35)))
+    ));
 
-      for (let i = 0; i < targetCount; i++) {
-        const angle = state.rng() * Math.PI * 2;
-        const speed = lerp(cfg.speedMin, cfg.speedMax, state.rng());
-        const vx = Math.cos(angle) * speed;
-        const vy = Math.sin(angle) * speed - speed * (cfg.upwardBias ?? 0.18);
-        const lifeMs = lerp(cfg.lifeMinMs, cfg.lifeMaxMs, state.rng());
-        const size = cfg.particleSizePx;
+    for (let i = 0; i < targetCount; i++) {
+      const angle = state.rng() * Math.PI * 2;
+      const speed = lerp(cfg.speedMin, cfg.speedMax, state.rng());
+      const vx = Math.cos(angle) * speed;
+      const vy = Math.sin(angle) * speed - speed * (cfg.upwardBias ?? 0.18);
+      const lifeMs = lerp(cfg.lifeMinMs, cfg.lifeMaxMs, state.rng());
+      const size = cfg.particleSizePx;
 
-        state.fx.particles.push({
-          x: px + state.rng() * cell,
-          y: py + state.rng() * cell,
-          vx,
-          vy,
-          lifeMs,
-          maxLifeMs: lifeMs,
-          size,
-          color: colours[Math.floor(state.rng() * colours.length)],
-        });
-      }
+      state.fx.particles.push({
+        x: px + state.rng() * cellPx,
+        y: py + state.rng() * cellPx,
+        vx,
+        vy,
+        lifeMs,
+        maxLifeMs: lifeMs,
+        size,
+        color: colours[Math.floor(state.rng() * colours.length)],
+      });
     }
   }
-}
-
-function buildRowDropDistancesAfterClear(oldBoard, fullRowsSet) {
-  const rows = CONFIG.board.rows;
-  const distances = Array(rows).fill(0);
-
-  for (let oldY = 0; oldY < rows; oldY++) {
-    if (fullRowsSet.has(oldY)) continue;
-
-    let clearedBelow = 0;
-    for (let y = oldY + 1; y < rows; y++) {
-      if (fullRowsSet.has(y)) clearedBelow++;
-    }
-
-    const newY = oldY + clearedBelow;
-    if (newY >= 0 && newY < rows) {
-      distances[newY] = clearedBelow;
-    }
-  }
-
-  return distances;
 }
 
 function countFallingBlocksAfterClear(oldBoard, fullRowsSet) {
   const rows = CONFIG.board.rows;
   const cols = CONFIG.board.cols;
   let fallingBlocks = 0;
+  let clearedBelow = 0;
 
-  for (let y = 0; y < rows; y++) {
-    if (fullRowsSet.has(y)) continue;
-
-    let clearedBelow = 0;
-    for (let yy = y + 1; yy < rows; yy++) {
-      if (fullRowsSet.has(yy)) clearedBelow++;
-    }
-
-    // This row only contributes if it actually drops.
-    if (clearedBelow <= 0) continue;
+  // Walk bottom-up so "rows cleared below" is a running count.
+  for (let y = rows - 1; y >= 0; y--) {
+    if (fullRowsSet.has(y)) { clearedBelow++; continue; }
+    if (clearedBelow <= 0) continue; // this row doesn't drop
 
     for (let x = 0; x < cols; x++) {
       if (oldBoard[y][x] !== null) fallingBlocks++;
@@ -1384,40 +1685,47 @@ function countFallingBlocksAfterClear(oldBoard, fullRowsSet) {
 function updateFX(state, dt) {
   const dtSec = dt / 1000;
 
-  if (state.fx?.particles?.length) {
+  const parts = state.fx.particles;
+  if (parts.length) {
     const cfg = CONFIG.fx.lineClear;
-    const out = [];
-    for (const p of state.fx.particles) {
+    const drag = Math.max(0, 1 - cfg.dragPerSecond * dtSec);
+    let n = 0;
+    for (let i = 0; i < parts.length; i++) {
+      const p = parts[i];
       p.lifeMs -= dt;
       if (p.lifeMs <= 0) continue;
 
-      const drag = Math.max(0, 1 - cfg.dragPerSecond * dtSec);
       p.vx *= drag;
       p.vy = p.vy * drag + cfg.gravityPxPerSec2 * dtSec;
       p.x += p.vx * dtSec;
       p.y += p.vy * dtSec;
 
-      out.push(p);
+      parts[n++] = p;
     }
-    state.fx.particles = out;
+    parts.length = n; // compact in place (no per-frame allocation)
   }
 
-  if (state.fx?.rowFall?.active) {
-    state.fx.rowFall.elapsedMs += dt;
-    if (state.fx.rowFall.elapsedMs >= state.fx.rowFall.durationMs) {
-      state.fx.rowFall.active = false;
-      state.fx.rowFall.elapsedMs = 0;
-      state.fx.rowFall.rowDropDistances.fill(0);
+  const rf = state.fx.rowFall;
+  if (rf.active) {
+    rf.elapsedMs += dt;
+    if (rf.elapsedMs >= rf.durationMs) {
+      rf.active = false;
+      rf.elapsedMs = 0;
+      rf.rowDropDistances.fill(0);
     }
   }
 
-  if (state.fx?.quake) {
-    const q = state.fx.quake;
-    q.trauma = Math.max(0, q.trauma - CONFIG.fx.quake.traumaDecayPerSecond * dtSec);
-    q.seed += dtSec * 11.7;
+  for (const anim of [state.fx.moveAnim, state.fx.growAnim, state.fx.flash]) {
+    if (!anim.active) continue;
+    anim.elapsedMs += dt;
+    if (anim.elapsedMs >= anim.durationMs) anim.active = false;
   }
 
-  if (state.gameOver && state.fx?.gameOverBackdrop) {
+  const q = state.fx.quake;
+  q.trauma = Math.max(0, q.trauma - CONFIG.fx.quake.traumaDecayPerSecond * dtSec);
+  q.seed += dtSec * 11.7;
+
+  if (state.gameOver) {
     const bg = state.fx.gameOverBackdrop;
     bg.elapsedMs += dt;
 
@@ -1442,37 +1750,356 @@ function updateFX(state, dt) {
 }
 
 // ============================================================
-// RENDERER (unchanged from your prior version, except kept here in full)
+// BLOCK DRAWING (shared by the renderer and previews)
+// ============================================================
+
+// The classic block look: pixel art + optional shading + thin per-cell outline.
+function drawBlockWithPaint(ctx, px, py, cellSize, paint, style = {}) {
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+  const shadeWidthRatio = style.shadeWidthRatio ?? 0.14;
+  const shadeWidthMinPx = style.shadeWidthMinPx ?? 1;
+  const shadeWidthMaxPx = style.shadeWidthMaxPx ?? 10;
+
+  const w = clamp(
+    Math.round(cellSize * shadeWidthRatio),
+    shadeWidthMinPx,
+    Math.min(shadeWidthMaxPx, Math.floor(cellSize / 2) - 1)
+  );
+
+  const darkAlpha = clamp(style.shadeDarkAlpha ?? 0.0, 0, 1);
+  const lightAlpha = clamp(style.shadeLightAlpha ?? 0.0, 0, 1);
+
+  const darkRGB = style.shadeDarkRGB ?? [0, 0, 0];
+  const lightRGB = style.shadeLightRGB ?? [255, 255, 255];
+
+  const darkComposite = style.shadeDarkComposite ?? "multiply";
+  const lightComposite = style.shadeLightComposite ?? "screen";
+
+  const tintWarmAlpha = clamp(style.shadeWarmTintAlpha ?? 0.0, 0, 1);
+  const tintCoolAlpha = clamp(style.shadeCoolTintAlpha ?? 0.0, 0, 1);
+  const warmRGB = style.shadeWarmTintRGB ?? [255, 230, 120];
+  const coolRGB = style.shadeCoolTintRGB ?? [70, 120, 255];
+
+  const outlineAlpha = clamp(style.outlineAlpha ?? 0.55, 0, 1);
+  const outlineWidth = style.outlineWidth ?? 0.5;
+  const outlineRGB = style.outlineRGB ?? [0, 0, 0];
+
+  const cornerMode = style.cornerMode ?? "single";
+  const shadeBottomLeftCorner = style.shadeBottomLeftCorner ?? true;
+  const shadeTopRightCorner = style.shadeTopRightCorner ?? true;
+
+  drawBlockWithPaintStatic(ctx, px, py, cellSize, paint, style);
+
+  if (w > 0 && (darkAlpha > 0 || lightAlpha > 0 || tintWarmAlpha > 0 || tintCoolAlpha > 0)) {
+    ctx.save();
+
+    if (darkAlpha > 0 || tintCoolAlpha > 0) {
+      ctx.globalCompositeOperation = darkComposite;
+
+      if (darkAlpha > 0) {
+        ctx.fillStyle = `rgba(${darkRGB[0]},${darkRGB[1]},${darkRGB[2]},${darkAlpha})`;
+        ctx.fillRect(px + w, py + cellSize - w, cellSize - w, w);
+        ctx.fillRect(px, py, w, cellSize - w);
+      }
+
+      if (tintCoolAlpha > 0) {
+        ctx.fillStyle = `rgba(${coolRGB[0]},${coolRGB[1]},${coolRGB[2]},${tintCoolAlpha})`;
+        ctx.fillRect(px + w, py + cellSize - w, cellSize - w, w);
+        ctx.fillRect(px, py, w, cellSize - w);
+      }
+
+      if (cornerMode === "single" && shadeBottomLeftCorner) {
+        if (darkAlpha > 0) {
+          ctx.fillStyle = `rgba(${darkRGB[0]},${darkRGB[1]},${darkRGB[2]},${darkAlpha})`;
+          ctx.fillRect(px, py + cellSize - w, w, w);
+        }
+        if (tintCoolAlpha > 0) {
+          ctx.fillStyle = `rgba(${coolRGB[0]},${coolRGB[1]},${coolRGB[2]},${tintCoolAlpha})`;
+          ctx.fillRect(px, py + cellSize - w, w, w);
+        }
+      }
+    }
+
+    if (lightAlpha > 0 || tintWarmAlpha > 0) {
+      ctx.globalCompositeOperation = lightComposite;
+
+      if (lightAlpha > 0) {
+        ctx.fillStyle = `rgba(${lightRGB[0]},${lightRGB[1]},${lightRGB[2]},${lightAlpha})`;
+        ctx.fillRect(px, py, cellSize - w, w);
+        ctx.fillRect(px + cellSize - w, py + w, w, cellSize - w);
+      }
+
+      if (tintWarmAlpha > 0) {
+        ctx.fillStyle = `rgba(${warmRGB[0]},${warmRGB[1]},${warmRGB[2]},${tintWarmAlpha})`;
+        ctx.fillRect(px, py, cellSize - w, w);
+        ctx.fillRect(px + cellSize - w, py + w, w, cellSize - w);
+      }
+
+      if (cornerMode === "single" && shadeTopRightCorner) {
+        if (lightAlpha > 0) {
+          ctx.fillStyle = `rgba(${lightRGB[0]},${lightRGB[1]},${lightRGB[2]},${lightAlpha})`;
+          ctx.fillRect(px + cellSize - w, py, w, w);
+        }
+        if (tintWarmAlpha > 0) {
+          ctx.fillStyle = `rgba(${warmRGB[0]},${warmRGB[1]},${warmRGB[2]},${tintWarmAlpha})`;
+          ctx.fillRect(px + cellSize - w, py, w, w);
+        }
+      }
+    }
+
+    ctx.restore();
+  }
+
+  if (outlineAlpha > 0 && outlineWidth > 0) {
+    ctx.save();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = `rgba(${outlineRGB[0]},${outlineRGB[1]},${outlineRGB[2]},${outlineAlpha})`;
+    ctx.lineWidth = outlineWidth;
+    const half = (outlineWidth % 2) ? 0.5 : 0;
+    ctx.strokeRect(px + half, py + half, cellSize - outlineWidth, cellSize - outlineWidth);
+    ctx.restore();
+  }
+}
+
+// Enhanced look: pixel art laid out on the device-pixel grid (even pixel
+// sizes at any scale), no per-cell outline — outlines are drawn per piece.
+function drawPixelArtDevice(ctx, sizePx, paint, baseColor) {
+  if (paint && typeof paint === "object" && paint.pixels && paint.k) {
+    const k = paint.k;
+    const b = new Array(k + 1);
+    for (let i = 0; i <= k; i++) b[i] = Math.round((i * sizePx) / k);
+    for (let sy = 0; sy < k; sy++) {
+      for (let sx = 0; sx < k; sx++) {
+        const c = paint.pixels[sy][sx];
+        ctx.fillStyle = (typeof c === "string" && isHexColour(c)) ? c : baseColor;
+        ctx.fillRect(b[sx], b[sy], b[sx + 1] - b[sx], b[sy + 1] - b[sy]);
+      }
+    }
+  } else {
+    ctx.fillStyle = (typeof paint === "string") ? paint : baseColor;
+    ctx.fillRect(0, 0, sizePx, sizePx);
+  }
+}
+
+// Edge mask bits: which sides of a block border a different piece / empty space.
+const EDGE_T = 1, EDGE_R = 2, EDGE_B = 4, EDGE_L = 8;
+
+function boardEdgeMask(board, x, y, pid) {
+  const rows = board.length, cols = board[0].length;
+  let m = 0;
+  if (y === 0 || board[y - 1][x]?.pid !== pid) m |= EDGE_T;
+  if (x === cols - 1 || board[y][x + 1]?.pid !== pid) m |= EDGE_R;
+  if (y === rows - 1 || board[y + 1][x]?.pid !== pid) m |= EDGE_B;
+  if (x === 0 || board[y][x - 1]?.pid !== pid) m |= EDGE_L;
+  return m;
+}
+
+function matrixEdgeMask(mat, x, y) {
+  let m = 0;
+  if (!mat[y - 1]?.[x]) m |= EDGE_T;
+  if (!mat[y][x + 1]) m |= EDGE_R;
+  if (!mat[y + 1]?.[x]) m |= EDGE_B;
+  if (!mat[y][x - 1]) m |= EDGE_L;
+  return m;
+}
+
+function hsla(h, s, l, a) {
+  return `hsla(${h | 0},${s}%,${l}%,${a.toFixed(3)})`;
+}
+
+// ============================================================
+// RENDERER
 // ============================================================
 
 function createRenderer(boardCanvas, nextCanvas) {
-  const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
   const cell = CONFIG.render.cellPx;
-  const bw = CONFIG.board.cols * cell;
-  const bh = CONFIG.board.rows * cell;
+  const cols = CONFIG.board.cols;
+  const rows = CONFIG.board.rows;
+  const bw = cols * cell;
+  const bh = rows * cell;
 
-  boardCanvas.width = bw * dpr;
-  boardCanvas.height = bh * dpr;
   const bctx = boardCanvas.getContext("2d");
-  bctx.scale(dpr, dpr);
+  let scale = 1;
 
+  // --- caches (all rebuilt when the backing scale or cell style changes) ---
+  let spriteObjCache = new WeakMap(); // paint object -> canvas
+  let spriteStrCache = new WeakMap(); // style object -> Map(colour -> canvas)
+  const boardCache = { canvas: document.createElement("canvas"), version: -1, styleKey: "" };
+  let staticLayers = null; // { bg, screen, classicTop } pre-rendered layers
+  let lastStyle = CONFIG.render.cellStyle;
+  const overlayCache = { key: "", area: null };
+
+  const isEnhanced = () => CONFIG.render.cellStyle !== "classic";
+
+  function computeScale() {
+    // Integer backing scale so cells land on whole device pixels; the browser
+    // only ever scales UP a little (image-rendering: pixelated), never down.
+    const dpr = window.devicePixelRatio || 1;
+    const cssW = boardCanvas.getBoundingClientRect().width || bw;
+    return Math.max(1, Math.min(CONFIG.render.maxScale ?? 4, Math.floor((cssW * dpr) / bw + 0.001)));
+  }
+
+  function invalidateCaches() {
+    spriteObjCache = new WeakMap();
+    spriteStrCache = new WeakMap();
+    boardCache.version = -1;
+    staticLayers = null;
+    overlayCache.key = "";
+  }
+
+  function applyScale(s) {
+    scale = s;
+    boardCanvas.width = bw * s;
+    boardCanvas.height = bh * s;
+    boardCache.canvas.width = bw * s;
+    boardCache.canvas.height = bh * s;
+    invalidateCaches();
+  }
+
+  applyScale(computeScale());
+  if (typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(() => {
+      const s = computeScale();
+      if (s !== scale) applyScale(s);
+    }).observe(boardCanvas);
+  }
+
+  // --- next-piece canvas ---
+  const ndpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
   const nextRect = nextCanvas.getBoundingClientRect();
   const nextW = Math.max(1, Math.round(nextRect.width));
   const nextH = Math.max(1, Math.round(nextRect.height));
 
-  nextCanvas.width = nextW * dpr;
-  nextCanvas.height = nextH * dpr;
+  nextCanvas.width = nextW * ndpr;
+  nextCanvas.height = nextH * ndpr;
 
   const nctx = nextCanvas.getContext("2d");
   nctx.setTransform(1, 0, 0, 1, 0, 0);
-  nctx.scale(dpr, dpr);
+  nctx.scale(ndpr, ndpr);
+
+  function makeCanvas(w, h) {
+    const c = document.createElement("canvas");
+    c.width = w;
+    c.height = h;
+    return c;
+  }
+
+  // One cached canvas per distinct block paint.
+  function getSprite(paint, style) {
+    const enhanced = isEnhanced();
+    if (paint && typeof paint === "object") {
+      let spr = spriteObjCache.get(paint);
+      if (!spr) {
+        spr = renderSprite(paint, style, enhanced);
+        spriteObjCache.set(paint, spr);
+      }
+      return spr;
+    }
+    const st = style ?? DEFAULT_STYLE;
+    let byColour = spriteStrCache.get(st);
+    if (!byColour) { byColour = new Map(); spriteStrCache.set(st, byColour); }
+    let spr = byColour.get(paint);
+    if (!spr) {
+      spr = renderSprite(paint, st, enhanced);
+      byColour.set(paint, spr);
+    }
+    return spr;
+  }
+
+  function renderSprite(paint, style, enhanced) {
+    const size = cell * scale;
+    const c = makeCanvas(size, size);
+    const g = c.getContext("2d");
+    if (enhanced) {
+      drawPixelArtDevice(g, size, paint, style?.baseColor ?? "#FFFFFF");
+    } else {
+      g.scale(scale, scale);
+      drawBlockWithPaint(g, 0, 0, cell, paint, style ?? {});
+    }
+    return c;
+  }
+
+  function getStaticLayers() {
+    if (staticLayers) return staticLayers;
+    const W = bw * scale, H = bh * scale;
+
+    // Enhanced background: gradient + a faint tile in every cell.
+    const bg = makeCanvas(W, H);
+    {
+      const g = bg.getContext("2d");
+      g.scale(scale, scale);
+      const e = CONFIG.render.enhanced;
+      const grad = g.createLinearGradient(0, 0, 0, bh);
+      grad.addColorStop(0, e.bgTop);
+      grad.addColorStop(1, e.bgBottom);
+      g.fillStyle = grad;
+      g.fillRect(0, 0, bw, bh);
+      g.fillStyle = e.emptyCellFill;
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) g.fillRect(x * cell + 1, y * cell + 1, cell - 2, cell - 2);
+      }
+      g.fillStyle = e.emptyCellDot;
+      for (let y = 1; y < rows; y++) {
+        for (let x = 1; x < cols; x++) g.fillRect(x * cell - 0.5, y * cell - 0.5, 1, 1);
+      }
+    }
+
+    // Classic grid lines (drawn over everything in the classic look).
+    function drawGridLines(g) {
+      g.save();
+      g.globalAlpha = CONFIG.render.gridLineAlpha;
+      g.strokeStyle = "rgba(220,220,235,0.45)";
+      g.lineWidth = 1;
+      g.beginPath();
+      for (let x = 0; x <= bw; x += cell) { g.moveTo(x + 0.5, 0); g.lineTo(x + 0.5, bh); }
+      for (let y = 0; y <= bh; y += cell) { g.moveTo(0, y + 0.5); g.lineTo(bw, y + 0.5); }
+      g.stroke();
+      g.restore();
+    }
+
+    // Scanlines + chromatic border (both looks).
+    function drawScreenFX(g) {
+      g.save();
+      g.globalAlpha = 0.08;
+      g.fillStyle = "rgba(255,255,255,0.06)";
+      for (let y = 0; y < bh; y += 4) g.fillRect(0, y, bw, 1);
+      g.globalAlpha = 0.05;
+      g.strokeStyle = "rgba(255,0,140,0.55)";
+      g.strokeRect(1.5, 1.5, bw - 3, bh - 3);
+      g.globalAlpha = 0.04;
+      g.strokeStyle = "rgba(0,255,255,0.55)";
+      g.strokeRect(3.5, 2.5, bw - 6, bh - 6);
+      g.restore();
+    }
+
+    const screen = makeCanvas(W, H);
+    {
+      const g = screen.getContext("2d");
+      g.scale(scale, scale);
+      drawScreenFX(g);
+    }
+
+    // Grid + screen FX merged, so the classic look costs one composite, not two.
+    const classicTop = makeCanvas(W, H);
+    {
+      const g = classicTop.getContext("2d");
+      g.scale(scale, scale);
+      drawGridLines(g);
+      drawScreenFX(g);
+    }
+
+    staticLayers = { bg, screen, classicTop };
+    return staticLayers;
+  }
 
   function rowFallOffsetForRow(state, y) {
-    if (!state.fx?.rowFall?.active) return 0;
-    const dist = state.fx.rowFall.rowDropDistances?.[y] ?? 0;
+    const rf = state.fx.rowFall;
+    if (!rf.active) return 0;
+    const dist = rf.rowDropDistances?.[y] ?? 0;
     if (!dist) return 0;
 
-    const t = clamp01(state.fx.rowFall.elapsedMs / state.fx.rowFall.durationMs);
+    const t = clamp01(rf.elapsedMs / rf.durationMs);
     const eased = 1 - Math.pow(1 - t, 3);
     const startOffset = dist * (CONFIG.fx.lineClear.boardFallPxPerRow ?? 18);
     return startOffset * (1 - eased);
@@ -1499,16 +2126,179 @@ function createRenderer(boardCanvas, nextCanvas) {
     ctx.translate(-bw / 2 + ox, -bh / 2 + oy);
   }
 
-  function drawGhostPiece(state) {
-    if (!CONFIG.render.ghost?.enabled) return;
-    if (!state.active) return;
-    if (state.gameOver) return;
+  // --- enhanced piece edges (outline + bevel), batched into 3 paths ---
+  function addEdgeRects(paths, px, py, mask) {
+    const t = 1;
+    const { out, light, dark } = paths;
+    if (mask & EDGE_T) { out.rect(px, py, cell, t); light.rect(px, py + t, cell, t); }
+    if (mask & EDGE_L) { out.rect(px, py, t, cell); light.rect(px + t, py, t, cell); }
+    if (mask & EDGE_B) { out.rect(px, py + cell - t, cell, t); dark.rect(px, py + cell - 2 * t, cell, t); }
+    if (mask & EDGE_R) { out.rect(px + cell - t, py, t, cell); dark.rect(px + cell - 2 * t, py, t, cell); }
+  }
 
-    const ghostY = getGhostDropY(state);
-    if (ghostY == null) return;
-    if (ghostY === state.active.y) return;
+  function newEdgePaths() {
+    return { out: new Path2D(), light: new Path2D(), dark: new Path2D() };
+  }
+
+  function fillEdgePaths(ctx, paths) {
+    const e = CONFIG.render.enhanced;
+    ctx.fillStyle = e.bevelLight; ctx.fill(paths.light);
+    ctx.fillStyle = e.bevelDark; ctx.fill(paths.dark);
+    ctx.fillStyle = e.outlineColor; ctx.fill(paths.out);
+  }
+
+  // Draw a list of blocks [{px, py, s, paint, style, mask}] in board pixels.
+  function drawBlockList(ctx, list) {
+    if (!list.length) return;
+    const enhanced = isEnhanced();
+
+    if (enhanced) {
+      const e = CONFIG.render.enhanced;
+      const so = e.shadowOffsetPx;
+      ctx.fillStyle = e.shadowColor;
+      ctx.beginPath();
+      for (const b of list) {
+        if (b.s < 1) continue;
+        ctx.rect(b.px + so, b.py + so, cell, cell);
+      }
+      ctx.fill();
+    }
+
+    for (const b of list) {
+      const spr = getSprite(b.paint, b.style);
+      if (b.s >= 1) {
+        ctx.drawImage(spr, b.px, b.py, cell, cell);
+      } else if (b.s > 0) {
+        const d = cell * b.s;
+        ctx.drawImage(spr, b.px + (cell - d) / 2, b.py + (cell - d) / 2, d, d);
+      }
+    }
+
+    if (enhanced) {
+      const paths = newEdgePaths();
+      for (const b of list) {
+        if (b.s >= 1 && b.mask) addEdgeRects(paths, b.px, b.py, b.mask);
+      }
+      fillEdgePaths(ctx, paths);
+    }
+  }
+
+  function collectBoardBlocks(state, animated) {
+    const board = state.board;
+    const enhanced = isEnhanced();
+    const list = [];
+    const mv = state.fx.moveAnim;
+    const gr = state.fx.growAnim;
+
+    for (let y = 0; y < rows; y++) {
+      const rowOffset = animated ? rowFallOffsetForRow(state, y) : 0;
+      const row = board[y];
+      for (let x = 0; x < cols; x++) {
+        const c = row[x];
+        if (!c) continue;
+
+        let px = x * cell;
+        let py = y * cell - rowOffset;
+        let s = 1;
+
+        if (animated) {
+          const idx = y * cols + x;
+          if (mv.active) {
+            const m = mv.byIndex.get(idx);
+            if (m) {
+              const t = clamp01(mv.elapsedMs / m.dur);
+              const k = 1 - t * t; // accelerate like falling
+              px += m.ox * cell * k;
+              py += m.oy * cell * k;
+            }
+          }
+          if (gr.active) {
+            const delay = gr.byIndex.get(idx);
+            if (delay !== undefined) {
+              const t = clamp01((gr.elapsedMs - delay) / gr.growMs);
+              s = easeOutBack(t);
+              if (t <= 0) continue;
+              if (t >= 1) s = 1;
+            }
+          }
+        }
+
+        list.push({
+          px, py, s,
+          paint: c.paint,
+          style: c.style,
+          mask: enhanced ? boardEdgeMask(board, x, y, c.pid) : 0,
+        });
+      }
+    }
+    return list;
+  }
+
+  function drawBackground(ctx) {
+    if (isEnhanced()) {
+      ctx.drawImage(getStaticLayers().bg, 0, 0, bw, bh);
+    } else {
+      ctx.fillStyle = CONFIG.render.bg;
+      ctx.fillRect(0, 0, bw, bh);
+    }
+  }
+
+  // Background + locked blocks. Cached as one opaque layer while nothing moves.
+  function drawBoard(ctx, state) {
+    const fx = state.fx;
+    const animating = fx.rowFall.active || fx.moveAnim.active || fx.growAnim.active;
+    if (animating) {
+      drawBackground(ctx);
+      drawBlockList(ctx, collectBoardBlocks(state, true));
+      return;
+    }
+
+    const styleKey = CONFIG.render.cellStyle;
+    if (boardCache.version !== state.boardVersion || boardCache.styleKey !== styleKey) {
+      const g = boardCache.canvas.getContext("2d");
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.clearRect(0, 0, boardCache.canvas.width, boardCache.canvas.height);
+      g.setTransform(scale, 0, 0, scale, 0, 0);
+      g.imageSmoothingEnabled = false;
+      drawBackground(g);
+      drawBlockList(g, collectBoardBlocks(state, false));
+      boardCache.version = state.boardVersion;
+      boardCache.styleKey = styleKey;
+    }
+    ctx.drawImage(boardCache.canvas, 0, 0, bw, bh);
+  }
+
+  function drawGhostPiece(state, ghostY) {
+    if (!CONFIG.render.ghost?.enabled) return;
+    if (!state.active || state.gameOver) return;
+    if (ghostY == null || ghostY === state.active.y) return;
 
     const mat = getActiveMatrix(state);
+
+    if (isEnhanced()) {
+      const e = CONFIG.render.enhanced;
+      const fill = new Path2D();
+      const edge = new Path2D();
+      for (let y = 0; y < mat.length; y++) {
+        for (let x = 0; x < mat[0].length; x++) {
+          if (!mat[y][x]) continue;
+          const by = ghostY + y;
+          if (by < 0) continue;
+          const px = (state.active.x + x) * cell;
+          const py = by * cell;
+          fill.rect(px, py, cell, cell);
+          const m = matrixEdgeMask(mat, x, y);
+          if (m & EDGE_T) edge.rect(px, py, cell, 1);
+          if (m & EDGE_B) edge.rect(px, py + cell - 1, cell, 1);
+          if (m & EDGE_L) edge.rect(px, py, 1, cell);
+          if (m & EDGE_R) edge.rect(px + cell - 1, py, 1, cell);
+        }
+      }
+      ctx_fill(bctx, fill, e.ghostFill);
+      ctx_fill(bctx, edge, e.ghostStroke);
+      return;
+    }
+
     const g = CONFIG.render.ghost;
     const inset = g.insetPx ?? 1.5;
 
@@ -1536,6 +2326,202 @@ function createRenderer(boardCanvas, nextCanvas) {
     bctx.restore();
   }
 
+  function ctx_fill(ctx, path, style) {
+    ctx.fillStyle = style;
+    ctx.fill(path);
+  }
+
+  function drawActivePiece(state) {
+    const { shape, rotIdx } = state.active;
+    const mat = getActiveMatrix(state);
+    const enhanced = isEnhanced();
+    const list = [];
+
+    for (let y = 0; y < mat.length; y++) {
+      for (let x = 0; x < mat[0].length; x++) {
+        if (!mat[y][x]) continue;
+        const by = state.active.y + y;
+        if (by < 0) continue;
+        list.push({
+          px: (state.active.x + x) * cell,
+          py: by * cell,
+          s: 1,
+          paint: getShapePaint(shape, rotIdx, x, y),
+          style: shape.style,
+          mask: enhanced ? matrixEdgeMask(mat, x, y) : 0,
+        });
+      }
+    }
+    drawBlockList(bctx, list);
+  }
+
+  // Animated rainbow outline around a powerup piece (falling, or charging).
+  function drawPowerupShimmer(cells, now, boost = 0) {
+    // cells: [{x, y, mask}] in board coords
+    const alpha = clamp01(CONFIG.fx.powerup.shimmerAlpha + boost * 0.1);
+    bctx.save();
+    bctx.lineWidth = 1.5;
+    for (const { x, y, mask } of cells) {
+      const px = x * cell, py = y * cell;
+      const hue = (now * 0.25 + (x + y) * 40) % 360;
+      bctx.strokeStyle = hsla(hue, 100, 65, alpha);
+      bctx.beginPath();
+      if (mask & EDGE_T) { bctx.moveTo(px, py + 0.75); bctx.lineTo(px + cell, py + 0.75); }
+      if (mask & EDGE_B) { bctx.moveTo(px, py + cell - 0.75); bctx.lineTo(px + cell, py + cell - 0.75); }
+      if (mask & EDGE_L) { bctx.moveTo(px + 0.75, py); bctx.lineTo(px + 0.75, py + cell); }
+      if (mask & EDGE_R) { bctx.moveTo(px + cell - 0.75, py); bctx.lineTo(px + cell - 0.75, py + cell); }
+      bctx.stroke();
+      if (boost > 0) {
+        bctx.fillStyle = hsla(hue, 100, 70, 0.25 * boost);
+        bctx.fillRect(px, py, cell, cell);
+      }
+    }
+    bctx.restore();
+  }
+
+  function activeShimmerCells(state) {
+    const mat = getActiveMatrix(state);
+    const out = [];
+    for (let y = 0; y < mat.length; y++) {
+      for (let x = 0; x < mat[0].length; x++) {
+        if (!mat[y][x] || state.active.y + y < 0) continue;
+        out.push({ x: state.active.x + x, y: state.active.y + y, mask: matrixEdgeMask(mat, x, y) });
+      }
+    }
+    return out;
+  }
+
+  // The highlighted ("effected") cells of the falling powerup (at its landing
+  // spot) or of a locked powerup that is charging up.
+  function drawPowerupOverlay(state, ghostY, now) {
+    let pu, area, pieceCells, centre, intensity = 1, chargeT = 0;
+
+    const e = state.effect;
+    if (e && e.phase === "charge") {
+      pu = e.pu;
+      area = e.area;
+      pieceCells = new Set(e.placed.map(({ x, y }) => y * cols + x));
+      centre = e.centre;
+      chargeT = clamp01(e.elapsedMs / e.durationMs);
+      intensity = 1 + 0.9 * chargeT + 0.35 * Math.sin(chargeT * Math.PI * 6);
+    } else if (state.active?.shape.powerup && ghostY != null) {
+      const a = state.active;
+      pu = a.shape.powerup;
+      const key = `${a.shape.id}|${a.rotIdx}|${a.x}|${ghostY}|${state.boardVersion}`;
+      if (overlayCache.key !== key) {
+        overlayCache.key = key;
+        overlayCache.area = resolveArea(pu.areaRotations[a.rotIdx], a.x, ghostY, cols, rows);
+      }
+      area = overlayCache.area;
+
+      const mat = getActiveMatrix(state);
+      pieceCells = new Set();
+      for (let y = 0; y < mat.length; y++) {
+        for (let x = 0; x < mat[0].length; x++) {
+          if (mat[y][x] && ghostY + y >= 0) pieceCells.add((ghostY + y) * cols + a.x + x);
+        }
+      }
+      centre = { x: a.x + (mat[0].length - 1) / 2, y: ghostY + (mat.length - 1) / 2 };
+    } else {
+      return;
+    }
+
+    const o = CONFIG.fx.powerup.overlay;
+    const board = state.board;
+    const cycle = now / o.periodMs;
+
+    bctx.save();
+    for (const i of area.indices) {
+      const x = i % cols, y = (i / cols) | 0;
+      const isPiece = pieceCells.has(i);
+      const filled = !!board[y][x] && !isPiece;
+
+      let effective;
+      if (pu.type === "expander") effective = !filled && !isPiece;
+      else effective = filled;
+
+      const px = x * cell, py = y * cell;
+      const hue = (now * o.hueDegPerMs + (x + y) * o.hueStepPerCell) % 360;
+      const fillA = clamp01((effective ? o.fillAlpha : o.idleFillAlpha) * intensity);
+      const markA = clamp01((effective ? o.markAlpha : o.idleMarkAlpha) * intensity);
+
+      bctx.globalCompositeOperation = "source-over";
+      bctx.fillStyle = hsla(hue, 100, 60, fillA);
+      bctx.fillRect(px, py, cell, cell);
+
+      // marks glow additively so they stay visible over bright pixel art
+      bctx.globalCompositeOperation = "lighter";
+      const mark = hsla(hue, 100, 62, markA);
+      bctx.strokeStyle = mark;
+      bctx.fillStyle = mark;
+
+      if (pu.type === "gravity") {
+        drawGravityMark(px, py, pu.direction, frac(cycle + hash01(x * 7 + y * 13) * 0.35));
+      } else {
+        const dist = Math.hypot(x - centre.x, y - centre.y);
+        if (pu.type === "destroyer") {
+          // squares shrink, rippling in towards the powerup
+          const p = frac(cycle + dist * o.ripplePerCell);
+          drawSquareMark(px, py, 1 - p, p < 0.15 ? p / 0.15 : 1);
+        } else {
+          // squares grow, rippling out from the powerup
+          const p = frac(cycle - dist * o.ripplePerCell);
+          drawSquareMark(px, py, p, p > 0.85 ? (1 - p) / 0.15 : 1);
+        }
+      }
+    }
+
+    bctx.globalCompositeOperation = "source-over";
+
+    // White-hot flash right before the effect fires.
+    if (chargeT > 0.6) {
+      bctx.fillStyle = `rgba(255,255,255,${(0.45 * Math.pow((chargeT - 0.6) / 0.4, 2)).toFixed(3)})`;
+      for (const i of area.indices) bctx.fillRect((i % cols) * cell, ((i / cols) | 0) * cell, cell, cell);
+    }
+    bctx.restore();
+  }
+
+  function drawSquareMark(px, py, sizeFrac, alphaMul) {
+    const s = (cell - 3) * sizeFrac;
+    if (s <= 0.5) return;
+    const prev = bctx.globalAlpha;
+    bctx.globalAlpha = prev * clamp01(alphaMul);
+    bctx.lineWidth = 2;
+    bctx.strokeRect(px + (cell - s) / 2, py + (cell - s) / 2, s, s);
+    bctx.globalAlpha = prev;
+  }
+
+  // A short line travelling through the cell in the gravity direction.
+  function drawGravityMark(px, py, direction, p) {
+    const len = cell * 0.5;
+    const head = p * (cell + len); // distance travelled along the axis
+    let a = clampN(head - len, 0, cell);
+    let b = clampN(head, 0, cell);
+    if (b - a < 0.5) return;
+    const w = 2;
+    const mid = (cell - w) / 2;
+    const reverse = direction === "up" || direction === "left";
+    if (reverse) { const ra = cell - b, rb = cell - a; a = ra; b = rb; }
+
+    if (direction === "down" || direction === "up") {
+      bctx.fillRect(px + mid, py + a, w, b - a);
+      const hy = reverse ? a : b - w;
+      if (head <= cell) bctx.fillRect(px + mid - 1, py + hy, w + 2, w);
+    } else {
+      bctx.fillRect(px + a, py + mid, b - a, w);
+      const hx = reverse ? a : b - w;
+      if (head <= cell) bctx.fillRect(px + hx, py + mid - 1, w, w + 2);
+    }
+  }
+
+  function drawFlash(state) {
+    const f = state.fx.flash;
+    if (!f.active) return;
+    const a = 0.85 * (1 - clamp01(f.elapsedMs / f.durationMs));
+    bctx.fillStyle = `rgba(255,255,255,${a.toFixed(3)})`;
+    for (const { x, y } of f.cells) bctx.fillRect(x * cell, y * cell, cell, cell);
+  }
+
   function drawGameOverBackdrop(state) {
     const bg = state.fx?.gameOverBackdrop;
     if (!state.gameOver || !CONFIG.fx.gameOverBackdrop.enabled) return;
@@ -1549,9 +2535,9 @@ function createRenderer(boardCanvas, nextCanvas) {
     bctx.globalAlpha = CONFIG.fx.gameOverBackdrop.alpha ?? 0.95;
 
     const patternCanvas = bg.snapshotCanvas;
-    const scale = CONFIG.fx.gameOverBackdrop.scale ?? 1.9;
-    const scaledW = patternCanvas.width * scale;
-    const scaledH = patternCanvas.height * scale;
+    const scaleG = CONFIG.fx.gameOverBackdrop.scale ?? 1.9;
+    const scaledW = patternCanvas.width * scaleG;
+    const scaledH = patternCanvas.height * scaleG;
     const angle = bg.currentAngle * Math.PI / 180;
 
     bctx.translate(bw / 2, bh / 2);
@@ -1574,27 +2560,40 @@ function createRenderer(boardCanvas, nextCanvas) {
   }
 
   function drawParticles(state) {
-    const parts = state.fx?.particles ?? [];
+    const parts = state.fx.particles;
     if (!parts.length) return;
 
     bctx.save();
     for (const p of parts) {
-      const a = clamp01(p.lifeMs / p.maxLifeMs);
-      bctx.globalAlpha = a;
+      bctx.globalAlpha = clamp01(p.lifeMs / p.maxLifeMs);
       bctx.fillStyle = p.color;
       bctx.fillRect(p.x, p.y, p.size, p.size);
     }
     bctx.restore();
   }
 
-  function draw(state) {
-    bctx.clearRect(0, 0, bw, bh);
-    bctx.fillStyle = CONFIG.render.bg;
-    bctx.fillRect(0, 0, bw, bh);
+  function draw(state, now = performance.now()) {
+    if (CONFIG.render.cellStyle !== lastStyle) {
+      lastStyle = CONFIG.render.cellStyle;
+      invalidateCaches();
+    }
+    const layers = getStaticLayers();
+    const enhanced = isEnhanced();
+
+    bctx.setTransform(scale, 0, 0, scale, 0, 0);
+    bctx.imageSmoothingEnabled = false;
+
+    // Solid fill behind everything: only needed when the shake exposes the
+    // edges (otherwise the opaque board layer covers the whole canvas).
+    if (state.gameOver || state.fx.quake.trauma > 0.0001) {
+      bctx.fillStyle = enhanced ? CONFIG.render.enhanced.bgBottom : CONFIG.render.bg;
+      bctx.fillRect(0, 0, bw, bh);
+    }
 
     if (state.gameOver) {
+      drawBackground(bctx);
       drawGameOverBackdrop(state);
-      drawScreenFX(bctx, bw, bh);
+      bctx.drawImage(layers.screen, 0, 0, bw, bh);
       return;
     }
 
@@ -1602,56 +2601,36 @@ function createRenderer(boardCanvas, nextCanvas) {
     quakeTransform(bctx, state);
 
     const hide = state.paused && CONFIG.pause.hideShapes;
-    const cellSize = cell;
 
-    if (!hide) {
-      for (let y = 0; y < CONFIG.board.rows; y++) {
-        const rowOffset = rowFallOffsetForRow(state, y);
+    if (hide) {
+      drawBackground(bctx);
+    } else {
+      drawBoard(bctx, state);
 
-        for (let x = 0; x < CONFIG.board.cols; x++) {
-          const cellObj = state.board[y][x];
-          if (!cellObj) continue;
+      const ghostY = state.active ? getGhostDropY(state) : null;
+      const ghostBehind = CONFIG.render.ghost?.drawBehindActive ?? true;
 
-          const px = x * cellSize;
-          const py = y * cellSize - rowOffset;
+      if (state.active && ghostBehind) drawGhostPiece(state, ghostY);
+      if (state.active) drawActivePiece(state);
+      if (state.active && !ghostBehind) drawGhostPiece(state, ghostY);
 
-          drawBlockWithPaint(bctx, px, py, cellSize, cellObj.paint, cellObj.style);
-        }
+      drawPowerupOverlay(state, ghostY, now);
+
+      if (state.active?.shape.powerup) {
+        drawPowerupShimmer(activeShimmerCells(state), now);
+      } else if (state.effect?.phase === "charge") {
+        const e = state.effect;
+        const pids = e.placed
+          .filter(({ x, y }) => state.board[y][x]?.pid === e.pid)
+          .map(({ x, y }) => ({ x, y, mask: boardEdgeMask(state.board, x, y, e.pid) }));
+        drawPowerupShimmer(pids, now, clamp01(e.elapsedMs / e.durationMs));
       }
-    }
 
-    if (!hide && state.active && (CONFIG.render.ghost?.drawBehindActive ?? true)) {
-      drawGhostPiece(state);
-    }
-
-    if (!hide && state.active) {
-      const shape = state.active.shape;
-      const mat = getActiveMatrix(state);
-
-      for (let y = 0; y < mat.length; y++) {
-        for (let x = 0; x < mat[0].length; x++) {
-          if (!mat[y][x]) continue;
-
-          const bx = state.active.x + x;
-          const by = state.active.y + y;
-          if (by < 0) continue;
-
-          const px = bx * cellSize;
-          const py = by * cellSize;
-
-          const paint = getActivePaintForBlock(state, x, y);
-          drawBlockWithPaint(bctx, px, py, cellSize, paint, shape.style);
-        }
-      }
-    }
-
-    if (!hide && state.active && !(CONFIG.render.ghost?.drawBehindActive ?? true)) {
-      drawGhostPiece(state);
+      drawFlash(state);
     }
 
     drawParticles(state);
-    drawGrid(bctx, bw, bh, cell, CONFIG.render.gridLineAlpha);
-    drawScreenFX(bctx, bw, bh);
+    bctx.drawImage(enhanced ? layers.screen : layers.classicTop, 0, 0, bw, bh);
 
     bctx.restore();
   }
@@ -1680,7 +2659,15 @@ function createRenderer(boardCanvas, nextCanvas) {
 
     nctx.save();
     nctx.globalAlpha = 1;
-    nctx.fillStyle = "#a83deb";
+    if (shape.powerup) {
+      // Powerups get a rainbow silhouette so you can see one coming.
+      const grad = nctx.createLinearGradient(ox, oy, ox + drawW, oy + drawH);
+      ["#ff4d6d", "#ffb84d", "#f9ff4d", "#4dff88", "#4dc3ff", "#b44dff"].forEach((c, i, arr) =>
+        grad.addColorStop(i / (arr.length - 1), c));
+      nctx.fillStyle = grad;
+    } else {
+      nctx.fillStyle = "#a83deb";
+    }
 
     nctx.beginPath();
     for (let y = 0; y < ph; y++) {
@@ -1693,176 +2680,20 @@ function createRenderer(boardCanvas, nextCanvas) {
     nctx.restore();
   }
 
-  function drawBlockWithPaint(ctx, px, py, cellSize, paint, style = {}) {
-    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-
-    const shadeWidthRatio = style.shadeWidthRatio ?? 0.14;
-    const shadeWidthMinPx = style.shadeWidthMinPx ?? 1;
-    const shadeWidthMaxPx = style.shadeWidthMaxPx ?? 10;
-
-    const w = clamp(
-      Math.round(cellSize * shadeWidthRatio),
-      shadeWidthMinPx,
-      Math.min(shadeWidthMaxPx, Math.floor(cellSize / 2) - 1)
-    );
-
-    const darkAlpha = clamp(style.shadeDarkAlpha ?? 0.0, 0, 1);
-    const lightAlpha = clamp(style.shadeLightAlpha ?? 0.0, 0, 1);
-
-    const darkRGB = style.shadeDarkRGB ?? [0, 0, 0];
-    const lightRGB = style.shadeLightRGB ?? [255, 255, 255];
-
-    const darkComposite = style.shadeDarkComposite ?? "multiply";
-    const lightComposite = style.shadeLightComposite ?? "screen";
-
-    const tintWarmAlpha = clamp(style.shadeWarmTintAlpha ?? 0.0, 0, 1);
-    const tintCoolAlpha = clamp(style.shadeCoolTintAlpha ?? 0.0, 0, 1);
-    const warmRGB = style.shadeWarmTintRGB ?? [255, 230, 120];
-    const coolRGB = style.shadeCoolTintRGB ?? [70, 120, 255];
-
-    const outlineAlpha = clamp(style.outlineAlpha ?? 0.55, 0, 1);
-    const outlineWidth = style.outlineWidth ?? 0.5;
-    const outlineRGB = style.outlineRGB ?? [0, 0, 0];
-
-    const cornerMode = style.cornerMode ?? "single";
-    const shadeBottomLeftCorner = style.shadeBottomLeftCorner ?? true;
-    const shadeTopRightCorner = style.shadeTopRightCorner ?? true;
-
-    if (typeof paint === "string") {
-      ctx.fillStyle = paint;
-      ctx.fillRect(px, py, cellSize, cellSize);
-    } else if (paint && typeof paint === "object" && paint.pixels && paint.k) {
-      const k = paint.k;
-      const xb = new Array(k + 1);
-      const yb = new Array(k + 1);
-      for (let i = 0; i <= k; i++) {
-        xb[i] = px + Math.round((i * cellSize) / k);
-        yb[i] = py + Math.round((i * cellSize) / k);
-      }
-
-      for (let sy = 0; sy < k; sy++) {
-        const y0 = yb[sy], y1 = yb[sy + 1];
-        const h = y1 - y0;
-        if (h <= 0) continue;
-
-        for (let sx = 0; sx < k; sx++) {
-          const x0 = xb[sx], x1 = xb[sx + 1];
-          const w = x1 - x0;
-          if (w <= 0) continue;
-
-          const c = paint.pixels?.[sy]?.[sx];
-          ctx.fillStyle = (typeof c === "string" && isHexColour(c)) ? c : (style.baseColor ?? "#FFFFFF");
-          ctx.fillRect(x0, y0, w, h);
-        }
-      }
-    } else {
-      ctx.fillStyle = style.baseColor ?? "#FFFFFF";
-      ctx.fillRect(px, py, cellSize, cellSize);
-    }
-
-    if (w > 0 && (darkAlpha > 0 || lightAlpha > 0 || tintWarmAlpha > 0 || tintCoolAlpha > 0)) {
-      ctx.save();
-
-      if (darkAlpha > 0 || tintCoolAlpha > 0) {
-        ctx.globalCompositeOperation = darkComposite;
-
-        if (darkAlpha > 0) {
-          ctx.fillStyle = `rgba(${darkRGB[0]},${darkRGB[1]},${darkRGB[2]},${darkAlpha})`;
-          ctx.fillRect(px + w, py + cellSize - w, cellSize - w, w);
-          ctx.fillRect(px, py, w, cellSize - w);
-        }
-
-        if (tintCoolAlpha > 0) {
-          ctx.fillStyle = `rgba(${coolRGB[0]},${coolRGB[1]},${coolRGB[2]},${tintCoolAlpha})`;
-          ctx.fillRect(px + w, py + cellSize - w, cellSize - w, w);
-          ctx.fillRect(px, py, w, cellSize - w);
-        }
-
-        if (cornerMode === "single" && shadeBottomLeftCorner) {
-          if (darkAlpha > 0) {
-            ctx.fillStyle = `rgba(${darkRGB[0]},${darkRGB[1]},${darkRGB[2]},${darkAlpha})`;
-            ctx.fillRect(px, py + cellSize - w, w, w);
-          }
-          if (tintCoolAlpha > 0) {
-            ctx.fillStyle = `rgba(${coolRGB[0]},${coolRGB[1]},${coolRGB[2]},${tintCoolAlpha})`;
-            ctx.fillRect(px, py + cellSize - w, w, w);
-          }
-        }
-      }
-
-      if (lightAlpha > 0 || tintWarmAlpha > 0) {
-        ctx.globalCompositeOperation = lightComposite;
-
-        if (lightAlpha > 0) {
-          ctx.fillStyle = `rgba(${lightRGB[0]},${lightRGB[1]},${lightRGB[2]},${lightAlpha})`;
-          ctx.fillRect(px, py, cellSize - w, w);
-          ctx.fillRect(px + cellSize - w, py + w, w, cellSize - w);
-        }
-
-        if (tintWarmAlpha > 0) {
-          ctx.fillStyle = `rgba(${warmRGB[0]},${warmRGB[1]},${warmRGB[2]},${tintWarmAlpha})`;
-          ctx.fillRect(px, py, cellSize - w, w);
-          ctx.fillRect(px + cellSize - w, py + w, w, cellSize - w);
-        }
-
-        if (cornerMode === "single" && shadeTopRightCorner) {
-          if (lightAlpha > 0) {
-            ctx.fillStyle = `rgba(${lightRGB[0]},${lightRGB[1]},${lightRGB[2]},${lightAlpha})`;
-            ctx.fillRect(px + cellSize - w, py, w, w);
-          }
-          if (tintWarmAlpha > 0) {
-            ctx.fillStyle = `rgba(${warmRGB[0]},${warmRGB[1]},${warmRGB[2]},${tintWarmAlpha})`;
-            ctx.fillRect(px + cellSize - w, py, w, w);
-          }
-        }
-      }
-
-      ctx.restore();
-    }
-
-    if (outlineAlpha > 0 && outlineWidth > 0) {
-      ctx.save();
-      ctx.globalCompositeOperation = "source-over";
-      ctx.strokeStyle = `rgba(${outlineRGB[0]},${outlineRGB[1]},${outlineRGB[2]},${outlineAlpha})`;
-      ctx.lineWidth = outlineWidth;
-      const half = (outlineWidth % 2) ? 0.5 : 0;
-      ctx.strokeRect(px + half, py + half, cellSize - outlineWidth, cellSize - outlineWidth);
-      ctx.restore();
-    }
-  }
-
-  function drawGrid(ctx, w, h, cellPx, alpha) {
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.strokeStyle = "rgba(220,220,235,0.45)";
-    ctx.lineWidth = 1;
-    for (let x = 0; x <= w; x += cellPx) {
-      ctx.beginPath(); ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, h); ctx.stroke();
-    }
-    for (let y = 0; y <= h; y += cellPx) {
-      ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(w, y + 0.5); ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  function drawScreenFX(ctx, w, h) {
-    ctx.save();
-    ctx.globalAlpha = 0.08;
-    ctx.fillStyle = "rgba(255,255,255,0.06)";
-    for (let y = 0; y < h; y += 4) ctx.fillRect(0, y, w, 1);
-    ctx.restore();
-
-    ctx.save();
-    ctx.globalAlpha = 0.05;
-    ctx.strokeStyle = "rgba(255,0,140,0.55)";
-    ctx.strokeRect(1.5, 1.5, w - 3, h - 3);
-    ctx.globalAlpha = 0.04;
-    ctx.strokeStyle = "rgba(0,255,255,0.55)";
-    ctx.strokeRect(3.5, 2.5, w - 6, h - 6);
-    ctx.restore();
-  }
-
   return { draw, drawNextSilhouette };
+}
+
+const DEFAULT_STYLE = {};
+
+function frac(x) { return x - Math.floor(x); }
+function clampN(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function hash01(n) {
+  const s = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+  return s - Math.floor(s);
+}
+function easeOutBack(t) {
+  const c1 = 1.70158, c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
 }
 
 // ============================================================
@@ -1880,15 +2711,28 @@ function createNameLayer(nameLayerEl) {
     nameLayerEl.innerHTML = "";
   }
 
-  function setName(name) {
+  // `effect`: optional line shown under the name (powerups).
+  function setName(name, effect = "") {
     if (!name) {
       clear();
       return;
     }
 
     const nextEl = document.createElement("div");
-    nextEl.className = "nameText enterFromRight";
-    nextEl.textContent = name;
+    nextEl.className = "nameText enterFromRight" + (effect ? " powerup" : "");
+
+    const main = document.createElement("span");
+    main.className = "nameMain";
+    main.textContent = name;
+    nextEl.appendChild(main);
+
+    if (effect) {
+      const sub = document.createElement("span");
+      sub.className = "nameEffect";
+      sub.textContent = effect;
+      nextEl.appendChild(sub);
+    }
+
     nameLayerEl.appendChild(nextEl);
 
     nextEl.getBoundingClientRect();
@@ -1904,7 +2748,40 @@ function createNameLayer(nameLayerEl) {
     currentEl = nextEl;
   }
 
-  return { setName, clear };
+  function setShape(shape) {
+    if (!shape) { clear(); return; }
+    setName(shape.name, shape.powerup?.description ?? "");
+  }
+
+  return { setName, setShape, clear };
+}
+
+// ============================================================
+// BEST SCORES (per mode, saved in this browser)
+// ============================================================
+
+const bestScores = {
+  key: (mode) => `extris.best.${mode}`,
+  get(mode) {
+    try { return Number(localStorage.getItem(this.key(mode))) || 0; } catch { return 0; }
+  },
+  submit(mode, score) {
+    const prev = this.get(mode);
+    if (score <= prev) return false;
+    try { localStorage.setItem(this.key(mode), String(score)); } catch { /* storage unavailable */ }
+    return true;
+  },
+};
+
+function loadLastMode() {
+  try {
+    const m = localStorage.getItem("extris.mode");
+    return CONFIG.modes[m] ? m : CONFIG.defaultMode;
+  } catch { return CONFIG.defaultMode; }
+}
+
+function saveLastMode(mode) {
+  try { localStorage.setItem("extris.mode", mode); } catch { /* storage unavailable */ }
 }
 
 // ============================================================
@@ -1917,43 +2794,34 @@ function bindUI(state, renderer, nameLayer) {
   const overlay = document.getElementById("overlay");
   const overlayTitle = document.getElementById("overlayTitle");
   const overlaySubtitle = document.getElementById("overlaySubtitle");
-  const overlayPlayBtn = document.getElementById("overlayPlayBtn");
+  const overlayNormalBtn = document.getElementById("overlayNormalBtn");
+  const overlayHardBtn = document.getElementById("overlayHardBtn");
   const overlayResumeBtn = document.getElementById("overlayResumeBtn");
   const overlayNewBtn = document.getElementById("overlayNewBtn");
+  const modeHint = document.getElementById("modeHint");
 
   const pauseBtn = document.getElementById("pauseBtn");
 
   const debugPanel = document.getElementById("debugPanel");
+  const dbgMode = document.getElementById("dbgMode");
   const dbgZone = document.getElementById("dbgZone");
   const dbgPieceDiff = document.getElementById("dbgPieceDiff");
   const dbgBaseSpeed = document.getElementById("dbgBaseSpeed");
+  const dbgPowerup = document.getElementById("dbgPowerup");
 
   const boardShellEl = document.getElementById("boardShell");
   const targetEl = document.body;
 
-  // NEW: dynamic game-over piece preview container
+  let lastMode = loadLastMode();
+  let newBest = false;
+
+  // Dynamic game-over piece preview container
   const overlayPieceWrap = document.createElement("div");
   overlayPieceWrap.style.marginTop = "16px";
   overlayPieceWrap.style.display = "flex";
   overlayPieceWrap.style.justifyContent = "center";
   overlayPieceWrap.style.alignItems = "center";
   overlaySubtitle.insertAdjacentElement("afterend", overlayPieceWrap);
-
-  function getShapePaintForPreview(shape, rotIdx, bx, by) {
-    if (!shape.colorRotations) {
-      return shape.style?.baseColor ?? "#FFFFFF";
-    }
-
-    const k = shape.pixelK ?? 1;
-    const grid = shape.colorRotations[rotIdx];
-
-    if (k === 1) return grid[by][bx];
-
-    return {
-      k,
-      pixels: sliceBlockPixels(grid, k, bx, by),
-    };
-  }
 
   function makeShapePreviewCanvas(shape) {
     if (!shape) return null;
@@ -1977,7 +2845,7 @@ function bindUI(state, renderer, nameLayer) {
     for (let y = 0; y < mat.length; y++) {
       for (let x = 0; x < mat[0].length; x++) {
         if (!mat[y][x]) continue;
-        const paint = getShapePaintForPreview(shape, 0, x, y);
+        const paint = getShapePaint(shape, 0, x, y);
         drawBlockWithPaintStatic(ctx, pad + x * cell, pad + y * cell, cell, paint, shape.style ?? {});
       }
     }
@@ -1993,6 +2861,25 @@ function bindUI(state, renderer, nameLayer) {
     if (cvs) overlayPieceWrap.appendChild(cvs);
   }
 
+  function modeLabel(mode) {
+    return CONFIG.modes[mode]?.label ?? mode;
+  }
+
+  function bestLine() {
+    return Object.keys(CONFIG.modes)
+      .map(m => `${modeLabel(m)} best: ${bestScores.get(m)}`)
+      .join(" · ");
+  }
+
+  function showModeButtons() {
+    overlayNormalBtn.style.display = "inline-block";
+    overlayHardBtn.style.display = "inline-block";
+    // The last-played mode is the primary button.
+    overlayNormalBtn.classList.toggle("secondary", lastMode !== "normal");
+    overlayHardBtn.classList.toggle("secondary", lastMode !== "hard");
+    modeHint.style.display = "block";
+  }
+
   function showOverlay(show, title, subtitle, mode) {
     const controlsBlock = document.getElementById("controlsBlock");
     const overlayBtns = document.getElementById("overlayBtns");
@@ -2004,8 +2891,10 @@ function bindUI(state, renderer, nameLayer) {
 
     controlsBlock.style.display = "none";
     overlayBtns.style.display = "none";
+    modeHint.style.display = "none";
 
-    overlayPlayBtn.style.display = "none";
+    overlayNormalBtn.style.display = "none";
+    overlayHardBtn.style.display = "none";
     overlayResumeBtn.style.display = "none";
     overlayNewBtn.style.display = "none";
 
@@ -2019,23 +2908,23 @@ function bindUI(state, renderer, nameLayer) {
     if (m === "gameover") {
       const killerShape = state.gameOverInfo.shape;
       const killerName = state.gameOverInfo.pieceName || "Unknown";
-      const blocksDestroyed = state.lines * CONFIG.board.cols;
 
       overlayTitle.textContent = "Game Over";
       overlaySubtitle.innerHTML =
-        `Final score: ${state.score}<br>` +
-        `Blocks destroyed: ${blocksDestroyed}<br>` +
-        `The piece that killed you: ${killerName}`;
+        `${modeLabel(state.mode)} mode<br>` +
+        `Final score: ${state.score}${newBest ? " — new best!" : ""}<br>` +
+        `Blocks destroyed: ${state.blocksDestroyed}<br>` +
+        `The piece that killed you: ${escapeHtml(killerName)}`;
 
       overlayBtns.style.display = "flex";
-      overlayNewBtn.style.display = "inline-block";
+      showModeButtons();
       setOverlayPiece(killerShape);
       return;
     }
 
     if (m === "pause") {
       overlayTitle.textContent = title ?? "Paused";
-      overlaySubtitle.innerHTML = subtitle ?? "";
+      overlaySubtitle.innerHTML = subtitle ?? `${modeLabel(state.mode)} mode`;
       overlayBtns.style.display = "flex";
       overlayResumeBtn.style.display = "inline-block";
       overlayNewBtn.style.display = "inline-block";
@@ -2044,33 +2933,51 @@ function bindUI(state, renderer, nameLayer) {
     }
 
     overlayTitle.textContent = title ?? "Extris";
-    overlaySubtitle.innerHTML = subtitle ?? "alpha version 20260306";
+    overlaySubtitle.innerHTML = (subtitle ?? "alpha version 20260306") + `<br>${bestLine()}`;
     controlsBlock.style.display = "block";
     overlayBtns.style.display = "flex";
-    overlayPlayBtn.style.display = "inline-block";
+    showModeButtons();
     setOverlayPiece(null);
   }
 
   function updateHUD() {
     scoreText.textContent = String(state.score);
-    linesText.textContent = String(state.lines * CONFIG.board.cols);
+    linesText.textContent = String(state.blocksDestroyed);
 
     if (state.debug) {
       const z = getDifficultyZone(state);
+      dbgMode.textContent = `${state.mode} · look: ${CONFIG.render.cellStyle} (V)`;
       dbgZone.textContent = z.zone;
-      dbgPieceDiff.textContent = state.active ? String(state.active.shape.difficulty ?? 1) : "–";
+      dbgPieceDiff.textContent = state.active
+        ? (state.active.shape.powerup ? `powerup tier ${state.active.shape.powerup.tier}` : String(state.active.shape.difficulty ?? 1))
+        : "–";
       dbgBaseSpeed.textContent = `${state.dropMs} ms/row (level ${state.level})`;
+      const ps = state.pieceSel?.powerup;
+      dbgPowerup.textContent = state.powerups.length && ps
+        ? `${(ps.lastChance * 100).toFixed(0)}% · cooldown ${ps.cooldown} · served ${ps.count} (P = next)`
+        : "off";
     }
   }
 
-  function startGame() {
+  function startGame(mode = lastMode) {
     markInput(state, "touch");
-    if (state.gameOver) resetGame(state, renderer, nameLayer, updateHUD, showOverlay);
-    if (!state.running) {
-      state.running = true;
-      state.paused = false;
-      showOverlay(false);
-    }
+    if (state.running) return;
+    if (state.gameOver || state.active) resetGame(state, ctx, false);
+
+    lastMode = CONFIG.modes[mode] ? mode : CONFIG.defaultMode;
+    saveLastMode(lastMode);
+    configureMode(state, lastMode);
+    initPieceSelectionState(state);
+    newBest = false;
+
+    spawnPiece(state);
+    nameLayer.setShape(state.active.shape);
+    renderer.drawNextSilhouette(state.next);
+
+    state.running = true;
+    state.paused = false;
+    showOverlay(false);
+    updateHUD();
   }
 
   function resumeGame() {
@@ -2087,7 +2994,7 @@ function bindUI(state, renderer, nameLayer) {
     if (!state.running) return;
     state.paused = true;
     state.softDropping = false;
-    showOverlay(true, "Paused", "", "pause");
+    showOverlay(true, "Paused", null, "pause");
     updateHUD();
   }
 
@@ -2097,20 +3004,52 @@ function bindUI(state, renderer, nameLayer) {
     else pauseGame();
   }
 
-  overlayPlayBtn.addEventListener("click", () => startGame());
+  function onGameOver() {
+    newBest = bestScores.submit(state.mode, state.score);
+    nameLayer.clear();
+    showOverlay(true, "", "", "gameover");
+    updateHUD();
+  }
+
+  overlayNormalBtn.addEventListener("click", () => startGame("normal"));
+  overlayHardBtn.addEventListener("click", () => startGame("hard"));
   overlayResumeBtn.addEventListener("click", () => resumeGame());
-  overlayNewBtn.addEventListener("click", () => resetGame(state, renderer, nameLayer, updateHUD, showOverlay));
+  overlayNewBtn.addEventListener("click", () => resetGame(state, ctx));
 
   pauseBtn.addEventListener("click", (e) => {
     e.preventDefault();
     togglePause();
   });
 
+  if (CONFIG.pause.pauseWhenHidden) {
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && state.running && !state.paused) pauseGame();
+    });
+  }
+
+  // Debug: force the next piece to be a powerup (cycles through them all).
+  let debugPowerupIdx = 0;
+  function debugQueuePowerup() {
+    const list = state.allPowerups;
+    if (!list.length || !state.running) return;
+    state.next = list[debugPowerupIdx++ % list.length];
+    renderer.drawNextSilhouette(state.next);
+  }
+
   window.addEventListener("keydown", (e) => {
     if (e.code === "KeyD") {
       state.debug = !state.debug;
       debugPanel.style.display = state.debug ? "block" : "none";
       updateHUD();
+      return;
+    }
+    if (state.debug && e.code === "KeyV") {
+      CONFIG.render.cellStyle = CONFIG.render.cellStyle === "classic" ? "enhanced" : "classic";
+      updateHUD();
+      return;
+    }
+    if (state.debug && e.code === "KeyP") {
+      debugQueuePowerup();
       return;
     }
     if (e.code === "Space") {
@@ -2122,7 +3061,8 @@ function bindUI(state, renderer, nameLayer) {
 
   window.addEventListener("keydown", (e) => {
     if (!state.running && e.code !== "Enter") return;
-    if (state.gameOver || state.paused) return;
+    if (state.gameOver && e.code !== "Enter") return;
+    if (state.paused) return;
 
     markInput(state, "keyboard");
 
@@ -2227,6 +3167,8 @@ function bindUI(state, renderer, nameLayer) {
 
   targetEl.addEventListener("pointerdown", (e) => {
     if (!e.isPrimary) return;
+    // Let overlay buttons receive their own clicks (e.g. choosing a mode).
+    if (e.target.closest?.("button")) return;
     e.preventDefault();
 
     if (!state.running && !state.gameOver) {
@@ -2234,7 +3176,7 @@ function bindUI(state, renderer, nameLayer) {
       return;
     }
 
-    if (state.paused) return;
+    if (state.paused || state.gameOver) return;
 
     const zone = getZone(e.clientX, e.clientY);
     state.touch.zone = zone;
@@ -2248,7 +3190,6 @@ function bindUI(state, renderer, nameLayer) {
 
   targetEl.addEventListener("pointerup", (e) => {
     if (!e.isPrimary) return;
-    e.preventDefault();
     stopRepeat();
     clearGlows();
   });
@@ -2258,6 +3199,8 @@ function bindUI(state, renderer, nameLayer) {
     stopRepeat();
     clearGlows();
   });
+
+  const ctx = { renderer, nameLayer, updateHUD, showOverlay, onGameOver };
 
   showOverlay(true, "Loading…", "", "loading");
   updateHUD();
@@ -2269,91 +3212,111 @@ function bindUI(state, renderer, nameLayer) {
     });
   });
 
-  return { updateHUD, showOverlay };
+  return ctx;
 }
 
-function resetGame(state, renderer, nameLayer, updateHUD, showOverlay) {
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;",
+  }[m]));
+}
+
+function resetGame(state, ctx, showMenu = true) {
   state.board = createEmptyBoard(CONFIG.board.cols, CONFIG.board.rows);
+  markBoardDirty(state);
   state.active = null;
   state.next = null;
+  state.effect = null;
   state.running = false;
   state.paused = false;
   state.gameOver = false;
   state.score = 0;
   state.lines = 0;
+  state.blocksDestroyed = 0;
   state.level = 1;
   state.dropMs = CONFIG.timing.baseDropMs;
   state.dropAccum = 0;
   state.softDropping = false;
+  cancelLock(state);
 
   state.lastLockedShape = null;
   state.gameOverInfo.pieceName = "";
   state.gameOverInfo.shape = null;
 
-  state.fx.particles = [];
-  state.fx.rowFall.active = false;
-  state.fx.rowFall.elapsedMs = 0;
-  state.fx.rowFall.rowDropDistances = Array(CONFIG.board.rows).fill(0);
-  state.fx.quake.trauma = 0;
-  state.fx.quake.x = 0;
-  state.fx.quake.y = 0;
-  state.fx.gameOverBackdrop.snapshotCanvas = null;
-  state.fx.gameOverBackdrop.elapsedMs = 0;
-  state.fx.gameOverBackdrop.offsetX = 0;
-  state.fx.gameOverBackdrop.offsetY = 0;
+  const fx = state.fx;
+  fx.particles.length = 0;
+  fx.rowFall.active = false;
+  fx.rowFall.elapsedMs = 0;
+  fx.rowFall.rowDropDistances = Array(CONFIG.board.rows).fill(0);
+  fx.moveAnim.active = false;
+  fx.growAnim.active = false;
+  fx.flash.active = false;
+  fx.quake.trauma = 0;
+  fx.quake.x = 0;
+  fx.quake.y = 0;
+  fx.gameOverBackdrop.snapshotCanvas = null;
+  fx.gameOverBackdrop.elapsedMs = 0;
+  fx.gameOverBackdrop.offsetX = 0;
+  fx.gameOverBackdrop.offsetY = 0;
 
-  nameLayer.clear();
+  initPieceSelectionState(state);
 
-  const ok = spawnPiece(state);
-  if (!ok) state.gameOver = true;
-  nameLayer.setName(state.active?.shape?.name ?? "");
-  renderer.drawNextSilhouette(state.next);
+  ctx.nameLayer.clear();
+  ctx.renderer.drawNextSilhouette(null);
 
-  updateHUD();
-  showOverlay(true, "Extris", " ");
+  ctx.updateHUD();
+  if (showMenu) ctx.showOverlay(true, "Extris", " ");
 }
 
 // ============================================================
 // LOOP (soft drop modifies gravity while held)
 // ============================================================
 
-function stepLockAndSpawn(state, renderer, nameLayer, updateHUD, showOverlay) {
-  lockPiece(state);
+function stepLockAndSpawn(state, ctx) {
+  const lockInfo = lockPiece(state);
 
   if (state.gameOver) {
-    nameLayer.clear();
-    showOverlay(true, "", "", "gameover");
-    updateHUD();
+    ctx.onGameOver();
     return;
   }
 
+  if (lockInfo.shape.powerup) {
+    // The next piece spawns once the effect has played out (finishTurn).
+    state.active = null;
+    beginPowerupEffect(state, lockInfo);
+    ctx.updateHUD();
+    return;
+  }
+
+  finishTurn(state, ctx);
+}
+
+function finishTurn(state, ctx) {
   clearFullLines(state);
 
   const ok = spawnPiece(state);
   if (!ok) {
-    state.gameOver = true;
-    state.running = false;
-
-    state.gameOverInfo.pieceName = state.lastLockedShape?.name ?? "";
-    state.gameOverInfo.shape = state.lastLockedShape ?? null;
-    state.fx.gameOverBackdrop.snapshotCanvas = makeBoardSnapshotCanvas(state);
-    state.fx.gameOverBackdrop.elapsedMs = 0;
-
-    nameLayer.clear();
-    showOverlay(true, "", "", "gameover");
+    setGameOver(state, state.lastLockedShape);
+    ctx.onGameOver();
   } else {
-    nameLayer.setName(state.active.shape.name);
-    renderer.drawNextSilhouette(state.next);
+    ctx.nameLayer.setShape(state.active.shape);
+    ctx.renderer.drawNextSilhouette(state.next);
   }
 
-  updateHUD();
+  ctx.updateHUD();
 }
 
-function updateGame(state, dt, renderer, nameLayer, updateHUD, showOverlay) {
+function updateGame(state, dt, ctx) {
   updateFX(state, dt);
 
   if (!state.running || state.gameOver) return;
   if (state.paused) return;
+
+  if (state.effect) {
+    updatePowerupEffect(state, dt, ctx);
+    return;
+  }
+  if (!state.active) return;
 
   const baseDropMs = state.dropMs;
   const effectiveDropMs = state.softDropping
@@ -2394,7 +3357,7 @@ function updateGame(state, dt, renderer, nameLayer, updateHUD, showOverlay) {
     } else {
       const delay = currentLockDelayMs(state);
       if (state.lockElapsed >= delay) {
-        stepLockAndSpawn(state, renderer, nameLayer, updateHUD, showOverlay);
+        stepLockAndSpawn(state, ctx);
         cancelLock(state);
       }
     }
@@ -2406,6 +3369,7 @@ function updateGame(state, dt, renderer, nameLayer, updateHUD, showOverlay) {
 // ============================================================
 
 const SHAPES = loadAndNormaliseShapes(RAW_SHAPES);
+const POWERUPS = loadAndNormaliseShapes(RAW_POWERUPS).filter(p => p.powerup);
 
 const boardCanvas = document.getElementById("boardCanvas");
 const nextCanvas = document.getElementById("nextCanvas");
@@ -2414,14 +3378,16 @@ const nameLayerEl = document.getElementById("nameLayer");
 const renderer = createRenderer(boardCanvas, nextCanvas);
 const nameLayer = createNameLayer(nameLayerEl);
 
-const state = createGameState(SHAPES);
+const state = createGameState(SHAPES, POWERUPS);
+const ctx = bindUI(state, renderer, nameLayer);
 
-spawnPiece(state);
-nameLayer.setName(state.active.shape.name);
-renderer.drawNextSilhouette(state.next);
-
-const boardShell = document.querySelector(".boardShell");
-const ui = bindUI(state, renderer, nameLayer, document.body);
+// Handy for testing in the browser console: open index.html?debug
+if (new URLSearchParams(location.search).has("debug")) {
+  window.__extris = {
+    state, ctx, CONFIG, SHAPES, POWERUPS, renderer,
+    step: (dt = 16) => updateGame(state, dt, ctx), // advance the game without waiting for frames
+  };
+}
 
 let last = performance.now();
 
@@ -2429,8 +3395,8 @@ function tick(now) {
   const dt = Math.min(50, now - last);
   last = now;
 
-  updateGame(state, dt, renderer, nameLayer, ui.updateHUD, ui.showOverlay);
-  renderer.draw(state);
+  updateGame(state, dt, ctx);
+  renderer.draw(state, now);
 
   requestAnimationFrame(tick);
 }
