@@ -10129,4 +10129,477 @@ export const SHAPES = [
       },
     frequency: 0.6,
   },
+  {
+    id: "neutrino",
+    name: "a neutrino (it went straight through you)",
+    grid: [
+        "X"
+      ],
+    color: [["#746bbd","#695dce","#695dce","#877cdb","#695dce","#695dce","#746bbd"],["#a3d1db","#bdf3ff","#bdf3ff","#9d90ff","#55c8ff","#55c8ff","#877cdb"],["#877cdb","#7a6cf0","#7a6cf0","#55c8ff","#bdf3ff","#ffffff","#49acdb"],["#a3d1db","#bdf3ff","#bdf3ff","#bdf3ff","#ffffff","#ffffff","#a3d1db"],["#877cdb","#7a6cf0","#7a6cf0","#55c8ff","#bdf3ff","#ffffff","#49acdb"],["#a3d1db","#bdf3ff","#bdf3ff","#9d90ff","#55c8ff","#55c8ff","#877cdb"],["#746bbd","#695dce","#695dce","#877cdb","#695dce","#695dce","#746bbd"]],
+    powerup: {
+        "type": "phantom",
+        "tier": 1,
+        "intro": "Passes straight through your blocks and stops in the deepest gap it fits, where it stays. Trillions of them go through you every second. This one finally sat down.",
+        "help": 2.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.9,
+  },
+  {
+    id: "vanishing_coin",
+    name: "a magician's disappearing coin",
+    grid: [
+        "X"
+      ],
+    color: [["#9382b7","#c9bbdb","#bb841d","#bb841d","#bb841d","#c9bbdb","#9382b7"],["#c9bbdb","#d99a22","#fff3a6","#fff3a6","#ffd447","#ffd447","#c9bbdb"],["#bb841d","#fff3a6","#fff3a6","#ffd447","#ffd447","#d99a22","#dbdbdb"],["#bb841d","#fff3a6","#ffd447","#ffd447","#ffd447","#d99a22","#aa97d4"],["#bb841d","#ffd447","#ffd447","#ffd447","#d99a22","#c6b0f7","#c9bbdb"],["#c9bbdb","#d99a22","#ffd447","#d99a22","#d99a22","#ead9ff","#dbdbdb"],["#9382b7","#c9bbdb","#bb841d","#bb841d","#c9bbdb","#aa97d4","#ada1bd"]],
+    powerup: {
+        "type": "phantom",
+        "tier": 1,
+        "intro": "Vanishes through your blocks and reappears in the deepest gap it fits, and stays there. Is this your gap?",
+        "help": 2
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.9,
+  },
+  {
+    id: "schrodingers_box",
+    name: "schrödinger's cat box",
+    grid: [
+        "XX"
+      ],
+    color: [["#865c33","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#ceb384","#ceb384","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#865c33"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#fff7e6","#fff7e6","#fff7e6","#d9a061","#bb8a53"],["#bb8a53","#4a2f2a","#4a2f2a","#4a2f2a","#4a2f2a","#4a2f2a","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#fff7e6","#d9a061","#bb8a53"],["#bb8a53","#4a2f2a","#9dff6a","#4a2f2a","#9dff6a","#4a2f2a","#efd09a","#efd09a","#d9a061","#d9a061","#fff7e6","#d9a061","#d9a061","#bb8a53"],["#bb8a53","#4a2f2a","#4a2f2a","#4a2f2a","#4a2f2a","#4a2f2a","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#bb8a53"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#d9a061","#fff7e6","#d9a061","#d9a061","#bb8a53"],["#865c33","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#ceb384","#ceb384","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#865c33"]],
+    powerup: {
+        "type": "phantom",
+        "tier": 1,
+        "intro": "Sinks straight through your blocks into the deepest gap it fits, and stays there. Until it lands, the cat inside is both fine and extremely fine.",
+        "help": 2.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.9,
+  },
+  {
+    id: "trenchcoat_spy",
+    name: "a spy in a trench coat",
+    grid: [
+        "X",
+        "X",
+        "X"
+      ],
+    color: [["#523722","#5f4028","#5f4028","#5f4028","#5f4028","#523722"],["#5f4028","#94653d","#94653d","#94653d","#94653d","#5f4028"],["#34241d","#3c2a22","#3c2a22","#3c2a22","#3c2a22","#34241d"],["#cea584","#f0c09a","#f0c09a","#f0c09a","#f0c09a","#cea584"],["#262d3e","#2c3448","#f0c09a","#2c3448","#2c3448","#cea584"],["#cea584","#f0c09a","#f0c09a","#d89a78","#f0c09a","#cea584"],["#ba9e67","#b89656","#f0c09a","#f0c09a","#d8b878","#9e814a"],["#ba9e67","#d8b878","#b89656","#b89656","#d8b878","#ba9e67"],["#ba9e67","#b89656","#d8b878","#d8b878","#b89656","#ba9e67"],["#ba9e67","#d8b878","#d8b878","#3c2a22","#d8b878","#ba9e67"],["#ba9e67","#b89656","#d8b878","#3c2a22","#d8b878","#ba9e67"],["#ba9e67","#d8b878","#d8b878","#3c2a22","#d8b878","#ba9e67"],["#775b32","#8a6a3a","#8a6a3a","#3c2a22","#8a6a3a","#775b32"],["#5c4424","#6b4f2a","#6b4f2a","#6b4f2a","#6b4f2a","#5c4424"],["#ba9e67","#d8b878","#d8b878","#3c2a22","#d8b878","#ba9e67"],["#ba9e67","#b89656","#d8b878","#d8b878","#d8b878","#ba9e67"],["#ba9e67","#b89656","#d8b878","#d8b878","#d8b878","#ba9e67"],["#664e2b","#775b32","#ba9e67","#775b32","#775b32","#664e2b"]],
+    powerup: {
+        "type": "phantom",
+        "tier": 1,
+        "intro": "Slips down through your blocks unseen and takes up position in the deepest gap it fits. This message will self-destruct. The spy will not: it stays.",
+        "help": 2
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.8,
+  },
+  {
+    id: "jellyfish",
+    name: "a jellyfish (mostly water, partly sneaking)",
+    grid: [
+        "XXX",
+        ".X."
+      ],
+    color: [["#a6538b","#c160a2","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#c160a2","#a6538b"],["#c160a2","#ff8fd0","#ffc4ea","#ffc4ea","#ffc4ea","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ffc4ea","#c160a2"],["#db7bb3","#ffc4ea","#ffffff","#ffc4ea","#ffc4ea","#ff8fd0","#ff8fd0","#5a2350","#ff8fd0","#ff8fd0","#ff8fd0","#5a2350","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#db7bb3"],["#db7bb3","#ffc4ea","#ffc4ea","#ffc4ea","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ffc4ea","#db7bb3"],["#db7bb3","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#5a2350","#5a2350","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#db7bb3"],["#823772","#db7bb3","#974084","#db7bb3","#974084","#db7bb3","#b04a9a","#ff8fd0","#b04a9a","#ff8fd0","#b04a9a","#ff8fd0","#974084","#db7bb3","#974084","#db7bb3","#974084","#bd6a9a"],["","","","","","","#ba539b","#ffc4ea","#d860b4","#ffc4ea","#d860b4","#dba9c9","","","","","",""],["","","","","","","#ba539b","#ffc4ea","#d860b4","#ffc4ea","#d860b4","#dba9c9","","","","","",""],["","","","","","","#dba9c9","#d860b4","#ffc4ea","#d860b4","#ffc4ea","#ba539b","","","","","",""],["","","","","","","#dba9c9","#d860b4","#ffc4ea","#d860b4","#ffc4ea","#ba539b","","","","","",""],["","","","","","","#ba539b","#ffc4ea","#d860b4","#ffc4ea","#d860b4","#dba9c9","","","","","",""],["","","","","","","#a04785","#dba9c9","#ba539b","#dba9c9","#ba539b","#bd91ad","","","","","",""]],
+    powerup: {
+        "type": "phantom",
+        "tier": 2,
+        "intro": "Drifts down through your blocks into the deepest gap it fits, and stays there. It has no brain, and it still found the best spot.",
+        "help": 1
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.7,
+  },
+  {
+    id: "slippery_seal",
+    name: "a slippery seal",
+    grid: [
+        "..X",
+        "XXX"
+      ],
+    color: [["","","","","","","","","","","","","#5e6a7b","#6d7b8f","#9da9b8","#9da9b8","#6d7b8f","#5e6a7b"],["","","","","","","","","","","","","#6d7b8f","#b6c4d6","#7f8fa6","#7f8fa6","#7f8fa6","#6d7b8f"],["","","","","","","","","","","","","#6d7b8f","#1e2633","#ffffff","#7f8fa6","#7f8fa6","#6d7b8f"],["","","","","","","","","","","","","#6d7b8f","#1e2633","#1e2633","#7f8fa6","#2e3644","#282e3a"],["","","","","","","","","","","","","#6d7b8f","#7f8fa6","#c9d3df","#ffffff","#c9d3df","#dbdbdb"],["","","","","","","","","","","","","#6d7b8f","#7f8fa6","#c9d3df","#c9d3df","#c9d3df","#adb5c0"],["#465162","#525f72","#6d7b8f","#6d7b8f","#6d7b8f","#9da9b8","#9da9b8","#9da9b8","#9da9b8","#9da9b8","#6d7b8f","#6d7b8f","#7f8fa6","#7f8fa6","#7f8fa6","#c9d3df","#c9d3df","#6d7b8f"],["#525f72","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#c9d3df","#c9d3df","#c9d3df","#6d7b8f"],["#525f72","#5f6e84","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#c9d3df","#c9d3df","#c9d3df","#6d7b8f"],["#525f72","#7f8fa6","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#7f8fa6","#6d7b8f"],["#525f72","#5f6e84","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#5f6e84","#5f6e84","#5f6e84","#c9d3df","#6d7b8f"],["#465162","#6d7b8f","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#525f72","#525f72","#adb5c0","#5e6a7b"]],
+    powerup: {
+        "type": "phantom",
+        "tier": 2,
+        "intro": "Slides down through your blocks on its belly into the deepest gap it fits, and stays there. Nobody has ever kept hold of a seal. Arf.",
+        "help": 1
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.7,
+  },
+  {
+    id: "greased_lightning",
+    name: "greased lightning",
+    grid: [
+        "X.",
+        "XX",
+        ".X"
+      ],
+    color: [["#b47221","#dbc240","#dbc240","#dbc240","#dbc240","#b47221","","","","","",""],["#d18426","#ffe14a","#ffffff","#ffe14a","#ffe14a","#d18426","","","","","",""],["#d18426","#ffe14a","#ffe14a","#ffffff","#ffe14a","#d18426","","","","","",""],["#d18426","#ffe14a","#ffe14a","#ffffff","#ffe14a","#d18426","","","","","",""],["#d18426","#ffe14a","#ffe14a","#ffe14a","#ffffff","#d18426","","","","","",""],["#d18426","#ffe14a","#ffe14a","#ffe14a","#ffffff","#dbc240","","","","","",""],["#d18426","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffffff","#dbc240","#dbc240","#dbc240","#dbc240","#dbc240","#b47221"],["#d18426","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffffff","#ffffff","#ffe14a","#ffe14a","#ffe14a","#d18426"],["#d18426","#8a4a1a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffffff","#ffe14a","#ffe14a","#d18426"],["#d18426","#8a4a1a","#8a4a1a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffffff","#ffe14a","#d18426"],["#d18426","#f39a2c","#8a4a1a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffffff","#d18426"],["#b47221","#d18426","#d18426","#dbc240","#dbc240","#dbc240","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffffff","#d18426"],["","","","","","","#d18426","#ffe14a","#ffe14a","#ffe14a","#ffffff","#d18426"],["","","","","","","#d18426","#ffe14a","#ffe14a","#ffffff","#ffe14a","#d18426"],["","","","","","","#d18426","#ffe14a","#ffffff","#ffe14a","#ffe14a","#d18426"],["","","","","","","#d18426","#ffe14a","#ffffff","#ffe14a","#8a4a1a","#d18426"],["","","","","","","#d18426","#ffe14a","#ffffff","#ffe14a","#f39a2c","#d18426"],["","","","","","","#b47221","#d18426","#dbdbdb","#d18426","#d18426","#b47221"]],
+    powerup: {
+        "type": "phantom",
+        "tier": 2,
+        "intro": "Zaps straight down through your blocks into the deepest gap it fits, and stays there. Lightning never strikes the same place twice. Greased lightning never strikes anything.",
+        "help": 1
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.6,
+  },
+  {
+    id: "fish_got_away",
+    name: "the fish that got away",
+    grid: [
+        "XXX"
+      ],
+    color: [["#23665c","#28776b","#44a790","#44a790","#44a790","#44a790","#77c6b2","#44a790","#44a790","#44a790","#44a790","#44a790","#44a790","#286b64","#5fbaa4","#5fbaa4","#5fbaa4","#52a08d"],["#28776b","#4fc2a8","#4fc2a8","#14303a","#4fc2a8","#8ae6cf","#8ae6cf","#8ae6cf","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#2f7c74","#2f7c74","#6fd8bf","#6fd8bf","#286b64"],["#c8c8ce","#2f8a7c","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#2f7c74","#2f7c74","#2f7c74","#286b64"],["#c8c8ce","#e8e8f0","#2f8a7c","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#2f7c74","#2f7c74","#2f7c74","#286b64"],["#28776b","#2f8a7c","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#4fc2a8","#2f7c74","#2f7c74","#6fd8bf","#6fd8bf","#286b64"],["#23665c","#28776b","#28776b","#bbd2c2","#bbd2c2","#bbd2c2","#bbd2c2","#bbd2c2","#bbd2c2","#bbd2c2","#bbd2c2","#44a790","#44a790","#286b64","#5fbaa4","#5fbaa4","#5fbaa4","#52a08d"]],
+    powerup: {
+        "type": "phantom",
+        "tier": 1,
+        "intro": "Wriggles off the hook and down through your blocks into the deepest gap it fits, and stays there. It was this big. Three blocks, honestly.",
+        "help": 2.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.8,
+  },
+  {
+    id: "wisp_of_fog",
+    name: "a wisp of fog",
+    grid: [
+        "XX.X"
+      ],
+    color: [["#7d8794","#b5bdc8","#b5bdc8","#919dac","#919dac","#919dac","#b5bdc8","#b5bdc8","#b5bdc8","#919dac","#919dac","#7d8794","","","","","","","#7d8794","#919dac","#b5bdc8","#b5bdc8","#919dac","#7d8794"],["#b5bdc8","#f4f7fb","#f4f7fb","#d3dce8","#d3dce8","#a9b6c8","#d3dce8","#f4f7fb","#f4f7fb","#f4f7fb","#d3dce8","#b5bdc8","","","","","","","#b5bdc8","#f4f7fb","#f4f7fb","#d3dce8","#d3dce8","#b5bdc8"],["#b5bdc8","#f4f7fb","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#f4f7fb","#d3dce8","#d3dce8","#d3dce8","#b5bdc8","","","","","","","#b5bdc8","#d3dce8","#f4f7fb","#f4f7fb","#d3dce8","#919dac"],["#b5bdc8","#d3dce8","#d3dce8","#d3dce8","#a9b6c8","#a9b6c8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#919dac","","","","","","","#b5bdc8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#919dac"],["#919dac","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#b5bdc8","","","","","","","#919dac","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#919dac"],["#7d8794","#919dac","#919dac","#919dac","#919dac","#919dac","#919dac","#919dac","#919dac","#919dac","#919dac","#7d8794","","","","","","","#7d8794","#919dac","#919dac","#919dac","#919dac","#7d8794"]],
+    powerup: {
+        "type": "phantom",
+        "tier": 2,
+        "intro": "Rolls down through your blocks and settles in the deepest gap its three puffs fit (two together, a gap, then one), and stays there. Visibility: poor.",
+        "help": 1.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.6,
+  },
+  {
+    id: "pickpockets_hand",
+    name: "a pickpocket's hand",
+    grid: [
+        "XXX",
+        "X.."
+      ],
+    color: [["#b39376","#d0ab8a","#d0ab8a","#d0ab8a","#d0ab8a","#dbdbdb","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#303b6a"],["#d0ab8a","#f2c7a0","#f2c7a0","#f2c7a0","#f2c7a0","#f2c7a0","#ffffff","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#38457b"],["#d0ab8a","#f2c7a0","#f2c7a0","#f2c7a0","#f2c7a0","#ffffff","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#38457b"],["#d0ab8a","#c98a64","#f2c7a0","#c98a64","#f2c7a0","#ffffff","#ffffff","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#38457b"],["#d0ab8a","#c98a64","#f2c7a0","#c98a64","#f2c7a0","#ffffff","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#38457b"],["#d0ab8a","#c98a64","#f2c7a0","#c98a64","#f2c7a0","#ffffff","#dbdbdb","#38457b","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#303b6a"],["#d0ab8a","#8a4f26","#f2c7a0","#8a4f26","#f2c7a0","#774421","","","","","","","","","","","",""],["#774421","#7ed36a","#7ed36a","#7ed36a","#8a4f26","#774421","","","","","","","","","","","",""],["#774421","#b06a34","#b06a34","#b06a34","#b06a34","#774421","","","","","","","","","","","",""],["#774421","#b06a34","#b06a34","#ffd447","#b06a34","#774421","","","","","","","","","","","",""],["#774421","#b06a34","#b06a34","#b06a34","#b06a34","#774421","","","","","","","","","","","",""],["#663a1c","#774421","#774421","#774421","#774421","#663a1c","","","","","","","","","","","",""]],
+    powerup: {
+        "type": "phantom",
+        "tier": 2,
+        "intro": "Slips down through your blocks into the deepest gap it fits, and keeps whatever it finds there. Check your pockets.",
+        "help": 1.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.6,
+  },
+  {
+    id: "flour_sack",
+    name: "a sack of flour",
+    grid: [
+        "XX"
+      ],
+    color: [["#a09373","#cec3a9","#baaa86","#cec3a9","#baaa86","#cec3a9","#baaa86","#cec3a9","#baaa86","#cec3a9","#baaa86","#845b32","#dbdbdb","#a09373"],["#446da5","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#efe3c4","#9a6a3a","#ffffff","#dbdbdb"],["#cec3a9","#efe3c4","#e0a838","#efe3c4","#e0a838","#efe3c4","#efe3c4","#d8c69c","#efe3c4","#efe3c4","#efe3c4","#9a6a3a","#9a6a3a","#dbdbdb"],["#cec3a9","#d8c69c","#e0a838","#e0a838","#e0a838","#efe3c4","#efe3c4","#efe3c4","#efe3c4","#d8c69c","#efe3c4","#9a6a3a","#ffffff","#dbdbdb"],["#cec3a9","#efe3c4","#efe3c4","#a8772a","#efe3c4","#d8c69c","#efe3c4","#efe3c4","#efe3c4","#efe3c4","#efe3c4","#9a6a3a","#9a6a3a","#dbdbdb"],["#446da5","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#efe3c4","#9a6a3a","#ffffff","#dbdbdb"],["#a09373","#cec3a9","#baaa86","#cec3a9","#baaa86","#cec3a9","#baaa86","#cec3a9","#baaa86","#cec3a9","#baaa86","#845b32","#dbdbdb","#a09373"]],
+    powerup: {
+        "type": "gravity",
+        "direction": "down",
+        "tier": 1,
+        "intro": "Every block in the 10-wide, 3-row band around and under it (its own row and the two below) drops down into the gaps. Leaves a fine white dust on everything.",
+        "area": {
+          "origin": [
+            4,
+            0
+          ],
+          "grid": [
+            "##########",
+            "##########",
+            "##########"
+          ]
+        },
+        "help": 2.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.9,
+  },
+  {
+    id: "tiptoe_elephant",
+    name: "an elephant tiptoeing past",
+    grid: [
+        "XXX",
+        "X.X"
+      ],
+    color: [["#727c88","#84909e","#84909e","#84909e","#84909e","#84909e","#84909e","#84909e","#a98c9b","#a98c9b","#a98c9b","#a98c9b","#84909e","#84909e","#84909e","#84909e","#a7afba","#727c88"],["#84909e","#9aa7b8","#c2ccd8","#c2ccd8","#9aa7b8","#9aa7b8","#9aa7b8","#c4a3b4","#c4a3b4","#c4a3b4","#c4a3b4","#c4a3b4","#c4a3b4","#9aa7b8","#c2ccd8","#9aa7b8","#9aa7b8","#84909e"],["#5e6978","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#c4a3b4","#c4a3b4","#c4a3b4","#c4a3b4","#c4a3b4","#c4a3b4","#c4a3b4","#9aa7b8","#1e2633","#9aa7b8","#9aa7b8","#84909e"],["#5e6978","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#c4a3b4","#c4a3b4","#c4a3b4","#c4a3b4","#c4a3b4","#c4a3b4","#9aa7b8","#9aa7b8","#fff1d6","#9aa7b8","#84909e"],["#84909e","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#c4a3b4","#c4a3b4","#c4a3b4","#c4a3b4","#c4a3b4","#9aa7b8","#9aa7b8","#9aa7b8","#fff1d6","#8794a6","#84909e"],["#84909e","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#84909e","#84909e","#84909e","#84909e","#84909e","#84909e","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#8794a6","#84909e"],["#84909e","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#84909e","","","","","","","#84909e","#9aa7b8","#9aa7b8","#6d7a8c","#8794a6","#84909e"],["#84909e","#c2ccd8","#9aa7b8","#9aa7b8","#9aa7b8","#84909e","","","","","","","#84909e","#9aa7b8","#9aa7b8","#6d7a8c","#8794a6","#84909e"],["#84909e","#c2ccd8","#9aa7b8","#9aa7b8","#9aa7b8","#84909e","","","","","","","#84909e","#9aa7b8","#9aa7b8","#6d7a8c","#8794a6","#84909e"],["#84909e","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#84909e","","","","","","","#84909e","#9aa7b8","#9aa7b8","#6d7a8c","#8794a6","#747f8f"],["#84909e","#9aa7b8","#9aa7b8","#9aa7b8","#9aa7b8","#84909e","","","","","","","#84909e","#9aa7b8","#9aa7b8","#6d7a8c","#8794a6","#747f8f"],["#aba094","#dbdbdb","#c7baac","#dbdbdb","#c7baac","#aba094","","","","","","","#bdbdbd","#c7baac","#dbdbdb","#c7baac","#747f8f","#646e7b"]],
+    powerup: {
+        "type": "gravity",
+        "direction": "down",
+        "tier": 2,
+        "intro": "Only every other column goes: four columns across the 7 cells under it, including the two under its feet. Everything in them drops into the gaps. It is trying so hard to be quiet.",
+        "area": {
+          "origin": [
+            2,
+            0
+          ],
+          "grid": [
+            "|.|.|.|"
+          ]
+        },
+        "help": 3.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.9,
+  },
+  {
+    id: "gravity_boot",
+    name: "a gravity boot",
+    grid: [
+        "X.",
+        "XX"
+      ],
+    color: [["#abb0b7","#c7cdd4","#c7cdd4","#c7cdd4","#c7cdd4","#c7cdd4","#abb0b7","","","","","","",""],["#798597","#d4e0ee","#8d9bb0","#8d9bb0","#8d9bb0","#d4e0ee","#798597","","","","","","",""],["#798597","#8d9bb0","#8d9bb0","#ff8a2a","#ff8a2a","#8d9bb0","#798597","","","","","","",""],["#798597","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#798597","","","","","","",""],["#798597","#8d9bb0","#8d9bb0","#ff8a2a","#ff8a2a","#8d9bb0","#798597","","","","","","",""],["#798597","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#798597","","","","","","",""],["#798597","#8d9bb0","#8d9bb0","#ff8a2a","#ff8a2a","#8d9bb0","#798597","","","","","","",""],["#798597","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#798597","#798597","#798597","#798597","#798597","#798597","#687382"],["#798597","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#d4e0ee","#8d9bb0","#798597"],["#798597","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#d4e0ee","#798597"],["#798597","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#8d9bb0","#798597"],["#414959","#4c5568","#4c5568","#4c5568","#4c5568","#4c5568","#4c5568","#4c5568","#4c5568","#4c5568","#4c5568","#4c5568","#4c5568","#414959"],["#323948","#3a4254","#3a4254","#3a4254","#3a4254","#3a4254","#3a4254","#3a4254","#3a4254","#3a4254","#3a4254","#3a4254","#3a4254","#323948"],["#2b313e","#414959","#323948","#323948","#414959","#323948","#323948","#414959","#323948","#323948","#414959","#323948","#323948","#2b313e"]],
+    powerup: {
+        "type": "gravity",
+        "direction": "down",
+        "tier": 2,
+        "intro": "Kicks down a staircase to its right: blocks fall in three 2-wide steps, 2, 4 and 6 rows deep, starting just under its sole. The opposite of moon boots.",
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            "......",
+            "......",
+            "######",
+            "######",
+            "..####",
+            "..####",
+            "....##",
+            "....##"
+          ]
+        },
+        "help": 2
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.9,
+  },
+  {
+    id: "lead_balloon",
+    name: "a lead balloon",
+    grid: [
+        "X",
+        "X"
+      ],
+    color: [["#515965","#5e6776","#79828f","#79828f","#79828f","#5e6776","#515965"],["#5e6776","#8d97a6","#c3cad4","#c3cad4","#8d97a6","#8d97a6","#5e6776"],["#79828f","#c3cad4","#3e4656","#3e4656","#3e4656","#8d97a6","#79828f"],["#79828f","#8d97a6","#3e4656","#8d97a6","#3e4656","#8d97a6","#79828f"],["#79828f","#c3cad4","#3e4656","#3e4656","#3e4656","#8d97a6","#79828f"],["#79828f","#8d97a6","#3e4656","#8d97a6","#8d97a6","#8d97a6","#79828f"],["#79828f","#8d97a6","#3e4656","#8d97a6","#3e4656","#8d97a6","#79828f"],["#79828f","#8d97a6","#8d97a6","#8d97a6","#3e4656","#8d97a6","#79828f"],["#79828f","#8d97a6","#8d97a6","#8d97a6","#3e4656","#3e4656","#353c4a"],["#79828f","#8d97a6","#8d97a6","#8d97a6","#3e4656","#8d97a6","#353c4a"],["#636c79","#8d97a6","#8d97a6","#8d97a6","#3e4656","#3e4656","#353c4a"],["#636c79","#737d8d","#8d97a6","#8d97a6","#8d97a6","#737d8d","#636c79"],["#636c79","#737d8d","#737d8d","#5a6272","#737d8d","#737d8d","#636c79"],["#555c68","#636c79","#4d5462","#4d5462","#4d5462","#636c79","#555c68"]],
+    powerup: {
+        "type": "gravity",
+        "direction": "down",
+        "tier": 1,
+        "intro": "Goes down like a lead balloon: blocks in a V right under it (two diagonal strokes, 9 cells wide at the top, meeting 5 rows down) drop into the gaps. Nobody laughed at the party either.",
+        "area": {
+          "origin": [
+            4,
+            0
+          ],
+          "grid": [
+            ".........",
+            ".........",
+            "##.....##",
+            ".##...##.",
+            "..##.##..",
+            "...###...",
+            "....#...."
+          ]
+        },
+        "help": 1.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.9,
+  },
+  {
+    id: "sinking_stone",
+    name: "a stone that never learned to swim",
+    grid: [
+        "XX"
+      ],
+    color: [["#726e65","#847f75","#847f75","#9e998f","#9e998f","#9e998f","#9e998f","#9e998f","#847f75","#847f75","#90bdd3","#90bdd3","#847f75","#726e65"],["#847f75","#9a9488","#b8b2a6","#b8b2a6","#b8b2a6","#b8b2a6","#b8b2a6","#b8b2a6","#b8b2a6","#9a9488","#a8dcf5","#ffffff","#a8dcf5","#847f75"],["#847f75","#b8b2a6","#b8b2a6","#4a4640","#b8b2a6","#b8b2a6","#b8b2a6","#4a4640","#b8b2a6","#b8b2a6","#9a9488","#a8dcf5","#a8dcf5","#847f75"],["#847f75","#b8b2a6","#b8b2a6","#b8b2a6","#b8b2a6","#b8b2a6","#b8b2a6","#b8b2a6","#b8b2a6","#b8b2a6","#9a9488","#9a9488","#9a9488","#847f75"],["#847f75","#9a9488","#b8b2a6","#b8b2a6","#b8b2a6","#4a4640","#4a4640","#b8b2a6","#b8b2a6","#b8b2a6","#9a9488","#9a9488","#7a7468","#847f75"],["#847f75","#7a7468","#9a9488","#9a9488","#9a9488","#9a9488","#9a9488","#9a9488","#9a9488","#9a9488","#9a9488","#7a7468","#9a9488","#847f75"],["#5a564d","#847f75","#847f75","#847f75","#696459","#847f75","#847f75","#847f75","#847f75","#696459","#847f75","#847f75","#847f75","#726e65"]],
+    powerup: {
+        "type": "gravity",
+        "direction": "down",
+        "tier": 1,
+        "intro": "Sinks straight to the bottom: every block in the two columns under it, all the way down, drops into the gaps. It never learned to swim. It never wanted to.",
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            "..",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##",
+            "##"
+          ]
+        },
+        "help": 3
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.9,
+  },
+  {
+    id: "ambitious_paperweight",
+    name: "a paperweight with ambitions",
+    grid: [
+        "X"
+      ],
+    color: [["#76a6b3","#89c1d0","#dbaf24","#89c1d0","#dbaf24","#89c1d0","#76a6b3"],["#89c1d0","#ffffff","#ffcc2a","#ffcc2a","#ffcc2a","#9fe0f2","#89c1d0"],["#89c1d0","#ffffff","#ff6b8a","#ff6b8a","#ff6b8a","#9fe0f2","#89c1d0"],["#89c1d0","#ff6b8a","#ff6b8a","#ffe14a","#ff6b8a","#ff6b8a","#89c1d0"],["#89c1d0","#6fc4e0","#ff6b8a","#ff6b8a","#ff6b8a","#6fc4e0","#89c1d0"],["#b68d37","#d4a440","#d4a440","#d4a440","#d4a440","#d4a440","#b68d37"],["#7c5c1f","#906b24","#906b24","#906b24","#906b24","#906b24","#7c5c1f"]],
+    powerup: {
+        "type": "gravity",
+        "direction": "down",
+        "tier": 2,
+        "intro": "Presses down in a T: the 7-wide strip two rows deep right under it, plus its own column down to 8 rows below it, drops into the gaps. It used to hold down one letter. Now it wants the whole stack.",
+        "area": {
+          "origin": [
+            3,
+            0
+          ],
+          "grid": [
+            ".......",
+            "#######",
+            "#######",
+            "...#...",
+            "...#...",
+            "...#...",
+            "...#...",
+            "...#...",
+            "...#..."
+          ]
+        },
+        "help": 2.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.9,
+  },
+  {
+    id: "sideways_apple",
+    name: "an apple from a different tree",
+    grid: [
+        "X"
+      ],
+    color: [["#4e8224","#7bba40","#7bba40","#7bba40","#7bba40","#7bba40","#4e8224"],["#7bba40","#efffd8","#efffd8","#8fd84a","#8fd84a","#2e8a3a","#287732"],["#7bba40","#efffd8","#8fd84a","#8fd84a","#8fd84a","#2e8a3a","#7bba40"],["#7bba40","#8fd84a","#8fd84a","#8fd84a","#8fd84a","#7a4a22","#69401d"],["#7bba40","#8fd84a","#8fd84a","#8fd84a","#8fd84a","#8fd84a","#7bba40"],["#7bba40","#8fd84a","#8fd84a","#8fd84a","#8fd84a","#ff8a5a","#7bba40"],["#4e8224","#7bba40","#7bba40","#7bba40","#db774d","#db774d","#4e8224"]],
+    powerup: {
+        "type": "gravity",
+        "direction": "right",
+        "tier": 1,
+        "intro": "Falls the wrong way: blocks in its own row and the two rows under it, wall to wall, slide right until they hit something. Different tree, different rules.",
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            "-",
+            "-",
+            "-"
+          ]
+        },
+        "help": 1
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.9,
+  },
+  {
+    id: "falling_accordion",
+    name: "a falling accordion (a piano's little cousin)",
+    grid: [
+        "XXX"
+      ],
+    color: [["#a02637","#ba2d40","#ba2d40","#ba2d40","#ba2d40","#ba2d40","#dbb63d","#d8d1c4","#901f32","#d8d1c4","#901f32","#dbb63d","#ba2d40","#ba2d40","#ba2d40","#ba2d40","#ba2d40","#a02637"],["#26242e","#2c2a36","#2c2a36","#fbf3e4","#fbf3e4","#d8344a","#fbf3e4","#a8243a","#fbf3e4","#a8243a","#fbf3e4","#a8243a","#d8344a","#ffd447","#d8344a","#ffd447","#d8344a","#ba2d40"],["#d8d1c4","#fbf3e4","#fbf3e4","#fbf3e4","#fbf3e4","#d8344a","#fbf3e4","#a8243a","#fbf3e4","#a8243a","#fbf3e4","#a8243a","#d8344a","#d8344a","#d8344a","#d8344a","#d8344a","#ba2d40"],["#26242e","#2c2a36","#2c2a36","#fbf3e4","#fbf3e4","#d8344a","#fbf3e4","#a8243a","#fbf3e4","#a8243a","#fbf3e4","#a8243a","#d8344a","#ffd447","#d8344a","#ffd447","#d8344a","#ba2d40"],["#d8d1c4","#fbf3e4","#fbf3e4","#fbf3e4","#fbf3e4","#d8344a","#fbf3e4","#a8243a","#fbf3e4","#a8243a","#fbf3e4","#a8243a","#d8344a","#d8344a","#d8344a","#d8344a","#d8344a","#ba2d40"],["#a02637","#ba2d40","#ba2d40","#ba2d40","#ba2d40","#ba2d40","#dbb63d","#d8d1c4","#901f32","#d8d1c4","#901f32","#dbb63d","#ba2d40","#ba2d40","#ba2d40","#ba2d40","#ba2d40","#a02637"]],
+    powerup: {
+        "type": "gravity",
+        "direction": "down",
+        "tier": 2,
+        "intro": "Squeezes every other row: rows 1, 3, 5 and 7 under it, 7 cells wide, drop into the gaps. A piano's little cousin. It falls just as hard, only wheezier.",
+        "area": {
+          "origin": [
+            2,
+            0
+          ],
+          "grid": [
+            ".......",
+            "#######",
+            ".......",
+            "#######",
+            ".......",
+            "#######",
+            ".......",
+            "#######"
+          ]
+        },
+        "help": 2
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.9,
+  },
 ];
