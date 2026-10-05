@@ -6655,4 +6655,830 @@ export const SHAPES = [
       },
     frequency: 0.5,
   },
+  {
+    id: "pile_driver",
+    name: "a pile driver",
+    grid: [
+        "X",
+        "X",
+        "X"
+      ],
+    color: [["#fee761","#fee761","#fee761","#fee761","#fee761","#fee761"],["#fee761","#262b44","#c0cbdc","#c0cbdc","#262b44","#fee761"],["#fee761","#feae34","#c0cbdc","#c0cbdc","#feae34","#fee761"],["#fee761","#262b44","#c0cbdc","#c0cbdc","#262b44","#fee761"],["#fee761","#feae34","#c0cbdc","#c0cbdc","#feae34","#fee761"],["#fee761","#262b44","#c0cbdc","#c0cbdc","#262b44","#fee761"],["#5a6988","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc"],["#c0cbdc","#ffffff","#ffffff","#ffffff","#ffffff","#8b9bb4"],["#c0cbdc","#181425","#fee761","#181425","#fee761","#8b9bb4"],["#c0cbdc","#fee761","#181425","#fee761","#181425","#8b9bb4"],["#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4"],["#5a6988","#5a6988","#5a6988","#5a6988","#5a6988","#5a6988"],["#fee761","#262b44","#b86f50","#733e39","#262b44","#fee761"],["#fee761","#262b44","#b86f50","#733e39","#262b44","#fee761"],["#fee761","#262b44","#b86f50","#733e39","#262b44","#fee761"],["#ead4aa","#262b44","#b86f50","#733e39","#262b44","#ead4aa"],["#ead4aa","#ead4aa","#b86f50","#733e39","#ead4aa","#ead4aa"],["#e4a672","#ead4aa","#b86f50","#733e39","#ead4aa","#e4a672"]],
+    powerup: {
+        "type": "combo",
+        "tier": 3,
+        "intro": "Slams down and smashes the whole row underneath it, which closes up like a line clear. Then everything in its column and the two beside it drops down into the gaps. Hard hats on.",
+        "parts": [
+          {
+            "type": "destroyer",
+            "collapse": true,
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                ".",
+                ".",
+                ".",
+                "-"
+              ]
+            }
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "|||"
+              ]
+            }
+          }
+        ],
+        "help": 4.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "dentist_drill",
+    name: "a dentist's drill",
+    grid: [
+        "XX",
+        ".X"
+      ],
+    color: [["#8b9bb4","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc"],["#5a6988","#c0cbdc","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#c0cbdc"],["#5a6988","#c0cbdc","#ffffff","#ffffff","#a6e4ff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#a6e4ff","#ffffff","#c0cbdc"],["#5a6988","#8b9bb4","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#8b9bb4"],["#5a6988","#c0cbdc","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#8b9bb4"],["#5a6988","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4"],["#3e2731","#3e2731","#3e2731","#3e2731","#3e2731","#3e2731","#3e2731","#3e2731","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#a8f0c8"],["","","","","","","","#a8f0c8","#a8f0c8","#8b9bb4","#8b9bb4","#8b9bb4","#a8f0c8","#a8f0c8"],["","","","","","","","#a8f0c8","#a8f0c8","#a8f0c8","#ffffff","#c0cbdc","#a8f0c8","#a8f0c8"],["","","","","","","","#a8f0c8","#a8f0c8","#a8f0c8","#ffffff","#c0cbdc","#a8f0c8","#a8f0c8"],["","","","","","","","#a8f0c8","#a8f0c8","#a8f0c8","#ffffff","#c0cbdc","#a8f0c8","#a8f0c8"],["","","","","","","","#a8f0c8","#a8f0c8","#fee761","#ffffff","#c0cbdc","#fee761","#a8f0c8"],["","","","","","","","#a8f0c8","#fee761","#a8f0c8","#ffffff","#a8f0c8","#fee761","#a8f0c8"],["","","","","","","","#a8f0c8","#a8f0c8","#a8f0c8","#fee761","#a8f0c8","#a8f0c8","#a8f0c8"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Drills out the three blocks under its tip, then packs a filling into every empty cell of the 3x4 patch around the hole. This might sting a little.",
+        "parts": [
+          {
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "..",
+                "..",
+                ".#",
+                ".#",
+                ".#"
+              ]
+            }
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc"
+              ],
+              [
+                "#c0cbdc",
+                "#ffffff",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#8b9bb4",
+                "#c0cbdc",
+                "#c0cbdc"
+              ],
+              [
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#ffffff",
+                "#c0cbdc"
+              ],
+              [
+                "#8b9bb4",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc"
+              ],
+              [
+                "#c0cbdc",
+                "#c0cbdc",
+                "#ffffff",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#8b9bb4"
+              ],
+              [
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#8b9bb4",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc"
+              ],
+              [
+                "#c0cbdc",
+                "#8b9bb4",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#ffffff",
+                "#c0cbdc"
+              ]
+            ],
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "...",
+                "...",
+                "###",
+                "###",
+                "###",
+                "###"
+              ]
+            }
+          }
+        ],
+        "help": 2
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "cement_mixer",
+    name: "a cement mixer",
+    grid: [
+        "XXX",
+        "XXX"
+      ],
+    color: [["#262b44","#262b44","#262b44","#262b44","#262b44","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44"],["#262b44","#262b44","#262b44","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#262b44","#262b44","#262b44","#262b44"],["#262b44","#262b44","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#262b44","#262b44","#262b44"],["#262b44","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#262b44","#e43b44","#e43b44"],["#262b44","#c0cbdc","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#c0cbdc","#262b44","#e43b44","#a6e4ff"],["#262b44","#262b44","#c0cbdc","#c0cbdc","#c0cbdc","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#c0cbdc","#c0cbdc","#c0cbdc","#262b44","#262b44","#e43b44","#a6e4ff"],["#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#e43b44","#e43b44","#e43b44","#e43b44"],["#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#a22633","#a22633","#a22633","#a22633"],["#8b9bb4","#181425","#181425","#181425","#181425","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#181425","#181425","#181425","#181425","#8b9bb4","#181425","#181425","#181425","#181425"],["#262b44","#181425","#c0cbdc","#c0cbdc","#181425","#262b44","#262b44","#262b44","#262b44","#181425","#c0cbdc","#c0cbdc","#181425","#262b44","#181425","#c0cbdc","#c0cbdc","#181425"],["#262b44","#181425","#c0cbdc","#c0cbdc","#181425","#262b44","#262b44","#262b44","#262b44","#181425","#c0cbdc","#c0cbdc","#181425","#262b44","#181425","#c0cbdc","#c0cbdc","#181425"],["#262b44","#262b44","#181425","#181425","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#181425","#181425","#262b44","#262b44","#262b44","#181425","#181425","#262b44"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "First everything in the five columns under it settles down, squashing out the air pockets. Then it pours cement into every empty cell of the 5x2 patch just below it. Keep it turning.",
+        "parts": [
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "|||||"
+              ]
+            }
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#c0cbdc",
+                "#c0cbdc",
+                "#8b9bb4",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#5a6988"
+              ],
+              [
+                "#c0cbdc",
+                "#8b9bb4",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#5a6988",
+                "#c0cbdc",
+                "#c0cbdc"
+              ],
+              [
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#8b9bb4",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc"
+              ],
+              [
+                "#5a6988",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#8b9bb4",
+                "#c0cbdc"
+              ],
+              [
+                "#c0cbdc",
+                "#c0cbdc",
+                "#8b9bb4",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc"
+              ],
+              [
+                "#8b9bb4",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#5a6988",
+                "#c0cbdc",
+                "#8b9bb4"
+              ],
+              [
+                "#c0cbdc",
+                "#c0cbdc",
+                "#5a6988",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc"
+              ]
+            ],
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                ".....",
+                ".....",
+                "#####",
+                "#####"
+              ]
+            }
+          }
+        ],
+        "help": 1.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "erupting_volcano",
+    name: "a small erupting volcano",
+    grid: [
+        ".X.",
+        "XXX"
+      ],
+    color: [["","","","","","","#fee761","#262b44","#e43b44","#262b44","#262b44","#262b44","","","","","",""],["","","","","","","#262b44","#fee761","#e43b44","#fee761","#262b44","#262b44","","","","","",""],["","","","","","","#fee761","#e43b44","#fee761","#e43b44","#262b44","#262b44","","","","","",""],["","","","","","","#e43b44","#fee761","#fee761","#e43b44","#262b44","#262b44","","","","","",""],["","","","","","","#e43b44","#fee761","#f77622","#e43b44","#b86f50","#262b44","","","","","",""],["","","","","","","#733e39","#e43b44","#e43b44","#b86f50","#b86f50","#262b44","","","","","",""],["#262b44","#262b44","#262b44","#262b44","#733e39","#733e39","#b86f50","#f77622","#e43b44","#b86f50","#b86f50","#b86f50","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44"],["#262b44","#262b44","#262b44","#733e39","#733e39","#b86f50","#b86f50","#e43b44","#f77622","#b86f50","#b86f50","#b86f50","#b86f50","#262b44","#262b44","#262b44","#262b44","#262b44"],["#262b44","#262b44","#733e39","#733e39","#b86f50","#b86f50","#f77622","#e43b44","#b86f50","#b86f50","#b86f50","#e4a672","#b86f50","#b86f50","#262b44","#262b44","#262b44","#262b44"],["#262b44","#733e39","#733e39","#b86f50","#b86f50","#b86f50","#e43b44","#f77622","#b86f50","#b86f50","#b86f50","#b86f50","#e4a672","#b86f50","#b86f50","#262b44","#262b44","#262b44"],["#733e39","#733e39","#b86f50","#b86f50","#b86f50","#b86f50","#f77622","#e43b44","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#e4a672","#b86f50","#b86f50","#b86f50","#262b44"],["#733e39","#733e39","#733e39","#733e39","#733e39","#733e39","#733e39","#733e39","#733e39","#733e39","#733e39","#733e39","#733e39","#733e39","#733e39","#733e39","#733e39","#733e39"]],
+    powerup: {
+        "type": "combo",
+        "tier": 3,
+        "intro": "Melts straight down through the four blocks under its crater, then erupts and throws every block around it up to 3 cells away. The ground will be lovely and fertile in a few hundred years.",
+        "parts": [
+          {
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "...",
+                "...",
+                ".#.",
+                ".#.",
+                ".#.",
+                ".#."
+              ]
+            }
+          },
+          {
+            "type": "blast",
+            "push": 3,
+            "area": {
+              "origin": [
+                2,
+                0
+              ],
+              "grid": [
+                "..#####..",
+                ".#######.",
+                "#########",
+                "#########",
+                ".#######."
+              ]
+            }
+          }
+        ],
+        "help": 3.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "sinkhole",
+    name: "a sinkhole",
+    grid: [
+        "XXX"
+      ],
+    color: [["#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d"],["#63c74d","#3e8948","#63c74d","#63c74d","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#63c74d","#63c74d","#3e8948","#63c74d","#63c74d"],["#3e8948","#63c74d","#b86f50","#b86f50","#733e39","#181425","#181425","#181425","#181425","#181425","#181425","#181425","#733e39","#b86f50","#b86f50","#63c74d","#3e8948","#63c74d"],["#63c74d","#b86f50","#733e39","#181425","#181425","#181425","#181425","#181425","#f77622","#181425","#181425","#181425","#181425","#181425","#733e39","#b86f50","#63c74d","#63c74d"],["#3e8948","#b86f50","#733e39","#181425","#181425","#181425","#181425","#f77622","#ffffff","#f77622","#181425","#181425","#181425","#181425","#733e39","#b86f50","#3e8948","#63c74d"],["#3e8948","#3e8948","#b86f50","#b86f50","#733e39","#733e39","#181425","#181425","#181425","#181425","#181425","#181425","#733e39","#733e39","#b86f50","#b86f50","#3e8948","#3e8948"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Swallows every block within two steps of it, then everything in the five columns under it slumps down into the hole. The traffic cone was a nice touch.",
+        "parts": [
+          {
+            "type": "acid",
+            "reach": 2
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "|||||"
+              ]
+            }
+          }
+        ],
+        "help": 3.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "tornado",
+    name: "a tornado (with a cow in it)",
+    grid: [
+        "XXX",
+        ".X.",
+        ".X."
+      ],
+    color: [["#262b44","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#5a6988","#5a6988","#262b44"],["#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#5a6988"],["#8b9bb4","#c0cbdc","#ffffff","#181425","#ffffff","#ffffff","#c0cbdc","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc"],["#5a6988","#8b9bb4","#ffffff","#ffffff","#181425","#ffffff","#f6757a","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#5a6988"],["#262b44","#5a6988","#181425","#8b9bb4","#5a6988","#181425","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#5a6988","#262b44"],["#262b44","#262b44","#262b44","#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#5a6988","#262b44","#262b44"],["","","","","","","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","","","","","",""],["","","","","","","#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#5a6988","","","","","",""],["","","","","","","#262b44","#8b9bb4","#c0cbdc","#8b9bb4","#c0cbdc","#262b44","","","","","",""],["","","","","","","#262b44","#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#8b9bb4","#c0cbdc","#8b9bb4","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#c0cbdc","#8b9bb4","#5a6988","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#8b9bb4","#c0cbdc","#262b44","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#262b44","#8b9bb4","#c0cbdc","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#262b44","#c0cbdc","#8b9bb4","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#c0cbdc","#8b9bb4","#262b44","#262b44","","","","","",""],["","","","","","","#262b44","#ead4aa","#c0cbdc","#ead4aa","#b86f50","#262b44","","","","","",""],["","","","","","","#ead4aa","#b86f50","#ead4aa","#ead4aa","#b86f50","#ead4aa","","","","","",""]],
+    powerup: {
+        "type": "combo",
+        "tier": 3,
+        "intro": "Picks up the blocks around it and flings them up to 4 cells away, then everything in the five columns under it settles down into the gaps. The cow is fine. The cow has seen things.",
+        "parts": [
+          {
+            "type": "blast",
+            "push": 4,
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "#####",
+                "#...#",
+                "##.##",
+                "##.##",
+                "#####"
+              ]
+            }
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "|||||"
+              ]
+            }
+          }
+        ],
+        "help": 3.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "hot_glue_gun",
+    name: "a hot glue gun",
+    grid: [
+        "XXX",
+        "X.."
+      ],
+    color: [["#ead4aa","#ead4aa","#ead4aa","#ead4aa","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#c0cbdc","#c0cbdc"],["#ead4aa","#ffffff","#ead4aa","#0099db","#0099db","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#0099db","#0099db","#0099db","#c0cbdc","#8b9bb4"],["#ead4aa","#ead4aa","#ead4aa","#ead4aa","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#c0cbdc","#c0cbdc"],["#262b44","#262b44","#262b44","#0099db","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#262b44","#262b44","#262b44"],["#262b44","#262b44","#262b44","#0099db","#124e89","#262b44","#fee761","#fee761","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#ead4aa"],["#262b44","#262b44","#262b44","#0099db","#124e89","#262b44","#262b44","#fee761","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#ead4aa"],["#262b44","#262b44","#0099db","#0099db","#124e89","#262b44","","","","","","","","","","","",""],["#262b44","#262b44","#0099db","#124e89","#124e89","#262b44","","","","","","","","","","","",""],["#262b44","#262b44","#0099db","#124e89","#124e89","#262b44","","","","","","","","","","","",""],["#262b44","#0099db","#0099db","#124e89","#124e89","#262b44","","","","","","","","","","","",""],["#262b44","#0099db","#124e89","#124e89","#262b44","#262b44","","","","","","","","","","","",""],["#262b44","#124e89","#124e89","#124e89","#262b44","#262b44","","","","","","","","","","","",""]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Melts every block it touches, then squirts glue into every empty cell under it (a 3x3 patch). Your fingers will be fine. Eventually.",
+        "parts": [
+          {
+            "type": "acid",
+            "reach": 1
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ffffff",
+                "#ead4aa",
+                "#ead4aa"
+              ],
+              [
+                "#ead4aa",
+                "#ffffff",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#e4a672"
+              ],
+              [
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa"
+              ],
+              [
+                "#ead4aa",
+                "#e4a672",
+                "#ead4aa",
+                "#ffffff",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa"
+              ],
+              [
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ffffff",
+                "#ead4aa"
+              ],
+              [
+                "#ffffff",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#e4a672",
+                "#ead4aa"
+              ],
+              [
+                "#ead4aa",
+                "#ead4aa",
+                "#ffffff",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa"
+              ]
+            ],
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "...",
+                "###",
+                "###",
+                "###"
+              ]
+            }
+          }
+        ],
+        "help": 1.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "car_airbag",
+    name: "a car airbag",
+    grid: [
+        "XX",
+        "XX"
+      ],
+    color: [["#262b44","#262b44","#262b44","#262b44","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#262b44","#262b44","#262b44","#262b44"],["#262b44","#262b44","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#262b44","#262b44"],["#262b44","#ffffff","#ffffff","#c0cbdc","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#262b44"],["#262b44","#ffffff","#c0cbdc","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#c0cbdc","#ffffff","#ffffff","#262b44"],["#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#c0cbdc","#ffffff","#ffffff"],["#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff"],["#5a6988","#ffffff","#ffffff","#ffffff","#c0cbdc","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#5a6988"],["#5a6988","#5a6988","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#c0cbdc","#ffffff","#5a6988","#5a6988"],["#5a6988","#181425","#5a6988","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#5a6988","#181425","#5a6988"],["#5a6988","#181425","#181425","#5a6988","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#5a6988","#181425","#181425","#5a6988"],["#5a6988","#181425","#181425","#181425","#5a6988","#5a6988","#8b9bb4","#8b9bb4","#5a6988","#5a6988","#181425","#181425","#181425","#5a6988"],["#5a6988","#5a6988","#181425","#181425","#181425","#181425","#8b9bb4","#5a6988","#181425","#181425","#181425","#181425","#5a6988","#5a6988"],["#262b44","#5a6988","#5a6988","#181425","#181425","#181425","#5a6988","#8b9bb4","#181425","#181425","#181425","#5a6988","#5a6988","#262b44"],["#262b44","#262b44","#5a6988","#5a6988","#5a6988","#5a6988","#5a6988","#5a6988","#5a6988","#5a6988","#5a6988","#5a6988","#262b44","#262b44"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Bangs every block touching it up to 2 cells away, then inflates into the six empty cells under it. You will be absolutely fine and also slightly deaf.",
+        "parts": [
+          {
+            "type": "blast",
+            "push": 2,
+            "area": {
+              "origin": [
+                1,
+                1
+              ],
+              "grid": [
+                ".##.",
+                "#..#",
+                "#..#",
+                ".##."
+              ]
+            }
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff"
+              ],
+              [
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#c0cbdc",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff"
+              ],
+              [
+                "#ffffff",
+                "#ffffff",
+                "#c0cbdc",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff"
+              ],
+              [
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#c0cbdc",
+                "#ffffff"
+              ],
+              [
+                "#ffffff",
+                "#c0cbdc",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff"
+              ],
+              [
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#c0cbdc",
+                "#ffffff",
+                "#ffffff"
+              ],
+              [
+                "#c0cbdc",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff",
+                "#ffffff"
+              ]
+            ],
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "....",
+                "....",
+                "####",
+                ".##."
+              ]
+            }
+          }
+        ],
+        "help": 2
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "hard_hats",
+    name: "a demolition crew (two tiny hard hats)",
+    grid: [
+        "XX"
+      ],
+    color: [["#262b44","#262b44","#fee761","#fee761","#fee761","#262b44","#262b44","#262b44","#262b44","#f77622","#f77622","#f77622","#262b44","#262b44"],["#262b44","#fee761","#fee761","#ffffff","#fee761","#fee761","#262b44","#262b44","#f77622","#f77622","#ffffff","#f77622","#f77622","#262b44"],["#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622"],["#262b44","#262b44","#e4a672","#e4a672","#e4a672","#e4a672","#262b44","#262b44","#262b44","#e4a672","#e4a672","#e4a672","#e4a672","#262b44"],["#262b44","#262b44","#e4a672","#181425","#e4a672","#181425","#262b44","#262b44","#262b44","#e4a672","#181425","#e4a672","#181425","#262b44"],["#262b44","#262b44","#e4a672","#e4a672","#e4a672","#e4a672","#262b44","#262b44","#262b44","#e4a672","#e4a672","#e4a672","#e4a672","#262b44"],["#262b44","#262b44","#0099db","#0099db","#0099db","#0099db","#262b44","#262b44","#262b44","#a22633","#a22633","#a22633","#a22633","#262b44"]],
+    powerup: {
+        "type": "combo",
+        "tier": 3,
+        "intro": "A three-step job: knocks out the 2x2 of blocks under them, lets everything in the four columns around them settle, then bricks up every empty cell of the 4x2 patch below. On budget, somehow.",
+        "parts": [
+          {
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "..",
+                "##",
+                "##"
+              ]
+            }
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "||||"
+              ]
+            }
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#e43b44",
+                "#e43b44",
+                "#e43b44",
+                "#ead4aa",
+                "#e43b44",
+                "#e43b44",
+                "#e43b44"
+              ],
+              [
+                "#e43b44",
+                "#a22633",
+                "#e43b44",
+                "#ead4aa",
+                "#e43b44",
+                "#a22633",
+                "#e43b44"
+              ],
+              [
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa"
+              ],
+              [
+                "#e43b44",
+                "#ead4aa",
+                "#e43b44",
+                "#e43b44",
+                "#e43b44",
+                "#ead4aa",
+                "#e43b44"
+              ],
+              [
+                "#e43b44",
+                "#ead4aa",
+                "#a22633",
+                "#e43b44",
+                "#e43b44",
+                "#ead4aa",
+                "#a22633"
+              ],
+              [
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa",
+                "#ead4aa"
+              ],
+              [
+                "#e43b44",
+                "#e43b44",
+                "#e43b44",
+                "#ead4aa",
+                "#e43b44",
+                "#e43b44",
+                "#e43b44"
+              ]
+            ],
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "....",
+                "####",
+                "####"
+              ]
+            }
+          }
+        ],
+        "help": 2.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "plunger",
+    name: "a plumber's plunger",
+    grid: [
+        "X",
+        "X"
+      ],
+    color: [["#262b44","#262b44","#b86f50","#e4a672","#b86f50","#262b44","#262b44"],["#262b44","#262b44","#b86f50","#e4a672","#b86f50","#262b44","#262b44"],["#262b44","#262b44","#b86f50","#e4a672","#b86f50","#262b44","#262b44"],["#262b44","#262b44","#b86f50","#e4a672","#b86f50","#262b44","#262b44"],["#262b44","#262b44","#b86f50","#e4a672","#b86f50","#262b44","#262b44"],["#262b44","#262b44","#b86f50","#e4a672","#b86f50","#262b44","#262b44"],["#262b44","#262b44","#b86f50","#e4a672","#b86f50","#262b44","#262b44"],["#262b44","#262b44","#b86f50","#e4a672","#b86f50","#262b44","#262b44"],["#262b44","#262b44","#b86f50","#e4a672","#b86f50","#262b44","#262b44"],["#262b44","#262b44","#a22633","#e43b44","#a22633","#262b44","#262b44"],["#262b44","#a22633","#e43b44","#f6757a","#e43b44","#a22633","#262b44"],["#a22633","#e43b44","#e43b44","#f6757a","#e43b44","#e43b44","#a22633"],["#a22633","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#a22633"],["#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Shoves the clog out: destroys the three blocks straight under it, then everything in its column and the two beside it drains down into the gaps. Glug.",
+        "parts": [
+          {
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                ".",
+                ".",
+                "#",
+                "#",
+                "#"
+              ]
+            }
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "|||"
+              ]
+            }
+          }
+        ],
+        "help": 3
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
 ];
