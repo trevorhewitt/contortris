@@ -3,8 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Extris Block Designer</title>
+  <title>Extris Block Designer — blocks, powerups &amp; achievements</title>
   <style>
+    @font-face{
+      font-family: "PressStart2P";
+      src: url("./fonts/PressStart2P-Regular.ttf") format("truetype");
+      font-weight: 400; font-style: normal; font-display: block;
+    }
     :root{
       --bg:#0b0b0b; --panel:#111; --panel2:#151515; --text:#eaeaea; --muted:#a8a8a8;
       --line:#2a2a2a; --btn:#1b1b1b; --btn2:#232323;
@@ -122,6 +127,7 @@
     /* below canvas cards */
     .belowCanvas{ display:flex; gap:12px; flex-wrap:wrap; align-items:stretch; }
     .subCard{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px; flex: 1 1 300px; min-width: 280px; }
+    .subCard h3{ font-size:13px; margin:0 0 8px 0; color:#fff; font-weight:650; }
     textarea.out{
       width:100%; min-height:130px; resize:vertical; background:var(--panel2); color:var(--text);
       border:1px solid var(--line); border-radius:10px; padding:8px; font-size:11px;
@@ -179,21 +185,120 @@
     #toast.show{ opacity:1; }
     #toast.bad{ border-color:rgba(255,106,106,.7); }
     #toast.good{ border-color:rgba(123,224,165,.6); }
+
+    /* mode switch */
+    .modeSeg button{ padding:7px 16px; font-size:13px; font-weight:650; }
+    .modeSeg button.on{ background:#24365a; }
+
+    /* chip (tag / id list) inputs */
+    .chips{ display:flex; flex-wrap:wrap; gap:4px; align-items:center; min-width:0; width:100%;
+      background:var(--panel2); border:1px solid var(--line); border-radius:8px; padding:3px 5px; min-height:32px; cursor:text; }
+    .chips:focus-within{ border-color:rgba(106,166,255,.55); }
+    .chip{ display:inline-flex; align-items:center; gap:2px; background:#1d2a40; border:1px solid rgba(106,166,255,.4);
+      color:#dfe9ff; border-radius:999px; padding:1px 2px 1px 8px; font-size:12px; line-height:18px; white-space:nowrap; }
+    .chip.unknown{ background:#2e2616; border-color:rgba(255,207,106,.45); color:#ffe3a6; }
+    .chip .chipX{ border:none; background:transparent; padding:0 5px; font-size:13px; line-height:16px; color:#9fb9ea; border-radius:999px; }
+    .chip .chipX:hover{ background:rgba(255,255,255,.08); color:#fff; }
+    .chip .chipN{ color:#7f93b8; font-size:10px; margin-right:3px; }
+    .chips input[type="text"]{ flex:1 1 70px; min-width:70px; width:auto; border:none; background:transparent; padding:3px 2px; outline:none; }
+
+    /* zones */
+    .zoneList{ display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+    .zoneRow{ display:grid; grid-template-columns: 14px minmax(0,1fr) auto auto; gap:6px; align-items:center;
+      padding:5px 6px; border:1px solid var(--line); border-radius:8px; background:#0f0f0f; cursor:pointer; }
+    .zoneRow.active{ border-color:rgba(46,230,200,.7); background:#0d1918; }
+    .zoneRow input[type="text"]{ padding:4px 6px; }
+    .zoneDot{ width:12px; height:12px; border-radius:3px; border:1px solid rgba(255,255,255,.35); }
+    #zoneCanvas{ display:block; touch-action:none; cursor:crosshair; }
+    .tagMini{ color:#9fb9ea; }
+    .zoneMini{ color:#7fe8d6; }
+
+    /* ---------- achievements mode ---------- */
+    .field.top{ align-items:start; }
+    .field.top > span{ padding-top:7px; }
+    textarea.desc{ width:100%; min-width:0; resize:vertical; background:var(--panel2); color:var(--text); border:1px solid var(--line);
+      border-radius:8px; padding:6px 8px; font:13px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .params{ margin-top:4px; }
+    .paramBox{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:8px 9px 9px; margin-top:8px; }
+    .paramBox .paramHead{ font-size:12px; font-weight:650; color:#fff; display:flex; justify-content:space-between; gap:6px; align-items:center; }
+    .paramBox .field{ grid-template-columns: 52px 1fr; margin-top:6px; }
+    .typeChecks{ display:flex; gap:10px; flex-wrap:wrap; }
+    .summary{ margin-top:12px; padding:9px 11px; border-radius:10px; background:#0f1626; border:1px solid rgba(106,166,255,.32);
+      font-size:13px; line-height:1.45; color:#dfe9ff; }
+    .summary small{ display:block; color:var(--muted); margin-top:4px; font-size:11.5px; }
+    .rawJson{ font-size:11px; white-space:pre-wrap; word-break:break-all; background:#0c0c0c; border:1px solid var(--line); border-radius:8px; padding:6px 8px; margin-top:6px; color:#cfcfcf; }
+
+    .iconLayout{ display:grid; grid-template-columns: 250px minmax(0,1fr); gap:12px; align-items:start; }
+    @media (max-width: 1100px){ .iconLayout{ grid-template-columns: 1fr; } }
+    .iconSide{ display:flex; flex-direction:column; gap:0; }
+    .iconStage{ background:#050505; border:1px solid var(--line); border-radius:12px; padding:12px; display:flex; justify-content:center; align-items:center; min-height:320px; }
+    #iconCanvas{ display:block; touch-action:none; cursor:crosshair; }
+    .iconStage.drop{ border-color:rgba(106,166,255,.8); }
+    .previewRow{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; }
+    .previewBox{ background:#14142a; border:1px solid var(--line); border-radius:8px; padding:10px; display:flex; align-items:center; justify-content:center; min-width:56px; min-height:56px; margin-top:4px; }
+    .toastStage{ background:radial-gradient(500px 220px at 30% 0%, #2a2550 0%, #0f1020 60%, #070714 100%); border:1px solid var(--line);
+      border-radius:8px; padding:16px 14px; margin-top:4px; display:flex; justify-content:center; }
+    /* mirrors .toast in index.html */
+    .achToast{ display:grid; grid-template-columns:36px 1fr; gap:10px; align-items:center; width:min(100%, 320px); box-sizing:border-box;
+      padding:8px 10px; background:rgba(20,20,42,0.94); border:2px solid rgba(255,207,63,0.7);
+      box-shadow:0 0 0 2px rgba(0,0,0,0.85), 0 8px 30px rgba(0,0,0,0.6), 0 0 18px rgba(255,207,63,0.25); }
+    .achToastLabel{ font-family:"PressStart2P", ui-monospace, monospace; font-size:7px; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,207,63,0.9); }
+    .achToastName{ font-family:"PressStart2P", ui-monospace, monospace; font-size:10px; line-height:1.5; text-transform:uppercase; color:rgba(245,245,255,0.98); margin:3px 0 2px; word-break:break-word; }
+    .achToastDesc{ font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; font-size:11px; line-height:1.3; color:rgba(245,245,255,0.70); }
+
+    .achItem{ border:1px solid #232323; border-radius:10px; padding:6px 8px; background:#0f0f0f; display:grid;
+      grid-template-columns: 36px minmax(0,1fr) auto; gap:9px; align-items:center; cursor:pointer; }
+    .achItem:hover{ border-color:#3a3a3a; }
+    .achItem.current{ border-color:rgba(106,166,255,.8); background:#111722; }
+    .achThumb{ width:36px; height:36px; image-rendering:pixelated; image-rendering:crisp-edges; display:block; border-radius:4px; background:#14142a; }
+    .achTitle{ font-weight:700; font-size:12.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .achTitle .achNum{ color:#7d7d7d; font-weight:500; margin-right:4px; font-size:11px; }
+    .achSub{ color:#9a9a9a; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .achBadges{ display:flex; flex-direction:column; gap:3px; align-items:flex-end; }
+    .achBadges .pill{ padding:1px 6px; font-size:10px; }
+    .achList{ max-height:max(300px, calc(100vh - 560px)); }
+    /* achievements layout: keep the list beside the editor down to 1150px */
+    @media (max-width: 1350px){
+      #achApp{ grid-template-columns: 330px minmax(0,1fr) 300px; }
+      #achApp .col.right{ grid-column:auto; display:flex; }
+    }
+    @media (max-width: 1150px){
+      #achApp{ grid-template-columns: 340px minmax(0,1fr); }
+      #achApp .col.right{ grid-column: 1 / -1; display:grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); }
+    }
+    @media (max-width: 860px){
+      #achApp{ grid-template-columns: 1fr; }
+    }
+    @media (max-width: 1350px) and (min-width: 1151px){
+      #achApp .iconLayout{ grid-template-columns: 220px minmax(0,1fr); }
+    }
+    textarea.entryOut{ min-height:150px; white-space:pre; overflow-x:auto; }
   </style>
 </head>
 
 <body>
 <div class="topbar">
-  <div class="brand">Extris Block Designer <small>shapes + powerups</small></div>
-  <div class="row">
+  <div class="row" style="gap:14px;">
+    <div class="brand">Extris Block Designer <small>blocks · powerups · achievements</small></div>
+    <div class="seg modeSeg" id="modeSeg">
+      <button data-appmode="blocks" class="on">Blocks</button>
+      <button data-appmode="achievements">Achievements</button>
+    </div>
+  </div>
+  <div class="row" id="blocksTop">
     <span id="sourcePill" class="pill mono">new block</span>
     <span id="dirtyPill" class="pill">no changes</span>
     <button id="newBtn">New block</button>
     <button id="revertBtn" disabled title="Reload the loaded entry, discarding edits">Revert</button>
   </div>
+  <div class="row hidden" id="achTop">
+    <span id="achFilePill" class="pill mono">achievements.js</span>
+    <span id="achDirtyPill" class="pill">no changes</span>
+    <button id="achRevertBtn" disabled title="Discard every unsaved change to the achievements list">Revert all</button>
+  </div>
 </div>
 
-<div class="app">
+<div class="app" id="blocksApp">
   <!-- =============================== LEFT =============================== -->
   <aside class="col left">
     <div class="card">
@@ -234,6 +339,7 @@
           <button data-mode="solid">Solid colour</button>
         </div>
       </div>
+      <div class="field"><span>Tags</span><div id="tagsInput" class="chips" title="Labels used by achievements, e.g. food, medicine, mouth. Enter or comma adds a tag."></div></div>
 
       <div class="sep"></div>
       <h3>Linked next shapes</h3>
@@ -320,6 +426,7 @@
       <div class="tabs" id="centreTabs">
         <button data-tab="art" class="on">Art</button>
         <button data-tab="powerup">Powerup</button>
+        <button data-tab="zones">Zones <span id="zonesTabCount" class="pill mono" style="padding:1px 6px;">0</span></button>
         <span style="flex:1"></span>
         <span class="pill mono">Native <span id="nativeLabel">14×14</span></span>
         <span class="pill mono">Blocks <span id="blocksLabel">2×2</span></span>
@@ -430,6 +537,59 @@
           </div>
         </div>
       </div>
+
+      <!-- ZONES TAB -->
+      <div id="tabZones" class="hidden">
+        <div class="puGrid">
+          <div class="puSide">
+            <div class="box">
+              <h3>Zones</h3>
+              <div class="hint">Named regions around the piece, e.g. <span class="mono">inside</span> for the inside of a mouth. Achievements use them (trigger <span class="mono">pieceInside</span>). Same format as a powerup area; any block can have zones.</div>
+              <div id="zoneList" class="zoneList"></div>
+              <div class="row" style="margin-top:8px;">
+                <button id="addZoneBtn" class="small primary">+ Add zone</button>
+                <span id="zoneHint" class="hint"></span>
+              </div>
+              <div id="zoneUnmanaged" class="hint hidden" style="margin-top:8px; color:var(--warn);"></div>
+            </div>
+
+            <div class="box">
+              <h3>Paint zone <span id="zoneActiveName" class="mono" style="font-weight:500;"></span></h3>
+              <div class="row areaTools" id="zoneTools">
+                <button data-zch="#" class="active" title="This cell">#</button>
+                <button data-zch="-" title="This cell's whole board row">-</button>
+                <button data-zch="|" title="This cell's whole board column">|</button>
+                <button data-zch="+" title="Whole row and whole column">+</button>
+                <button data-zch="." title="Erase (right-click also erases)">.</button>
+              </div>
+              <div class="row">
+                <label>Margin <input id="zoneMargin" type="number" min="0" max="30" value="3"></label>
+                <span id="zoneInfo" class="pill mono">0 cells</span>
+              </div>
+              <div class="sep"></div>
+              <div class="row">
+                <button id="zoneGenInner" class="small primary" title="Mark the empty cells the piece wraps around: a piece block on both sides of them, left and right or above and below (e.g. the inside of a mouth)">Fill inner gaps</button>
+              </div>
+              <div class="row">
+                <label>r <input id="zoneRadius" type="number" min="0" max="20" step="0.5" value="1"></label>
+                <button id="zoneGenCircle" class="small">Circle</button>
+                <button id="zoneGenSquare" class="small">Square</button>
+              </div>
+              <div class="row">
+                <button id="zoneGenRows" class="small">Piece rows (-)</button>
+                <button id="zoneGenCols" class="small">Piece columns (|)</button>
+                <button id="zoneGenClear" class="small danger">Clear zone</button>
+              </div>
+              <div class="hint" style="margin-top:6px;">Generators add to the selected zone (one is created if there is none). Empty zones are not saved.</div>
+            </div>
+          </div>
+
+          <div class="areaWrap" id="zoneWrap">
+            <canvas id="zoneCanvas" width="300" height="300"></canvas>
+            <div class="hint" style="margin-top:8px;">Drag to paint the selected zone; right-click erases. Other zones are shown faintly. Zones are saved like powerup areas: trimmed, with <span class="mono">origin</span> = the piece's top-left inside the grid.</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="belowCanvas">
@@ -438,6 +598,7 @@
         <canvas id="gameCanvas" width="252" height="216"></canvas>
         <div class="row" style="margin-top:8px;">
           <label><input id="previewStack" type="checkbox" checked> Sample stack</label>
+          <label><input id="previewZones" type="checkbox" checked> Zones</label>
           <label><input id="previewBig" type="checkbox" checked> 2×</label>
           <button id="previewCentre" class="small">Centre</button>
         </div>
@@ -489,33 +650,29 @@
     <div class="card">
       <h2>Save</h2>
       <div class="row">
-        <label>Target
-          <select id="targetSlot"><option value="shapes">Shapes file</option><option value="powerups">Powerups file</option></select>
-        </label>
-        <button id="saveBtn" class="primary big">Save block</button>
-      </div>
-      <div class="row">
+        <button id="saveBtn" class="primary big" title="Save this block (regular or powerup) into the blocks file (Ctrl/Cmd+S)">Save block</button>
         <button id="deleteBtn" class="danger small" disabled>Delete loaded entry</button>
-        <span id="saveModeHint" class="hint"></span>
       </div>
+      <div class="row"><span id="saveModeHint" class="hint"></span></div>
       <ul id="issues" class="issues"></ul>
     </div>
 
     <div class="card">
-      <h2>Files</h2>
+      <h2>File</h2>
       <div id="slotList"></div>
       <input id="fallbackFile" type="file" accept=".js" style="display:none;">
-      <div class="hint" style="margin-top:8px;">Pick a file (Chrome/Edge) for in-place saving; the handle is remembered. Otherwise the files are fetched for browsing when served over http, and saving downloads the updated file.</div>
+      <div class="hint" style="margin-top:8px;">Regular blocks and powerups live in one file. Pick it (Chrome/Edge) for in-place saving; the handle is remembered. Otherwise it is fetched for browsing when served over http, and saving downloads the updated file.</div>
     </div>
 
     <div class="card">
       <h2>Library <span id="listCount" class="pill mono">0</span></h2>
       <div class="listTabs" id="listTabs">
-        <button data-lslot="shapes" class="on">Shapes</button>
-        <button data-lslot="powerups">Powerups</button>
+        <button data-lkind="all" class="on">All</button>
+        <button data-lkind="regular">Regular</button>
+        <button data-lkind="powerup">Powerups</button>
       </div>
       <div class="row" style="margin-top:8px;">
-        <input id="listFilter" type="text" placeholder="Filter by name or id" spellcheck="false">
+        <input id="listFilter" type="text" placeholder="Filter by name, id or tag" spellcheck="false">
       </div>
       <div class="row">
         <label>Show <input id="pageSize" type="number" min="5" max="200" step="5" value="20"></label>
@@ -525,6 +682,145 @@
       </div>
       <div class="hint" style="margin-top:4px;">Newest first. Click an entry to load it into the editor.</div>
       <div id="recentList" class="recentList"></div>
+    </div>
+  </aside>
+</div>
+
+<!-- ============================ ACHIEVEMENTS MODE ============================ -->
+<div class="app hidden" id="achApp">
+  <aside class="col left">
+    <div class="card">
+      <h2>Achievement <span id="achPosPill" class="pill mono">—</span></h2>
+      <div id="achNone" class="hint hidden">No achievement selected. Add one with <b>+ New</b> in the list.</div>
+      <div id="achForm">
+        <div class="field"><span>Name</span><input id="achName" type="text" placeholder="e.g. Baby's First Row" spellcheck="false"></div>
+        <div class="field"><span>Id</span>
+          <div class="grow" style="width:100%;">
+            <input id="achId" type="text" class="mono" placeholder="lowercase_id" spellcheck="false" style="flex:1 1 auto;">
+            <button id="achIdFromName" class="small" style="white-space:nowrap;" title="Make an id from the name">from name</button>
+          </div>
+        </div>
+        <div class="field" style="margin-top:4px;"><span></span><div id="achIdHint" class="hint"></div></div>
+        <div class="field top"><span>Description</span><textarea id="achDesc" class="desc" rows="2" placeholder="What you have to do."></textarea></div>
+        <div class="field"><span>Mode</span>
+          <div class="grow">
+            <select id="achMode"><option value="any">any (default)</option><option value="normal">normal</option><option value="extreme">extreme</option></select>
+            <span class="hint">where it can unlock</span>
+          </div>
+        </div>
+        <div class="field"><span>Secret</span><label><input id="achSecret" type="checkbox"> listed as ??? until unlocked</label></div>
+        <div id="achExtras" class="hint" style="margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <div class="card" id="achTrigCard">
+      <h2>Trigger</h2>
+      <div class="field"><span>Type</span><select id="achTrigType" style="width:100%;"></select></div>
+      <div id="achTrigDoc" class="hint" style="margin-top:6px;"></div>
+      <div id="achParams" class="params"></div>
+      <div id="achSummary" class="summary"></div>
+    </div>
+  </aside>
+
+  <main class="col centre">
+    <div class="card">
+      <h2>Icon <span class="row" style="gap:6px;"><span id="iconSizePill" class="pill mono">12×12</span><span id="iconStatePill" class="pill">no icon</span></span></h2>
+      <div class="iconLayout">
+        <div class="iconSide">
+          <div class="row" id="iconTools">
+            <button class="iconToolBtn active" data-itool="draw" title="Draw (D). Right-click erases.">Draw</button>
+            <button class="iconToolBtn" data-itool="erase" title="Erase (E)">Erase</button>
+            <button class="iconToolBtn" data-itool="fill" title="Flood fill (F). Right-click fills with transparent.">Fill</button>
+            <button class="iconToolBtn" data-itool="dropper" title="Pick a colour (I)">Dropper</button>
+          </div>
+          <div class="row">
+            <label>Colour <input id="iconColour" type="color" value="#ffcf3f"></label>
+            <label>Hex <input id="iconHex" type="text" value="#ffcf3f" class="mono" spellcheck="false" style="width:86px;"></label>
+          </div>
+          <div class="hint" style="margin-top:8px;">Recent colours</div>
+          <div id="iconRecent" class="palette" style="margin-top:4px; min-height:16px;"></div>
+          <div class="hint" style="margin-top:8px;">In this icon</div>
+          <div id="iconUsed" class="palette" style="margin-top:4px; min-height:16px;"></div>
+          <div class="sep"></div>
+          <div class="row">
+            <label>Size <input id="iconSize" type="number" min="8" max="32" value="12"></label>
+            <button id="iconResize" class="small" title="Change the canvas size keeping the pixels (centred: pads or crops)">Pad / crop</button>
+            <button id="iconScale" class="small" title="Rescale the art to the new size (nearest neighbour)">Scale</button>
+          </div>
+          <div class="row">
+            <button id="iconPaste" class="primary" title="Paste an image from the clipboard, scaled to the icon size (Ctrl/Cmd+V also works, or drop an image file on the canvas)">Paste image</button>
+            <button id="iconClear" class="danger small" title="Clear every pixel (a fully transparent icon is removed from the entry)">Clear</button>
+          </div>
+          <div class="row">
+            <button id="iconUndo">Undo</button>
+            <button id="iconRedo">Redo</button>
+            <span class="pill mono">Ctrl/Cmd+Z / Y</span>
+          </div>
+          <div class="hint" style="margin-top:8px;">Right-click erases. 12×12 is recommended (shown at 3× in game). "" pixels are transparent.</div>
+        </div>
+        <div class="iconStage" id="iconStage"><canvas id="iconCanvas" width="240" height="240"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Preview</h2>
+      <div class="previewRow">
+        <div><div class="hint">1×</div><div class="previewBox"><canvas id="iconPrev1" class="pixel"></canvas></div></div>
+        <div><div class="hint">3×</div><div class="previewBox"><canvas id="iconPrev3" class="pixel"></canvas></div></div>
+        <div style="flex:1 1 340px; min-width:0;">
+          <div class="hint">In-game unlock toast</div>
+          <div class="toastStage">
+            <div class="achToast">
+              <canvas id="toastIcon" class="pixel" width="36" height="36" style="width:36px;height:36px;"></canvas>
+              <div class="achToastText">
+                <div class="achToastLabel">Achievement unlocked</div>
+                <div id="toastName" class="achToastName"></div>
+                <div id="toastDesc" class="achToastDesc"></div>
+              </div>
+            </div>
+          </div>
+          <div id="toastNote" class="hint" style="margin-top:6px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Saved as <button id="achCopyEntry" class="small" title="Copy this entry as JavaScript">Copy</button></h2>
+      <textarea id="achEntryOut" class="out entryOut" readonly spellcheck="false" wrap="off"></textarea>
+      <div class="hint" style="margin-top:6px;">How this entry is written into the file (mode "any" and secret false are left out; the icon goes on one line).</div>
+    </div>
+  </main>
+
+  <aside class="col right">
+    <div class="card">
+      <h2>Save</h2>
+      <div class="row">
+        <button id="achSaveBtn" class="primary big" title="Write the whole achievements list to the file (Ctrl/Cmd+S)">Save achievements</button>
+      </div>
+      <div class="row"><span id="achSaveHint" class="hint"></span></div>
+      <ul id="achIssues" class="issues"></ul>
+    </div>
+
+    <div class="card">
+      <h2>File</h2>
+      <div id="achSlotList"></div>
+      <div id="achBlocksInfo" class="hint" style="margin-top:8px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>Achievements <span id="achCount" class="pill mono">0</span></h2>
+      <div class="row">
+        <input id="achFilter" type="text" placeholder="Filter by name, id, trigger or description" spellcheck="false">
+      </div>
+      <div class="row">
+        <button id="achNewBtn" class="small primary" title="Add a new achievement after the selected one">+ New</button>
+        <button id="achDupBtn" class="small" title="Duplicate the selected achievement">Duplicate</button>
+        <button id="achUpBtn" class="small" title="Move the selected achievement up">▲ Up</button>
+        <button id="achDownBtn" class="small" title="Move the selected achievement down">▼ Down</button>
+        <button id="achDelBtn" class="small danger" title="Delete the selected achievement">Delete</button>
+      </div>
+      <div class="hint" style="margin-top:6px;">In display order (as in the game). Edits stay here until you save the file.</div>
+      <div id="achList" class="recentList achList"></div>
     </div>
   </aside>
 </div>
@@ -555,12 +851,17 @@
   };
   const PU_DEFAULT_CONSUME = { destroyer: true, gravity: true, expander: false };
   // Keys the editor manages itself; everything else on a loaded shape is preserved as-is.
-  const MANAGED_KEYS = ["id", "name", "grid", "color", "powerup", "difficulty", "rotation", "frequency", "nextShapes", "nextShapeProbs"];
+  const MANAGED_KEYS = ["id", "name", "grid", "color", "powerup", "difficulty", "rotation", "frequency", "nextShapes", "nextShapeProbs", "tags", "zones"];
   const MANAGED_PU_KEYS = ["type", "direction", "tier", "description", "area", "fill", "consume", "collapse"];
-  // Serialisation key order (rest sorted alphabetically, like shape_encoder)
+  // Serialisation key order (rest sorted alphabetically, like shape_encoder): ... nextShapeProbs, nextShapes, tags, zones
   const PREFERRED_KEYS = ["id", "name", "grid", "color", "powerup", "difficulty", "rotation", "frequency"];
   // In-game preview
   const GAME = { cols: 14, rows: 12, cell: 18 };
+  // Zones: overlay colours (kept clear of the powerup area's yellow markers + rainbow) and name rule
+  const ZONE_COLOURS = ["#2ee6c8", "#ff5fd2", "#9dff4f", "#5fb4ff", "#ffa94d", "#c78bff"];
+  const ZONE_NAME_RE = /^[a-z0-9_]+$/;
+  const zoneColour = (i) => ZONE_COLOURS[((i % ZONE_COLOURS.length) + ZONE_COLOURS.length) % ZONE_COLOURS.length];
+  const isPlainObject = (v) => !!v && typeof v === "object" && !Array.isArray(v);
 
   // ============================================================
   // Utilities
@@ -586,6 +887,7 @@
     const n = parseInt(h.slice(1), 16);
     return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
   };
+  const rgba = (hex, a) => { const { r, g, b } = hexToRgb(hex); return `rgba(${r},${g},${b},${a})`; };
   const rgbToHex = (r, g, b) => "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("");
   const packARGB = (a, r, g, b) => (((a & 255) << 24) | ((r & 255) << 16) | ((g & 255) << 8) | (b & 255)) >>> 0;
   const unpackARGB = (u) => ({ a: (u >>> 24) & 255, r: (u >>> 16) & 255, g: (u >>> 8) & 255, b: u & 255 });
@@ -678,6 +980,86 @@
     });
   }
 
+  // ------------------------------------------------------------
+  // Chip input: a list of strings edited as removable chips with datalist
+  // autocomplete. Enter or comma adds, Backspace on empty removes the last one.
+  // opts: placeholder, suggest() -> [string], onChange(values), allowDup (ordered
+  // sequences), numbered (show 1. 2. …), known(value) -> false marks a chip "unknown".
+  // ------------------------------------------------------------
+  let chipSeq = 0;
+  function chipInput(host, opts){
+    const o = { placeholder: "", suggest: () => [], onChange: () => {}, allowDup: false, numbered: false, known: null, ...opts };
+    host.classList.add("chips");
+    host.innerHTML = "";
+    let vals = [];
+    const dl = document.createElement("datalist");
+    dl.id = "chipdl" + (++chipSeq);
+    const input = document.createElement("input");
+    input.type = "text"; input.spellcheck = false; input.autocomplete = "off";
+    input.setAttribute("list", dl.id);
+    input.placeholder = o.placeholder;
+    host.append(input, dl);
+    const chipEls = [];
+    const emit = () => o.onChange(vals.slice());
+    function renderChips(){
+      for (const c of chipEls) c.remove();
+      chipEls.length = 0;
+      vals.forEach((v, i) => {
+        const unknown = o.known ? !o.known(v) : false;
+        const c = document.createElement("span");
+        c.className = "chip mono" + (unknown ? " unknown" : "");
+        if (unknown) c.title = "Not found in the blocks file";
+        c.innerHTML = (o.numbered ? `<span class="chipN">${i + 1}.</span>` : "") + escapeHtml(v);
+        const x = document.createElement("button");
+        x.type = "button"; x.className = "chipX"; x.textContent = "×"; x.title = "Remove";
+        x.addEventListener("mousedown", (e) => e.preventDefault()); // keep focus (and pending text) in the input
+        x.addEventListener("click", (e) => { e.stopPropagation(); vals.splice(i, 1); renderChips(); refreshDl(); emit(); });
+        c.appendChild(x);
+        host.insertBefore(c, input);
+        chipEls.push(c);
+      });
+    }
+    function refreshDl(){
+      const have = new Set(vals);
+      dl.innerHTML = o.suggest().filter(s => o.allowDup || !have.has(s)).slice(0, 500)
+        .map(s => `<option value="${escapeHtml(s)}"></option>`).join("");
+    }
+    function addText(text){
+      const parts = String(text).split(",").map(s => s.trim()).filter(Boolean);
+      input.value = "";
+      let changed = false;
+      for (const p of parts){ if (!o.allowDup && vals.includes(p)) continue; vals.push(p); changed = true; }
+      if (changed){ renderChips(); emit(); }
+      refreshDl();
+    }
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === ","){ e.preventDefault(); if (input.value.trim()) addText(input.value); return; }
+      if (e.key === "Backspace" && !input.value && vals.length){ e.preventDefault(); vals.pop(); renderChips(); refreshDl(); emit(); }
+    });
+    input.addEventListener("input", (e) => {
+      if (input.value.includes(",")){ addText(input.value); return; }
+      // picking a datalist suggestion adds it straight away
+      if (e.inputType === "insertReplacementText" || e.inputType === undefined){
+        const v = input.value.trim();
+        if (v && o.suggest().includes(v)) addText(v);
+      }
+    });
+    input.addEventListener("focus", refreshDl);
+    input.addEventListener("blur", () => { if (input.value.trim()) addText(input.value); });
+    host.addEventListener("click", (e) => { if (e.target === host) input.focus(); });
+    return {
+      input,
+      set(v){ vals = Array.isArray(v) ? v.map(String) : []; input.value = ""; renderChips(); },
+      get: () => vals.slice(),
+      refresh(){ renderChips(); },
+    };
+  }
+  // Commit text typed into a chip input that has focus (before saving)
+  function flushChipInputs(){
+    const a = document.activeElement;
+    if (a && a.closest && a.closest(".chips")) a.blur();
+  }
+
   // deterministic hash -> [0,1)
   function hash01(x, y, layer, seed){
     let n = (x | 0) * 374761393 ^ (y | 0) * 668265263 ^ (layer | 0) * 1442695041 ^ (seed | 0) * 1597334677;
@@ -754,20 +1136,25 @@
     difficulty: 2, frequency: 1,
     rotationMode: "any", rotationExtras: {},
     links: [],                     // [{ id, prob|null }]
+    tags: [],                      // ["food", ...] (written only when non-empty)
     extras: {},                    // unknown properties of a loaded shape (preserved)
 
     // powerup
     pu: { type: "destroyer", direction: "down", tier: 1, description: "", consume: null, collapse: false, extras: {} },
-    area: { cells: {}, margin: 3, tool: "#" },   // cells: "x,y" (editor block coords) -> "#"|"-"|"|"|"+"
+    // cells: "x,y" (editor block coords = the grid as loaded) -> "#"|"-"|"|"|"+"
+    // orig: the area object as loaded (written back verbatim while its cells are unchanged)
+    area: { cells: {}, margin: 3, tool: "#", extras: {}, orig: undefined },
     fill: { mode: "solid", solidHex: "#ffffff", k: 7, data: new Uint32Array(49), tool: "draw" },
+    // zones: list of { name, cells, extras, orig } (same cell format as the area)
+    zones: { list: [], active: 0, tool: "#", margin: 3 },
 
     // session
-    source: null,                  // { slot, id, original }
+    mode: "blocks",                // top-level: "blocks" | "achievements"
+    source: null,                  // { id, original } of the entry loaded from the blocks file
     dirty: false,
     centreTab: "art",
-    targetSlot: "shapes",
-    list: { slot: "shapes", page: 0, pageSize: 20, filter: "" },
-    previewPos: null, previewStack: true, previewModel: null,
+    list: { kind: "all", page: 0, pageSize: 20, filter: "" },
+    previewPos: null, previewStack: true, previewZones: true, previewModel: null,
     lastBuild: null,
   };
 
@@ -797,6 +1184,8 @@
       mask: state.mask.slice(),
       areaCells: { ...state.area.cells },
       fill: { mode: state.fill.mode, solidHex: state.fill.solidHex, k: state.fill.k, data: state.fill.data.slice() },
+      zones: state.zones.list.map(z => ({ ...z, cells: { ...z.cells } })),
+      zoneActive: state.zones.active,
     };
   }
   function restoreSnapshot(s){
@@ -807,6 +1196,8 @@
     state.mask = s.mask.slice();
     state.area.cells = { ...s.areaCells };
     state.fill.mode = s.fill.mode; state.fill.solidHex = s.fill.solidHex; state.fill.k = s.fill.k; state.fill.data = s.fill.data.slice();
+    state.zones.list = s.zones.map(z => ({ ...z, cells: { ...z.cells } }));
+    state.zones.active = clamp(s.zoneActive, 0, Math.max(0, state.zones.list.length - 1));
     syncAllUI();
   }
   function beginAction(){
@@ -1080,6 +1471,7 @@
     requestAnimationFrame(() => { renderQueued = false; renderNow(); });
   }
   function renderNow(){
+    if (state.mode !== "blocks") return;
     const flatAll = compositeFlattened();
     renderArt(flatAll);
     rebuildPieceCanvas(flatAll);
@@ -1090,6 +1482,7 @@
     renderFillCanvas();
     const t = performance.now();
     drawAreaCanvas(t);
+    drawZoneCanvas();
     drawGamePreview(t);
     renderPalette(flatAll);
     el.zoomLabel.textContent = `${state.zoom}×`;
@@ -1394,7 +1787,10 @@
     e.preventDefault();
     const blob = imgItem.getAsFile();
     if (!blob) return;
-    try { await pasteBitmap(await createImageBitmap(blob)); } catch {}
+    try {
+      const bmp = await createImageBitmap(blob);
+      if (state.mode === "achievements") await iconPasteBitmap(bmp); else await pasteBitmap(bmp);
+    } catch {}
   });
 
   // ============================================================
@@ -1440,8 +1836,10 @@
     el.extrasRow.innerHTML = extraKeys.length
       ? `Preserved on save: ${extraKeys.map(k => `<span class="pill mono">${escapeHtml(k)}</span>`).join(" ")}`
       : "";
+    tagsChips.set(state.tags);
     renderLinks();
     syncPowerupUI();
+    renderZoneList();
   }
   function ensureOption(select, value){
     if ([...select.options].some(o => o.value === value)) return;
@@ -1484,16 +1882,20 @@
         if (Number.isFinite(d)) state.difficulty = clamp(d, 0, 5);
         delete state.extras.difficulty;
       }
-      state.targetSlot = "shapes";
     } else {
       // new powerups default to no rotation
       if (!(state.source && state.source.original && state.source.original.powerup)) state.rotationMode = "none";
-      state.targetSlot = "powerups";
     }
-    el.targetSlot.value = state.targetSlot;
     setDirty(true);
-    syncMetaUI(); renderSaveHint(); scheduleRender();
+    syncMetaUI(); scheduleRender();
   }
+
+  // ---------- tags (chip input, suggestions from the blocks file) ----------
+  const tagsChips = chipInput(el.tagsInput, {
+    placeholder: "add tag…",
+    suggest: () => [...blockTagCounts().entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([t]) => t),
+    onChange: (vals) => { state.tags = vals; setDirty(true); scheduleRender(); },
+  });
 
   document.querySelectorAll("#colourModeSeg button").forEach(b => b.addEventListener("click", () => {
     const mode = b.dataset.mode;
@@ -1578,137 +1980,185 @@
   el.puCollapse.addEventListener("change", () => { state.pu.collapse = el.puCollapse.checked; setDirty(true); scheduleRender(); });
 
   // ============================================================
-  // Area editor (highlighted cells around the piece)
+  // Region editors: the powerup area and the zones share one cell format
+  // (cells: "x,y" in editor block coords -> "#"|"-"|"|"|"+"), the pointer
+  // painting, the generators and the trimmed export.
   // ============================================================
-  const actx = el.areaCanvas.getContext("2d");
   const areaKey = (x, y) => `${x},${y}`;
   const parseKey = (k) => k.split(",").map(Number);
-  const areaPtr = { down: false, ch: "#", last: null, hover: null };
+  const regionCellList = (cells) => Object.entries(cells || {}).map(([k, ch]) => { const [x, y] = parseKey(k); return { x, y, ch }; });
 
-  function areaView(){
-    const m = state.area.margin;
-    return { x0: -m, y0: -m, cols: state.blocksW + 2 * m, rows: state.blocksH + 2 * m };
+  // Cells of an {origin, grid} object, relative to the point the origin names, minus (offX, offY).
+  // Same rule as the game's parseArea: dx = gx - origin.x - trim.left.
+  function regionObjectCells(r, offX = 0, offY = 0){
+    const out = [];
+    if (!isPlainObject(r)) return out;
+    const lines = Array.isArray(r.grid) ? r.grid : (r.grid != null ? String(r.grid).split("\n") : []);
+    const o = Array.isArray(r.origin) ? r.origin : [0, 0];
+    const ox = (o[0] | 0) + offX, oy = (o[1] | 0) + offY;
+    lines.forEach((line, gy) => String(line).split("").forEach((ch, gx) => {
+      if (AREA_CHARS.has(ch)) out.push({ x: gx - ox, y: gy - oy, ch });
+    }));
+    return out;
   }
-  function areaCellSize(v){
-    const availW = Math.max(220, el.areaWrap.clientWidth - 22);
-    const availH = Math.max(280, window.innerHeight - 200);
-    return clamp(Math.floor(Math.min(availW / v.cols, availH / v.rows)), 8, 44);
+  // What an {origin, grid} object means to the game for a trimmed piece grid, plus any other keys it has
+  function regionSignature(r){
+    if (!isPlainObject(r)) return "invalid:" + JSON.stringify(r);
+    const cells = regionObjectCells(r).map(c => `${c.x},${c.y},${c.ch}`).sort();
+    const rest = Object.keys(r).filter(k => k !== "origin" && k !== "grid").sort().map(k => `${k}=${JSON.stringify(r[k])}`);
+    return cells.join(";") + "|" + rest.join(";");
   }
-  function areaCellFromEvent(evt){
-    const v = areaView(), cs = areaCellSize(v);
-    const rect = el.areaCanvas.getBoundingClientRect();
-    const x = Math.floor((evt.clientX - rect.left) / rect.width * (v.cols * cs) / cs) + v.x0;
-    const y = Math.floor((evt.clientY - rect.top) / rect.height * (v.rows * cs) / cs) + v.y0;
-    if (x < v.x0 || y < v.y0 || x >= v.x0 + v.cols || y >= v.y0 + v.rows) return null;
-    return { x, y };
+  // Load an {origin, grid} object into editor cells. Editor coords are the block grid as loaded,
+  // so a cell lands at (gx - origin.x, gy - origin.y): the game's rule, also for untrimmed grids.
+  function regionCellsFromObject(r){
+    const cells = {};
+    for (const c of regionObjectCells(r)) cells[areaKey(c.x, c.y)] = c.ch;
+    return cells;
   }
-  function setAreaCell(x, y, ch){
-    const k = areaKey(x, y), prev = state.area.cells[k] || ".";
+  const regionExtras = (r) => isPlainObject(r) ? clone(Object.fromEntries(Object.entries(r).filter(([k]) => k !== "origin" && k !== "grid"))) : {};
+  // Trimmed export: bounding box of the marked cells ∪ the piece box b; origin = the piece's top-left
+  // inside it (so origin is never negative). While the cells still mean exactly what the loaded object
+  // meant, the loaded object is written back unchanged (keeps hand-made padding/formatting).
+  function exportRegion(b, cells, extras, orig){
+    let x0 = b.x0, y0 = b.y0, x1 = b.x1, y1 = b.y1;
+    for (const c of regionCellList(cells)){ x0 = Math.min(x0, c.x); y0 = Math.min(y0, c.y); x1 = Math.max(x1, c.x); y1 = Math.max(y1, c.y); }
+    const grid = [];
+    for (let y = y0; y <= y1; y++){ let s = ""; for (let x = x0; x <= x1; x++) s += cells[areaKey(x, y)] || "."; grid.push(s); }
+    const out = { ...clone(extras || {}), origin: [b.x0 - x0, b.y0 - y0], grid };
+    if (orig !== undefined && regionSignature(orig) === regionSignature(out)) return clone(orig);
+    return out;
+  }
+
+  function setRegionCell(cells, x, y, ch){
+    const k = areaKey(x, y), prev = cells[k] || ".";
     if (prev === ch) return false;
-    if (ch === ".") delete state.area.cells[k]; else state.area.cells[k] = ch;
+    if (ch === ".") delete cells[k]; else cells[k] = ch;
     return true;
   }
   // generators merge: '-' + '|' = '+', '#' never downgrades a row/column marker
-  function mergeAreaCell(x, y, ch){
-    const prev = state.area.cells[areaKey(x, y)] || ".";
+  function mergeRegionCell(cells, x, y, ch){
+    const prev = cells[areaKey(x, y)] || ".";
     let next = ch;
     if (prev === "+") next = "+";
     else if (ch === "#" && (prev === "-" || prev === "|")) next = prev;
     else if ((prev === "-" && ch === "|") || (prev === "|" && ch === "-")) next = "+";
-    return setAreaCell(x, y, next);
+    return setRegionCell(cells, x, y, next);
   }
+  const regionView = (m) => ({ x0: -m, y0: -m, cols: state.blocksW + 2 * m, rows: state.blocksH + 2 * m });
+  function regionCellSize(wrap, v){
+    const availW = Math.max(220, wrap.clientWidth - 22);
+    const availH = Math.max(280, window.innerHeight - 200);
+    return clamp(Math.floor(Math.min(availW / v.cols, availH / v.rows)), 8, 44);
+  }
+  // how far the cells reach outside the editor grid (to size the view)
+  function regionReach(cells){
+    let need = 0;
+    for (const c of regionCellList(cells)) need = Math.max(need, -c.x, -c.y, c.x - (state.blocksW - 1), c.y - (state.blocksH - 1));
+    return need;
+  }
+  const inView = (c, v) => c.x >= v.x0 && c.y >= v.y0 && c.x < v.x0 + v.cols && c.y < v.y0 + v.rows;
 
-  el.areaCanvas.addEventListener("pointerdown", (evt) => {
-    evt.preventDefault();
-    blurFields();
-    const c = areaCellFromEvent(evt);
-    if (!c) return;
-    areaPtr.ch = evt.button === 2 ? "." : state.area.tool;
-    areaPtr.down = true; areaPtr.last = c;
-    try { el.areaCanvas.setPointerCapture(evt.pointerId); } catch {}
-    beginAction();
-    if (setAreaCell(c.x, c.y, areaPtr.ch)) markChanged();
-    scheduleRender();
-  });
-  el.areaCanvas.addEventListener("pointermove", (evt) => {
-    const c = areaCellFromEvent(evt);
-    areaPtr.hover = c;
-    if (c) el.ptrLabel.textContent = `area ${c.x},${c.y}`;
-    if (areaPtr.down && c){
-      let changed = false;
-      const l = areaPtr.last || c;
-      lineCells(l.x, l.y, c.x, c.y, (x, y) => { changed = setAreaCell(x, y, areaPtr.ch) || changed; });
-      areaPtr.last = c;
-      if (changed) markChanged();
-    }
-    if (!animationRunning()) scheduleRender();
-  });
-  const endAreaStroke = (evt) => {
-    if (!areaPtr.down) return;
-    areaPtr.down = false; areaPtr.last = null;
-    endAction(); scheduleRender();
-    try { el.areaCanvas.releasePointerCapture(evt.pointerId); } catch {}
-  };
-  el.areaCanvas.addEventListener("pointerup", endAreaStroke);
-  el.areaCanvas.addEventListener("pointercancel", endAreaStroke);
-  el.areaCanvas.addEventListener("pointerleave", () => { areaPtr.hover = null; if (!animationRunning()) scheduleRender(); });
-  el.areaCanvas.addEventListener("contextmenu", (e) => e.preventDefault());
-
-  document.querySelectorAll("#areaTools button").forEach(b => b.addEventListener("click", () => {
-    state.area.tool = b.dataset.ach;
-    syncPowerupUI();
-  }));
-  el.areaMargin.addEventListener("input", () => {
-    state.area.margin = clamp(parseInt(el.areaMargin.value, 10) || 0, 0, 30);
-    scheduleRender();
-  });
+  // Drag painting on a region canvas. cfg: margin(), cells(create) -> cells object | null, tool(), label
+  function bindRegionCanvas(canvas, wrap, cfg){
+    const ptr = { down: false, ch: "#", last: null, hover: null, cells: null };
+    const cellFromEvent = (evt) => {
+      const v = regionView(cfg.margin());
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return null;
+      const x = Math.floor((evt.clientX - rect.left) / rect.width * v.cols) + v.x0;
+      const y = Math.floor((evt.clientY - rect.top) / rect.height * v.rows) + v.y0;
+      return inView({ x, y }, v) ? { x, y } : null;
+    };
+    canvas.addEventListener("pointerdown", (evt) => {
+      evt.preventDefault();
+      blurFields();
+      const c = cellFromEvent(evt);
+      if (!c) return;
+      const erase = evt.button === 2;
+      beginAction();
+      const cells = cfg.cells(!erase);
+      if (!cells){ endAction(); return; }
+      ptr.ch = erase ? "." : cfg.tool();
+      ptr.down = true; ptr.last = c; ptr.cells = cells;
+      try { canvas.setPointerCapture(evt.pointerId); } catch {}
+      if (setRegionCell(cells, c.x, c.y, ptr.ch)) markChanged();
+      scheduleRender();
+    });
+    canvas.addEventListener("pointermove", (evt) => {
+      const c = cellFromEvent(evt);
+      ptr.hover = c;
+      if (c) el.ptrLabel.textContent = `${cfg.label} ${c.x},${c.y}`;
+      if (ptr.down && c){
+        let changed = false;
+        const l = ptr.last || c;
+        lineCells(l.x, l.y, c.x, c.y, (x, y) => { changed = setRegionCell(ptr.cells, x, y, ptr.ch) || changed; });
+        ptr.last = c;
+        if (changed) markChanged();
+      }
+      if (!animationRunning()) scheduleRender();
+    });
+    const end = (evt) => {
+      if (!ptr.down) return;
+      ptr.down = false; ptr.last = null; ptr.cells = null;
+      endAction(); scheduleRender();
+      try { canvas.releasePointerCapture(evt.pointerId); } catch {}
+    };
+    canvas.addEventListener("pointerup", end);
+    canvas.addEventListener("pointercancel", end);
+    canvas.addEventListener("pointerleave", () => { ptr.hover = null; if (!animationRunning()) scheduleRender(); });
+    canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+    return ptr;
+  }
 
   // piece box / centre in editor block coords
   function pieceBox(){ return maskBounds() || fullBounds(); }
-  function generate(kind){
-    const r = Math.max(0, Number(el.genRadius.value) || 0);
+  // Empty cells the piece wraps around: a piece block somewhere to their left AND right in the same
+  // row, or above AND below in the same column (the inside of a mouth, a cup, a ring...).
+  function innerGapCells(){
+    const out = [];
+    const W = state.blocksW, H = state.blocksH;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
+      if (maskAt(x, y)) continue;
+      let l = false, r = false, u = false, d = false;
+      for (let i = 0; i < x && !l; i++) l = maskAt(i, y);
+      for (let i = x + 1; i < W && !r; i++) r = maskAt(i, y);
+      for (let j = 0; j < y && !u; j++) u = maskAt(x, j);
+      for (let j = y + 1; j < H && !d; j++) d = maskAt(x, j);
+      if ((l && r) || (u && d)) out.push({ x, y });
+    }
+    return out;
+  }
+  // Add generated cells to `cells` (kind: clear | circle | square | rows | cols | inner); true if changed
+  function generateRegion(cells, kind, r){
     const b = pieceBox();
     const cx = (b.x0 + b.x1 + 1) / 2, cy = (b.y0 + b.y1 + 1) / 2;
-    commit(() => {
-      let changed = false;
-      if (kind === "clear"){
-        changed = Object.keys(state.area.cells).length > 0;
-        state.area.cells = {};
-        return changed;
-      }
-      if (kind === "circle" || kind === "square"){
-        const R = Math.ceil(r + 1);
-        for (let y = Math.floor(cy - R); y <= Math.ceil(cy + R); y++){
-          for (let x = Math.floor(cx - R); x <= Math.ceil(cx + R); x++){
-            const dx = x + 0.5 - cx, dy = y + 0.5 - cy;
-            const inside = kind === "circle"
-              ? Math.hypot(dx, dy) <= r + 0.5 + 1e-9
-              : Math.abs(dx) <= r + 0.5 + 1e-9 && Math.abs(dy) <= r + 0.5 + 1e-9;
-            if (inside) changed = mergeAreaCell(x, y, "#") || changed;
-          }
-        }
-      }
-      if (kind === "rows" || kind === "cols"){
-        for (let y = b.y0; y <= b.y1; y++) for (let x = b.x0; x <= b.x1; x++){
-          changed = mergeAreaCell(x, y, kind === "rows" ? "-" : "|") || changed;
-        }
-      }
+    let changed = false;
+    if (kind === "clear"){
+      for (const k of Object.keys(cells)){ delete cells[k]; changed = true; }
       return changed;
-    });
-    // grow the view if the generator went past the margin
-    let need = 0;
-    for (const k of Object.keys(state.area.cells)){
-      const [x, y] = parseKey(k);
-      need = Math.max(need, -x, -y, x - (state.blocksW - 1), y - (state.blocksH - 1));
     }
-    if (need > state.area.margin){ state.area.margin = clamp(need, 0, 30); el.areaMargin.value = String(state.area.margin); }
-    scheduleRender();
+    if (kind === "circle" || kind === "square"){
+      const R = Math.ceil(r + 1);
+      for (let y = Math.floor(cy - R); y <= Math.ceil(cy + R); y++){
+        for (let x = Math.floor(cx - R); x <= Math.ceil(cx + R); x++){
+          const dx = x + 0.5 - cx, dy = y + 0.5 - cy;
+          const inside = kind === "circle"
+            ? Math.hypot(dx, dy) <= r + 0.5 + 1e-9
+            : Math.abs(dx) <= r + 0.5 + 1e-9 && Math.abs(dy) <= r + 0.5 + 1e-9;
+          if (inside) changed = mergeRegionCell(cells, x, y, "#") || changed;
+        }
+      }
+    }
+    if (kind === "rows" || kind === "cols"){
+      for (let y = b.y0; y <= b.y1; y++) for (let x = b.x0; x <= b.x1; x++){
+        changed = mergeRegionCell(cells, x, y, kind === "rows" ? "-" : "|") || changed;
+      }
+    }
+    if (kind === "inner"){
+      for (const c of innerGapCells()) changed = mergeRegionCell(cells, c.x, c.y, "#") || changed;
+    }
+    return changed;
   }
-  el.genCircle.addEventListener("click", () => generate("circle"));
-  el.genSquare.addEventListener("click", () => generate("square"));
-  el.genRows.addEventListener("click", () => generate("rows"));
-  el.genCols.addEventListener("click", () => generate("cols"));
-  el.genClear.addEventListener("click", () => generate("clear"));
 
   // Affected cells inside a rectangular view, given cells [{x,y,ch}]
   function affectedCells(cells, vx0, vy0, cols, rows){
@@ -1721,32 +2171,38 @@
     }
     return set;
   }
-  const editorAreaCells = () => Object.entries(state.area.cells).map(([k, ch]) => { const [x, y] = parseKey(k); return { x, y, ch }; });
-
-  function drawAreaCanvas(t){
-    if (state.centreTab !== "powerup" || state.kind !== "powerup") return;
-    const v = areaView(), cs = areaCellSize(v);
+  // Outline the border of a set of cells ("x,y" keys); px/py map cell coords to canvas pixels
+  function drawSetOutline(ctx, set, px, py, cs, stroke, dash){
+    ctx.save();
+    ctx.strokeStyle = stroke; ctx.lineWidth = cs >= 24 ? 2 : 1;
+    if (dash) ctx.setLineDash(dash);
+    const h = ctx.lineWidth / 2;
+    ctx.beginPath();
+    for (const k of set){
+      const [x, y] = parseKey(k);
+      const X = px(x), Y = py(y);
+      if (!set.has(areaKey(x, y - 1))){ ctx.moveTo(X, Y + h); ctx.lineTo(X + cs, Y + h); }
+      if (!set.has(areaKey(x, y + 1))){ ctx.moveTo(X, Y + cs - h); ctx.lineTo(X + cs, Y + cs - h); }
+      if (!set.has(areaKey(x - 1, y))){ ctx.moveTo(X + h, Y); ctx.lineTo(X + h, Y + cs); }
+      if (!set.has(areaKey(x + 1, y))){ ctx.moveTo(X + cs - h, Y); ctx.lineTo(X + cs - h, Y + cs); }
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+  // Shared background of both region canvases: bands, grid, piece art and its box
+  function drawRegionBase(ctx, v, cs, bandCells, bandColour){
     const W = v.cols * cs, H = v.rows * cs;
-    if (el.areaCanvas.width !== W) el.areaCanvas.width = W;
-    if (el.areaCanvas.height !== H) el.areaCanvas.height = H;
-    const ctx = actx;
     ctx.fillStyle = "#050505"; ctx.fillRect(0, 0, W, H);
-    const cells = editorAreaCells();
-
-    // row / column bands
-    ctx.fillStyle = "rgba(255,207,106,0.07)";
-    for (const c of cells){
+    ctx.fillStyle = bandColour;
+    for (const c of bandCells){
       if (c.ch === "-" || c.ch === "+") ctx.fillRect(0, (c.y - v.y0) * cs, W, cs);
       if (c.ch === "|" || c.ch === "+") ctx.fillRect((c.x - v.x0) * cs, 0, cs, H);
     }
-    // grid
     ctx.save(); ctx.translate(0.5, 0.5);
     ctx.strokeStyle = "rgba(255,255,255,0.07)"; ctx.lineWidth = 1; ctx.beginPath();
     for (let x = 1; x < v.cols; x++){ ctx.moveTo(x * cs, 0); ctx.lineTo(x * cs, H); }
     for (let y = 1; y < v.rows; y++){ ctx.moveTo(0, y * cs); ctx.lineTo(W, y * cs); }
     ctx.stroke(); ctx.restore();
-
-    // piece art
     const px0 = -v.x0 * cs, py0 = -v.y0 * cs;
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(pieceCanvas, 0, 0, state.pxW, state.pxH, px0, py0, state.blocksW * cs, state.blocksH * cs);
@@ -1754,6 +2210,59 @@
     ctx.setLineDash([4, 3]); ctx.strokeStyle = "rgba(106,166,255,0.55)"; ctx.lineWidth = 1;
     ctx.strokeRect(px0 + 0.5, py0 + 0.5, state.blocksW * cs - 1, state.blocksH * cs - 1);
     ctx.restore();
+  }
+  function drawHover(ctx, hover, v, cs){
+    if (!hover) return;
+    ctx.strokeStyle = "rgba(106,166,255,0.9)"; ctx.lineWidth = 2;
+    ctx.strokeRect((hover.x - v.x0) * cs + 1, (hover.y - v.y0) * cs + 1, cs - 2, cs - 2);
+  }
+  function setRegionInfo(pill, cells, v){
+    let outside = 0;
+    for (const c of cells) if (!inView(c, v)) outside++;
+    pill.textContent = `${cells.length} marked` + (outside ? ` · ${outside} outside view` : "");
+    pill.className = "pill mono " + (outside ? "warn" : "");
+  }
+
+  // ------------------------------------------------------------
+  // Powerup area editor (highlighted cells around the piece)
+  // ------------------------------------------------------------
+  const actx = el.areaCanvas.getContext("2d");
+  const areaPtr = bindRegionCanvas(el.areaCanvas, el.areaWrap, {
+    margin: () => state.area.margin, cells: () => state.area.cells, tool: () => state.area.tool, label: "area",
+  });
+  document.querySelectorAll("#areaTools button").forEach(b => b.addEventListener("click", () => {
+    state.area.tool = b.dataset.ach;
+    syncPowerupUI();
+  }));
+  el.areaMargin.addEventListener("input", () => {
+    state.area.margin = clamp(parseInt(el.areaMargin.value, 10) || 0, 0, 30);
+    scheduleRender();
+  });
+  function generate(kind){
+    const r = Math.max(0, Number(el.genRadius.value) || 0);
+    commit(() => generateRegion(state.area.cells, kind, r));
+    // grow the view if the generator went past the margin
+    const need = regionReach(state.area.cells);
+    if (need > state.area.margin){ state.area.margin = clamp(need, 0, 30); el.areaMargin.value = String(state.area.margin); }
+    scheduleRender();
+  }
+  el.genCircle.addEventListener("click", () => generate("circle"));
+  el.genSquare.addEventListener("click", () => generate("square"));
+  el.genRows.addEventListener("click", () => generate("rows"));
+  el.genCols.addEventListener("click", () => generate("cols"));
+  el.genClear.addEventListener("click", () => generate("clear"));
+
+  const editorAreaCells = () => regionCellList(state.area.cells);
+
+  function drawAreaCanvas(t){
+    if (state.mode !== "blocks" || state.centreTab !== "powerup" || state.kind !== "powerup") return;
+    const v = regionView(state.area.margin), cs = regionCellSize(el.areaWrap, v);
+    const W = v.cols * cs, H = v.rows * cs;
+    if (el.areaCanvas.width !== W) el.areaCanvas.width = W;
+    if (el.areaCanvas.height !== H) el.areaCanvas.height = H;
+    const ctx = actx;
+    const cells = editorAreaCells();
+    drawRegionBase(ctx, v, cs, cells, "rgba(255,207,106,0.07)");
 
     // rainbow highlight (what the game shows)
     const aff = affectedCells(cells, v.x0, v.y0, v.cols, v.rows);
@@ -1761,39 +2270,191 @@
       const [x, y] = parseKey(k);
       drawRainbowCell(ctx, (x - v.x0) * cs, (y - v.y0) * cs, cs, x, y, state.pu.type, state.pu.direction, t);
     }
-
     // markers
-    for (const c of cells){
-      if (c.x < v.x0 || c.y < v.y0 || c.x >= v.x0 + v.cols || c.y >= v.y0 + v.rows) continue;
-      drawMarker(ctx, (c.x - v.x0) * cs, (c.y - v.y0) * cs, cs, c.ch);
-    }
-    // hover
-    if (areaPtr.hover){
-      ctx.strokeStyle = "rgba(106,166,255,0.9)"; ctx.lineWidth = 2;
-      ctx.strokeRect((areaPtr.hover.x - v.x0) * cs + 1, (areaPtr.hover.y - v.y0) * cs + 1, cs - 2, cs - 2);
-    }
-
-    // info pill
-    let outside = 0;
-    for (const c of cells) if (c.x < v.x0 || c.y < v.y0 || c.x >= v.x0 + v.cols || c.y >= v.y0 + v.rows) outside++;
-    el.areaInfo.textContent = `${cells.length} marked` + (outside ? ` · ${outside} outside view` : "");
-    el.areaInfo.className = "pill mono " + (outside ? "warn" : "");
+    for (const c of cells) if (inView(c, v)) drawMarker(ctx, (c.x - v.x0) * cs, (c.y - v.y0) * cs, cs, c.ch);
+    drawHover(ctx, areaPtr.hover, v, cs);
+    setRegionInfo(el.areaInfo, cells, v);
   }
 
-  function drawMarker(ctx, px, py, cs, ch){
+  // col: one colour for every marker (zones); default: white cells, yellow rows/columns (area)
+  function drawMarker(ctx, px, py, cs, ch, col){
     const th = Math.max(2, Math.round(cs * 0.14));
     const mid = Math.round(cs / 2);
-    const paint = (col, grow) => {
-      ctx.fillStyle = col;
+    const paint = (c, grow) => {
+      ctx.fillStyle = c;
       if (ch === "#"){
-        ctx.strokeStyle = col; ctx.lineWidth = 2 + grow * 2;
+        ctx.strokeStyle = c; ctx.lineWidth = 2 + grow * 2;
         ctx.strokeRect(px + 2.5, py + 2.5, cs - 5, cs - 5);
       }
       if (ch === "-" || ch === "+") ctx.fillRect(px + 3 - grow, py + mid - th / 2 - grow, cs - 6 + grow * 2, th + grow * 2);
       if (ch === "|" || ch === "+") ctx.fillRect(px + mid - th / 2 - grow, py + 3 - grow, th + grow * 2, cs - 6 + grow * 2);
     };
     paint("rgba(0,0,0,0.75)", 1);
-    paint(ch === "#" ? "rgba(255,255,255,0.9)" : "rgba(255,207,106,0.95)", 0);
+    paint(col || (ch === "#" ? "rgba(255,255,255,0.9)" : "rgba(255,207,106,0.95)"), 0);
+  }
+
+  // ------------------------------------------------------------
+  // Zones editor (named regions, any block)
+  // ------------------------------------------------------------
+  const zctx = el.zoneCanvas.getContext("2d");
+  const activeZone = () => state.zones.list[state.zones.active] || null;
+  function uniqueZoneName(base = "inside"){
+    const taken = new Set(state.zones.list.map(z => z.name.trim()));
+    if (!taken.has(base)) return base;
+    for (let i = 2; ; i++){ const n = `zone${i}`; if (!taken.has(n)) return n; }
+  }
+  // (call inside an undoable action)
+  function addZoneRaw(name){
+    state.zones.list.push({ name, cells: {}, extras: {}, orig: undefined });
+    state.zones.active = state.zones.list.length - 1;
+  }
+  const zonePtr = bindRegionCanvas(el.zoneCanvas, el.zoneWrap, {
+    margin: () => state.zones.margin,
+    cells: (create) => {
+      if (!activeZone()){
+        if (!create) return null;
+        addZoneRaw(uniqueZoneName()); markChanged(); renderZoneList();
+      }
+      return activeZone().cells;
+    },
+    tool: () => state.zones.tool, label: "zone",
+  });
+  function zoneGenerate(kind){
+    if (kind === "clear" && !activeZone()) return;
+    const r = Math.max(0, Number(el.zoneRadius.value) || 0);
+    const before = activeZone() ? Object.keys(activeZone().cells).length : 0;
+    commit(() => {
+      let changed = false;
+      if (!activeZone()){ addZoneRaw(uniqueZoneName()); changed = true; }
+      return generateRegion(activeZone().cells, kind, r) || changed;
+    });
+    if (kind === "inner" && !innerGapCells().length) toast("This piece has no inner gaps (empty cells with piece blocks on both sides).");
+    else if (kind === "inner" && activeZone() && Object.keys(activeZone().cells).length === before) toast("The inner gaps are already in this zone.");
+    const need = regionReach(activeZone() && activeZone().cells);
+    if (need > state.zones.margin){ state.zones.margin = clamp(need, 0, 30); el.zoneMargin.value = String(state.zones.margin); }
+    renderZoneList(); scheduleRender();
+  }
+  el.zoneGenInner.addEventListener("click", () => zoneGenerate("inner"));
+  el.zoneGenCircle.addEventListener("click", () => zoneGenerate("circle"));
+  el.zoneGenSquare.addEventListener("click", () => zoneGenerate("square"));
+  el.zoneGenRows.addEventListener("click", () => zoneGenerate("rows"));
+  el.zoneGenCols.addEventListener("click", () => zoneGenerate("cols"));
+  el.zoneGenClear.addEventListener("click", () => zoneGenerate("clear"));
+  document.querySelectorAll("#zoneTools button").forEach(b => b.addEventListener("click", () => { state.zones.tool = b.dataset.zch; syncZoneTools(); }));
+  el.zoneMargin.addEventListener("input", () => {
+    state.zones.margin = clamp(parseInt(el.zoneMargin.value, 10) || 0, 0, 30);
+    scheduleRender();
+  });
+  el.addZoneBtn.addEventListener("click", () => {
+    commit(() => { addZoneRaw(uniqueZoneName()); return true; });
+    renderZoneList(); scheduleRender();
+    const inputs = el.zoneList.querySelectorAll("input");
+    if (inputs.length){ inputs[inputs.length - 1].focus(); inputs[inputs.length - 1].select(); }
+  });
+  function syncZoneTools(){
+    document.querySelectorAll("#zoneTools button").forEach(b => b.classList.toggle("active", b.dataset.zch === state.zones.tool));
+    el.zoneMargin.value = String(state.zones.margin);
+  }
+  function renderZoneList(){
+    const list = state.zones.list;
+    el.zoneList.innerHTML = "";
+    list.forEach((z, i) => {
+      const row = document.createElement("div");
+      row.className = "zoneRow" + (i === state.zones.active ? " active" : "");
+      row.title = "Click to paint this zone";
+      const dot = document.createElement("span");
+      dot.className = "zoneDot"; dot.style.background = zoneColour(i);
+      const name = document.createElement("input");
+      name.type = "text"; name.className = "mono"; name.value = z.name; name.spellcheck = false; name.placeholder = "zone name";
+      name.title = "Zone name (achievements refer to it, e.g. pieceInside zone \"inside\")";
+      // typing a new name is one undo step
+      name.addEventListener("focus", () => {
+        if (state.zones.active !== i){ state.zones.active = i; markActiveZoneRow(); scheduleRender(); }
+        beginAction();
+      });
+      name.addEventListener("input", () => { z.name = name.value; markChanged(); setDirty(true); updateZoneHeader(); scheduleRender(); });
+      name.addEventListener("change", () => endAction());
+      name.addEventListener("blur", () => endAction());
+      name.addEventListener("keydown", (e) => { if (e.key === "Enter") name.blur(); });
+      const count = document.createElement("span");
+      count.className = "pill mono zoneCount"; count.title = "marked cells";
+      count.textContent = String(Object.keys(z.cells).length);
+      const del = document.createElement("button");
+      del.className = "small danger"; del.textContent = "×"; del.title = "Delete this zone (undoable)";
+      del.addEventListener("click", (e) => {
+        e.stopPropagation();
+        commit(() => {
+          state.zones.list.splice(i, 1);
+          if (state.zones.active > i) state.zones.active--;
+          state.zones.active = clamp(state.zones.active, 0, Math.max(0, state.zones.list.length - 1));
+          return true;
+        });
+        renderZoneList();
+      });
+      row.addEventListener("click", (e) => {
+        if (e.target === name || e.target === del) return;
+        state.zones.active = i; markActiveZoneRow(); scheduleRender();
+      });
+      row.append(dot, name, count, del);
+      el.zoneList.appendChild(row);
+    });
+    if (!list.length) el.zoneList.innerHTML = `<div class="hint">No zones. Add one, use a generator, or just paint on the canvas (a zone called <span class="mono">inside</span> is created).</div>`;
+    const pre = state.extras.zones;
+    el.zoneUnmanaged.classList.toggle("hidden", pre === undefined);
+    if (pre !== undefined) el.zoneUnmanaged.textContent = `This block's zones value (${JSON.stringify(pre).slice(0, 80)}) isn't a map of {origin, grid} zones, so it is kept as-is — unless you add zones here, which replace it.`;
+    syncZoneTools();
+    updateZoneHeader();
+  }
+  function markActiveZoneRow(){
+    el.zoneList.querySelectorAll(".zoneRow").forEach((r, i) => r.classList.toggle("active", i === state.zones.active));
+    updateZoneHeader();
+  }
+  function updateZoneHeader(){
+    const z = activeZone();
+    el.zoneActiveName.textContent = z ? `“${z.name}”` : "";
+    el.zoneActiveName.style.color = z ? zoneColour(state.zones.active) : "";
+    el.zonesTabCount.textContent = String(state.zones.list.length);
+    el.zoneHint.textContent = state.zones.list.length ? "" : "default name: inside";
+  }
+  function updateZoneCounts(){
+    const pills = el.zoneList.querySelectorAll(".zoneCount");
+    state.zones.list.forEach((z, i) => { if (pills[i]) pills[i].textContent = String(Object.keys(z.cells).length); });
+    el.zonesTabCount.textContent = String(state.zones.list.length);
+  }
+
+  function drawZoneCanvas(){
+    updateZoneCounts();
+    if (state.mode !== "blocks" || state.centreTab !== "zones") return;
+    const v = regionView(state.zones.margin), cs = regionCellSize(el.zoneWrap, v);
+    const W = v.cols * cs, H = v.rows * cs;
+    if (el.zoneCanvas.width !== W) el.zoneCanvas.width = W;
+    if (el.zoneCanvas.height !== H) el.zoneCanvas.height = H;
+    const ctx = zctx;
+    const az = activeZone(), ai = state.zones.active, col = zoneColour(ai);
+    const cells = az ? regionCellList(az.cells) : [];
+    drawRegionBase(ctx, v, cs, cells, rgba(col, 0.07));
+    const px = (x) => (x - v.x0) * cs, py = (y) => (y - v.y0) * cs;
+    // other zones, faint
+    state.zones.list.forEach((z, i) => {
+      if (i === ai) return;
+      const set = affectedCells(regionCellList(z.cells), v.x0, v.y0, v.cols, v.rows);
+      ctx.fillStyle = rgba(zoneColour(i), 0.13);
+      for (const k of set){ const [x, y] = parseKey(k); ctx.fillRect(px(x), py(y), cs, cs); }
+      drawSetOutline(ctx, set, px, py, cs, rgba(zoneColour(i), 0.35), [3, 3]);
+    });
+    // the zone being painted
+    if (az){
+      const set = affectedCells(cells, v.x0, v.y0, v.cols, v.rows);
+      ctx.fillStyle = rgba(col, 0.30);
+      for (const k of set){ const [x, y] = parseKey(k); ctx.fillRect(px(x), py(y), cs, cs); }
+      drawSetOutline(ctx, set, px, py, cs, rgba(col, 0.95), [5, 3]);
+      for (const c of cells) if (inView(c, v)) drawMarker(ctx, px(c.x), py(c.y), cs, c.ch, col);
+    } else {
+      ctx.fillStyle = "rgba(255,255,255,0.55)"; ctx.font = "12px system-ui, sans-serif"; ctx.textBaseline = "top";
+      ctx.fillText("Paint to create zone “inside”", 8, 8);
+    }
+    drawHover(ctx, zonePtr.hover, v, cs);
+    setRegionInfo(el.zoneInfo, cells, v);
   }
 
   // ============================================================
@@ -1828,7 +2489,7 @@
   }
 
   let rafId = 0;
-  const animationWanted = () => state.kind === "powerup" && state.centreTab === "powerup" && document.visibilityState === "visible";
+  const animationWanted = () => state.mode === "blocks" && state.kind === "powerup" && state.centreTab === "powerup" && document.visibilityState === "visible";
   const animationRunning = () => rafId !== 0;
   function ensureAnimation(){
     if (animationWanted() && !rafId) rafId = requestAnimationFrame(animFrame);
@@ -2028,20 +2689,16 @@
     const blocks = [];
     for (let y = ty0; y <= ty1; y++) for (let x = tx0; x <= tx1; x++) if (mask[y][x]) blocks.push({ x: x - tx0, y: y - ty0, gx: x, gy: y });
 
+    // area / zone cells relative to the trimmed piece (the game subtracts the trimmed rows/cols too)
     let area = null, powerup = null;
-    if (shape && shape.powerup && typeof shape.powerup === "object"){
+    if (shape && isPlainObject(shape.powerup)){
       powerup = shape.powerup;
-      area = [];
-      const a = powerup.area;
-      if (a && Array.isArray(a.grid)){
-        const o = Array.isArray(a.origin) ? a.origin : [0, 0];
-        const ox = Number(o[0]) || 0, oy = Number(o[1]) || 0;
-        a.grid.forEach((line, gy) => {
-          String(line).split("").forEach((ch, gx) => { if (AREA_CHARS.has(ch)) area.push({ x: gx - ox, y: gy - oy, ch }); });
-        });
-      }
+      area = regionObjectCells(powerup.area, tx0, ty0);
     }
-    return { w: tx1 - tx0 + 1, h: ty1 - ty0 + 1, blocks, solid, pix, k, base, area, powerup };
+    const zones = shape && isPlainObject(shape.zones)
+      ? Object.entries(shape.zones).filter(([, z]) => isPlainObject(z)).map(([name, z]) => ({ name, cells: regionObjectCells(z, tx0, ty0) }))
+      : [];
+    return { w: tx1 - tx0 + 1, h: ty1 - ty0 + 1, blocks, solid, pix, k, base, area, powerup, zones };
   }
   function blockPixelColour(m, b, sx, sy){
     if (!m.pix) return m.solid;
@@ -2117,6 +2774,17 @@
       occupied.add(areaKey(bx, by));
       drawModelBlock(ctx, bx * C, by * C, C, m, b, true);
     }
+    // zones: static tint + dashed outline (colour as in the Zones tab)
+    if (state.previewZones && m.zones.length){
+      m.zones.forEach((z, i) => {
+        const zi = state.zones.list.findIndex(e => e.name.trim() === z.name);
+        const col = zoneColour(zi >= 0 ? zi : i);
+        const set = affectedCells(z.cells.map(c => ({ x: c.x + pos.x, y: c.y + pos.y, ch: c.ch })), 0, 0, GAME.cols, GAME.rows);
+        ctx.fillStyle = rgba(col, 0.24);
+        for (const k of set){ const [x, y] = parseKey(k); ctx.fillRect(x * C, y * C, C, C); }
+        drawSetOutline(ctx, set, (x) => x * C, (y) => y * C, C, rgba(col, 0.95), [3, 2]);
+      });
+    }
     // highlighted area
     if (m.powerup && m.area){
       const cells = m.area.map(c => ({ x: c.x + pos.x, y: c.y + pos.y, ch: c.ch }));
@@ -2148,6 +2816,7 @@
   });
   el.previewCentre.addEventListener("click", () => { state.previewPos = null; scheduleRender(); });
   el.previewStack.addEventListener("change", () => { state.previewStack = el.previewStack.checked; scheduleRender(); });
+  el.previewZones.addEventListener("change", () => { state.previewZones = el.previewZones.checked; scheduleRender(); });
   function syncPreviewScale(){
     const s = el.previewBig.checked ? 2 : 1;
     el.gameCanvas.style.width = (GAME.cols * GAME.cell * s) + "px";
@@ -2174,14 +2843,27 @@
     for (let y = b.y0; y <= b.y1; y++){ let s = ""; for (let x = b.x0; x <= b.x1; x++) s += maskAt(x, y) ? "X" : "."; rows.push(s); }
     return rows;
   }
-  // area trimmed to the bounding box of marked cells ∪ piece box; origin = piece top-left inside it
+  // powerup area, trimmed (see exportRegion); left out while empty if the loaded powerup had none
   function exportArea(b){
-    let x0 = b.x0, y0 = b.y0, x1 = b.x1, y1 = b.y1;
-    const cells = editorAreaCells();
-    for (const c of cells){ x0 = Math.min(x0, c.x); y0 = Math.min(y0, c.y); x1 = Math.max(x1, c.x); y1 = Math.max(y1, c.y); }
-    const grid = [];
-    for (let y = y0; y <= y1; y++){ let s = ""; for (let x = x0; x <= x1; x++) s += state.area.cells[areaKey(x, y)] || "."; grid.push(s); }
-    return { origin: [b.x0 - x0, b.y0 - y0], grid };
+    if (!Object.keys(state.area.cells).length && state.area.orig === undefined) return undefined;
+    return exportRegion(b, state.area.cells, state.area.extras, state.area.orig);
+  }
+  // zones: { name: {origin, grid} } in list order, each trimmed like the area; empty new zones are skipped
+  function exportZones(b, errors, warnings){
+    const out = {}, seen = new Set();
+    for (const z of state.zones.list){
+      const name = z.name.trim();
+      if (!name){ errors.push("A zone has no name."); continue; }
+      if (name === "__proto__"){ errors.push(`"${name}" can't be used as a zone name.`); continue; }
+      if (seen.has(name)){ errors.push(`Two zones are called "${name}".`); continue; }
+      seen.add(name);
+      if (!ZONE_NAME_RE.test(name)) warnings.push(`Zone name "${name}": use lowercase letters, digits and _ (achievements refer to zones by name).`);
+      const n = Object.keys(z.cells).length;
+      if (!n && z.orig === undefined){ warnings.push(`Zone "${name}" is empty, so it is not saved.`); continue; }
+      if (!n) warnings.push(`Zone "${name}" is empty.`);
+      out[name] = exportRegion(b, z.cells, z.extras, z.orig);
+    }
+    return Object.keys(out).length ? out : undefined;
   }
   function exportFill(){
     const f = state.fill;
@@ -2245,7 +2927,8 @@
       if (p.type === "gravity") pu.direction = p.direction;
       pu.tier = p.tier;
       if (p.description.trim()) pu.description = p.description.trim();
-      pu.area = exportArea(b);
+      const area = exportArea(b);
+      if (area !== undefined) pu.area = area;
       if (!Object.keys(state.area.cells).length) warnings.push("The highlighted area is empty: the powerup would affect nothing.");
       if (p.type === "expander"){
         pu.fill = exportFill();
@@ -2273,8 +2956,18 @@
       if (sum > 1.0001) warnings.push(`Link probabilities add up to ${Math.round(sum * 100) / 100} (> 1).`);
     }
     if (state.links.some(r => !r.id.trim())) warnings.push("Link rows with an empty id are ignored.");
-    if (state.kind === "powerup" && state.targetSlot !== "powerups") warnings.push("This is a powerup but the target is the Shapes file.");
-    if (state.kind === "regular" && state.targetSlot === "powerups") warnings.push("This is a regular shape but the target is the Powerups file.");
+
+    if (state.tags.length){
+      out.tags = state.tags.slice();
+      const known = blockTagCounts();
+      for (const t of state.tags){
+        if (known.has(t)) continue;
+        const ci = [...known.keys()].find(k => k.toLowerCase() === t.toLowerCase());
+        if (ci) warnings.push(`Tag "${t}" differs only in case from the existing tag "${ci}".`);
+      }
+    }
+    const zones = exportZones(b, errors, warnings);
+    if (zones) out.zones = zones;
     return { shape: out, errors, warnings };
   }
 
@@ -2290,19 +2983,19 @@
 
   function renderIdHint(built){
     const id = built.shape.id;
-    const slot = SLOTS[state.targetSlot];
     let txt = "", cls = "";
     if (!id){ txt = ""; }
-    else if (state.source && state.source.slot === slot.key && state.source.id === id) { txt = `updates "${id}" in ${slot.label}`; cls = "good"; }
-    else if (slot.items.some(s => s && s.id === id)) { txt = `"${id}" already exists in ${slot.label} — saving will ask`; cls = "warn"; }
-    else txt = `new id in ${slot.label}`;
+    else if (state.source && state.source.id === id) { txt = `updates "${id}" in the blocks file`; cls = "good"; }
+    else if (BLOCKS.items.some(s => s && s.id === id)) { txt = `"${id}" already exists — saving will ask`; cls = "warn"; }
+    else txt = "new id";
     el.idHint.innerHTML = txt ? `<span class="pill ${cls}">${escapeHtml(txt)}</span>` : "";
   }
 
   // ============================================================
   // Load a shape object into the editor
   // ============================================================
-  function loadShapeIntoEditor(shape, slotKey){
+  // fromFile: the entry comes from the blocks file (becomes state.source, used by save/revert/delete)
+  function loadShapeIntoEditor(shape, fromFile){
     const lines = gridLines(shape.grid);
     const h = clamp(lines.length || 1, 1, MAX_BLOCKS);
     const w = clamp(Math.max(1, ...lines.map(l => l.length)), 1, MAX_BLOCKS);
@@ -2356,15 +3049,27 @@
     const ids = Array.isArray(shape.nextShapes) ? shape.nextShapes : [];
     const probs = Array.isArray(shape.nextShapeProbs) ? shape.nextShapeProbs : null;
     state.links = ids.map((x, i) => ({ id: String(x), prob: probs && Number.isFinite(Number(probs[i])) ? Number(probs[i]) : null }));
+    // tags / zones in a shape the editor can't represent exactly are preserved as unknown properties
+    const tagsManaged = Array.isArray(shape.tags) && shape.tags.length > 0 && shape.tags.every(t => typeof t === "string");
+    const zonesManaged = isPlainObject(shape.zones) && Object.keys(shape.zones).length > 0 && Object.values(shape.zones).every(isPlainObject);
+    state.tags = tagsManaged ? shape.tags.slice() : [];
     state.extras = {};
     for (const [k, v] of Object.entries(shape)){
-      if (MANAGED_KEYS.includes(k) && !(k === "difficulty" && isPu)) continue;
+      const managed = MANAGED_KEYS.includes(k) && !(k === "difficulty" && isPu)
+        && !(k === "tags" && !tagsManaged) && !(k === "zones" && !zonesManaged);
+      if (managed) continue;
       state.extras[k] = clone(v);
     }
 
+    // zones
+    state.zones.list = zonesManaged
+      ? Object.entries(shape.zones).map(([name, z]) => ({ name, cells: regionCellsFromObject(z), extras: regionExtras(z), orig: clone(z) }))
+      : [];
+    state.zones.active = 0;
+    state.zones.margin = clamp(Math.max(3, ...state.zones.list.map(z => regionReach(z.cells))), 0, 30);
+
     // powerup
-    const mb = maskBounds() || fullBounds();
-    state.area.cells = {};
+    state.area.cells = {}; state.area.extras = {}; state.area.orig = undefined;
     if (isPu){
       const pu = shape.powerup;
       state.pu = {
@@ -2381,18 +3086,10 @@
         state.pu.consume = pu.consume === def ? null : pu.consume;
       }
       const a = pu.area;
-      let need = 0;
-      if (a && Array.isArray(a.grid)){
-        const o = Array.isArray(a.origin) ? a.origin : [0, 0];
-        const ox = Number(o[0]) || 0, oy = Number(o[1]) || 0;
-        a.grid.forEach((line, gy) => String(line).split("").forEach((ch, gx) => {
-          if (!AREA_CHARS.has(ch)) return;
-          const x = gx - ox + mb.x0, y = gy - oy + mb.y0;
-          state.area.cells[areaKey(x, y)] = ch;
-          need = Math.max(need, -x, -y, x - (w - 1), y - (h - 1));
-        }));
-      }
-      state.area.margin = clamp(Math.max(3, need), 0, 30);
+      state.area.cells = regionCellsFromObject(a);
+      state.area.extras = regionExtras(a);
+      state.area.orig = clone(a);
+      state.area.margin = clamp(Math.max(3, regionReach(state.area.cells)), 0, 30);
       // fill art
       const fill = pu.fill;
       if (Array.isArray(fill) && Array.isArray(fill[0])){
@@ -2409,8 +3106,7 @@
       state.fill = { ...state.fill, mode: "solid", solidHex: "#ffffff", k: P, data: new Uint32Array(P * P) };
     }
 
-    state.source = slotKey ? { slot: slotKey, id: state.id, original: clone(shape) } : null;
-    state.targetSlot = slotKey || (isPu ? "powerups" : "shapes");
+    state.source = fromFile ? { id: state.id, original: clone(shape) } : null;
     state.previewPos = null;
     resetHistory();
     setDirty(false);
@@ -2426,11 +3122,12 @@
     state.colourMode = "pixel";
     state.adj = { brightness: 0, contrast: 0, hue: 0, sat: 1 };
     state.kind = "regular"; state.name = ""; state.id = ""; state.difficulty = 2; state.frequency = 1;
-    state.rotationMode = "any"; state.rotationExtras = {}; state.links = []; state.extras = {};
+    state.rotationMode = "any"; state.rotationExtras = {}; state.links = []; state.tags = []; state.extras = {};
     state.pu = { type: "destroyer", direction: "down", tier: 1, description: "", consume: null, collapse: false, extras: {} };
-    state.area.cells = {}; state.area.margin = 3;
+    state.area.cells = {}; state.area.margin = 3; state.area.extras = {}; state.area.orig = undefined;
+    state.zones.list = []; state.zones.active = 0; state.zones.margin = 3;
     state.fill = { mode: "solid", solidHex: "#ffffff", k: 7, data: new Uint32Array(49), tool: state.fill.tool || "draw" };
-    state.source = null; state.targetSlot = "shapes"; state.previewPos = null;
+    state.source = null; state.previewPos = null;
     resetHistory(); setDirty(false);
     state.zoom = 24; el.zoom.value = "24";
     syncAllUI(); renderList();
@@ -2451,8 +3148,7 @@
     syncAdjustmentUI();
     syncMetaUI();
     renderLayerList();
-    el.targetSlot.value = state.targetSlot;
-    el.sourcePill.textContent = state.source ? `${SLOTS[state.source.slot].label}: ${state.source.id}` : "new block";
+    el.sourcePill.textContent = state.source ? `${state.kind === "powerup" ? "powerup" : "block"}: ${state.source.id}` : "new block";
     el.sourcePill.className = "pill mono " + (state.source ? "accent" : "");
     el.revertBtn.disabled = !state.source;
     el.deleteBtn.disabled = !state.source;
@@ -2543,21 +3239,25 @@
     }
     return String(v);
   }
-  function orderedKeys(obj){
+  // Entry formats: preferred key order (the rest alphabetically) and keys whose (2D array) value
+  // goes on one line. Blocks: like shape_encoder. Achievements: id, name, description, icon, trigger, mode, secret.
+  const BLOCK_FORMAT = { preferred: PREFERRED_KEYS, oneLine: ["color"] };
+  const ACH_FORMAT = { preferred: ["id", "name", "description", "icon", "trigger", "mode", "secret"], oneLine: ["icon"] };
+  function orderedKeys(obj, preferred = PREFERRED_KEYS){
     const keys = Object.keys(obj).filter(k => obj[k] !== undefined);
-    const head = PREFERRED_KEYS.filter(k => keys.includes(k));
-    const rest = keys.filter(k => !PREFERRED_KEYS.includes(k)).sort((a, b) => a.localeCompare(b));
+    const head = preferred.filter(k => keys.includes(k));
+    const rest = keys.filter(k => !preferred.includes(k)).sort((a, b) => a.localeCompare(b));
     return head.concat(rest);
   }
-  // One array entry, in shape_encoder's style: preferred key order, colour arrays on one line,
+  // One array entry: preferred key order, one-line keys (colour / icon grids) on one line,
   // everything else JSON-pretty with 2-space indent.
-  function serialiseEntry(s){
+  function serialiseEntry(s, fmt = BLOCK_FORMAT){
     if (!s || typeof s !== "object" || Array.isArray(s)) return [`  ${JSON.stringify(toJsonCompatible(s))},`];
     const lines = ["  {"];
-    for (const k of orderedKeys(s)){
+    for (const k of orderedKeys(s, fmt.preferred)){
       const key = /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(k) ? k : JSON.stringify(k);
       const v = toJsonCompatible(s[k]);
-      if (k === "color"){ lines.push(`    ${key}: ${JSON.stringify(v)},`); continue; }
+      if (fmt.oneLine.includes(k)){ lines.push(`    ${key}: ${JSON.stringify(v)},`); continue; }
       const json = JSON.stringify(v, null, 2);
       if (json.includes("\n")){
         lines.push(json.split("\n").map((ln, i) => (i === 0 ? `    ${key}: ${ln}` : `      ${ln}`)).join("\n") + ",");
@@ -2566,36 +3266,46 @@
     lines.push("  },");
     return lines;
   }
-  function serialiseArray(exportName, items){
+  function serialiseArray(exportName, items, fmt = BLOCK_FORMAT){
     const lines = [`export const ${exportName} = [`];
-    for (const s of items) lines.push(...serialiseEntry(s));
+    for (const s of items) lines.push(...serialiseEntry(s, fmt));
     lines.push("];", "");
     return lines.join("\n");
   }
 
   // ============================================================
-  // File slots (Shapes / Powerups), File System Access + IndexedDB
+  // File slots: the blocks file (regular blocks + powerups) and the achievements file.
+  // Fetched for browsing when served over http; File System Access handles (remembered
+  // in IndexedDB) save in place; otherwise saving downloads the updated file.
   // ============================================================
   function makeSlot(key, label, defaultPath, defaultExport){
-    return { key, label, defaultPath, defaultExport, handle: null, pendingHandle: null, text: null, parsed: null, items: [], origin: "none", fileName: "", error: "" };
+    return { key, label, defaultPath, defaultExport, handle: null, pendingHandle: null, text: null, parsed: null, items: [], origin: "none", fileName: "", error: "",
+      onLoaded: null,       // ({ ok, keepWorking }) after new text was set
+      beforeReplace: null,  // async () => may the slot load another file? (unsaved-changes guard)
+    };
   }
-  const SLOTS = {
-    shapes: makeSlot("shapes", "Shapes", "shapes/main_shapes.js", "SHAPES"),
-    powerups: makeSlot("powerups", "Powerups", "shapes/powerup_shapes.js", "POWERUPS"),
-  };
+  // the blocks slot keeps the key "shapes" so a file handle remembered by earlier versions still works
+  const BLOCKS = makeSlot("shapes", "Blocks", "shapes/main_shapes.js", "SHAPES");
+  const ACH = makeSlot("achievements", "Achievements", "shapes/achievements.js", "ACHIEVEMENTS");
+  const SLOTS = { shapes: BLOCKS, achievements: ACH };
+  BLOCKS.onLoaded = () => { renderList(); updateIdDatalist(); scheduleRender(); achBlocksChanged(); };
   const HANDLE_DB = "extris_block_designer_handles", HANDLE_STORE = "handles";
   const isServed = () => /^https?:$/.test(location.protocol);
 
-  function setSlotText(slot, text, origin, fileName){
+  // opts.keepWorking: the text was just written from the editor's own data (don't reload the editor)
+  function setSlotText(slot, text, origin, fileName, opts = {}){
+    let ok = true;
     try {
       const parsed = parseArrayFile(text);
       slot.text = parsed.text; slot.parsed = parsed; slot.items = parsed.items;
       slot.origin = origin; slot.fileName = fileName; slot.error = "";
     } catch (e){
+      ok = false;
       slot.error = e.message || String(e);
       if (!slot.parsed){ slot.items = []; }
     }
-    renderSlots(); renderList(); updateIdDatalist(); scheduleRender();
+    renderSlots();
+    if (slot.onLoaded) slot.onLoaded({ ...opts, ok });
   }
 
   function openHandleDb(){
@@ -2645,9 +3355,10 @@
     } catch {}
     return false;
   }
+  const mayReplace = async (slot) => !slot.beforeReplace || await slot.beforeReplace();
   async function reconnectSlot(slot){
     const handle = slot.pendingHandle;
-    if (!handle) return;
+    if (!handle || !(await mayReplace(slot))) return;
     try {
       const perm = await handle.requestPermission({ mode: "readwrite" });
       if (perm !== "granted") throw new Error("Permission not granted.");
@@ -2659,6 +3370,7 @@
   }
   let fallbackSlot = null;
   async function pickFileForSlot(slot){
+    if (!(await mayReplace(slot))) return;
     if (!window.showOpenFilePicker){
       fallbackSlot = slot;
       el.fallbackFile.click();
@@ -2678,16 +3390,16 @@
       if (e && e.name === "AbortError") return;
       toast("Could not open file: " + (e.message || e), "bad");
     }
-    renderSlots(); renderSaveHint();
+    renderSlots();
   }
   el.fallbackFile.addEventListener("change", async () => {
     const f = el.fallbackFile.files && el.fallbackFile.files[0];
     el.fallbackFile.value = "";
     if (!f || !fallbackSlot) return;
     setSlotText(fallbackSlot, await f.text(), "upload", f.name);
-    renderSaveHint();
   });
   async function reloadSlot(slot){
+    if (!(await mayReplace(slot))) return;
     if (slot.handle) await loadFromHandle(slot);
     else if (isServed()) await fetchDefault(slot);
     toast(`Reloaded ${slot.label} (${slot.items.length} entries)`);
@@ -2695,7 +3407,7 @@
   async function forgetSlot(slot){
     slot.handle = null; slot.pendingHandle = null;
     await persistHandle(slot, null);
-    renderSlots(); renderSaveHint();
+    renderSlots();
   }
 
   function slotModeText(slot){
@@ -2703,52 +3415,75 @@
     if (slot.text != null) return "saves by download";
     return "not loaded";
   }
-  function renderSlots(){
-    el.slotList.innerHTML = "";
-    for (const slot of Object.values(SLOTS)){
-      const div = document.createElement("div");
-      div.className = "slot";
-      const loaded = slot.text != null;
-      const src = slot.origin === "handle" ? "picked file" : slot.origin === "fetch" ? "fetched (browse)" : slot.origin === "upload" ? "opened copy" : "—";
-      div.innerHTML = `
-        <div class="slotHead">
-          <span class="slotName">${escapeHtml(slot.label)}</span>
-          <span class="pill ${slot.handle ? "good" : loaded ? "warn" : ""}">${escapeHtml(slotModeText(slot))}</span>
-        </div>
-        <div class="slotInfo">
-          <span class="mono">${escapeHtml(slot.fileName || slot.defaultPath)}</span><br>
-          ${loaded ? `<span class="mono">export const ${escapeHtml(slot.parsed.exportName)}</span> · ${slot.items.length} entries · ${src}` : "not loaded"}
-          ${slot.parsed && slot.parsed.commentCount ? `<br><span style="color:var(--warn)">${slot.parsed.commentCount} comment(s) inside the array will be dropped on save.</span>` : ""}
-          ${slot.error ? `<br><span style="color:var(--bad)">${escapeHtml(slot.error)}</span>` : ""}
-        </div>`;
-      const row = document.createElement("div");
-      row.className = "row";
-      const pick = document.createElement("button"); pick.className = "small primary"; pick.textContent = "Pick file…";
-      pick.addEventListener("click", () => pickFileForSlot(slot));
-      const reload = document.createElement("button"); reload.className = "small"; reload.textContent = "Reload";
-      reload.disabled = !slot.handle && !isServed();
-      reload.addEventListener("click", () => reloadSlot(slot).catch(e => toast(e.message || String(e), "bad")));
-      row.append(pick, reload);
-      if (slot.pendingHandle){
-        const rc = document.createElement("button"); rc.className = "small primary"; rc.textContent = `Reconnect ${slot.pendingHandle.name}`;
-        rc.addEventListener("click", () => reconnectSlot(slot));
-        row.appendChild(rc);
-      }
-      if (slot.handle || slot.pendingHandle){
-        const fg = document.createElement("button"); fg.className = "small"; fg.textContent = "Forget";
-        fg.title = "Forget the remembered file handle";
-        fg.addEventListener("click", () => forgetSlot(slot));
-        row.appendChild(fg);
-      }
-      div.appendChild(row);
-      el.slotList.appendChild(div);
+  function slotCard(slot){
+    const div = document.createElement("div");
+    div.className = "slot";
+    const loaded = slot.text != null;
+    const src = slot.origin === "handle" ? "picked file" : slot.origin === "fetch" ? "fetched (browse)" : slot.origin === "upload" ? "opened copy" : "—";
+    div.innerHTML = `
+      <div class="slotHead">
+        <span class="slotName">${escapeHtml(slot.label)} file</span>
+        <span class="pill ${slot.handle ? "good" : loaded ? "warn" : ""}">${escapeHtml(slotModeText(slot))}</span>
+      </div>
+      <div class="slotInfo">
+        <span class="mono">${escapeHtml(slot.fileName || slot.defaultPath)}</span><br>
+        ${loaded ? `<span class="mono">export const ${escapeHtml(slot.parsed.exportName)}</span> · ${slot.items.length} entries · ${src}` : "not loaded"}
+        ${slot.parsed && slot.parsed.commentCount ? `<br><span style="color:var(--warn)">${slot.parsed.commentCount} comment(s) inside the array will be dropped on save.</span>` : ""}
+        ${slot.error ? `<br><span style="color:var(--bad)">${escapeHtml(slot.error)}</span>` : ""}
+      </div>`;
+    const row = document.createElement("div");
+    row.className = "row";
+    const pick = document.createElement("button"); pick.className = "small primary"; pick.textContent = "Pick file…";
+    pick.title = `Open ${slot.defaultPath} for in-place saving`;
+    pick.addEventListener("click", () => pickFileForSlot(slot));
+    const reload = document.createElement("button"); reload.className = "small"; reload.textContent = "Reload";
+    reload.disabled = !slot.handle && !isServed();
+    reload.addEventListener("click", () => reloadSlot(slot).catch(e => toast(e.message || String(e), "bad")));
+    row.append(pick, reload);
+    if (slot.pendingHandle){
+      const rc = document.createElement("button"); rc.className = "small primary"; rc.textContent = `Reconnect ${slot.pendingHandle.name}`;
+      rc.addEventListener("click", () => reconnectSlot(slot));
+      row.appendChild(rc);
     }
+    if (slot.handle || slot.pendingHandle){
+      const fg = document.createElement("button"); fg.className = "small"; fg.textContent = "Forget";
+      fg.title = "Forget the remembered file handle";
+      fg.addEventListener("click", () => forgetSlot(slot));
+      row.appendChild(fg);
+    }
+    div.appendChild(row);
+    return div;
+  }
+  function renderSlots(){
+    el.slotList.innerHTML = ""; el.slotList.appendChild(slotCard(BLOCKS));
+    el.achSlotList.innerHTML = ""; el.achSlotList.appendChild(slotCard(ACH));
+    el.achBlocksInfo.innerHTML = BLOCKS.text != null
+      ? `Blocks file <span class="mono">${escapeHtml(BLOCKS.fileName || BLOCKS.defaultPath)}</span>: ${BLOCKS.items.length} blocks, ${blockTagCounts().size} tags, zones ${[...blockZoneNames()].map(z => `<span class="mono">${escapeHtml(z)}</span>`).join(", ") || "none"} — used for id / tag / zone suggestions and checks.`
+      : `The blocks file isn't loaded (Blocks mode → File), so ids, tags and zones can't be suggested or checked.`;
+    renderSaveHint();
+    achRenderSaveHint();
   }
 
+  // ---------- what the blocks file contains (for suggestions and checks) ----------
   function allKnownIds(){
     const s = new Set();
-    for (const slot of Object.values(SLOTS)) for (const it of slot.items) if (it && typeof it.id === "string") s.add(it.id);
+    for (const it of BLOCKS.items) if (it && typeof it.id === "string") s.add(it.id);
     return s;
+  }
+  function blockTagCounts(){
+    const m = new Map();
+    for (const it of BLOCKS.items) if (it && Array.isArray(it.tags)) for (const t of it.tags) if (typeof t === "string" && t) m.set(t, (m.get(t) || 0) + 1);
+    return m;
+  }
+  function blockZoneNames(){
+    const s = new Set();
+    for (const it of BLOCKS.items) if (it && isPlainObject(it.zones)) for (const k of Object.keys(it.zones)) s.add(k);
+    return s;
+  }
+  function blocksById(){
+    const m = new Map();
+    for (const it of BLOCKS.items) if (it && typeof it.id === "string" && !m.has(it.id)) m.set(it.id, it);
+    return m;
   }
   function updateIdDatalist(){
     el.allIds.innerHTML = [...allKnownIds()].sort().map(id => `<option value="${escapeHtml(id)}"></option>`).join("");
@@ -2774,13 +3509,12 @@
   }
 
   function renderSaveHint(){
-    const slot = SLOTS[state.targetSlot];
-    el.saveModeHint.textContent = slot.handle ? `writes ${slot.handle.name} in place`
-      : slot.text != null ? "downloads the updated file" : "no file loaded: downloads a new file";
+    el.saveModeHint.textContent = BLOCKS.handle ? `writes ${BLOCKS.handle.name} in place`
+      : BLOCKS.text != null ? "downloads the updated blocks file" : "no file loaded: downloads a new file";
   }
 
   // ============================================================
-  // Save / delete flow
+  // Save / delete flow (blocks)
   // ============================================================
   async function freshParsed(slot){
     if (slot.handle){
@@ -2790,40 +3524,42 @@
     return null;
   }
 
-  async function writeItems(slot, parsed, items){
-    const block = serialiseArray(parsed.exportName, items);
+  // Rewrite the array in the file text (everything before/after it, like the header comment, is kept)
+  async function writeItems(slot, parsed, items, fmt = BLOCK_FORMAT, opts = {}){
+    const block = serialiseArray(parsed.exportName, items, fmt);
     const newText = replaceArrayInText(parsed, block);
     // safety net: the written file must parse back to exactly the intended data
     const check = parseArrayFile(newText);
     if (!deepEqual(check.items, toJsonCompatible(items))) throw new Error("Internal check failed: serialised data does not round-trip. Nothing was written.");
     const how = await writeSlot(slot, newText);
-    setSlotText(slot, newText, slot.handle ? "handle" : (slot.origin === "none" ? "upload" : slot.origin), slot.handle ? slot.handle.name : (slot.fileName || slot.defaultPath));
+    setSlotText(slot, newText, slot.handle ? "handle" : (slot.origin === "none" ? "upload" : slot.origin), slot.handle ? slot.handle.name : (slot.fileName || slot.defaultPath), opts);
     return how;
   }
 
   async function saveCurrent(){
     endAction();
+    flushChipInputs();
     const built = buildShapeFromEditor();
     if (built.errors.length){ toast(built.errors[0], "bad"); return; }
     const shape = built.shape;
-    const slot = SLOTS[state.targetSlot];
+    const slot = BLOCKS;
     let parsed;
     try { parsed = await freshParsed(slot); }
-    catch (e){ toast(`Cannot parse ${slot.label} file: ${e.message}`, "bad"); return; }
+    catch (e){ toast(`Cannot parse the blocks file: ${e.message}`, "bad"); return; }
     if (!parsed){
-      const k = await ask("No file loaded", `No ${slot.label} file is loaded. Create a new file containing only this entry? It will be downloaded as ${basename(slot.defaultPath)}.`,
+      const k = await ask("No file loaded", `The blocks file isn't loaded. Create a new file containing only this entry? It will be downloaded as ${basename(slot.defaultPath)}.`,
         [{ key: "new", label: "Create new file", cls: "primary" }, { key: "cancel", label: "Cancel" }]);
       if (k !== "new") return;
       parsed = parseArrayFile(`export const ${slot.defaultExport} = [\n];\n`);
     }
     if (parsed.commentCount){
-      const k = await ask("Comments will be removed", `The ${parsed.exportName} array in ${slot.label} contains ${parsed.commentCount} comment(s). Rewriting the array drops comments inside it (text before the export, like the doc comment, is kept).`,
+      const k = await ask("Comments will be removed", `The ${parsed.exportName} array contains ${parsed.commentCount} comment(s). Rewriting the array drops comments inside it (text before the export, like the doc comment, is kept).`,
         [{ key: "go", label: "Save anyway", cls: "primary" }, { key: "cancel", label: "Cancel" }]);
       if (k !== "go") return;
     }
 
     const items = parsed.items.slice();
-    const src = state.source && state.source.slot === slot.key ? state.source : null;
+    const src = state.source;
     const idIdx = items.findIndex(s => s && s.id === shape.id);
     const nameIdx = items.findIndex(s => s && s.name === shape.name);
     const srcIdx = src ? items.findIndex(s => s && s.id === src.id) : -1;
@@ -2851,10 +3587,11 @@
     if (action === "replace") items[index] = shape; else items.push(shape);
     try {
       const how = await writeItems(slot, parsed, items);
-      state.source = { slot: slot.key, id: shape.id, original: clone(shape) };
+      state.source = { id: shape.id, original: clone(shape) };
       if (!state.id.trim()){ state.id = shape.id; }
       setDirty(false);
-      state.list.slot = slot.key;
+      // keep the saved entry visible in the library
+      if (state.list.kind !== "all" && state.list.kind !== (shape.powerup ? "powerup" : "regular")) state.list.kind = "all";
       if (action === "add") state.list.page = 0;
       syncAllUI(); renderList();
       toast(`${action === "replace" ? "Updated" : "Added"} "${shape.id}" — ${how === "written" ? "saved to " + slot.handle.name : "file downloaded"}`, "good");
@@ -2865,13 +3602,13 @@
 
   async function deleteLoaded(){
     if (!state.source) return;
-    const slot = SLOTS[state.source.slot];
+    const slot = BLOCKS;
     let parsed;
     try { parsed = await freshParsed(slot); } catch (e){ toast(e.message, "bad"); return; }
     if (!parsed){ toast("File not loaded.", "bad"); return; }
     const idx = parsed.items.findIndex(s => s && s.id === state.source.id);
-    if (idx < 0){ toast(`"${state.source.id}" not found in ${slot.label}.`, "bad"); return; }
-    const k = await ask("Delete entry", `Delete "${state.source.id}" (${parsed.items[idx].name}) from ${slot.label}? The editor keeps its contents.`,
+    if (idx < 0){ toast(`"${state.source.id}" not found in the blocks file.`, "bad"); return; }
+    const k = await ask("Delete entry", `Delete "${state.source.id}" (${parsed.items[idx].name}) from the blocks file? The editor keeps its contents.`,
       [{ key: "del", label: "Delete", cls: "danger" }, { key: "cancel", label: "Cancel" }]);
     if (k !== "del") return;
     const items = parsed.items.slice(); items.splice(idx, 1);
@@ -2885,19 +3622,19 @@
 
   el.saveBtn.addEventListener("click", saveCurrent);
   el.deleteBtn.addEventListener("click", deleteLoaded);
-  el.targetSlot.addEventListener("change", () => { state.targetSlot = el.targetSlot.value; renderSaveHint(); scheduleRender(); });
 
   async function confirmDiscard(){
     if (!state.dirty) return true;
-    const k = await ask("Unsaved changes", "Discard the changes in the editor?", [{ key: "discard", label: "Discard", cls: "danger" }, { key: "cancel", label: "Cancel" }]);
+    const k = await ask("Unsaved changes", "Discard the changes to this block?", [{ key: "discard", label: "Discard", cls: "danger" }, { key: "cancel", label: "Cancel" }]);
     return k === "discard";
   }
   el.newBtn.addEventListener("click", async () => { if (await confirmDiscard()) newBlock(); });
   el.revertBtn.addEventListener("click", async () => {
     if (!state.source || !(await confirmDiscard())) return;
-    loadShapeIntoEditor(clone(state.source.original), state.source.slot);
+    loadShapeIntoEditor(clone(state.source.original), true);
   });
-  window.addEventListener("beforeunload", (e) => { if (state.dirty){ e.preventDefault(); e.returnValue = ""; } });
+  // unsaved-changes guard for both modes
+  window.addEventListener("beforeunload", (e) => { if (state.dirty || ach.dirty){ e.preventDefault(); e.returnValue = ""; } });
 
   // ============================================================
   // Library list (newest first, paginated, mini previews)
@@ -2909,7 +3646,8 @@
     let m;
     try { m = shapeModel(shape); } catch { return; }
     let x0 = 0, y0 = 0, x1 = m.w - 1, y1 = m.h - 1, lines = false;
-    for (const c of (m.area || [])){
+    const zoneCells = m.zones.map(z => z.cells);
+    for (const c of [...(m.area || []), ...zoneCells.flat()]){
       x0 = Math.min(x0, c.x); y0 = Math.min(y0, c.y); x1 = Math.max(x1, c.x); y1 = Math.max(y1, c.y);
       if (c.ch !== "#") lines = true;
     }
@@ -2924,20 +3662,30 @@
       ctx.strokeStyle = "rgba(255,255,255,0.10)"; ctx.lineWidth = 1;
       ctx.strokeRect(ox + x0 * cell + 0.5, oy + y0 * cell + 0.5, rw * cell - 1, rh * cell - 1);
     }
+    zoneCells.forEach((cells, i) => {
+      const set = affectedCells(cells, x0, y0, rw, rh);
+      ctx.fillStyle = rgba(zoneColour(i), 0.32);
+      for (const k of set){ const [x, y] = parseKey(k); ctx.fillRect(ox + x * cell, oy + y * cell, cell, cell); }
+    });
     for (const b of m.blocks) drawModelBlock(ctx, ox + b.x * cell, oy + b.y * cell, cell, m, b, false);
   }
 
+  const isPowerupEntry = (s) => !!(s && isPlainObject(s.powerup));
+  const kindOk = (s, kind) => kind === "all" || (kind === "powerup") === isPowerupEntry(s);
   function listEntries(){
-    const slot = SLOTS[state.list.slot];
     const f = state.list.filter.trim().toLowerCase();
-    const all = slot.items.map((s, i) => ({ s, i })).reverse();
-    return f ? all.filter(({ s }) => s && (String(s.name || "").toLowerCase().includes(f) || String(s.id || "").toLowerCase().includes(f))) : all;
+    const all = BLOCKS.items.map((s, i) => ({ s, i })).reverse().filter(({ s }) => kindOk(s, state.list.kind));
+    if (!f) return all;
+    return all.filter(({ s }) => s && (String(s.name || "").toLowerCase().includes(f) || String(s.id || "").toLowerCase().includes(f)
+      || (Array.isArray(s.tags) && s.tags.some(t => String(t).toLowerCase().includes(f)))));
   }
   function renderList(){
+    const counts = { all: BLOCKS.items.length, powerup: BLOCKS.items.filter(isPowerupEntry).length };
+    counts.regular = counts.all - counts.powerup;
+    const labels = { all: "All", regular: "Regular", powerup: "Powerups" };
     document.querySelectorAll("#listTabs button").forEach(b => {
-      const slot = SLOTS[b.dataset.lslot];
-      b.classList.toggle("on", b.dataset.lslot === state.list.slot);
-      b.textContent = `${slot.label} (${slot.items.length})`;
+      b.classList.toggle("on", b.dataset.lkind === state.list.kind);
+      b.textContent = `${labels[b.dataset.lkind]} (${counts[b.dataset.lkind]})`;
     });
     const entries = listEntries();
     const ps = state.list.pageSize;
@@ -2948,26 +3696,27 @@
     el.nextPage.disabled = state.list.page >= pages - 1;
     el.listCount.textContent = String(entries.length);
     el.recentList.innerHTML = "";
-    const slot = SLOTS[state.list.slot];
     if (!entries.length){
-      el.recentList.innerHTML = `<div class="hint">${slot.text == null ? "File not loaded. Pick it in Files (or serve the repo over http)." : "No entries."}</div>`;
+      el.recentList.innerHTML = `<div class="hint">${BLOCKS.text == null ? "File not loaded. Pick it in File (or serve the repo over http)." : "No entries."}</div>`;
       return;
     }
     for (const { s } of entries.slice(state.list.page * ps, (state.list.page + 1) * ps)){
       if (!s || typeof s !== "object") continue;
       const item = document.createElement("div");
-      item.className = "item" + (state.source && state.source.slot === slot.key && state.source.id === s.id ? " current" : "");
+      item.className = "item" + (state.source && state.source.id === s.id ? " current" : "");
       item.title = "Click to load into the editor";
-      const pu = s.powerup && typeof s.powerup === "object" ? s.powerup : null;
+      const pu = isPlainObject(s.powerup) ? s.powerup : null;
       const freq = Number(s.frequency);
       const mode = typeof s.color === "string" ? "solid" : (Array.isArray(s.color) && Array.isArray(s.color[0]) ? `${Math.round(s.color.length / Math.max(1, gridLines(s.grid).length))}×` : "?");
       const stats = pu
         ? `${escapeHtml(pu.type || "?")}${pu.type === "gravity" ? " " + escapeHtml(pu.direction || "down") : ""}<br>tier ${escapeHtml(pu.tier ?? "?")} · f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>${mode}`
         : `f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>d=${escapeHtml(s.difficulty ?? "—")}<br>${mode}`;
       const links = Array.isArray(s.nextShapes) && s.nextShapes.length ? ` · → ${s.nextShapes.map(escapeHtml).join(", ")}` : "";
+      const tags = Array.isArray(s.tags) && s.tags.length ? ` <span class="tagMini">${s.tags.map(t => "#" + escapeHtml(t)).join(" ")}</span>` : "";
+      const zones = isPlainObject(s.zones) && Object.keys(s.zones).length ? ` <span class="zoneMini">◇ ${Object.keys(s.zones).map(escapeHtml).join(", ")}</span>` : "";
       item.innerHTML = `
         <div class="itemHead">
-          <div><div class="itemName">${escapeHtml(s.name || "(unnamed)")}</div><div class="itemMeta mono">${escapeHtml(s.id || "(no id)")}${links}</div></div>
+          <div><div class="itemName">${pu ? `<span class="pill accent" style="padding:0 6px;margin-right:5px;">powerup</span>` : ""}${escapeHtml(s.name || "(unnamed)")}</div><div class="itemMeta mono">${escapeHtml(s.id || "(no id)")}${links}${tags}${zones}</div></div>
           <div class="itemStats mono">${stats}</div>
         </div>`;
       const mini = document.createElement("canvas");
@@ -2976,12 +3725,12 @@
       drawThumb(mini, s);
       item.addEventListener("click", async () => {
         if (!(await confirmDiscard())) return;
-        loadShapeIntoEditor(clone(s), slot.key);
+        loadShapeIntoEditor(clone(s), true);
       });
       el.recentList.appendChild(item);
     }
   }
-  document.querySelectorAll("#listTabs button").forEach(b => b.addEventListener("click", () => { state.list.slot = b.dataset.lslot; state.list.page = 0; renderList(); }));
+  document.querySelectorAll("#listTabs button").forEach(b => b.addEventListener("click", () => { state.list.kind = b.dataset.lkind; state.list.page = 0; renderList(); }));
   el.listFilter.addEventListener("input", () => { state.list.filter = el.listFilter.value; state.list.page = 0; renderList(); });
   el.pageSize.addEventListener("change", () => {
     state.list.pageSize = clamp(parseInt(el.pageSize.value, 10) || 20, 5, 200);
@@ -3012,7 +3761,7 @@
   function makeProjectObject(){
     const hex = (d) => Array.from(d, u => "0x" + (u >>> 0).toString(16).padStart(8, "0"));
     return {
-      version: 3, app: "extris_block_designer",
+      version: 4, app: "extris_block_designer",
       meta: {
         blocksW: state.blocksW, blocksH: state.blocksH, ppb: state.ppb, pxW: state.pxW, pxH: state.pxH,
         zoom: state.zoom, seed: state.seed, adj: { ...state.adj }, activeLayerId: state.activeLayerId,
@@ -3024,9 +3773,10 @@
       shape: {
         kind: state.kind, name: state.name, id: state.id, difficulty: state.difficulty, frequency: state.frequency,
         rotationMode: state.rotationMode, rotationExtras: state.rotationExtras, links: state.links, extras: state.extras,
-        pu: state.pu, areaCells: state.area.cells, areaMargin: state.area.margin,
+        pu: state.pu, areaCells: state.area.cells, areaMargin: state.area.margin, areaExtras: state.area.extras,
         fill: { mode: state.fill.mode, solidHex: state.fill.solidHex, k: state.fill.k, data: hex(state.fill.data) },
-        targetSlot: state.targetSlot,
+        tags: state.tags,
+        zones: state.zones.list.map(z => ({ name: z.name, cells: z.cells, extras: z.extras })), zonesMargin: state.zones.margin,
       },
     };
   }
@@ -3039,7 +3789,7 @@
     }
     return u;
   }
-  // Accepts this tool's projects (v3) and shape_drawer projects (v1/v2, no mask -> all filled)
+  // Accepts this tool's projects (v3/v4) and shape_drawer projects (v1/v2, no mask -> all filled)
   function loadProjectObject(obj){
     if (!obj || !obj.meta || !Array.isArray(obj.layers)) throw new Error("Invalid project file.");
     const m = obj.meta;
@@ -3085,11 +3835,18 @@
       if (s.pu) state.pu = { ...state.pu, ...s.pu, extras: s.pu.extras || {} };
       state.area.cells = s.areaCells || {};
       state.area.margin = clamp(parseInt(s.areaMargin, 10) || 3, 0, 30);
+      state.area.extras = isPlainObject(s.areaExtras) ? s.areaExtras : {};
+      state.area.orig = undefined;
       if (s.fill){
         const k = clamp(parseInt(s.fill.k, 10) || 7, 1, 7);
         state.fill = { ...state.fill, mode: s.fill.mode === "pixel" ? "pixel" : "solid", solidHex: normHex(s.fill.solidHex) || "#ffffff", k, data: parseHexWords(s.fill.data, k * k) };
       }
-      if (s.targetSlot === "shapes" || s.targetSlot === "powerups") state.targetSlot = s.targetSlot;
+      state.tags = Array.isArray(s.tags) ? s.tags.map(String) : [];
+      state.zones.list = Array.isArray(s.zones)
+        ? s.zones.filter(isPlainObject).map(z => ({ name: String(z.name ?? ""), cells: isPlainObject(z.cells) ? { ...z.cells } : {}, extras: isPlainObject(z.extras) ? z.extras : {}, orig: undefined }))
+        : [];
+      state.zones.active = 0;
+      state.zones.margin = clamp(parseInt(s.zonesMargin, 10) || 3, 0, 30);
     }
     state.source = null;
     resetHistory(); setDirty(true); syncAllUI(); renderList();
@@ -3205,19 +3962,1252 @@
     document.querySelectorAll("#centreTabs button[data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
     el.tabArt.classList.toggle("hidden", tab !== "art");
     el.tabPowerup.classList.toggle("hidden", tab !== "powerup");
+    el.tabZones.classList.toggle("hidden", tab !== "zones");
     scheduleRender();
   }
   document.querySelectorAll("#centreTabs button[data-tab]").forEach(b => b.addEventListener("click", () => setCentreTab(b.dataset.tab)));
 
-  // keyboard shortcuts
+  // ============================================================
+  // ======================  ACHIEVEMENTS  ======================
+  // The editor holds a working copy of the whole ACHIEVEMENTS array (in display order);
+  // Save writes all of it. Each entry is edited in place, so unknown properties survive.
+  // ============================================================
+  const ACH_ID_RE = /^[a-z0-9_]+$/;
+  const ACH_MODES = ["any", "normal", "extreme"];
+  const ICON_MIN = 8, ICON_MAX = 32, ICON_DEFAULT = 12;
+  const RECENT_KEY = "extris_block_designer_recent_icon_colours";
+  const MODE_KEY = "extris_block_designer_mode";
+  const STARTER_COLOURS = ["#ffcf3f", "#c98d1d", "#fff6c8", "#1a1428", "#ffffff", "#9a9ab8", "#5c5c78", "#ff4d6d", "#ffb84d", "#4dff88", "#4dc3ff", "#b44dff"];
+  // Every trigger type in the header of shapes/achievements.js. Param kinds: int, scope ("game" | "lifetime"),
+  // match ({ ids, tags, types }), ids (ordered list of block ids), zone (zone name). def = the game's default.
+  const TRIGGER_DEFS = [
+    { type: "rowsDestroyed", doc: "Destroy `count` rows; scope \"game\" (one game, default) or \"lifetime\" (all games). Line clears and rows a powerup collapses both count.",
+      params: [{ key: "count", kind: "int", label: "Rows", def: 1 }, { key: "scope", kind: "scope", label: "Scope" }] },
+    { type: "multiRow", doc: "Destroy at least `rows` rows in one go.",
+      params: [{ key: "rows", kind: "int", label: "Rows", def: 2 }] },
+    { type: "pieceServed", doc: "A matching piece arrives.",
+      params: [{ key: "match", kind: "match", label: "Piece" }] },
+    { type: "pieceSequence", doc: "These pieces arrive one straight after another, in order (e.g. [\"spam\", \"spam\", \"spam\"]).",
+      params: [{ key: "ids", kind: "ids", label: "Pieces", required: true }] },
+    { type: "pieceInside", doc: "A `piece`-matching block lands with at least one block in the zone (default \"inside\") of a `container`-matching piece on the board — in either order.",
+      params: [{ key: "piece", kind: "match", label: "Piece" }, { key: "container", kind: "match", label: "Container" }, { key: "zone", kind: "zone", label: "Zone", def: "inside" }] },
+    { type: "seenAll", doc: "Every matching piece has arrived at least once in one game.",
+      params: [{ key: "match", kind: "match", label: "Pieces" }] },
+    { type: "powerupUsed", doc: "Fire matching powerups `count` times (default 1).",
+      params: [{ key: "match", kind: "match", label: "Powerup", powerup: true }, { key: "count", kind: "int", label: "Times", def: 1 }, { key: "scope", kind: "scope", label: "Scope" }] },
+    { type: "powerupBlocks", doc: "One matching powerup destroys, moves or fills at least `count` blocks.",
+      params: [{ key: "match", kind: "match", label: "Powerup", powerup: true }, { key: "count", kind: "int", label: "Blocks", def: 1 }] },
+    { type: "score", doc: "Reach this score in one game.", params: [{ key: "value", kind: "int", label: "Score", required: true }] },
+    { type: "level", doc: "Reach this level in one game.", params: [{ key: "value", kind: "int", label: "Level", required: true }] },
+    { type: "drops", doc: "Place this many pieces in one game.", params: [{ key: "count", kind: "int", label: "Pieces", required: true }] },
+    { type: "boardCleared", doc: "The board is completely empty after rows are destroyed.", params: [] },
+    { type: "gameOver", doc: "The game ends; optionally only if the piece that topped you out matches `killer`, or within `maxDrops` pieces.",
+      params: [{ key: "killer", kind: "match", label: "Killer" }, { key: "maxDrops", kind: "int", label: "Max drops" }] },
+  ];
+  // "?" placeholder for achievements without an icon (12×12)
+  const ICON_PLACEHOLDER = [
+    "............", "....####....", "...##..##...", "...##..##...", ".......##...", "......##....",
+    ".....##.....", ".....##.....", "............", ".....##.....", ".....##.....", "............",
+  ];
+
+  const ach = {
+    items: [],              // [{ uid, data, stash, origId }]: data = the entry as it will be saved
+    base: [],               // normalised file entries as last loaded / saved (dirty check, conflicts)
+    sel: -1,                // selected index into items
+    seq: 1,
+    filter: "",
+    dirty: false,
+    headerTypes: [],        // trigger types parsed from the file's header comment
+    triggers: TRIGGER_DEFS.slice(),
+    icon: { tool: "draw", colour: "#ffcf3f", blank: ICON_DEFAULT, recent: [], hist: new Map(), hover: null },
+  };
+  const curAch = () => ach.items[ach.sel] || null;
+  const achData = () => { const w = curAch(); return w && isPlainObject(w.data) ? w.data : null; };
+  const wrapAch = (data, fromFile) => ({ uid: ach.seq++, data, stash: {}, origId: fromFile && isPlainObject(data) ? data.id : undefined });
+  const arrOf = (v) => Array.isArray(v) ? v.filter(x => x != null && x !== "").map(String) : (typeof v === "string" && v ? [v] : []);
+  const slugify = (s) => String(s ?? "").toLowerCase().replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+
+  // What Save writes for one entry: mode "any" and secret false are left out
+  function normaliseAchievement(a){
+    if (!isPlainObject(a)) return a;
+    const out = { ...a };
+    if (out.mode === "any") delete out.mode;
+    if (out.secret === false) delete out.secret;
+    return out;
+  }
+  const achNormItems = (items) => toJsonCompatible(items.map(normaliseAchievement));
+  const serialiseAchievements = (exportName, items) => serialiseArray(exportName, items.map(normaliseAchievement), ACH_FORMAT);
+
+  // ---------- trigger types: built-in list + whatever the file header documents ----------
+  // Header lines look like: " *   rowsDestroyed  { count, scope }   destroy `count` rows; ..." (+ indented continuation lines)
+  function parseTriggerHeader(text){
+    const out = [];
+    if (!text) return out;
+    const lines = normaliseNewlines(text).split("\n");
+    let i = lines.findIndex(l => /trigger types\s*:/i.test(l));
+    if (i < 0) return out;
+    let cur = null;
+    for (i++; i < lines.length; i++){
+      if (/\*\//.test(lines[i])) break;
+      const line = lines[i].replace(/^\s*\*?/, "");
+      if (!line.trim()){ if (out.length) break; continue; }
+      const m = /^\s{1,4}([A-Za-z_$][\w$]*)\s*\{([^}]*)\}\s*(.*)$/.exec(line);
+      if (m){ cur = { type: m[1], params: m[2].split(",").map(s => s.trim()).filter(Boolean), doc: m[3].trim() }; out.push(cur); }
+      else if (cur && /^\s{5,}\S/.test(line)) cur.doc = (cur.doc + " " + line.trim()).trim();
+      else break;
+    }
+    return out;
+  }
+  function guessParam(key){
+    if (["match", "piece", "container", "killer"].includes(key)) return { key, kind: "match", label: key };
+    if (key === "ids") return { key, kind: "ids", label: key };
+    if (key === "scope") return { key, kind: "scope", label: key };
+    if (key === "zone") return { key, kind: "zone", label: key };
+    return { key, kind: "int", label: key };
+  }
+  function buildTriggerList(){
+    const byType = new Map(TRIGGER_DEFS.map(d => [d.type, d]));
+    const out = [], seen = new Set();
+    for (const h of ach.headerTypes){
+      if (seen.has(h.type)) continue;
+      seen.add(h.type);
+      const known = byType.get(h.type);
+      const doc = h.doc ? h.doc.charAt(0).toUpperCase() + h.doc.slice(1) : "";
+      if (known){
+        const extra = h.params.filter(p => !known.params.some(q => q.key === p)).map(guessParam);
+        out.push({ ...known, doc: doc || known.doc, params: known.params.concat(extra) });
+      } else out.push({ type: h.type, doc, params: h.params.map(guessParam), guessed: true });
+    }
+    for (const d of TRIGGER_DEFS) if (!seen.has(d.type)) out.push(d);
+    return out;
+  }
+  const triggerSpec = (type) => ach.triggers.find(d => d.type === type) || null;
+
+  // ---------- matching (same rule as the game) ----------
+  function matchesShape(s, m){
+    if (!s) return false;
+    if (!isPlainObject(m)) return true;
+    const ids = arrOf(m.ids), tags = arrOf(m.tags), types = arrOf(m.types);
+    if (!ids.length && !tags.length && !types.length) return true;
+    if (ids.includes(s.id)) return true;
+    if (tags.length && Array.isArray(s.tags) && s.tags.some(t => tags.includes(t))) return true;
+    if (types.length && isPlainObject(s.powerup) && types.includes(s.powerup.type)) return true;
+    return false;
+  }
+
+  // ---------- plain-English summary ----------
+  const art = (w) => /^[aeiou]/i.test(String(w)) ? "an" : "a";
+  function listJoin(arr, conj = "or"){
+    if (arr.length <= 1) return arr.join("");
+    return arr.slice(0, -1).join(", ") + ` ${conj} ` + arr[arr.length - 1];
+  }
+  function blockLabel(id){
+    const s = blocksById().get(id);
+    return `“${s && typeof s.name === "string" && s.name ? s.name : id}”`;
+  }
+  // noun: "piece" | "powerup"; bare: tags without a noun ("a mouth", for containers)
+  function matchPhrase(m, noun = "piece", bare = false){
+    const ids = arrOf(m && m.ids), tags = arrOf(m && m.tags), types = arrOf(m && m.types);
+    const parts = [];
+    if (ids.length) parts.push(listJoin(ids.map(blockLabel)));
+    if (tags.length) parts.push(`${art(tags[0])} ${listJoin(tags)}${bare ? "" : " " + noun}`);
+    if (types.length) parts.push(`${art(types[0])} ${listJoin(types)} powerup`);
+    if (!parts.length) return noun === "powerup" ? "a powerup" : "any piece";
+    return listJoin(parts);
+  }
+  function triggerSummary(t){
+    if (!isPlainObject(t) || !t.type) return "Has no trigger, so it can never unlock";
+    const spec = triggerSpec(t.type);
+    const val = (k) => { if (t[k] !== undefined && t[k] !== "") return t[k]; const p = spec && spec.params.find(q => q.key === k); return p ? p.def : undefined; };
+    const num = (v) => (typeof v === "number" && Number.isFinite(v)) ? v.toLocaleString("en-US") : (v === undefined ? "?" : String(v));
+    const scope = t.scope === "lifetime" ? "in total, across all games" : "in one game";
+    switch (t.type){
+      case "rowsDestroyed": { const c = val("count"); return `Unlocks when you destroy ${c === 1 ? "a row" : `${num(c)} rows`} ${scope}`; }
+      case "multiRow": return `Unlocks when you destroy at least ${num(val("rows"))} rows in one go`;
+      case "pieceServed": return `Unlocks when ${matchPhrase(t.match)} arrives`;
+      case "pieceSequence": {
+        const ids = arrOf(t.ids);
+        if (!ids.length) return "Unlocks when … (no pieces listed yet)";
+        if (ids.length === 1) return `Unlocks when ${blockLabel(ids[0])} arrives`;
+        if (ids.every(x => x === ids[0])) return `Unlocks when ${blockLabel(ids[0])} arrives ${ids.length} times in a row`;
+        return `Unlocks when ${listJoin(ids.map(blockLabel), "and")} arrive one straight after another, in that order`;
+      }
+      case "pieceInside": {
+        const zone = String(val("zone") ?? "inside");
+        const where = zone === "inside" ? `inside ${matchPhrase(t.container, "piece", true)}` : `in the “${zone}” zone of ${matchPhrase(t.container, "piece", true)}`;
+        return `Unlocks when ${matchPhrase(t.piece)} lands ${where}`;
+      }
+      case "seenAll": {
+        const ids = arrOf(t.match && t.match.ids), tags = arrOf(t.match && t.match.tags), types = arrOf(t.match && t.match.types);
+        if (!ids.length && !tags.length && !types.length) return "Unlocks when every piece has arrived at least once in one game";
+        if (ids.length && !tags.length && !types.length) return `Unlocks when ${listJoin(ids.map(blockLabel), "and")} have all arrived at least once in one game`;
+        if (!ids.length && tags.length && !types.length) return `Unlocks when every ${listJoin(tags)} piece has arrived at least once in one game`;
+        if (!ids.length && !tags.length) return `Unlocks when every ${listJoin(types)} powerup has arrived at least once in one game`;
+        return `Unlocks when every piece that is ${matchPhrase(t.match)} has arrived at least once in one game`;
+      }
+      case "powerupUsed": {
+        const c = val("count");
+        if (c === 1) return `Unlocks when you fire ${matchPhrase(t.match, "powerup")}`;
+        return `Unlocks when you fire ${t.match ? matchPhrase(t.match, "powerup") : "powerups"} ${num(c)} times ${scope}`;
+      }
+      case "powerupBlocks": {
+        const types = new Set(arrOf(t.match && t.match.types));
+        for (const id of arrOf(t.match && t.match.ids)){ const s = blocksById().get(id); if (s && isPlainObject(s.powerup)) types.add(s.powerup.type); }
+        const verbs = { destroyer: "destroys", gravity: "moves", expander: "fills" };
+        const verb = types.size === 1 && verbs[[...types][0]] ? verbs[[...types][0]] : "destroys, moves or fills";
+        const c = val("count");
+        return `Unlocks when ${matchPhrase(t.match, "powerup")} ${verb} at least ${c === 1 ? "one block" : `${num(c)} blocks`} in one go`;
+      }
+      case "score": return `Unlocks when you reach a score of ${num(val("value"))} in one game`;
+      case "level": return `Unlocks when you reach level ${num(val("value"))} in one game`;
+      case "drops": return `Unlocks when you have placed ${num(val("count"))} pieces in one game`;
+      case "boardCleared": return "Unlocks when the board is completely empty after rows are destroyed";
+      case "gameOver": {
+        let s = t.killer ? `Unlocks when you are topped out by ${matchPhrase(t.killer)}` : "Unlocks when the game ends";
+        if (t.maxDrops !== undefined) s += ` within ${num(t.maxDrops)} pieces`;
+        return s;
+      }
+      default: {
+        const keys = Object.keys(t).filter(k => k !== "type");
+        return `Unlocks on “${t.type}”${keys.length ? ` (${keys.join(", ")})` : ""}`;
+      }
+    }
+  }
+
+  // ---------- validation ----------
+  const isIconGrid = (v) => Array.isArray(v) && v.length > 0 && v.every(Array.isArray);
+  const iconDims = (ic) => ({ h: ic.length, w: Math.max(0, ...ic.map(r => r.length)) });
+  function achIssues(a, idx){
+    const errors = [], warnings = [];
+    if (!isPlainObject(a)){ warnings.push("This entry isn't an object; it is kept as-is."); return { errors, warnings }; }
+    const id = a.id;
+    if (typeof id !== "string" || !id) errors.push("Id is empty.");
+    else if (!ACH_ID_RE.test(id)) errors.push(`Id "${id}" may only contain lowercase letters, digits and _.`);
+    else {
+      const dup = ach.items.findIndex((w, j) => j !== idx && isPlainObject(w.data) && w.data.id === id);
+      if (dup >= 0) errors.push(`Id "${id}" is also used by #${dup + 1}.`);
+    }
+    if (typeof a.name !== "string" || !a.name.trim()) errors.push("Name is empty.");
+    if (typeof a.description !== "string" || !a.description.trim()) warnings.push("Description is empty.");
+    if (a.mode !== undefined && !ACH_MODES.includes(a.mode)) warnings.push(`Unknown mode "${a.mode}" (any, normal or extreme).`);
+    if (a.secret !== undefined && typeof a.secret !== "boolean") warnings.push("secret should be true or false.");
+    if (a.icon !== undefined){
+      if (!isIconGrid(a.icon)) warnings.push("icon should be a square grid of hex colours.");
+      else {
+        const d = iconDims(a.icon);
+        if (d.w !== d.h || a.icon.some(r => r.length !== d.w)) warnings.push(`The icon is ${d.w}×${d.h}; it should be square.`);
+        if (Math.max(d.w, d.h) > ICON_MAX) warnings.push(`The icon is bigger than ${ICON_MAX}×${ICON_MAX}.`);
+        let bad = 0;
+        for (const r of a.icon) for (const c of r) if (c !== "" && !/^#[0-9a-fA-F]{6}$/.test(String(c))) bad++;
+        if (bad) warnings.push(`${bad} icon pixel(s) aren't "#rrggbb" or "".`);
+      }
+    }
+    const t = a.trigger;
+    if (!isPlainObject(t)){ errors.push("The trigger is missing."); return { errors, warnings }; }
+    if (typeof t.type !== "string" || !t.type){ errors.push("The trigger type is missing."); return { errors, warnings }; }
+    const spec = triggerSpec(t.type);
+    if (!spec){ warnings.push(`Trigger type "${t.type}" isn't documented in the file header.`); return { errors, warnings }; }
+    const haveBlocks = BLOCKS.items.length > 0;
+    const ids = allKnownIds(), tags = blockTagCounts();
+    for (const p of spec.params){
+      const v = t[p.key];
+      if (v === undefined){ if (p.required) warnings.push(`${p.label} (${p.key}) is not set, so this can never unlock.`); continue; }
+      if (p.kind === "int"){
+        if (typeof v !== "number" || !Number.isFinite(v)) warnings.push(`${p.key} should be a number.`);
+        else if (v < 1) warnings.push(`${p.key} should be at least 1.`);
+        else if (!Number.isInteger(v)) warnings.push(`${p.key} should be a whole number.`);
+      } else if (p.kind === "scope"){
+        if (v !== "game" && v !== "lifetime") warnings.push(`Unknown scope "${v}" (game or lifetime).`);
+      } else if (p.kind === "zone"){
+        if (typeof v !== "string" || !v) warnings.push("zone should be a zone name.");
+      } else if (p.kind === "ids"){
+        const list = arrOf(v);
+        if (!list.length) warnings.push(`${p.key} is empty, so this can never unlock.`);
+        else if (haveBlocks){ const unk = [...new Set(list.filter(x => !ids.has(x)))]; if (unk.length) warnings.push(`Unknown block id(s): ${unk.join(", ")}.`); }
+      } else if (p.kind === "match"){
+        if (!isPlainObject(v)){ warnings.push(`${p.key} should be an object like { ids, tags, types }.`); continue; }
+        if (haveBlocks){
+          const unkI = [...new Set(arrOf(v.ids).filter(x => !ids.has(x)))];
+          if (unkI.length) warnings.push(`${p.key}: unknown block id(s) ${unkI.join(", ")}.`);
+          const unkT = [...new Set(arrOf(v.tags).filter(x => !tags.has(x)))];
+          if (unkT.length) warnings.push(`${p.key}: no block has the tag(s) ${unkT.join(", ")}.`);
+        }
+        const unkTy = arrOf(v.types).filter(x => !PU_TYPES.includes(x));
+        if (unkTy.length) warnings.push(`${p.key}: unknown powerup type(s) ${unkTy.join(", ")}.`);
+      }
+    }
+    if (haveBlocks && t.type === "pieceInside"){
+      const zone = typeof t.zone === "string" && t.zone ? t.zone : "inside";
+      const containers = BLOCKS.items.filter(s => s && matchesShape(s, t.container));
+      if (!containers.some(s => isPlainObject(s.zones) && isPlainObject(s.zones[zone])))
+        warnings.push(`No ${t.container ? "matching container" : "block"} has a zone called "${zone}" (add it in Blocks → Zones).`);
+    }
+    if (haveBlocks && t.type === "seenAll" && !BLOCKS.items.some(s => s && matchesShape(s, t.match))) warnings.push("No block matches, so this can never unlock.");
+    return { errors, warnings };
+  }
+
+  // ---------- working copy ----------
+  function achLoadWorking(){
+    const prev = curAch();
+    const prevId = prev && isPlainObject(prev.data) ? prev.data.id : null;
+    ach.items = ACH.items.map(a => wrapAch(clone(a), true));
+    ach.base = achNormItems(ACH.items);
+    ach.icon.hist.clear();
+    ach.headerTypes = parseTriggerHeader(ACH.parsed ? ACH.text.slice(0, ACH.parsed.start) : "");
+    ach.triggers = buildTriggerList();
+    let idx = prevId != null ? ach.items.findIndex(w => isPlainObject(w.data) && w.data.id === prevId) : -1;
+    if (idx < 0) idx = ach.items.length ? 0 : -1;
+    ach.sel = idx;
+    achRenderAll();
+  }
+  ACH.onLoaded = ({ ok, keepWorking }) => { if (ok && !keepWorking) achLoadWorking(); else achRenderStatus(); };
+  ACH.beforeReplace = () => achConfirmDiscard();
+  async function achConfirmDiscard(){
+    if (!ach.dirty) return true;
+    const k = await ask("Unsaved achievements", "The achievements list has unsaved changes. Discard them?",
+      [{ key: "discard", label: "Discard", cls: "danger" }, { key: "cancel", label: "Cancel" }]);
+    return k === "discard";
+  }
+  // the blocks file changed: refresh suggestions, checks and names
+  function achBlocksChanged(){
+    if (state.mode === "achievements") achRenderTrigger();
+    renderAchList();
+    achAfterChange(false);
+  }
+
+  function achSelect(i){
+    iconFinishStroke();
+    ach.sel = clamp(i, -1, ach.items.length - 1);
+    ach.icon.hover = null;
+    achRenderAll();
+  }
+  function achRenderAll(){
+    renderAchList();
+    achSyncForm();
+    achRenderTrigger();
+    achRenderIcon();
+    achAfterChange(false);
+  }
+  // after any edit: dirty state, issues, summary, previews and the selected row
+  function achAfterChange(edited = true){
+    ach.dirty = !deepEqual(achNormItems(ach.items.map(w => w.data)), ach.base);
+    achRenderStatus();
+    achRenderIdHint();
+    achRenderSummary();
+    achRenderIssues();
+    achRenderPreviews();
+    const a = achData();
+    el.achEntryOut.value = a ? serialiseEntry(normaliseAchievement(a), ACH_FORMAT).join("\n") : "";
+    if (edited) updateAchRow(ach.sel);
+  }
+  function achRenderStatus(){
+    el.achDirtyPill.textContent = ach.dirty ? "unsaved changes" : "no changes";
+    el.achDirtyPill.className = "pill " + (ach.dirty ? "warn" : "");
+    el.achRevertBtn.disabled = !ach.dirty;
+    el.achFilePill.textContent = ACH.text != null ? `${basename(ACH.handle ? ACH.handle.name : (ACH.fileName || ACH.defaultPath))} · ${ach.items.length} entries` : "achievements file not loaded";
+    achRenderSaveHint();
+  }
+  function achRenderSaveHint(){
+    el.achSaveHint.textContent = ACH.handle ? `writes ${ACH.handle.name} in place`
+      : ACH.text != null ? "downloads the updated achievements file" : "no file loaded: downloads a new file";
+  }
+
+  // ---------- list ----------
+  const achRowEls = new Map(); // uid -> row element
+  function achMatchesFilter(w, f){
+    if (!f) return true;
+    const a = w.data;
+    if (!isPlainObject(a)) return false;
+    const t = isPlainObject(a.trigger) ? a.trigger.type : "";
+    return [a.id, a.name, a.description, t, a.mode, a.secret ? "secret" : ""].map(v => String(v ?? "").toLowerCase()).join(" ").includes(f);
+  }
+  function renderAchList(){
+    const f = ach.filter.trim().toLowerCase();
+    const sc = el.achList.scrollTop;
+    el.achList.innerHTML = "";
+    achRowEls.clear();
+    let shown = 0;
+    ach.items.forEach((w, i) => {
+      if (!achMatchesFilter(w, f)) return;
+      shown++;
+      const row = document.createElement("div");
+      row.className = "achItem" + (i === ach.sel ? " current" : "");
+      row.title = "Click to edit";
+      fillAchRow(row, w, i);
+      row.addEventListener("click", () => { const j = ach.items.indexOf(w); if (j >= 0 && j !== ach.sel) achSelect(j); });
+      achRowEls.set(w.uid, row);
+      el.achList.appendChild(row);
+    });
+    if (!ach.items.length){
+      el.achList.innerHTML = `<div class="hint">${ACH.text == null
+        ? "The achievements file isn't loaded. Pick it in File (or serve the repo over http) — or add achievements and save to create the file."
+        : "No achievements yet. Add one with + New."}</div>`;
+    } else if (!shown) el.achList.innerHTML = `<div class="hint">Nothing matches the filter.</div>`;
+    el.achCount.textContent = f ? `${shown}/${ach.items.length}` : String(ach.items.length);
+    el.achList.scrollTop = sc;
+    const has = !!curAch();
+    el.achDupBtn.disabled = !has || !achData();
+    el.achDelBtn.disabled = !has;
+    el.achUpBtn.disabled = !has || ach.sel <= 0;
+    el.achDownBtn.disabled = !has || ach.sel >= ach.items.length - 1;
+  }
+  function fillAchRow(row, w, i){
+    const a = isPlainObject(w.data) ? w.data : null;
+    const is = achIssues(w.data, i);
+    row.innerHTML = "";
+    const thumb = document.createElement("canvas");
+    thumb.className = "achThumb"; thumb.width = 36; thumb.height = 36;
+    drawIconBox(thumb.getContext("2d"), a ? a.icon : null, 0, 0, 36);
+    const mid = document.createElement("div");
+    mid.style.minWidth = "0";
+    const type = a && isPlainObject(a.trigger) ? a.trigger.type : "";
+    mid.innerHTML = `<div class="achTitle"><span class="achNum">${i + 1}.</span>${escapeHtml(a ? (String(a.name ?? "") || "(unnamed)") : "(not an object)")}</div>
+      <div class="achSub mono">${escapeHtml(a ? String(a.id ?? "") : "")}${type ? " · " + escapeHtml(type) : ""}</div>
+      <div class="achSub">${escapeHtml(a ? String(a.description ?? "") : "")}</div>`;
+    const badges = document.createElement("div");
+    badges.className = "achBadges";
+    let b = "";
+    if (is.errors.length) b += `<span class="pill bad" title="${escapeHtml(is.errors.join("\n"))}">error</span>`;
+    else if (is.warnings.length) b += `<span class="pill warn" title="${escapeHtml(is.warnings.join("\n"))}">check</span>`;
+    if (a && a.mode !== undefined && a.mode !== "any") b += `<span class="pill accent">${escapeHtml(a.mode)}</span>`;
+    if (a && a.secret) b += `<span class="pill">secret</span>`;
+    badges.innerHTML = b;
+    row.append(thumb, mid, badges);
+  }
+  function updateAchRow(i){
+    const w = ach.items[i];
+    const row = w && achRowEls.get(w.uid);
+    if (row) fillAchRow(row, w, i);
+  }
+  el.achFilter.addEventListener("input", () => { ach.filter = el.achFilter.value; renderAchList(); });
+
+  function uniqueAchId(base, except = -1){
+    base = slugify(base) || "achievement";
+    const taken = new Set(ach.items.filter((w, i) => i !== except && isPlainObject(w.data)).map(w => w.data.id));
+    if (!taken.has(base)) return base;
+    for (let i = 2; ; i++){ const id = `${base}_${i}`; if (!taken.has(id)) return id; }
+  }
+  function achInsert(data, at){
+    ach.items.splice(at, 0, wrapAch(data, false));
+    ach.sel = at;
+    achRenderAll(); achAfterChange();
+  }
+  el.achNewBtn.addEventListener("click", () => {
+    const at = ach.sel >= 0 ? ach.sel + 1 : ach.items.length;
+    achInsert({ id: uniqueAchId("new_achievement"), name: "New Achievement", description: "", trigger: { type: "rowsDestroyed", count: 1 } }, at);
+    el.achName.focus(); el.achName.select();
+  });
+  el.achDupBtn.addEventListener("click", () => {
+    const a = achData();
+    if (!a) return;
+    const copy = clone(a);
+    copy.id = uniqueAchId(`${a.id || "achievement"}_copy`);
+    copy.name = `${a.name || ""} (copy)`;
+    achInsert(copy, ach.sel + 1);
+  });
+  function achMove(d){
+    const i = ach.sel, j = i + d;
+    if (i < 0 || j < 0 || j >= ach.items.length) return;
+    [ach.items[i], ach.items[j]] = [ach.items[j], ach.items[i]];
+    ach.sel = j;
+    renderAchList(); achSyncForm(); achAfterChange(false);
+    const row = achRowEls.get(ach.items[j].uid);
+    if (row && row.scrollIntoView) row.scrollIntoView({ block: "nearest" });
+  }
+  el.achUpBtn.addEventListener("click", () => achMove(-1));
+  el.achDownBtn.addEventListener("click", () => achMove(1));
+  el.achDelBtn.addEventListener("click", async () => {
+    const w = curAch();
+    if (!w) return;
+    const a = achData();
+    const k = await ask("Delete achievement", `Delete #${ach.sel + 1} ${a ? `"${a.name || a.id}" (${a.id})` : ""} from the list? It is removed from the file when you save.`,
+      [{ key: "del", label: "Delete", cls: "danger" }, { key: "cancel", label: "Cancel" }]);
+    if (k !== "del") return;
+    iconFinishStroke();
+    ach.items.splice(ach.sel, 1);
+    ach.icon.hist.delete(w.uid);
+    ach.sel = Math.min(ach.sel, ach.items.length - 1);
+    achRenderAll();
+  });
+  el.achRevertBtn.addEventListener("click", async () => {
+    if (!ach.dirty) return;
+    const k = await ask("Revert all", "Discard every unsaved change to the achievements list and go back to the file's contents?",
+      [{ key: "revert", label: "Revert all", cls: "danger" }, { key: "cancel", label: "Cancel" }]);
+    if (k === "revert") achLoadWorking();
+  });
+
+  // ---------- form ----------
+  function achSyncForm(){
+    const w = curAch(), a = achData();
+    el.achNone.classList.toggle("hidden", !!a);
+    el.achNone.innerHTML = w && !a ? "This entry isn't an object, so it can't be edited here. It is kept as-is." : "No achievement selected. Add one with <b>+ New</b> in the list.";
+    el.achForm.classList.toggle("hidden", !a);
+    el.achTrigCard.classList.toggle("hidden", !a);
+    el.achPosPill.textContent = w ? `#${ach.sel + 1} of ${ach.items.length}` : "—";
+    if (!a) return;
+    const str = (v) => v == null ? "" : String(v);
+    el.achName.value = str(a.name);
+    el.achId.value = str(a.id);
+    el.achDesc.value = str(a.description);
+    const mode = a.mode === undefined ? "any" : str(a.mode);
+    ensureOption(el.achMode, mode);
+    el.achMode.value = mode;
+    el.achSecret.checked = !!a.secret;
+    const extra = Object.keys(a).filter(k => !ACH_FORMAT.preferred.includes(k));
+    el.achExtras.innerHTML = extra.length ? `Preserved on save: ${extra.map(k => `<span class="pill mono">${escapeHtml(k)}</span>`).join(" ")}` : "";
+  }
+  function achRenderIdHint(){
+    const w = curAch(), a = achData();
+    if (!a){ el.achIdHint.innerHTML = ""; return; }
+    const id = typeof a.id === "string" ? a.id : "";
+    let txt, cls = "";
+    const dup = id ? ach.items.findIndex((x, j) => j !== ach.sel && isPlainObject(x.data) && x.data.id === id) : -1;
+    if (!id){ txt = "an id is required"; cls = "bad"; }
+    else if (!ACH_ID_RE.test(id)){ txt = "lowercase letters, digits and _ only"; cls = "bad"; }
+    else if (dup >= 0){ txt = `also used by #${dup + 1}`; cls = "bad"; }
+    else if (w.origId !== undefined && w.origId !== id){ txt = `renamed from "${w.origId}": unlocks are saved by id`; cls = "warn"; }
+    else txt = w.origId === undefined ? "new id" : "unlocks are saved by id";
+    el.achIdHint.innerHTML = `<span class="pill ${cls}">${escapeHtml(txt)}</span>`;
+  }
+  el.achName.addEventListener("input", () => { const a = achData(); if (!a) return; a.name = el.achName.value; achAfterChange(); });
+  el.achId.addEventListener("input", () => { const a = achData(); if (!a) return; a.id = el.achId.value; renderAchList(); achAfterChange(); });
+  el.achIdFromName.addEventListener("click", () => {
+    const a = achData(); if (!a) return;
+    a.id = uniqueAchId(a.name, ach.sel);
+    el.achId.value = a.id;
+    renderAchList(); achAfterChange();
+  });
+  el.achDesc.addEventListener("input", () => { const a = achData(); if (!a) return; a.description = el.achDesc.value; achAfterChange(); });
+  el.achMode.addEventListener("change", () => {
+    const a = achData(); if (!a) return;
+    if (el.achMode.value === "any") delete a.mode; else a.mode = el.achMode.value;
+    achAfterChange();
+  });
+  el.achSecret.addEventListener("change", () => {
+    const a = achData(); if (!a) return;
+    if (el.achSecret.checked) a.secret = true; else delete a.secret;
+    achAfterChange();
+  });
+
+  // ---------- trigger editor ----------
+  function achRenderSummary(){
+    const a = achData();
+    if (!a){ el.achSummary.innerHTML = ""; return; }
+    let html = escapeHtml(triggerSummary(a.trigger)) + ".";
+    const notes = [];
+    if (a.mode === "normal") notes.push("Normal mode only.");
+    else if (a.mode === "extreme") notes.push("Extreme mode only.");
+    else if (a.mode !== undefined && a.mode !== "any") notes.push(`Mode "${a.mode}".`);
+    if (a.secret) notes.push("Secret: listed as ??? until unlocked.");
+    if (notes.length) html += `<small>${escapeHtml(notes.join(" "))}</small>`;
+    el.achSummary.innerHTML = html;
+  }
+  function achRenderTrigger(){
+    const a = achData();
+    el.achParams.innerHTML = "";
+    const t = a && isPlainObject(a.trigger) ? a.trigger : null;
+    const curType = t && typeof t.type === "string" ? t.type : "";
+    el.achTrigType.innerHTML = (curType ? "" : `<option value="">(choose a trigger)</option>`)
+      + ach.triggers.map(d => `<option value="${escapeHtml(d.type)}">${escapeHtml(d.type)}  { ${escapeHtml(d.params.map(p => p.key).join(", "))} }</option>`).join("")
+      + (curType && !triggerSpec(curType) ? `<option value="${escapeHtml(curType)}">${escapeHtml(curType)} (unknown)</option>` : "");
+    el.achTrigType.value = curType;
+    const spec = triggerSpec(curType);
+    el.achTrigDoc.textContent = spec ? spec.doc + (spec.guessed ? " (found in the file header; field types are guessed)" : "")
+      : (curType ? "This trigger type isn't documented in the file header; its parameters are kept as they are." : "");
+    if (!t) return;
+    if (spec) for (const p of spec.params) el.achParams.appendChild(p.kind === "match" ? matchEditor(t, p) : paramField(t, p));
+    const known = new Set(["type", ...(spec ? spec.params.map(p => p.key) : [])]);
+    const other = Object.keys(t).filter(k => !known.has(k));
+    if (other.length){
+      const box = document.createElement("div");
+      box.className = "hint"; box.style.marginTop = "8px";
+      box.innerHTML = `${spec ? "Other parameters" : "Parameters"}, kept as they are:<div class="rawJson mono">${escapeHtml(JSON.stringify(Object.fromEntries(other.map(k => [k, t[k]])), null, 1))}</div>`;
+      el.achParams.appendChild(box);
+    }
+  }
+  el.achTrigType.addEventListener("change", () => {
+    const w = curAch(), a = achData();
+    const nt = el.achTrigType.value;
+    if (!a || !nt) return;
+    const old = isPlainObject(a.trigger) ? a.trigger : null;
+    if (old && typeof old.type === "string" && old.type) w.stash[old.type] = clone(old);
+    let next;
+    if (w.stash[nt]) next = clone(w.stash[nt]);
+    else {
+      // carry over parameters with the same name and kind (count, scope, match ...)
+      next = { type: nt };
+      const spec = triggerSpec(nt), oldSpec = old ? triggerSpec(old.type) : null;
+      if (spec && old && oldSpec) for (const p of spec.params){
+        const op = oldSpec.params.find(q => q.key === p.key);
+        if (op && op.kind === p.kind && old[p.key] !== undefined) next[p.key] = clone(old[p.key]);
+      }
+    }
+    a.trigger = next;
+    achRenderTrigger(); achAfterChange();
+  });
+  function paramHint(text){ const s = document.createElement("span"); s.className = "hint"; s.textContent = text; return s; }
+  function paramField(t, p){
+    const wrap = document.createElement("div");
+    wrap.className = "field";
+    const lab = document.createElement("span");
+    lab.textContent = p.label || p.key; lab.title = `trigger.${p.key}`;
+    const box = document.createElement("div");
+    box.className = "grow"; box.style.width = "100%";
+    if (p.kind === "int"){
+      const inp = document.createElement("input");
+      inp.type = "number"; inp.min = "1"; inp.step = "1"; inp.style.width = "120px";
+      inp.value = t[p.key] === undefined ? "" : String(t[p.key]);
+      inp.placeholder = p.def !== undefined ? String(p.def) : "";
+      inp.dataset.param = p.key;
+      inp.addEventListener("input", () => {
+        const v = inp.value.trim();
+        if (v === "") delete t[p.key];
+        else { const n = Number(v); if (!Number.isFinite(n)) return; t[p.key] = n; }
+        achAfterChange();
+      });
+      box.append(inp, paramHint(p.key + (p.def !== undefined ? ` · default ${p.def}` : p.required ? " · needed" : " · optional")));
+    } else if (p.kind === "scope"){
+      const sel = document.createElement("select");
+      sel.dataset.param = p.key;
+      sel.innerHTML = `<option value="">game (default)</option><option value="game">game</option><option value="lifetime">lifetime</option>`;
+      const v = t[p.key] === undefined ? "" : String(t[p.key]);
+      ensureOption(sel, v); sel.value = v;
+      sel.addEventListener("change", () => { if (sel.value === "") delete t[p.key]; else t[p.key] = sel.value; achAfterChange(); });
+      box.append(sel, paramHint("one game, or all games"));
+    } else if (p.kind === "zone"){
+      const inp = document.createElement("input");
+      inp.type = "text"; inp.className = "mono"; inp.spellcheck = false; inp.style.width = "140px";
+      inp.dataset.param = p.key;
+      inp.placeholder = p.def !== undefined ? String(p.def) : "";
+      inp.value = t[p.key] === undefined ? "" : String(t[p.key]);
+      const dl = document.createElement("datalist");
+      dl.id = "zonedl" + (++chipSeq);
+      dl.innerHTML = [...new Set(["inside", ...blockZoneNames()])].map(z => `<option value="${escapeHtml(z)}"></option>`).join("");
+      inp.setAttribute("list", dl.id);
+      inp.addEventListener("input", () => { const v = inp.value.trim(); if (!v) delete t[p.key]; else t[p.key] = v; achAfterChange(); });
+      inp.title = "A zone of the container block (Blocks mode → Zones tab)";
+      box.append(inp, dl, paramHint(p.key + (p.def !== undefined ? ` · default ${p.def}` : "")));
+    } else if (p.kind === "ids"){
+      const host = document.createElement("div");
+      host.dataset.param = p.key;
+      const ci = chipInput(host, {
+        placeholder: "add id…", allowDup: true, numbered: true,
+        suggest: () => [...allKnownIds()].sort(),
+        known: (v) => !BLOCKS.items.length || allKnownIds().has(v),
+        onChange: (vals) => { if (vals.length) t[p.key] = vals; else delete t[p.key]; achAfterChange(); },
+      });
+      ci.set(arrOf(t[p.key]));
+      box.append(host);
+    } else {
+      box.append(paramHint(JSON.stringify(t[p.key])));
+    }
+    wrap.append(lab, box);
+    return wrap;
+  }
+  // { ids, tags, types } editor; empty lists are left out and an empty match object is removed
+  function matchEditor(t, p){
+    const box = document.createElement("div");
+    box.className = "paramBox";
+    box.dataset.param = p.key;
+    const getM = () => isPlainObject(t[p.key]) ? t[p.key] : null;
+    const head = document.createElement("div");
+    head.className = "paramHead";
+    head.innerHTML = `<span>${escapeHtml(p.label || p.key)} <span class="mono" style="color:var(--muted);font-weight:500;">${escapeHtml(p.key)}</span></span>`;
+    const count = document.createElement("span");
+    count.className = "pill mono";
+    head.appendChild(count);
+    box.appendChild(head);
+    const updateCount = () => {
+      const m = getM();
+      const pool = BLOCKS.items.filter(s => s && (!p.powerup || isPowerupEntry(s)));
+      const hits = pool.filter(s => matchesShape(s, m));
+      const noun = p.powerup ? "powerup" : "block";
+      if (!m) count.textContent = BLOCKS.items.length ? `any ${p.powerup ? "powerup" : "piece"} (${hits.length})` : `any ${p.powerup ? "powerup" : "piece"}`;
+      else count.textContent = BLOCKS.items.length ? `matches ${hits.length} ${noun}${hits.length === 1 ? "" : "s"}` : "set";
+      count.className = "pill mono " + (m && BLOCKS.items.length && !hits.length ? "warn" : "");
+      count.title = hits.length && m ? hits.slice(0, 40).map(s => s.id).join(", ") + (hits.length > 40 ? " …" : "") : "";
+    };
+    const setList = (k, vals) => {
+      let m = getM();
+      if (!m){ if (!vals.length) return; m = t[p.key] = {}; }
+      if (vals.length) m[k] = vals; else delete m[k];
+      if (!Object.keys(m).length) delete t[p.key];
+      updateCount(); achAfterChange();
+    };
+    const row = (label, el2) => {
+      const f = document.createElement("div");
+      f.className = "field";
+      const s = document.createElement("span"); s.textContent = label;
+      f.append(s, el2);
+      return f;
+    };
+    const m0 = getM();
+    if (t[p.key] !== undefined && !m0){
+      const raw = document.createElement("div");
+      raw.className = "hint"; raw.style.color = "var(--warn)";
+      raw.textContent = `Unrecognised value ${JSON.stringify(t[p.key])} — kept unless you edit this.`;
+      box.appendChild(raw);
+    }
+    const ids = document.createElement("div");
+    const idChips = chipInput(ids, {
+      placeholder: "block id…",
+      suggest: () => {
+        const all = BLOCKS.items.filter(s => s && typeof s.id === "string");
+        const first = p.powerup ? all.filter(isPowerupEntry) : [];
+        return [...new Set([...first.map(s => s.id), ...all.map(s => s.id).sort()])];
+      },
+      known: (v) => !BLOCKS.items.length || allKnownIds().has(v),
+      onChange: (vals) => setList("ids", vals),
+    });
+    idChips.set(arrOf(m0 && m0.ids));
+    const tags = document.createElement("div");
+    const tagChips = chipInput(tags, {
+      placeholder: "tag…",
+      suggest: () => [...blockTagCounts().entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([tg]) => tg),
+      known: (v) => !BLOCKS.items.length || blockTagCounts().has(v),
+      onChange: (vals) => setList("tags", vals),
+    });
+    tagChips.set(arrOf(m0 && m0.tags));
+    const types = document.createElement("div");
+    types.className = "typeChecks";
+    const curTypes = arrOf(m0 && m0.types);
+    const allTypes = [...PU_TYPES, ...curTypes.filter(x => !PU_TYPES.includes(x))];
+    const boxes = allTypes.map(ty => {
+      const lab = document.createElement("label");
+      const cb = document.createElement("input");
+      cb.type = "checkbox"; cb.value = ty; cb.checked = curTypes.includes(ty);
+      cb.addEventListener("change", () => setList("types", boxes.filter(b => b.checked).map(b => b.value)));
+      lab.append(cb, document.createTextNode(" " + ty));
+      types.appendChild(lab);
+      return cb;
+    });
+    box.append(row("Ids", ids), row("Tags", tags), row("Types", types));
+    const other = m0 ? Object.keys(m0).filter(k => !["ids", "tags", "types"].includes(k)) : [];
+    const note = document.createElement("div");
+    note.className = "hint"; note.style.marginTop = "6px";
+    note.textContent = "Matches a piece whose id is listed, OR that has one of the tags, OR (powerups) whose type is ticked. Leave it all empty to match anything."
+      + (other.length ? ` Also kept: ${other.join(", ")}.` : "");
+    box.appendChild(note);
+    updateCount();
+    return box;
+  }
+
+  // ---------- icon editor ----------
+  const ictx = el.iconCanvas.getContext("2d");
+  const iedit = { down: false, tool: null, last: null, work: null, changed: false, uid: 0, snap: null };
+  function curIcon(){ const a = achData(); return a && isIconGrid(a.icon) ? a.icon : null; }
+  function iconSizeNow(){ const ic = curIcon(); if (!ic) return ach.icon.blank; const d = iconDims(ic); return Math.max(d.w, d.h); }
+  const iconCell = (ic, x, y) => (ic && Array.isArray(ic[y]) && ic[y][x] !== undefined && ic[y][x] !== null) ? ic[y][x] : "";
+  function iconGridCopy(ic, N){
+    const out = [];
+    for (let y = 0; y < N; y++){ const row = []; for (let x = 0; x < N; x++) row.push(iconCell(ic, x, y)); out.push(row); }
+    return out;
+  }
+  const iconAllEmpty = (g) => g.every(r => r.every(c => !normHex(c)));
+  const iconSnap = (a) => ({ has: Object.prototype.hasOwnProperty.call(a, "icon"), v: clone(a.icon) });
+  function iconRestore(a, s){ if (s.has) a.icon = clone(s.v); else delete a.icon; }
+  function iconHist(uid){
+    let h = ach.icon.hist.get(uid);
+    if (!h){ h = { undo: [], redo: [] }; ach.icon.hist.set(uid, h); }
+    return h;
+  }
+  // An icon edit: begin -> set pixels on a working N×N copy -> end (one undo step).
+  // A change that leaves every pixel transparent removes the icon from the entry.
+  function iconBegin(){
+    const w = curAch(), a = achData();
+    if (!a) return false;
+    iedit.uid = w.uid; iedit.snap = iconSnap(a);
+    iedit.work = iconGridCopy(curIcon(), iconSizeNow());
+    iedit.changed = false;
+    return true;
+  }
+  function iconSet(x, y, v){
+    const row = iedit.work && iedit.work[y];
+    if (!row || x < 0 || x >= row.length) return false;
+    const cur = row[x];
+    if (v ? normHex(cur) === v : cur === "") return false;
+    row[x] = v;
+    iedit.changed = true;
+    const a = achData();
+    if (a) a.icon = iedit.work; // live
+    return true;
+  }
+  function iconEnd(){
+    if (!iedit.work) return;
+    const w = curAch(), a = achData();
+    if (iedit.changed && a && w.uid === iedit.uid){
+      if (iconAllEmpty(iedit.work)) delete a.icon; else a.icon = iedit.work;
+      const h = iconHist(iedit.uid);
+      h.undo.push(iedit.snap);
+      if (h.undo.length > 200) h.undo.shift();
+      h.redo.length = 0;
+    }
+    iedit.work = null; iedit.down = false; iedit.last = null;
+    achRenderIcon(); achAfterChange();
+  }
+  function iconFinishStroke(){ if (iedit.work) iconEnd(); }
+  function iconUndo(){
+    iconFinishStroke();
+    const w = curAch(), a = achData();
+    if (!a) return;
+    const h = iconHist(w.uid);
+    if (!h.undo.length) return;
+    h.redo.push(iconSnap(a));
+    iconRestore(a, h.undo.pop());
+    achRenderIcon(); achAfterChange();
+  }
+  function iconRedo(){
+    iconFinishStroke();
+    const w = curAch(), a = achData();
+    if (!a) return;
+    const h = iconHist(w.uid);
+    if (!h.redo.length) return;
+    h.undo.push(iconSnap(a));
+    iconRestore(a, h.redo.pop());
+    achRenderIcon(); achAfterChange();
+  }
+  function iconFlood(x0, y0, v){
+    const N = iedit.work.length;
+    const key = (c) => normHex(c) || "";
+    const target = key(iedit.work[y0][x0]);
+    if (target === (v || "")) return;
+    const stack = [[x0, y0]], seen = new Set();
+    while (stack.length){
+      const [x, y] = stack.pop();
+      if (x < 0 || y < 0 || x >= N || y >= N) continue;
+      const k = y * N + x;
+      if (seen.has(k)) continue;
+      seen.add(k);
+      if (key(iedit.work[y][x]) !== target) continue;
+      iconSet(x, y, v);
+      stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+    }
+  }
+  // pad/crop (centred, keeps pixels) or scale (nearest neighbour) to N×N
+  function iconResize(N, mode){
+    N = clamp(N | 0, ICON_MIN, ICON_MAX);
+    if (!achData()) return;
+    const ic = curIcon();
+    if (!ic){ ach.icon.blank = N; achRenderIcon(); achRenderPreviews(); return; }
+    const old = iconSizeNow();
+    const d = iconDims(ic);
+    if (N === old && d.w === d.h && ic.every(r => r.length === d.w)) return;
+    const src = iconGridCopy(ic, old);
+    const off = Math.floor((N - old) / 2);
+    const out = [];
+    for (let y = 0; y < N; y++){
+      const row = [];
+      for (let x = 0; x < N; x++){
+        if (mode === "scale") row.push(src[Math.floor(y * old / N)][Math.floor(x * old / N)]);
+        else { const sx = x - off, sy = y - off; row.push(sx >= 0 && sy >= 0 && sx < old && sy < old ? src[sy][sx] : ""); }
+      }
+      out.push(row);
+    }
+    if (!iconBegin()) return;
+    iedit.work = out; iedit.changed = true;
+    achData().icon = out;
+    iconEnd();
+  }
+  // An image scaled into N×N (contain-fit, centred), box-filtered; mostly transparent pixels become ""
+  function bitmapToIcon(bmp, N){
+    const sc = Math.min(1, 512 / Math.max(bmp.width, bmp.height));
+    const cw = Math.max(1, Math.round(bmp.width * sc)), ch = Math.max(1, Math.round(bmp.height * sc));
+    const c = document.createElement("canvas");
+    c.width = cw; c.height = ch;
+    const cx = c.getContext("2d", { willReadFrequently: true });
+    cx.imageSmoothingEnabled = true; cx.imageSmoothingQuality = "high";
+    cx.drawImage(bmp, 0, 0, cw, ch);
+    const d = cx.getImageData(0, 0, cw, ch).data;
+    const s = Math.min(N / cw, N / ch);
+    const ox = (N - cw * s) / 2, oy = (N - ch * s) / 2;
+    const out = [];
+    for (let ty = 0; ty < N; ty++){
+      const row = [];
+      const sy0 = (ty - oy) / s, sy1 = (ty + 1 - oy) / s;
+      for (let tx = 0; tx < N; tx++){
+        const sx0 = (tx - ox) / s, sx1 = (tx + 1 - ox) / s;
+        const area = (sx1 - sx0) * (sy1 - sy0);
+        let A = 0, R = 0, G = 0, B = 0;
+        for (let y = Math.max(0, Math.floor(sy0)); y < Math.min(ch, Math.ceil(sy1)); y++){
+          const wy = Math.min(sy1, y + 1) - Math.max(sy0, y);
+          if (wy <= 0) continue;
+          for (let x = Math.max(0, Math.floor(sx0)); x < Math.min(cw, Math.ceil(sx1)); x++){
+            const wx = Math.min(sx1, x + 1) - Math.max(sx0, x);
+            if (wx <= 0) continue;
+            const j = (y * cw + x) * 4, al = (d[j + 3] / 255) * wx * wy;
+            A += al; R += d[j] * al; G += d[j + 1] * al; B += d[j + 2] * al;
+          }
+        }
+        row.push(A / area >= 0.5 ? rgbToHex(clamp255(Math.round(R / A)), clamp255(Math.round(G / A)), clamp255(Math.round(B / A))) : "");
+      }
+      out.push(row);
+    }
+    return out;
+  }
+  async function iconPasteBitmap(bmp){
+    const a = achData();
+    if (!a){ toast("Select or add an achievement first."); return; }
+    iconFinishStroke();
+    const N = iconSizeNow();
+    const grid = bitmapToIcon(bmp, N);
+    if (!iconBegin()) return;
+    iedit.work = grid;
+    iedit.changed = !deepEqual(grid, iconGridCopy(curIcon(), N));
+    if (iedit.changed) a.icon = grid;
+    iconEnd();
+    toast(`Image pasted as a ${N}×${N} icon`, "good");
+  }
+
+  function setIconTool(t){
+    ach.icon.tool = t;
+    document.querySelectorAll(".iconToolBtn").forEach(b => b.classList.toggle("active", b.dataset.itool === t));
+  }
+  // from: the input the value came from (not rewritten while typing)
+  function setIconColour(hex, addRecent, from){
+    const h = normHex(hex);
+    if (!h) return;
+    ach.icon.colour = h;
+    if (from !== el.iconColour) el.iconColour.value = h;
+    if (from !== el.iconHex) el.iconHex.value = h;
+    if (addRecent) pushRecent(h);
+  }
+  function loadRecent(){
+    let r = null;
+    try { r = JSON.parse(localStorage.getItem(RECENT_KEY) || "null"); } catch {}
+    ach.icon.recent = Array.isArray(r) ? r.map(normHex).filter(Boolean).slice(0, 18) : STARTER_COLOURS.slice();
+  }
+  function pushRecent(hex){
+    const h = normHex(hex);
+    if (!h) return;
+    ach.icon.recent = [h, ...ach.icon.recent.filter(c => c !== h)].slice(0, 18);
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(ach.icon.recent)); } catch {}
+    renderIconPalettes();
+  }
+  function swatches(host, cols){
+    const key = cols.join(",");
+    if (host.dataset.key === key) return;
+    host.dataset.key = key;
+    host.innerHTML = "";
+    if (!cols.length){ host.innerHTML = `<span class="hint">—</span>`; return; }
+    for (const c of cols){
+      const b = document.createElement("button");
+      b.className = "swatch"; b.style.background = c; b.title = c;
+      b.addEventListener("click", () => { setIconColour(c, true); if (ach.icon.tool !== "fill") setIconTool("draw"); });
+      host.appendChild(b);
+    }
+  }
+  function renderIconPalettes(){
+    swatches(el.iconRecent, ach.icon.recent);
+    const used = new Map(), ic = curIcon();
+    if (ic) for (const r of ic) for (const c of r){ const h = normHex(c); if (h) used.set(h, (used.get(h) || 0) + 1); }
+    swatches(el.iconUsed, [...used.entries()].sort((p, q) => q[1] - p[1]).map(([h]) => h).slice(0, 48));
+  }
+
+  // Draw an icon (or the "?" placeholder) into a size×size box, with the game's rounding
+  function drawIconBox(ctx, icon, x, y, size, placeholder = true){
+    if (isIconGrid(icon)){
+      const n = Math.max(icon.length, ...icon.map(r => r.length));
+      const b = [];
+      for (let i = 0; i <= n; i++) b.push(Math.round(i * size / n));
+      for (let gy = 0; gy < icon.length; gy++){
+        const row = icon[gy];
+        for (let gx = 0; gx < row.length; gx++){
+          const c = normHex(row[gx]);
+          if (!c) continue;
+          ctx.fillStyle = c;
+          ctx.fillRect(x + b[gx], y + b[gy], b[gx + 1] - b[gx], b[gy + 1] - b[gy]);
+        }
+      }
+      return true;
+    }
+    if (placeholder){
+      ctx.fillStyle = "#1d1d38"; ctx.fillRect(x, y, size, size);
+      const n = 12, b = [];
+      for (let i = 0; i <= n; i++) b.push(Math.round(i * size / n));
+      ctx.fillStyle = "rgba(205,205,235,0.42)";
+      ICON_PLACEHOLDER.forEach((row, gy) => { for (let gx = 0; gx < n; gx++) if (row[gx] === "#") ctx.fillRect(x + b[gx], y + b[gy], b[gx + 1] - b[gx], b[gy + 1] - b[gy]); });
+    }
+    return false;
+  }
+  function drawIconPreview(canvas, ic, N, scale){
+    const S = N * scale;
+    if (canvas.width !== S) canvas.width = S;
+    if (canvas.height !== S) canvas.height = S;
+    canvas.style.width = S + "px"; canvas.style.height = S + "px";
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, S, S);
+    drawIconBox(ctx, ic, 0, 0, S);
+  }
+  function achRenderPreviews(){
+    const a = achData();
+    const ic = a && isIconGrid(a.icon) ? a.icon : null;
+    const N = iconSizeNow();
+    drawIconPreview(el.iconPrev1, ic, N, 1);
+    drawIconPreview(el.iconPrev3, ic, N, 3);
+    const tctx = el.toastIcon.getContext("2d");
+    tctx.clearRect(0, 0, 36, 36);
+    drawIconBox(tctx, ic, 0, 0, 36);
+    el.toastName.textContent = a ? (String(a.name ?? "") || "(unnamed)") : "";
+    el.toastDesc.textContent = a ? String(a.description ?? "") : "";
+    const notes = [];
+    if (a && !ic) notes.push("No icon yet: the game shows its default icon instead of the ?.");
+    if (ic){ const d = iconDims(ic); if (d.w !== 12 || d.h !== 12) notes.push(`The game draws icons in a 36px square: exactly 3× for 12×12, so ${d.w}×${d.h} gets scaled.`); }
+    if (a && a.secret) notes.push("Secret: listed as ??? until it unlocks.");
+    el.toastNote.textContent = notes.join(" ");
+  }
+  function achRenderIcon(){
+    const a = achData();
+    const ic = curIcon(), N = iconSizeNow();
+    const avail = Math.max(120, Math.min(440, (el.iconStage.clientWidth || 326) - 26));
+    const z = clamp(Math.floor(avail / N), 4, 40), S = N * z;
+    if (el.iconCanvas.width !== S) el.iconCanvas.width = S;
+    if (el.iconCanvas.height !== S) el.iconCanvas.height = S;
+    el.iconCanvas.style.width = S + "px"; el.iconCanvas.style.height = S + "px";
+    const ctx = ictx, h = Math.max(2, Math.floor(z / 2));
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++){
+      ctx.fillStyle = "#171717"; ctx.fillRect(x * z, y * z, z, z);
+      ctx.fillStyle = "#0e0e0e"; ctx.fillRect(x * z, y * z, h, h); ctx.fillRect(x * z + h, y * z + h, z - h, z - h);
+      const c = normHex(iconCell(ic, x, y));
+      if (c){ ctx.fillStyle = c; ctx.fillRect(x * z, y * z, z, z); }
+    }
+    if (z >= 8){
+      ctx.save(); ctx.translate(0.5, 0.5); ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(255,255,255,0.08)"; ctx.beginPath();
+      for (let i = 1; i < N; i++){ ctx.moveTo(i * z, 0); ctx.lineTo(i * z, S); ctx.moveTo(0, i * z); ctx.lineTo(S, i * z); }
+      ctx.stroke();
+      if (N % 2 === 0){
+        ctx.strokeStyle = "rgba(255,255,255,0.18)"; ctx.beginPath();
+        const m = (N / 2) * z; ctx.moveTo(m, 0); ctx.lineTo(m, S); ctx.moveTo(0, m); ctx.lineTo(S, m);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+    const hv = ach.icon.hover;
+    if (hv && a){ ctx.strokeStyle = "rgba(106,166,255,0.95)"; ctx.lineWidth = 2; ctx.strokeRect(hv.x * z + 1, hv.y * z + 1, z - 2, z - 2); }
+    if (!a){
+      ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(0, 0, S, S);
+      ctx.fillStyle = "rgba(255,255,255,0.7)"; ctx.font = "13px system-ui, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("No achievement selected", S / 2, S / 2);
+      ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
+    }
+    if (ic){ const d = iconDims(ic); el.iconSizePill.textContent = `${d.w}×${d.h}`; } else el.iconSizePill.textContent = `${N}×${N}`;
+    el.iconStatePill.textContent = ic ? "icon set" : "no icon";
+    el.iconStatePill.className = "pill " + (ic ? "good" : "warn");
+    if (document.activeElement !== el.iconSize) el.iconSize.value = String(N);
+    const w = curAch(), hist = w ? iconHist(w.uid) : { undo: [], redo: [] };
+    el.iconUndo.disabled = !hist.undo.length;
+    el.iconRedo.disabled = !hist.redo.length;
+    el.iconClear.disabled = !ic;
+    renderIconPalettes();
+  }
+  function iconPixelFromEvent(evt){
+    const N = iconSizeNow(), rect = el.iconCanvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return null;
+    const x = Math.floor((evt.clientX - rect.left) / rect.width * N);
+    const y = Math.floor((evt.clientY - rect.top) / rect.height * N);
+    return x < 0 || y < 0 || x >= N || y >= N ? null : { x, y };
+  }
+  el.iconCanvas.addEventListener("pointerdown", (evt) => {
+    evt.preventDefault();
+    blurFields();
+    if (!achData()) return;
+    const p = iconPixelFromEvent(evt);
+    if (!p) return;
+    const right = evt.button === 2;
+    let tool = ach.icon.tool;
+    if (tool === "dropper"){
+      const c = normHex(iconCell(curIcon(), p.x, p.y));
+      if (c){ setIconColour(c, true); setIconTool("draw"); }
+      return;
+    }
+    if (right && tool !== "fill") tool = "erase";
+    iconFinishStroke();
+    if (!iconBegin()) return;
+    const colour = ach.icon.colour;
+    if (tool === "fill"){
+      iconFlood(p.x, p.y, right ? "" : colour);
+      if (!right) pushRecent(colour);
+      iconEnd();
+      return;
+    }
+    if (tool === "draw") pushRecent(colour);
+    iedit.down = true; iedit.tool = tool; iedit.last = p;
+    try { el.iconCanvas.setPointerCapture(evt.pointerId); } catch {}
+    iconSet(p.x, p.y, tool === "erase" ? "" : colour);
+    achRenderIcon(); achRenderPreviews();
+  });
+  el.iconCanvas.addEventListener("pointermove", (evt) => {
+    const p = iconPixelFromEvent(evt);
+    const hv = ach.icon.hover;
+    const moved = !hv !== !p || (hv && p && (hv.x !== p.x || hv.y !== p.y));
+    ach.icon.hover = p;
+    if (iedit.down && p && iedit.work){
+      const l = iedit.last || p;
+      const v = iedit.tool === "erase" ? "" : ach.icon.colour;
+      lineCells(l.x, l.y, p.x, p.y, (x, y) => { iconSet(x, y, v); });
+      iedit.last = p;
+      achRenderIcon(); achRenderPreviews();
+    } else if (moved) achRenderIcon();
+  });
+  const endIconStroke = (evt) => {
+    if (!iedit.down) return;
+    iconEnd();
+    try { el.iconCanvas.releasePointerCapture(evt.pointerId); } catch {}
+  };
+  el.iconCanvas.addEventListener("pointerup", endIconStroke);
+  el.iconCanvas.addEventListener("pointercancel", endIconStroke);
+  el.iconCanvas.addEventListener("pointerleave", () => { ach.icon.hover = null; if (!iedit.down) achRenderIcon(); });
+  el.iconCanvas.addEventListener("contextmenu", (e) => e.preventDefault());
+  document.querySelectorAll(".iconToolBtn").forEach(b => b.addEventListener("click", () => setIconTool(b.dataset.itool)));
+  el.iconColour.addEventListener("input", () => setIconColour(el.iconColour.value, false, el.iconColour));
+  el.iconColour.addEventListener("change", () => setIconColour(el.iconColour.value, true, el.iconColour));
+  el.iconHex.addEventListener("input", () => { if (normHex(el.iconHex.value)) setIconColour(el.iconHex.value, false, el.iconHex); });
+  el.iconHex.addEventListener("change", () => { if (normHex(el.iconHex.value)) setIconColour(el.iconHex.value, true); });
+  el.iconSize.addEventListener("change", () => {
+    const N = clamp(parseInt(el.iconSize.value, 10) || ICON_DEFAULT, ICON_MIN, ICON_MAX);
+    el.iconSize.value = String(N);
+    if (!curIcon()){ ach.icon.blank = N; achRenderIcon(); achRenderPreviews(); }
+  });
+  const sizeInput = () => clamp(parseInt(el.iconSize.value, 10) || ICON_DEFAULT, ICON_MIN, ICON_MAX);
+  el.iconResize.addEventListener("click", () => iconResize(sizeInput(), "pad"));
+  el.iconScale.addEventListener("click", () => iconResize(sizeInput(), "scale"));
+  el.iconClear.addEventListener("click", () => {
+    if (!curIcon() || !iconBegin()) return;
+    for (let y = 0; y < iedit.work.length; y++) for (let x = 0; x < iedit.work[y].length; x++) iconSet(x, y, "");
+    iconEnd();
+  });
+  el.iconUndo.addEventListener("click", iconUndo);
+  el.iconRedo.addEventListener("click", iconRedo);
+  el.iconPaste.addEventListener("click", async () => {
+    try {
+      if (!navigator.clipboard || !navigator.clipboard.read) throw new Error("Clipboard read API not available.");
+      const items = await navigator.clipboard.read();
+      for (const item of items){
+        const type = item.types.find(t => t.startsWith("image/"));
+        if (!type) continue;
+        await iconPasteBitmap(await createImageBitmap(await item.getType(type)));
+        return;
+      }
+      toast("No image found in the clipboard.");
+    } catch (e){
+      toast("Paste failed (the clipboard needs http://localhost or https; Ctrl/Cmd+V or dropping an image file also works): " + (e.message || e), "bad");
+    }
+  });
+  el.iconStage.addEventListener("dragover", (e) => {
+    if ([...((e.dataTransfer && e.dataTransfer.items) || [])].some(i => i.kind === "file")){ e.preventDefault(); el.iconStage.classList.add("drop"); }
+  });
+  el.iconStage.addEventListener("dragleave", () => el.iconStage.classList.remove("drop"));
+  el.iconStage.addEventListener("drop", async (e) => {
+    e.preventDefault();
+    el.iconStage.classList.remove("drop");
+    const f = [...((e.dataTransfer && e.dataTransfer.files) || [])].find(x => x.type.startsWith("image/"));
+    if (!f) return;
+    try { await iconPasteBitmap(await createImageBitmap(f)); } catch (err){ toast("Could not read the image: " + (err.message || err), "bad"); }
+  });
+
+  // ---------- issues + save ----------
+  function achRenderIssues(){
+    const out = [];
+    const all = ach.items.map((w, i) => achIssues(w.data, i));
+    const w = curAch();
+    if (w){
+      const is = all[ach.sel];
+      out.push(...is.errors.map(t => `<li class="err">${escapeHtml(t)}</li>`), ...is.warnings.map(t => `<li class="warn">${escapeHtml(t)}</li>`));
+    }
+    const bad = [];
+    all.forEach((is, i) => { if (i !== ach.sel && is.errors.length) bad.push(i); });
+    if (bad.length) out.push(`<li class="err">${bad.length === 1 ? "Another achievement has" : `${bad.length} other achievements have`} errors: ${bad.slice(0, 8).map(i => "#" + (i + 1)).join(", ")}${bad.length > 8 ? " …" : ""}</li>`);
+    if (!out.length) out.push(`<li class="ok">${ach.dirty ? "Ready to save." : "No unsaved changes."}</li>`);
+    el.achIssues.innerHTML = out.join("");
+    el.achSaveBtn.disabled = all.some(is => is.errors.length > 0);
+  }
+  async function saveAchievements(){
+    flushChipInputs();
+    iconFinishStroke();
+    const bad = ach.items.map((w, i) => ({ i, is: achIssues(w.data, i) })).find(x => x.is.errors.length);
+    if (bad){ achSelect(bad.i); toast(`#${bad.i + 1}: ${bad.is.errors[0]}`, "bad"); return; }
+    const slot = ACH;
+    let parsed;
+    try { parsed = await freshParsed(slot); }
+    catch (e){ toast(`Cannot parse the achievements file: ${e.message}`, "bad"); return; }
+    if (!parsed){
+      const k = await ask("No file loaded", `The achievements file isn't loaded. Create a new file with these ${ach.items.length} achievement(s)? It will be downloaded as ${basename(slot.defaultPath)}.`,
+        [{ key: "new", label: "Create new file", cls: "primary" }, { key: "cancel", label: "Cancel" }]);
+      if (k !== "new") return;
+      parsed = parseArrayFile(`export const ${slot.defaultExport} = [\n];\n`);
+    } else if (slot.text != null && !deepEqual(achNormItems(parsed.items), ach.base)){
+      const k = await ask("File changed", `${basename(slot.handle ? slot.handle.name : (slot.fileName || slot.defaultPath))} was changed outside the editor since it was loaded (it now has ${parsed.items.length} entries). Saving replaces the whole list with the editor's.`,
+        [{ key: "overwrite", label: "Overwrite with the editor's list", cls: "danger" }, { key: "load", label: "Load the file (discard my changes)" }, { key: "cancel", label: "Cancel" }]);
+      if (k === "cancel") return;
+      if (k === "load"){ setSlotText(slot, parsed.text, slot.handle ? "handle" : slot.origin, slot.handle ? slot.handle.name : slot.fileName); return; }
+    }
+    if (parsed.commentCount){
+      const k = await ask("Comments will be removed", `The ${parsed.exportName} array contains ${parsed.commentCount} comment(s). Rewriting the array drops comments inside it (text before the export, like the header comment, is kept).`,
+        [{ key: "go", label: "Save anyway", cls: "primary" }, { key: "cancel", label: "Cancel" }]);
+      if (k !== "go") return;
+    }
+    const items = ach.items.map(w => normaliseAchievement(w.data));
+    try {
+      const how = await writeItems(slot, parsed, items, ACH_FORMAT, { keepWorking: true });
+      ach.base = achNormItems(items);
+      if (!ach.headerTypes.length && slot.parsed){ ach.headerTypes = parseTriggerHeader(slot.text.slice(0, slot.parsed.start)); ach.triggers = buildTriggerList(); }
+      achAfterChange(false);
+      toast(`Saved ${items.length} achievements — ${how === "written" ? "written to " + slot.handle.name : "file downloaded"}`, "good");
+    } catch (e){ toast(e.message || String(e), "bad"); }
+  }
+  el.achSaveBtn.addEventListener("click", saveAchievements);
+  el.achCopyEntry.addEventListener("click", async () => {
+    if (!el.achEntryOut.value) return;
+    try { await navigator.clipboard.writeText(el.achEntryOut.value); toast("Entry copied"); }
+    catch { el.achEntryOut.select(); document.execCommand && document.execCommand("copy"); toast("Entry copied (fallback)"); }
+  });
+
+  // ---------- top-level mode ----------
+  function setAppMode(mode){
+    if (mode !== "achievements") mode = "blocks";
+    if (mode !== state.mode){ endAction(); iconFinishStroke(); }
+    state.mode = mode;
+    document.querySelectorAll("#modeSeg button").forEach(b => b.classList.toggle("on", b.dataset.appmode === mode));
+    el.blocksApp.classList.toggle("hidden", mode !== "blocks");
+    el.achApp.classList.toggle("hidden", mode !== "achievements");
+    el.blocksTop.classList.toggle("hidden", mode !== "blocks");
+    el.achTop.classList.toggle("hidden", mode !== "achievements");
+    try { localStorage.setItem(MODE_KEY, mode); } catch {}
+    try { history.replaceState(null, "", mode === "achievements" ? "#achievements" : location.pathname + location.search); } catch {}
+    if (mode === "blocks") scheduleRender(); else achRenderAll();
+  }
+  function initialMode(){
+    if (location.hash === "#achievements") return "achievements";
+    if (location.hash === "#blocks") return "blocks";
+    try { return localStorage.getItem(MODE_KEY) || "blocks"; } catch { return "blocks"; }
+  }
+  document.querySelectorAll("#modeSeg button").forEach(b => b.addEventListener("click", () => setAppMode(b.dataset.appmode)));
+  function achInit(){
+    loadRecent();
+    setIconColour(ach.icon.colour, false);
+    setIconTool("draw");
+  }
+
+  // keyboard shortcuts (per mode)
   window.addEventListener("keydown", async (e) => {
     const tag = (e.target && e.target.tagName || "").toLowerCase();
     const typing = tag === "input" || tag === "textarea" || tag === "select" || (e.target && e.target.isContentEditable);
     if (el.modal.open) return;
     const mod = e.ctrlKey || e.metaKey;
     const k = String(e.key || "").toLowerCase();
-    if (mod && k === "s"){ e.preventDefault(); saveCurrent(); return; }
+    if (mod && k === "s"){ e.preventDefault(); if (state.mode === "achievements") saveAchievements(); else saveCurrent(); return; }
     if (typing) return;
+    if (state.mode === "achievements"){
+      if (mod){
+        if (k === "z" && !e.shiftKey){ e.preventDefault(); iconUndo(); }
+        else if (k === "y" || (k === "z" && e.shiftKey)){ e.preventDefault(); iconRedo(); }
+        return;
+      }
+      if (e.altKey) return;
+      const iconKeys = { d: "draw", e: "erase", f: "fill", i: "dropper" };
+      if (iconKeys[k]) setIconTool(iconKeys[k]);
+      return;
+    }
     if (mod){
       if (k === "z" && !e.shiftKey){ e.preventDefault(); undo(); return; }
       if (k === "y" || (k === "z" && e.shiftKey)){ e.preventDefault(); redo(); return; }
@@ -3231,12 +5221,15 @@
     const toolKeys = { d: "draw", b: "brush", f: "fill", e: "erase", i: "dropper", m: "mask" };
     if (toolKeys[k]){ setTool(toolKeys[k]); if (state.centreTab !== "art") setCentreTab("art"); }
   });
-  window.addEventListener("resize", scheduleRender);
+  window.addEventListener("resize", () => { if (state.mode === "achievements") achRenderIcon(); else scheduleRender(); });
 
   // test / debugging hook (used by automated checks; harmless otherwise)
   window.__blockDesigner = {
-    state, SLOTS, parseArrayFile, serialiseArray, serialiseEntry, replaceArrayInText, findMatchingBracket,
+    state, SLOTS, BLOCKS, ACH, ach, parseArrayFile, serialiseArray, serialiseEntry, replaceArrayInText, findMatchingBracket,
     buildShapeFromEditor, loadShapeIntoEditor, deepEqual, toJsonCompatible, renderNow, setKind, setCentreTab, generate,
+    zoneGenerate, regionSignature, exportRegion, setAppMode, achSelect, achIssues, triggerSummary, normaliseAchievement,
+    serialiseAchievements, saveAchievements, saveCurrent, parseTriggerHeader, bitmapToIcon, iconPasteBitmap, setSlotText,
+    BLOCK_FORMAT, ACH_FORMAT,
   };
 
   // ============================================================
@@ -3248,14 +5241,19 @@
     setTool(state.tool);
     syncPreviewScale();
     syncAllUI();
+    achInit();
     renderSlots();
     renderList();
-    for (const slot of Object.values(SLOTS)){
+    setAppMode(initialMode());
+    // the separate powerups file is gone: drop a handle remembered for it by earlier versions
+    idb("readwrite", s => s.delete("slot_powerups")).catch(() => {});
+    for (const slot of [BLOCKS, ACH]){
       let restored = false;
       try { restored = await restoreHandle(slot); } catch {}
       if (!restored && isServed()) await fetchDefault(slot);
     }
-    renderSlots(); renderList(); renderSaveHint();
+    renderSlots(); renderList();
+    if (state.mode === "achievements") achRenderAll();
   })();
 })();
 </script>
