@@ -142,7 +142,7 @@ export const CONFIG = {
       // the weight by (1 - penaltyPerCopy). A copy that has been partly destroyed counts
       // partly (by the fraction of its blocks left).
       onBoard: {
-        penaltyPerCopy: 0.45,  // 0 = off
+        penaltyPerCopy: 0.6,   // 0 = off
         minMultiplier: 0.1,
       },
     },
@@ -185,7 +185,8 @@ export const CONFIG = {
 
   achievements: {
     enabled: true,
-    toastMs: 3600,     // how long an unlock toast stays up
+    toastMs: 3200,     // how long an unlock toast stays up
+    maxToastsAtOnce: 2, // more unlocks than this wait their turn
   },
 
   sound: {

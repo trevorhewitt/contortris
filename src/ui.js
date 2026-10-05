@@ -300,6 +300,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
         break;
       case "gameOver":
         nameLayer.clear();
+        renderer.drawNextSilhouette(null);
         sound.play("gameOver");
         // let the last achievement toasts show before the panel covers them
         setTimeout(showGameOver, 350);
@@ -348,8 +349,24 @@ export function bindUI({ state, renderer, sound, achievements }) {
     return c;
   }
 
+  // Unlock toasts queue up so a big moment doesn't bury the board in them.
+  const toastQueue = [];
+  let toastsShowing = 0;
+
   function toast(def) {
     if (!CONFIG.achievements.enabled) return;
+    toastQueue.push(def);
+    pumpToasts();
+  }
+
+  function pumpToasts() {
+    while (toastsShowing < (CONFIG.achievements.maxToastsAtOnce ?? 2) && toastQueue.length) {
+      showToast(toastQueue.shift());
+    }
+  }
+
+  function showToast(def) {
+    toastsShowing++;
     const el = document.createElement("div");
     el.className = "toast";
     el.appendChild(iconCanvas(def.icon, 36));
@@ -365,7 +382,11 @@ export function bindUI({ state, renderer, sound, achievements }) {
     setTimeout(() => {
       el.classList.remove("in");
       el.classList.add("out");
-      setTimeout(() => el.remove(), 400);
+      setTimeout(() => {
+        el.remove();
+        toastsShowing--;
+        pumpToasts();
+      }, 400);
     }, CONFIG.achievements.toastMs);
     sound.play("achievement");
   }
