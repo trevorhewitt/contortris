@@ -12779,7 +12779,7 @@ export const ACHIEVEMENTS = [
   {
     id: "landmarks_all",
     name: "Grand Tour",
-    description: "Meet every landmark in one game.",
+    description: "Three different landmarks on the board at once.",
     icon: [
         [
           "",
@@ -12952,12 +12952,13 @@ export const ACHIEVEMENTS = [
       ],
     secret: true,
     trigger: {
-        "type": "seenAll",
+        "type": "together",
         "match": {
           "tags": [
             "landmark"
           ]
-        }
+        },
+        "count": 3
       },
   },
   {
