@@ -2858,8 +2858,10 @@
       if (seen.has(name)){ errors.push(`Two zones are called "${name}".`); continue; }
       seen.add(name);
       if (!ZONE_NAME_RE.test(name)) warnings.push(`Zone name "${name}": use lowercase letters, digits and _ (achievements refer to zones by name).`);
+      // empty zones are not saved, except one that was already empty in the file (kept as it was)
       const n = Object.keys(z.cells).length;
-      if (!n && z.orig === undefined){ warnings.push(`Zone "${name}" is empty, so it is not saved.`); continue; }
+      const emptyInFile = z.orig !== undefined && !regionObjectCells(z.orig).length;
+      if (!n && !emptyInFile){ warnings.push(`Zone "${name}" is empty, so it is not saved.`); continue; }
       if (!n) warnings.push(`Zone "${name}" is empty.`);
       out[name] = exportRegion(b, z.cells, z.extras, z.orig);
     }
