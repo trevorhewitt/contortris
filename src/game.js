@@ -139,7 +139,7 @@ export function configureMode(state, modeId) {
 
 // The pieces that can appear in the current mode.
 export function currentPool(state) {
-  return [...state.shapes, ...state.powerups];
+  return [...state.shapes, ...state.powerups].filter(s => (s.frequency ?? 1) > 0);
 }
 
 /* =========================
@@ -340,6 +340,25 @@ export function tryRotate(state) {
     { x: 0, y: 0 }, { x: -1, y: 0 }, { x: +1, y: 0 },
     { x: -2, y: 0 }, { x: +2, y: 0 }, { x: 0, y: -1 },
   ];
+
+  if (isPhantom(state)) {
+    // phantoms only care about the walls, and must still have somewhere to land
+    for (const k of kicks) {
+      const nx = state.active.x + k.x;
+      let inside = true;
+      for (let y = 0; y < nextMat.length && inside; y++) for (let x = 0; x < nextMat[0].length; x++) {
+        if (nextMat[y][x] && (nx + x < 0 || nx + x >= CONFIG.board.cols)) { inside = false; break; }
+      }
+      const target = inside ? phantomLandingY(state.board, nx, nextMat) : null;
+      if (target === null) continue;
+      state.active.rotIdx = nextIdx;
+      state.active.x = nx;
+      state.active.y = Math.min(state.active.y + k.y, target);
+      cancelLock(state);
+      return true;
+    }
+    return false;
+  }
 
   for (const k of kicks) {
     const nx = state.active.x + k.x;

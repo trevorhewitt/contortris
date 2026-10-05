@@ -13,6 +13,7 @@
  *   difficulty: 0-5,          regular blocks only; drives when it is served
  *                             (see CONFIG.assist.pieceMix in config.js)
  *   frequency: 0-1,           how often it is picked compared with others of its kind
+ *                             (0 = retired: never served, but kept in the file)
  *   rotation: { mode: "any" | "none" },
  *
  *   Optional:
@@ -564,7 +565,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "smallintestine",
@@ -629,7 +630,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "foot",
@@ -1986,7 +1987,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.9,
+    frequency: 0,
   },
   {
     id: "swiss_cheese",
@@ -4196,7 +4197,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -4214,7 +4215,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
   },
@@ -4233,7 +4234,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
   },
@@ -4251,7 +4252,7 @@ export const SHAPES = [
         "help": 1.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
   },
@@ -4271,7 +4272,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.8,
   },
@@ -4289,7 +4290,7 @@ export const SHAPES = [
         "help": 1
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.7,
   },
@@ -4308,7 +4309,7 @@ export const SHAPES = [
         "help": 1
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.8,
   },
@@ -4327,7 +4328,7 @@ export const SHAPES = [
         "help": 1
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.7,
   },

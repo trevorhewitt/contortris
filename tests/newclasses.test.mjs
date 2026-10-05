@@ -6,7 +6,7 @@ import { touchArea, applyBlast, applyGoo, phantomLandingY, resolveArea, normalis
 import { loadShapes } from "../src/shapes.js";
 import { SHAPES } from "../shapes/main_shapes.js";
 import { makeRng } from "../src/util.js";
-import { createGameState, startRun, hardDropAndLock, on, updateGame } from "../src/game.js";
+import { createGameState, startRun, hardDropAndLock, on, updateGame, tryRotate } from "../src/game.js";
 
 const mk = (lines) => lines.map(l => [...l].map(ch => (ch === "." ? null : { ch })));
 const show = (b) => b.map(r => r.map(c => (c ? c.ch : ".")).join(""));
@@ -139,4 +139,17 @@ test("combo: destroys a row, then its column falls", () => {
   assert.equal(fx.destroyed.length, 5);
   assert.deepEqual(show(b), [".....", ".....", ".....", "#...#", "#####"]);
   assert.equal(fx.moves.length, 1, "the block in its column fell into the hole");
+});
+
+test("phantoms rotate, even while overlapping blocks", () => {
+  const { shapes, powerups } = loadShapes(SHAPES);
+  const state = createGameState(shapes, powerups, { rng: makeRng(3) });
+  startRun(state, "normal");
+  const worm = powerups.find(p => p.id === "ghost_worm");
+  assert.ok(worm.rotations.length > 1, "ghost_worm has rotations");
+  // fill the board's lower half so the phantom sits inside blocks
+  for (let y = 10; y < state.board.length; y++) for (let x = 0; x < state.board[0].length; x++) state.board[y][x] = (x === 5 && y > 20) ? null : { pid: 999 };
+  state.active = { shape: worm, rotIdx: 0, x: 5, y: 12 };
+  assert.ok(tryRotate(state), "rotated inside the stack");
+  assert.equal(state.active.rotIdx, 1);
 });
