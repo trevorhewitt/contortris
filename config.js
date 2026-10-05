@@ -174,11 +174,13 @@ export const CONFIG = {
       },
 
       // Which class is most useful right now (multipliers):
-      // gravity/expanders fix air pockets, destroyers fix height.
+      // downward gravity/expanders fix air pockets, destroyers fix height.
+      // Sideways gravity (slides) tidies rows but rarely fixes air pockets.
       need: {
-        gravity:   { base: 0.6, holes: 1.2, danger: 0.0 },
-        expander:  { base: 0.6, holes: 0.8, danger: 0.0 },
-        destroyer: { base: 0.7, holes: 0.2, danger: 1.0 },
+        gravity:         { base: 0.6, holes: 1.2, danger: 0.0 },
+        gravitySideways: { base: 0.6, holes: 0.0, danger: 0.0 },
+        expander:        { base: 0.6, holes: 0.8, danger: 0.0 },
+        destroyer:       { base: 0.7, holes: 0.2, danger: 1.0 },
       },
     },
   },

@@ -402,7 +402,8 @@ function maybeSelectPowerup(state, danger01) {
   return sampleByWeight(candidates, (p) => {
     const tier = p.powerup.tier;
     const tierW = lerp(tw.calm[tier] ?? 1, tw.danger[tier] ?? 1, danger01);
-    const n = need[p.powerup.type] ?? { base: 1 };
+    const sideways = p.powerup.type === "gravity" && (p.powerup.direction === "left" || p.powerup.direction === "right");
+    const n = (sideways ? need.gravitySideways : null) ?? need[p.powerup.type] ?? { base: 1 };
     const needW = (n.base ?? 1) + (n.holes ?? 0) * holes01 + (n.danger ?? 0) * danger01;
     return (p.frequency ?? 1) * tierW * needW * varietyMultiplier(sel, p);
   }, state.rng);
