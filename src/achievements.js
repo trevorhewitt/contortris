@@ -113,6 +113,23 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
 
       case "lock": {
         game.drops = d.drops ?? game.drops + 1;
+        each("together", (def, t) => {
+          const present = d.onBoard ? d.onBoard() : [];
+          if (t.groups?.length) {
+            // one distinct piece on the board for each group
+            const used = new Set();
+            const ok = t.groups.every(g => {
+              const i = present.findIndex((s, k) => !used.has(k) && matchShape(s, g));
+              if (i < 0) return false;
+              used.add(i);
+              return true;
+            });
+            if (ok) unlock(def);
+          } else if (t.count) {
+            const ids = new Set(present.filter(s => matchShape(s, t.match)).map(s => s.id));
+            if (ids.size >= t.count) unlock(def);
+          }
+        });
         each("pieceInside", (def, t) => {
           const pairs = d.inside ? d.inside(t.zone ?? "inside") : [];
           if (pairs.some(p => matchShape(p.inner, t.piece) && matchShape(p.container, t.container))) unlock(def);

@@ -457,7 +457,17 @@
             <div class="box">
               <h3>Effect</h3>
               <div class="field"><span>Type</span>
-                <select id="puType"><option value="destroyer">destroyer</option><option value="gravity">gravity</option><option value="expander">expander</option></select>
+                <select id="puType"><option value="destroyer">destroyer</option><option value="gravity">gravity</option><option value="expander">expander</option><option value="acid">acid</option><option value="blast">blast</option><option value="goo">goo</option><option value="phantom">phantom</option></select>
+              </div>
+              <div class="hint" id="puTypeDoc" style="margin:-2px 0 6px;"></div>
+              <div class="field" id="puReachField"><span>Reach</span>
+                <div class="grow"><input id="puReach" type="number" min="1" max="10" step="1" style="width:80px;" placeholder="1"><span class="hint" title="Steps from its blocks">default 1</span></div>
+              </div>
+              <div class="field" id="puPushField"><span>Push</span>
+                <div class="grow"><input id="puPush" type="number" min="1" max="20" step="1" style="width:80px;" placeholder="3"><span class="hint" title="Cells the blocks get thrown">default 3</span></div>
+              </div>
+              <div class="field" id="puVolumeField"><span>Volume</span>
+                <div class="grow"><input id="puVolume" type="number" min="0.1" max="10" step="0.1" style="width:80px;" placeholder="1"><span class="hint" title="Cells filled, × its own block count">× blocks · def. 1</span></div>
               </div>
               <div class="field" id="puDirectionField"><span>Direction</span>
                 <select id="puDirection"><option value="down">down</option><option value="left">left</option><option value="right">right</option><option value="up">up</option></select>
@@ -469,12 +479,19 @@
                 </div>
               </div>
               <div class="field"><span>Description</span><input id="puDescription" type="text" spellcheck="false"></div>
+              <div class="field top"><span>Intro</span><textarea id="puIntro" class="desc" rows="3" spellcheck="true" placeholder="Optional: a line or two for the powerup's intro screen"></textarea></div>
               <div class="field"><span></span><label><input id="puConsume" type="checkbox"> Consume <span id="puConsumeNote" class="pill">default</span></label></div>
               <div class="field" id="puCollapseField"><span></span><label title="Rows wiped wall-to-wall collapse like a line clear"><input id="puCollapse" type="checkbox"> Collapse wiped rows</label></div>
             </div>
 
-            <div class="box">
-              <h3>Highlighted area</h3>
+            <div class="box hidden" id="puNoAreaBox">
+              <h3>No highlighted area</h3>
+              <div class="hint" id="puNoAreaText"></div>
+            </div>
+
+            <div class="box" id="puAreaBox">
+              <h3 id="puAreaTitle">Highlighted area</h3>
+              <div class="hint hidden" id="puAcidAreaNote" style="margin-bottom:6px;">Acid works out its own area: every cell within <b>reach</b> steps of its blocks (shown green, read-only). Paint here only to add <b>extra</b> cells, rows or columns (optional).</div>
               <div class="row areaTools" id="areaTools">
                 <button data-ach="#" class="active" title="This cell">#</button>
                 <button data-ach="-" title="This cell's whole board row">-</button>
@@ -501,7 +518,7 @@
             </div>
 
             <div class="box" id="fillBox">
-              <h3>Expander fill art</h3>
+              <h3 id="fillBoxTitle">Expander fill art</h3>
               <div class="row">
                 <div class="seg" id="fillModeSeg">
                   <button data-fmode="pixel">Pixel art</button>
@@ -533,7 +550,7 @@
 
           <div class="areaWrap" id="areaWrap">
             <canvas id="areaCanvas" width="300" height="300"></canvas>
-            <div class="hint" style="margin-top:8px;">Drag to paint with the selected marker; right-click erases. Bands show rows/columns that extend across the whole board. The rainbow shows what the game highlights.</div>
+            <div class="hint" id="areaCanvasHint" style="margin-top:8px;">Drag to paint with the selected marker; right-click erases. Bands show rows/columns that extend across the whole board. The rainbow shows what the game highlights.</div>
           </div>
         </div>
       </div>
@@ -843,16 +860,41 @@
   const MAX_BLOCKS = 64;
   const ID_RE = /^[a-z0-9_]+$/;
   const AREA_CHARS = new Set(["#", "-", "|", "+"]);
-  const PU_TYPES = ["destroyer", "gravity", "expander"];
+  const PU_TYPES = ["destroyer", "gravity", "expander", "acid", "blast", "goo", "phantom"];
   const PU_DEFAULT_DESC = {
     destroyer: "destroys highlighted blocks",
     gravity: "gravitates highlighted blocks",
     expander: "fills highlighted blocks",
+    acid: "dissolves blocks it touches",
+    blast: "blasts highlighted blocks away",
+    goo: "melts into the gaps below",
+    phantom: "falls through blocks into the deepest gap",
   };
-  const PU_DEFAULT_CONSUME = { destroyer: true, gravity: true, expander: false };
+  const PU_DEFAULT_CONSUME = { destroyer: true, gravity: true, expander: false, acid: true, blast: true, goo: true, phantom: false };
+  // What each type does (shown under the type select)
+  const PU_TYPE_DOC = {
+    destroyer: "Destroys every block in its area.",
+    gravity: "Blocks in its area fall (or slide) until they hit something.",
+    expander: "Fills every empty cell in its area with its fill art.",
+    acid: "Dissolves every block it touches: its area is every cell within reach steps of its blocks, plus any extra area.",
+    blast: "Throws the blocks in its area outwards by up to push cells, then they fall.",
+    goo: "Melts: its blocks (× volume) flow down into the lowest gaps they can reach, drawn with its fill art.",
+    phantom: "Falls straight through blocks into the deepest gap it fits, and stays there as blocks.",
+  };
+  // Types whose `area` the game reads (acid: optional extra cells on top of its touch area)
+  const PU_AREA_TYPES = ["destroyer", "gravity", "expander", "blast", "acid"];
+  const PU_FILL_TYPES = ["expander", "goo"];
+  const PU_COLLAPSE_TYPES = ["destroyer", "acid"];
+  // Per-type numeric parameters (written only for their type, and only when not the default)
+  const PU_NUM_PARAMS = [
+    { key: "reach", type: "acid", def: 1, min: 1, int: true },
+    { key: "push", type: "blast", def: 3, min: 1, int: false },
+    { key: "volume", type: "goo", def: 1, min: 0.1, int: false },
+  ];
+  const defaultPu = () => ({ type: "destroyer", direction: "down", tier: 1, description: "", intro: "", consume: null, collapse: false, reach: null, push: null, volume: null, extras: {} });
   // Keys the editor manages itself; everything else on a loaded shape is preserved as-is.
   const MANAGED_KEYS = ["id", "name", "grid", "color", "powerup", "difficulty", "rotation", "frequency", "nextShapes", "nextShapeProbs", "tags", "zones"];
-  const MANAGED_PU_KEYS = ["type", "direction", "tier", "description", "area", "fill", "consume", "collapse"];
+  const MANAGED_PU_KEYS = ["type", "direction", "tier", "description", "intro", "area", "fill", "consume", "collapse"];
   // Serialisation key order (rest sorted alphabetically, like shape_encoder): ... nextShapeProbs, nextShapes, tags, zones
   const PREFERRED_KEYS = ["id", "name", "grid", "color", "powerup", "difficulty", "rotation", "frequency"];
   // In-game preview
@@ -1140,7 +1182,7 @@
     extras: {},                    // unknown properties of a loaded shape (preserved)
 
     // powerup
-    pu: { type: "destroyer", direction: "down", tier: 1, description: "", consume: null, collapse: false, extras: {} },
+    pu: defaultPu(),
     // cells: "x,y" (editor block coords = the grid as loaded) -> "#"|"-"|"|"|"+"
     // orig: the area object as loaded (written back verbatim while its cells are unchanged)
     area: { cells: {}, margin: 3, tool: "#", extras: {}, orig: undefined },
@@ -1960,15 +2002,64 @@
     el.puConsume.checked = puConsumeEffective();
     el.puConsumeNote.textContent = state.pu.consume === null ? "default" : "custom";
     el.puConsumeNote.className = "pill " + (state.pu.consume === null ? "" : "accent");
-    el.puDirectionField.classList.toggle("hidden", state.pu.type !== "gravity");
-    el.puCollapseField.classList.toggle("hidden", state.pu.type !== "destroyer");
+    const type = state.pu.type;
+    el.puTypeDoc.textContent = PU_TYPE_DOC[type] || (PU_TYPES.includes(type) ? "" : `Unknown type "${type}": the game ignores this powerup.`);
+    el.puIntro.value = state.pu.intro;
+    for (const prm of PU_NUM_PARAMS){
+      const f = el["pu" + prm.key[0].toUpperCase() + prm.key.slice(1) + "Field"], inp = el["pu" + prm.key[0].toUpperCase() + prm.key.slice(1)];
+      f.classList.toggle("hidden", type !== prm.type);
+      const v = state.pu[prm.key];
+      if (document.activeElement !== inp) inp.value = v == null ? "" : String(v);
+    }
+    el.puDirectionField.classList.toggle("hidden", type !== "gravity");
+    el.puCollapseField.classList.toggle("hidden", !PU_COLLAPSE_TYPES.includes(type));
     el.puCollapse.checked = !!state.pu.collapse;
-    el.fillBox.classList.toggle("hidden", state.pu.type !== "expander");
+    el.fillBox.classList.toggle("hidden", !PU_FILL_TYPES.includes(type));
+    el.fillBoxTitle.textContent = type === "goo" ? "Goo fill art" : "Expander fill art";
+    const usesArea = puUsesArea();
+    el.puAreaBox.classList.toggle("hidden", !usesArea);
+    el.puAcidAreaNote.classList.toggle("hidden", type !== "acid");
+    el.puAreaTitle.textContent = type === "acid" ? "Extra area (optional)" : "Highlighted area";
+    el.puNoAreaBox.classList.toggle("hidden", usesArea);
+    el.puNoAreaText.textContent = type === "goo"
+      ? "Goo has no highlighted area: when it lands it melts, and its blocks (× volume) flow down into the lowest gaps they can reach. The in-game preview shows a rough guess of where it ends up."
+      : type === "phantom" ? "Phantoms have no highlighted area: they fall straight through other blocks and settle, as blocks, in the deepest gap they fit. The in-game preview outlines where it would land."
+      : "This type has no highlighted area.";
+    el.areaCanvasHint.textContent = usesArea
+      ? (type === "acid"
+        ? "Green: the cells acid touches (worked out from its shape and reach, read-only). Drag to paint extra cells; right-click erases. The rainbow shows what the game highlights."
+        : "Drag to paint with the selected marker; right-click erases. Bands show rows/columns that extend across the whole board. The rainbow shows what the game highlights.")
+      : "Read-only: this type has no highlighted area. The shimmer shows the piece itself.";
     el.areaMargin.value = String(state.area.margin);
     document.querySelectorAll("#areaTools button").forEach(b => b.classList.toggle("active", b.dataset.ach === state.area.tool));
     syncFillUI();
   }
-  el.puType.addEventListener("change", () => { state.pu.type = el.puType.value; setDirty(true); syncPowerupUI(); scheduleRender(); });
+  el.puType.addEventListener("change", () => { state.pu.type = el.puType.value; adoptPuExtras(); setDirty(true); syncPowerupUI(); scheduleRender(); });
+  function puUsesArea(){ return PU_AREA_TYPES.includes(state.pu.type) || !PU_TYPES.includes(state.pu.type); }
+  // A numeric parameter kept as an unknown property (it didn't belong to the loaded type) becomes
+  // managed once the type uses it.
+  function adoptPuExtras(){
+    const p = state.pu;
+    for (const prm of PU_NUM_PARAMS){
+      const v = p.extras[prm.key];
+      if (p.type === prm.type && p[prm.key] == null && typeof v === "number" && Number.isFinite(v)){ p[prm.key] = v; delete p.extras[prm.key]; }
+    }
+  }
+  for (const prm of PU_NUM_PARAMS){
+    const inp = el["pu" + prm.key[0].toUpperCase() + prm.key.slice(1)];
+    inp.addEventListener("input", () => {
+      const raw = inp.value.trim();
+      if (raw === ""){ state.pu[prm.key] = null; }
+      else {
+        let n = Number(raw);
+        if (!Number.isFinite(n)) return;
+        state.pu[prm.key] = n;
+      }
+      setDirty(true); scheduleRender();
+    });
+    inp.addEventListener("change", () => syncPowerupUI());
+  }
+  el.puIntro.addEventListener("input", () => { state.pu.intro = el.puIntro.value; setDirty(true); scheduleRender(); });
   el.puDirection.addEventListener("change", () => { state.pu.direction = el.puDirection.value; setDirty(true); scheduleRender(); });
   el.puTier.addEventListener("change", () => { state.pu.tier = clamp(parseInt(el.puTier.value, 10) || 1, 1, 3); setDirty(true); scheduleRender(); });
   el.puDescription.addEventListener("input", () => { state.pu.description = el.puDescription.value; setDirty(true); scheduleRender(); });
@@ -2228,7 +2319,7 @@
   // ------------------------------------------------------------
   const actx = el.areaCanvas.getContext("2d");
   const areaPtr = bindRegionCanvas(el.areaCanvas, el.areaWrap, {
-    margin: () => state.area.margin, cells: () => state.area.cells, tool: () => state.area.tool, label: "area",
+    margin: () => state.area.margin, cells: () => puUsesArea() ? state.area.cells : null, tool: () => state.area.tool, label: "area",
   });
   document.querySelectorAll("#areaTools button").forEach(b => b.addEventListener("click", () => {
     state.area.tool = b.dataset.ach;
@@ -2261,19 +2352,51 @@
     if (el.areaCanvas.width !== W) el.areaCanvas.width = W;
     if (el.areaCanvas.height !== H) el.areaCanvas.height = H;
     const ctx = actx;
-    const cells = editorAreaCells();
+    const type = state.pu.type;
+    const usesArea = puUsesArea();
+    const cells = usesArea ? editorAreaCells() : [];
     drawRegionBase(ctx, v, cs, cells, "rgba(255,207,106,0.07)");
+    const pieceCells = editorPieceCells();
+
+    if (!usesArea){
+      // goo / phantom: nothing highlighted; the piece itself shimmers
+      for (const c of pieceCells) drawRainbowCell(ctx, (c.x - v.x0) * cs, (c.y - v.y0) * cs, cs, c.x, c.y, "shimmer", null, t);
+      el.areaInfo.textContent = "no area"; el.areaInfo.className = "pill mono";
+      return;
+    }
+    // acid: the cells it touches (read-only), drawn under the extra area
+    const touch = type === "acid" ? touchCells(pieceCells, state.pu.reach) : [];
+    if (touch.length){
+      const tset = new Set(touch.filter(c => inView(c, v)).map(c => areaKey(c.x - v.x0, c.y - v.y0)));
+      ctx.fillStyle = "rgba(120,255,90,0.16)";
+      for (const k of tset){ const [x, y] = parseKey(k); ctx.fillRect(x * cs, y * cs, cs, cs); }
+      drawSetOutline(ctx, tset, (x) => x * cs, (y) => y * cs, cs, "rgba(140,255,110,0.85)", [4, 3]);
+    }
 
     // rainbow highlight (what the game shows)
-    const aff = affectedCells(cells, v.x0, v.y0, v.cols, v.rows);
+    const aff = affectedCells(cells.concat(touch), v.x0, v.y0, v.cols, v.rows);
+    const ctr = { x: (pieceBox().x0 + pieceBox().x1 + 1) / 2, y: (pieceBox().y0 + pieceBox().y1 + 1) / 2 };
     for (const k of aff){
       const [x, y] = parseKey(k);
-      drawRainbowCell(ctx, (x - v.x0) * cs, (y - v.y0) * cs, cs, x, y, state.pu.type, state.pu.direction, t);
+      drawRainbowCell(ctx, (x - v.x0) * cs, (y - v.y0) * cs, cs, x, y, rainbowType(type), type === "blast" ? outward(x + 0.5 - ctr.x, y + 0.5 - ctr.y) : state.pu.direction, t);
     }
     // markers
     for (const c of cells) if (inView(c, v)) drawMarker(ctx, (c.x - v.x0) * cs, (c.y - v.y0) * cs, cs, c.ch);
     drawHover(ctx, areaPtr.hover, v, cs);
     setRegionInfo(el.areaInfo, cells, v);
+    if (type === "acid") el.areaInfo.textContent = `${touch.length} touched · ` + el.areaInfo.textContent + " extra";
+  }
+  // the piece's filled blocks in editor coords
+  function editorPieceCells(){
+    const out = [];
+    for (let y = 0; y < state.blocksH; y++) for (let x = 0; x < state.blocksW; x++) if (maskAt(x, y)) out.push({ x, y });
+    return out;
+  }
+  const rainbowType = (type) => type === "acid" ? "destroyer" : type;
+  // unit vector pointing away from the piece centre ({0,0} at the centre)
+  function outward(dx, dy){
+    const l = Math.hypot(dx, dy);
+    return l < 1e-6 ? { x: 0, y: 0 } : { x: dx / l, y: dy / l };
   }
 
   // col: one colour for every marker (zones); default: white cells, yellow rows/columns (area)
@@ -2462,6 +2585,10 @@
   //   destroyer: a square shrinking inside each cell (loop)
   //   expander:  a square growing inside each cell (loop)
   //   gravity:   a short line moving through each cell in the gravity direction (loop)
+  //   acid:      like destroyer (shrinking squares) over the cells it touches
+  //   blast:     a square and its trail moving outwards from the piece (dir = {x, y} unit vector)
+  //   goo:       growing squares (like expander) where it would flow
+  //   phantom / shimmer: no squares, just the colour shimmering over the piece
   // ============================================================
   const RAINBOW_PERIOD_MS = 1100;
   function drawRainbowCell(ctx, px, py, size, gx, gy, type, dir, t){
@@ -2480,8 +2607,26 @@
       else if (dir === "right") ctx.fillRect(px + travel, py + c - th / 2, len, th);
       else if (dir === "up") ctx.fillRect(px + c - th / 2, py + size - travel - len, th, len);
       else ctx.fillRect(px + c - th / 2, py + travel, th, len);
+    } else if (type === "blast"){
+      const d = dir && typeof dir === "object" ? dir : { x: 0, y: 0 };
+      const c = size / 2, s = size * 0.34;
+      if (!d.x && !d.y){
+        const f = 0.3 + 0.62 * p;
+        ctx.fillRect(px + (size - size * f) / 2, py + (size - size * f) / 2, size * f, size * f);
+      } else {
+        const off = (p - 0.5) * size * 1.1;
+        const cx = px + c + d.x * off, cy = py + c + d.y * off;
+        ctx.fillRect(cx - s / 2, cy - s / 2, s, s);
+        // trail
+        ctx.strokeStyle = `hsla(${hue},100%,62%,0.3)`; ctx.lineWidth = Math.max(1, size * 0.1);
+        ctx.beginPath(); ctx.moveTo(cx - d.x * size * 0.45, cy - d.y * size * 0.45); ctx.lineTo(cx, cy); ctx.stroke();
+      }
+    } else if (type === "phantom" || type === "shimmer"){
+      const w = 0.5 + 0.5 * Math.sin(2 * Math.PI * (p - (gx + gy) * 0.13));
+      ctx.fillStyle = `hsla(${hue},100%,70%,${0.08 + 0.26 * w})`;
+      ctx.fillRect(px, py, size, size);
     } else {
-      const f = type === "expander" ? p : 1 - p;
+      const f = (type === "expander" || type === "goo") ? p : 1 - p;
       const s = size * 0.92 * f;
       ctx.fillRect(px + (size - s) / 2, py + (size - s) / 2, s, s);
     }
@@ -2522,7 +2667,7 @@
     document.querySelectorAll(".fillToolBtn").forEach(b => b.classList.toggle("active", b.dataset.ftool === f.tool));
   }
   function renderFillCanvas(){
-    if (state.kind !== "powerup" || state.pu.type !== "expander" || state.centreTab !== "powerup") return;
+    if (state.kind !== "powerup" || !PU_FILL_TYPES.includes(state.pu.type) || state.centreTab !== "powerup") return;
     const f = state.fill, cs = fillCellSize(), S = f.k * cs;
     if (el.fillCanvas.width !== S) el.fillCanvas.width = S;
     if (el.fillCanvas.height !== S) el.fillCanvas.height = S;
@@ -2690,15 +2835,31 @@
     for (let y = ty0; y <= ty1; y++) for (let x = tx0; x <= tx1; x++) if (mask[y][x]) blocks.push({ x: x - tx0, y: y - ty0, gx: x, gy: y });
 
     // area / zone cells relative to the trimmed piece (the game subtracts the trimmed rows/cols too)
-    let area = null, powerup = null;
+    let area = null, powerup = null, touch = null;
     if (shape && isPlainObject(shape.powerup)){
       powerup = shape.powerup;
-      area = regionObjectCells(powerup.area, tx0, ty0);
+      // goo / phantom: the game ignores any area; acid: its touch area plus an optional extra area
+      if (PU_AREA_TYPES.includes(powerup.type) || !PU_TYPES.includes(powerup.type)) area = regionObjectCells(powerup.area, tx0, ty0);
+      if (powerup.type === "acid") touch = touchCells(blocks, powerup.reach);
     }
     const zones = shape && isPlainObject(shape.zones)
       ? Object.entries(shape.zones).filter(([, z]) => isPlainObject(z)).map(([name, z]) => ({ name, cells: regionObjectCells(z, tx0, ty0) }))
       : [];
-    return { w: tx1 - tx0 + 1, h: ty1 - ty0 + 1, blocks, solid, pix, k, base, area, powerup, zones };
+    return { w: tx1 - tx0 + 1, h: ty1 - ty0 + 1, blocks, solid, pix, k, base, area, touch, powerup, zones };
+  }
+  // Acid: every cell within `reach` (Manhattan) steps of a block, not the blocks themselves
+  // (same rule as the game's touchArea; reach is rounded and at least 1). blocks: [{x, y}]
+  const acidReach = (r) => Math.max(1, Math.round(Number(r) || 1));
+  function touchCells(blocks, reach){
+    const R = acidReach(reach);
+    const own = new Set(blocks.map(b => areaKey(b.x, b.y))), seen = new Set(), out = [];
+    for (const b of blocks) for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++){
+      if (Math.abs(dx) + Math.abs(dy) > R) continue;
+      const k = areaKey(b.x + dx, b.y + dy);
+      if (own.has(k) || seen.has(k)) continue;
+      seen.add(k); out.push({ x: b.x + dx, y: b.y + dy, ch: "#" });
+    }
+    return out;
   }
   function blockPixelColour(m, b, sx, sy){
     if (!m.pix) return m.solid;
@@ -2785,17 +2946,53 @@
         drawSetOutline(ctx, set, (x) => x * C, (y) => y * C, C, rgba(col, 0.95), [3, 2]);
       });
     }
-    // highlighted area
-    if (m.powerup && m.area){
-      const cells = m.area.map(c => ({ x: c.x + pos.x, y: c.y + pos.y, ch: c.ch }));
+    // highlighted area (acid: the cells it touches + any extra area)
+    const type = m.powerup ? m.powerup.type : null;
+    if (m.powerup && (m.area || m.touch)){
+      const cells = [...(m.area || []), ...(m.touch || [])].map(c => ({ x: c.x + pos.x, y: c.y + pos.y, ch: c.ch }));
       const aff = affectedCells(cells, 0, 0, GAME.cols, GAME.rows);
-      const type = m.powerup.type, dir = m.powerup.direction || "down";
+      const dir = m.powerup.direction || "down";
+      const cx = pos.x + m.w / 2, cy = pos.y + m.h / 2;
       for (const k of aff){
         const [x, y] = parseKey(k);
         if (type === "expander" && m.powerup.fill != null && !occupied.has(k)){
           ctx.save(); ctx.globalAlpha = 0.35; drawFillBlock(ctx, x * C, y * C, C, m.powerup.fill); ctx.restore();
         }
-        drawRainbowCell(ctx, x * C, y * C, C, x, y, type, dir, t);
+        drawRainbowCell(ctx, x * C, y * C, C, x, y, rainbowType(type), type === "blast" ? outward(x + 0.5 - cx, y + 0.5 - cy) : dir, t);
+      }
+    }
+    const pieceOnBoard = m.blocks.map(b => ({ x: pos.x + b.x, y: pos.y + b.y })).filter(c => c.x >= 0 && c.y >= 0 && c.x < GAME.cols && c.y < GAME.rows);
+    const stackFree = (x, y) => x >= 0 && x < GAME.cols && y >= 0 && y < GAME.rows && !(occupied.has(areaKey(x, y)) && !pieceOnBoard.some(c => c.x === x && c.y === y));
+    if (type === "goo"){
+      // a rough guess of where it ends up: drop the piece, then its blocks (× volume) fill the lowest reachable gaps
+      for (const c of pieceOnBoard) drawRainbowCell(ctx, c.x * C, c.y * C, C, c.x, c.y, "shimmer", null, t);
+      const gaps = gooGuess(m, pos, stackFree);
+      for (const g of gaps){
+        if (m.powerup.fill != null){ ctx.save(); ctx.globalAlpha = 0.7; drawFillBlock(ctx, g.x * C, g.y * C, C, m.powerup.fill); ctx.restore(); }
+        drawRainbowCell(ctx, g.x * C, g.y * C, C, g.x, g.y, "goo", null, t);
+      }
+    } else if (type === "phantom"){
+      for (const c of pieceOnBoard) drawRainbowCell(ctx, c.x * C, c.y * C, C, c.x, c.y, "phantom", null, t);
+      // ghost where it would land: the deepest spot below where every block is an empty cell
+      let land = null;
+      for (let y = GAME.rows - m.h; y > pos.y; y--){
+        if (m.blocks.every(b => stackFree(pos.x + b.x, y + b.y))){ land = y; break; }
+      }
+      if (land != null){
+        const set = new Set(m.blocks.map(b => areaKey(pos.x + b.x, land + b.y)));
+        ctx.save(); ctx.globalAlpha = 0.4;
+        for (const b of m.blocks) drawModelBlock(ctx, (pos.x + b.x) * C, (land + b.y) * C, C, m, b, false);
+        ctx.restore();
+        drawSetOutline(ctx, set, (x) => x * C, (y) => y * C, C, "rgba(220,200,255,0.9)", [3, 2]);
+        ctx.save();
+        ctx.font = "9px ui-monospace, monospace"; ctx.textBaseline = "bottom"; ctx.fillStyle = "rgba(230,215,255,0.95)";
+        ctx.shadowColor = "#000"; ctx.shadowBlur = 3;
+        const label = "lands here", tw = ctx.measureText(label).width;
+        const right = (pos.x + m.w) * C + 4;
+        const lx = right + tw <= GAME.cols * C - 2 ? right : Math.max(2, pos.x * C - 4 - tw);
+        ctx.textBaseline = "middle";
+        ctx.fillText(label, lx, (land + m.h / 2) * C);
+        ctx.restore();
       }
     }
     // grid like the game
@@ -2804,6 +3001,28 @@
     for (let x = 0; x <= W; x += C){ ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, H); }
     for (let y = 0; y <= H; y += C){ ctx.moveTo(0, y + 0.5); ctx.lineTo(W, y + 0.5); }
     ctx.stroke(); ctx.restore();
+  }
+  // Goo preview: drop the piece straight down, then flood down/sideways through empty cells and take
+  // the lowest ones (deepest rows first, nearest the piece first) — a hint, not the game's exact flow.
+  function gooGuess(m, pos, free){
+    let y = pos.y;
+    while (m.blocks.every(b => free(pos.x + b.x, y + 1 + b.y))) y++;
+    const start = m.blocks.map(b => ({ x: pos.x + b.x, y: y + b.y })).filter(c => free(c.x, c.y));
+    const seen = new Set(start.map(c => areaKey(c.x, c.y))), q = start.slice();
+    while (q.length){
+      const c = q.shift();
+      for (const [dx, dy] of [[0, 1], [-1, 0], [1, 0]]){
+        const nx = c.x + dx, ny = c.y + dy, k = areaKey(nx, ny);
+        if (seen.has(k) || !free(nx, ny)) continue;
+        seen.add(k); q.push({ x: nx, y: ny });
+      }
+    }
+    const vol = Number(m.powerup.volume);
+    const n = Math.max(1, Math.round(m.blocks.length * (Number.isFinite(vol) && vol > 0 ? Math.max(0.1, vol) : 1)));
+    const cx = pos.x + m.w / 2;
+    return [...seen].map(parseKey).map(([x, yy]) => ({ x, y: yy }))
+      .sort((a, b) => b.y - a.y || Math.abs(a.x + 0.5 - cx) - Math.abs(b.x + 0.5 - cx) || a.x - b.x)
+      .slice(0, n);
   }
   el.gameCanvas.addEventListener("click", (evt) => {
     const m = state.previewModel;
@@ -2875,6 +3094,13 @@
     return rows;
   }
 
+  // Keys the loaded object already had keep its order; new keys follow in build order
+  function inOriginalKeyOrder(obj, orig){
+    const out = {};
+    for (const k of Object.keys(orig)) if (Object.prototype.hasOwnProperty.call(obj, k)) out[k] = obj[k];
+    for (const k of Object.keys(obj)) if (!Object.prototype.hasOwnProperty.call(out, k)) out[k] = obj[k];
+    return out;
+  }
   function buildShapeFromEditor(flatAll){
     const errors = [], warnings = [];
     const flat = flatAll || compositeFlattened();
@@ -2926,20 +3152,35 @@
       const p = state.pu, pu = { ...clone(p.extras) };
       pu.type = p.type;
       if (!PU_TYPES.includes(p.type)) warnings.push(`Unknown powerup type "${p.type}".`);
+      const origPu = orig && isPlainObject(orig.powerup) ? orig.powerup : null;
+      for (const prm of PU_NUM_PARAMS){
+        if (p.type !== prm.type) continue;
+        const v = p[prm.key];
+        if (v == null) continue;
+        delete pu[prm.key];
+        // defaults are left out, unless the file spelled the same default out already
+        if (v !== prm.def || (origPu && origPu[prm.key] === v)) pu[prm.key] = v;
+        if (v < prm.min) warnings.push(`${prm.key} should be at least ${prm.min} (the game uses ${prm.min}).`);
+        else if (prm.int && !Number.isInteger(v)) warnings.push(`${prm.key} should be a whole number (the game rounds it).`);
+      }
       if (p.type === "gravity") pu.direction = p.direction;
       pu.tier = p.tier;
       if (p.description.trim()) pu.description = p.description.trim();
-      const area = exportArea(b);
-      if (area !== undefined) pu.area = area;
-      if (!Object.keys(state.area.cells).length) warnings.push("The highlighted area is empty: the powerup would affect nothing.");
-      if (p.type === "expander"){
+      if (p.intro.trim()) pu.intro = origPu && origPu.intro === p.intro ? p.intro : p.intro.trim();
+      const hasCells = Object.keys(state.area.cells).length > 0;
+      if (puUsesArea()){
+        const area = exportArea(b);
+        if (area !== undefined) pu.area = area;
+        if (!hasCells && p.type !== "acid") warnings.push("The highlighted area is empty: the powerup would affect nothing.");
+      } else if (hasCells) warnings.push(`A ${p.type} has no highlighted area: the painted area is not saved.`);
+      if (PU_FILL_TYPES.includes(p.type)){
         pu.fill = exportFill();
         if (Array.isArray(pu.fill) && pu.fill.some(r => r.some(c => !c))) warnings.push("Fill art has transparent pixels.");
       }
       const def = PU_DEFAULT_CONSUME[p.type] ?? true;
       if (p.consume !== null && p.consume !== def) pu.consume = p.consume;
-      if (p.type === "destroyer" && p.collapse) pu.collapse = true;
-      out.powerup = pu;
+      if (PU_COLLAPSE_TYPES.includes(p.type) && p.collapse) pu.collapse = true;
+      out.powerup = origPu ? inOriginalKeyOrder(pu, origPu) : pu;
     } else {
       out.difficulty = state.difficulty;
     }
@@ -3079,10 +3320,13 @@
         direction: typeof pu.direction === "string" ? pu.direction : "down",
         tier: clamp(parseInt(pu.tier, 10) || 1, 1, 3),
         description: typeof pu.description === "string" ? pu.description : "",
+        intro: typeof pu.intro === "string" ? pu.intro : "",
         consume: null,
         collapse: pu.collapse === true,
-        extras: clone(Object.fromEntries(Object.entries(pu).filter(([k]) => !MANAGED_PU_KEYS.includes(k)))),
+        reach: null, push: null, volume: null,
+        extras: clone(Object.fromEntries(Object.entries(pu).filter(([k]) => !MANAGED_PU_KEYS.includes(k) || (k === "intro" && typeof pu.intro !== "string")))),
       };
+      adoptPuExtras();
       if (typeof pu.consume === "boolean"){
         const def = PU_DEFAULT_CONSUME[state.pu.type] ?? true;
         state.pu.consume = pu.consume === def ? null : pu.consume;
@@ -3103,7 +3347,7 @@
         state.fill = { ...state.fill, mode: "solid", solidHex: hx, k: P, data: new Uint32Array(P * P).fill(argbFromHex(hx)) };
       }
     } else {
-      state.pu = { type: "destroyer", direction: "down", tier: 1, description: "", consume: null, collapse: false, extras: {} };
+      state.pu = defaultPu();
       state.area.margin = 3;
       state.fill = { ...state.fill, mode: "solid", solidHex: "#ffffff", k: P, data: new Uint32Array(P * P) };
     }
@@ -3125,7 +3369,7 @@
     state.adj = { brightness: 0, contrast: 0, hue: 0, sat: 1 };
     state.kind = "regular"; state.name = ""; state.id = ""; state.difficulty = 2; state.frequency = 1;
     state.rotationMode = "any"; state.rotationExtras = {}; state.links = []; state.tags = []; state.extras = {};
-    state.pu = { type: "destroyer", direction: "down", tier: 1, description: "", consume: null, collapse: false, extras: {} };
+    state.pu = defaultPu();
     state.area.cells = {}; state.area.margin = 3; state.area.extras = {}; state.area.orig = undefined;
     state.zones.list = []; state.zones.active = 0; state.zones.margin = 3;
     state.fill = { mode: "solid", solidHex: "#ffffff", k: 7, data: new Uint32Array(49), tool: state.fill.tool || "draw" };
@@ -3649,7 +3893,22 @@
     try { m = shapeModel(shape); } catch { return; }
     let x0 = 0, y0 = 0, x1 = m.w - 1, y1 = m.h - 1, lines = false;
     const zoneCells = m.zones.map(z => z.cells);
-    for (const c of [...(m.area || []), ...zoneCells.flat()]){
+    const type = m.powerup ? m.powerup.type : null;
+    // goo: a puddle of fill art under the piece; phantom: a dashed ghost of the piece further down
+    let puddle = [], ghost = null;
+    if (type === "goo"){
+      const vol = Number(m.powerup.volume);
+      const n = clamp(Math.round(m.blocks.length * (Number.isFinite(vol) && vol > 0 ? Math.max(0.1, vol) : 1)), 1, 200);
+      const pw = Math.max(m.w + 2, Math.ceil(n / 2));
+      const rows = Math.ceil(n / pw);
+      for (let r = 0; r < rows; r++){
+        const cnt = r === 0 ? n - pw * (rows - 1) : pw;   // full rows at the bottom, the rest centred on top
+        const x0 = Math.floor((m.w - pw) / 2) + Math.floor((pw - cnt) / 2);
+        for (let i = 0; i < cnt; i++) puddle.push({ x: x0 + i, y: m.h + 1 + r, ch: "#" });
+      }
+    } else if (type === "phantom") ghost = { dy: m.h + 1 };
+    const extra = puddle.concat(ghost ? m.blocks.map(b => ({ x: b.x, y: b.y + ghost.dy, ch: "#" })) : []);
+    for (const c of [...(m.area || []), ...(m.touch || []), ...zoneCells.flat(), ...extra]){
       x0 = Math.min(x0, c.x); y0 = Math.min(y0, c.y); x1 = Math.max(x1, c.x); y1 = Math.max(y1, c.y);
       if (c.ch !== "#") lines = true;
     }
@@ -3663,6 +3922,28 @@
       for (const k of aff){ const [x, y] = parseKey(k); ctx.fillRect(ox + x * cell, oy + y * cell, cell, cell); }
       ctx.strokeStyle = "rgba(255,255,255,0.10)"; ctx.lineWidth = 1;
       ctx.strokeRect(ox + x0 * cell + 0.5, oy + y0 * cell + 0.5, rw * cell - 1, rh * cell - 1);
+    }
+    if (m.touch){
+      ctx.fillStyle = "rgba(120,255,90,0.22)";
+      for (const c of m.touch) ctx.fillRect(ox + c.x * cell, oy + c.y * cell, cell, cell);
+    }
+    if (puddle.length){
+      ctx.save(); ctx.globalAlpha = 0.55;
+      for (const c of puddle){
+        if (m.powerup.fill != null) drawFillBlock(ctx, ox + c.x * cell, oy + c.y * cell, cell, m.powerup.fill);
+        else { ctx.fillStyle = "rgba(255,255,255,0.3)"; ctx.fillRect(ox + c.x * cell, oy + c.y * cell, cell, cell); }
+      }
+      ctx.restore();
+    }
+    if (ghost){
+      const set = new Set(m.blocks.map(b => areaKey(b.x, b.y + ghost.dy)));
+      ctx.save(); ctx.globalAlpha = 0.2;
+      for (const b of m.blocks) drawModelBlock(ctx, ox + b.x * cell, oy + (b.y + ghost.dy) * cell, cell, m, b, false);
+      ctx.restore();
+      drawSetOutline(ctx, set, (x) => ox + x * cell, (y) => oy + y * cell, cell, "rgba(220,200,255,0.75)", [3, 2]);
+      ctx.save(); ctx.font = "10px ui-monospace, monospace"; ctx.fillStyle = "rgba(220,200,255,0.8)"; ctx.textBaseline = "middle";
+      ctx.fillText("falls through", ox + (m.w + 0.4) * cell + 4, oy + (ghost.dy + m.h / 2) * cell);
+      ctx.restore();
     }
     zoneCells.forEach((cells, i) => {
       const set = affectedCells(cells, x0, y0, rw, rh);
@@ -3711,7 +3992,7 @@
       const freq = Number(s.frequency);
       const mode = typeof s.color === "string" ? "solid" : (Array.isArray(s.color) && Array.isArray(s.color[0]) ? `${Math.round(s.color.length / Math.max(1, gridLines(s.grid).length))}×` : "?");
       const stats = pu
-        ? `${escapeHtml(pu.type || "?")}${pu.type === "gravity" ? " " + escapeHtml(pu.direction || "down") : ""}<br>tier ${escapeHtml(pu.tier ?? "?")} · f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>${mode}`
+        ? `${escapeHtml(pu.type || "?")}${pu.type === "gravity" ? " " + escapeHtml(pu.direction || "down") : ""}${PU_NUM_PARAMS.filter(q => q.type === pu.type && pu[q.key] !== undefined).map(q => ` ${q.key}=${escapeHtml(pu[q.key])}`).join("")}<br>tier ${escapeHtml(pu.tier ?? "?")} · f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>${mode}`
         : `f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>d=${escapeHtml(s.difficulty ?? "—")}<br>${mode}`;
       const links = Array.isArray(s.nextShapes) && s.nextShapes.length ? ` · → ${s.nextShapes.map(escapeHtml).join(", ")}` : "";
       const tags = Array.isArray(s.tags) && s.tags.length ? ` <span class="tagMini">${s.tags.map(t => "#" + escapeHtml(t)).join(" ")}</span>` : "";
@@ -3834,7 +4115,7 @@
       state.rotationExtras = s.rotationExtras || {};
       state.links = Array.isArray(s.links) ? s.links.map(r => ({ id: String(r.id || ""), prob: r.prob == null ? null : Number(r.prob) })) : [];
       state.extras = s.extras || {};
-      if (s.pu) state.pu = { ...state.pu, ...s.pu, extras: s.pu.extras || {} };
+      if (s.pu) state.pu = { ...defaultPu(), ...s.pu, extras: s.pu.extras || {} };
       state.area.cells = s.areaCells || {};
       state.area.margin = clamp(parseInt(s.areaMargin, 10) || 3, 0, 30);
       state.area.extras = isPlainObject(s.areaExtras) ? s.areaExtras : {};
@@ -4002,6 +4283,9 @@
     { type: "score", doc: "Reach this score in one game.", params: [{ key: "value", kind: "int", label: "Score", required: true }] },
     { type: "level", doc: "Reach this level in one game.", params: [{ key: "value", kind: "int", label: "Level", required: true }] },
     { type: "drops", doc: "Place this many pieces in one game.", params: [{ key: "count", kind: "int", label: "Pieces", required: true }] },
+    { type: "together", doc: "Pieces are on the board at the same time: one for each match in `groups` (e.g. [{ids:[\"david\"]}, {ids:[\"lisa\"]}]), or `count` different pieces that all match `match`.",
+      custom: "together", sig: "groups } or { match, count",
+      params: [{ key: "groups", kind: "groups", label: "Pieces" }, { key: "match", kind: "match", label: "Pieces" }, { key: "count", kind: "int", label: "Different pieces" }] },
     { type: "boardCleared", doc: "The board is completely empty after rows are destroyed.", params: [] },
     { type: "gameOver", doc: "The game ends; optionally only if the piece that topped you out matches `killer`, or within `maxDrops` pieces.",
       params: [{ key: "killer", kind: "match", label: "Killer" }, { key: "maxDrops", kind: "int", label: "Max drops" }] },
@@ -4054,7 +4338,15 @@
       const line = lines[i].replace(/^\s*\*?/, "");
       if (!line.trim()){ if (out.length) break; continue; }
       const m = /^\s{1,4}([A-Za-z_$][\w$]*)\s*\{([^}]*)\}\s*(.*)$/.exec(line);
-      if (m){ cur = { type: m[1], params: m[2].split(",").map(s => s.trim()).filter(Boolean), doc: m[3].trim() }; out.push(cur); }
+      if (m){
+        cur = { type: m[1], params: m[2].split(",").map(s => s.trim()).filter(Boolean), doc: m[3].trim() };
+        // alternative forms: "together { groups } or { match, count }"
+        for (let alt; (alt = /^or\s*\{([^}]*)\}\s*(.*)$/.exec(cur.doc));){
+          for (const q of alt[1].split(",").map(s => s.trim()).filter(Boolean)) if (!cur.params.includes(q)) cur.params.push(q);
+          cur.doc = alt[2].trim();
+        }
+        out.push(cur);
+      }
       else if (cur && /^\s{5,}\S/.test(line)) cur.doc = (cur.doc + " " + line.trim()).trim();
       else break;
     }
@@ -4155,7 +4447,7 @@
       case "powerupBlocks": {
         const types = new Set(arrOf(t.match && t.match.types));
         for (const id of arrOf(t.match && t.match.ids)){ const s = blocksById().get(id); if (s && isPlainObject(s.powerup)) types.add(s.powerup.type); }
-        const verbs = { destroyer: "destroys", gravity: "moves", expander: "fills" };
+        const verbs = { destroyer: "destroys", gravity: "moves", expander: "fills", acid: "dissolves", blast: "throws", goo: "fills" };
         const verb = types.size === 1 && verbs[[...types][0]] ? verbs[[...types][0]] : "destroys, moves or fills";
         const c = val("count");
         return `Unlocks when ${matchPhrase(t.match, "powerup")} ${verb} at least ${c === 1 ? "one block" : `${num(c)} blocks`} in one go`;
@@ -4163,6 +4455,30 @@
       case "score": return `Unlocks when you reach a score of ${num(val("value"))} in one game`;
       case "level": return `Unlocks when you reach level ${num(val("value"))} in one game`;
       case "drops": return `Unlocks when you have placed ${num(val("count"))} pieces in one game`;
+      case "together": {
+        if (t.groups === undefined && t.match === undefined && t.count === undefined) return "Unlocks when … (no pieces listed yet)";
+        if (t.groups !== undefined){
+          const groups = Array.isArray(t.groups) ? t.groups : [];
+          if (!groups.length) return "Unlocks when … (no pieces listed yet)";
+          const parts = groups.map(g => { const ph = matchPhrase(isPlainObject(g) ? g : null); return / or /.test(ph) ? "either " + ph : ph; });
+          if (parts.length === 1) return `Unlocks when ${parts[0]} is on the board`;
+          const joined = parts.some(x => / or /.test(x)) ? parts.slice(0, -1).join(", ") + ", and " + parts[parts.length - 1] : listJoin(parts, "and");
+          return `Unlocks when ${joined} are on the board at the same time`;
+        }
+        const m = isPlainObject(t.match) ? t.match : null, c = t.count;
+        const ids = arrOf(m && m.ids), tags = arrOf(m && m.tags), types = arrOf(m && m.types);
+        if (c === 1) return `Unlocks when ${matchPhrase(m)} is on the board`;
+        const n = num(c);
+        let what;
+        if (!ids.length && !tags.length && !types.length) what = `${n} different pieces`;
+        else if (!ids.length && tags.length && !types.length) what = `${n} different ${listJoin(tags)} pieces`;
+        else if (!ids.length && !tags.length) what = `${n} different ${listJoin(types)} powerups`;
+        else if (ids.length && !tags.length && !types.length){
+          if (c === ids.length) return `Unlocks when ${listJoin(ids.map(blockLabel), "and")} are all on the board at once`;
+          what = `${n} different pieces out of ${listJoin(ids.map(blockLabel), "and")}`;
+        } else what = `${n} different pieces, each ${matchPhrase(m)},`;
+        return `Unlocks when ${what} are on the board at once`;
+      }
       case "boardCleared": return "Unlocks when the board is completely empty after rows are destroyed";
       case "gameOver": {
         let s = t.killer ? `Unlocks when you are topped out by ${matchPhrase(t.killer)}` : "Unlocks when the game ends";
@@ -4211,6 +4527,19 @@
     if (!spec){ warnings.push(`Trigger type "${t.type}" isn't documented in the file header.`); return { errors, warnings }; }
     const haveBlocks = BLOCKS.items.length > 0;
     const ids = allKnownIds(), tags = blockTagCounts();
+    // warnings for one { ids, tags, types } match; false if it isn't an object
+    const checkMatch = (key, v) => {
+      if (!isPlainObject(v)){ warnings.push(`${key} should be an object like { ids, tags, types }.`); return false; }
+      if (haveBlocks){
+        const unkI = [...new Set(arrOf(v.ids).filter(x => !ids.has(x)))];
+        if (unkI.length) warnings.push(`${key}: unknown block id(s) ${unkI.join(", ")}.`);
+        const unkT = [...new Set(arrOf(v.tags).filter(x => !tags.has(x)))];
+        if (unkT.length) warnings.push(`${key}: no block has the tag(s) ${unkT.join(", ")}.`);
+      }
+      const unkTy = arrOf(v.types).filter(x => !PU_TYPES.includes(x));
+      if (unkTy.length) warnings.push(`${key}: unknown powerup type(s) ${unkTy.join(", ")}.`);
+      return true;
+    };
     for (const p of spec.params){
       const v = t[p.key];
       if (v === undefined){ if (p.required) warnings.push(`${p.label} (${p.key}) is not set, so this can never unlock.`); continue; }
@@ -4227,15 +4556,28 @@
         if (!list.length) warnings.push(`${p.key} is empty, so this can never unlock.`);
         else if (haveBlocks){ const unk = [...new Set(list.filter(x => !ids.has(x)))]; if (unk.length) warnings.push(`Unknown block id(s): ${unk.join(", ")}.`); }
       } else if (p.kind === "match"){
-        if (!isPlainObject(v)){ warnings.push(`${p.key} should be an object like { ids, tags, types }.`); continue; }
-        if (haveBlocks){
-          const unkI = [...new Set(arrOf(v.ids).filter(x => !ids.has(x)))];
-          if (unkI.length) warnings.push(`${p.key}: unknown block id(s) ${unkI.join(", ")}.`);
-          const unkT = [...new Set(arrOf(v.tags).filter(x => !tags.has(x)))];
-          if (unkT.length) warnings.push(`${p.key}: no block has the tag(s) ${unkT.join(", ")}.`);
+        checkMatch(p.key, v);
+      } else if (p.kind === "groups"){
+        if (!Array.isArray(v)){ warnings.push(`${p.key} should be a list of matches like [{ ids: ["david"] }, { ids: ["lisa"] }].`); continue; }
+        if (!v.length) warnings.push(`${p.key} is empty, so this can never unlock.`);
+        v.forEach((g, i) => {
+          const label = `Piece ${i + 1}`;
+          if (!isPlainObject(g)){ warnings.push(`${label} should be an object like { ids, tags, types }.`); return; }
+          if (!arrOf(g.ids).length && !arrOf(g.tags).length && !arrOf(g.types).length) warnings.push(`${label} matches any piece.`);
+          else if (checkMatch(label, g) && haveBlocks && !BLOCKS.items.some(s => s && matchesShape(s, g))) warnings.push(`${label}: no block matches.`);
+        });
+      }
+    }
+    if (t.type === "together"){
+      const hasG = t.groups !== undefined, hasC = t.match !== undefined || t.count !== undefined;
+      if (hasG && hasC) warnings.push("Uses both groups and match / count: use one form or the other.");
+      else if (!hasG && !hasC) warnings.push("No pieces are set (add groups, or a match and a count), so this can never unlock.");
+      else if (hasC && !hasG){
+        if (t.count === undefined) warnings.push("Different pieces (count) is not set, so this can never unlock.");
+        else if (haveBlocks && typeof t.count === "number"){
+          const n = BLOCKS.items.filter(s => s && matchesShape(s, t.match)).length;
+          if (n < t.count) warnings.push(`Only ${n} block${n === 1 ? "" : "s"} match${n === 1 ? "es" : ""}, so ${t.count} different pieces can never be on the board.`);
         }
-        const unkTy = arrOf(v.types).filter(x => !PU_TYPES.includes(x));
-        if (unkTy.length) warnings.push(`${p.key}: unknown powerup type(s) ${unkTy.join(", ")}.`);
       }
     }
     if (haveBlocks && t.type === "pieceInside"){
@@ -4510,14 +4852,15 @@
     const t = a && isPlainObject(a.trigger) ? a.trigger : null;
     const curType = t && typeof t.type === "string" ? t.type : "";
     el.achTrigType.innerHTML = (curType ? "" : `<option value="">(choose a trigger)</option>`)
-      + ach.triggers.map(d => `<option value="${escapeHtml(d.type)}">${escapeHtml(d.type)}  { ${escapeHtml(d.params.map(p => p.key).join(", "))} }</option>`).join("")
+      + ach.triggers.map(d => `<option value="${escapeHtml(d.type)}">${escapeHtml(d.type)}  { ${escapeHtml(d.sig || d.params.map(p => p.key).join(", "))} }</option>`).join("")
       + (curType && !triggerSpec(curType) ? `<option value="${escapeHtml(curType)}">${escapeHtml(curType)} (unknown)</option>` : "");
     el.achTrigType.value = curType;
     const spec = triggerSpec(curType);
     el.achTrigDoc.textContent = spec ? spec.doc + (spec.guessed ? " (found in the file header; field types are guessed)" : "")
       : (curType ? "This trigger type isn't documented in the file header; its parameters are kept as they are." : "");
     if (!t) return;
-    if (spec) for (const p of spec.params) el.achParams.appendChild(p.kind === "match" ? matchEditor(t, p) : paramField(t, p));
+    if (spec && spec.custom === "together") el.achParams.appendChild(togetherEditor(t, spec));
+    else if (spec) for (const p of spec.params) el.achParams.appendChild(p.kind === "match" ? matchEditor(t, p) : paramField(t, p));
     const known = new Set(["type", ...(spec ? spec.params.map(p => p.key) : [])]);
     const other = Object.keys(t).filter(k => !known.has(k));
     if (other.length){
@@ -4541,6 +4884,8 @@
       const spec = triggerSpec(nt), oldSpec = old ? triggerSpec(old.type) : null;
       if (spec && old && oldSpec) for (const p of spec.params){
         const op = oldSpec.params.find(q => q.key === p.key);
+        // (together: a count from another trigger means something else, so only a match carries over)
+        if (nt === "together" && p.kind !== "match") continue;
         if (op && op.kind === p.kind && old[p.key] !== undefined) next[p.key] = clone(old[p.key]);
       }
     }
@@ -4606,6 +4951,111 @@
     wrap.append(lab, box);
     return wrap;
   }
+  // ---------- together: { groups: [match, ...] } or { match, count } ----------
+  const togetherUi = new Map();   // achievement uid -> { mode, groups (stash), match, count (stash) }
+  function togetherMode(t, uid){
+    if (t.groups !== undefined) return "groups";
+    if (t.match !== undefined || t.count !== undefined) return "count";
+    const ui = togetherUi.get(uid);
+    return ui && ui.mode ? ui.mode : "groups";
+  }
+  function togetherEditor(t, spec){
+    const w = curAch(), uid = w ? w.uid : 0;
+    if (!togetherUi.has(uid)) togetherUi.set(uid, {});
+    const ui = togetherUi.get(uid);
+    const mode = togetherMode(t, uid);
+    const pspec = (k) => spec.params.find(q => q.key === k) || { key: k, kind: k === "count" ? "int" : "match", label: k };
+    const host = document.createElement("div");
+    host.className = "togetherEditor";
+    const segRow = document.createElement("div");
+    segRow.className = "row"; segRow.style.marginTop = "8px";
+    const seg = document.createElement("div");
+    seg.className = "seg"; seg.id = "achTogetherMode";
+    const changed = () => { achRenderTrigger(); achAfterChange(); };
+    for (const [m, label, tip] of [["groups", "Groups", "One on-board piece for each match"], ["count", "Match + count", "count different pieces that all match"]]){
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = label; b.title = tip; b.dataset.tmode = m;
+      b.classList.toggle("on", m === mode);
+      b.addEventListener("click", () => {
+        if (m === togetherMode(t, uid)) return;
+        if (m === "count"){
+          if (t.groups !== undefined){ ui.groups = clone(t.groups); delete t.groups; }
+          if (ui.match !== undefined) t.match = clone(ui.match);
+          if (ui.count !== undefined) t.count = ui.count;
+        } else {
+          if (t.match !== undefined){ ui.match = clone(t.match); delete t.match; } else delete ui.match;
+          if (t.count !== undefined){ ui.count = t.count; delete t.count; } else delete ui.count;
+          if (ui.groups !== undefined) t.groups = clone(ui.groups);
+        }
+        ui.mode = m;
+        changed();
+      });
+      seg.appendChild(b);
+    }
+    segRow.append(seg, paramHint(mode === "groups" ? "one piece on the board for each group" : "this many different matching pieces"));
+    host.appendChild(segRow);
+
+    if (mode === "groups"){
+      if (t.groups !== undefined && !Array.isArray(t.groups)){
+        const raw = document.createElement("div");
+        raw.className = "hint"; raw.style.color = "var(--warn)";
+        raw.textContent = `Unrecognised groups ${JSON.stringify(t.groups)} — kept unless you add a piece.`;
+        host.appendChild(raw);
+      }
+      const groups = Array.isArray(t.groups) ? t.groups : [];
+      groups.forEach((g, i) => {
+        // match editor on groups[i]: an emptied match stays in the list as {} (any piece)
+        const slot = new Proxy({}, {
+          get: (_, k) => { if (k !== "g") return undefined; const v = t.groups[i]; return isPlainObject(v) && !Object.keys(v).length ? undefined : v; },
+          set: (_, k, v) => { if (k === "g") t.groups[i] = v; return true; },
+          deleteProperty: (_, k) => { if (k === "g") t.groups[i] = {}; return true; },
+        });
+        const ed = matchEditor(slot, { key: "g", label: `Piece ${i + 1}` });
+        ed.dataset.group = String(i);
+        const note = ed.lastElementChild;
+        if (note && note.classList.contains("hint") && !/Also kept/.test(note.textContent)) note.remove();   // one shared note below the list
+        const keyLab = ed.querySelector(".paramHead .mono");
+        if (keyLab) keyLab.textContent = `groups[${i}]`;
+        const rm = document.createElement("button");
+        rm.type = "button"; rm.className = "small danger"; rm.textContent = "Remove"; rm.dataset.removeGroup = String(i);
+        rm.addEventListener("click", () => {
+          t.groups.splice(i, 1);
+          if (!t.groups.length) delete t.groups;
+          changed();
+        });
+        const head = ed.querySelector(".paramHead");
+        const right = document.createElement("span");
+        right.style.display = "flex"; right.style.gap = "6px"; right.style.alignItems = "center";
+        const pill = head.querySelector(".pill");
+        if (pill) right.appendChild(pill);
+        right.appendChild(rm);
+        head.appendChild(right);
+        host.appendChild(ed);
+      });
+      const addRow = document.createElement("div");
+      addRow.className = "row"; addRow.style.marginTop = "8px";
+      const add = document.createElement("button");
+      add.type = "button"; add.className = "small primary"; add.id = "achTogetherAdd"; add.textContent = "+ Add piece";
+      add.addEventListener("click", () => {
+        if (!Array.isArray(t.groups)) t.groups = [];
+        t.groups.push({});
+        changed();
+      });
+      addRow.append(add, paramHint(groups.length ? "each group is matched by a different piece on the board" : "no pieces yet: add one for each piece that must be on the board"));
+      host.appendChild(addRow);
+      if (groups.length){
+        const note = document.createElement("div");
+        note.className = "hint"; note.style.marginTop = "6px";
+        note.textContent = "Each group matches a piece whose id is listed, OR that has one of the tags, OR (powerups) whose type is ticked. An empty group matches any piece.";
+        host.appendChild(note);
+      }
+    } else {
+      host.appendChild(matchEditor(t, pspec("match")));
+      host.appendChild(paramField(t, { ...pspec("count"), required: true }));
+    }
+    return host;
+  }
+
   // { ids, tags, types } editor; empty lists are left out and an empty match object is removed
   function matchEditor(t, p){
     const box = document.createElement("div");
@@ -5231,7 +5681,7 @@
     buildShapeFromEditor, loadShapeIntoEditor, deepEqual, toJsonCompatible, renderNow, setKind, setCentreTab, generate,
     zoneGenerate, regionSignature, exportRegion, setAppMode, achSelect, achIssues, triggerSummary, normaliseAchievement,
     serialiseAchievements, saveAchievements, saveCurrent, parseTriggerHeader, bitmapToIcon, iconPasteBitmap, setSlotText,
-    BLOCK_FORMAT, ACH_FORMAT,
+    BLOCK_FORMAT, ACH_FORMAT, touchCells, shapeModel, gooGuess,
   };
 
   // ============================================================

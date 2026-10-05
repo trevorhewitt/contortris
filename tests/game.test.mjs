@@ -225,7 +225,7 @@ test("achievements: game over triggers", () => {
 });
 
 test("every achievement trigger in the data file is a known type", () => {
-  const KNOWN = ["rowsDestroyed", "multiRow", "pieceServed", "pieceSequence", "pieceInside", "seenAll",
+  const KNOWN = ["together", "rowsDestroyed", "multiRow", "pieceServed", "pieceSequence", "pieceInside", "seenAll",
     "powerupUsed", "powerupBlocks", "score", "level", "drops", "boardCleared", "gameOver"];
   const ids = new Set();
   for (const a of ACHIEVEMENTS) {
@@ -244,4 +244,18 @@ test("movement and rotation respect walls", () => {
   assert.equal(tryRotate(state), false, "powerups don't rotate");
   setNextPiece(state, byId("pea"));
   assert.equal(state.next.id, "pea");
+});
+
+test("achievements: together (groups and count)", () => {
+  const got = [];
+  const ach = createAchievements(ACHIEVEMENTS, { storage: memoryStorage(), onUnlock: (d) => got.push(d.id) });
+  ach.handle("start", { mode: "normal" }, null);
+  ach.handle("lock", { drops: 1, onBoard: () => [byId("david")] });
+  assert.ok(!got.includes("art_gallery"));
+  ach.handle("lock", { drops: 2, onBoard: () => [byId("david"), byId("lisa")] });
+  assert.ok(got.includes("art_gallery"));
+  ach.handle("lock", { drops: 3, onBoard: () => [byId("eyeball"), byId("seeyou1"), byId("eyeball")] });
+  assert.ok(!got.includes("being_watched"), "needs 3 different eyes");
+  ach.handle("lock", { drops: 4, onBoard: () => [byId("eyeball"), byId("seeyou1"), byId("seeyou3")] });
+  assert.ok(got.includes("being_watched"));
 });

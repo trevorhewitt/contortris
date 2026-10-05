@@ -39,6 +39,12 @@ export function initPieceSelectionState(state) {
       cooldown: 0,
       count: 0,
       lastChance: 0, // for the debug panel
+      // progression (introduce powerups over time)
+      introduced: new Set(), // ids the scheduler has started serving
+      shown: new Set(),      // ids whose intro has been shown (spawned at least once)
+      classes: [],           // powerup classes unlocked so far, in order
+      sinceNew: 0,           // powerups served since the last brand new one
+      introsSinceClass: 0,   // new powerups introduced since the last new class
     },
 
     // board presence, recomputed once per selection: shapeId -> copies on the board
@@ -322,10 +328,7 @@ export function selectPiece(state) {
   levelW[3] *= (1 - 0.65 * danger);
 
   // Hard-ban level 0 for the first few drops.
-  // NOTE: openingNoLevel0UntilDrop lives in CONFIG.assist, not pieceMix, so this
-  // reads undefined and the ban is currently off. Left as-is so the tuned
-  // balance doesn't change; point it at CONFIG.assist to switch the ban on.
-  if (sel.dropIndex <= (mixCfg.openingNoLevel0UntilDrop ?? 0)) {
+  if (sel.dropIndex <= (CONFIG.assist.openingNoLevel0UntilDrop ?? 0)) {
     levelW[0] = 0;
   }
 
@@ -393,8 +396,25 @@ function maybeSelectPowerup(state, danger01) {
     return null;
   }
 
-  const candidates = state.powerups.filter(p => (p.frequency ?? 1) > 0);
+  let candidates = state.powerups.filter(p => (p.frequency ?? 1) > 0);
   if (!candidates.length) return null;
+
+  // Progression: powerups are introduced one at a time, class by class.
+  const prog = cfg.progression;
+  if (prog?.enabled) {
+    const dueNew = ps.introduced.size === 0 || ps.sinceNew >= (prog.newPowerupEvery ?? 3) - 1;
+    if (dueNew) {
+      const fresh = pickNewPowerup(state, candidates);
+      if (fresh) {
+        ps.sinceNew = 0;
+        ps.introduced.add(fresh.id);
+        return fresh;
+      }
+    }
+    ps.sinceNew++;
+    candidates = candidates.filter(p => ps.introduced.has(p.id));
+    if (!candidates.length) return null;
+  }
 
   const tw = cfg.tierWeights;
   const need = cfg.need ?? {};
@@ -407,6 +427,44 @@ function maybeSelectPowerup(state, danger01) {
     const needW = (n.base ?? 1) + (n.holes ?? 0) * holes01 + (n.danger ?? 0) * danger01;
     return (p.frequency ?? 1) * tierW * needW * varietyMultiplier(sel, p);
   }, state.rng);
+}
+
+// The next brand new powerup: from the classes unlocked so far, or from a newly
+// unlocked class (the first class is always CONFIG...progression.firstClass).
+function pickNewPowerup(state, pool) {
+  const prog = CONFIG.assist.powerups.progression;
+  const ps = state.pieceSel.powerup;
+  const fresh = (p) => !ps.introduced.has(p.id);
+  let cands = pool.filter(p => fresh(p) && ps.classes.includes(p.powerup.type));
+
+  if (!cands.length || ps.introsSinceClass >= (prog.newClassEvery ?? 3)) {
+    const remaining = [...new Set(pool.filter(fresh).map(p => p.powerup.type))].filter(t => !ps.classes.includes(t));
+    if (remaining.length) {
+      const next = (!ps.classes.length && remaining.includes(prog.firstClass))
+        ? prog.firstClass
+        : remaining[Math.floor(state.rng() * remaining.length)];
+      ps.classes.push(next);
+      ps.introsSinceClass = 0;
+      cands = pool.filter(p => fresh(p) && p.powerup.type === next);
+    }
+  }
+  if (!cands.length) cands = pool.filter(fresh);
+  if (!cands.length) return null;
+
+  // gentlest first
+  const minTier = Math.min(...cands.map(p => p.powerup.tier));
+  cands = cands.filter(p => p.powerup.tier === minTier);
+  ps.introsSinceClass++;
+  return sampleByWeight(cands, p => p.frequency ?? 1, state.rng);
+}
+
+// Dev / testing: unlock every class and powerup right away.
+export function introduceAllPowerups(state) {
+  const ps = state.pieceSel.powerup;
+  for (const p of state.powerups) {
+    ps.introduced.add(p.id);
+    if (!ps.classes.includes(p.powerup.type)) ps.classes.push(p.powerup.type);
+  }
 }
 
 function notePowerupDropped(sel) {

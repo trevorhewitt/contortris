@@ -6,10 +6,12 @@ import { CONFIG } from "../config.js";
 import { escapeHtml, store } from "./util.js";
 import { getDifficultyZone } from "./selection.js";
 import {
-  on, startRun, resetGame, tryMove, tryRotate, beginLockIfNeeded, markInput, setNextPiece,
+  on, startRun, resetGame, tryMove, tryRotate, beginLockIfNeeded, markInput, setNextPiece, markBoardDirty,
 } from "./game.js";
-import { makeShapePreviewCanvas, drawIcon, drawPowerupMark, drawBlockWithPaintStatic } from "./render.js";
-import { getShapePaint } from "./shapes.js";
+import { makeShapePreviewCanvas, drawIcon } from "./render.js";
+import { createDemo, runDemos } from "./demo.js";
+import { CLASS_INFO, analyseBoard } from "./powerups.js";
+import { introduceAllPowerups, computeStackDanger01 } from "./selection.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -163,6 +165,15 @@ export function bindUI({ state, renderer, sound, achievements }) {
     achievements: $("panelAchievements"),
     pause: $("panelPause"),
     gameover: $("panelGameOver"),
+    intro: $("panelIntro"),
+    powerups: $("panelPowerups"),
+  };
+  const devmode = new URLSearchParams(location.search).get("devmode") === "1";
+  const SKIP_KEY = "extris.skipIntros";
+  const skipIntros = () => { try { return sessionStorage.getItem(SKIP_KEY) === "1"; } catch { return false; } };
+  const setSkipIntros = (on) => {
+    try { sessionStorage.setItem(SKIP_KEY, on ? "1" : "0"); } catch { /* ignore */ }
+    for (const b of document.querySelectorAll(".skipIntros")) b.checked = on;
   };
 
   let lastMode = loadLastMode();
@@ -180,8 +191,10 @@ export function bindUI({ state, renderer, sound, achievements }) {
     for (const [key, el] of Object.entries(panels)) el.hidden = key !== name;
     if (name === "menu") renderMenu();
     if (name === "achievements") renderAchievements();
-    if (name === "howto") startDemos();
-    else stopDemos();
+    stopDemos();
+    if (name === "howto") startHowToDemos();
+    if (name === "powerups") renderPowerupHelp();
+    if (name === "pause") $("btnPowerupHelp").hidden = !state.pieceSel?.powerup.shown.size;
     if (name) {
       const scroller = panels[name];
       if (scroller) scroller.scrollTop = 0;
@@ -279,6 +292,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
         nameLayer.setShape(d.shape);
         renderer.drawNextSilhouette(d.next);
         if (d.shape.powerup) sound.play("powerupSpawn");
+        if (d.isNew && !skipIntros()) showIntro(d.shape);
         break;
       case "next":
         renderer.drawNextSilhouette(d.next);
@@ -317,7 +331,9 @@ export function bindUI({ state, renderer, sound, achievements }) {
   let hudScore = null, hudBlocks = null;
   function updateHUD() {
     if (state.score !== hudScore) { hudScore = state.score; scoreText.textContent = String(state.score); }
-    if (state.blocksDestroyed !== hudBlocks) { hudBlocks = state.blocksDestroyed; linesText.textContent = String(state.blocksDestroyed); }
+    const rb = `${state.rowsDestroyed} · ${state.blocksDestroyed}`;
+    if (rb !== hudBlocks) { hudBlocks = rb; linesText.textContent = rb; }
+    if (devmode) updateDevPanel();
     pauseBtn.textContent = (state.running && !state.paused) ? "❚❚" : "▶";
 
     if (state.debug) {
@@ -428,109 +444,176 @@ export function bindUI({ state, renderer, sound, achievements }) {
     }
   }
 
-  /* ---------- How to play demos ---------- */
+  /* ---------- powerup demos (How to play, intro, help) ---------- */
 
-  let demoRaf = 0;
-  const demos = [];
+  let stopDemoLoop = null;
+  function stopDemos() { stopDemoLoop?.(); stopDemoLoop = null; }
+  function playDemos(demos) {
+    stopDemos();
+    const panelName = currentPanel;
+    stopDemoLoop = runDemos(demos, () => currentPanel === panelName);
+  }
 
-  function setupDemos() {
-    const pick = (id, type) =>
-      state.allPowerups.find(p => p.id === id) ?? state.allPowerups.find(p => p.powerup.type === type) ?? null;
+  // The gentlest powerup of a class, to show it off.
+  const exampleOf = (type) => state.allPowerups
+    .filter(p => p.powerup.type === type)
+    .sort((a, b) => a.powerup.tier - b.powerup.tier || (b.frequency ?? 1) - (a.frequency ?? 1))[0];
 
-    // Tiny 6×4 boards: "#" block, "." empty, "P" the powerup, area = cells marked in `area`.
-    const DEMOS = {
-      destroyer: {
-        piece: pick("small_black_hole", "destroyer"),
-        board: ["......", "..P...", "#.###.", "######"],
-        area: [".###..", ".###..", ".###..", "......"],
-      },
-      gravity: {
-        piece: pick("infectious_sand", "gravity"),
-        board: ["..P...", ".##...", "......", "#.#.##"],
-        area: [".|||..", ".|||..", ".|||..", ".|||.."],
-        direction: "down",
-      },
-      expander: {
-        piece: pick("expanding_foam", "expander"),
-        board: ["......", "...P..", "#.#..#", "##.###"],
-        area: ["..###.", ".#####", ".#####", "..###."],
-      },
+  function demoCard(shape, { cell = 14, title = null, text = "" } = {}) {
+    const row = document.createElement("div");
+    row.className = "demoRow";
+    const cvs = document.createElement("canvas");
+    cvs.className = "demo";
+    row.appendChild(cvs);
+    const txt = document.createElement("div");
+    txt.innerHTML = `<div class="demoName">${escapeHtml(title ?? shape.name)}</div>${text}`;
+    row.appendChild(txt);
+    return { row, demo: createDemo(cvs, shape, { cell }) };
+  }
+
+  let howToBuilt = null;
+  function startHowToDemos() {
+    if (!howToBuilt) {
+      howToBuilt = [];
+      const box = $("howtoClasses");
+      box.innerHTML = "";
+      for (const type of Object.keys(CLASS_INFO)) {
+        const ex = exampleOf(type);
+        if (!ex) continue;
+        const info = CLASS_INFO[type];
+        const card = demoCard(ex, { title: info.name, text: `${escapeHtml(info.text)}<div class="demoEg">e.g. ${escapeHtml(ex.name)}</div>` });
+        box.appendChild(card.row);
+        howToBuilt.push(card.demo);
+      }
+    }
+    playDemos(howToBuilt);
+  }
+
+  // Intro screen for a powerup the player hasn't seen yet this game.
+  function showIntro(shape) {
+    state.paused = true;
+    state.softDropping = false;
+    const pu = shape.powerup;
+    const info = CLASS_INFO[pu.type];
+    const firstOfClass = ![...state.pieceSel.powerup.shown].some(id => id !== shape.id && state.idToShape.get(id)?.powerup?.type === pu.type);
+    $("introKicker").textContent = firstOfClass ? `New powerup class: ${info.name}!` : "New powerup!";
+    $("introName").textContent = shape.name;
+    $("introEffect").textContent = pu.description;
+    $("introText").textContent = pu.intro || "";
+    $("introClass").textContent = firstOfClass ? info.text : "";
+    const cvs = $("introDemo");
+    const demo = createDemo(cvs, shape, { cell: 22 });
+    panels.intro.classList.remove("slideIn");
+    void panels.intro.offsetWidth;
+    panels.intro.classList.add("slideIn");
+    showPanel("intro");
+    playDemos([demo]);
+  }
+
+  function renderPowerupHelp() {
+    const list = $("powerupList");
+    list.innerHTML = "";
+    const demos = [];
+    const shown = [...state.pieceSel.powerup.shown].map(id => state.idToShape.get(id)).filter(Boolean);
+    for (const type of Object.keys(CLASS_INFO)) {
+      const ofType = shown.filter(s => s.powerup.type === type);
+      if (!ofType.length) continue;
+      const h = document.createElement("h3");
+      h.textContent = CLASS_INFO[type].name;
+      list.appendChild(h);
+      const p = document.createElement("p");
+      p.textContent = CLASS_INFO[type].text;
+      list.appendChild(p);
+      for (const shape of ofType) {
+        const card = demoCard(shape, { cell: 12, text: `<b>${escapeHtml(shape.powerup.description)}</b>${shape.powerup.intro ? "<br>" + escapeHtml(shape.powerup.intro) : ""}` });
+        list.appendChild(card.row);
+        demos.push(card.demo);
+      }
+    }
+    if (!shown.length) list.textContent = "No powerups yet this game.";
+    playDemos(demos);
+  }
+
+  /* ---------- dev mode (?devmode=1) ---------- */
+
+  const devPanel = $("devPanel");
+  function setupDevMode() {
+    if (!devmode) return;
+    document.body.classList.add("devmode");
+    devPanel.hidden = false;
+    // on narrow screens the panel would cover the board, so it starts folded: tap to open
+    if (window.innerWidth < 760) devPanel.classList.add("folded");
+    devPanel.addEventListener("click", () => devPanel.classList.toggle("folded"));
+    $("devTools").hidden = false;
+    const sel = $("devNextPiece");
+    const add = (label, items) => {
+      const g = document.createElement("optgroup");
+      g.label = label;
+      for (const s of items) {
+        const o = document.createElement("option");
+        o.value = s.id;
+        o.textContent = `${s.name} [${s.id}]`;
+        g.appendChild(o);
+      }
+      sel.appendChild(g);
     };
-
-    const palette = ["#e8794a", "#5fb0e8", "#9ad45b", "#e85fa8", "#e8d35f", "#9a7be8"];
-    for (const canvas of document.querySelectorAll("canvas.demo")) {
-      const type = canvas.dataset.type;
-      const spec = DEMOS[type];
-      if (!spec) continue;
-      const cell = 18;
-      const dpr = Math.max(1, Math.round(window.devicePixelRatio || 1));
-      canvas.width = 6 * cell * dpr;
-      canvas.height = 4 * cell * dpr;
-      canvas.style.width = `${6 * cell}px`;
-      canvas.style.height = `${4 * cell}px`;
-      demos.push({ canvas, ctx: canvas.getContext("2d"), spec, cell, dpr, type, palette });
+    for (const type of Object.keys(CLASS_INFO)) {
+      add(`Powerups: ${CLASS_INFO[type].name}`, state.allPowerups.filter(p => p.powerup.type === type));
     }
+    for (let d = 0; d <= 5; d++) add(`Difficulty ${d}`, state.allShapes.filter(s => s.difficulty === d));
+    $("btnDevNext").addEventListener("click", () => {
+      const shape = state.idToShape.get(sel.value) ?? [...state.allShapes, ...state.allPowerups].find(s => s.id === sel.value);
+      if (shape) setNextPiece(state, shape);
+      $("devNextStatus").textContent = `next: ${shape?.name ?? "?"}`;
+    });
+    $("btnDevClear").addEventListener("click", () => {
+      state.board = state.board.map(r => r.fill(null));
+      state.instances.clear();
+      markBoardDirty(state);
+    });
+    $("btnDevMessy").addEventListener("click", () => {
+      const pool = state.allShapes;
+      for (let y = 16; y < state.board.length; y++) for (let x = 0; x < state.board[0].length; x++) {
+        if (Math.random() < 0.65) {
+          const sh = pool[(Math.random() * pool.length) | 0];
+          const paint = sh.cellPaints[0].flat().find(Boolean);
+          state.board[y][x] = { paint, style: sh.style, pid: 1e9 + y * 100 + x };
+        } else state.board[y][x] = null;
+      }
+      markBoardDirty(state);
+    });
+    $("btnDevUnlockAll").addEventListener("click", () => {
+      introduceAllPowerups(state);
+      $("devNextStatus").textContent = "all powerups unlocked";
+    });
   }
 
-  function drawDemo(d, now) {
-    const { ctx, spec, cell, dpr, type, palette } = d;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.imageSmoothingEnabled = false;
-    ctx.fillStyle = "#05050c";
-    ctx.fillRect(0, 0, 6 * cell, 4 * cell);
-    let px0 = 0, py0 = 0;
-    for (let y = 0; y < 4; y++) {
-      for (let x = 0; x < 6; x++) {
-        ctx.fillStyle = "rgba(255,255,255,0.035)";
-        ctx.fillRect(x * cell + 1, y * cell + 1, cell - 2, cell - 2);
-        const ch = spec.board[y][x];
-        if (ch === "#") {
-          ctx.fillStyle = palette[(x * 3 + y * 5) % palette.length];
-          ctx.fillRect(x * cell, y * cell, cell, cell);
-          ctx.fillStyle = "rgba(0,0,0,0.25)";
-          ctx.fillRect(x * cell, y * cell + cell - 2, cell, 2);
-        } else if (ch === "P") {
-          px0 = x; py0 = y;
-        }
-      }
-    }
-    // the powerup piece itself (its top-left block at the "P")
-    if (spec.piece) {
-      const mat = spec.piece.rotations[0];
-      for (let y = 0; y < mat.length; y++) {
-        for (let x = 0; x < mat[0].length; x++) {
-          if (!mat[y][x]) continue;
-          drawBlockWithPaintStatic(ctx, (px0 + x) * cell, (py0 + y) * cell, cell,
-            getShapePaint(spec.piece, 0, x, y), spec.piece.style);
-        }
-      }
-    }
-    const pu = { type, direction: spec.direction ?? "down" };
-    for (let y = 0; y < 4; y++) {
-      for (let x = 0; x < 6; x++) {
-        if (spec.area[y][x] === ".") continue;
-        const filled = spec.board[y][x] === "#";
-        const isPiece = spec.board[y][x] === "P";
-        if (isPiece) continue;
-        const effective = type === "expander" ? !filled : filled;
-        drawPowerupMark(ctx, pu, x * cell, y * cell, cell, now, x, y, Math.hypot(x - px0, y - py0), effective);
-      }
-    }
-  }
-
-  function startDemos() {
-    if (!demos.length) setupDemos();
-    cancelAnimationFrame(demoRaf);
-    const loop = (now) => {
-      for (const d of demos) drawDemo(d, now);
-      demoRaf = requestAnimationFrame(loop);
-    };
-    demoRaf = requestAnimationFrame(loop);
-  }
-
-  function stopDemos() {
-    cancelAnimationFrame(demoRaf);
-    demoRaf = 0;
+  let devLast = 0;
+  function updateDevPanel() {
+    const now = performance.now();
+    if (now - devLast < 200) return;
+    devLast = now;
+    const ps = state.pieceSel?.powerup;
+    const a = state.active?.shape;
+    const stats = analyseBoard(state.board);
+    const z = getDifficultyZone(state);
+    const lines = [
+      ["mode", `${state.mode}${state.running ? "" : " (not running)"}${state.paused ? " · paused" : ""}`],
+      ["piece", a ? `${a.id} (${a.powerup ? `${a.powerup.type} t${a.powerup.tier}` : `d${a.difficulty}`})` : "–"],
+      ["next", state.next ? state.next.id : "–"],
+      ["level / speed", `${state.level} · ${state.dropMs} ms/row`],
+      ["drops / rows", `${state.drops} · ${state.rowsDestroyed}`],
+      ["danger", `${computeStackDanger01(state).toFixed(2)} · ${z.zone}`],
+      ["stack / holes", `${stats.stackHeight} · ${stats.holes}`],
+      ["powerup chance", ps && state.powerups.length ? `${(ps.lastChance * 100).toFixed(0)}% · cd ${ps.cooldown}` : "off"],
+      ["classes", ps ? (ps.classes.join(", ") || "none yet") : "–"],
+      ["introduced", ps ? `${ps.introduced.size}/${state.powerups.length}` : "–"],
+      ["pieces on board", String(state.instances.size)],
+      ["look", `${CONFIG.render.cellStyle} · edges ${CONFIG.render.enhanced.edgeStrength}`],
+    ];
+    devPanel.innerHTML = `<div class="devTitle">dev mode</div>` +
+      lines.map(([k, v]) => `<div><span class="k">${k}</span> <span class="v">${escapeHtml(v)}</span></div>`).join("") +
+      `<div class="devHint">pause menu: pick the next piece · D V E P keys</div>`;
   }
 
   /* ---------- buttons ---------- */
@@ -542,6 +625,13 @@ export function bindUI({ state, renderer, sound, achievements }) {
   $("btnResume").addEventListener("click", () => resumeGame());
   $("btnQuit").addEventListener("click", () => goToMenu());
   $("btnPauseHowTo").addEventListener("click", () => { panelBack = "pause"; showPanel("howto"); });
+  $("btnPowerupHelp").addEventListener("click", () => { panelBack = "pause"; showPanel("powerups"); });
+  $("btnIntroContinue").addEventListener("click", () => resumeGame());
+  for (const b of document.querySelectorAll(".skipIntros")) {
+    b.checked = skipIntros();
+    b.addEventListener("change", () => setSkipIntros(b.checked));
+  }
+  setupDevMode();
   $("btnAgain").addEventListener("click", () => startGame(state.mode));
   $("btnGameOverMenu").addEventListener("click", () => goToMenu());
   $("btnResetAch").addEventListener("click", () => {
@@ -599,7 +689,8 @@ export function bindUI({ state, renderer, sound, achievements }) {
     }
 
     if (e.code === "Escape") {
-      if (currentPanel === "howto" || currentPanel === "achievements") showPanel(panelBack);
+      if (currentPanel === "howto" || currentPanel === "achievements" || currentPanel === "powerups") showPanel(panelBack);
+      else if (currentPanel === "intro") resumeGame();
       else togglePause();
       return;
     }
@@ -611,6 +702,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
     if (e.code === "Enter") {
       if (currentPanel === "menu") { e.preventDefault(); startGame(); }
       else if (currentPanel === "gameover") { e.preventDefault(); startGame(state.mode); }
+      else if (currentPanel === "intro") { e.preventDefault(); resumeGame(); }
       return;
     }
 

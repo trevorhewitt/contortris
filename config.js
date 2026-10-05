@@ -77,7 +77,7 @@ export const CONFIG = {
   },
 
   assist: {
-    openingNoLevel0UntilDrop: 17,
+    openingNoLevel0UntilDrop: 17, // no level-0 (tiny) pieces in the first 17 drops
 
     // “Danger” bands (rows-from-top). Higher = assistance kicks in earlier.
     topRowsForDiff2Only: 22,
@@ -85,7 +85,9 @@ export const CONFIG = {
 
     pieceMix: {
       // Baseline level weights (0–5). Keep 4/5 at 0: they’re injected via the “hard” scheduler below.
-      baseLevelWeight:    { 0: 0.1, 1: 0.5, 2: 0.3, 3: 0.08, 4: 0.00, 5: 0.00 },
+      // (level 0 is 0.13 rather than 0.1 to make up for the opening level-0 ban below,
+      //  which used to be switched off by a bug — measured to keep the same difficulty)
+      baseLevelWeight:    { 0: 0.13, 1: 0.5, 2: 0.3, 3: 0.08, 4: 0.00, 5: 0.00 },
 
       // Opening blend (first N drops), then fades into baseLevelWeight.
       openingDrops: 10,
@@ -151,15 +153,23 @@ export const CONFIG = {
     // once a powerup is "due", it replaces that drop's regular piece.
     powerups: {
       // No powerups in the first N drops of a run.
-      minDropIndex: 6,
+      minDropIndex: 4,
       // Drops to wait after a powerup before another one can appear.
-      cooldownDrops: 5,
+      cooldownDrops: 2,
 
       // Chance per drop once eligible. Starts at baseChance and grows by
       // chancePerDrop every drop without a powerup (reset when one drops).
-      baseChance: 0.05,
-      chancePerDrop: 0.035,
-      maxChance: 0.6,
+      baseChance: 0.12,
+      chancePerDrop: 0.07,
+      maxChance: 0.8,
+
+      // Powerups are introduced one at a time (each with an intro screen).
+      progression: {
+        enabled: true,
+        firstClass: "destroyer",  // the first class is always this one
+        newPowerupEvery: 3,       // every Nth powerup is a brand new one, until all are in
+        newClassEvery: 3,         // after this many new ones, the next new one opens a new class
+      },
 
       // The chance is multiplied by (1 + dangerBoost*danger + holesBoost*holes01):
       // you get more help when the stack is high or full of air pockets.
@@ -181,6 +191,10 @@ export const CONFIG = {
         gravitySideways: { base: 0.6, holes: 0.0, danger: 0.0 },
         expander:        { base: 0.6, holes: 0.8, danger: 0.0 },
         destroyer:       { base: 0.7, holes: 0.2, danger: 1.0 },
+        acid:            { base: 0.7, holes: 0.3, danger: 0.8 },
+        blast:           { base: 0.7, holes: 0.3, danger: 0.6 },
+        goo:             { base: 0.6, holes: 1.0, danger: 0.0 },
+        phantom:         { base: 0.6, holes: 1.2, danger: 0.0 },
       },
     },
   },

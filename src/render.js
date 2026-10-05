@@ -6,7 +6,7 @@ import { CONFIG } from "../config.js";
 import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour } from "./util.js";
 import { getShapePaint } from "./shapes.js";
 import { getActiveMatrix, getGhostDropY } from "./game.js";
-import { resolveArea } from "./powerups.js";
+import { resolveArea, computeEffect } from "./powerups.js";
 
 const DEFAULT_STYLE = {};
 
@@ -222,7 +222,10 @@ export function drawIcon(ctx, grid, x, y, sizePx) {
 //   type: destroyer (squares shrink) | expander (squares grow) | gravity (lines travel)
 //   x, y: board cell coords (for the rainbow); dist: distance from the powerup (ripple)
 //   effective: does the effect change this cell (strong) or not (faint)
-export function drawPowerupMark(ctx, { type, direction }, px, py, cell, now, x, y, dist, effective, intensity = 1) {
+// Which animation each class uses for its highlighted cells.
+const MARK_STYLE = { destroyer: "shrink", acid: "shrink", expander: "grow", goo: "grow", phantom: "grow", gravity: "line", blast: "out" };
+
+export function drawPowerupMark(ctx, { type, direction }, px, py, cell, now, x, y, dist, effective, intensity = 1, centre = null) {
   const o = CONFIG.fx.powerup.overlay;
   const cycle = now / o.periodMs;
   const hue = (now * o.hueDegPerMs + (x + y) * o.hueStepPerCell) % 360;
@@ -239,9 +242,26 @@ export function drawPowerupMark(ctx, { type, direction }, px, py, cell, now, x, 
   ctx.strokeStyle = mark;
   ctx.fillStyle = mark;
 
-  if (type === "gravity") {
+  const style = MARK_STYLE[type] ?? "shrink";
+  if (style === "line") {
     drawGravityMark(ctx, px, py, cell, direction, frac(cycle + hash01(x * 7 + y * 13) * 0.35));
-  } else if (type === "destroyer") {
+  } else if (style === "out") {
+    // little streaks flying away from the blast centre
+    let vx = centre ? x - centre.x : 0, vy = centre ? y - centre.y : -1;
+    const len = Math.hypot(vx, vy) || 1;
+    vx /= len; vy /= len;
+    const p = frac(cycle - dist * 0.15);
+    const cxp = px + cell / 2 + vx * (p - 0.5) * cell * 0.9;
+    const cyp = py + cell / 2 + vy * (p - 0.5) * cell * 0.9;
+    const w = Math.max(1, cell / 8);
+    ctx.globalAlpha *= p > 0.8 ? (1 - p) / 0.2 : 1;
+    ctx.lineWidth = w;
+    ctx.beginPath();
+    ctx.moveTo(cxp - vx * cell * 0.25, cyp - vy * cell * 0.25);
+    ctx.lineTo(cxp + vx * cell * 0.15, cyp + vy * cell * 0.15);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  } else if (style === "shrink") {
     // squares shrink, rippling in towards the powerup
     const p = frac(cycle + dist * o.ripplePerCell);
     drawSquareMark(ctx, px, py, cell, 1 - p, p < 0.15 ? p / 0.15 : 1);
@@ -609,9 +629,23 @@ export function createRenderer(boardCanvas, nextCanvas) {
             const m = mv.byIndex.get(idx);
             if (m) {
               const t = clamp01(mv.elapsedMs / m.dur);
-              const k = 1 - t * t; // accelerate like falling
-              px += m.ox * cell * k;
-              py += m.oy * cell * k;
+              if (m.vx !== undefined) {
+                // thrown out to (vx, vy), then falls to its resting place
+                const split = 0.4;
+                if (t < split) {
+                  const u = 1 - Math.pow(1 - t / split, 2);
+                  px += (m.ox + (m.vx - m.ox) * u) * cell;
+                  py += (m.oy + (m.vy - m.oy) * u) * cell;
+                } else {
+                  const u = (t - split) / (1 - split);
+                  px += m.vx * (1 - u * u) * cell;
+                  py += m.vy * (1 - u * u) * cell;
+                }
+              } else {
+                const k = 1 - t * t; // accelerate like falling
+                px += m.ox * cell * k;
+                py += m.oy * cell * k;
+              }
             }
           }
           if (gr.active) {
@@ -750,7 +784,10 @@ export function createRenderer(boardCanvas, nextCanvas) {
         });
       }
     }
+    const phantom = shape.powerup?.type === "phantom";
+    if (phantom) bctx.globalAlpha = 0.7;
     drawBlockList(bctx, list);
+    bctx.globalAlpha = 1;
   }
 
   // Animated rainbow outline around a powerup piece (falling, or charging).
@@ -789,6 +826,22 @@ export function createRenderer(boardCanvas, nextCanvas) {
     return out;
   }
 
+  // Goo and phantoms don't have an area: highlight where the goo will settle /
+  // where the phantom will land instead.
+  function previewArea(state, pu, area, placed, centre) {
+    if (pu.type === "phantom") {
+      return { indices: placed.map(p => p.y * cols + p.x), flags: null, fullRows: [] };
+    }
+    if (pu.type === "goo") {
+      const copy = state.board.map(r => r.slice());
+      const fx = computeEffect(copy, { ...pu, consume: false }, {
+        area, placed, pid: null, centre, cols, rows, makeFill: () => ({ goo: true }),
+      });
+      return { indices: fx.filled.map(f => f.y * cols + f.x), flags: null, fullRows: [] };
+    }
+    return area;
+  }
+
   // The highlighted ("effected") cells of the falling powerup (at its landing
   // spot) or of a locked powerup that is charging up.
   function drawPowerupOverlay(state, ghostY, now) {
@@ -810,16 +863,24 @@ export function createRenderer(boardCanvas, nextCanvas) {
         overlayCache.key = key;
         overlayCache.area = resolveArea(pu.areaRotations[a.rotIdx], a.x, ghostY, cols, rows);
       }
-      area = overlayCache.area;
-
       const mat = getActiveMatrix(state);
       pieceCells = new Set();
+      const placed = [];
       for (let y = 0; y < mat.length; y++) {
         for (let x = 0; x < mat[0].length; x++) {
-          if (mat[y][x] && ghostY + y >= 0) pieceCells.add((ghostY + y) * cols + a.x + x);
+          if (mat[y][x] && ghostY + y >= 0) {
+            pieceCells.add((ghostY + y) * cols + a.x + x);
+            placed.push({ x: a.x + x, y: ghostY + y });
+          }
         }
       }
       centre = { x: a.x + (mat[0].length - 1) / 2, y: ghostY + (mat.length - 1) / 2 };
+
+      if (overlayCache.area && overlayCache.preview !== key) {
+        overlayCache.preview = key;
+        overlayCache.area = previewArea(state, pu, overlayCache.area, placed, centre);
+      }
+      area = overlayCache.area;
     } else {
       return;
     }
@@ -830,9 +891,10 @@ export function createRenderer(boardCanvas, nextCanvas) {
       const x = i % cols, y = (i / cols) | 0;
       const isPiece = pieceCells.has(i);
       const filled = !!board[y][x] && !isPiece;
-      const effective = pu.type === "expander" ? (!filled && !isPiece) : filled;
+      const effective = (pu.type === "goo" || pu.type === "phantom") ? true
+        : pu.type === "expander" ? (!filled && !isPiece) : filled;
       const dist = Math.hypot(x - centre.x, y - centre.y);
-      drawPowerupMark(bctx, pu, x * cell, y * cell, cell, now, x, y, dist, effective, intensity);
+      drawPowerupMark(bctx, pu, x * cell, y * cell, cell, now, x, y, dist, effective, intensity, centre);
     }
 
     // White-hot flash right before the effect fires.

@@ -2,7 +2,10 @@
 
 A Tetris-like game where every piece is a silly pixel-art object.
 
-- **Normal mode**: the game plus powerups (destroyers, gravity blocks, expanders).
+- **Normal mode**: the game plus powerups, introduced one at a time. Destroyers always come first,
+  then a new random class joins every so often: gravity, expanders, acid, blasts, goo and phantoms.
+  Each new powerup pauses the game with an intro screen (tick "skip powerup intro screens" to turn
+  them off for the session). The pause menu's **Powerups** page lists every one you've met.
 - **Extreme mode**: the original game. No powerups, no mercy.
 
 ## Where things are
@@ -24,7 +27,8 @@ A Tetris-like game where every piece is a silly pixel-art object.
 | `main.js` | Boots the game and runs the loop. |
 | `game.js` | The game rules: falling, locking, line clears, powerup effects. No DOM, sends events. |
 | `selection.js` | The piece picker: difficulty levels, "hard" pieces, powerup scheduling, variety. |
-| `powerups.js` | Powerup areas and effects (destroy / gravity / expand). |
+| `powerups.js` | Powerup areas and effects for every class (`computeEffect`). |
+| `demo.js` | The little looping powerup animations on the intro / help / How to play screens. |
 | `shapes.js` | Loads `shapes/main_shapes.js`. |
 | `achievements.js` | Tracks and unlocks achievements (saved in the browser). |
 | `render.js` | Draws everything on the board canvas. |
@@ -56,8 +60,15 @@ Otherwise it downloads the updated file for you to drop in.
 - `render.cellStyle`: `"enhanced"` (new look) or `"classic"` (the original look).
 - `render.enhanced.edgeStrength`: 0 = pieces melt into one mess of pixel art, 1 = chunky outlines.
 - `assist.variety`: how strongly the picker avoids pieces served recently / still on the board.
-- `assist.powerups`: how often powerups appear and which ones.
+- `assist.powerups`: how often powerups appear and which ones; `progression` controls how they are
+  introduced (`firstClass`, `newPowerupEvery`, `newClassEvery`, or `enabled: false` for all at once).
 - `sound.enabled`, `sound.volume`.
+
+## Dev mode
+
+Open `index.html?devmode=1` for a live dev-info panel on the left (tap it to fold/unfold on phones),
+and a dev section in the pause menu: pick exactly which piece comes next, unlock every powerup,
+clear the board or fill it with a messy stack.
 
 ## Debug keys
 

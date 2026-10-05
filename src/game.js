@@ -18,13 +18,7 @@ import { CONFIG } from "../config.js";
 import { clamp01, lerp } from "./util.js";
 import { getShapePaint } from "./shapes.js";
 import { initPieceSelectionState, selectPiece } from "./selection.js";
-import {
-  resolveArea,
-  applyDestroy,
-  applyGravity,
-  applyExpand,
-  collapseRows,
-} from "./powerups.js";
+import { resolveArea, collapseRows, computeEffect, phantomLandingY } from "./powerups.js";
 
 /* =========================
    State
@@ -235,6 +229,7 @@ export function getGhostDropY(state) {
   if (!state.active) return null;
 
   const mat = getActiveMatrix(state);
+  if (isPhantom(state)) return phantomLandingY(state.board, state.active.x, mat);
   let ghostY = state.active.y;
 
   while (!collides(state, state.active.x, ghostY + 1, mat)) {
@@ -282,8 +277,40 @@ function cancelLock(state) {
   state.lockElapsed = 0;
 }
 
+// Phantom powerups pass through blocks: only walls stop them, and they land in the
+// deepest spot their columns have room for.
+export function isPhantom(state) {
+  return state.active?.shape.powerup?.type === "phantom";
+}
+
+function canFall(state) {
+  const mat = getActiveMatrix(state);
+  if (isPhantom(state)) {
+    const target = phantomLandingY(state.board, state.active.x, mat);
+    return target !== null && state.active.y < target;
+  }
+  return !collides(state, state.active.x, state.active.y + 1, mat);
+}
+
+function tryMovePhantom(state, dx, dy) {
+  const mat = getActiveMatrix(state);
+  const nx = state.active.x + dx;
+  for (let y = 0; y < mat.length; y++) for (let x = 0; x < mat[0].length; x++) {
+    if (mat[y][x] && (nx + x < 0 || nx + x >= CONFIG.board.cols)) return false;
+  }
+  const target = phantomLandingY(state.board, nx, mat);
+  if (target === null) return false;
+  const ny = state.active.y + dy;
+  if (dy > 0 && ny > target) return false;
+  if (dx !== 0 || dy !== 0) cancelLock(state);
+  state.active.x = nx;
+  state.active.y = Math.min(ny, target);
+  return true;
+}
+
 export function tryMove(state, dx, dy) {
   if (!state.active) return false;
+  if (isPhantom(state)) return tryMovePhantom(state, dx, dy);
   const mat = getActiveMatrix(state);
   const nx = state.active.x + dx;
   const ny = state.active.y + dy;
@@ -345,8 +372,17 @@ function spawnPiece(state) {
     y: -mat.length,
   };
 
-  const ok = !collides(state, state.active.x, state.active.y, mat);
-  if (ok) emit(state, "spawn", { shape, next: state.next });
+  const ok = shape.powerup?.type === "phantom" || !collides(state, state.active.x, state.active.y, mat);
+  if (ok) {
+    // First time this powerup turns up in this game: the UI shows its intro screen.
+    const shown = state.pieceSel.powerup.shown;
+    const isNew = !!shape.powerup && !shown.has(shape.id);
+    if (isNew) {
+      shown.add(shape.id);
+      state.pieceSel.powerup.introduced.add(shape.id);
+    }
+    emit(state, "spawn", { shape, next: state.next, isNew });
+  }
   return ok;
 }
 
@@ -403,6 +439,7 @@ function lockPiece(state) {
   emit(state, "lock", {
     shape, pid, cells: placed, drops: state.drops,
     inside: (zone = "inside") => insidePairs(state, pid, zone),
+    onBoard: () => [...state.instances.values()].filter(i => i.cells.length && i.shape).map(i => i.shape),
   });
 
   // A powerup that vanishes when it fires can't top you out.
@@ -662,59 +699,63 @@ function firePowerupEffect(state, e) {
   const cfg = CONFIG.fx.powerup;
   const cols = CONFIG.board.cols;
   const rows = CONFIG.board.rows;
-  const board = state.board;
   const pu = e.pu;
   let settleMs = 0;
-  let affected = 0;
 
-  if (pu.consume) {
-    const gone = [];
-    for (const { x, y } of e.placed) {
-      const c = board[y][x];
-      if (c && c.pid === e.pid) {
-        gone.push({ x, y, cell: c });
-        board[y][x] = null;
-      }
-    }
-    spawnCellParticles(state, gone, 0.6);
+  const fillPid = state.nextPid++;
+  const fx = computeEffect(state.board, pu, {
+    area: e.area, placed: e.placed, pid: e.pid, centre: e.centre, cols, rows, rng: state.rng,
+    makeFill: () => ({ paint: pu.fillPaint, style: pu.fillStyle, pid: fillPid }),
+  });
+
+  if (fx.consumed.length) {
+    spawnCellParticles(state, fx.consumed, 0.6);
     state.instances.delete(e.pid);
   }
 
-  if (pu.type === "destroyer") {
-    const destroyed = applyDestroy(board, e.area, cols);
-    instancesAfterRemoval(state, destroyed);
-    spawnCellParticles(state, destroyed);
-    startFlash(state, destroyed, cfg.destroyFlashMs);
-    affected = destroyed.length;
-
-    state.blocksDestroyed += destroyed.length;
-    state.score += destroyed.length * (CONFIG.scoring.powerupDestroyPerBlock ?? 0) * state.level;
-    addQuakeFromBlocks(state, destroyed.length * (cfg.destroyQuakePerBlock ?? 1));
+  if (fx.destroyed.length) {
+    instancesAfterRemoval(state, fx.destroyed);
+    spawnCellParticles(state, fx.destroyed);
+    startFlash(state, fx.destroyed, cfg.destroyFlashMs);
+    state.blocksDestroyed += fx.destroyed.length;
+    state.score += fx.destroyed.length * (CONFIG.scoring.powerupDestroyPerBlock ?? 0) * state.level;
+    addQuakeFromBlocks(state, fx.destroyed.length * (cfg.destroyQuakePerBlock ?? 1));
     settleMs = cfg.destroySettleMs;
+  }
 
-    if (pu.collapse && e.area.fullRows.length) {
-      const { dropDistances } = collapseRows(board, e.area.fullRows, cols);
-      instancesAfterCollapse(state, e.area.fullRows);
-      startRowFall(state, dropDistances);
-      settleMs = Math.max(settleMs, CONFIG.fx.lineClear.boardFallAnimMs);
-      state.rowsDestroyed += e.area.fullRows.length;
-      emit(state, "rowsDestroyed", { count: e.area.fullRows.length, source: "powerup" });
+  if (fx.collapsed) {
+    instancesAfterCollapse(state, fx.collapsed.rows);
+    startRowFall(state, fx.collapsed.dropDistances);
+    settleMs = Math.max(settleMs, CONFIG.fx.lineClear.boardFallAnimMs);
+    state.rowsDestroyed += fx.collapsed.rows.length;
+    emit(state, "rowsDestroyed", { count: fx.collapsed.rows.length, source: "powerup" });
+  }
+
+  if (fx.moves.length) {
+    instancesAfterMoves(state, fx.moves);
+    settleMs = Math.max(settleMs, startMoveAnim(state, fx.moves));
+    e.quakeOnSettle = fx.moves.length * (cfg.gravityQuakePerBlock ?? 1);
+  }
+
+  if (fx.filled.length) {
+    if (pu.type === "goo") {
+      // goo flows from where the piece melted to where it settles
+      settleMs = Math.max(settleMs, startMoveAnim(state, fx.filled.map(f => ({
+        fromX: f.fromX, fromY: f.fromY, toX: f.x, toY: f.y,
+      }))));
+    } else {
+      settleMs = Math.max(settleMs, startGrowAnim(state, fx.filled, e.centre));
     }
-  } else if (pu.type === "gravity") {
-    const moves = applyGravity(board, e.area, cols, rows, pu.direction);
-    instancesAfterMoves(state, moves);
-    settleMs = startMoveAnim(state, moves);
-    e.quakeOnSettle = moves.length * (cfg.gravityQuakePerBlock ?? 1);
-    affected = moves.length;
-  } else if (pu.type === "expander") {
-    const fillPid = state.nextPid++;
-    const filled = applyExpand(board, e.area, cols, () => ({
-      paint: pu.fillPaint,
-      style: pu.fillStyle,
-      pid: fillPid,
-    }));
-    settleMs = startGrowAnim(state, filled, e.centre);
-    affected = filled.length;
+  }
+
+  let affected = fx.destroyed.length + fx.moves.length + fx.filled.length;
+  if (pu.type === "phantom") {
+    // how many of its blocks ended up under something (= gaps it plugged)
+    affected = e.placed.filter(({ x, y }) => {
+      for (let yy = y - 1; yy >= 0; yy--) if (state.board[yy][x] && state.board[yy][x].pid !== e.pid) return true;
+      return false;
+    }).length;
+    settleMs = 120;
   }
 
   markBoardDirty(state);
@@ -739,9 +780,12 @@ function startMoveAnim(state, moves) {
   for (const m of moves) {
     const ox = m.fromX - m.toX;
     const oy = m.fromY - m.toY;
-    const dist = Math.abs(ox) + Math.abs(oy);
-    const dur = Math.min(cfg.gravityMaxMs, cfg.gravityBaseMs + cfg.gravityMsPerSqrtCell * Math.sqrt(dist));
-    anim.byIndex.set(m.toY * cols + m.toX, { ox, oy, dur });
+    const hasVia = m.viaX != null && (m.viaX !== m.toX || m.viaY !== m.toY);
+    const dist = Math.abs(ox) + Math.abs(oy) + (hasVia ? Math.abs(m.viaY - m.toY) : 0);
+    const dur = Math.min(cfg.gravityMaxMs * (hasVia ? 1.6 : 1), cfg.gravityBaseMs + cfg.gravityMsPerSqrtCell * Math.sqrt(dist));
+    const item = { ox, oy, dur };
+    if (hasVia) { item.vx = m.viaX - m.toX; item.vy = m.viaY - m.toY; }
+    anim.byIndex.set(m.toY * cols + m.toX, item);
     longest = Math.max(longest, dur);
   }
 
@@ -1000,8 +1044,7 @@ export function updateGame(state, dt) {
   if (state.locking && state.active && !state.gameOver) {
     state.lockElapsed += dt;
 
-    const mat = getActiveMatrix(state);
-    if (!collides(state, state.active.x, state.active.y + 1, mat)) {
+    if (canFall(state)) {
       cancelLock(state);
     } else {
       const delay = currentLockDelayMs(state);

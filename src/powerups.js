@@ -5,13 +5,31 @@
 // Board format (same as main.js): board[y][x] is null (empty) or a cell object.
 // Area format: see the doc comment at the top of shapes/powerup_shapes.js.
 
-export const POWERUP_TYPES = ["destroyer", "gravity", "expander"];
+export const POWERUP_TYPES = ["destroyer", "gravity", "expander", "acid", "blast", "goo", "phantom"];
 
 export const DEFAULT_EFFECT_TEXT = {
   destroyer: "destroys highlighted blocks",
   gravity: "gravitates highlighted blocks",
   expander: "fills highlighted blocks",
+  acid: "dissolves the blocks around it",
+  blast: "blasts highlighted blocks away",
+  goo: "melts into the gaps below",
+  phantom: "falls through blocks into the deepest gap",
 };
+
+// Longer explanations for intro / help screens, one per class.
+export const CLASS_INFO = {
+  destroyer: { name: "Destroyers", text: "When it lands, every highlighted block is destroyed." },
+  gravity: { name: "Gravity", text: "Highlighted blocks fall until they hit something, squashing out air pockets." },
+  expander: { name: "Expanders", text: "Fills every highlighted empty cell with stuff, plugging gaps." },
+  acid: { name: "Acid", text: "Dissolves every block it touches where it lands. Rub it up against the mess." },
+  blast: { name: "Blasts", text: "Throws the highlighted blocks outwards, then they fall back down somewhere new." },
+  goo: { name: "Goo", text: "Melts when it lands and flows down into the lowest gaps it can reach." },
+  phantom: { name: "Phantoms", text: "Falls straight through other blocks and settles in the deepest gap it fits." },
+};
+
+// Which consume by default (vanish when they fire).
+const CONSUMES = { destroyer: true, gravity: true, expander: false, acid: true, blast: true, goo: true, phantom: false };
 
 const DIRECTIONS = {
   down: { dx: 0, dy: 1 },
@@ -108,9 +126,27 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
   const direction = DIRECTIONS[raw.direction] ? raw.direction : "down";
   const tier = Math.max(1, Math.min(3, Math.round(Number(raw.tier) || 1)));
 
-  const areaRotations = areaRotationsFor(raw.area, rotations, trim);
-  if (isEmptyArea(areaRotations[0])) {
-    console.warn(`[${id}] powerup has an empty area; it will do nothing.`);
+  let areaRotations;
+  if (type === "acid") {
+    // everything within `reach` steps of the piece, plus any explicit area
+    const reach = Math.max(1, Math.round(Number(raw.reach) || 1));
+    const extra = raw.area ? areaRotationsFor(raw.area, rotations, trim) : null;
+    areaRotations = rotations.map((mat, i) => {
+      const t = touchArea(mat, reach);
+      if (extra) {
+        t.cells.push(...extra[i].cells);
+        t.rows = [...new Set([...t.rows, ...extra[i].rows])];
+        t.cols = [...new Set([...t.cols, ...extra[i].cols])];
+      }
+      return t;
+    });
+  } else if (type === "goo" || type === "phantom") {
+    areaRotations = rotations.map(() => ({ cells: [], rows: [], cols: [] }));
+  } else {
+    areaRotations = areaRotationsFor(raw.area, rotations, trim);
+    if (isEmptyArea(areaRotations[0])) {
+      console.warn(`[${id}] powerup has an empty area; it will do nothing.`);
+    }
   }
 
   return {
@@ -120,11 +156,32 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
     description: (typeof raw.description === "string" && raw.description.trim())
       ? raw.description.trim()
       : DEFAULT_EFFECT_TEXT[type],
-    consume: (typeof raw.consume === "boolean") ? raw.consume : (type !== "expander"),
-    collapse: type === "destroyer" && raw.collapse === true,
+    intro: typeof raw.intro === "string" ? raw.intro.trim() : "",
+    consume: (typeof raw.consume === "boolean") ? raw.consume : CONSUMES[type],
+    collapse: (type === "destroyer" || type === "acid") && raw.collapse === true,
+    reach: Math.max(1, Math.round(Number(raw.reach) || 1)),
+    push: Math.max(1, Number(raw.push) || 3),
+    volume: Math.max(0.1, Number(raw.volume) || 1),
     fill: raw.fill ?? null,
     areaRotations,
   };
+}
+
+// Cells within `reach` (Manhattan) steps of the piece's blocks, not the blocks themselves.
+export function touchArea(mat, reach = 1) {
+  const H = mat.length, W = mat[0].length;
+  const cells = [];
+  for (let dy = -reach; dy < H + reach; dy++) {
+    for (let dx = -reach; dx < W + reach; dx++) {
+      if (mat[dy]?.[dx]) continue;
+      let best = Infinity;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        if (mat[y][x]) best = Math.min(best, Math.abs(dx - x) + Math.abs(dy - y));
+      }
+      if (best <= reach) cells.push({ dx, dy });
+    }
+  }
+  return { cells, rows: [], cols: [] };
 }
 
 /* =========================
@@ -294,4 +351,160 @@ export function analyseBoard(board) {
     }
   }
   return { highest, holes, filled, stackHeight: rows - highest };
+}
+
+// Blast: blocks in the area are thrown away from `centre` by up to `push` cells
+// (outermost first), then the thrown blocks fall. Moves carry the throw point
+// (viaX, viaY) for the animation.
+export function applyBlast(board, area, cols, rows, centre, push = 3, rng = Math.random) {
+  const blocks = [];
+  for (const i of area.indices) {
+    const x = i % cols, y = (i / cols) | 0;
+    if (board[y][x]) blocks.push({ x, y, d: Math.hypot(x - centre.x, y - centre.y) });
+  }
+  blocks.sort((a, b) => b.d - a.d);
+
+  const moves = [];
+  for (const b of blocks) {
+    const cell = board[b.y][b.x];
+    let dx = b.x - centre.x, dy = b.y - centre.y;
+    let len = Math.hypot(dx, dy);
+    if (len < 0.01) { dx = rng() * 2 - 1; dy = -1; len = Math.hypot(dx, dy); }
+    dx /= len; dy /= len;
+    // straight out first; blocked (e.g. by the floor) -> sideways, then up and out
+    const side = Math.sign(dx) || (rng() < 0.5 ? -1 : 1);
+    const dirs = [[dx, dy], [side, 0], [side * 0.7, -0.7], [0, -1]];
+    let target = null;
+    for (const [ux, uy] of dirs) {
+      for (let d = push; d >= 1 && !target; d -= 0.5) {
+        const tx = Math.round(b.x + ux * d), ty = Math.round(b.y + uy * d);
+        if (tx < 0 || tx >= cols || ty < 0 || ty >= rows) continue;
+        if (tx === b.x && ty === b.y) continue;
+        if (!board[ty][tx]) target = { x: tx, y: ty };
+      }
+      if (target) break;
+    }
+    if (!target) continue;
+    board[b.y][b.x] = null;
+    board[target.y][target.x] = cell;
+    moves.push({ fromX: b.x, fromY: b.y, viaX: target.x, viaY: target.y, toX: target.x, toY: target.y, cell });
+  }
+
+  // thrown blocks fall (lowest first so they stack)
+  moves.sort((a, b) => b.viaY - a.viaY);
+  for (const m of moves) {
+    let y = m.viaY;
+    while (y + 1 < rows && !board[y + 1][m.viaX]) y++;
+    if (y !== m.viaY) {
+      board[m.viaY][m.viaX] = null;
+      board[y][m.viaX] = m.cell;
+    }
+    m.toY = y;
+  }
+  return moves;
+}
+
+// Goo: `units` cells of goo flow from `sources` (the melted piece's cells, already
+// empty) down and sideways (never up) and fill the lowest reachable cells first,
+// staying within `spread` columns of the piece. Returns [{x, y, cell, fromX, fromY}].
+export function applyGoo(board, sources, units, cols, rows, makeCell, spread = 4) {
+  if (!sources.length || units <= 0) return [];
+  const minX = Math.min(...sources.map(s => s.x)) - spread;
+  const maxX = Math.max(...sources.map(s => s.x)) + spread;
+  const cx = sources.reduce((a, s) => a + s.x, 0) / sources.length;
+
+  const seen = new Uint8Array(cols * rows);
+  const queue = [];
+  for (const s of sources) {
+    if (s.y < 0 || board[s.y][s.x]) continue;
+    const i = s.y * cols + s.x;
+    if (!seen[i]) { seen[i] = 1; queue.push(s); }
+  }
+  const region = [];
+  while (queue.length) {
+    const c = queue.shift();
+    region.push(c);
+    for (const [nx, ny] of [[c.x, c.y + 1], [c.x - 1, c.y], [c.x + 1, c.y]]) {
+      if (nx < 0 || nx >= cols || ny < 0 || ny >= rows || nx < minX || nx > maxX) continue;
+      const i = ny * cols + nx;
+      if (seen[i] || board[ny][nx]) continue;
+      seen[i] = 1;
+      queue.push({ x: nx, y: ny });
+    }
+  }
+  region.sort((a, b) => (b.y - a.y) || (Math.abs(a.x - cx) - Math.abs(b.x - cx)) || (a.x - b.x));
+
+  const filled = [];
+  for (const t of region.slice(0, units)) {
+    let src = sources[0], best = Infinity;
+    for (const s of sources) {
+      const d = Math.abs(s.x - t.x) + Math.abs(s.y - t.y);
+      if (d < best) { best = d; src = s; }
+    }
+    const cell = makeCell(t.x, t.y);
+    board[t.y][t.x] = cell;
+    filled.push({ x: t.x, y: t.y, cell, fromX: src.x, fromY: src.y });
+  }
+  return filled;
+}
+
+// Deepest y where `mat` fits entirely in empty cells at column `x` (phantoms), or null.
+export function phantomLandingY(board, x, mat) {
+  const rows = board.length, cols = board[0].length;
+  const fits = (y) => {
+    for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) {
+      if (!mat[j][i]) continue;
+      const bx = x + i, by = y + j;
+      if (bx < 0 || bx >= cols || by >= rows) return false;
+      if (by >= 0 && board[by][bx]) return false;
+    }
+    return true;
+  };
+  for (let y = rows - mat.length; y >= -mat.length; y--) if (fits(y)) return y;
+  return null;
+}
+
+// Apply a powerup's effect to `board` (mutates it). Shared by the game and the demos.
+//   ctx: { area, placed: [{x,y}] (the powerup's own cells), pid, centre, cols, rows, rng, makeFill }
+// Returns { consumed, destroyed, moves, filled, collapsed }.
+export function computeEffect(board, pu, ctx) {
+  const { area, placed, pid, centre, cols, rows, rng = Math.random, makeFill } = ctx;
+  const out = { consumed: [], destroyed: [], moves: [], filled: [], collapsed: null };
+
+  if (pu.consume) {
+    for (const { x, y } of placed) {
+      const c = board[y]?.[x];
+      if (c && (pid == null || c.pid === pid)) {
+        out.consumed.push({ x, y, cell: c });
+        board[y][x] = null;
+      }
+    }
+  }
+
+  switch (pu.type) {
+    case "destroyer":
+    case "acid":
+      out.destroyed = applyDestroy(board, area, cols);
+      if (pu.collapse && area.fullRows.length) {
+        out.collapsed = { rows: area.fullRows, ...collapseRows(board, area.fullRows, cols) };
+      }
+      break;
+    case "gravity":
+      out.moves = applyGravity(board, area, cols, rows, pu.direction);
+      break;
+    case "expander":
+      out.filled = applyExpand(board, area, cols, makeFill);
+      break;
+    case "blast":
+      out.moves = applyBlast(board, area, cols, rows, centre, pu.push, rng);
+      break;
+    case "goo": {
+      const units = Math.max(1, Math.round(placed.length * (pu.volume ?? 1)));
+      out.filled = applyGoo(board, placed.filter(p => p.y >= 0), units, cols, rows, makeFill);
+      break;
+    }
+    default: // phantom: already where it wants to be
+      break;
+  }
+  return out;
 }

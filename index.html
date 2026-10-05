@@ -77,6 +77,9 @@
     }
   
     .app{
+      position: fixed;
+      left: 0;
+      top: 0;
       width: 100vw;
       height: 100dvh;
       display: grid;
@@ -136,7 +139,7 @@
       position: absolute;
       left: 0;
       right: 0;
-      top: 42px;
+      top: 30%;
       width: 100%;
       padding: 0 10px;
       box-sizing: border-box;
@@ -332,6 +335,91 @@
     }
     canvas.pixelIcon{ image-rendering: pixelated; display: block; }
     canvas.pixelIcon.locked{ filter: grayscale(1) brightness(0.7); opacity: 0.55; }
+
+
+    /* Powerup intro screen */
+    #panelIntro, #panelPowerups{ background: rgba(8,8,20,0.97); }
+    #panelIntro.slideIn{ animation: introSlide 380ms steps(8, end); }
+    @keyframes introSlide{
+      from{ transform: translateX(110%); opacity: 0; }
+      to{ transform: translateX(0); opacity: 1; }
+    }
+    .introKicker{
+      font-family: var(--font-display);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,207,63,0.95);
+      margin-bottom: 8px;
+    }
+    .introName{
+      font-family: var(--font-display);
+      font-size: 14px;
+      line-height: 1.5;
+      text-transform: uppercase;
+      animation: rainbowText 1.6s steps(12, end) infinite;
+    }
+    .introEffect{
+      font-family: var(--font-display);
+      font-size: 8px;
+      text-transform: uppercase;
+      color: rgba(245,245,255,0.85);
+      margin: 6px 0 10px;
+    }
+    canvas.introDemo{ margin: 0 auto 10px; }
+    .introText{ font-size: 13px !important; color: rgba(245,245,255,0.9) !important; margin-bottom: 6px; }
+    .introClass{ margin-bottom: 4px; }
+    .skipBox{
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 10px;
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .demoEg{ font-size: 11px; opacity: 0.75; margin-top: 2px; }
+
+    /* Dev mode */
+    .devPanel{
+      position: fixed;
+      left: 8px;
+      top: 8px;
+      z-index: 20;
+      width: 230px;
+      max-width: calc(50vw - 16px);
+      padding: 8px 10px;
+      background: rgba(0,0,0,0.72);
+      border: 1px solid rgba(123,247,255,0.35);
+      font-family: ui-monospace, monospace;
+      font-size: 10px;
+      line-height: 1.45;
+      color: rgba(245,245,255,0.75);
+      pointer-events: none;
+    }
+    .devPanel.folded > :not(.devTitle){ display: none; }
+    .devPanel.folded{ width: auto; opacity: 0.8; }
+    @media (max-width: 759px){ .devPanel{ pointer-events: auto; cursor: pointer; } }
+    .devPanel .k{ color: rgba(123,247,255,0.8); }
+    .devPanel .v{ color: rgba(245,245,255,0.95); }
+    .devTitle{ font-family: var(--font-display); font-size: 8px; text-transform: uppercase; color: rgba(123,247,255,0.95); margin-bottom: 4px; }
+    .devHint{ margin-top: 4px; opacity: 0.7; }
+    .devTools{
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px dashed rgba(123,247,255,0.4);
+    }
+    .devTools select{
+      width: 100%;
+      margin: 6px 0 8px;
+      padding: 6px;
+      background: #10101e;
+      color: #eee;
+      border: 1px solid rgba(255,255,255,0.2);
+      font-size: 12px;
+    }
 
     /* Achievement toasts */
     .toasts{
@@ -773,6 +861,7 @@
               <button class="secondary small soundToggle">Sound: on</button>
             </div>
             <div class="small" id="bestLine"></div>
+            <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
           </div>
 
           <div class="msg panel" id="panelHowTo" hidden>
@@ -787,19 +876,8 @@
 
               <h3>Powerups (Normal mode)</h3>
               <p>Some pieces are powerups: their name glows rainbow and says what they do. While one falls, the cells it will affect light up where it is going to land.</p>
-              <div class="demoRow">
-                <canvas class="demo" data-type="destroyer"></canvas>
-                <div><div class="demoName">Destroyers</div>Destroy the highlighted blocks. Shrinking squares.</div>
-              </div>
-              <div class="demoRow">
-                <canvas class="demo" data-type="gravity"></canvas>
-                <div><div class="demoName">Gravity</div>Highlighted blocks fall (or slide) until they hit something, squashing out air pockets. Moving lines.</div>
-              </div>
-              <div class="demoRow">
-                <canvas class="demo" data-type="expander"></canvas>
-                <div><div class="demoName">Expanders</div>Fill the highlighted empty cells. Growing squares.</div>
-              </div>
-              <p>Powerups turn up more often when you're in trouble.</p>
+              <div id="howtoClasses"></div>
+              <p>New powerups are introduced one at a time as you play (destroyers first), each with a quick intro. Powerups turn up more often when you're in trouble. The pause menu lists every powerup you've met so far.</p>
 
               <h3>Modes</h3>
               <p><b>Normal:</b> the full game, with powerups.<br><b>Extreme:</b> the original. No powerups, no mercy.</p>
@@ -829,11 +907,47 @@
             <div class="small" id="pauseMode"></div>
             <div class="menuBtns">
               <button id="btnResume">Resume</button>
+              <button id="btnPowerupHelp" class="secondary" hidden>Powerups</button>
               <button id="btnPauseHowTo" class="secondary">How to play</button>
               <button id="btnQuit" class="secondary">Quit to menu</button>
             </div>
             <div class="menuRow">
               <button class="secondary small soundToggle">Sound: on</button>
+            </div>
+            <div class="devTools" id="devTools" hidden>
+              <div class="devTitle">dev: next piece</div>
+              <select id="devNextPiece"></select>
+              <div class="menuRow">
+                <button id="btnDevNext" class="small">Use as next</button>
+                <button id="btnDevUnlockAll" class="secondary small">Unlock all powerups</button>
+              </div>
+              <div class="menuRow">
+                <button id="btnDevClear" class="secondary small">Clear board</button>
+                <button id="btnDevMessy" class="secondary small">Messy board</button>
+              </div>
+              <div class="small" id="devNextStatus"></div>
+            </div>
+          </div>
+
+          <div class="msg panel" id="panelIntro" hidden>
+            <div class="introKicker" id="introKicker">New powerup!</div>
+            <div class="introName" id="introName"></div>
+            <div class="introEffect" id="introEffect"></div>
+            <canvas id="introDemo" class="demo introDemo"></canvas>
+            <div class="small introText" id="introText"></div>
+            <div class="small introClass" id="introClass"></div>
+            <div class="panelBtns">
+              <button id="btnIntroContinue">Got it</button>
+            </div>
+            <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
+          </div>
+
+          <div class="msg panel" id="panelPowerups" hidden>
+            <div class="big">Powerups</div>
+            <div class="small">Everything you've met so far this game.</div>
+            <div class="howto" id="powerupList"></div>
+            <div class="panelBtns">
+              <button data-back>Back</button>
             </div>
           </div>
 
@@ -876,12 +990,14 @@
           <div class="v" id="scoreText">0</div>
         </div>
         <div class="statPill">
-          <div class="k">Blocks destroyed</div>
+          <div class="k">Rows · Blocks</div>
           <div class="v" id="linesText">0</div>
         </div>
       </div>
     </div>
   </div>
+
+  <div id="devPanel" class="devPanel" hidden></div>
 
   <!-- Fit-to-viewport script: uses VisualViewport so the bottom bar never gets cut off.
        Also sizes the board to use ALL available space above the bottom bar. -->
@@ -901,8 +1017,13 @@
         return { w: window.innerWidth, h: window.innerHeight };
       }
 
+      const app = document.querySelector(".app");
+
       function fit(){
         const vp = viewportSize();
+        // Pin the app to the *visible* viewport: some mobile browsers (e.g. Firefox on
+        // Android) report 100dvh taller than what's shown above their bottom toolbar.
+        app.style.height = Math.floor(vp.h) + "px";
         const bb = bottomBar.getBoundingClientRect();
 
         // Space available to boardRegion content:
@@ -941,6 +1062,8 @@
 
       // Initial fit after layout settles
       requestAnimationFrame(() => requestAnimationFrame(fit));
+      // mobile toolbars slide in/out after load; settle a few times
+      [250, 700, 1500].forEach(ms => setTimeout(fit, ms));
     })();
   </script>
 

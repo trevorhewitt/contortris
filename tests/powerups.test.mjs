@@ -54,7 +54,9 @@ test("every bundled powerup normalises with a non-empty area", () => {
     const pu = normalisePowerup(p.powerup, rotations, { top: 0, left: 0 }, p.id);
     assert.ok(pu, `${p.id} normalises`);
     const a = pu.areaRotations[0];
-    assert.ok(a.cells.length + a.rows.length + a.cols.length > 0, `${p.id} has an area`);
+    if (pu.type !== "goo" && pu.type !== "phantom") {
+      assert.ok(a.cells.length + a.rows.length + a.cols.length > 0, `${p.id} has an area`);
+    }
     assert.ok(pu.description.length > 0);
   }
 });
