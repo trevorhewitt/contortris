@@ -10845,4 +10845,827 @@ export const SHAPES = [
       },
     frequency: 0.9,
   },
+  {
+    id: "mole_family",
+    name: "a family of moles",
+    grid: [
+        "XXX"
+      ],
+    color: [["#5c4d54","#6c5962","#6c5962","#c83b69","#c83b69","#6c5962","#6c5962","#6c5962","#6c5962","#6c5962","#6c5962","#6c5962","#dac753","#dac753","#dbdbdb","#dac753","#dac753","#bcab48"],["#6c5962","#181425","#7d6872","#7d6872","#181425","#7d6872","#dfe6f0","#181425","#dfe6f0","#dfe6f0","#181425","#dfe6f0","#7d6872","#7d6872","#7d6872","#7d6872","#7d6872","#6c5962"],["#6c5962","#7d6872","#ff8fa3","#ff8fa3","#7d6872","#7d6872","#7d6872","#7d6872","#ff8fa3","#ff8fa3","#7d6872","#7d6872","#7d6872","#181425","#7d6872","#7d6872","#181425","#6c5962"],["#6c5962","#7d6872","#ff8fa3","#ff8fa3","#7d6872","#7d6872","#7d6872","#7d6872","#ff8fa3","#ff8fa3","#7d6872","#7d6872","#7d6872","#7d6872","#ff8fa3","#ff8fa3","#7d6872","#6c5962"],["#d29b9e","#f4b4b8","#7d6872","#7d6872","#f4b4b8","#f4b4b8","#f4b4b8","#f4b4b8","#7d6872","#7d6872","#f4b4b8","#f4b4b8","#f4b4b8","#f4b4b8","#ff8fa3","#ff8fa3","#f4b4b8","#d29b9e"],["#b58588","#dbdbdb","#6c5962","#6c5962","#dbdbdb","#d29b9e","#d29b9e","#dbdbdb","#6c5962","#6c5962","#dbdbdb","#d29b9e","#d29b9e","#dbdbdb","#6c5962","#6c5962","#dbdbdb","#b58588"]],
+    powerup: {
+        "type": "combo",
+        "tier": 3,
+        "intro": "Mum, dad and the little one each dig a tunnel straight down (3, 5 and 2 blocks deep), then everything in the five columns under them drops into the gaps. Dad's glasses do not help.",
+        "parts": [
+          {
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "...",
+                "###",
+                "###",
+                "##.",
+                ".#.",
+                ".#."
+              ]
+            }
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "|||||"
+              ]
+            }
+          }
+        ],
+        "help": 3.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "snow_plough",
+    name: "a snow plough (it is not even snowing)",
+    grid: [
+        "XXX"
+      ],
+    color: [["#bdbdbd","#dbdbdb","#dbdbdb","#dbdbdb","#a5afbd","#78859b","#dbdbdb","#a5afbd","#dbdbdb","#dbdbdb","#a5afbd","#dbdbdb","#dac753","#da962d","#c4333a","#c4333a","#da962d","#bcab48"],["#dbdbdb","#feae34","#fee761","#feae34","#f77622","#8b9bb4","#c0cbdc","#ffffff","#c0cbdc","#ffffff","#ffffff","#c0cbdc","#fee761","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#dac753"],["#dbdbdb","#fee761","#feae34","#feae34","#f77622","#8b9bb4","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#a6e4ff","#a6e4ff","#a6e4ff","#ffffff","#dac753"],["#a5afbd","#feae34","#feae34","#feae34","#f77622","#8b9bb4","#fee761","#ffffff","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#dac753"],["#dbdbdb","#f77622","#f77622","#f77622","#f77622","#8b9bb4","#fee761","#5a6988","#5a6988","#5a6988","#fee761","#fee761","#fee761","#fee761","#5a6988","#5a6988","#5a6988","#dac753"],["#bdbdbd","#dbdbdb","#dbdbdb","#dbdbdb","#dbdbdb","#dbdbdb","#dbdbdb","#4d5a75","#78859b","#4d5a75","#dbdbdb","#dbdbdb","#dbdbdb","#dbdbdb","#4d5a75","#78859b","#4d5a75","#bdbdbd"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Scrapes the whole row under it clear, wall to wall, and that row closes up like a line clear. Then the two rows below get shoved left until they hit something. Schools are still open.",
+        "parts": [
+          {
+            "type": "destroyer",
+            "collapse": true,
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "...",
+                "-.."
+              ]
+            }
+          },
+          {
+            "type": "gravity",
+            "direction": "left",
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "...",
+                "...",
+                "-..",
+                "-.."
+              ]
+            }
+          }
+        ],
+        "help": 3.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "tidy_robot",
+    name: "a tidy-up robot (very judgemental)",
+    grid: [
+        "XX",
+        "XX"
+      ],
+    color: [["#8e96a3","#a5afbd","#a5afbd","#a5afbd","#a5afbd","#c4333a","#c4333a","#a5afbd","#a5afbd","#a5afbd","#a5afbd","#8e96a3"],["#a5afbd","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#a5afbd"],["#a5afbd","#8b9bb4","#124e89","#2ce8f5","#2ce8f5","#124e89","#124e89","#2ce8f5","#2ce8f5","#124e89","#8b9bb4","#a5afbd"],["#a5afbd","#8b9bb4","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#8b9bb4","#a5afbd"],["#a5afbd","#8b9bb4","#124e89","#124e89","#2ce8f5","#2ce8f5","#2ce8f5","#2ce8f5","#124e89","#124e89","#8b9bb4","#a5afbd"],["#a5afbd","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#a5afbd"],["#da962d","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#feae34","#d46569"],["#da962d","#c0cbdc","#ffffff","#c0cbdc","#fee761","#c0cbdc","#e43b44","#c0cbdc","#c0cbdc","#c0cbdc","#b55088","#d46569"],["#da962d","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#feae34","#8b9bb4","#9c4575"],["#da962d","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#feae34","#8b9bb4","#a5afbd"],["#4d5a75","#5a6988","#8b9bb4","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#4d5a75"],["#434e65","#78859b","#4d5a75","#78859b","#4d5a75","#78859b","#4d5a75","#78859b","#4d5a75","#78859b","#4d5a75","#677385"]],
+    powerup: {
+        "type": "combo",
+        "tier": 3,
+        "intro": "Everything in the eight columns around it settles down to squash out the gaps, then it packs toy blocks into the empty cells of the 4-wide strip right under it. It has started on your room.",
+        "parts": [
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                3,
+                0
+              ],
+              "grid": [
+                "||||||||"
+              ]
+            }
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#c4333a",
+                "#d4373f",
+                "#d4373f",
+                "#d4373f",
+                "#d4373f",
+                "#d4373f",
+                "#c4333a"
+              ],
+              [
+                "#d4373f",
+                "#fee761",
+                "#fee761",
+                "#0099db",
+                "#fee761",
+                "#fee761",
+                "#d4373f"
+              ],
+              [
+                "#d4373f",
+                "#fee761",
+                "#0099db",
+                "#fee761",
+                "#0099db",
+                "#fee761",
+                "#d4373f"
+              ],
+              [
+                "#d4373f",
+                "#fee761",
+                "#0099db",
+                "#0099db",
+                "#0099db",
+                "#fee761",
+                "#d4373f"
+              ],
+              [
+                "#d4373f",
+                "#fee761",
+                "#0099db",
+                "#fee761",
+                "#0099db",
+                "#fee761",
+                "#d4373f"
+              ],
+              [
+                "#d4373f",
+                "#fee761",
+                "#fee761",
+                "#fee761",
+                "#fee761",
+                "#fee761",
+                "#d4373f"
+              ],
+              [
+                "#c4333a",
+                "#d4373f",
+                "#d4373f",
+                "#d4373f",
+                "#d4373f",
+                "#d4373f",
+                "#c4333a"
+              ]
+            ],
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "....",
+                "....",
+                "####"
+              ]
+            }
+          }
+        ],
+        "help": 3.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "busy_beaver",
+    name: "a very busy beaver",
+    grid: [
+        "XX"
+      ],
+    color: [["#88523b","#9e5f45","#9e5f45","#633531","#633531","#9e5f45","#9e5f45","#633531","#633531","#4d2e26","#633531","#633531","#4d2e26","#552e2a"],["#9e5f45","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#733e39","#5a362c","#733e39","#733e39","#5a362c","#733e39","#633531"],["#9e5f45","#b86f50","#181425","#b86f50","#b86f50","#b86f50","#b86f50","#5a362c","#733e39","#733e39","#5a362c","#733e39","#733e39","#4d2e26"],["#4d2e26","#5a362c","#e4a672","#b86f50","#b86f50","#b86f50","#b86f50","#733e39","#733e39","#5a362c","#733e39","#733e39","#5a362c","#633531"],["#c48f62","#e4a672","#e4a672","#e4a672","#b86f50","#b86f50","#b86f50","#733e39","#5a362c","#733e39","#733e39","#5a362c","#733e39","#633531"],["#c48f62","#ead4aa","#ead4aa","#e4a672","#e4a672","#b86f50","#b86f50","#5a362c","#733e39","#733e39","#5a362c","#733e39","#733e39","#4d2e26"],["#88523b","#c9b692","#c9b692","#9e5f45","#9e5f45","#9e5f45","#9e5f45","#633531","#633531","#4d2e26","#633531","#633531","#4d2e26","#552e2a"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Gnaws away the two blocks right under it, then builds a dam of sticks in every empty cell of the 6x3 patch below that. It has a deadline.",
+        "parts": [
+          {
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "..",
+                "##"
+              ]
+            }
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#9e5f45",
+                "#6b3a35",
+                "#d49a6a",
+                "#d49a6a",
+                "#ab674a",
+                "#6b3a35",
+                "#c48f62"
+              ],
+              [
+                "#6b3a35",
+                "#e4a672",
+                "#e4a672",
+                "#b86f50",
+                "#733e39",
+                "#e4a672",
+                "#d49a6a"
+              ],
+              [
+                "#d49a6a",
+                "#e4a672",
+                "#b86f50",
+                "#733e39",
+                "#e4a672",
+                "#e4a672",
+                "#ab674a"
+              ],
+              [
+                "#d49a6a",
+                "#b86f50",
+                "#733e39",
+                "#e4a672",
+                "#e4a672",
+                "#b86f50",
+                "#6b3a35"
+              ],
+              [
+                "#ab674a",
+                "#733e39",
+                "#e4a672",
+                "#e4a672",
+                "#b86f50",
+                "#733e39",
+                "#d49a6a"
+              ],
+              [
+                "#6b3a35",
+                "#e4a672",
+                "#e4a672",
+                "#b86f50",
+                "#733e39",
+                "#e4a672",
+                "#d49a6a"
+              ],
+              [
+                "#c48f62",
+                "#d49a6a",
+                "#ab674a",
+                "#6b3a35",
+                "#d49a6a",
+                "#d49a6a",
+                "#9e5f45"
+              ]
+            ],
+            "area": {
+              "origin": [
+                2,
+                0
+              ],
+              "grid": [
+                "......",
+                "......",
+                "######",
+                "######",
+                "######"
+              ]
+            }
+          }
+        ],
+        "help": 3
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "ant_farm",
+    name: "an ant farm (the ants run the farm)",
+    grid: [
+        "XXX"
+      ],
+    color: [["#499339","#55ab42","#35763e","#55ab42","#55ab42","#55ab42","#35763e","#55ab42","#55ab42","#55ab42","#55ab42","#35763e","#55ab42","#55ab42","#35763e","#55ab42","#55ab42","#499339"],["#c9b692","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#b86f50","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#b86f50","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#c9b692"],["#c9b692","#ead4aa","#ead4aa","#181425","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#ead4aa","#ead4aa","#ead4aa","#b86f50","#b86f50","#181425","#b86f50","#ead4aa","#c9b692"],["#c9b692","#ead4aa","#b86f50","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#b86f50","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#b86f50","#ead4aa","#c9b692"],["#c9b692","#b86f50","#b86f50","#b86f50","#181425","#ead4aa","#ead4aa","#ead4aa","#b86f50","#b86f50","#b86f50","#181425","#b86f50","#ead4aa","#ead4aa","#b86f50","#ead4aa","#c9b692"],["#ad9d7e","#c9b692","#c9b692","#c9b692","#9e5f45","#9e5f45","#9e5f45","#9e5f45","#9e5f45","#c9b692","#c9b692","#c9b692","#9e5f45","#9e5f45","#9e5f45","#9e5f45","#c9b692","#ad9d7e"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Dissolves every block touching it, plus a winding tunnel up to six blocks deep underneath. Then everything in its three columns settles down. The ants have a five-year plan.",
+        "parts": [
+          {
+            "type": "acid",
+            "reach": 1,
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "...",
+                "...",
+                "#..",
+                "#.#",
+                ".##",
+                "..#",
+                ".##"
+              ]
+            }
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "|||"
+              ]
+            }
+          }
+        ],
+        "help": 3.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "dustpan_brush",
+    name: "a dust pan and brush",
+    grid: [
+        "XX"
+      ],
+    color: [["#88523b","#9e5f45","#9e5f45","#9e5f45","#9e5f45","#9e5f45","#9e5f45","#78859b","#a5afbd","#78859b","#a5afbd","#a5afbd","#c4333a","#a92c32"],["#9e5f45","#e4a672","#e4a672","#e4a672","#e4a672","#e4a672","#b86f50","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#8b9bb4","#e43b44","#c4333a"],["#633531","#733e39","#733e39","#733e39","#733e39","#733e39","#733e39","#c0cbdc","#181425","#c0cbdc","#c0cbdc","#181425","#c0cbdc","#c4333a"],["#dac753","#feae34","#fee761","#feae34","#fee761","#feae34","#fee761","#8b9bb4","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#8b9bb4","#c4333a"],["#dac753","#feae34","#fee761","#feae34","#fee761","#feae34","#fee761","#c0cbdc","#8b9bb4","#c0cbdc","#8b9bb4","#c0cbdc","#c0cbdc","#c4333a"],["#dac753","#feae34","#fee761","#feae34","#fee761","#feae34","#fee761","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#c4333a"],["#ad9d7e","#dac753","#c9b692","#dac753","#c9b692","#dac753","#c9b692","#8b212c","#8b212c","#8b212c","#8b212c","#8b212c","#8b212c","#781c26"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Empties its pan first: destroys the three blocks under the pan. Then the brush sweeps everything in the six columns under it down into the gaps. Under the rug it goes.",
+        "parts": [
+          {
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "..",
+                ".#",
+                ".#",
+                ".#"
+              ]
+            }
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                2,
+                0
+              ],
+              "grid": [
+                "......",
+                "||||||"
+              ]
+            }
+          }
+        ],
+        "help": 3.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "jelly_mould",
+    name: "a lime jelly, freshly turned out",
+    grid: [
+        "XXX",
+        "XXX"
+      ],
+    color: [["#87b269","#55ab42","#55ab42","#55ab42","#55ab42","#35763e","#9dce7a","#55ab42","#214f39","#214f39","#55ab42","#35763e","#9dce7a","#55ab42","#55ab42","#55ab42","#55ab42","#2e6535"],["#9dce7a","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#e43b44","#ffffff","#e43b44","#63c74d","#3e8948","#b6f08e","#63c74d","#63c74d","#63c74d","#63c74d","#35763e"],["#dbdbdb","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#ffffff","#a22633","#e43b44","#a22633","#3e8948","#b6f08e","#ffffff","#63c74d","#63c74d","#63c74d","#3e8948","#9dce7a"],["#dbdbdb","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#ffffff","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#ffffff","#63c74d","#63c74d","#63c74d","#3e8948","#9dce7a"],["#55ab42","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#9dce7a"],["#9dce7a","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#63c74d","#63c74d","#63c74d","#63c74d","#35763e"],["#9dce7a","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#63c74d","#63c74d","#63c74d","#63c74d","#35763e"],["#35763e","#b6f08e","#ffffff","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#ffffff","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#ffffff","#63c74d","#63c74d","#55ab42"],["#35763e","#b6f08e","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#63c74d","#63c74d","#63c74d","#55ab42"],["#35763e","#b6f08e","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#b6f08e","#63c74d","#63c74d","#63c74d","#55ab42"],["#55ab42","#3e8948","#3e8948","#3e8948","#3e8948","#3e8948","#63c74d","#3e8948","#3e8948","#3e8948","#3e8948","#3e8948","#63c74d","#3e8948","#3e8948","#3e8948","#3e8948","#35763e"],["#bdbdbd","#a5afbd","#a5afbd","#a5afbd","#a5afbd","#dbdbdb","#a5afbd","#a5afbd","#a5afbd","#a5afbd","#dbdbdb","#a5afbd","#a5afbd","#a5afbd","#a5afbd","#dbdbdb","#a5afbd","#8e96a3"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Lands with a thwack and knocks out the three blocks under it, then wobbles into every empty cell of the big patch below that (7 wide, 3 deep). Nobody asked for lime.",
+        "parts": [
+          {
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "...",
+                "...",
+                "###"
+              ]
+            }
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#55ab42",
+                "#5cb948",
+                "#5cb948",
+                "#5cb948",
+                "#5cb948",
+                "#a9df84",
+                "#55ab42"
+              ],
+              [
+                "#5cb948",
+                "#ffffff",
+                "#63c74d",
+                "#63c74d",
+                "#63c74d",
+                "#b6f08e",
+                "#5cb948"
+              ],
+              [
+                "#5cb948",
+                "#63c74d",
+                "#63c74d",
+                "#63c74d",
+                "#b6f08e",
+                "#63c74d",
+                "#5cb948"
+              ],
+              [
+                "#5cb948",
+                "#63c74d",
+                "#63c74d",
+                "#63c74d",
+                "#b6f08e",
+                "#63c74d",
+                "#5cb948"
+              ],
+              [
+                "#5cb948",
+                "#63c74d",
+                "#63c74d",
+                "#b6f08e",
+                "#63c74d",
+                "#63c74d",
+                "#5cb948"
+              ],
+              [
+                "#5cb948",
+                "#63c74d",
+                "#63c74d",
+                "#b6f08e",
+                "#63c74d",
+                "#63c74d",
+                "#ededed"
+              ],
+              [
+                "#35763e",
+                "#3a7f43",
+                "#3a7f43",
+                "#3a7f43",
+                "#3a7f43",
+                "#3a7f43",
+                "#35763e"
+              ]
+            ],
+            "area": {
+              "origin": [
+                2,
+                0
+              ],
+              "grid": [
+                ".......",
+                ".......",
+                ".......",
+                "#######",
+                "#######",
+                ".#####."
+              ]
+            }
+          }
+        ],
+        "help": 3.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "bricklayer",
+    name: "a bricklayer's trowel (and one brick)",
+    grid: [
+        "XX"
+      ],
+    color: [["#943f2d","#ac4934","#ac4934","#ac4934","#ac4934","#ac4934","#ac4934","#a39882","#a39882","#633531","#9e5f45","#633531","#a39882","#8c8370"],["#ac4934","#e07a5f","#c8553d","#c8553d","#e07a5f","#c8553d","#c8553d","#bdb197","#bdb197","#bdb197","#8b9bb4","#bdb197","#bdb197","#a39882"],["#ac4934","#c8553d","#c8553d","#c8553d","#c8553d","#c8553d","#c8553d","#8b9bb4","#c0cbdc","#ffffff","#ffffff","#ffffff","#c0cbdc","#78859b"],["#ac4934","#c8553d","#8f3a2a","#c8553d","#c8553d","#c8553d","#c8553d","#bdb197","#8b9bb4","#c0cbdc","#ffffff","#c0cbdc","#8b9bb4","#a39882"],["#ac4934","#c8553d","#c8553d","#c8553d","#c8553d","#e07a5f","#c8553d","#a39678","#bdb197","#8b9bb4","#c0cbdc","#8b9bb4","#bdb197","#8c8167"],["#ac4934","#e07a5f","#c8553d","#c8553d","#c8553d","#c8553d","#c8553d","#bdb197","#a39678","#bdb197","#8b9bb4","#bdb197","#a39678","#a39882"],["#943f2d","#ac4934","#ac4934","#ac4934","#7b3224","#ac4934","#ac4934","#8c8167","#8c8167","#8c8167","#a39882","#8c8167","#8c8167","#796f59"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Scrapes off every block touching it, then lays a course of bricks in every empty cell of the row under it, wall to wall. It whistles the whole time.",
+        "parts": [
+          {
+            "type": "acid",
+            "reach": 1
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#ac4934",
+                "#ba4f39",
+                "#ba4f39",
+                "#b0a58c",
+                "#ba4f39",
+                "#ba4f39",
+                "#ac4934"
+              ],
+              [
+                "#ba4f39",
+                "#e07a5f",
+                "#c8553d",
+                "#bdb197",
+                "#c8553d",
+                "#e07a5f",
+                "#ba4f39"
+              ],
+              [
+                "#b0a58c",
+                "#bdb197",
+                "#bdb197",
+                "#bdb197",
+                "#bdb197",
+                "#bdb197",
+                "#b0a58c"
+              ],
+              [
+                "#ba4f39",
+                "#bdb197",
+                "#c8553d",
+                "#c8553d",
+                "#c8553d",
+                "#bdb197",
+                "#ba4f39"
+              ],
+              [
+                "#ba4f39",
+                "#bdb197",
+                "#c8553d",
+                "#e07a5f",
+                "#c8553d",
+                "#bdb197",
+                "#ba4f39"
+              ],
+              [
+                "#b0a58c",
+                "#bdb197",
+                "#bdb197",
+                "#bdb197",
+                "#bdb197",
+                "#bdb197",
+                "#b0a58c"
+              ],
+              [
+                "#ac4934",
+                "#ba4f39",
+                "#ba4f39",
+                "#b0a58c",
+                "#ba4f39",
+                "#ba4f39",
+                "#ac4934"
+              ]
+            ],
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "..",
+                "-."
+              ]
+            }
+          }
+        ],
+        "help": 2.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "bulldozer_cement",
+    name: "a bulldozer (with a cement truck right behind it)",
+    grid: [
+        "XXXX"
+      ],
+    color: [["#552e2a","#9e5f45","#dac753","#da962d","#da962d","#4d5a75","#da962d","#da962d","#dac753","#dac753","#dac753","#dac753","#c4333a","#c4333a","#c4333a","#c4333a","#c4333a","#c4333a","#a5afbd","#a5afbd","#d4651d","#a5afbd","#a5afbd","#8e96a3"],["#9e5f45","#b86f50","#fee761","#feae34","#feae34","#5a6988","#fee761","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#fee761","#e43b44","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#e43b44","#c0cbdc","#f77622","#c0cbdc","#c0cbdc","#f77622","#a5afbd"],["#9e5f45","#733e39","#fee761","#feae34","#feae34","#5a6988","#fee761","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#fee761","#e43b44","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#e43b44","#f77622","#c0cbdc","#c0cbdc","#f77622","#c0cbdc","#a5afbd"],["#9e5f45","#b86f50","#fee761","#feae34","#feae34","#5a6988","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#c0cbdc","#c0cbdc","#f77622","#c0cbdc","#c0cbdc","#d4651d"],["#633531","#b86f50","#fee761","#feae34","#feae34","#5a6988","#5a6988","#8b9bb4","#5a6988","#8b9bb4","#5a6988","#8b9bb4","#e43b44","#5a6988","#5a6988","#e43b44","#5a6988","#5a6988","#c0cbdc","#5a6988","#5a6988","#c0cbdc","#5a6988","#4d5a75"],["#88523b","#9e5f45","#78859b","#78859b","#78859b","#4d5a75","#78859b","#4d5a75","#78859b","#4d5a75","#78859b","#4d5a75","#c4333a","#4d5a75","#78859b","#c4333a","#4d5a75","#78859b","#a5afbd","#4d5a75","#78859b","#a5afbd","#4d5a75","#677385"]],
+    powerup: {
+        "type": "combo",
+        "tier": 3,
+        "intro": "Three jobs: bulldozes the 2x3 of blocks in front of it (on its left), lets everything in its six columns settle, then the truck pours concrete into the empty cells of the 2x2 under its drum. Nobody knows who ordered it.",
+        "parts": [
+          {
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                2,
+                0
+              ],
+              "grid": [
+                "##....",
+                "##....",
+                "##...."
+              ]
+            }
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                2,
+                0
+              ],
+              "grid": [
+                "||||||"
+              ]
+            }
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#a5afbd",
+                "#b3bdcd",
+                "#b3bdcd",
+                "#8190a7",
+                "#b3bdcd",
+                "#b3bdcd",
+                "#a5afbd"
+              ],
+              [
+                "#b3bdcd",
+                "#8b9bb4",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#ffffff",
+                "#b3bdcd"
+              ],
+              [
+                "#b3bdcd",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#b3bdcd"
+              ],
+              [
+                "#b3bdcd",
+                "#c0cbdc",
+                "#ffffff",
+                "#c0cbdc",
+                "#8b9bb4",
+                "#c0cbdc",
+                "#b3bdcd"
+              ],
+              [
+                "#8190a7",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#b3bdcd"
+              ],
+              [
+                "#b3bdcd",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#8b9bb4",
+                "#c0cbdc",
+                "#c0cbdc",
+                "#ededed"
+              ],
+              [
+                "#a5afbd",
+                "#ededed",
+                "#b3bdcd",
+                "#b3bdcd",
+                "#b3bdcd",
+                "#b3bdcd",
+                "#a5afbd"
+              ]
+            ],
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "....",
+                "..##",
+                "..##"
+              ]
+            }
+          }
+        ],
+        "help": 3.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "upright_vacuum",
+    name: "an upright vacuum cleaner (very loud)",
+    grid: [
+        "X.",
+        "XX"
+      ],
+    color: [["#8e96a3","#78859b","#78859b","#78859b","#78859b","#8e96a3","","","","","",""],["#9c4575","#b55088","#b55088","#b55088","#b55088","#9c4575","","","","","",""],["#9c4575","#68386c","#b55088","#b55088","#f6757a","#9c4575","","","","","",""],["#9c4575","#b55088","#68386c","#b55088","#b55088","#9c4575","","","","","",""],["#9c4575","#b55088","#b55088","#68386c","#b55088","#9c4575","","","","","",""],["#4d5a75","#b55088","#b55088","#b55088","#b55088","#4d5a75","","","","","",""],["#a5afbd","#5a6988","#5a6988","#5a6988","#5a6988","#c0cbdc","#c4333a","#c4333a","#c4333a","#c4333a","#c4333a","#a92c32"],["#4d5a75","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#e43b44","#e43b44","#e43b44","#e43b44","#ffffff","#dac753"],["#4d5a75","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#c4333a"],["#a5afbd","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#a5afbd"],["#dac753","#feae34","#fee761","#feae34","#fee761","#feae34","#fee761","#feae34","#fee761","#feae34","#fee761","#da962d"],["#434e65","#78859b","#4d5a75","#78859b","#4d5a75","#78859b","#4d5a75","#78859b","#4d5a75","#78859b","#4d5a75","#677385"]],
+    powerup: {
+        "type": "combo",
+        "tier": 3,
+        "intro": "Sucks up every block touching it plus two more under its head, then everything in the six columns around it drops down into the gaps. You will not hear the phone.",
+        "parts": [
+          {
+            "type": "acid",
+            "reach": 1,
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "..",
+                "..",
+                "##",
+                "##"
+              ]
+            }
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                2,
+                0
+              ],
+              "grid": [
+                "||||||"
+              ]
+            }
+          }
+        ],
+        "help": 3.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
 ];
