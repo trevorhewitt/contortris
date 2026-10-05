@@ -1624,6 +1624,284 @@ export const SHAPES = [
     frequency: 1,
   },
   {
+    id: "stubborn_sugar_cube",
+    name: "a sugar cube that refuses to dissolve",
+    grid: [
+        "X"
+      ],
+    color: [["#bdbdbd","#cfcec8","#cfcec8","#b2afa7","#cfcec8","#dbdbdb","#b2b1ac"],["#cfcec8","#cfcbc2","#ffffff","#f1efe9","#f1efe9","#f1efe9","#cfcec8"],["#cfcec8","#f1efe9","#f1efe9","#f1efe9","#cfcbc2","#f1efe9","#cfcec8"],["#cfcec8","#5b4a58","#f1efe9","#f1efe9","#f1efe9","#5b4a58","#cfcec8"],["#cfcec8","#f1efe9","#f1efe9","#f1efe9","#f1efe9","#f1efe9","#dbdbdb"],["#b2afa7","#f1efe9","#5b4a58","#5b4a58","#5b4a58","#f1efe9","#cfcec8"],["#b2b1ac","#cfcec8","#cfcec8","#dbdbdb","#cfcec8","#b2afa7","#b2b1ac"]],
+    difficulty: 0,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    tags: [
+        "food"
+      ],
+  },
+  {
+    id: "die_of_ones",
+    name: "a die that has only ever rolled a one",
+    grid: [
+        "X"
+      ],
+    color: [["#999794","#c5c2be","#c5c2be","#c5c2be","#c5c2be","#c5c2be","#999794"],["#c5c2be","#f6f3ee","#f6f3ee","#f6f3ee","#f6f3ee","#f6f3ee","#c5c2be"],["#c5c2be","#f6f3ee","#e98a8e","#d4202c","#e98a8e","#f6f3ee","#c5c2be"],["#c5c2be","#f6f3ee","#d4202c","#ff6a72","#d4202c","#f6f3ee","#c5c2be"],["#c5c2be","#f6f3ee","#e98a8e","#d4202c","#e98a8e","#f6f3ee","#c5c2be"],["#c5c2be","#f6f3ee","#f6f3ee","#f6f3ee","#f6f3ee","#f6f3ee","#c5c2be"],["#999794","#c5c2be","#c5c2be","#c5c2be","#c5c2be","#c5c2be","#999794"]],
+    difficulty: 0,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+  },
+  {
+    id: "ambitious_sesame",
+    name: "a sesame seed with ambition",
+    grid: [
+        "X"
+      ],
+    color: [["#816c46","#a18657","#c4b288","#d1c8ae","#c4b288","#a18657","#816c46"],["#a18657","#efd9a6","#fff4d4","#fff4d4","#fff4d4","#efd9a6","#a18657"],["#c4b288","#3b2a1e","#efd9a6","#efd9a6","#efd9a6","#3b2a1e","#b49f71"],["#c4b288","#efd9a6","#efd9a6","#efd9a6","#efd9a6","#efd9a6","#b49f71"],["#c4b288","#efd9a6","#ffffff","#2a3c8c","#ffffff","#efd9a6","#b49f71"],["#c4b288","#efd9a6","#efd9a6","#2a3c8c","#efd9a6","#efd9a6","#c4b288"],["#91805b","#c4b288","#223173","#223173","#223173","#c4b288","#91805b"]],
+    difficulty: 0,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    tags: [
+        "food"
+      ],
+  },
+  {
+    id: "orphan_sim_card",
+    name: "a SIM card from a phone you lost in 2011",
+    grid: [
+        "X"
+      ],
+    color: [["#a7a8ab","#c8cacd","#c8cacd","#c8cacd","#c8cacd","#8a92a2","#8a92a2"],["#c8cacd","#eef0f4","#eef0f4","#eef0f4","#eef0f4","#eef0f4","#8a92a2"],["#c8cacd","#f2c13a","#f2c13a","#f2c13a","#a8740c","#f2c13a","#c8cacd"],["#c8cacd","#a8740c","#a8740c","#f2c13a","#a8740c","#f2c13a","#c8cacd"],["#c8cacd","#f2c13a","#f2c13a","#f2c13a","#a8740c","#a8740c","#c8cacd"],["#c8cacd","#f2c13a","#a8740c","#f2c13a","#f2c13a","#f2c13a","#c8cacd"],["#a7a8ab","#c8cacd","#c8cacd","#c8cacd","#c8cacd","#c8cacd","#a7a8ab"]],
+    difficulty: 0,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+  },
+  {
+    id: "barefoot_lego",
+    name: "a single lego, placed exactly where you will step",
+    grid: [
+        "X"
+      ],
+    color: [["#91181b","#b61e22","#b61e22","#b61e22","#b61e22","#b61e22","#91181b"],["#b61e22","#e3262a","#a8161c","#a8161c","#a8161c","#e3262a","#b61e22"],["#b61e22","#a8161c","#ff9a86","#ffd2c4","#f04a3c","#a8161c","#b61e22"],["#b61e22","#a8161c","#ff9a86","#f04a3c","#f04a3c","#a8161c","#b61e22"],["#b61e22","#a8161c","#f04a3c","#f04a3c","#f04a3c","#a8161c","#b61e22"],["#b61e22","#e3262a","#a8161c","#a8161c","#a8161c","#e3262a","#b61e22"],["#91181b","#b61e22","#b61e22","#b61e22","#b61e22","#b61e22","#91181b"]],
+    difficulty: 0,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+  },
+  {
+    id: "lone_sprinkle",
+    name: "a lone sprinkle. the cake left without it.",
+    grid: [
+        "XX"
+      ],
+    color: [["#9e3b6c","#d14e8f","#d14e8f","#d14e8f","#d14e8f","#d14e8f","#d14e8f","#d14e8f","#d14e8f","#d14e8f","#d14e8f","#d14e8f","#d14e8f","#9e3b6c"],["#d14e8f","#ffb3d9","#ffb3d9","#ffb3d9","#ffb3d9","#ffb3d9","#ffb3d9","#ffb3d9","#ffb3d9","#ffb3d9","#ffb3d9","#ffb3d9","#ffb3d9","#d14e8f"],["#d14e8f","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#d14e8f"],["#d14e8f","#ff5fae","#ff5fae","#5a1438","#ff5fae","#ff5fae","#ff5fae","#5a1438","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#d14e8f"],["#d14e8f","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#7fd8ff","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#d14e8f"],["#d14e8f","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#5a1438","#ff5fae","#ff5fae","#7fd8ff","#ff5fae","#ff5fae","#ff5fae","#ff5fae","#d14e8f"],["#9e3b6c","#ac306e","#ac306e","#ac306e","#ac306e","#ac306e","#ac306e","#ac306e","#ac306e","#ac306e","#ac306e","#ac306e","#ac306e","#9e3b6c"]],
+    difficulty: 0,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    tags: [
+        "food"
+      ],
+  },
+  {
+    id: "rubber_duck_egg",
+    name: "a rubber duck egg. it squeaks when it hatches.",
+    grid: [
+        "X"
+      ],
+    color: [["#a88b26","#d1ac30","#d1c78a","#d1ac30","#d1ac30","#d1ac30","#a88b26"],["#d1ac30","#fff3a8","#ffd23a","#ffd23a","#ffd23a","#ffd23a","#d1ac30"],["#d1ac30","#ffd23a","#ffd23a","#ffd23a","#ffd23a","#ffd23a","#d1ac30"],["#643d00","#ffd23a","#ffd23a","#7a4a00","#ffd23a","#ffd23a","#643d00"],["#d1ac30","#7a4a00","#2a1a10","#7a4a00","#ff7a10","#ffd23a","#d1ac30"],["#d1ac30","#ffd23a","#ffd23a","#ff7a10","#ff7a10","#ffd23a","#d1ac30"],["#a88b26","#d1ac30","#d1ac30","#d1ac30","#d1ac30","#d1ac30","#a88b26"]],
+    difficulty: 0,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+  },
+  {
+    id: "blank_domino",
+    name: "a domino with nothing to say",
+    grid: [
+        "X",
+        "X"
+      ],
+    color: [["#a09a8d","#c7c0af","#c7c0af","#c7c0af","#c7c0af","#c7c0af","#a09a8d"],["#c7c0af","#ffffff","#fbf6ea","#f3ead6","#f3ead6","#f3ead6","#c7c0af"],["#c7c0af","#ffffff","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#c7c0af"],["#c7c0af","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#c7c0af"],["#c7c0af","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#c7c0af"],["#c7c0af","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#c7c0af"],["#a59a82","#c9bc9e","#c9bc9e","#d9a62a","#c9bc9e","#c9bc9e","#a59a82"],["#8a7d64","#a8987a","#a8987a","#a8987a","#a8987a","#a8987a","#8a7d64"],["#c7c0af","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#c7c0af"],["#c7c0af","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#c7c0af"],["#c7c0af","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#c7c0af"],["#c7c0af","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#c7c0af"],["#c7c0af","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#f3ead6","#c7c0af"],["#a09a8d","#c7c0af","#c7c0af","#c7c0af","#c7c0af","#c7c0af","#a09a8d"]],
+    difficulty: 0,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+  },
+  {
+    id: "overpacked_suitcase",
+    name: "a suitcase that will not close. it has tried.",
+    grid: [
+        "X..",
+        "XXX"
+      ],
+    color: [["#b2b2b2","#d6d6d6","#d6d6d6","#5085cb","#5085cb","#426fa9","","","","","","","","","","","",""],["#be2832","#ffffff","#5f9ef2","#5f9ef2","#5f9ef2","#5085cb","","","","","","","","","","","",""],["#d6d6d6","#e2303c","#5f9ef2","#a8ccff","#5f9ef2","#5085cb","","","","","","","","","","","",""],["#be2832","#ffffff","#5f9ef2","#5f9ef2","#5f9ef2","#5085cb","","","","","","","","","","","",""],["#d6d6d6","#e2303c","#5f9ef2","#5f9ef2","#5f9ef2","#8dabd6","","","","","","","","","","","",""],["#be2832","#ffffff","#5f9ef2","#5f9ef2","#5f9ef2","#5085cb","","","","","","","","","","","",""],["#be2832","#ffffff","#5f9ef2","#5f9ef2","#5f9ef2","#5f9ef2","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#623918"],["#bc8145","#e09a52","#e09a52","#e09a52","#e09a52","#8c5222","#e09a52","#e09a52","#e09a52","#e09a52","#e09a52","#e09a52","#8c5222","#e09a52","#e09a52","#e09a52","#e09a52","#bc8145"],["#a3662d","#c27a36","#c27a36","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#a3662d"],["#a3662d","#c27a36","#c27a36","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#fff0a0","#e8c25a","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#a3662d"],["#a3662d","#c27a36","#c27a36","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#e8c25a","#e8c25a","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#a3662d"],["#885526","#a3662d","#a3662d","#a3662d","#a3662d","#76451d","#a3662d","#a3662d","#a3662d","#a3662d","#a3662d","#a3662d","#76451d","#a3662d","#a3662d","#a3662d","#a3662d","#885526"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+  },
+  {
+    id: "blinking_photo_strip",
+    name: "a photo booth strip. you blinked in all three.",
+    grid: [
+        "X",
+        "X",
+        "X"
+      ],
+    color: [["#b5b4b1","#d8d7d4","#d8d7d4","#d8d7d4","#d8d7d4","#b5b4b1"],["#d8d7d4","#7a4a2a","#7a4a2a","#7a4a2a","#7a4a2a","#d8d7d4"],["#d8d7d4","#f2c29a","#f2c29a","#f2c29a","#f2c29a","#d8d7d4"],["#d8d7d4","#4a2a20","#f2c29a","#f2c29a","#4a2a20","#d8d7d4"],["#d8d7d4","#f2c29a","#c95a5a","#c95a5a","#f2c29a","#d8d7d4"],["#d8d7d4","#9fd0f0","#f2c29a","#f2c29a","#9fd0f0","#d8d7d4"],["#d8d7d4","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#d8d7d4"],["#d8d7d4","#7a4a2a","#7a4a2a","#7a4a2a","#7a4a2a","#d8d7d4"],["#d8d7d4","#f2c29a","#f2c29a","#f2c29a","#f2c29a","#d8d7d4"],["#d8d7d4","#4a2a20","#f2c29a","#4a2a20","#f2c29a","#d8d7d4"],["#d8d7d4","#f2c29a","#c95a5a","#c95a5a","#f2c29a","#d8d7d4"],["#d8d7d4","#9fd0f0","#f2c29a","#f2c29a","#9fd0f0","#d8d7d4"],["#d8d7d4","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#d8d7d4"],["#d8d7d4","#7a4a2a","#7a4a2a","#7a4a2a","#7a4a2a","#d8d7d4"],["#d8d7d4","#f2c29a","#f2c29a","#f2c29a","#f2c29a","#d8d7d4"],["#d8d7d4","#4a2a20","#f2c29a","#f2c29a","#4a2a20","#d8d7d4"],["#d8d7d4","#f2c29a","#e0403c","#e0403c","#f2c29a","#d8d7d4"],["#b5b4b1","#89b3ce","#d0a784","#d0a784","#89b3ce","#b5b4b1"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+  },
+  {
+    id: "drizzle_cloud",
+    name: "a cloud that is mostly drizzle",
+    grid: [
+        "XXX",
+        ".X."
+      ],
+    color: [["#a8abb0","#dbdbdb","#dbdbdb","#dbdbdb","#c8cdd3","#c8cdd3","#dbdbdb","#dbdbdb","#dbdbdb","#c8cdd3","#c8cdd3","#dbdbdb","#dbdbdb","#dbdbdb","#c8cdd3","#c8cdd3","#dbdbdb","#b8b8b8"],["#c8cdd3","#e9eef5","#ffffff","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#56607a","#e9eef5","#e9eef5","#56607a","#e9eef5","#ffffff","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#dbdbdb"],["#c8cdd3","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#c8cdd3"],["#c8cdd3","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#56607a","#56607a","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#c8cdd3"],["#c8cdd3","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#e9eef5","#c8cdd3"],["#8c939c","#a8afba","#a8afba","#a8afba","#a8afba","#a8afba","#c3ccd8","#c3ccd8","#c3ccd8","#c3ccd8","#c3ccd8","#c3ccd8","#a8afba","#a8afba","#a8afba","#a8afba","#a8afba","#8c939c"],["","","","","","","#a8afba","#e2eeff","#a8c4e6","#a8c4e6","#a8c4e6","#a8afba","","","","","",""],["","","","","","","#90a9c6","#a8c4e6","#a8c4e6","#a8c4e6","#e2eeff","#90a9c6","","","","","",""],["","","","","","","#90a9c6","#a8c4e6","#e2eeff","#a8c4e6","#a8c4e6","#90a9c6","","","","","",""],["","","","","","","#c2cddb","#a8c4e6","#a8c4e6","#a8c4e6","#a8c4e6","#c2cddb","","","","","",""],["","","","","","","#90a9c6","#a8c4e6","#a8c4e6","#e2eeff","#a8c4e6","#90a9c6","","","","","",""],["","","","","","","#798da6","#c2cddb","#90a9c6","#90a9c6","#c2cddb","#798da6","","","","","",""]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    tags: [
+        "weather"
+      ],
+  },
+  {
+    id: "washed_rainbow",
+    name: "a rainbow that has been through the wash",
+    grid: [
+        "XXX",
+        "X.X"
+      ],
+    color: [["#b65a58","#cb6867","#ca6b6a","#ca6e6e","#c97171","#c87475","#c77879","#c67a7c","#c57e80","#c48182","#c28486","#c2878a","#c18b8d","#c08d91","#bf9194","#be9498","#bd979c","#a7898d"],["#cc6563","#e9aa6d","#e7ab72","#e6ac76","#e5ad7a","#e3ae7e","#e2b082","#e1b186","#dfb28a","#deb38e","#dcb492","#dbb596","#dab69b","#d8b79f","#d7b9a3","#d6baa7","#d4bbab","#bc9a9e"],["#cc6563","#e9aa6d","#e7d480","#e5d483","#e4d387","#e3d28a","#e1d18d","#e0d191","#dfd094","#ddcf98","#dcce9b","#dbce9f","#d9cda2","#d8cca6","#d7cba9","#d5cbad","#d4bbab","#bc9a9e"],["#cc6563","#e9aa6d","#e7d480","#9ece90","#a0cd93","#a2cd96","#a4cc99","#a6cc9c","#a8cb9f","#aacba1","#accaa4","#aecaa7","#b0caaa","#b2c9ad","#b4c9b0","#d5cbad","#d4bbab","#bc9a9e"],["#cc6563","#e9aa6d","#e7d480","#9ece90","#90b4e0","#93b5df","#96b6de","#99b7dd","#9cb8dc","#9eb8db","#a1b9da","#a4bad9","#a7bbd8","#aabbd7","#b4c9b0","#d5cbad","#d4bbab","#bc9a9e"],["#cc6563","#e9aa6d","#e7d480","#9ece90","#90b4e0","#b19dd3","#a08fbd","#a191bd","#a393bd","#a494bc","#a596bc","#a698bc","#baabd0","#aabbd7","#b4c9b0","#d5cbad","#d4bbab","#bc9a9e"],["#cc6563","#e9aa6d","#e7d480","#9ece90","#90b4e0","#9f8dbe","","","","","","","#a79abb","#aabbd7","#b4c9b0","#d5cbad","#d4bbab","#bc9a9e"],["#cc6563","#e9aa6d","#e7d480","#9ece90","#90b4e0","#9f8dbe","","","","","","","#a79abb","#aabbd7","#b4c9b0","#d5cbad","#d4bbab","#bc9a9e"],["#cc6563","#e9aa6d","#e7d480","#9ece90","#90b4e0","#9f8dbe","","","","","","","#a79abb","#aabbd7","#b4c9b0","#d5cbad","#d4bbab","#bc9a9e"],["#cc6563","#e9aa6d","#e7d480","#9ece90","#90b4e0","#9f8dbe","","","","","","","#a79abb","#aabbd7","#b4c9b0","#d5cbad","#d4bbab","#bc9a9e"],["#cc6563","#e9aa6d","#e7d480","#9ece90","#90b4e0","#9f8dbe","","","","","","","#a79abb","#aabbd7","#b4c9b0","#d5cbad","#d4bbab","#bc9a9e"],["#b65a58","#d29962","#d0bf73","#8eb982","#82a2ca","#8e7ea9","","","","","","","#9589a6","#99a8c2","#a2b59e","#c0b79c","#bfa89a","#a7898d"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    tags: [
+        "weather"
+      ],
+  },
+  {
+    id: "slough_postcard",
+    name: "a postcard from slough. the weather is also slough.",
+    grid: [
+        "XX",
+        "XX"
+      ],
+    color: [["#b5b2ab","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#b5b2ab"],["#d8d4cd","#b7bcc4","#b7bcc4","#b7bcc4","#b7bcc4","#b7bcc4","#b7bcc4","#b7bcc4","#d8343c","#d8343c","#d8343c","#d8d4cd"],["#d8d4cd","#b7bcc4","#b7bcc4","#b7bcc4","#b7bcc4","#b7bcc4","#b7bcc4","#b7bcc4","#d8343c","#ffd0c0","#d8343c","#d8d4cd"],["#d8d4cd","#b7bcc4","#b7bcc4","#b7bcc4","#b7bcc4","#b7bcc4","#b7bcc4","#b7bcc4","#d8343c","#d8343c","#d8343c","#d8d4cd"],["#d8d4cd","#b7bcc4","#b7bcc4","#848b96","#848b96","#848b96","#848b96","#848b96","#b7bcc4","#b7bcc4","#b7bcc4","#d8d4cd"],["#d8d4cd","#b7bcc4","#b7bcc4","#848b96","#c4cad2","#848b96","#c4cad2","#848b96","#848b96","#848b96","#848b96","#d8d4cd"],["#d8d4cd","#b7bcc4","#b7bcc4","#848b96","#848b96","#848b96","#848b96","#848b96","#848b96","#c4cad2","#848b96","#d8d4cd"],["#d8d4cd","#b7bcc4","#b7bcc4","#848b96","#c4cad2","#848b96","#c4cad2","#848b96","#848b96","#848b96","#848b96","#d8d4cd"],["#d8d4cd","#848b96","#848b96","#848b96","#848b96","#848b96","#848b96","#848b96","#848b96","#848b96","#848b96","#d8d4cd"],["#d8d4cd","#9aa094","#9aa094","#9aa094","#9aa094","#9aa094","#9aa094","#9aa094","#9aa094","#9aa094","#9aa094","#d8d4cd"],["#d8d4cd","#9aa094","#9aa094","#9aa094","#9aa094","#9aa094","#9aa094","#9aa094","#9aa094","#9aa094","#9aa094","#d8d4cd"],["#b5b2ab","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#d8d4cd","#b5b2ab"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    tags: [
+        "travel"
+      ],
+  },
+  {
+    id: "lost_satellite",
+    name: "a satellite that has lost signal. it is just floating now.",
+    grid: [
+        "XXX"
+      ],
+    color: [["#2c59a1","#356bc1","#789cd6","#789cd6","#356bc1","#356bc1","#cba53a","#cba53a","#59310d","#59310d","#cba53a","#cba53a","#356bc1","#356bc1","#789cd6","#789cd6","#356bc1","#2c59a1"],["#356bc1","#3f7fe6","#8fbaff","#8fbaff","#3f7fe6","#3f7fe6","#f2c445","#6a3a10","#f2c445","#f2c445","#6a3a10","#f2c445","#3f7fe6","#3f7fe6","#8fbaff","#8fbaff","#3f7fe6","#356bc1"],["#789cd6","#8fbaff","#2a5cb8","#2a5cb8","#8fbaff","#8fbaff","#f2c445","#f2c445","#f2c445","#6a3a10","#f2c445","#f2c445","#8fbaff","#8fbaff","#2a5cb8","#2a5cb8","#8fbaff","#789cd6"],["#789cd6","#8fbaff","#2a5cb8","#2a5cb8","#8fbaff","#8fbaff","#f2c445","#f2c445","#6a3a10","#f2c445","#f2c445","#f2c445","#8fbaff","#8fbaff","#2a5cb8","#2a5cb8","#8fbaff","#789cd6"],["#356bc1","#3f7fe6","#8fbaff","#8fbaff","#3f7fe6","#3f7fe6","#f2c445","#f2c445","#f2c445","#f2c445","#f2c445","#f2c445","#3f7fe6","#3f7fe6","#8fbaff","#8fbaff","#3f7fe6","#356bc1"],["#2c59a1","#356bc1","#789cd6","#789cd6","#356bc1","#356bc1","#cba53a","#cba53a","#59310d","#cba53a","#cba53a","#cba53a","#356bc1","#356bc1","#789cd6","#789cd6","#356bc1","#2c59a1"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    tags: [
+        "space"
+      ],
+  },
+  {
+    id: "astronaut_ice_cream",
+    name: "astronaut ice cream. it is crunchy and that is wrong.",
+    grid: [
+        "XXXX"
+      ],
+    color: [["#7a7f88","#c1c5ca","#c1c5ca","#9299a3","#c1c5ca","#a8adb5","#d68297","#d68297","#d68297","#d68297","#d6a8b4","#d68297","#d68297","#d68297","#d68297","#d6a8b4","#d68297","#d68297","#d68297","#d68297","#d6a8b4","#d68297","#d68297","#b26c7e"],["#c1c5ca","#e6eaf0","#aeb6c2","#e6eaf0","#e6eaf0","#ff9bb4","#ff9bb4","#ffc8d6","#ff9bb4","#ff9bb4","#ff9bb4","#ff9bb4","#ffc8d6","#ff9bb4","#ff9bb4","#ff9bb4","#ff9bb4","#ffc8d6","#ff9bb4","#ff9bb4","#ff9bb4","#ff9bb4","#ffc8d6","#d68297"],["#c1c5ca","#aeb6c2","#e6eaf0","#e6eaf0","#aeb6c2","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#d6ccb4"],["#9299a3","#e6eaf0","#e6eaf0","#aeb6c2","#e6eaf0","#e8d6a8","#fff3d6","#e8d6a8","#fff3d6","#e8d6a8","#fff3d6","#e8d6a8","#fff3d6","#e8d6a8","#fff3d6","#e8d6a8","#fff3d6","#e8d6a8","#fff3d6","#e8d6a8","#fff3d6","#e8d6a8","#fff3d6","#c3b48d"],["#c1c5ca","#e6eaf0","#aeb6c2","#e6eaf0","#e6eaf0","#a8683c","#a8683c","#a8683c","#c88a58","#a8683c","#a8683c","#a8683c","#c88a58","#a8683c","#a8683c","#a8683c","#c88a58","#a8683c","#a8683c","#a8683c","#c88a58","#a8683c","#a8683c","#8d5732"],["#a1a4a8","#9299a3","#c1c5ca","#c1c5ca","#9299a3","#a8adb5","#8d5732","#a8744a","#8d5732","#8d5732","#8d5732","#a8744a","#8d5732","#8d5732","#8d5732","#a8744a","#8d5732","#8d5732","#8d5732","#a8744a","#8d5732","#8d5732","#8d5732","#8c613e"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    tags: [
+        "food",
+        "space"
+      ],
+  },
+  {
+    id: "sad_asteroid",
+    name: "a small sad asteroid. it missed.",
+    grid: [
+        ".XX",
+        "XX."
+      ],
+    color: [["","","","","","","#726961","#897e74","#897e74","#897e74","#897e74","#897e74","#897e74","#897e74","#897e74","#665c52","#897e74","#726961"],["","","","","","","#897e74","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#6a5e54","#6a5e54","#a3968a","#897e74"],["","","","","","","#897e74","#2e241f","#a3968a","#a3968a","#a3968a","#2e241f","#a3968a","#c4b8ab","#6a5e54","#d2c6b8","#a3968a","#897e74"],["","","","","","","#897e74","#2e241f","#a3968a","#a3968a","#a3968a","#2e241f","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#897e74"],["","","","","","","#897e74","#7fd0ff","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#6a5e54","#6a5e54","#a3968a","#a3968a","#897e74"],["","","","","","","#897e74","#a3968a","#2e241f","#2e241f","#2e241f","#a3968a","#897e74","#594f47","#b0a69b","#897e74","#a59b90","#726961"],["#726961","#897e74","#897e74","#897e74","#897e74","#897e74","#a3968a","#2e241f","#a3968a","#a3968a","#a3968a","#271e1a","","","","","",""],["#897e74","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#897e74","","","","","",""],["#897e74","#a3968a","#6a5e54","#6a5e54","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#897e74","","","","","",""],["#897e74","#a3968a","#6a5e54","#d2c6b8","#a3968a","#a3968a","#7a6d62","#a3968a","#a3968a","#a3968a","#a3968a","#897e74","","","","","",""],["#897e74","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a3968a","#a59b90","","","","","",""],["#726961","#897e74","#897e74","#897e74","#897e74","#897e74","#897e74","#897e74","#897e74","#897e74","#897e74","#726961","","","","","",""]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    tags: [
+        "space"
+      ],
+  },
+  {
+    id: "lost_ufo",
+    name: "a ufo that took a wrong turn at saturn",
+    grid: [
+        ".X.",
+        "XXX"
+      ],
+    color: [["","","","","","","#6fa1a9","#86c1cb","#86c1cb","#86c1cb","#86c1cb","#6fa1a9","","","","","",""],["","","","","","","#86c1cb","#ffffff","#9fe6f2","#9fe6f2","#9fe6f2","#86c1cb","","","","","",""],["","","","","","","#86c1cb","#9fe6f2","#6ad64a","#6ad64a","#9fe6f2","#86c1cb","","","","","",""],["","","","","","","#86c1cb","#6ad64a","#1e4a14","#1e4a14","#6ad64a","#86c1cb","","","","","",""],["","","","","","","#86c1cb","#6ad64a","#6ad64a","#6ad64a","#6ad64a","#86c1cb","","","","","",""],["","","","","","","#999ea8","#b6bcc8","#6ad64a","#6ad64a","#b6bcc8","#999ea8","","","","","",""],["#7f848c","#999ea8","#999ea8","#999ea8","#999ea8","#999ea8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#999ea8","#999ea8","#999ea8","#999ea8","#999ea8","#7f848c"],["#c0c3ca","#e4e8f0","#e4e8f0","#e4e8f0","#e4e8f0","#e4e8f0","#e4e8f0","#e4e8f0","#e4e8f0","#e4e8f0","#e4e8f0","#e4e8f0","#e4e8f0","#e4e8f0","#e4e8f0","#e4e8f0","#e4e8f0","#c0c3ca"],["#999ea8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#999ea8"],["#999ea8","#ffe04a","#ffe04a","#b6bcc8","#b6bcc8","#ff5a6a","#ff5a6a","#b6bcc8","#b6bcc8","#ffe04a","#ffe04a","#b6bcc8","#b6bcc8","#ff5a6a","#ff5a6a","#b6bcc8","#b6bcc8","#d6bc3e"],["#999ea8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#b6bcc8","#999ea8"],["#61656f","#747985","#747985","#747985","#747985","#747985","#747985","#747985","#747985","#747985","#747985","#747985","#747985","#747985","#747985","#747985","#747985","#61656f"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    tags: [
+        "space"
+      ],
+  },
+  {
+    id: "folded_deckchair",
+    name: "a deckchair that refuses to unfold",
+    grid: [
+        "XX.",
+        ".XX"
+      ],
+    color: [["#8e6335","#a97740","#a97740","#a97740","#a97740","#a97740","#a97740","#a97740","#a97740","#a97740","#a97740","#8e6335","","","","","",""],["#a97740","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#a97740","","","","","",""],["#a97740","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#a97740","","","","","",""],["#a97740","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#a97740","","","","","",""],["#a97740","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#a97740","","","","","",""],["#8e6335","#a97740","#a97740","#a97740","#a97740","#a97740","#f6f6f2","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#a97740","","","","","",""],["","","","","","","#a97740","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#f6f6f2","#a97740","#a97740","#a97740","#a97740","#a97740","#8e6335"],["","","","","","","#a97740","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#a97740"],["","","","","","","#a97740","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#a97740"],["","","","","","","#a97740","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#a97740"],["","","","","","","#a97740","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#3d7fd8","#f6f6f2","#f6f6f2","#3d7fd8","#a97740"],["","","","","","","#8e6335","#a97740","#a97740","#a97740","#a97740","#a97740","#a97740","#a97740","#a97740","#a97740","#a97740","#8e6335"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    tags: [
+        "travel"
+      ],
+  },
+  {
     id: "mormon",
     name: "The Book of Mormon",
     grid: [
