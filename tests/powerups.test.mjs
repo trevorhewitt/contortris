@@ -12,8 +12,9 @@ import {
   applyExpand,
   collapseRows,
   analyseBoard,
-} from "../powerups.js";
-import { POWERUPS } from "../shapes/powerup_shapes.js";
+} from "../src/powerups.js";
+import { SHAPES } from "../shapes/main_shapes.js";
+const POWERUPS = SHAPES.filter(s => s.powerup);
 
 // Board helpers: rows of "#" (block) and "." (empty).
 function makeBoard(lines) {

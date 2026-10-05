@@ -1,3 +1,50 @@
+/**
+ * EXTRIS BLOCKS — every piece in the game: regular blocks and powerups.
+ * Edit by hand or with block_designer.html (it keeps this comment when saving).
+ *
+ * Each entry:
+ * {
+ *   id: "unique_id",          lowercase letters, numbers and _
+ *   name: "shown in game",
+ *   grid: ["XX", "X."],       the shape: X = block, . = empty
+ *   color: "#hex" | [[...]],  a solid colour, or pixel art: a grid of hex colours exactly
+ *                             k times the size of `grid` (k = pixels per block, 1-7).
+ *                             "" pixels inside a block show the first colour in the grid.
+ *   difficulty: 0-5,          regular blocks only; drives when it is served
+ *                             (see CONFIG.assist.pieceMix in config.js)
+ *   frequency: 0-1,           how often it is picked compared with others of its kind
+ *   rotation: { mode: "any" | "none" },
+ *
+ *   Optional:
+ *   nextShapes: ["id"],       blocks that may come straight after this one ("back to back")...
+ *   nextShapeProbs: [0.5],    ...with these probabilities
+ *   tags: ["food"],           labels used by achievements (shapes/achievements.js), e.g.
+ *                             "food", "medicine", "squelchy"
+ *   zones: {                  named regions around the piece, in the same format as powerup
+ *     inside: { origin, grid } areas (below). Used by achievements, e.g. the inside of a mouth.
+ *   },
+ *   powerup: { ... },         makes this block a powerup (Normal mode only), see below
+ * }
+ *
+ * powerup: {
+ *   type: "destroyer" | "gravity" | "expander",
+ *   direction: "down" | "left" | "right" | "up",   gravity only (default "down")
+ *   tier: 1 | 2 | 3,          1 = gentle ... 3 = very strong. Stronger tiers are served more
+ *                             when the stack is high (CONFIG.assist.powerups in config.js)
+ *   description: "...",       optional: replaces the effect text shown under the name
+ *   area: {                   the highlighted ("effected") cells:
+ *     origin: [x, y],         where the piece's top-left block sits inside `grid`
+ *     grid: ["..."],          "." not affected, "#" this cell, "-" this cell's whole row,
+ *   },                        "|" this cell's whole column, "+" both row and column
+ *   fill: "#hex" | [[...]],   expander only: art for the cells it fills (one block of k×k pixels)
+ *   consume: true,            optional: vanish when fired (default: yes, except expanders)
+ *   collapse: false,          destroyer only: wiped wall-to-wall rows close up like a line clear
+ * }
+ *
+ * For powerups, `frequency` is compared with the other powerups only. Powerups don't rotate
+ * unless rotation.mode is "any" (then the highlighted area rotates with the piece).
+ */
+
 export const SHAPES = [
   {
     id: "david",
@@ -16,6 +63,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "art"
+      ],
   },
   {
     id: "lisa",
@@ -31,6 +81,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "art"
+      ],
   },
   {
     id: "hotdog",
@@ -50,6 +103,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "donut",
@@ -65,6 +121,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "marge",
@@ -108,6 +167,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "lentil",
@@ -121,6 +183,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "banana",
@@ -137,6 +202,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "heart",
@@ -199,6 +267,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "medicine"
+      ],
   },
   {
     id: "brain",
@@ -251,6 +322,9 @@ export const SHAPES = [
     nextShapes: [
         "spam"
       ],
+    tags: [
+        "food"
+      ],
   },
   {
     id: "beans",
@@ -267,6 +341,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "tomatoes",
@@ -334,6 +411,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "tomatoeone",
@@ -347,6 +427,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "hourglass",
@@ -375,6 +458,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "sausage",
@@ -393,6 +479,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "colour",
@@ -691,6 +780,22 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "mouth"
+      ],
+    zones: {
+        "inside": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            "...",
+            ".##",
+            "..."
+          ]
+        }
+      },
   },
   {
     id: "tongue",
@@ -719,6 +824,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "ziggurat",
@@ -793,6 +901,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "mormon",
@@ -970,6 +1081,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "mirror",
@@ -997,6 +1111,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "mirrormean",
@@ -1080,6 +1197,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "squelchy"
+      ],
   },
   {
     id: "message",
@@ -1109,6 +1229,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "square",
@@ -1123,6 +1246,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "ramen",
@@ -1137,6 +1263,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "threatening",
@@ -1166,6 +1295,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "north",
@@ -1228,6 +1360,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "beetle",
@@ -1307,6 +1442,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "saltine",
@@ -1320,6 +1458,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "flemish",
@@ -1386,8 +1527,15 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.1,
-    nextShapes: ["twofish"],
-    nextShapeProbs: [1.0]
+    nextShapeProbs: [
+        1
+      ],
+    nextShapes: [
+        "twofish"
+      ],
+    tags: [
+        "food"
+      ],
   },
   {
     id: "twofish",
@@ -1402,8 +1550,15 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    nextShapes: ["redfish"],
-    nextShapeProbs: [1.0]
+    nextShapeProbs: [
+        1
+      ],
+    nextShapes: [
+        "redfish"
+      ],
+    tags: [
+        "food"
+      ],
   },
   {
     id: "redfish",
@@ -1418,8 +1573,17 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    nextShapes: ["bluefish", "bluefishbig"],
-    nextShapeProbs: [0.5, 0.5]
+    nextShapeProbs: [
+        0.5,
+        0.5
+      ],
+    nextShapes: [
+        "bluefish",
+        "bluefishbig"
+      ],
+    tags: [
+        "food"
+      ],
   },
   {
     id: "bluefish",
@@ -1434,6 +1598,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "bluefishbig",
@@ -1455,6 +1622,9 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    tags: [
+        "food"
+      ],
   },
   {
     id: "thats",
@@ -1484,5 +1654,251 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    tags: [
+        "food"
+      ],
+  },
+  {
+    id: "infectious_sand",
+    name: "infectious sand",
+    grid: [
+        "X"
+      ],
+    color: "#d9b45a",
+    powerup: {
+        "type": "gravity",
+        "direction": "down",
+        "tier": 1,
+        "area": {
+          "origin": [
+            1,
+            0
+          ],
+          "grid": [
+            "|||"
+          ]
+        }
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "slide_left",
+    name: "slide to the left",
+    grid: [
+        "..X",
+        ".XX",
+        "XXX"
+      ],
+    color: "#ff6b3d",
+    powerup: {
+        "type": "gravity",
+        "direction": "left",
+        "tier": 1,
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            "---",
+            "---",
+            "---"
+          ]
+        }
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.8,
+    nextShapeProbs: [
+        0.75
+      ],
+    nextShapes: [
+        "slide_right"
+      ],
+  },
+  {
+    id: "slide_right",
+    name: "slide to the right",
+    grid: [
+        "X..",
+        "XX.",
+        "XXX"
+      ],
+    color: "#3dc1ff",
+    powerup: {
+        "type": "gravity",
+        "direction": "right",
+        "tier": 1,
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            "---",
+            "---",
+            "---"
+          ]
+        }
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.2,
+  },
+  {
+    id: "small_black_hole",
+    name: "a small black hole",
+    grid: [
+        "X"
+      ],
+    color: "#6a3fb5",
+    powerup: {
+        "type": "destroyer",
+        "tier": 2,
+        "area": {
+          "origin": [
+            2,
+            2
+          ],
+          "grid": [
+            ".###.",
+            "#####",
+            "#####",
+            "#####",
+            ".###."
+          ]
+        }
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "large_black_hole",
+    name: "a large black hole",
+    grid: [
+        "XX",
+        "XX"
+      ],
+    color: "#4a2391",
+    powerup: {
+        "type": "destroyer",
+        "tier": 3,
+        "area": {
+          "origin": [
+            3,
+            3
+          ],
+          "grid": [
+            "..####..",
+            ".######.",
+            "########",
+            "########",
+            "########",
+            "########",
+            ".######.",
+            "..####.."
+          ]
+        }
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.6,
+  },
+  {
+    id: "katana",
+    name: "a cool katana",
+    grid: [
+        "XXXXX"
+      ],
+    color: "#c9d3e0",
+    powerup: {
+        "type": "destroyer",
+        "tier": 2,
+        "collapse": true,
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            "-----"
+          ]
+        }
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.9,
+  },
+  {
+    id: "expanding_foam",
+    name: "expanding foam",
+    grid: [
+        "X"
+      ],
+    color: "#f2efd8",
+    powerup: {
+        "type": "expander",
+        "tier": 1,
+        "fill": "#e3dcae",
+        "area": {
+          "origin": [
+            2,
+            1
+          ],
+          "grid": [
+            ".###.",
+            "#####",
+            "#####",
+            "#####",
+            ".###."
+          ]
+        }
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "bamboo",
+    name: "bamboo",
+    grid: [
+        "X",
+        "X"
+      ],
+    color: "#4f9e3a",
+    powerup: {
+        "type": "expander",
+        "tier": 1,
+        "fill": "#7fd35f",
+        "area": {
+          "origin": [
+            0,
+            5
+          ],
+          "grid": [
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            ".",
+            "."
+          ]
+        }
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.9,
   },
 ];

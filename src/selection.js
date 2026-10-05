@@ -1,0 +1,468 @@
+// ============================================================
+// PIECE PICKER (no DOM)
+// ============================================================
+// Order of precedence for each drop:
+//   1. linked shapes (prev.nextShapes / nextShapeProbs) — "back to back" pieces
+//   2. powerup scheduler (Normal mode only)
+//   3. regular level mix: (a) choose a difficulty level, (b) choose a shape in that
+//      level by frequency × variety (recently served / already on the board)
+
+import { CONFIG } from "../config.js";
+import { clamp01, lerp, sampleByWeight } from "./util.js";
+import { analyseBoard } from "./powerups.js";
+
+const DEBUG_LINK = false; // verbose console logging for linked shapes
+
+export function initPieceSelectionState(state) {
+  state.pieceSel = {
+    dropIndex: 0,
+    lastLevel: null,
+    lastWasHard: false,
+    lastShapeId: null,
+
+    // last few selected shape IDs (for the soft non-repetition bias)
+    recentShapeIds: [],
+
+    // counts by level (0–5)
+    levelCounts: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+
+    // shared urge/cooldown for hard (4/5)
+    urge: { hard: 0.0 },
+    cooldown: { hard: 0 },
+
+    // whether we already produced the first hard drop in this run
+    hasDroppedFirstHard: false,
+
+    // powerup scheduler (Normal mode)
+    powerup: {
+      chance: CONFIG.assist.powerups.baseChance,
+      cooldown: 0,
+      count: 0,
+      lastChance: 0, // for the debug panel
+    },
+
+    // board presence, recomputed once per selection: shapeId -> copies on the board
+    presence: new Map(),
+  };
+}
+
+/* =========================
+   Danger estimation
+   =========================
+   Returns a value in [0, 1]:
+   - 0 means the highest locked block is well below the “diff2” band
+   - 1 means the highest locked block is at/above the very top row (i.e., game-over territory)
+*/
+export function computeStackDanger01(state) {
+  const rows = CONFIG.board.rows;
+
+  const highest = highestLockedRowIndex(state);
+  if (highest === null) return 0; // empty board
+
+  // Convert “highest occupied row” into “rows from top that are currently penetrated”.
+  const topPenetration = (rows - highest); // bigger = closer to top / worse
+
+  const diff2Band = CONFIG.assist.topRowsForDiff2Only;
+  const diff1Band = CONFIG.assist.topRowsForDiff1Only;
+
+  // Soft ramp: map penetration within [rows - diff2Band, rows] -> [0, 1].
+  const startPenetration = rows - diff2Band;
+  const endPenetration = rows; // top
+
+  const t = (topPenetration - startPenetration) / (endPenetration - startPenetration);
+  const dangerRaw = clamp01(t);
+
+  // Extra curvature so the “diff1” band feels meaningfully more urgent.
+  const diff1StartPenetration = rows - diff1Band;
+  const diff1T = clamp01((topPenetration - diff1StartPenetration) / (endPenetration - diff1StartPenetration));
+
+  return clamp01(0.65 * dangerRaw + 0.35 * diff1T);
+}
+
+export function highestLockedRowIndex(state) {
+  // Returns smallest y (closest to top) that contains ANY locked block, or null.
+  for (let y = 0; y < CONFIG.board.rows; y++) {
+    const row = state.board[y];
+    for (let x = 0; x < CONFIG.board.cols; x++) {
+      if (row[x]) return y;
+    }
+  }
+  return null;
+}
+
+function isStackInTopRows(state, topRows) {
+  const y = highestLockedRowIndex(state);
+  if (y === null) return false;
+  return y < topRows;
+}
+
+export function getDifficultyZone(state) {
+  const inDiff1Zone = isStackInTopRows(state, CONFIG.assist.topRowsForDiff1Only);
+  const inDiff2Zone = !inDiff1Zone && isStackInTopRows(state, CONFIG.assist.topRowsForDiff2Only);
+
+  if (inDiff1Zone) return { zone: "assist: difficulty ≤ 1 (strict)", cap: 1 };
+  if (inDiff2Zone) return { zone: "assist: difficulty ≤ 2 (sometimes >2)", cap: 2 };
+  return { zone: "normal", cap: Infinity };
+}
+
+/* =========================
+   Variety
+   ========================= */
+
+function getRecencyMultiplier(shapeId, recentIds, lastK, penaltyStrength, minMultiplier) {
+  // If the same ID occurred d drops ago (1..K), apply a multiplier that increases with distance.
+  // d=1 => strongest penalty; d=K => light penalty; not in window => 1.
+  for (let i = recentIds.length - 1, d = 1; i >= 0 && d <= lastK; i--, d++) {
+    if (recentIds[i] === shapeId) {
+      const t = (lastK - d + 1) / lastK; // closer => larger t
+      const mult = 1 - penaltyStrength * t;
+      return Math.max(minMultiplier, mult);
+    }
+  }
+  return 1.0;
+}
+
+// How many copies of each shape are on the board: shapeId -> sum over its pieces of
+// (blocks left / blocks it had). Needs state.instances (pid -> {shape, total}).
+export function computeBoardPresence(state) {
+  const counts = new Map(); // pid -> blocks on board
+  for (const row of state.board) {
+    for (const c of row) {
+      if (c && c.pid) counts.set(c.pid, (counts.get(c.pid) ?? 0) + 1);
+    }
+  }
+  const presence = new Map();
+  for (const [pid, n] of counts) {
+    const inst = state.instances?.get(pid);
+    if (!inst?.shape) continue; // e.g. cells filled by an expander
+    const id = inst.shape.id;
+    presence.set(id, (presence.get(id) ?? 0) + n / Math.max(1, inst.total));
+  }
+  return presence;
+}
+
+export function varietyMultiplier(sel, shape) {
+  const v = CONFIG.assist.variety ?? {};
+  if (typeof shape.id !== "string") return 1.0;
+
+  const r = v.recent ?? {};
+  let mult = getRecencyMultiplier(
+    shape.id,
+    sel.recentShapeIds,
+    r.lastK ?? 5,
+    r.penaltyStrength ?? 0.75,
+    r.minMultiplier ?? 0.15
+  );
+
+  const b = v.onBoard ?? {};
+  const copies = sel.presence?.get(shape.id) ?? 0;
+  if (copies > 0 && (b.penaltyPerCopy ?? 0) > 0) {
+    const onBoard = Math.pow(1 - clamp01(b.penaltyPerCopy), copies);
+    mult *= Math.max(b.minMultiplier ?? 0.1, onBoard);
+  }
+  return mult;
+}
+
+/* =========================
+   Linked ("back to back") shapes
+   ========================= */
+
+function tryLinkedNextShape(state, prevShape, idToShape, debug = false) {
+  if (!prevShape) return null;
+
+  const ids = prevShape.nextShapes;
+  const ps = prevShape.nextShapeProbs;
+
+  if (!Array.isArray(ids) || !Array.isArray(ps)) return null;
+
+  if (ids.length === 0 || ids.length !== ps.length) {
+    if (debug) console.log("[LINK] invalid arrays", { id: prevShape.id, ids, ps });
+    return null;
+  }
+
+  // Only consider targets that exist in this mode's pool (e.g. powerup links
+  // are ignored in Extreme mode), so a missing target never "uses up" the roll.
+  const cand = [];
+  for (let i = 0; i < ids.length; i++) {
+    const shape = idToShape.get(ids[i]);
+    const x = Number(ps[i]);
+    const p = Number.isFinite(x) ? Math.max(0, Math.min(1, x)) : 0;
+    if (shape && p > 0) cand.push({ shape, p });
+    else if (!shape && debug) console.log("[LINK] id not in this mode's pool", ids[i]);
+  }
+  if (!cand.length) return null;
+
+  let sumP = 0;
+  for (const c of cand) sumP += c.p;
+  sumP = Math.min(1, sumP);
+
+  const gate = state.rng();
+  if (debug) console.log("[LINK] gate roll", { from: prevShape.id, gate, sumP, triggered: gate < sumP });
+  if (gate >= sumP) return null;
+
+  // Sample among linked targets using their probs (normalised within sumP mass).
+  return sampleByWeight(cand, c => c.p, state.rng).shape;
+}
+
+/* =========================
+   Main entry point
+   ========================= */
+
+export function selectPiece(state) {
+  if (!state.pieceSel) initPieceSelectionState(state);
+
+  const sel = state.pieceSel;
+  sel.dropIndex += 1;
+  sel.presence = computeBoardPresence(state);
+
+  const mixCfg = CONFIG.assist.pieceMix;
+  const danger01 = computeStackDanger01(state);
+  const danger = clamp01(danger01 * (mixCfg.dangerBiasStrength ?? 1.0));
+
+  // Cooldowns tick down.
+  if (sel.cooldown.hard > 0) sel.cooldown.hard -= 1;
+  if (sel.powerup.cooldown > 0) sel.powerup.cooldown -= 1;
+
+  const idToShape = state.idToShape;
+  const prevShape = sel.lastShapeId ? idToShape.get(sel.lastShapeId) : null;
+
+  const linked = tryLinkedNextShape(state, prevShape, idToShape, DEBUG_LINK);
+
+  if (linked) {
+    commitSelectedShape(sel, linked);
+
+    if (linked.powerup) {
+      notePowerupDropped(sel);
+    } else {
+      const lvl = (linked.difficulty ?? 1);
+      if (lvl === 4 || lvl === 5) {
+        const hardCfg = mixCfg.hard;
+        sel.urge.hard = 0.0;
+        sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, hardCfg.cooldownDrops ?? 9);
+        sel.hasDroppedFirstHard = true;
+      }
+    }
+    return linked;
+  }
+
+  // Powerups (Normal mode).
+  if (state.powerups.length) {
+    const pu = maybeSelectPowerup(state, danger01);
+    if (pu) {
+      commitSelectedShape(sel, pu);
+      notePowerupDropped(sel);
+      return pu;
+    }
+  }
+
+  // Keys for level weights (0–5).
+  const LEVELS = [0, 1, 2, 3, 4, 5];
+
+  // 1) Opening blend -> base.
+  const baseW = normaliseWeights({ ...mixCfg.baseLevelWeight });
+  const openingW = normaliseWeights({ ...mixCfg.openingLevelWeight });
+
+  const openingDrops = Math.max(0, mixCfg.openingDrops | 0);
+  const openingT = openingDrops > 0 ? clamp01(1 - (sel.dropIndex - 1) / openingDrops) : 0;
+
+  let levelW = {};
+  for (const k of LEVELS) levelW[k] = lerp(baseW[k] ?? 0, openingW[k] ?? 0, openingT);
+
+  // 2) Danger blend towards assistance mix (never allocates to 4/5 directly).
+  const dangerTarget = normaliseWeights({ ...mixCfg.dangerTargetMix });
+  for (const k of LEVELS) levelW[k] = lerp(levelW[k] ?? 0, dangerTarget[k] ?? 0, danger);
+
+  // 3) Hard scheduler (4/5 share the same urge/cooldown).
+  const hardCfg = mixCfg.hard;
+
+  const pastMinHard = sel.dropIndex > (hardCfg.minDropIndex ?? 5);
+  const dangerAllowsHard = danger01 <= (hardCfg.hardMaxDanger ?? 0.32);
+  const cooldownAllowsHard = (sel.cooldown.hard ?? 0) <= 0 && !sel.lastWasHard;
+
+  const allowHard = pastMinHard && dangerAllowsHard && cooldownAllowsHard;
+
+  // Update shared hard urge every call.
+  const inWindow =
+    sel.dropIndex >= (hardCfg.softWindowStart ?? 6) &&
+    sel.dropIndex <= (hardCfg.softWindowEnd ?? 25);
+
+  const recharge = (hardCfg.rechargePerDrop ?? 0.005) * (inWindow ? 1.4 : 0.8);
+  sel.urge.hard = clamp01(Math.min(hardCfg.maxUrge ?? 0.95, (sel.urge.hard ?? 0) + recharge));
+
+  const addHardWeight = allowHard ? (sel.urge.hard ?? 0) : 0;
+
+  // Inject hard weight by allocating it to 4/5 (not to the whole distribution).
+  // This keeps baseline/danger behaviour intact while allowing periodic “hard surprises”.
+  if (addHardWeight > 0) {
+    // Compute probability of choosing a 5 vs 4, with 5 suppressed as danger rises.
+    let p5 = hardCfg.baseProbLevel5WhenHard ?? 0.55;
+
+    const dFull = hardCfg.level5FullAllowedDanger ?? 0.12;
+    const dNever = hardCfg.level5AlmostNeverDanger ?? 0.28;
+
+    // Suppression factor: 1 below dFull, ~0 above dNever, smooth in between.
+    const t = clamp01((danger01 - dFull) / Math.max(1e-6, (dNever - dFull)));
+    const suppression = 1 - t;
+    p5 = p5 * suppression;
+
+    // First hard preference: try to make the first hard a 5 if possible (and not heavily suppressed).
+    if ((hardCfg.preferLevel5ForFirstHard ?? true) && !sel.hasDroppedFirstHard) {
+      const anyLevel5Exists = state.shapes.some(s => (s.difficulty ?? 1) === 5 && (s.frequency ?? 1) >= 0);
+      if (anyLevel5Exists && suppression > 0.25) p5 = Math.max(p5, 0.80);
+    }
+
+    levelW[4] = (levelW[4] ?? 0) + addHardWeight * (1 - p5);
+    levelW[5] = (levelW[5] ?? 0) + addHardWeight * p5;
+  } else {
+    levelW[4] = 0;
+    levelW[5] = 0;
+  }
+
+  // Softly suppress level 3 in danger to prevent “still awkward at the top”.
+  levelW[3] *= (1 - 0.65 * danger);
+
+  // Hard-ban level 0 for the first few drops.
+  // NOTE: openingNoLevel0UntilDrop lives in CONFIG.assist, not pieceMix, so this
+  // reads undefined and the ban is currently off. Left as-is so the tuned
+  // balance doesn't change; point it at CONFIG.assist to switch the ban on.
+  if (sel.dropIndex <= (mixCfg.openingNoLevel0UntilDrop ?? 0)) {
+    levelW[0] = 0;
+  }
+
+  levelW = normaliseWeights(levelW);
+
+  // Choose a level.
+  const chosenLevel = sampleDiscrete(levelW, state.rng);
+
+  // Candidate shapes in that level (frequency>0).
+  let candidates = state.shapes.filter(s =>
+    (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) === chosenLevel
+  );
+
+  // Fallback: if no shapes exist for that level, broaden to any frequency>0.
+  if (candidates.length === 0) {
+    candidates = state.shapes.filter(s => (s.frequency ?? 1) > 0);
+  }
+  if (candidates.length === 0) {
+    return state.shapes[Math.floor(state.rng() * state.shapes.length)];
+  }
+
+  const chosenShape = sampleByWeight(
+    candidates,
+    (s) => (s.frequency ?? 1) * varietyMultiplier(sel, s),
+    state.rng
+  );
+
+  commitSelectedShape(sel, chosenShape);
+
+  // If we dropped a hard shape, reset shared urge and start shared cooldown.
+  const lvl = (chosenShape.difficulty ?? 1);
+  if (lvl === 4 || lvl === 5) {
+    sel.urge.hard = 0.0;
+    sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, hardCfg.cooldownDrops ?? 9);
+    sel.hasDroppedFirstHard = true;
+  }
+
+  return chosenShape;
+}
+
+/* =========================================
+   Powerup scheduler (Normal mode)
+   =========================================
+   Decides IF a powerup is due (an accumulating chance, boosted by danger and
+   air pockets) and THEN WHICH one (frequency × tier-for-danger × class-need ×
+   variety).
+*/
+function maybeSelectPowerup(state, danger01) {
+  const cfg = CONFIG.assist.powerups;
+  const sel = state.pieceSel;
+  const ps = sel.powerup;
+
+  if (sel.dropIndex <= (cfg.minDropIndex ?? 0)) return null;
+  if (ps.cooldown > 0) return null;
+
+  const stats = analyseBoard(state.board);
+  const holes01 = clamp01(stats.holes / Math.max(1, cfg.holesForMax ?? 18));
+
+  const boost = 1 + (cfg.dangerBoost ?? 0) * danger01 + (cfg.holesBoost ?? 0) * holes01;
+  const chance = clamp01(ps.chance * boost);
+  ps.lastChance = chance;
+
+  if (state.rng() >= chance) {
+    ps.chance = Math.min(cfg.maxChance ?? 0.6, ps.chance + (cfg.chancePerDrop ?? 0.03));
+    return null;
+  }
+
+  const candidates = state.powerups.filter(p => (p.frequency ?? 1) > 0);
+  if (!candidates.length) return null;
+
+  const tw = cfg.tierWeights;
+  const need = cfg.need ?? {};
+
+  return sampleByWeight(candidates, (p) => {
+    const tier = p.powerup.tier;
+    const tierW = lerp(tw.calm[tier] ?? 1, tw.danger[tier] ?? 1, danger01);
+    const n = need[p.powerup.type] ?? { base: 1 };
+    const needW = (n.base ?? 1) + (n.holes ?? 0) * holes01 + (n.danger ?? 0) * danger01;
+    return (p.frequency ?? 1) * tierW * needW * varietyMultiplier(sel, p);
+  }, state.rng);
+}
+
+function notePowerupDropped(sel) {
+  const cfg = CONFIG.assist.powerups;
+  sel.powerup.chance = cfg.baseChance ?? 0.05;
+  sel.powerup.cooldown = cfg.cooldownDrops ?? 5;
+  sel.powerup.count++;
+}
+
+function commitSelectedShape(sel, shape) {
+  sel.lastShapeId = (typeof shape.id === "string") ? shape.id : null;
+
+  if (shape.powerup) {
+    // Powerups sit outside the 0–5 difficulty levels.
+    sel.lastWasHard = false;
+  } else {
+    const lvl = (shape.difficulty ?? 1);
+    sel.lastLevel = lvl;
+    sel.lastWasHard = (lvl === 4 || lvl === 5);
+    sel.levelCounts[lvl] = (sel.levelCounts[lvl] ?? 0) + 1;
+  }
+
+  if (sel.lastShapeId) {
+    sel.recentShapeIds.push(sel.lastShapeId);
+
+    // Keep a modest history buffer.
+    if (sel.recentShapeIds.length > 32) sel.recentShapeIds.splice(0, sel.recentShapeIds.length - 32);
+  }
+}
+
+/* =========================
+   Sampling helpers
+   ========================= */
+
+function normaliseWeights(w) {
+  let total = 0;
+  for (const k of Object.keys(w)) total += Math.max(0, w[k] ?? 0);
+  if (total <= 0) {
+    // Safe fallback: uniform over 0–3 (never 4) if everything went to zero.
+    return { 0: 0.25, 1: 0.25, 2: 0.25, 3: 0.25, 4: 0.0, 5: 0.0 };
+  }
+  const out = {};
+  for (const k of Object.keys(w)) out[k] = Math.max(0, w[k] ?? 0) / total;
+  for (const k of [0, 1, 2, 3, 4, 5]) out[k] = out[k] ?? 0;
+  return out;
+}
+
+function sampleDiscrete(probByKey, rng) {
+  let total = 0;
+  for (const k of Object.keys(probByKey)) total += Math.max(0, probByKey[k] ?? 0);
+  if (total <= 0) return 1;
+
+  let r = rng() * total;
+  const keys = Object.keys(probByKey).map(k => Number(k)).sort((a, b) => a - b);
+  for (const k of keys) {
+    r -= Math.max(0, probByKey[k] ?? 0);
+    if (r <= 0) return k;
+  }
+  return keys[keys.length - 1];
+}

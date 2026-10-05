@@ -188,12 +188,215 @@
       100% { color: rgba(200,120,255,0.85); }
     }
 
-    .modeHint{
+    /* ---------- menu panels ---------- */
+    .overlay .msg.panel{
+      box-sizing: border-box;
+      width: min(100%, 420px);
+      max-width: calc(100% - 20px);
+      max-height: calc(100% - 20px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+      scrollbar-width: thin;
+    }
+    .overlay .msg.panel[hidden]{ display: none; }
+
+    .overlay .msg .big.title{
+      font-size: 26px;
+      margin: 6px 0 6px;
+    }
+
+    .menuBtns{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 16px auto 12px;
+      width: min(100%, 260px);
+    }
+    .menuBtns button{ font-size: 11px; }
+
+    .menuRow{
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 0 0 12px;
+    }
+    button.small{
+      min-height: 34px;
+      padding: 8px 10px;
+      font-size: 8px;
+    }
+
+    .menuFoot{
       margin-top: 10px;
+      font-size: 10px !important;
+      opacity: 0.8;
+    }
+
+    /* How to play */
+    .howto{
+      text-align: left;
       font-family: var(--font-body);
-      font-size: 11px;
+      font-size: 12px;
       line-height: 1.5;
       color: var(--muted);
+    }
+    .howto h3{
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(245,245,255,0.92);
+      margin: 16px 0 6px;
+    }
+    .howto p{ margin: 0 0 8px; }
+    .howto b{ color: rgba(245,245,255,0.92); font-weight: 600; }
+    .howto kbd{
+      font-family: var(--font-display);
+      font-size: 8px;
+      padding: 2px 4px;
+      border: 1px solid rgba(255,255,255,0.25);
+      color: rgba(245,245,255,0.9);
+    }
+    .demoRow{
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: center;
+      margin: 8px 0;
+      padding: 8px;
+      background: rgba(255,255,255,0.04);
+      border: 2px solid rgba(255,255,255,0.08);
+    }
+    canvas.demo{
+      display: block;
+      image-rendering: pixelated;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .demoRow .demoName{
+      font-family: var(--font-display);
+      font-size: 9px;
+      text-transform: uppercase;
+      color: rgba(245,245,255,0.92);
+      margin-bottom: 4px;
+    }
+    .panelBtns{
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    /* Achievements */
+    .achGrid{
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      text-align: left;
+    }
+    .achCard{
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.05);
+      border: 2px solid rgba(255,255,255,0.10);
+    }
+    .achCard.unlocked{
+      border-color: rgba(255,207,63,0.45);
+      background: rgba(255,207,63,0.07);
+    }
+    .achCard.locked .achName{ color: rgba(245,245,255,0.6); }
+    .achName{
+      font-family: var(--font-display);
+      font-size: 9px;
+      line-height: 1.5;
+      text-transform: uppercase;
+      color: rgba(245,245,255,0.95);
+    }
+    .achDesc{
+      font-family: var(--font-body);
+      font-size: 12px;
+      line-height: 1.35;
+      color: var(--muted);
+    }
+    .achMeta{
+      font-family: var(--font-body);
+      font-size: 10px;
+      color: rgba(255,207,63,0.75);
+      margin-top: 2px;
+    }
+    canvas.pixelIcon{ image-rendering: pixelated; display: block; }
+    canvas.pixelIcon.locked{ filter: grayscale(1) brightness(0.7); opacity: 0.55; }
+
+    /* Achievement toasts */
+    .toasts{
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .toast{
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 10px;
+      align-items: center;
+      width: min(100%, 320px);
+      box-sizing: border-box;
+      padding: 8px 10px;
+      background: rgba(20,20,42,0.94);
+      border: 2px solid rgba(255,207,63,0.7);
+      box-shadow:
+        0 0 0 2px rgba(0,0,0,0.85),
+        0 8px 30px rgba(0,0,0,0.6),
+        0 0 18px rgba(255,207,63,0.25);
+      transform: translateY(-140%);
+      opacity: 0;
+      transition: transform 260ms steps(6, end), opacity 200ms linear;
+    }
+    .toast.in{ transform: translateY(0); opacity: 1; }
+    .toast.out{ transform: translateY(-40%); opacity: 0; }
+    .toastLabel{
+      font-family: var(--font-display);
+      font-size: 7px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,207,63,0.9);
+    }
+    .toastName{
+      font-family: var(--font-display);
+      font-size: 10px;
+      line-height: 1.5;
+      text-transform: uppercase;
+      color: rgba(245,245,255,0.98);
+      margin: 3px 0 2px;
+    }
+    .toastDesc{
+      font-family: var(--font-body);
+      font-size: 11px;
+      line-height: 1.3;
+      color: var(--muted);
+    }
+
+    #gameOverPiece{
+      margin-top: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #gameOverAch{
+      margin-top: 10px;
+      color: rgba(255,207,63,0.9) !important;
     }
 
     .nameText.enterFromRight{ transform: translateX(110%); opacity: 0; }
@@ -259,41 +462,6 @@
       font-size: 12px;
       line-height: 1.45;
       color: var(--muted);
-    }
-  
-    .controlsBlock{
-      margin-top: 12px;
-      text-align: left;
-      padding: 12px 14px;
-      border-radius: var(--ui-radius);
-      background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(255,255,255,0.10);
-      box-shadow: 0 0 0 2px rgba(0,0,0,0.55) inset;
-    }
-  
-    .controlsHeader{
-      font-family: var(--font-display);
-      font-size: 10px;
-      line-height: 1.5;
-      letter-spacing: 0.06em;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      color: rgba(245,245,255,0.92);
-    }
-  
-    .controlsText{
-      font-family: var(--font-body);
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-  
-    .overlayBtns{
-      display: flex;
-      gap: 10px;
-      margin-top: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
     }
   
     button{
@@ -585,31 +753,98 @@
         <div id="nameLayer" class="nameLayer"></div>
         <canvas id="boardCanvas"></canvas>
 
+        <div id="toasts" class="toasts" aria-live="polite"></div>
+
         <div id="overlay" class="overlay show">
-          <div class="msg">
-            <div class="big" id="overlayTitle">Loading…</div>
-            <div class="small" id="overlaySubtitle"></div>
+          <div class="msg panel" id="panelLoading">
+            <div class="big">Loading…</div>
+          </div>
 
-            <div class="controlsBlock" id="controlsBlock" style="display:none;">
-              <div class="controlsHeader">Controls</div>
-              <div class="controlsText">
-                Swipe or tap left to move left. <br>
-                Swipe or tap right to move right. <br>
-                Tap the top to rotate. <br>
-                Tap the bottom to move the piece down.
-                <small>[Extris alpha version 20250306 copyright 2026 geometrixgamestudio@gmail.com]</small>
+          <div class="msg panel" id="panelMenu" hidden>
+            <div class="big title">Extris</div>
+            <div class="small">alpha version 20260306</div>
+            <div class="menuBtns">
+              <button id="btnNormal">Normal mode</button>
+              <button id="btnExtreme" class="secondary">Extreme mode</button>
+              <button id="btnHowTo" class="secondary">How to play</button>
+            </div>
+            <div class="menuRow">
+              <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
+              <button class="secondary small soundToggle">Sound: on</button>
+            </div>
+            <div class="small" id="bestLine"></div>
+          </div>
+
+          <div class="msg panel" id="panelHowTo" hidden>
+            <div class="big">How to play</div>
+            <div class="howto">
+              <h3>The goal</h3>
+              <p>Weird pieces fall from the top. Fill a whole row with blocks and the row is destroyed. Don't let the pile reach the top.</p>
+
+              <h3>Controls</h3>
+              <p><b>Touch:</b> tap the left or right side to move, tap the top to rotate, tap the bottom middle to drop faster. Hold to keep going.</p>
+              <p><b>Keyboard:</b> <kbd>←</kbd> <kbd>→</kbd> move, <kbd>↑</kbd> rotate, <kbd>↓</kbd> drop faster, <kbd>Space</kbd> pause.</p>
+
+              <h3>Powerups (Normal mode)</h3>
+              <p>Some pieces are powerups: their name glows rainbow and says what they do. While one falls, the cells it will affect light up where it is going to land.</p>
+              <div class="demoRow">
+                <canvas class="demo" data-type="destroyer"></canvas>
+                <div><div class="demoName">Destroyers</div>Destroy the highlighted blocks. Shrinking squares.</div>
               </div>
-            </div>
+              <div class="demoRow">
+                <canvas class="demo" data-type="gravity"></canvas>
+                <div><div class="demoName">Gravity</div>Highlighted blocks fall (or slide) until they hit something, squashing out air pockets. Moving lines.</div>
+              </div>
+              <div class="demoRow">
+                <canvas class="demo" data-type="expander"></canvas>
+                <div><div class="demoName">Expanders</div>Fill the highlighted empty cells. Growing squares.</div>
+              </div>
+              <p>Powerups turn up more often when you're in trouble.</p>
 
-            <div class="overlayBtns" id="overlayBtns" style="display:none;">
-              <button id="overlayNormalBtn">Normal</button>
-              <button id="overlayHardBtn" class="secondary">Hard</button>
-              <button id="overlayResumeBtn" class="secondary">Resume</button>
-              <button id="overlayNewBtn" class="secondary">New game</button>
+              <h3>Modes</h3>
+              <p><b>Normal:</b> the full game, with powerups.<br><b>Extreme:</b> the original. No powerups, no mercy.</p>
+
+              <h3>Achievements</h3>
+              <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
+
+              <p class="small menuFoot">[Extris alpha version 20250306 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
-            <div class="modeHint" id="modeHint" style="display:none;">
-              Normal: powerups help you out<br>
-              Hard: the original. no help.
+            <div class="panelBtns">
+              <button data-back>Back</button>
+            </div>
+          </div>
+
+          <div class="msg panel" id="panelAchievements" hidden>
+            <div class="big">Achievements</div>
+            <div class="small" id="achSummary"></div>
+            <div class="achGrid" id="achGrid"></div>
+            <div class="panelBtns">
+              <button data-back>Back</button>
+              <button id="btnResetAch" class="secondary small">Reset</button>
+            </div>
+          </div>
+
+          <div class="msg panel" id="panelPause" hidden>
+            <div class="big">Paused</div>
+            <div class="small" id="pauseMode"></div>
+            <div class="menuBtns">
+              <button id="btnResume">Resume</button>
+              <button id="btnPauseHowTo" class="secondary">How to play</button>
+              <button id="btnQuit" class="secondary">Quit to menu</button>
+            </div>
+            <div class="menuRow">
+              <button class="secondary small soundToggle">Sound: on</button>
+            </div>
+          </div>
+
+          <div class="msg panel" id="panelGameOver" hidden>
+            <div class="big">Game Over</div>
+            <div class="small" id="gameOverStats"></div>
+            <div id="gameOverPiece"></div>
+            <div class="small" id="gameOverAch"></div>
+            <div class="panelBtns">
+              <button id="btnAgain">Play again</button>
+              <button id="btnGameOverMenu" class="secondary">Menu</button>
             </div>
           </div>
         </div>
@@ -691,7 +926,11 @@
       }
 
       // Prevent browser from handling touch scroll/zoom gestures anywhere
-      document.addEventListener("touchmove", (e) => e.preventDefault(), { passive: false });
+      // ...except inside scrolling menu panels.
+      document.addEventListener("touchmove", (e) => {
+        if (e.target.closest && e.target.closest(".panel")) return;
+        e.preventDefault();
+      }, { passive: false });
 
       window.addEventListener("resize", fit, { passive: true });
       if (window.visualViewport) {
@@ -705,6 +944,6 @@
     })();
   </script>
 
-  <script type="module" src="./main.js"></script>
+  <script type="module" src="./src/main.js"></script>
 </body>
 </html>

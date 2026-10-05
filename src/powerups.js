@@ -80,6 +80,20 @@ export function rotateArea90CW(area, pieceH) {
   };
 }
 
+// Parse an area/zone ({origin, grid}) for every rotation of a piece.
+// `rotations` are the piece's boolean matrices in rotation order (0..3).
+export function areaRotationsFor(area, rotations, trim = { top: 0, left: 0 }) {
+  const out = [parseArea(area, trim)];
+  for (let i = 1; i < rotations.length; i++) {
+    out.push(rotateArea90CW(out[i - 1], rotations[i - 1].length));
+  }
+  return out;
+}
+
+export function isEmptyArea(a) {
+  return !a.cells.length && !a.rows.length && !a.cols.length;
+}
+
 // Normalise a raw `powerup` object. `rotations` are the piece's boolean
 // matrices (one per allowed rotation), `trim` comes from the grid parser.
 export function normalisePowerup(raw, rotations, trim, id = "?") {
@@ -94,14 +108,9 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
   const direction = DIRECTIONS[raw.direction] ? raw.direction : "down";
   const tier = Math.max(1, Math.min(3, Math.round(Number(raw.tier) || 1)));
 
-  const base = parseArea(raw.area, trim);
-  if (!base.cells.length && !base.rows.length && !base.cols.length) {
+  const areaRotations = areaRotationsFor(raw.area, rotations, trim);
+  if (isEmptyArea(areaRotations[0])) {
     console.warn(`[${id}] powerup has an empty area; it will do nothing.`);
-  }
-
-  const areaRotations = [base];
-  for (let i = 1; i < rotations.length; i++) {
-    areaRotations.push(rotateArea90CW(areaRotations[i - 1], rotations[i - 1].length));
   }
 
   return {
