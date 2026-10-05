@@ -287,9 +287,32 @@ export function bindUI({ state, renderer, sound, achievements }) {
 
   /* ---------- game events ---------- */
 
+  // Remember which pieces opened the last few games, so the next opening is different
+  // (CONFIG.assist.variety.acrossGames).
+  const OPENINGS_KEY = "extris.openings.v1";
+  let opening = [];
+  const agCfg = CONFIG.assist.variety.acrossGames;
+  function saveOpening() {
+    if (!agCfg || !opening.length) return;
+    const past = store.getJSON(OPENINGS_KEY, []);
+    past.unshift(opening);
+    store.setJSON(OPENINGS_KEY, past.slice(0, agCfg.games ?? 3));
+    opening = [];
+  }
+
   on(state, (type, d) => {
     switch (type) {
+      case "start":
+        if (agCfg) {
+          state.pieceSel.openingMemory = new Set(store.getJSON(OPENINGS_KEY, []).flat());
+          opening = [];
+        }
+        break;
       case "spawn":
+        if (agCfg && opening && !d.shape.powerup && state.pieceSel.dropIndex <= (agCfg.drops ?? 20) + 1) {
+          opening.push(d.shape.id);
+          if (opening.length >= (agCfg.drops ?? 20)) saveOpening();
+        }
         nameLayer.setShape(d.shape);
         renderer.drawNextSilhouette(d.next);
         if (d.shape.powerup) sound.play("powerupSpawn");
@@ -314,6 +337,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
         sound.play(d.type);
         break;
       case "gameOver":
+        saveOpening();
         nameLayer.clear();
         renderer.drawNextSilhouette(null);
         sound.play("gameOver");

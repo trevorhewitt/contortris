@@ -24,6 +24,8 @@ export function initPieceSelectionState(state) {
     recentShapeIds: [],
     // how many times each shape has been served this game
     servedCounts: new Map(),
+    // ids that opened the last few games (set by the UI from browser storage)
+    openingMemory: state.openingMemory ?? null,
 
     // counts by level (0–5)
     levelCounts: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
@@ -196,6 +198,10 @@ export function varietyMultiplier(sel, shape) {
     r.penaltyStrength ?? 0.75,
     r.minMultiplier ?? 0.15
   );
+
+  // pieces that opened recent games (state.openingMemory, filled in by the UI)
+  const ag = v.acrossGames;
+  if (ag && sel.openingMemory?.has(shape.id) && sel.dropIndex <= (ag.drops ?? 20)) mult *= ag.penalty ?? 1;
 
   const lvl = shape.powerup ? 0 : (shape.difficulty ?? 1);
   const served = sel.servedCounts?.get(shape.id) ?? 0;

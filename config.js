@@ -149,6 +149,9 @@ export const CONFIG = {
       // game is much less likely to come again: its weight × repeatPenalty per time served
       // (it can still happen, just rarely, e.g. when every giant has had a turn).
       giants: { repeatPenalty: 0.04 },
+      // Across games: pieces that opened your last few games (remembered in this browser)
+      // are less likely in the first `drops` pieces of the next one, so openings differ.
+      acrossGames: { games: 3, drops: 20, penalty: 0.2 },
 
       // Pieces served recently: d drops ago (1..lastK) the weight is multiplied by
       // 1 - penaltyStrength × (lastK - d + 1) / lastK  (strongest for the last piece).
