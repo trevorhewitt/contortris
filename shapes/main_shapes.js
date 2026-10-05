@@ -1141,7 +1141,7 @@ export const SHAPES = [
             "#######"
           ]
         },
-        "help": 3
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -2362,7 +2362,7 @@ export const SHAPES = [
           ]
         },
         "intro": "Makes its own column and the two next to it collapse, squashing out the air pockets. Try not to touch it.",
-        "help": 1.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -2428,7 +2428,7 @@ export const SHAPES = [
           ]
         },
         "intro": "Swallows a big circle of blocks around it. Physicists are very excited and also very worried.",
-        "help": 2.5
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -2552,7 +2552,7 @@ export const SHAPES = [
           ]
         },
         "intro": "Puffs up and fills every empty cell around it. Don't get it in your hair.",
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -2766,7 +2766,7 @@ export const SHAPES = [
         },
         "collapse": true,
         "intro": "Blows away its whole row plus a few blocks above and below. It knows, and it is not okay.",
-        "help": 4
+        "help": 4.5
       },
     rotation: {
         "mode": "none"
@@ -2794,7 +2794,7 @@ export const SHAPES = [
           ]
         },
         "intro": "So heavy that the four columns under it collapse, squashing out air pockets. Nobody has finished it.",
-        "help": 3
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -2822,7 +2822,7 @@ export const SHAPES = [
           ]
         },
         "intro": "Gravity is discovered all over again: five columns collapse and the air pockets disappear.",
-        "help": 2
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -2850,7 +2850,7 @@ export const SHAPES = [
           ]
         },
         "intro": "Every column on the board collapses. Nobody was hurt. Some blocks were mildly inconvenienced.",
-        "help": 1.5
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -2998,7 +2998,7 @@ export const SHAPES = [
           ]
         },
         "intro": "Floods the entire row underneath it, which usually means that row is done. Call a plumber.",
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3100,7 +3100,7 @@ export const SHAPES = [
           ]
         },
         "intro": "Squirts filler into the eight cells below it, even the air pockets under overhangs. Very satisfying.",
-        "help": 3
+        "help": 1.5
       },
     rotation: {
         "mode": "none"
@@ -3196,7 +3196,7 @@ export const SHAPES = [
           ]
         },
         "intro": "Pops into a puff of popcorn that fills the empty cells around it. You can't stop at one.",
-        "help": 2
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -3387,7 +3387,7 @@ export const SHAPES = [
           ]
         },
         "intro": "Escapes and fills the empty cells around and below it. It has a name now and it is Gerald.",
-        "help": 2
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3445,7 +3445,7 @@ export const SHAPES = [
         "reach": 2,
         "tier": 1,
         "intro": "Eats every block within two bites of it, then stares at you like you're next. It skipped breakfast.",
-        "help": 1.5
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -3464,7 +3464,7 @@ export const SHAPES = [
         "reach": 2,
         "tier": 1,
         "intro": "Wind them up and they chomp through every block within two steps. Nobody knows whose teeth these were.",
-        "help": 1.5
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -3503,7 +3503,7 @@ export const SHAPES = [
         "reach": 3,
         "tier": 2,
         "intro": "Her loyal colony devours every block within three steps of her. Long may she reign over your stack.",
-        "help": 2
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -3523,7 +3523,7 @@ export const SHAPES = [
         "reach": 3,
         "tier": 2,
         "intro": "It has been on since 1974 and now melts every block within three steps. Still very relaxing to watch.",
-        "help": 3
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -3576,7 +3576,7 @@ export const SHAPES = [
             "...#..."
           ]
         },
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3612,7 +3612,7 @@ export const SHAPES = [
             "...###..."
           ]
         },
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3644,7 +3644,7 @@ export const SHAPES = [
             ".#####."
           ]
         },
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3748,7 +3748,7 @@ export const SHAPES = [
             "...###..."
           ]
         },
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3901,7 +3901,7 @@ export const SHAPES = [
             "#4fc492"
           ]
         ],
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -4240,7 +4240,7 @@ export const SHAPES = [
             "#feae34"
           ]
         ],
-        "help": 2
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -4325,7 +4325,7 @@ export const SHAPES = [
             "#feae34"
           ]
         ],
-        "help": 3.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -4409,7 +4409,7 @@ export const SHAPES = [
             "#4fc492"
           ]
         ],
-        "help": 3
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -4494,7 +4494,7 @@ export const SHAPES = [
             "#4fb83a"
           ]
         ],
-        "help": 4
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -4512,7 +4512,7 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "It floats straight down through your blocks and settles into the deepest gap it fits, where it stays. It just wanted to help.",
-        "help": 1.5
+        "help": 2
       },
     rotation: {
         "mode": "any"
@@ -4530,7 +4530,7 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "Until it lands, it is both here and at the bottom of your stack. It passes through blocks and drops into the deepest gap it fits.",
-        "help": 1
+        "help": 2
       },
     rotation: {
         "mode": "any"
@@ -4549,7 +4549,7 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "Lost in the dryer, now at peace. It drifts through your blocks and lies down in the deepest gap it fits. Its partner is still out there.",
-        "help": 2
+        "help": 2.5
       },
     rotation: {
         "mode": "any"
@@ -4567,7 +4567,7 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "Ignores walls, blocks and you. It strolls straight down through the stack into the deepest gap it fits, and sits there like it owns the place.",
-        "help": 1.5
+        "help": 2
       },
     rotation: {
         "mode": "any"
@@ -4587,7 +4587,7 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "Gone to the big compost heap in the sky. It wriggles down through solid blocks into the deepest gap it fits.",
-        "help": 1.5
+        "help": 2
       },
     rotation: {
         "mode": "any"
@@ -4605,7 +4605,7 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 2,
         "intro": "One is where you left your keys. The other is that guy's name. They sink through everything and settle into the deepest gap they fit, never to be seen again.",
-        "help": 2.5
+        "help": 2
       },
     rotation: {
         "mode": "any"
@@ -4624,7 +4624,7 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 2,
         "intro": "You've seen it before: the faint outline showing where a piece will land. Now it goes there for real, straight through your blocks into the deepest gap it fits.",
-        "help": 1
+        "help": 1.5
       },
     rotation: {
         "mode": "any"
@@ -4672,7 +4672,7 @@ export const SHAPES = [
             "######"
           ]
         },
-        "help": 1.5
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -4701,7 +4701,7 @@ export const SHAPES = [
             "####"
           ]
         },
-        "help": 1.5
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -4790,7 +4790,7 @@ export const SHAPES = [
             "|||"
           ]
         },
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -4885,7 +4885,7 @@ export const SHAPES = [
             "####"
           ]
         },
-        "help": 1
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -4918,7 +4918,7 @@ export const SHAPES = [
           ]
         },
         "push": 6,
-        "help": 3
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -4953,7 +4953,7 @@ export const SHAPES = [
             "########"
           ]
         },
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -4985,7 +4985,7 @@ export const SHAPES = [
             "...#..."
           ]
         },
-        "help": 1.5
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -5018,7 +5018,7 @@ export const SHAPES = [
             ".#.#.#"
           ]
         },
-        "help": 1
+        "help": 1.5
       },
     rotation: {
         "mode": "none"
@@ -5074,7 +5074,7 @@ export const SHAPES = [
             "#"
           ]
         },
-        "help": 1.5
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -5108,7 +5108,7 @@ export const SHAPES = [
             "#############"
           ]
         },
-        "help": 4
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -5230,7 +5230,7 @@ export const SHAPES = [
             "#2b2d42"
           ]
         ],
-        "help": 2.5
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -5325,7 +5325,7 @@ export const SHAPES = [
             "#2e7d32"
           ]
         ],
-        "help": 2
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -5596,7 +5596,7 @@ export const SHAPES = [
             "#2b2d42"
           ]
         ],
-        "help": 2.5
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -5692,7 +5692,7 @@ export const SHAPES = [
             "#c9921a"
           ]
         ],
-        "help": 1.5
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -5786,7 +5786,7 @@ export const SHAPES = [
             "#ffb3dc"
           ]
         ],
-        "help": 1.5
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -5906,7 +5906,7 @@ export const SHAPES = [
             "#b8f05a"
           ]
         ],
-        "help": 2
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -6060,7 +6060,7 @@ export const SHAPES = [
             "###.###"
           ]
         },
-        "help": 1.5
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -6095,7 +6095,7 @@ export const SHAPES = [
             "#"
           ]
         },
-        "help": 2
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -6136,7 +6136,7 @@ export const SHAPES = [
         "reach": 2,
         "tier": 2,
         "intro": "Dissolves every block within two steps of the bottle, top to bottom. Great on chips, terrible on everything else.",
-        "help": 2
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -6198,7 +6198,7 @@ export const SHAPES = [
             "-"
           ]
         },
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -6227,7 +6227,7 @@ export const SHAPES = [
             "|||"
           ]
         },
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -6261,7 +6261,7 @@ export const SHAPES = [
             ".#####."
           ]
         },
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -6416,7 +6416,7 @@ export const SHAPES = [
             "#fee761"
           ]
         ],
-        "help": 4
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -6669,7 +6669,7 @@ export const SHAPES = [
             "#ff9fb5"
           ]
         ],
-        "help": 3
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -6827,7 +6827,7 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "Floats down through the blocks and settles into the deepest gap it fits. The tea is still hot. Nobody poured it.",
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "any"
@@ -6845,7 +6845,7 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "Slips straight through your blocks and ends up in the deepest gap it fits, exactly like it does in the shower.",
-        "help": 1
+        "help": 2
       },
     rotation: {
         "mode": "any"
@@ -6863,7 +6863,7 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "A genuinely spiritual spirit level. It passes through your blocks and lies down in the deepest gap it fits, perfectly level.",
-        "help": 3.5
+        "help": 1.5
       },
     rotation: {
         "mode": "any"
@@ -6881,7 +6881,7 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "Nobody can hold on to it, blocks included. It squirts down through the stack into the deepest gap it fits. Squeal.",
-        "help": 1
+        "help": 1.5
       },
     rotation: {
         "mode": "any"
@@ -6900,7 +6900,7 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "Somebody's phantom limb. It sinks through your blocks into the deepest gap it fits, and points. It still itches.",
-        "help": 1
+        "help": 2
       },
     rotation: {
         "mode": "any"
@@ -6918,7 +6918,7 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 2,
         "intro": "Slides down through every block in the way into the deepest gap it fits. Turn it upright to post it down a well.",
-        "help": 1
+        "help": 2.5
       },
     rotation: {
         "mode": "any"
@@ -7026,7 +7026,7 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 4.5
+        "help": 5
       },
     rotation: {
         "mode": "none"
@@ -7259,7 +7259,7 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 1
+        "help": 1.5
       },
     rotation: {
         "mode": "none"
@@ -7316,7 +7316,7 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 3
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -7353,7 +7353,7 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 2
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -7757,7 +7757,7 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 1
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -7807,7 +7807,7 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 2
+        "help": 4
       },
     rotation: {
         "mode": "none"
