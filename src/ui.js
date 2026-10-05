@@ -206,6 +206,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
   const overlayShowing = () => !!currentPanel;
 
   function renderMenu() {
+    $("btnEasy").classList.toggle("secondary", lastMode !== "easy");
     $("btnNormal").classList.toggle("secondary", lastMode !== "normal");
     $("btnExtreme").classList.toggle("secondary", lastMode !== "extreme");
     $("bestLine").textContent = Object.keys(CONFIG.modes)
@@ -331,7 +332,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
   let hudScore = null, hudBlocks = null;
   function updateHUD() {
     if (state.score !== hudScore) { hudScore = state.score; scoreText.textContent = String(state.score); }
-    const rb = `${state.rowsDestroyed} · ${state.blocksDestroyed}`;
+    const rb = String(state.blocksDestroyed);
     if (rb !== hudBlocks) { hudBlocks = rb; linesText.textContent = rb; }
     if (devmode) updateDevPanel();
     pauseBtn.textContent = (state.running && !state.paused) ? "❚❚" : "▶";
@@ -424,8 +425,9 @@ export function bindUI({ state, renderer, sound, achievements }) {
 
       const txt = document.createElement("div");
       txt.className = "achText";
-      const name = hidden ? "???" : def.name;
-      const desc = hidden ? "A secret achievement." : (def.description ?? "");
+      const shown = achievements.display(def);
+      const name = hidden ? "???" : shown.name;
+      const desc = hidden ? "A secret achievement." : shown.description;
       let meta = "";
       if (unlocked) {
         const at = achievements.unlockedAt(def.id);
@@ -433,7 +435,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
       } else {
         const pr = achievements.progressOf(def);
         if (pr && !hidden) meta = `${pr.best ? "Best" : "Progress"}: ${Math.min(pr.value, pr.target)} / ${pr.target}`;
-        if (def.mode && def.mode !== "any") meta += `${meta ? " · " : ""}${modeLabel(def.mode)} mode`;
+        if (def.mode && def.mode !== "any") meta += `${meta ? " · " : ""}${def.mode === "powerups" ? "Easy or Normal" : modeLabel(def.mode)} mode`;
       }
       txt.innerHTML =
         `<div class="achName">${escapeHtml(name)}</div>` +
@@ -489,18 +491,19 @@ export function bindUI({ state, renderer, sound, achievements }) {
     playDemos(howToBuilt);
   }
 
-  // Intro screen for a powerup the player hasn't seen yet this game.
+  // Intro screen for a powerup class the player hasn't seen yet this game,
+  // shown with the piece that just turned up as the example.
   function showIntro(shape) {
     state.paused = true;
     state.softDropping = false;
     const pu = shape.powerup;
     const info = CLASS_INFO[pu.type];
-    const firstOfClass = ![...state.pieceSel.powerup.shown].some(id => id !== shape.id && state.idToShape.get(id)?.powerup?.type === pu.type);
-    $("introKicker").textContent = firstOfClass ? `New powerup class: ${info.name}!` : "New powerup!";
+    const inClass = state.powerups.filter(p => p.powerup.type === pu.type && !state.devPowerups?.disabled?.has(p.id)).length;
+    $("introKicker").textContent = `New powerup class: ${info.name}!`;
     $("introName").textContent = shape.name;
     $("introEffect").textContent = pu.description;
     $("introText").textContent = pu.intro || "";
-    $("introClass").textContent = firstOfClass ? info.text : "";
+    $("introClass").textContent = info.text + (inClass > 1 ? ` There are ${inClass} different ${info.name.toLowerCase()} to find.` : "");
     const cvs = $("introDemo");
     const demo = createDemo(cvs, shape, { cell: 22 });
     panels.intro.classList.remove("slideIn");
@@ -531,6 +534,15 @@ export function bindUI({ state, renderer, sound, achievements }) {
       }
     }
     if (!shown.length) list.textContent = "No powerups yet this game.";
+    else {
+      const left = state.powerups.filter(p => state.pieceSel.powerup.classes.includes(p.powerup.type) && !state.pieceSel.powerup.shown.has(p.id)).length;
+      if (left) {
+        const p = document.createElement("p");
+        p.className = "small";
+        p.textContent = `…and ${left} more from these classes still to turn up.`;
+        list.appendChild(p);
+      }
+    }
     playDemos(demos);
   }
 
@@ -584,8 +596,66 @@ export function bindUI({ state, renderer, sound, achievements }) {
     });
     $("btnDevUnlockAll").addEventListener("click", () => {
       introduceAllPowerups(state);
-      $("devNextStatus").textContent = "all powerups unlocked";
+      $("devNextStatus").textContent = "all powerup classes unlocked";
     });
+
+    // which powerups can turn up, and how often (remembered for this browser session)
+    const dev = state.devPowerups;
+    try {
+      const saved = JSON.parse(sessionStorage.getItem("extris.dev") ?? "null");
+      if (saved) { dev.disabled = new Set(saved.disabled ?? []); dev.rate = Number(saved.rate ?? 1); }
+    } catch { /* ignore */ }
+    const saveDev = () => {
+      try { sessionStorage.setItem("extris.dev", JSON.stringify({ disabled: [...dev.disabled], rate: dev.rate })); } catch { /* ignore */ }
+    };
+    const rate = $("devRate");
+    const rateLabel = () => { $("devRateValue").textContent = dev.rate === 0 ? "off" : `×${dev.rate}`; };
+    rate.value = String(dev.rate);
+    rateLabel();
+    rate.addEventListener("input", () => { dev.rate = Number(rate.value); rateLabel(); saveDev(); });
+    const box = $("devEnabled");
+    box.innerHTML = "";
+    for (const type of Object.keys(CLASS_INFO)) {
+      const items = state.allPowerups.filter(p => p.powerup.type === type);
+      if (!items.length) continue;
+      const det = document.createElement("details");
+      const sum = document.createElement("summary");
+      const all = document.createElement("input");
+      all.type = "checkbox";
+      sum.appendChild(all);
+      sum.appendChild(document.createTextNode(` ${CLASS_INFO[type].name} (${items.length})`));
+      det.appendChild(sum);
+      const boxes = [];
+      for (const p of items) {
+        const lab = document.createElement("label");
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = !dev.disabled.has(p.id);
+        cb.addEventListener("change", () => {
+          if (cb.checked) dev.disabled.delete(p.id); else dev.disabled.add(p.id);
+          syncAll(); saveDev();
+        });
+        boxes.push(cb);
+        lab.appendChild(cb);
+        lab.appendChild(document.createTextNode(` ${p.name} (help ${p.powerup.help})`));
+        det.appendChild(lab);
+      }
+      const syncAll = () => {
+        const on = boxes.filter(b => b.checked).length;
+        all.checked = on === boxes.length;
+        all.indeterminate = on > 0 && on < boxes.length;
+      };
+      all.addEventListener("click", (e) => e.stopPropagation());
+      all.addEventListener("change", () => {
+        items.forEach((p, i) => {
+          boxes[i].checked = all.checked;
+          if (all.checked) dev.disabled.delete(p.id); else dev.disabled.add(p.id);
+        });
+        syncAll(); saveDev();
+      });
+      syncAll();
+      box.appendChild(det);
+    }
   }
 
   let devLast = 0;
@@ -605,9 +675,11 @@ export function bindUI({ state, renderer, sound, achievements }) {
       ["drops / rows", `${state.drops} · ${state.rowsDestroyed}`],
       ["danger", `${computeStackDanger01(state).toFixed(2)} · ${z.zone}`],
       ["stack / holes", `${stats.stackHeight} · ${stats.holes}`],
-      ["powerup chance", ps && state.powerups.length ? `${(ps.lastChance * 100).toFixed(0)}% · cd ${ps.cooldown}` : "off"],
+      ["powerup chance", ps && state.powerups.length ? `${(ps.lastChance * 100).toFixed(0)}% · cd ${ps.cooldown} · rate ×${state.devPowerups.rate}` : "off"],
+      ["struggle", (state.pieceSel?.struggle ?? 0).toFixed(2)],
+      ["first giant", state.pieceSel?.giantDueAt == null ? "none (easy)" : state.pieceSel.hadGiant ? "done" : `due at piece ${state.pieceSel.giantDueAt}`],
       ["classes", ps ? (ps.classes.join(", ") || "none yet") : "–"],
-      ["introduced", ps ? `${ps.introduced.size}/${state.powerups.length}` : "–"],
+      ["powerups seen", ps ? `${ps.shown.size}/${state.powerups.length} · ${state.devPowerups.disabled.size} disabled` : "–"],
       ["pieces on board", String(state.instances.size)],
       ["look", `${CONFIG.render.cellStyle} · edges ${CONFIG.render.enhanced.edgeStrength}`],
     ];
@@ -618,6 +690,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
 
   /* ---------- buttons ---------- */
 
+  $("btnEasy").addEventListener("click", () => startGame("easy"));
   $("btnNormal").addEventListener("click", () => startGame("normal"));
   $("btnExtreme").addEventListener("click", () => startGame("extreme"));
   $("btnHowTo").addEventListener("click", () => { panelBack = "menu"; showPanel("howto"); });

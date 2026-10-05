@@ -19,7 +19,7 @@ function emptyData() {
   return {
     version: 1,
     unlocked: {},                       // id -> { at, mode }
-    stats: { rowsDestroyed: 0, powerupsUsed: 0, games: 0, bestRowsInGame: 0 },
+    stats: { rowsDestroyed: 0, blocksDestroyed: 0, powerupsUsed: 0, games: 0, bestRowsInGame: 0, bestBlocksInGame: 0 },
     progress: {},                       // achievement id -> lifetime counter
   };
 }
@@ -35,7 +35,7 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
   let game = newGame("normal", []);
 
   function newGame(mode, pool) {
-    return { mode, pool, rows: 0, drops: 0, history: [], seen: new Set(), progress: {}, unlocked: [] };
+    return { mode, pool, rows: 0, blocks: 0, drops: 0, history: [], seen: new Set(), progress: {}, unlocked: [] };
   }
 
   const save = () => storage.save(data);
@@ -44,15 +44,26 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
   function eligible(def) {
     if (isUnlocked(def.id)) return false;
     const mode = def.mode ?? "any";
-    return mode === "any" || mode === game.mode;
+    // "powerups" = any mode that has powerups
+    return mode === "any" || mode === game.mode || (mode === "powerups" && game.mode !== "extreme");
+  }
+
+  // The name and description to show: achievements with `variants` pick one at random
+  // when they unlock (and keep it).
+  function display(def) {
+    const v = data.unlocked[def.id]?.v;
+    const alt = v != null ? def.variants?.[v - 1] : null;
+    return { name: alt?.name ?? def.name, description: alt?.description ?? def.description ?? "" };
   }
 
   function unlock(def) {
     if (isUnlocked(def.id)) return;
-    data.unlocked[def.id] = { at: now(), mode: game.mode };
+    const n = Array.isArray(def.variants) ? def.variants.length : 0;
+    const v = n ? Math.floor(Math.random() * (n + 1)) : 0; // 0 = the main name
+    data.unlocked[def.id] = { at: now(), mode: game.mode, ...(v ? { v } : {}) };
     game.unlocked.push(def.id);
     save();
-    try { onUnlock(def); } catch (e) { console.error(e); }
+    try { onUnlock({ ...def, ...display(def) }); } catch (e) { console.error(e); }
   }
 
   // Count towards a counter trigger; scope "lifetime" persists between games.
@@ -77,7 +88,22 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
     each("score", (def, t) => { if (state.score >= (t.value ?? Infinity)) unlock(def); });
     each("level", (def, t) => { if (state.level >= (t.value ?? Infinity)) unlock(def); });
     each("drops", (def, t) => { if (game.drops >= (t.count ?? Infinity)) unlock(def); });
+
+    // blocks destroyed (line clears and powerups both count)
+    const blocks = state.blocksDestroyed ?? 0;
+    if (blocks > game.blocks) {
+      data.stats.blocksDestroyed += blocks - game.blocks;
+      data.stats.bestBlocksInGame = Math.max(data.stats.bestBlocksInGame, blocks);
+      game.blocks = blocks;
+      dirty = true;
+    }
+    each("blocksDestroyed", (def, t) => {
+      const have = (t.scope ?? "game") === "lifetime" ? data.stats.blocksDestroyed : game.blocks;
+      if (have >= (t.count ?? 1)) unlock(def);
+    });
+    if (dirty) { dirty = false; save(); }
   }
+  let dirty = false;
 
   function handle(type, d = {}, state = null) {
     switch (type) {
@@ -196,6 +222,11 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
         ? { value: data.stats.rowsDestroyed, target: t.count ?? 1 }
         : { value: data.stats.bestRowsInGame, target: t.count ?? 1, best: true };
     }
+    if (t.type === "blocksDestroyed") {
+      return lifetime
+        ? { value: data.stats.blocksDestroyed, target: t.count ?? 1 }
+        : { value: data.stats.bestBlocksInGame, target: t.count ?? 1, best: true };
+    }
     if (t.type === "powerupUsed" && lifetime) return { value: data.progress[def.id] ?? 0, target: t.count ?? 1 };
     return null;
   }
@@ -203,6 +234,7 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
   return {
     handle,
     isUnlocked,
+    display,
     progressOf,
     get defs() { return list; },
     get stats() { return data.stats; },

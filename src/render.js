@@ -6,7 +6,7 @@ import { CONFIG } from "../config.js";
 import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour } from "./util.js";
 import { getShapePaint } from "./shapes.js";
 import { getActiveMatrix, getGhostDropY } from "./game.js";
-import { resolveArea, computeEffect } from "./powerups.js";
+import { resolvePowerupArea, computeEffect } from "./powerups.js";
 
 const DEFAULT_STYLE = {};
 
@@ -861,7 +861,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       const key = `${a.shape.id}|${a.rotIdx}|${a.x}|${ghostY}|${state.boardVersion}`;
       if (overlayCache.key !== key) {
         overlayCache.key = key;
-        overlayCache.area = resolveArea(pu.areaRotations[a.rotIdx], a.x, ghostY, cols, rows);
+        overlayCache.area = resolvePowerupArea(pu, a.rotIdx, a.x, ghostY, cols, rows);
       }
       const mat = getActiveMatrix(state);
       pieceCells = new Set();
@@ -887,14 +887,18 @@ export function createRenderer(boardCanvas, nextCanvas) {
 
     const board = state.board;
     bctx.save();
-    for (const i of area.indices) {
-      const x = i % cols, y = (i / cols) | 0;
-      const isPiece = pieceCells.has(i);
-      const filled = !!board[y][x] && !isPiece;
-      const effective = (pu.type === "goo" || pu.type === "phantom") ? true
-        : pu.type === "expander" ? (!filled && !isPiece) : filled;
-      const dist = Math.hypot(x - centre.x, y - centre.y);
-      drawPowerupMark(bctx, pu, x * cell, y * cell, cell, now, x, y, dist, effective, intensity, centre);
+    // combos: each part draws its own kind of highlight over its own area
+    const layers = pu.parts && area.parts ? pu.parts.map((p, k) => [p, area.parts[k]]) : [[pu, area]];
+    for (const [lp, la] of layers) {
+      for (const i of la.indices) {
+        const x = i % cols, y = (i / cols) | 0;
+        const isPiece = pieceCells.has(i);
+        const filled = !!board[y][x] && !isPiece;
+        const effective = (lp.type === "goo" || lp.type === "phantom") ? true
+          : lp.type === "expander" ? (!filled && !isPiece) : filled;
+        const dist = Math.hypot(x - centre.x, y - centre.y);
+        drawPowerupMark(bctx, lp, x * cell, y * cell, cell, now, x, y, dist, effective, intensity, centre);
+      }
     }
 
     // White-hot flash right before the effect fires.

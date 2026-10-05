@@ -39,17 +39,52 @@ export function initPieceSelectionState(state) {
       cooldown: 0,
       count: 0,
       lastChance: 0, // for the debug panel
-      // progression (introduce powerups over time)
-      introduced: new Set(), // ids the scheduler has started serving
-      shown: new Set(),      // ids whose intro has been shown (spawned at least once)
-      classes: [],           // powerup classes unlocked so far, in order
-      sinceNew: 0,           // powerups served since the last brand new one
-      introsSinceClass: 0,   // new powerups introduced since the last new class
+      // progression (introduce powerups class by class)
+      classes: [],             // powerup classes unlocked so far, in order
+      shown: new Set(),        // ids that have turned up this game
+      shownClasses: new Set(), // classes whose intro has been shown
+      sinceClass: 0,           // powerups served since the last new class
+      classAtDrop: 0,          // dropIndex when the last class came in
     },
+
+    // how much the player is struggling, 0..1 (see CONFIG.assist.powerups.struggle)
+    struggle: 0,
+    lastRows: 0,
+    dropsSinceRow: 0,
+
+    // the first giant (level 5) arrives at this piece number (null = no forced giant)
+    giantDueAt: pickGiantDue(state),
+    hadGiant: false,
 
     // board presence, recomputed once per selection: shapeId -> copies on the board
     presence: new Map(),
   };
+}
+
+function pickGiantDue(state) {
+  const range = CONFIG.assist.pieceMix.hard.firstGiantBetween;
+  const mode = CONFIG.modes[state.mode];
+  if (!range || mode?.giants === false) return null;
+  const [a, b] = range;
+  return a + Math.floor((state.rng ?? Math.random)() * (b - a + 1));
+}
+
+/* =========================
+   Struggle tally
+   =========================
+   Blends stack danger, air pockets and how long it's been since a row was destroyed,
+   smoothed over a few drops. 0 = cruising, 1 = in real trouble.
+*/
+export function updateStruggle(state, danger01) {
+  const sel = state.pieceSel;
+  const cfg = CONFIG.assist.powerups.struggle ?? {};
+  if (state.rowsDestroyed > sel.lastRows) { sel.lastRows = state.rowsDestroyed; sel.dropsSinceRow = 0; }
+  else sel.dropsSinceRow++;
+  const holes01 = clamp01(analyseBoard(state.board).holes / Math.max(1, CONFIG.assist.powerups.holesForMax ?? 18));
+  const drought01 = clamp01(sel.dropsSinceRow / Math.max(1, cfg.rowDroughtDrops ?? 18));
+  const target = clamp01(0.5 * danger01 + 0.3 * holes01 + 0.2 * drought01 + 0.4 * danger01 * holes01);
+  sel.struggle = lerp(sel.struggle, target, cfg.smoothing ?? 0.3);
+  return sel.struggle;
 }
 
 /* =========================
@@ -231,6 +266,19 @@ export function selectPiece(state) {
 
   const idToShape = state.idToShape;
   const prevShape = sel.lastShapeId ? idToShape.get(sel.lastShapeId) : null;
+  updateStruggle(state, danger01);
+
+  // The first giant: always somewhere in CONFIG...hard.firstGiantBetween (unless it would
+  // land on an already dangerous stack, then as soon as things calm down a bit).
+  if (sel.giantDueAt != null && !sel.hadGiant && sel.dropIndex >= sel.giantDueAt && !sel.lastWasHard && danger01 < 0.55) {
+    const giants = state.shapes.filter(s => (s.difficulty ?? 1) === 5 && (s.frequency ?? 1) > 0);
+    if (giants.length) {
+      const g = sampleByWeight(giants, s => (s.frequency ?? 1) * varietyMultiplier(sel, s), state.rng);
+      commitSelectedShape(sel, g);
+      noteHardDropped(sel);
+      return g;
+    }
+  }
 
   const linked = tryLinkedNextShape(state, prevShape, idToShape, DEBUG_LINK);
 
@@ -241,12 +289,7 @@ export function selectPiece(state) {
       notePowerupDropped(sel);
     } else {
       const lvl = (linked.difficulty ?? 1);
-      if (lvl === 4 || lvl === 5) {
-        const hardCfg = mixCfg.hard;
-        sel.urge.hard = 0.0;
-        sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, hardCfg.cooldownDrops ?? 9);
-        sel.hasDroppedFirstHard = true;
-      }
+      if (lvl === 4 || lvl === 5) noteHardDropped(sel, lvl);
     }
     return linked;
   }
@@ -285,7 +328,8 @@ export function selectPiece(state) {
   const dangerAllowsHard = danger01 <= (hardCfg.hardMaxDanger ?? 0.32);
   const cooldownAllowsHard = (sel.cooldown.hard ?? 0) <= 0 && !sel.lastWasHard;
 
-  const allowHard = pastMinHard && dangerAllowsHard && cooldownAllowsHard;
+  const modeHasGiants = CONFIG.modes[state.mode]?.giants !== false;
+  const allowHard = modeHasGiants && pastMinHard && dangerAllowsHard && cooldownAllowsHard;
 
   // Update shared hard urge every call.
   const inWindow =
@@ -360,13 +404,16 @@ export function selectPiece(state) {
 
   // If we dropped a hard shape, reset shared urge and start shared cooldown.
   const lvl = (chosenShape.difficulty ?? 1);
-  if (lvl === 4 || lvl === 5) {
-    sel.urge.hard = 0.0;
-    sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, hardCfg.cooldownDrops ?? 9);
-    sel.hasDroppedFirstHard = true;
-  }
+  if (lvl === 4 || lvl === 5) noteHardDropped(sel, lvl);
 
   return chosenShape;
+}
+
+function noteHardDropped(sel, lvl = 5) {
+  sel.urge.hard = 0.0;
+  sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, CONFIG.assist.pieceMix.hard.cooldownDrops ?? 9);
+  sel.hasDroppedFirstHard = true;
+  if (lvl === 5) sel.hadGiant = true;
 }
 
 /* =========================================
@@ -387,8 +434,10 @@ function maybeSelectPowerup(state, danger01) {
   const stats = analyseBoard(state.board);
   const holes01 = clamp01(stats.holes / Math.max(1, cfg.holesForMax ?? 18));
 
-  const boost = 1 + (cfg.dangerBoost ?? 0) * danger01 + (cfg.holesBoost ?? 0) * holes01;
-  const chance = clamp01(ps.chance * boost);
+  const boost = (1 + (cfg.dangerBoost ?? 0) * danger01 + (cfg.holesBoost ?? 0) * holes01)
+    * (1 + (cfg.struggle?.chanceBoost ?? 0) * sel.struggle);
+  const rate = state.devPowerups?.rate ?? 1; // dev mode frequency override
+  const chance = clamp01(ps.chance * boost * rate);
   ps.lastChance = chance;
 
   if (state.rng() >= chance) {
@@ -396,73 +445,72 @@ function maybeSelectPowerup(state, danger01) {
     return null;
   }
 
-  let candidates = state.powerups.filter(p => (p.frequency ?? 1) > 0);
+  const dev = state.devPowerups;
+  let candidates = state.powerups.filter(p => (p.frequency ?? 1) > 0 && !dev?.disabled?.has(p.id));
   if (!candidates.length) return null;
 
-  // Progression: powerups are introduced one at a time, class by class.
+  // Progression: classes come in one at a time; every powerup of an unlocked class can turn up.
   const prog = cfg.progression;
   if (prog?.enabled) {
-    const dueNew = ps.introduced.size === 0 || ps.sinceNew >= (prog.newPowerupEvery ?? 3) - 1;
-    if (dueNew) {
-      const fresh = pickNewPowerup(state, candidates);
-      if (fresh) {
-        ps.sinceNew = 0;
-        ps.introduced.add(fresh.id);
-        return fresh;
-      }
-    }
-    ps.sinceNew++;
-    candidates = candidates.filter(p => ps.introduced.has(p.id));
-    if (!candidates.length) return null;
+    const due = !ps.classes.length
+      || ps.sinceClass >= (prog.newClassEvery ?? 5)
+      || sel.dropIndex - ps.classAtDrop >= (prog.newClassAfterDrops ?? Infinity);
+    if (due) unlockNextClass(state, candidates);
+    candidates = candidates.filter(p => ps.classes.includes(p.powerup.type));
   }
 
-  const tw = cfg.tierWeights;
-  const need = cfg.need ?? {};
+  // Combos: mid-to-late game, and only built from classes that are already in.
+  const combos = cfg.combos ?? {};
+  const combosOpen = sel.dropIndex >= (combos.minDrop ?? 0) &&
+    (!prog?.enabled || ps.classes.filter(c => c !== "combo").length >= (combos.minClasses ?? 2));
+  candidates = candidates.filter(p => p.powerup.type !== "combo" ||
+    (combosOpen && (!prog?.enabled || p.powerup.parts.every(part => ps.classes.includes(part.type)))));
+  if (prog?.enabled && combosOpen && !ps.classes.includes("combo") && candidates.some(p => p.powerup.type === "combo")) {
+    ps.classes.push("combo");
+  }
+  if (!candidates.length) return null;
 
+  const need = cfg.need ?? {};
+  const st = cfg.struggle ?? {};
+  // help preference: from slightly favouring gentle ones (calm) to strongly helpful (struggling)
+  const lucky = state.rng() < (st.luckyChance ?? 0);
+  const power = lucky ? (st.helpPower ?? 2) : lerp(st.calmHelpPower ?? 0, st.helpPower ?? 2, sel.struggle);
+
+  ps.sinceClass++;
   return sampleByWeight(candidates, (p) => {
-    const tier = p.powerup.tier;
-    const tierW = lerp(tw.calm[tier] ?? 1, tw.danger[tier] ?? 1, danger01);
     const sideways = p.powerup.type === "gravity" && (p.powerup.direction === "left" || p.powerup.direction === "right");
     const n = (sideways ? need.gravitySideways : null) ?? need[p.powerup.type] ?? { base: 1 };
     const needW = (n.base ?? 1) + (n.holes ?? 0) * holes01 + (n.danger ?? 0) * danger01;
-    return (p.frequency ?? 1) * tierW * needW * varietyMultiplier(sel, p);
+    const helpW = Math.pow((p.powerup.help ?? 3) / 3, power);
+    const comboW = p.powerup.type === "combo" ? (combos.weight ?? 1) : 1;
+    // a class's pieces share its weight, so big classes don't crowd out small ones
+    const classSize = candidates.filter(c => c.powerup.type === p.powerup.type).length;
+    return (p.frequency ?? 1) * needW * helpW * comboW * varietyMultiplier(sel, p) * (6 / (classSize + 5));
   }, state.rng);
 }
 
-// The next brand new powerup: from the classes unlocked so far, or from a newly
-// unlocked class (the first class is always CONFIG...progression.firstClass).
-function pickNewPowerup(state, pool) {
+// Open the next powerup class: the first is random from progression.firstClassPool,
+// after that any class not in yet (combos open on their own, see CONFIG...combos).
+function unlockNextClass(state, pool) {
   const prog = CONFIG.assist.powerups.progression;
   const ps = state.pieceSel.powerup;
-  const fresh = (p) => !ps.introduced.has(p.id);
-  let cands = pool.filter(p => fresh(p) && ps.classes.includes(p.powerup.type));
-
-  if (!cands.length || ps.introsSinceClass >= (prog.newClassEvery ?? 3)) {
-    const remaining = [...new Set(pool.filter(fresh).map(p => p.powerup.type))].filter(t => !ps.classes.includes(t));
-    if (remaining.length) {
-      const next = (!ps.classes.length && remaining.includes(prog.firstClass))
-        ? prog.firstClass
-        : remaining[Math.floor(state.rng() * remaining.length)];
-      ps.classes.push(next);
-      ps.introsSinceClass = 0;
-      cands = pool.filter(p => fresh(p) && p.powerup.type === next);
-    }
+  let remaining = [...new Set(pool.map(p => p.powerup.type))].filter(t => t !== "combo" && !ps.classes.includes(t));
+  if (!remaining.length) return null;
+  if (!ps.classes.length) {
+    const simple = remaining.filter(t => (prog.firstClassPool ?? remaining).includes(t));
+    if (simple.length) remaining = simple;
   }
-  if (!cands.length) cands = pool.filter(fresh);
-  if (!cands.length) return null;
-
-  // gentlest first
-  const minTier = Math.min(...cands.map(p => p.powerup.tier));
-  cands = cands.filter(p => p.powerup.tier === minTier);
-  ps.introsSinceClass++;
-  return sampleByWeight(cands, p => p.frequency ?? 1, state.rng);
+  const next = remaining[Math.floor(state.rng() * remaining.length)];
+  ps.classes.push(next);
+  ps.sinceClass = 0;
+  ps.classAtDrop = state.pieceSel.dropIndex;
+  return next;
 }
 
 // Dev / testing: unlock every class and powerup right away.
 export function introduceAllPowerups(state) {
   const ps = state.pieceSel.powerup;
   for (const p of state.powerups) {
-    ps.introduced.add(p.id);
     if (!ps.classes.includes(p.powerup.type)) ps.classes.push(p.powerup.type);
   }
 }

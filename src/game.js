@@ -18,7 +18,7 @@ import { CONFIG } from "../config.js";
 import { clamp01, lerp } from "./util.js";
 import { getShapePaint } from "./shapes.js";
 import { initPieceSelectionState, selectPiece } from "./selection.js";
-import { resolveArea, collapseRows, computeEffect, phantomLandingY } from "./powerups.js";
+import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY } from "./powerups.js";
 
 /* =========================
    State
@@ -60,6 +60,8 @@ export function createGameState(shapes, powerups, { rng = Math.random } = {}) {
     lines: 0,            // rows cleared by filling them (drives the level)
     rowsDestroyed: 0,    // rows cleared + rows collapsed by powerups
     blocksDestroyed: 0,
+    // dev mode overrides for the powerup scheduler: ids that never turn up, chance multiplier
+    devPowerups: { disabled: new Set(), rate: 1 },
     drops: 0,            // pieces locked
     level: 1,
 
@@ -127,8 +129,10 @@ export function createGameState(shapes, powerups, { rng = Math.random } = {}) {
 
 export function configureMode(state, modeId) {
   state.mode = CONFIG.modes[modeId] ? modeId : CONFIG.defaultMode;
-  state.shapes = state.allShapes;
-  state.powerups = CONFIG.modes[state.mode].powerups ? state.allPowerups : [];
+  const mode = CONFIG.modes[state.mode];
+  // Easy mode: no giant (difficulty 4/5) pieces
+  state.shapes = mode.giants === false ? state.allShapes.filter(s => (s.difficulty ?? 1) < 4) : state.allShapes;
+  state.powerups = mode.powerups ? state.allPowerups : [];
   state.idToShape = new Map();
   for (const s of [...state.shapes, ...state.powerups]) state.idToShape.set(s.id, s);
 }
@@ -374,12 +378,14 @@ function spawnPiece(state) {
 
   const ok = shape.powerup?.type === "phantom" || !collides(state, state.active.x, state.active.y, mat);
   if (ok) {
-    // First time this powerup turns up in this game: the UI shows its intro screen.
-    const shown = state.pieceSel.powerup.shown;
-    const isNew = !!shape.powerup && !shown.has(shape.id);
-    if (isNew) {
-      shown.add(shape.id);
-      state.pieceSel.powerup.introduced.add(shape.id);
+    // First powerup of a class in this game: the UI shows that class's intro screen.
+    const ps = state.pieceSel.powerup;
+    const type = shape.powerup?.type;
+    const isNew = !!type && !ps.shownClasses.has(type);
+    if (type) {
+      ps.shown.add(shape.id);
+      ps.shownClasses.add(type);
+      if (!ps.classes.includes(type)) ps.classes.push(type); // e.g. picked in dev mode
     }
     emit(state, "spawn", { shape, next: state.next, isNew });
   }
@@ -666,7 +672,7 @@ function beginPowerupEffect(state, lockInfo) {
   state.effect = {
     ...lockInfo,
     pu,
-    area: resolveArea(pu.areaRotations[rotIdx], x, y, CONFIG.board.cols, CONFIG.board.rows),
+    area: resolvePowerupArea(pu, rotIdx, x, y, CONFIG.board.cols, CONFIG.board.rows),
     centre: { x: x + (mat[0].length - 1) / 2, y: y + (mat.length - 1) / 2 },
     phase: "charge",
     elapsedMs: 0,

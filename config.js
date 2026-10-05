@@ -7,8 +7,10 @@ export const CONFIG = {
 
   // Game modes. Extreme = the original game. Normal = the same game plus powerups.
   modes: {
-    normal: { label: "Normal", tagline: "powerups help you out", powerups: true },
-    extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false },
+    // giants: whether the huge (difficulty 4 and 5) pieces turn up at all
+    easy: { label: "Easy", tagline: "powerups, and no giant pieces", powerups: true, giants: false },
+    normal: { label: "Normal", tagline: "powerups help you out", powerups: true, giants: true },
+    extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true },
   },
   defaultMode: "normal",
 
@@ -114,6 +116,11 @@ export const CONFIG = {
         // Early “first hard” preference: the first hard drop should be a level 5 (if possible).
         preferLevel5ForFirstHard: true,
 
+        // The first giant (level 5) always lands somewhere in this range of pieces — just as
+        // you settle in, the Pyramid of Giza arrives. A random piece number in the range is
+        // picked at the start of each game. (Normal and Extreme; Easy has no giants.)
+        firstGiantBetween: [6, 18],
+
         // If danger is above this, hard is disallowed entirely (same idea as old level4MaxDanger).
         hardMaxDanger: 0.32,
 
@@ -163,12 +170,36 @@ export const CONFIG = {
       chancePerDrop: 0.07,
       maxChance: 0.8,
 
-      // Powerups are introduced one at a time (each with an intro screen).
+      // Powerups are introduced class by class (each class with an intro screen). Once a
+      // class is in, every powerup of that class can turn up.
       progression: {
         enabled: true,
-        firstClass: "destroyer",  // the first class is always this one
-        newPowerupEvery: 3,       // every Nth powerup is a brand new one, until all are in
-        newClassEvery: 3,         // after this many new ones, the next new one opens a new class
+        // the first class is picked at random from these (the simpler ones), so every
+        // game starts differently
+        firstClassPool: ["destroyer", "gravity", "expander", "acid"],
+        newClassEvery: 5,          // after this many powerups, the next one opens a new class
+        newClassAfterDrops: 28,    // ...or after this many drops since the last new class
+      },
+
+      // Combos (two powerups in one) turn up mid-to-late game, built only from classes
+      // that are already in.
+      combos: {
+        minDrop: 45,      // not before this many drops...
+        minClasses: 3,    // ...and not until this many classes are in
+        weight: 0.6,      // how often a combo is picked compared with a normal powerup
+      },
+
+      // Helpfulness: each powerup has `help` (1–5) in its data. The worse you're doing
+      // (the struggle tally: stack height, air pockets, how long since you cleared a row),
+      // the more the helpful ones are preferred. helpPower is how strongly, at full struggle.
+      // Even when you're doing fine, luckyChance of powerups are picked mostly by help.
+      struggle: {
+        rowDroughtDrops: 18, // this many drops without destroying a row counts as full drought
+        smoothing: 0.3,      // 0..1: how quickly the tally follows the board
+        helpPower: 2.2,
+        calmHelpPower: -0.3, // when not struggling, slightly favour the gentler ones
+        chanceBoost: 0.6,    // the powerup chance is also multiplied by 1 + chanceBoost * struggle
+        luckyChance: 0.12,
       },
 
       // The chance is multiplied by (1 + dangerBoost*danger + holesBoost*holes01):
@@ -176,12 +207,6 @@ export const CONFIG = {
       dangerBoost: 1.6,
       holesBoost: 0.8,
       holesForMax: 18, // this many air pockets counts as holes01 = 1
-
-      // Which tier to serve: blended from calm -> danger as the stack rises.
-      tierWeights: {
-        calm:   { 1: 1.00, 2: 0.45, 3: 0.12 },
-        danger: { 1: 0.45, 2: 1.00, 3: 0.90 },
-      },
 
       // Which class is most useful right now (multipliers):
       // downward gravity/expanders fix air pockets, destroyers fix height.
@@ -195,6 +220,7 @@ export const CONFIG = {
         blast:           { base: 0.7, holes: 0.3, danger: 0.6 },
         goo:             { base: 0.6, holes: 1.0, danger: 0.0 },
         phantom:         { base: 0.6, holes: 1.2, danger: 0.0 },
+        combo:           { base: 0.8, holes: 0.6, danger: 0.8 },
       },
     },
   },

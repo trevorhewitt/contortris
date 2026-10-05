@@ -198,6 +198,12 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
         const fill = normaliseFillPaint(powerup.fill, style.baseColor);
         powerup.fillPaint = fill.paint;
         powerup.fillStyle = { ...style, baseColor: fill.baseColor };
+        for (const part of powerup.parts ?? []) {
+          part.areaRotations = allowed.map(i => part.areaRotations[i]);
+          const pf = part.fill != null ? normaliseFillPaint(part.fill, style.baseColor) : fill;
+          part.fillPaint = pf.paint;
+          part.fillStyle = { ...style, baseColor: pf.baseColor };
+        }
       }
     }
 

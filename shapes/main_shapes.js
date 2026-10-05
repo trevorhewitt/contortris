@@ -27,7 +27,7 @@
  * }
  *
  * powerup: {
- *   type: "destroyer" | "gravity" | "expander" | "acid" | "blast" | "goo" | "phantom",
+ *   type: "destroyer" | "gravity" | "expander" | "acid" | "blast" | "goo" | "phantom" | "combo",
  *     destroyer: destroys every block in its area
  *     gravity:   blocks in its area fall (or slide) until they hit something
  *     expander:  fills every empty cell in its area with `fill`
@@ -36,10 +36,19 @@
  *     blast:     throws the blocks in its area outwards by up to `push` cells, then they fall
  *     goo:       melts: its blocks (× `volume`) flow down into the lowest gaps they can reach
  *     phantom:   falls straight through blocks into the deepest gap it fits; stays as blocks
+ *     combo:     several powerups in one: `parts` (see below), mid-to-late game only
  *   reach: 1,                 acid only: how far it dissolves (steps from its blocks, default 1)
  *   push: 3,                  blast only: how far blocks get thrown (cells, default 3)
  *   volume: 1.5,              goo only: how many cells it fills, × its own block count (default 1)
  *   intro: "...",             optional: a line or two for the powerup's intro screen
+ *   help: 1-5,                how helpful it is (1 = barely, 5 = a lifesaver). The more the
+ *                             player is struggling, the more the helpful ones are picked
+ *                             (CONFIG.assist.powerups.struggle). Default from tier.
+ *   parts: [ {...}, {...} ],  combo only: each part is a mini powerup with its own type
+ *                             ("destroyer", "acid", "blast", "gravity" or "expander") and that
+ *                             type's fields (area, direction, reach, push, fill). They fire in
+ *                             that order (destroy first, fill last). A combo only turns up once
+ *                             all of its parts' classes are in the game.
  *   direction: "down" | "left" | "right" | "up",   gravity only (default "down")
  *   tier: 1 | 2 | 3,          1 = gentle ... 3 = very strong. Stronger tiers are served more
  *                             when the stack is high (CONFIG.assist.powerups in config.js)
@@ -2048,7 +2057,8 @@ export const SHAPES = [
             "|||"
           ]
         },
-        "intro": "Makes its own column and the two next to it collapse, squashing out the air pockets. Try not to touch it."
+        "intro": "Makes its own column and the two next to it collapse, squashing out the air pockets. Try not to touch it.",
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -2078,7 +2088,8 @@ export const SHAPES = [
             ".###."
           ]
         },
-        "intro": "Swallows every block in a small circle around where it lands. Mind the event horizon."
+        "intro": "Swallows every block in a small circle around where it lands. Mind the event horizon.",
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -2112,7 +2123,8 @@ export const SHAPES = [
             "..####.."
           ]
         },
-        "intro": "Swallows a big circle of blocks around it. Physicists are very excited and also very worried."
+        "intro": "Swallows a big circle of blocks around it. Physicists are very excited and also very worried.",
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -2139,7 +2151,8 @@ export const SHAPES = [
             "-----"
           ]
         },
-        "intro": "Slices its whole row clean off, and everything above drops down. It is very cool and knows it."
+        "intro": "Slices its whole row clean off, and everything above drops down. It is very cool and knows it.",
+        "help": 4
       },
     rotation: {
         "mode": "none"
@@ -2234,7 +2247,8 @@ export const SHAPES = [
             ".###."
           ]
         },
-        "intro": "Puffs up and fills every empty cell around it. Don't get it in your hair."
+        "intro": "Puffs up and fills every empty cell around it. Don't get it in your hair.",
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -2266,7 +2280,8 @@ export const SHAPES = [
             "#"
           ]
         },
-        "intro": "Digs straight down through the six blocks underneath it. It has never forgiven the stack."
+        "intro": "Digs straight down through the six blocks underneath it. It has never forgiven the stack.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -2292,7 +2307,8 @@ export const SHAPES = [
             "|"
           ]
         },
-        "intro": "Vaporises every block in its whole column, top to bottom. Funded by a billionaire, aimed by nobody."
+        "intro": "Vaporises every block in its whole column, top to bottom. Funded by a billionaire, aimed by nobody.",
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -2322,7 +2338,8 @@ export const SHAPES = [
             ".####."
           ]
         },
-        "intro": "Clears a big cloud of blocks around it. Nobody will admit to it."
+        "intro": "Clears a big cloud of blocks around it. Nobody will admit to it.",
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -2349,7 +2366,8 @@ export const SHAPES = [
           ]
         },
         "collapse": true,
-        "intro": "Cuts through its whole row and its whole column at once. The row closes up afterwards. Don't run."
+        "intro": "Cuts through its whole row and its whole column at once. The row closes up afterwards. Don't run.",
+        "help": 4.5
       },
     rotation: {
         "mode": "none"
@@ -2377,7 +2395,8 @@ export const SHAPES = [
             "-."
           ]
         },
-        "intro": "Mows the whole row underneath it clean away, and everything above drops down. Nobody is pushing it."
+        "intro": "Mows the whole row underneath it clean away, and everything above drops down. Nobody is pushing it.",
+        "help": 4
       },
     rotation: {
         "mode": "none"
@@ -2406,7 +2425,8 @@ export const SHAPES = [
             "-"
           ]
         },
-        "intro": "Takes both of its rows away completely. Everything above drops down. Please keep your receipts."
+        "intro": "Takes both of its rows away completely. Everything above drops down. Please keep your receipts.",
+        "help": 5
       },
     rotation: {
         "mode": "none"
@@ -2441,7 +2461,8 @@ export const SHAPES = [
           ]
         },
         "collapse": true,
-        "intro": "Blows away its whole row plus a few blocks above and below. It knows, and it is not okay."
+        "intro": "Blows away its whole row plus a few blocks above and below. It knows, and it is not okay.",
+        "help": 4
       },
     rotation: {
         "mode": "none"
@@ -2468,7 +2489,8 @@ export const SHAPES = [
             "||||"
           ]
         },
-        "intro": "So heavy that the four columns under it collapse, squashing out air pockets. Nobody has finished it."
+        "intro": "So heavy that the four columns under it collapse, squashing out air pockets. Nobody has finished it.",
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -2495,7 +2517,8 @@ export const SHAPES = [
             "|||||"
           ]
         },
-        "intro": "Gravity is discovered all over again: five columns collapse and the air pockets disappear."
+        "intro": "Gravity is discovered all over again: five columns collapse and the air pockets disappear.",
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -2522,7 +2545,8 @@ export const SHAPES = [
             "|||||||||||||||||||||||||||"
           ]
         },
-        "intro": "Every column on the board collapses. Nobody was hurt. Some blocks were mildly inconvenienced."
+        "intro": "Every column on the board collapses. Nobody was hurt. Some blocks were mildly inconvenienced.",
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -2576,7 +2600,8 @@ export const SHAPES = [
             "--"
           ]
         },
-        "intro": "Blows its row and every row below it over to the left, packing them up against the wall."
+        "intro": "Blows its row and every row below it over to the left, packing them up against the wall.",
+        "help": 1.5
       },
     rotation: {
         "mode": "none"
@@ -2668,7 +2693,8 @@ export const SHAPES = [
             "-"
           ]
         },
-        "intro": "Floods the entire row underneath it, which usually means that row is done. Call a plumber."
+        "intro": "Floods the entire row underneath it, which usually means that row is done. Call a plumber.",
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -2769,7 +2795,8 @@ export const SHAPES = [
             "#"
           ]
         },
-        "intro": "Squirts filler into the eight cells below it, even the air pockets under overhangs. Very satisfying."
+        "intro": "Squirts filler into the eight cells below it, even the air pockets under overhangs. Very satisfying.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -2864,7 +2891,8 @@ export const SHAPES = [
             "..#.."
           ]
         },
-        "intro": "Pops into a puff of popcorn that fills the empty cells around it. You can't stop at one."
+        "intro": "Pops into a puff of popcorn that fills the empty cells around it. You can't stop at one.",
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -2957,7 +2985,8 @@ export const SHAPES = [
             "..###."
           ]
         },
-        "intro": "Sprays a cone of snot to the right, filling the empty cells. Bless you. Gross."
+        "intro": "Sprays a cone of snot to the right, filling the empty cells. Bless you. Gross.",
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3053,7 +3082,8 @@ export const SHAPES = [
             ".###."
           ]
         },
-        "intro": "Escapes and fills the empty cells around and below it. It has a name now and it is Gerald."
+        "intro": "Escapes and fills the empty cells around and below it. It has a name now and it is Gerald.",
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3071,7 +3101,8 @@ export const SHAPES = [
         "type": "acid",
         "reach": 2,
         "tier": 1,
-        "intro": "So sour it dissolves every block within two steps of it. The packet says \"ages 40 and up\"."
+        "intro": "So sour it dissolves every block within two steps of it. The packet says \"ages 40 and up\".",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -3090,7 +3121,8 @@ export const SHAPES = [
         "type": "acid",
         "reach": 2,
         "tier": 1,
-        "intro": "Dissolves every block within two steps of the jar. Somebody labelled it \"juice\" and we need to talk about that."
+        "intro": "Dissolves every block within two steps of the jar. Somebody labelled it \"juice\" and we need to talk about that.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -3108,7 +3140,8 @@ export const SHAPES = [
         "type": "acid",
         "reach": 2,
         "tier": 1,
-        "intro": "Eats every block within two bites of it, then stares at you like you're next. It skipped breakfast."
+        "intro": "Eats every block within two bites of it, then stares at you like you're next. It skipped breakfast.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -3126,7 +3159,8 @@ export const SHAPES = [
         "type": "acid",
         "reach": 2,
         "tier": 1,
-        "intro": "Wind them up and they chomp through every block within two steps. Nobody knows whose teeth these were."
+        "intro": "Wind them up and they chomp through every block within two steps. Nobody knows whose teeth these were.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -3145,7 +3179,8 @@ export const SHAPES = [
         "type": "acid",
         "reach": 2,
         "tier": 1,
-        "intro": "Dissolves every block within two steps and leaves a lemon-fresh trail. Kills 99.9% of blocks."
+        "intro": "Dissolves every block within two steps and leaves a lemon-fresh trail. Kills 99.9% of blocks.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -3163,7 +3198,8 @@ export const SHAPES = [
         "type": "acid",
         "reach": 3,
         "tier": 2,
-        "intro": "Her loyal colony devours every block within three steps of her. Long may she reign over your stack."
+        "intro": "Her loyal colony devours every block within three steps of her. Long may she reign over your stack.",
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -3182,7 +3218,8 @@ export const SHAPES = [
         "type": "acid",
         "reach": 3,
         "tier": 2,
-        "intro": "It has been on since 1974 and now melts every block within three steps. Still very relaxing to watch."
+        "intro": "It has been on since 1974 and now melts every block within three steps. Still very relaxing to watch.",
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -3200,7 +3237,8 @@ export const SHAPES = [
         "type": "acid",
         "reach": 2,
         "tier": 2,
-        "intro": "Every block within two steps becomes lava, and lava means gone. You know the rules."
+        "intro": "Every block within two steps becomes lava, and lava means gone. You know the rules.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -3231,7 +3269,8 @@ export const SHAPES = [
             ".###.",
             "..#.."
           ]
-        }
+        },
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -3262,7 +3301,8 @@ export const SHAPES = [
             ".###.",
             "..#.."
           ]
-        }
+        },
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -3293,7 +3333,8 @@ export const SHAPES = [
             ".###.",
             "..#.."
           ]
-        }
+        },
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -3322,7 +3363,8 @@ export const SHAPES = [
             "####.####",
             "####.####"
           ]
-        }
+        },
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3355,7 +3397,8 @@ export const SHAPES = [
             "#####",
             "..#.."
           ]
-        }
+        },
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3388,7 +3431,8 @@ export const SHAPES = [
             ".#####.",
             "...#..."
           ]
-        }
+        },
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3419,7 +3463,8 @@ export const SHAPES = [
             "######",
             ".####."
           ]
-        }
+        },
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3452,7 +3497,8 @@ export const SHAPES = [
             "######",
             ".####."
           ]
-        }
+        },
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -3535,7 +3581,8 @@ export const SHAPES = [
             "#25b677",
             "#4fc492"
           ]
-        ]
+        ],
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3619,7 +3666,8 @@ export const SHAPES = [
             "#f7a8bc",
             "#f7a8bc"
           ]
-        ]
+        ],
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -3702,7 +3750,8 @@ export const SHAPES = [
             "#63c74d",
             "#63c74d"
           ]
-        ]
+        ],
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -3786,7 +3835,8 @@ export const SHAPES = [
             "#ffb3c6",
             "#ffb3c6"
           ]
-        ]
+        ],
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -3870,7 +3920,8 @@ export const SHAPES = [
             "#feae34",
             "#feae34"
           ]
-        ]
+        ],
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -3954,7 +4005,8 @@ export const SHAPES = [
             "#fee761",
             "#feae34"
           ]
-        ]
+        ],
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -4037,7 +4089,8 @@ export const SHAPES = [
             "#25b677",
             "#4fc492"
           ]
-        ]
+        ],
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -4121,7 +4174,8 @@ export const SHAPES = [
             "#8ee35c",
             "#4fb83a"
           ]
-        ]
+        ],
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -4138,7 +4192,8 @@ export const SHAPES = [
     powerup: {
         "type": "phantom",
         "tier": 1,
-        "intro": "It floats straight down through your blocks and settles into the deepest gap it fits, where it stays. It just wanted to help."
+        "intro": "It floats straight down through your blocks and settles into the deepest gap it fits, where it stays. It just wanted to help.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -4155,7 +4210,8 @@ export const SHAPES = [
     powerup: {
         "type": "phantom",
         "tier": 1,
-        "intro": "Until it lands, it is both here and at the bottom of your stack. It passes through blocks and drops into the deepest gap it fits."
+        "intro": "Until it lands, it is both here and at the bottom of your stack. It passes through blocks and drops into the deepest gap it fits.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -4173,7 +4229,8 @@ export const SHAPES = [
     powerup: {
         "type": "phantom",
         "tier": 1,
-        "intro": "Lost in the dryer, now at peace. It drifts through your blocks and lies down in the deepest gap it fits. Its partner is still out there."
+        "intro": "Lost in the dryer, now at peace. It drifts through your blocks and lies down in the deepest gap it fits. Its partner is still out there.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -4190,7 +4247,8 @@ export const SHAPES = [
     powerup: {
         "type": "phantom",
         "tier": 1,
-        "intro": "Ignores walls, blocks and you. It strolls straight down through the stack into the deepest gap it fits, and sits there like it owns the place."
+        "intro": "Ignores walls, blocks and you. It strolls straight down through the stack into the deepest gap it fits, and sits there like it owns the place.",
+        "help": 1.5
       },
     rotation: {
         "mode": "none"
@@ -4209,7 +4267,8 @@ export const SHAPES = [
     powerup: {
         "type": "phantom",
         "tier": 1,
-        "intro": "Gone to the big compost heap in the sky. It wriggles down through solid blocks into the deepest gap it fits."
+        "intro": "Gone to the big compost heap in the sky. It wriggles down through solid blocks into the deepest gap it fits.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -4226,7 +4285,8 @@ export const SHAPES = [
     powerup: {
         "type": "phantom",
         "tier": 2,
-        "intro": "One is where you left your keys. The other is that guy's name. They sink through everything and settle into the deepest gap they fit, never to be seen again."
+        "intro": "One is where you left your keys. The other is that guy's name. They sink through everything and settle into the deepest gap they fit, never to be seen again.",
+        "help": 1
       },
     rotation: {
         "mode": "none"
@@ -4244,7 +4304,8 @@ export const SHAPES = [
     powerup: {
         "type": "phantom",
         "tier": 2,
-        "intro": "You've seen it before: the faint outline showing where a piece will land. Now it goes there for real, straight through your blocks into the deepest gap it fits."
+        "intro": "You've seen it before: the faint outline showing where a piece will land. Now it goes there for real, straight through your blocks into the deepest gap it fits.",
+        "help": 1
       },
     rotation: {
         "mode": "none"
@@ -4262,7 +4323,8 @@ export const SHAPES = [
     powerup: {
         "type": "phantom",
         "tier": 2,
-        "intro": "There is nobody underneath. It floats down through your blocks and settles in the deepest gap it fits. Wash at 40."
+        "intro": "There is nobody underneath. It floats down through your blocks and settles in the deepest gap it fits. Wash at 40.",
+        "help": 1
       },
     rotation: {
         "mode": "none"
@@ -4290,7 +4352,8 @@ export const SHAPES = [
             "######",
             "######"
           ]
-        }
+        },
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -4318,7 +4381,8 @@ export const SHAPES = [
             "####",
             "####"
           ]
-        }
+        },
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -4349,7 +4413,8 @@ export const SHAPES = [
             "####",
             "####"
           ]
-        }
+        },
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -4377,7 +4442,8 @@ export const SHAPES = [
           "grid": [
             "|||||"
           ]
-        }
+        },
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -4404,7 +4470,8 @@ export const SHAPES = [
           "grid": [
             "|||"
           ]
-        }
+        },
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -4498,7 +4565,8 @@ export const SHAPES = [
             "####",
             "####"
           ]
-        }
+        },
+        "help": 1.5
       },
     rotation: {
         "mode": "none"

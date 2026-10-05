@@ -411,6 +411,11 @@
       padding: 10px;
       border: 1px dashed rgba(123,247,255,0.4);
     }
+    .devTools input[type=range]{ width: 100%; }
+    .devEnabled{ text-align: left; font-size: 11px; max-height: 40vh; overflow-y: auto; }
+    .devEnabled details{ margin: 2px 0; }
+    .devEnabled summary{ cursor: pointer; }
+    .devEnabled label{ display: block; padding: 2px 0 2px 18px; }
     .devTools select{
       width: 100%;
       margin: 6px 0 8px;
@@ -852,6 +857,7 @@
             <div class="big title">Extris</div>
             <div class="small">alpha version 20260306</div>
             <div class="menuBtns">
+              <button id="btnEasy" class="secondary">Easy mode</button>
               <button id="btnNormal">Normal mode</button>
               <button id="btnExtreme" class="secondary">Extreme mode</button>
               <button id="btnHowTo" class="secondary">How to play</button>
@@ -874,13 +880,13 @@
               <p><b>Touch:</b> tap the left or right side to move, tap the top to rotate, tap the bottom middle to drop faster. Hold to keep going.</p>
               <p><b>Keyboard:</b> <kbd>←</kbd> <kbd>→</kbd> move, <kbd>↑</kbd> rotate, <kbd>↓</kbd> drop faster, <kbd>Space</kbd> pause.</p>
 
-              <h3>Powerups (Normal mode)</h3>
+              <h3>Powerups (Easy and Normal)</h3>
               <p>Some pieces are powerups: their name glows rainbow and says what they do. While one falls, the cells it will affect light up where it is going to land.</p>
               <div id="howtoClasses"></div>
-              <p>New powerups are introduced one at a time as you play (destroyers first), each with a quick intro. Powerups turn up more often when you're in trouble. The pause menu lists every powerup you've met so far.</p>
+              <p>Powerups come in classes, introduced one class at a time as you play, each with a quick intro; once a class is in, any of its pieces can turn up. Later on, combo powerups do two things at once. When you're in trouble, powerups turn up more often and the more helpful ones get picked. The pause menu lists every powerup you've met so far.</p>
 
               <h3>Modes</h3>
-              <p><b>Normal:</b> the full game, with powerups.<br><b>Extreme:</b> the original. No powerups, no mercy.</p>
+              <p><b>Easy:</b> powerups, and none of the giant pieces.<br><b>Normal:</b> the full game, with powerups. Watch out for the giants.<br><b>Extreme:</b> the original. No powerups, no mercy.</p>
 
               <h3>Achievements</h3>
               <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
@@ -926,6 +932,10 @@
                 <button id="btnDevMessy" class="secondary small">Messy board</button>
               </div>
               <div class="small" id="devNextStatus"></div>
+              <div class="devTitle">dev: powerup frequency <span id="devRateValue"></span></div>
+              <input type="range" id="devRate" min="0" max="5" step="0.25" value="1">
+              <div class="devTitle">dev: enabled powerups</div>
+              <div class="devEnabled" id="devEnabled"></div>
             </div>
           </div>
 
@@ -990,7 +1000,7 @@
           <div class="v" id="scoreText">0</div>
         </div>
         <div class="statPill">
-          <div class="k">Rows · Blocks</div>
+          <div class="k">Blocks</div>
           <div class="v" id="linesText">0</div>
         </div>
       </div>

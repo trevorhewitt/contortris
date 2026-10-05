@@ -5,7 +5,10 @@
 // Board format (same as main.js): board[y][x] is null (empty) or a cell object.
 // Area format: see the doc comment at the top of shapes/powerup_shapes.js.
 
-export const POWERUP_TYPES = ["destroyer", "gravity", "expander", "acid", "blast", "goo", "phantom"];
+export const POWERUP_TYPES = ["destroyer", "gravity", "expander", "acid", "blast", "goo", "phantom", "combo"];
+
+// Classes a combo can be built from, in the order their parts fire.
+export const COMBO_PART_TYPES = ["destroyer", "acid", "blast", "gravity", "expander"];
 
 export const DEFAULT_EFFECT_TEXT = {
   destroyer: "destroys highlighted blocks",
@@ -15,6 +18,7 @@ export const DEFAULT_EFFECT_TEXT = {
   blast: "blasts highlighted blocks away",
   goo: "melts into the gaps below",
   phantom: "falls through blocks into the deepest gap",
+  combo: "does several things at once",
 };
 
 // Longer explanations for intro / help screens, one per class.
@@ -26,10 +30,14 @@ export const CLASS_INFO = {
   blast: { name: "Blasts", text: "Throws the highlighted blocks outwards, then they fall back down somewhere new." },
   goo: { name: "Goo", text: "Melts when it lands and flows down into the lowest gaps it can reach." },
   phantom: { name: "Phantoms", text: "Falls straight through other blocks and settles in the deepest gap it fits." },
+  combo: { name: "Combos", text: "Two powerups in one: each colour of highlight does its own thing, one after the other." },
 };
 
 // Which consume by default (vanish when they fire).
-const CONSUMES = { destroyer: true, gravity: true, expander: false, acid: true, blast: true, goo: true, phantom: false };
+const CONSUMES = { destroyer: true, gravity: true, expander: false, acid: true, blast: true, goo: true, phantom: false, combo: true };
+
+// How helpful a powerup is (1 = barely, 5 = a lifesaver) when the data doesn't say.
+const DEFAULT_HELP_BY_TIER = { 1: 2, 2: 3, 3: 4.5 };
 
 const DIRECTIONS = {
   down: { dx: 0, dy: 1 },
@@ -127,7 +135,17 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
   const tier = Math.max(1, Math.min(3, Math.round(Number(raw.tier) || 1)));
 
   let areaRotations;
-  if (type === "acid") {
+  let parts = null;
+  if (type === "combo") {
+    // each part is a small powerup of its own (no goo / phantom / nested combos)
+    parts = (Array.isArray(raw.parts) ? raw.parts : [])
+      .filter(p => p && COMBO_PART_TYPES.includes(p.type))
+      .map(p => normalisePowerup({ ...p, consume: false, tier: raw.tier }, rotations, trim, `${id}/${p.type}`))
+      .filter(Boolean)
+      .sort((a, b) => COMBO_PART_TYPES.indexOf(a.type) - COMBO_PART_TYPES.indexOf(b.type));
+    if (parts.length < 2) console.warn(`[${id}] a combo needs at least two parts.`);
+    areaRotations = rotations.map((_, i) => unionAreas(parts.map(p => p.areaRotations[i])));
+  } else if (type === "acid") {
     // everything within `reach` steps of the piece, plus any explicit area
     const reach = Math.max(1, Math.round(Number(raw.reach) || 1));
     const extra = raw.area ? areaRotationsFor(raw.area, rotations, trim) : null;
@@ -163,8 +181,33 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
     push: Math.max(1, Number(raw.push) || 3),
     volume: Math.max(0.1, Number(raw.volume) || 1),
     fill: raw.fill ?? null,
+    help: Number.isFinite(Number(raw.help)) && raw.help !== null && raw.help !== ""
+      ? Math.max(1, Math.min(5, Number(raw.help)))
+      : DEFAULT_HELP_BY_TIER[tier],
+    parts,
     areaRotations,
   };
+}
+
+function unionAreas(list) {
+  const out = { cells: [], rows: [], cols: [] };
+  for (const a of list) {
+    if (!a) continue;
+    out.cells.push(...a.cells);
+    out.rows.push(...a.rows);
+    out.cols.push(...a.cols);
+  }
+  out.rows = [...new Set(out.rows)].sort((a, b) => a - b);
+  out.cols = [...new Set(out.cols)].sort((a, b) => a - b);
+  return out;
+}
+
+// The area of a powerup at board position (px, py) in rotation `rot`. Combos also get
+// `parts`: one resolved area per part.
+export function resolvePowerupArea(pu, rot, px, py, cols, rows) {
+  const area = resolveArea(pu.areaRotations[rot] ?? pu.areaRotations[0], px, py, cols, rows);
+  if (pu.parts) area.parts = pu.parts.map(p => resolveArea(p.areaRotations[rot] ?? p.areaRotations[0], px, py, cols, rows));
+  return area;
 }
 
 // Cells within `reach` (Manhattan) steps of the piece's blocks, not the blocks themselves.
@@ -503,8 +546,41 @@ export function computeEffect(board, pu, ctx) {
       out.filled = applyGoo(board, placed.filter(p => p.y >= 0), units, cols, rows, makeFill);
       break;
     }
+    case "combo": {
+      // parts fire one after another on the same board (destroy first, fill last)
+      const parts = pu.parts ?? [];
+      parts.forEach((part, i) => {
+        const makeFill = ctx.makeFill ? (x, y) => ({ ...ctx.makeFill(x, y), paint: part.fillPaint ?? pu.fillPaint, style: part.fillStyle ?? pu.fillStyle }) : undefined;
+        const sub = computeEffect(board, { ...part, consume: false }, { ...ctx, makeFill, area: area.parts?.[i] ?? area });
+        mergeEffect(out, sub);
+      });
+      break;
+    }
     default: // phantom: already where it wants to be
       break;
   }
   return out;
+}
+
+// Fold a later part's results into `out`, chaining moves of the same block.
+function mergeEffect(out, sub) {
+  const at = (x, y) => out.moves.findIndex(m => m.toX === x && m.toY === y);
+  for (const d of sub.destroyed) {
+    const i = at(d.x, d.y);
+    if (i >= 0) { // it had moved earlier in this combo: it was destroyed where it ended up
+      out.moves.splice(i, 1);
+    }
+    out.destroyed.push(d);
+  }
+  for (const m of sub.moves) {
+    const i = at(m.fromX, m.fromY);
+    if (i >= 0) {
+      const prev = out.moves[i];
+      out.moves[i] = { ...m, fromX: prev.fromX, fromY: prev.fromY, viaX: prev.viaX ?? m.viaX, viaY: prev.viaY ?? m.viaY };
+    } else {
+      out.moves.push(m);
+    }
+  }
+  out.filled.push(...sub.filled);
+  if (sub.collapsed) out.collapsed = sub.collapsed;
 }

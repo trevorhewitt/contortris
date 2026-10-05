@@ -5,7 +5,7 @@
 // ============================================================
 
 import { clamp01, easeOutBack, makeRng } from "./util.js";
-import { resolveArea, computeEffect, phantomLandingY } from "./powerups.js";
+import { resolvePowerupArea, computeEffect, phantomLandingY } from "./powerups.js";
 import { getShapePaint } from "./shapes.js";
 import { drawBlockWithPaintStatic, drawPowerupMark } from "./render.js";
 
@@ -32,7 +32,8 @@ function makeBoard(shape, rng) {
     }
   }
   // floating lumps with air pockets under them (gravity / goo / phantoms love these)
-  if (type === "gravity" || type === "phantom" || type === "goo") {
+  const gravityish = type === "gravity" || (type === "combo" && shape.powerup.parts?.some(p => p.type === "gravity"));
+  if (gravityish || type === "phantom" || type === "goo") {
     for (const x of [1, 2, 6, 7]) { b[ROWS - 4][x] = filler(x + 11); b[ROWS - 3][x] = null; }
   }
   if (type === "phantom") {
@@ -79,16 +80,17 @@ function simulate(board, shape, x) {
     after[y + j][x + i] = { paint: getShapePaint(shape, 0, i, j), style: shape.style, pid: -1 };
   }
   const centre = { x: x + (mat[0].length - 1) / 2, y: y + (mat.length - 1) / 2 };
-  const area = resolveArea(pu.areaRotations[0], x, y, COLS, ROWS);
+  const area = resolvePowerupArea(pu, 0, x, y, COLS, ROWS);
   const fx = computeEffect(after, pu, {
     area, placed, pid: -1, centre, cols: COLS, rows: ROWS, rng: makeRng(7),
     makeFill: () => ({ paint: pu.fillPaint, style: pu.fillStyle }),
   });
   let preview = area.indices;
+  const layers = pu.parts && area.parts ? pu.parts.map((p, k) => [p, area.parts[k].indices]) : null;
   if (pu.type === "goo") preview = fx.filled.map(f => f.y * COLS + f.x);
   if (pu.type === "phantom") preview = placed.map(p => p.y * COLS + p.x);
   const score = fx.destroyed.length * 2 + fx.moves.length + fx.filled.length + (pu.type === "phantom" ? y : 0);
-  return { x, y, placed, centre, fx, after, preview, score };
+  return { x, y, placed, centre, fx, after, preview, layers, score };
 }
 
 export function createDemo(canvas, shape, { cell = 16 } = {}) {
@@ -147,11 +149,13 @@ export function createDemo(canvas, shape, { cell = 16 } = {}) {
       for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) drawCell(board[y][x], x * cell, y * cell);
       const charge = t > T_FALL ? (t - T_FALL) / T_CHARGE : 0;
       ctx.save();
-      for (const i of best.preview) {
-        const x = i % COLS, y = (i / COLS) | 0;
-        const filled = !!board[y][x];
-        const eff = (pu.type === "goo" || phantom) ? true : pu.type === "expander" ? !filled : filled;
-        drawPowerupMark(ctx, pu, x * cell, y * cell, cell, now, x, y, Math.hypot(x - best.centre.x, y - best.centre.y), eff, 1 + charge, best.centre);
+      for (const [lp, idx] of best.layers ?? [[pu, best.preview]]) {
+        for (const i of idx) {
+          const x = i % COLS, y = (i / COLS) | 0;
+          const filled = !!board[y][x];
+          const eff = (lp.type === "goo" || lp.type === "phantom") ? true : lp.type === "expander" ? !filled : filled;
+          drawPowerupMark(ctx, lp, x * cell, y * cell, cell, now, x, y, Math.hypot(x - best.centre.x, y - best.centre.y), eff, 1 + charge, best.centre);
+        }
       }
       ctx.restore();
       const fy = t < T_FALL ? -mat.length + (best.y + mat.length) * (t / T_FALL) : best.y;

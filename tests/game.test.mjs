@@ -225,7 +225,7 @@ test("achievements: game over triggers", () => {
 });
 
 test("every achievement trigger in the data file is a known type", () => {
-  const KNOWN = ["together", "rowsDestroyed", "multiRow", "pieceServed", "pieceSequence", "pieceInside", "seenAll",
+  const KNOWN = ["together", "blocksDestroyed", "rowsDestroyed", "multiRow", "pieceServed", "pieceSequence", "pieceInside", "seenAll",
     "powerupUsed", "powerupBlocks", "score", "level", "drops", "boardCleared", "gameOver"];
   const ids = new Set();
   for (const a of ACHIEVEMENTS) {
