@@ -22,6 +22,8 @@ export function initPieceSelectionState(state) {
 
     // last few selected shape IDs (for the soft non-repetition bias)
     recentShapeIds: [],
+    // how many times each shape has been served this game
+    servedCounts: new Map(),
 
     // counts by level (0–5)
     levelCounts: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
@@ -194,6 +196,10 @@ export function varietyMultiplier(sel, shape) {
     r.penaltyStrength ?? 0.75,
     r.minMultiplier ?? 0.15
   );
+
+  const lvl = shape.powerup ? 0 : (shape.difficulty ?? 1);
+  const served = sel.servedCounts?.get(shape.id) ?? 0;
+  if (lvl >= 4 && served > 0) mult *= Math.pow(v.giants?.repeatPenalty ?? 1, served);
 
   const b = v.onBoard ?? {};
   const copies = sel.presence?.get(shape.id) ?? 0;
@@ -536,6 +542,7 @@ function commitSelectedShape(sel, shape) {
   }
 
   if (sel.lastShapeId) {
+    sel.servedCounts.set(sel.lastShapeId, (sel.servedCounts.get(sel.lastShapeId) ?? 0) + 1);
     sel.recentShapeIds.push(sel.lastShapeId);
 
     // Keep a modest history buffer.

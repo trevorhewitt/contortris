@@ -51,7 +51,8 @@ test("every block in main_shapes.js loads (regular + powerups)", () => {
     assert.ok(s.rotations.length >= 1, s.id);
     assert.equal(s.cellPaints.length, s.rotations.length, s.id);
   }
-  for (const p of powerups) if (p.powerup.type !== "phantom") assert.equal(p.rotations.length, 1, `${p.id} should not rotate`);
+  const rawRot = Object.fromEntries(SHAPES.map(s => [s.id, s.rotation?.mode]));
+  for (const p of powerups) if (rawRot[p.id] !== "any") assert.equal(p.rotations.length, 1, `${p.id} should not rotate`);
 });
 
 test("Extreme mode never serves powerups; Normal does", () => {

@@ -29,10 +29,15 @@ export const CONFIG = {
   },
 
   scoring: {
-    lineClear: { 1: 100, 2: 250, 3: 450, 4: 700 },
+    lineClear: { 1: 100, 2: 250, 3: 450, 4: 700, 5: 1000, 6: 1400, 7: 1900, 8: 2500 },
     softDropPerCell: 1,
     hardDropPerCell: 2,
-    powerupDestroyPerBlock: 10, // × level, for blocks destroyed by a destroyer
+    // everything below is × level
+    placePerBlock: 2,           // each block of a piece you place
+    blockDestroyed: 5,          // each block destroyed, by a line clear or a powerup
+    powerupDestroyPerBlock: 10, // extra for each block a powerup destroys
+    powerupMovePerBlock: 3,     // each block a powerup moves or fills
+    // rows a powerup wipes out wall to wall also score lineClear
   },
 
   pause: { hideShapes: true, pauseWhenHidden: true },
@@ -140,6 +145,11 @@ export const CONFIG = {
     // multipliers, so the same things don't keep turning up. Both are soft (never zero),
     // and linked "back to back" pieces (nextShapes) ignore them.
     variety: {
+      // The big level 4 and 5 pieces are the most noticeable, so one already served this
+      // game is much less likely to come again: its weight × repeatPenalty per time served
+      // (it can still happen, just rarely, e.g. when every giant has had a turn).
+      giants: { repeatPenalty: 0.04 },
+
       // Pieces served recently: d drops ago (1..lastK) the weight is multiplied by
       // 1 - penaltyStrength × (lastK - d + 1) / lastK  (strongest for the last piece).
       recent: {

@@ -461,6 +461,7 @@ function lockPiece(state) {
 
   const info = { shape, rotIdx, x: state.active.x, y: state.active.y, pid, placed };
 
+  state.score += placed.length * (CONFIG.scoring.placePerBlock ?? 0) * state.level;
   emit(state, "lock", {
     shape, pid, cells: placed, drops: state.drops,
     inside: (zone = "inside") => insidePairs(state, pid, zone),
@@ -612,7 +613,7 @@ function clearFullLines(state) {
   state.blocksDestroyed += cleared * cols;
 
   const base = CONFIG.scoring.lineClear[cleared] ?? (cleared * 100);
-  state.score += base * state.level;
+  state.score += (base + cleared * cols * (CONFIG.scoring.blockDestroyed ?? 0)) * state.level;
 
   const newLevel = 1 + Math.floor(state.lines / CONFIG.timing.levelEveryLines);
   if (newLevel !== state.level) {
@@ -749,7 +750,7 @@ function firePowerupEffect(state, e) {
     spawnCellParticles(state, fx.destroyed);
     startFlash(state, fx.destroyed, cfg.destroyFlashMs);
     state.blocksDestroyed += fx.destroyed.length;
-    state.score += fx.destroyed.length * (CONFIG.scoring.powerupDestroyPerBlock ?? 0) * state.level;
+    state.score += fx.destroyed.length * ((CONFIG.scoring.powerupDestroyPerBlock ?? 0) + (CONFIG.scoring.blockDestroyed ?? 0)) * state.level;
     addQuakeFromBlocks(state, fx.destroyed.length * (cfg.destroyQuakePerBlock ?? 1));
     settleMs = cfg.destroySettleMs;
   }
@@ -759,8 +760,12 @@ function firePowerupEffect(state, e) {
     startRowFall(state, fx.collapsed.dropDistances);
     settleMs = Math.max(settleMs, CONFIG.fx.lineClear.boardFallAnimMs);
     state.rowsDestroyed += fx.collapsed.rows.length;
+    state.score += (CONFIG.scoring.lineClear[fx.collapsed.rows.length] ?? fx.collapsed.rows.length * 100) * state.level;
     emit(state, "rowsDestroyed", { count: fx.collapsed.rows.length, source: "powerup" });
   }
+
+  // blocks moved or filled by a powerup score a little too
+  state.score += (fx.moves.length + fx.filled.length) * (CONFIG.scoring.powerupMovePerBlock ?? 0) * state.level;
 
   if (fx.moves.length) {
     instancesAfterMoves(state, fx.moves);
@@ -1090,7 +1095,7 @@ export function updateGame(state, dt) {
 // Test/debug helper: drop the active piece straight down and lock it now.
 export function hardDropAndLock(state) {
   if (!state.active || state.effect || state.gameOver) return false;
-  while (tryMove(state, 0, 1)) { /* fall */ }
+  while (tryMove(state, 0, 1)) state.score += CONFIG.scoring.hardDropPerCell ?? 0;
   stepLockAndSpawn(state);
   cancelLock(state);
   return true;
