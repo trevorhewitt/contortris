@@ -145,9 +145,21 @@
     .box{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:10px; }
     .box h3{ margin-bottom:6px; }
     .areaWrap{ background:#050505; border:1px solid var(--line); border-radius:12px; padding:10px; overflow:auto; max-height: calc(100vh - 150px); }
+    /* the side column can get long (combo parts): keep the canvas in view while editing below */
+    .puGrid > .areaWrap{ position:sticky; top:12px; max-height: calc(100vh - 24px); }
+    @media (max-width: 1100px){ .puGrid > .areaWrap{ position:static; max-height: calc(100vh - 150px); } }
     #areaCanvas{ display:block; touch-action:none; cursor:crosshair; }
     .areaTools button{ min-width:40px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size:13px; }
     #fillCanvas{ display:block; touch-action:none; cursor:crosshair; border-radius:6px; }
+    .partList{ display:flex; flex-direction:column; gap:5px; margin-top:8px; }
+    .partRow{ display:grid; grid-template-columns: 12px 18px minmax(0,1fr) auto; gap:7px; align-items:center; padding:5px 8px;
+      border:1px solid var(--line); border-radius:8px; background:#0f0f0f; cursor:pointer; font-size:12px; text-align:left; }
+    .partRow:hover{ border-color:rgba(106,166,255,.35); background:#0f0f0f; }
+    .partRow.active{ border-color:rgba(106,166,255,.8); background:#141a24; }
+    .partRow .partNum{ color:#7d7d7d; font-size:11px; }
+    .partRow .partType{ font-weight:650; color:#fff; }
+    .partDot{ width:12px; height:12px; border-radius:3px; border:1px solid rgba(255,255,255,.35); }
+    .partEditor{ margin-top:8px; padding-top:2px; border-top:1px solid var(--line); }
     #gameCanvas{ display:block; cursor:pointer; border:1px solid #222; border-radius:4px; image-rendering: pixelated; }
 
     /* right column: files + list */
@@ -226,6 +238,13 @@
     .summary{ margin-top:12px; padding:9px 11px; border-radius:10px; background:#0f1626; border:1px solid rgba(106,166,255,.32);
       font-size:13px; line-height:1.45; color:#dfe9ff; }
     .summary small{ display:block; color:var(--muted); margin-top:4px; font-size:11.5px; }
+    #toastVariantSeg button{ padding:3px 8px; font-size:11px; }
+    .varHead{ display:flex; justify-content:space-between; align-items:center; }
+    .variantList{ display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+    .variantBox{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:7px 8px 8px; }
+    .variantBox .varTop{ display:grid; grid-template-columns: 22px minmax(0,1fr) auto; gap:6px; align-items:center; }
+    .variantBox .varNum{ color:#7d7d7d; font-size:11px; text-align:center; }
+    .variantBox textarea.desc{ margin-top:6px; }
     .rawJson{ font-size:11px; white-space:pre-wrap; word-break:break-all; background:#0c0c0c; border:1px solid var(--line); border-radius:8px; padding:6px 8px; margin-top:6px; color:#cfcfcf; }
 
     .iconLayout{ display:grid; grid-template-columns: 250px minmax(0,1fr); gap:12px; align-items:start; }
@@ -457,7 +476,7 @@
             <div class="box">
               <h3>Effect</h3>
               <div class="field"><span>Type</span>
-                <select id="puType"><option value="destroyer">destroyer</option><option value="gravity">gravity</option><option value="expander">expander</option><option value="acid">acid</option><option value="blast">blast</option><option value="goo">goo</option><option value="phantom">phantom</option></select>
+                <select id="puType"><option value="destroyer">destroyer</option><option value="gravity">gravity</option><option value="expander">expander</option><option value="acid">acid</option><option value="blast">blast</option><option value="goo">goo</option><option value="phantom">phantom</option><option value="combo">combo</option></select>
               </div>
               <div class="hint" id="puTypeDoc" style="margin:-2px 0 6px;"></div>
               <div class="field" id="puReachField"><span>Reach</span>
@@ -478,10 +497,40 @@
                   <span class="hint">1 gentle · 2 strong · 3 very strong</span>
                 </div>
               </div>
+              <div class="field"><span>Help</span>
+                <div class="grow"><input id="puHelp" type="number" min="1" max="5" step="0.5" style="width:80px;"><span id="puHelpHint" class="hint" title="How helpful it is. The more the player is struggling, the more the helpful ones are picked.">1 barely · 5 a lifesaver</span></div>
+              </div>
               <div class="field"><span>Description</span><input id="puDescription" type="text" spellcheck="false"></div>
               <div class="field top"><span>Intro</span><textarea id="puIntro" class="desc" rows="3" spellcheck="true" placeholder="Optional: a line or two for the powerup's intro screen"></textarea></div>
               <div class="field"><span></span><label><input id="puConsume" type="checkbox"> Consume <span id="puConsumeNote" class="pill">default</span></label></div>
               <div class="field" id="puCollapseField"><span></span><label title="Rows wiped wall-to-wall collapse like a line clear"><input id="puCollapse" type="checkbox"> Collapse wiped rows</label></div>
+            </div>
+
+            <div class="box hidden" id="puPartsBox">
+              <h3>Combo parts <span id="puPartsCount" class="pill mono" style="font-weight:500;">0</span></h3>
+              <div class="hint">Each part is a mini powerup with its own type, fields and area. Pick a part to edit it; the area canvas paints the selected part.</div>
+              <div id="puPartList" class="partList"></div>
+              <div class="row" style="margin-top:8px;">
+                <button id="puPartAdd" class="small primary">+ Add part</button>
+                <button id="puPartRemove" class="small danger">Remove part</button>
+              </div>
+              <div id="puPartEditor" class="partEditor">
+                <div class="field"><span>Part type</span>
+                  <select id="puPartType"><option value="destroyer">destroyer</option><option value="acid">acid</option><option value="blast">blast</option><option value="gravity">gravity</option><option value="expander">expander</option></select>
+                </div>
+                <div class="hint" id="puPartTypeDoc" style="margin:4px 0 0;"></div>
+                <div class="field" id="puPartReachField"><span>Reach</span>
+                  <div class="grow"><input id="puPartReach" type="number" min="1" max="10" step="1" style="width:80px;" placeholder="1"><span class="hint">default 1</span></div>
+                </div>
+                <div class="field" id="puPartPushField"><span>Push</span>
+                  <div class="grow"><input id="puPartPush" type="number" min="1" max="20" step="1" style="width:80px;" placeholder="3"><span class="hint">default 3</span></div>
+                </div>
+                <div class="field" id="puPartDirectionField"><span>Direction</span>
+                  <select id="puPartDirection"><option value="down">down</option><option value="left">left</option><option value="right">right</option><option value="up">up</option></select>
+                </div>
+                <div class="field" id="puPartCollapseField"><span></span><label title="Rows this part wipes wall-to-wall collapse like a line clear"><input id="puPartCollapse" type="checkbox"> Collapse wiped rows</label></div>
+                <div id="puPartExtras" class="hint" style="margin-top:6px;"></div>
+              </div>
             </div>
 
             <div class="box hidden" id="puNoAreaBox">
@@ -620,6 +669,7 @@
           <button id="previewCentre" class="small">Centre</button>
         </div>
         <div class="hint" style="margin-top:4px;">18px cells, 14×12 board. Click to move the piece.</div>
+        <div id="previewLegend" class="hint hidden" style="margin-top:4px; display:flex; gap:10px; flex-wrap:wrap;"></div>
       </div>
 
       <div class="subCard">
@@ -721,11 +771,16 @@
         <div class="field top"><span>Description</span><textarea id="achDesc" class="desc" rows="2" placeholder="What you have to do."></textarea></div>
         <div class="field"><span>Mode</span>
           <div class="grow">
-            <select id="achMode"><option value="any">any (default)</option><option value="normal">normal</option><option value="extreme">extreme</option></select>
-            <span class="hint">where it can unlock</span>
+            <select id="achMode" title="Which game modes it can unlock in"><option value="any">any (default)</option><option value="easy">easy</option><option value="normal">normal</option><option value="extreme">extreme</option><option value="powerups">powerups (Easy or Normal)</option></select>
+
           </div>
         </div>
         <div class="field"><span>Secret</span><label><input id="achSecret" type="checkbox"> listed as ??? until unlocked</label></div>
+        <div class="sep"></div>
+        <h3 class="varHead">Variants <span id="achVarCount" class="pill mono">0</span></h3>
+        <div class="hint">Other names for the same achievement. When it unlocks, one of the names (the main one or a variant) is picked at random, so different players see different jokes.</div>
+        <div id="achVariants" class="variantList"></div>
+        <div class="row" style="margin-top:8px;"><button id="achVarAdd" class="small primary">+ Add variant</button></div>
         <div id="achExtras" class="hint" style="margin-top:8px;"></div>
       </div>
     </div>
@@ -785,7 +840,10 @@
         <div><div class="hint">1×</div><div class="previewBox"><canvas id="iconPrev1" class="pixel"></canvas></div></div>
         <div><div class="hint">3×</div><div class="previewBox"><canvas id="iconPrev3" class="pixel"></canvas></div></div>
         <div style="flex:1 1 340px; min-width:0;">
-          <div class="hint">In-game unlock toast</div>
+          <div class="row" style="justify-content:space-between; gap:6px;">
+            <span class="hint">In-game unlock toast</span>
+            <div id="toastVariantSeg" class="seg hidden" title="Which name to preview"></div>
+          </div>
           <div class="toastStage">
             <div class="achToast">
               <canvas id="toastIcon" class="pixel" width="36" height="36" style="width:36px;height:36px;"></canvas>
@@ -860,7 +918,14 @@
   const MAX_BLOCKS = 64;
   const ID_RE = /^[a-z0-9_]+$/;
   const AREA_CHARS = new Set(["#", "-", "|", "+"]);
-  const PU_TYPES = ["destroyer", "gravity", "expander", "acid", "blast", "goo", "phantom"];
+  const PU_TYPES = ["destroyer", "gravity", "expander", "acid", "blast", "goo", "phantom", "combo"];
+  // Types a combo part may have, in the order the parts fire (the game sorts them like this)
+  const COMBO_PART_TYPES = ["destroyer", "acid", "blast", "gravity", "expander"];
+  // One colour per part type: combo areas in the area editor, the in-game preview and the thumbnails
+  const PART_COLOURS = { destroyer: "#ff5a6e", acid: "#9dff5a", blast: "#ffa03c", gravity: "#5aa8ff", expander: "#f2e05a" };
+  const partColour = (type) => PART_COLOURS[type] || "#d0d0d0";
+  // How helpful a powerup is when `help` is left out (the game's DEFAULT_HELP_BY_TIER)
+  const DEFAULT_HELP_BY_TIER = { 1: 2, 2: 3, 3: 4.5 };
   const PU_DEFAULT_DESC = {
     destroyer: "destroys highlighted blocks",
     gravity: "gravitates highlighted blocks",
@@ -869,8 +934,9 @@
     blast: "blasts highlighted blocks away",
     goo: "melts into the gaps below",
     phantom: "falls through blocks into the deepest gap",
+    combo: "does several things at once",
   };
-  const PU_DEFAULT_CONSUME = { destroyer: true, gravity: true, expander: false, acid: true, blast: true, goo: true, phantom: false };
+  const PU_DEFAULT_CONSUME = { destroyer: true, gravity: true, expander: false, acid: true, blast: true, goo: true, phantom: false, combo: true };
   // What each type does (shown under the type select)
   const PU_TYPE_DOC = {
     destroyer: "Destroys every block in its area.",
@@ -880,6 +946,7 @@
     blast: "Throws the blocks in its area outwards by up to push cells, then they fall.",
     goo: "Melts: its blocks (× volume) flow down into the lowest gaps they can reach, drawn with its fill art.",
     phantom: "Falls straight through blocks into the deepest gap it fits, and stays there as blocks.",
+    combo: "Several powerups in one: each part has its own type, fields and area. They fire in class order (destroy, acid, blast, gravity, fill last). Only turns up once all of its parts' classes are in the game.",
   };
   // Types whose `area` the game reads (acid: optional extra cells on top of its touch area)
   const PU_AREA_TYPES = ["destroyer", "gravity", "expander", "blast", "acid"];
@@ -891,10 +958,12 @@
     { key: "push", type: "blast", def: 3, min: 1, int: false },
     { key: "volume", type: "goo", def: 1, min: 0.1, int: false },
   ];
-  const defaultPu = () => ({ type: "destroyer", direction: "down", tier: 1, description: "", intro: "", consume: null, collapse: false, reach: null, push: null, volume: null, extras: {} });
+  const defaultPu = () => ({ type: "destroyer", direction: "down", tier: 1, description: "", intro: "", help: null, consume: null, collapse: false, reach: null, push: null, volume: null, parts: [], partSel: 0, extras: {} });
   // Keys the editor manages itself; everything else on a loaded shape is preserved as-is.
   const MANAGED_KEYS = ["id", "name", "grid", "color", "powerup", "difficulty", "rotation", "frequency", "nextShapes", "nextShapeProbs", "tags", "zones"];
-  const MANAGED_PU_KEYS = ["type", "direction", "tier", "description", "intro", "area", "fill", "consume", "collapse"];
+  const MANAGED_PU_KEYS = ["type", "direction", "tier", "description", "intro", "help", "parts", "area", "fill", "consume", "collapse"];
+  // Keys a combo part's editor manages (the rest of a part is kept as written)
+  const MANAGED_PART_KEYS = ["type", "area", "direction", "reach", "push", "fill", "collapse"];
   // Serialisation key order (rest sorted alphabetically, like shape_encoder): ... nextShapeProbs, nextShapes, tags, zones
   const PREFERRED_KEYS = ["id", "name", "grid", "color", "powerup", "difficulty", "rotation", "frequency"];
   // In-game preview
@@ -1186,7 +1255,8 @@
     // cells: "x,y" (editor block coords = the grid as loaded) -> "#"|"-"|"|"|"+"
     // orig: the area object as loaded (written back verbatim while its cells are unchanged)
     area: { cells: {}, margin: 3, tool: "#", extras: {}, orig: undefined },
-    fill: { mode: "solid", solidHex: "#ffffff", k: 7, data: new Uint32Array(49), tool: "draw" },
+    // the powerup's own fill art; `state.fill` (below) is whichever fill the fill editor shows
+    _fill: { mode: "solid", solidHex: "#ffffff", k: 7, data: new Uint32Array(49), tool: "draw" },
     // zones: list of { name, cells, extras, orig } (same cell format as the area)
     zones: { list: [], active: 0, tool: "#", margin: 3 },
 
@@ -1199,6 +1269,26 @@
     previewPos: null, previewStack: true, previewZones: true, previewModel: null,
     lastBuild: null,
   };
+  // The fill editor edits the selected combo part's fill when that part is an expander, else the
+  // powerup's own fill. Assigning state.fill always sets the powerup's own fill.
+  Object.defineProperty(state, "fill", {
+    get(){ const p = fillPart(); return p ? p.fill : state._fill; },
+    set(v){ state._fill = v; },
+    enumerable: true,
+  });
+  // ---------- combo parts ----------
+  const isCombo = () => state.pu.type === "combo";
+  const curPart = () => isCombo() ? (state.pu.parts[state.pu.partSel] || null) : null;
+  function fillPart(){ const p = curPart(); return p && p.type === "expander" ? p : null; }
+  const newFillState = (hex = "#ffffff", k = 7) => ({ mode: "solid", solidHex: hex, k, data: new Uint32Array(k * k).fill(argbFromHex(hex)), tool: "draw" });
+  const cloneFillState = (f) => ({ ...f, data: f.data.slice() });
+  let partSeq = 1;
+  // part: { uid, type, direction, reach, push, collapse, cells, areaExtras, areaOrig, fill, extras, orig }
+  function newPart(type, from){
+    return { uid: partSeq++, type, direction: "down", hadDirection: true, fillUnset: null, reach: null, push: null, collapse: false,
+      cells: {}, areaExtras: {}, areaOrig: undefined, fill: newFillState(), extras: {}, orig: undefined, ...(from || {}) };
+  }
+  const clonePart = (p) => ({ ...p, cells: { ...p.cells }, fill: cloneFillState(p.fill) });
 
   // ============================================================
   // Layers
@@ -1225,9 +1315,10 @@
       layers: state.layers.map(L => ({ id: L.id, name: L.name, visible: L.visible, noise: L.noise, opacity: L.opacity, data: L.data.slice() })),
       mask: state.mask.slice(),
       areaCells: { ...state.area.cells },
-      fill: { mode: state.fill.mode, solidHex: state.fill.solidHex, k: state.fill.k, data: state.fill.data.slice() },
+      fill: { mode: state._fill.mode, solidHex: state._fill.solidHex, k: state._fill.k, data: state._fill.data.slice() },
       zones: state.zones.list.map(z => ({ ...z, cells: { ...z.cells } })),
       zoneActive: state.zones.active,
+      parts: state.pu.parts.map(clonePart), partSel: state.pu.partSel,
     };
   }
   function restoreSnapshot(s){
@@ -1237,7 +1328,9 @@
     state.layers = s.layers.map(L => ({ ...L, data: L.data.slice() }));
     state.mask = s.mask.slice();
     state.area.cells = { ...s.areaCells };
-    state.fill.mode = s.fill.mode; state.fill.solidHex = s.fill.solidHex; state.fill.k = s.fill.k; state.fill.data = s.fill.data.slice();
+    state._fill.mode = s.fill.mode; state._fill.solidHex = s.fill.solidHex; state._fill.k = s.fill.k; state._fill.data = s.fill.data.slice();
+    state.pu.parts = s.parts.map(clonePart);
+    state.pu.partSel = clamp(s.partSel, 0, Math.max(0, state.pu.parts.length - 1));
     state.zones.list = s.zones.map(z => ({ ...z, cells: { ...z.cells } }));
     state.zones.active = clamp(s.zoneActive, 0, Math.max(0, state.zones.list.length - 1));
     syncAllUI();
@@ -1521,6 +1614,8 @@
     state.lastBuild = built;
     state.previewModel = shapeModel(built.shape);
     renderIssues(built);
+    updatePartPills();
+    renderPreviewLegend();
     renderFillCanvas();
     const t = performance.now();
     drawAreaCanvas(t);
@@ -2014,18 +2109,32 @@
     el.puDirectionField.classList.toggle("hidden", type !== "gravity");
     el.puCollapseField.classList.toggle("hidden", !PU_COLLAPSE_TYPES.includes(type));
     el.puCollapse.checked = !!state.pu.collapse;
-    el.fillBox.classList.toggle("hidden", !PU_FILL_TYPES.includes(type));
-    el.fillBoxTitle.textContent = type === "goo" ? "Goo fill art" : "Expander fill art";
+    if (document.activeElement !== el.puHelp) el.puHelp.value = state.pu.help == null ? "" : String(state.pu.help);
+    el.puHelp.placeholder = String(DEFAULT_HELP_BY_TIER[state.pu.tier] ?? 2);
+    el.puHelpHint.textContent = state.pu.help == null ? `default ${DEFAULT_HELP_BY_TIER[state.pu.tier] ?? 2} (from tier) · 1 barely – 5 a lifesaver` : "1 barely – 5 a lifesaver";
+    syncPartsUI();
+    const part = curPart(), tgt = areaTarget();
+    const fp = fillPart();
+    el.fillBox.classList.toggle("hidden", !(PU_FILL_TYPES.includes(type) || fp));
+    el.fillBoxTitle.textContent = fp ? `Fill art · part ${state.pu.partSel + 1} (expander)` : type === "goo" ? "Goo fill art" : "Expander fill art";
     const usesArea = puUsesArea();
+    const tType = tgt ? tgt.type : type;
     el.puAreaBox.classList.toggle("hidden", !usesArea);
-    el.puAcidAreaNote.classList.toggle("hidden", type !== "acid");
-    el.puAreaTitle.textContent = type === "acid" ? "Extra area (optional)" : "Highlighted area";
+    el.puAcidAreaNote.classList.toggle("hidden", tType !== "acid");
+    el.puAreaTitle.textContent = part
+      ? `${tType === "acid" ? "Extra area" : "Area"} · part ${state.pu.partSel + 1} (${part.type})`
+      : type === "acid" ? "Extra area (optional)" : "Highlighted area";
+    el.puAreaTitle.style.color = part ? partColour(part.type) : "";
     el.puNoAreaBox.classList.toggle("hidden", usesArea);
-    el.puNoAreaText.textContent = type === "goo"
+    el.puNoAreaText.textContent = type === "combo"
+      ? "A combo has no area of its own: each part has one. Add a part to paint its area."
+      : type === "goo"
       ? "Goo has no highlighted area: when it lands it melts, and its blocks (× volume) flow down into the lowest gaps they can reach. The in-game preview shows a rough guess of where it ends up."
       : type === "phantom" ? "Phantoms have no highlighted area: they fall straight through other blocks and settle, as blocks, in the deepest gap they fit. The in-game preview outlines where it would land."
       : "This type has no highlighted area.";
-    el.areaCanvasHint.textContent = usesArea
+    el.areaCanvasHint.textContent = part
+      ? `Painting part ${state.pu.partSel + 1} (${part.type}). ${part.type === "acid" ? "Green: the cells it touches (from its reach, read-only); paint only extra cells." : "Drag to paint; right-click erases."} The other parts are shown as tinted outlines in their colours; the animation shows what the selected part does.`
+      : usesArea
       ? (type === "acid"
         ? "Green: the cells acid touches (worked out from its shape and reach, read-only). Drag to paint extra cells; right-click erases. The rainbow shows what the game highlights."
         : "Drag to paint with the selected marker; right-click erases. Bands show rows/columns that extend across the whole board. The rainbow shows what the game highlights.")
@@ -2034,8 +2143,155 @@
     document.querySelectorAll("#areaTools button").forEach(b => b.classList.toggle("active", b.dataset.ach === state.area.tool));
     syncFillUI();
   }
-  el.puType.addEventListener("change", () => { state.pu.type = el.puType.value; adoptPuExtras(); setDirty(true); syncPowerupUI(); scheduleRender(); });
-  function puUsesArea(){ return PU_AREA_TYPES.includes(state.pu.type) || !PU_TYPES.includes(state.pu.type); }
+  el.puType.addEventListener("change", () => {
+    const prevType = state.pu.type;
+    state.pu.type = el.puType.value;
+    adoptPuExtras();
+    if (isCombo() && !state.pu.parts.length) seedComboParts(prevType);
+    setDirty(true); syncPowerupUI(); scheduleRender();
+  });
+  el.puHelp.addEventListener("input", () => {
+    const raw = el.puHelp.value.trim();
+    if (raw === "") state.pu.help = null;
+    else { const n = Number(raw); if (!Number.isFinite(n)) return; state.pu.help = n; }
+    setDirty(true); scheduleRender();
+  });
+  el.puHelp.addEventListener("change", () => syncPowerupUI());
+
+  // ---------- combo parts editor ----------
+  // Switching to combo with no parts: the first part takes over the current effect and area
+  // (when its type can be a part), plus an empty second part.
+  function seedComboParts(prevType){
+    beginAction();
+    const t1 = COMBO_PART_TYPES.includes(prevType) ? prevType : "destroyer";
+    const p1 = newPart(t1, { cells: { ...state.area.cells }, reach: t1 === "acid" ? state.pu.reach : null, push: t1 === "blast" ? state.pu.push : null,
+      direction: state.pu.direction, collapse: PU_COLLAPSE_TYPES.includes(t1) && !!state.pu.collapse,
+      fill: t1 === "expander" ? cloneFillState(state._fill) : newFillState() });
+    const p2 = newPart(t1 === "gravity" ? "destroyer" : "gravity");
+    state.pu.parts = [p1, p2];
+    state.area.cells = {};     // moved into part 1 (undo brings it back)
+    state.pu.partSel = 0;
+    markChanged(); endAction();
+  }
+  function partSummary(p){
+    const n = Object.keys(p.cells).length;
+    const bits = [];
+    if (p.type === "acid") bits.push(`reach ${p.reach ?? 1}`);
+    if (p.type === "blast") bits.push(`push ${p.push ?? 3}`);
+    if (p.type === "gravity") bits.push(p.direction);
+    if (PU_COLLAPSE_TYPES.includes(p.type) && p.collapse) bits.push("collapse");
+    bits.push(p.type === "acid" ? (n ? `+${n} extra` : "auto area") : (n ? `${n} marked` : "no area"));
+    return bits.join(" · ");
+  }
+  function syncPartsUI(){
+    const combo = isCombo();
+    el.puPartsBox.classList.toggle("hidden", !combo);
+    if (!combo) return;
+    const parts = state.pu.parts;
+    state.pu.partSel = clamp(state.pu.partSel, 0, Math.max(0, parts.length - 1));
+    el.puPartsCount.textContent = String(parts.length);
+    el.puPartsCount.className = "pill mono " + (parts.length < 2 ? "warn" : "");
+    el.puPartList.innerHTML = "";
+    parts.forEach((p, i) => {
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "partRow" + (i === state.pu.partSel ? " active" : "");
+      row.dataset.part = String(i);
+      const empty = p.type !== "acid" && !Object.keys(p.cells).length;
+      row.innerHTML = `<span class="partDot" style="background:${partColour(p.type)}"></span><span class="partNum mono">${i + 1}</span>`
+        + `<span class="partType">${escapeHtml(p.type)}${COMBO_PART_TYPES.includes(p.type) ? "" : " (not allowed)"}</span>`
+        + `<span class="pill mono ${empty || !COMBO_PART_TYPES.includes(p.type) ? "warn" : ""}" style="padding:1px 6px;">${escapeHtml(partSummary(p))}</span>`;
+      row.addEventListener("click", () => { if (state.pu.partSel === i) return; state.pu.partSel = i; syncPowerupUI(); scheduleRender(); });
+      el.puPartList.appendChild(row);
+    });
+    if (!parts.length) el.puPartList.innerHTML = `<div class="hint" style="color:var(--warn);">No parts yet. A combo needs at least two.</div>`;
+    const p = curPart();
+    el.puPartEditor.classList.toggle("hidden", !p);
+    el.puPartRemove.disabled = !p;
+    if (!p) return;
+    ensureOption(el.puPartType, p.type);
+    el.puPartType.value = p.type;
+    el.puPartTypeDoc.textContent = COMBO_PART_TYPES.includes(p.type) ? (PU_TYPE_DOC[p.type] || "") : `"${p.type}" can't be a combo part: the game skips it.`;
+    el.puPartReachField.classList.toggle("hidden", p.type !== "acid");
+    el.puPartPushField.classList.toggle("hidden", p.type !== "blast");
+    el.puPartDirectionField.classList.toggle("hidden", p.type !== "gravity");
+    el.puPartCollapseField.classList.toggle("hidden", !PU_COLLAPSE_TYPES.includes(p.type));
+    if (document.activeElement !== el.puPartReach) el.puPartReach.value = p.reach == null ? "" : String(p.reach);
+    if (document.activeElement !== el.puPartPush) el.puPartPush.value = p.push == null ? "" : String(p.push);
+    ensureOption(el.puPartDirection, p.direction);
+    el.puPartDirection.value = p.direction;
+    el.puPartCollapse.checked = !!p.collapse;
+    const ex = Object.keys(p.extras);
+    el.puPartExtras.innerHTML = ex.length ? `Kept as written: ${ex.map(k => `<span class="pill mono">${escapeHtml(k)}</span>`).join(" ")}` : "";
+  }
+  // combo: which colour is which part, in firing order
+  function renderPreviewLegend(){
+    const m = state.previewModel, parts = m && m.parts;
+    el.previewLegend.classList.toggle("hidden", !(parts && parts.length));
+    if (!parts || !parts.length) return;
+    const html = "fires: " + parts.slice().sort((a, b) => COMBO_PART_TYPES.indexOf(a.type) - COMBO_PART_TYPES.indexOf(b.type))
+      .map(p => `<span><span class="partDot" style="display:inline-block;vertical-align:-1px;background:${partColour(p.type)}"></span> ${escapeHtml(p.type)}</span>`).join(" → ");
+    if (el.previewLegend.dataset.html !== html){ el.previewLegend.dataset.html = html; el.previewLegend.innerHTML = html; }
+  }
+  function updatePartPills(){
+    if (!isCombo() || state.kind !== "powerup") return;
+    el.puPartList.querySelectorAll(".partRow").forEach(row => {
+      const p = state.pu.parts[+row.dataset.part], pill = row.querySelector(".pill");
+      if (!p || !pill) return;
+      const txt = partSummary(p);
+      if (pill.textContent !== txt) pill.textContent = txt;
+      const bad = (p.type !== "acid" && !Object.keys(p.cells).length) || !COMBO_PART_TYPES.includes(p.type);
+      pill.classList.toggle("warn", bad);
+    });
+  }
+  // one undoable step on the selected part
+  function editPart(fn){
+    const p = curPart();
+    if (!p) return;
+    commit(() => fn(p) !== false);
+    syncPowerupUI();
+  }
+  el.puPartAdd.addEventListener("click", () => {
+    const used = new Set(state.pu.parts.map(p => p.type));
+    const type = COMBO_PART_TYPES.find(t => !used.has(t)) || "destroyer";
+    commit(() => { state.pu.parts.push(newPart(type)); state.pu.partSel = state.pu.parts.length - 1; return true; });
+    syncPowerupUI();
+  });
+  el.puPartRemove.addEventListener("click", () => {
+    if (!curPart()) return;
+    commit(() => { state.pu.parts.splice(state.pu.partSel, 1); state.pu.partSel = Math.max(0, state.pu.partSel - 1); return true; });
+    syncPowerupUI();
+  });
+  el.puPartType.addEventListener("change", () => editPart(p => {
+    p.type = el.puPartType.value;
+    // a field kept as written because the old type didn't use it becomes managed again
+    for (const k of ["reach", "push"]){
+      const v = p.extras[k];
+      if (((k === "reach" && p.type === "acid") || (k === "push" && p.type === "blast")) && p[k] == null && typeof v === "number"){ p[k] = v; delete p.extras[k]; }
+    }
+  }));
+  for (const [inp, key] of [[el.puPartReach, "reach"], [el.puPartPush, "push"]]){
+    inp.addEventListener("input", () => {
+      const raw = inp.value.trim();
+      const n = raw === "" ? null : Number(raw);
+      if (n !== null && !Number.isFinite(n)) return;
+      const p = curPart(); if (!p || p[key] === n) return;
+      commit(() => { p[key] = n; return true; });
+      syncPartsUI();
+    });
+    inp.addEventListener("change", () => syncPowerupUI());
+  }
+  el.puPartDirection.addEventListener("change", () => editPart(p => { p.direction = el.puPartDirection.value; }));
+  el.puPartCollapse.addEventListener("change", () => editPart(p => { p.collapse = el.puPartCollapse.checked; }));
+  function puUsesArea(){ return isCombo() ? !!curPart() : (PU_AREA_TYPES.includes(state.pu.type) || !PU_TYPES.includes(state.pu.type)); }
+  // What the area editor paints: the powerup's own area, or (combo) the selected part's
+  function areaTarget(){
+    if (isCombo()){
+      const p = curPart();
+      return p ? { cells: p.cells, type: p.type, reach: p.reach, direction: p.direction, part: p } : null;
+    }
+    return { cells: state.area.cells, type: state.pu.type, reach: state.pu.reach, direction: state.pu.direction, part: null };
+  }
   // A numeric parameter kept as an unknown property (it didn't belong to the loaded type) becomes
   // managed once the type uses it.
   function adoptPuExtras(){
@@ -2319,7 +2575,7 @@
   // ------------------------------------------------------------
   const actx = el.areaCanvas.getContext("2d");
   const areaPtr = bindRegionCanvas(el.areaCanvas, el.areaWrap, {
-    margin: () => state.area.margin, cells: () => puUsesArea() ? state.area.cells : null, tool: () => state.area.tool, label: "area",
+    margin: () => state.area.margin, cells: () => { const tg = puUsesArea() && areaTarget(); return tg ? tg.cells : null; }, tool: () => state.area.tool, label: "area",
   });
   document.querySelectorAll("#areaTools button").forEach(b => b.addEventListener("click", () => {
     state.area.tool = b.dataset.ach;
@@ -2331,9 +2587,12 @@
   });
   function generate(kind){
     const r = Math.max(0, Number(el.genRadius.value) || 0);
-    commit(() => generateRegion(state.area.cells, kind, r));
+    const tg = puUsesArea() && areaTarget();
+    if (!tg){ toast(isCombo() ? "Add a part first: each combo part has its own area." : "This type has no highlighted area."); return; }
+    commit(() => generateRegion(tg.cells, kind, r));
+    if (tg.part) syncPartsUI();
     // grow the view if the generator went past the margin
-    const need = regionReach(state.area.cells);
+    const need = regionReach(tg.cells);
     if (need > state.area.margin){ state.area.margin = clamp(need, 0, 30); el.areaMargin.value = String(state.area.margin); }
     scheduleRender();
   }
@@ -2343,7 +2602,7 @@
   el.genCols.addEventListener("click", () => generate("cols"));
   el.genClear.addEventListener("click", () => generate("clear"));
 
-  const editorAreaCells = () => regionCellList(state.area.cells);
+  const editorAreaCells = () => { const tg = areaTarget(); return tg ? regionCellList(tg.cells) : []; };
 
   function drawAreaCanvas(t){
     if (state.mode !== "blocks" || state.centreTab !== "powerup" || state.kind !== "powerup") return;
@@ -2352,11 +2611,22 @@
     if (el.areaCanvas.width !== W) el.areaCanvas.width = W;
     if (el.areaCanvas.height !== H) el.areaCanvas.height = H;
     const ctx = actx;
-    const type = state.pu.type;
+    const tgt = areaTarget();
+    const type = tgt ? tgt.type : state.pu.type;
     const usesArea = puUsesArea();
     const cells = usesArea ? editorAreaCells() : [];
-    drawRegionBase(ctx, v, cs, cells, "rgba(255,207,106,0.07)");
     const pieceCells = editorPieceCells();
+    // combo: the other parts' areas (and acid touch areas) as static tints in their colours
+    const others = isCombo() ? state.pu.parts.filter(p => p !== (tgt && tgt.part)) : [];
+    drawRegionBase(ctx, v, cs, cells, tgt && tgt.part ? rgba(partColour(tgt.part.type), 0.08) : "rgba(255,207,106,0.07)");
+    for (const p of others){
+      const col = partColour(p.type);
+      const pc = regionCellList(p.cells).concat(p.type === "acid" ? touchCells(pieceCells, p.reach) : []);
+      const set = new Set([...affectedCells(pc, v.x0, v.y0, v.cols, v.rows)].map(k => { const [x, y] = parseKey(k); return areaKey(x - v.x0, y - v.y0); }));
+      ctx.fillStyle = rgba(col, 0.13);
+      for (const k of set){ const [x, y] = parseKey(k); ctx.fillRect(x * cs, y * cs, cs, cs); }
+      drawSetOutline(ctx, set, (x) => x * cs, (y) => y * cs, cs, rgba(col, 0.6), [3, 3]);
+    }
 
     if (!usesArea){
       // goo / phantom: nothing highlighted; the piece itself shimmers
@@ -2365,7 +2635,7 @@
       return;
     }
     // acid: the cells it touches (read-only), drawn under the extra area
-    const touch = type === "acid" ? touchCells(pieceCells, state.pu.reach) : [];
+    const touch = type === "acid" ? touchCells(pieceCells, tgt ? tgt.reach : state.pu.reach) : [];
     if (touch.length){
       const tset = new Set(touch.filter(c => inView(c, v)).map(c => areaKey(c.x - v.x0, c.y - v.y0)));
       ctx.fillStyle = "rgba(120,255,90,0.16)";
@@ -2378,7 +2648,7 @@
     const ctr = { x: (pieceBox().x0 + pieceBox().x1 + 1) / 2, y: (pieceBox().y0 + pieceBox().y1 + 1) / 2 };
     for (const k of aff){
       const [x, y] = parseKey(k);
-      drawRainbowCell(ctx, (x - v.x0) * cs, (y - v.y0) * cs, cs, x, y, rainbowType(type), type === "blast" ? outward(x + 0.5 - ctr.x, y + 0.5 - ctr.y) : state.pu.direction, t);
+      drawRainbowCell(ctx, (x - v.x0) * cs, (y - v.y0) * cs, cs, x, y, rainbowType(type), type === "blast" ? outward(x + 0.5 - ctr.x, y + 0.5 - ctr.y) : (tgt ? tgt.direction : state.pu.direction), t, tgt && tgt.part ? partColour(tgt.part.type) : null);
     }
     // markers
     for (const c of cells) if (inView(c, v)) drawMarker(ctx, (c.x - v.x0) * cs, (c.y - v.y0) * cs, cs, c.ch);
@@ -2591,14 +2861,16 @@
   //   phantom / shimmer: no squares, just the colour shimmering over the piece
   // ============================================================
   const RAINBOW_PERIOD_MS = 1100;
-  function drawRainbowCell(ctx, px, py, size, gx, gy, type, dir, t){
+  // tint: draw in this one colour instead of the rainbow (combo parts, one colour per part type)
+  function drawRainbowCell(ctx, px, py, size, gx, gy, type, dir, t, tint){
     const p = ((t / RAINBOW_PERIOD_MS) % 1 + 1) % 1;
     const hue = ((t * 0.12) + (gx + gy) * 28) % 360;
+    const col = (l, a) => tint ? rgba(tint, a) : `hsla(${hue},100%,${l}%,${a})`;
     ctx.save();
     ctx.beginPath(); ctx.rect(px, py, size, size); ctx.clip();
-    ctx.fillStyle = `hsla(${hue},100%,60%,0.14)`;
+    ctx.fillStyle = col(60, tint ? 0.16 : 0.14);
     ctx.fillRect(px, py, size, size);
-    ctx.fillStyle = `hsla(${hue},100%,62%,0.42)`;
+    ctx.fillStyle = col(62, tint ? 0.6 : 0.42);
     if (type === "gravity"){
       const len = size * 0.45, th = Math.max(2, size * 0.14);
       const travel = -len + p * (size + len);
@@ -2618,12 +2890,12 @@
         const cx = px + c + d.x * off, cy = py + c + d.y * off;
         ctx.fillRect(cx - s / 2, cy - s / 2, s, s);
         // trail
-        ctx.strokeStyle = `hsla(${hue},100%,62%,0.3)`; ctx.lineWidth = Math.max(1, size * 0.1);
+        ctx.strokeStyle = col(62, 0.3); ctx.lineWidth = Math.max(1, size * 0.1);
         ctx.beginPath(); ctx.moveTo(cx - d.x * size * 0.45, cy - d.y * size * 0.45); ctx.lineTo(cx, cy); ctx.stroke();
       }
     } else if (type === "phantom" || type === "shimmer"){
       const w = 0.5 + 0.5 * Math.sin(2 * Math.PI * (p - (gx + gy) * 0.13));
-      ctx.fillStyle = `hsla(${hue},100%,70%,${0.08 + 0.26 * w})`;
+      ctx.fillStyle = col(70, 0.08 + 0.26 * w);
       ctx.fillRect(px, py, size, size);
     } else {
       const f = (type === "expander" || type === "goo") ? p : 1 - p;
@@ -2667,7 +2939,7 @@
     document.querySelectorAll(".fillToolBtn").forEach(b => b.classList.toggle("active", b.dataset.ftool === f.tool));
   }
   function renderFillCanvas(){
-    if (state.kind !== "powerup" || !PU_FILL_TYPES.includes(state.pu.type) || state.centreTab !== "powerup") return;
+    if (state.kind !== "powerup" || !(PU_FILL_TYPES.includes(state.pu.type) || fillPart()) || state.centreTab !== "powerup") return;
     const f = state.fill, cs = fillCellSize(), S = f.k * cs;
     if (el.fillCanvas.width !== S) el.fillCanvas.width = S;
     if (el.fillCanvas.height !== S) el.fillCanvas.height = S;
@@ -2835,9 +3107,14 @@
     for (let y = ty0; y <= ty1; y++) for (let x = tx0; x <= tx1; x++) if (mask[y][x]) blocks.push({ x: x - tx0, y: y - ty0, gx: x, gy: y });
 
     // area / zone cells relative to the trimmed piece (the game subtracts the trimmed rows/cols too)
-    let area = null, powerup = null, touch = null;
+    let area = null, powerup = null, touch = null, parts = null;
     if (shape && isPlainObject(shape.powerup)){
       powerup = shape.powerup;
+      // combo: one area per part (acid parts: their touch area too); the game skips other part types
+      if (powerup.type === "combo") parts = (Array.isArray(powerup.parts) ? powerup.parts : [])
+        .filter(q => isPlainObject(q) && COMBO_PART_TYPES.includes(q.type))
+        .map(q => ({ type: q.type, direction: q.direction || "down", fill: q.fill ?? null,
+          cells: regionObjectCells(q.area, tx0, ty0), touch: q.type === "acid" ? touchCells(blocks, q.reach) : [] }));
       // goo / phantom: the game ignores any area; acid: its touch area plus an optional extra area
       if (PU_AREA_TYPES.includes(powerup.type) || !PU_TYPES.includes(powerup.type)) area = regionObjectCells(powerup.area, tx0, ty0);
       if (powerup.type === "acid") touch = touchCells(blocks, powerup.reach);
@@ -2845,7 +3122,7 @@
     const zones = shape && isPlainObject(shape.zones)
       ? Object.entries(shape.zones).filter(([, z]) => isPlainObject(z)).map(([name, z]) => ({ name, cells: regionObjectCells(z, tx0, ty0) }))
       : [];
-    return { w: tx1 - tx0 + 1, h: ty1 - ty0 + 1, blocks, solid, pix, k, base, area, touch, powerup, zones };
+    return { w: tx1 - tx0 + 1, h: ty1 - ty0 + 1, blocks, solid, pix, k, base, area, touch, parts, powerup, zones };
   }
   // Acid: every cell within `reach` (Manhattan) steps of a block, not the blocks themselves
   // (same rule as the game's touchArea; reach is rounded and at least 1). blocks: [{x, y}]
@@ -2959,6 +3236,25 @@
           ctx.save(); ctx.globalAlpha = 0.35; drawFillBlock(ctx, x * C, y * C, C, m.powerup.fill); ctx.restore();
         }
         drawRainbowCell(ctx, x * C, y * C, C, x, y, rainbowType(type), type === "blast" ? outward(x + 0.5 - cx, y + 0.5 - cy) : dir, t);
+      }
+    }
+    // combo: every part's area, each in its type's colour and animation (in firing order, fill last)
+    if (m.parts){
+      const cx = pos.x + m.w / 2, cy = pos.y + m.h / 2;
+      const order = m.parts.slice().sort((a, b) => COMBO_PART_TYPES.indexOf(a.type) - COMBO_PART_TYPES.indexOf(b.type));
+      for (const part of order){
+        const cells = [...part.cells, ...part.touch].map(c => ({ x: c.x + pos.x, y: c.y + pos.y, ch: c.ch }));
+        const aff = affectedCells(cells, 0, 0, GAME.cols, GAME.rows);
+        const col = partColour(part.type);
+        for (const k of aff){
+          const [x, y] = parseKey(k);
+          if (part.type === "expander" && part.fill != null && !occupied.has(k)){
+            ctx.save(); ctx.globalAlpha = 0.3; drawFillBlock(ctx, x * C, y * C, C, part.fill); ctx.restore();
+          }
+          drawRainbowCell(ctx, x * C, y * C, C, x, y, rainbowType(part.type), part.type === "blast" ? outward(x + 0.5 - cx, y + 0.5 - cy) : part.direction, t, col);
+        }
+        const set = new Set([...aff]);
+        drawSetOutline(ctx, set, (x) => x * C, (y) => y * C, C, rgba(col, 0.75), [3, 2]);
       }
     }
     const pieceOnBoard = m.blocks.map(b => ({ x: pos.x + b.x, y: pos.y + b.y })).filter(c => c.x >= 0 && c.y >= 0 && c.x < GAME.cols && c.y < GAME.rows);
@@ -3086,12 +3382,88 @@
     }
     return Object.keys(out).length ? out : undefined;
   }
-  function exportFill(){
-    const f = state.fill;
+  function exportFill(f = state._fill){
     if (f.mode === "solid") return f.solidHex;
     const rows = [];
     for (let y = 0; y < f.k; y++){ const r = []; for (let x = 0; x < f.k; x++) r.push(hexFromARGB(f.data[y * f.k + x])); rows.push(r); }
     return rows;
+  }
+
+  // Combo parts, in list order. Each keeps what it doesn't manage, and its loaded key order.
+  const PART_NUM_PARAMS = PU_NUM_PARAMS.filter(q => COMBO_PART_TYPES.includes(q.type));
+  const fillSig = (v) => typeof v === "string" ? (normHex(v) || v)
+    : JSON.stringify(Array.isArray(v) ? v.map(r => Array.isArray(r) ? r.map(c => normHex(c) || "") : r) : v);
+  function exportParts(b, origPu, warnings){
+    const parts = state.pu.parts;
+    if (parts.length < 2) warnings.push(`A combo needs at least two parts (it has ${parts.length}).`);
+    const seen = new Map();
+    return parts.map((p, i) => {
+      const o = isPlainObject(p.orig) ? p.orig : null;
+      const q = { ...clone(p.extras) };
+      q.type = p.type;
+      const label = `Part ${i + 1} (${p.type})`;
+      if (!COMBO_PART_TYPES.includes(p.type)) warnings.push(`${label}: a combo part can only be ${listJoin(COMBO_PART_TYPES)}; the game skips it.`);
+      else if (seen.has(p.type)) warnings.push(`${label} has the same type as part ${seen.get(p.type) + 1}.`);
+      else seen.set(p.type, i);
+      for (const prm of PART_NUM_PARAMS){
+        if (p.type !== prm.type) continue;
+        const v = p[prm.key];
+        if (v == null) continue;
+        delete q[prm.key];
+        if (v !== prm.def || (o && o[prm.key] === v)) q[prm.key] = v;
+        if (v < prm.min) warnings.push(`${label}: ${prm.key} should be at least ${prm.min}.`);
+        else if (prm.int && !Number.isInteger(v)) warnings.push(`${label}: ${prm.key} should be a whole number (the game rounds it).`);
+      }
+      // (a part loaded without a direction / fill keeps it left out until it is changed)
+      if (p.type === "gravity" && (p.hadDirection || p.direction !== "down")) q.direction = p.direction;
+      const n = Object.keys(p.cells).length;
+      if (n || p.areaOrig !== undefined) q.area = exportRegion(b, p.cells, p.areaExtras, p.areaOrig);
+      if (!n && p.type !== "acid" && COMBO_PART_TYPES.includes(p.type)) warnings.push(`${label} has an empty area: it would do nothing.`);
+      if (p.type === "expander" && p.fillUnset && fillSig(exportFill(p.fill)) === p.fillUnset){
+        warnings.push(`${label} has no fill art (the game uses its default).`);
+      } else if (p.type === "expander"){
+        q.fill = exportFill(p.fill);
+        if (o && o.fill !== undefined && fillSig(o.fill) === fillSig(q.fill)) q.fill = clone(o.fill);
+        if (Array.isArray(q.fill) && q.fill.some(r => r.some(c => !c))) warnings.push(`${label}: fill art has transparent pixels.`);
+      }
+      if (PU_COLLAPSE_TYPES.includes(p.type) && p.collapse) q.collapse = true;
+      return o ? inOriginalKeyOrder(q, o) : q;
+    });
+  }
+  // A fill value from a file as fill-editor state (k: pixels per block for a solid fill)
+  function fillStateFrom(fill, fallbackHex, P){
+    if (Array.isArray(fill) && Array.isArray(fill[0])){
+      const k = clamp(fill.length, 1, 7);
+      const f = { mode: "pixel", k, data: new Uint32Array(k * k), solidHex: normHex(fill[0][0]) || "#ffffff", tool: "draw" };
+      for (let y = 0; y < k; y++) for (let x = 0; x < k; x++) f.data[y * k + x] = argbFromHex(fill[y] && fill[y][x]);
+      return f;
+    }
+    const hx = normHex(fill) || fallbackHex;
+    return { mode: "solid", solidHex: hx, k: P, data: new Uint32Array(P * P).fill(argbFromHex(hx)), tool: "draw" };
+  }
+  // A part object from a file. Fields its type doesn't use (or can't be edited) are kept as written.
+  function partFromObject(q, P){
+    const type = String(q.type);
+    const p = newPart(type, { orig: clone(q), hadDirection: typeof q.direction === "string" });
+    const keep = (k) => { p.extras[k] = clone(q[k]); };
+    for (const [k, v] of Object.entries(q)){
+      if (k === "type") continue;
+      if (!MANAGED_PART_KEYS.includes(k)){ keep(k); continue; }
+      if (k === "area"){
+        if (!isPlainObject(v)){ keep(k); continue; }
+        p.cells = regionCellsFromObject(v); p.areaExtras = regionExtras(v); p.areaOrig = clone(v);
+      } else if (k === "reach" || k === "push"){
+        if (typeof v === "number" && Number.isFinite(v) && ((k === "reach") === (type === "acid")) && (type === "acid" || type === "blast")) p[k] = v; else keep(k);
+      } else if (k === "direction"){
+        if (type === "gravity" && typeof v === "string") p.direction = v; else keep(k);
+      } else if (k === "collapse"){
+        if (v === true && PU_COLLAPSE_TYPES.includes(type)) p.collapse = true; else keep(k);
+      } else if (k === "fill"){
+        if (type === "expander" && (typeof v === "string" || (Array.isArray(v) && Array.isArray(v[0])))) p.fill = fillStateFrom(v, "#ffffff", P); else keep(k);
+      }
+    }
+    if (q.fill === undefined || p.extras.fill !== undefined) p.fillUnset = fillSig(exportFill(p.fill));
+    return p;
   }
 
   // Keys the loaded object already had keep its order; new keys follow in build order
@@ -3163,12 +3535,22 @@
         if (v < prm.min) warnings.push(`${prm.key} should be at least ${prm.min} (the game uses ${prm.min}).`);
         else if (prm.int && !Number.isInteger(v)) warnings.push(`${prm.key} should be a whole number (the game rounds it).`);
       }
-      if (p.type === "gravity") pu.direction = p.direction;
+      // (a powerup loaded without a direction keeps it left out while it is the default "down")
+      if (p.type === "gravity" && (p.hadDirection !== false || p.direction !== "down")) pu.direction = p.direction;
       pu.tier = p.tier;
       if (p.description.trim()) pu.description = p.description.trim();
       if (p.intro.trim()) pu.intro = origPu && origPu.intro === p.intro ? p.intro : p.intro.trim();
+      if (p.help != null){
+        pu.help = p.help;
+        if (p.help < 1 || p.help > 5) warnings.push(`Help ${p.help} is outside 1–5 (the game clamps it).`);
+        else if (!Number.isInteger(p.help * 2)) warnings.push(`Help ${p.help}: use steps of 0.5 (1, 1.5, 2 … 5).`);
+      }
       const hasCells = Object.keys(state.area.cells).length > 0;
-      if (puUsesArea()){
+      if (p.type === "combo"){
+        pu.parts = exportParts(b, origPu, warnings);
+        if (hasCells) warnings.push("The area painted before this became a combo is not saved: each part has its own area.");
+        if (p.extras.area !== undefined || p.extras.fill !== undefined) warnings.push("The game ignores a combo's top-level area / fill (kept as written).");
+      } else if (puUsesArea()){
         const area = exportArea(b);
         if (area !== undefined) pu.area = area;
         if (!hasCells && p.type !== "acid") warnings.push("The highlighted area is empty: the powerup would affect nothing.");
@@ -3315,41 +3697,51 @@
     state.area.cells = {}; state.area.extras = {}; state.area.orig = undefined;
     if (isPu){
       const pu = shape.powerup;
+      const combo = pu.type === "combo";
+      // help / parts the editor can't represent exactly (and a combo's top-level area / fill) stay as written
+      const helpManaged = typeof pu.help === "number" && Number.isFinite(pu.help);
+      const partsManaged = combo && Array.isArray(pu.parts) && pu.parts.every(q => isPlainObject(q) && typeof q.type === "string");
+      const unmanaged = (k) => !MANAGED_PU_KEYS.includes(k) || (k === "intro" && typeof pu.intro !== "string")
+        || (k === "help" && !helpManaged) || (k === "parts" && !partsManaged) || (combo && (k === "area" || k === "fill"));
       state.pu = {
         type: String(pu.type || "destroyer"),
         direction: typeof pu.direction === "string" ? pu.direction : "down",
+        hadDirection: typeof pu.direction === "string",
         tier: clamp(parseInt(pu.tier, 10) || 1, 1, 3),
         description: typeof pu.description === "string" ? pu.description : "",
         intro: typeof pu.intro === "string" ? pu.intro : "",
+        help: helpManaged ? pu.help : null,
         consume: null,
         collapse: pu.collapse === true,
         reach: null, push: null, volume: null,
-        extras: clone(Object.fromEntries(Object.entries(pu).filter(([k]) => !MANAGED_PU_KEYS.includes(k) || (k === "intro" && typeof pu.intro !== "string")))),
+        parts: partsManaged ? pu.parts.map(q => partFromObject(q, P)) : [],
+        partSel: 0,
+        extras: clone(Object.fromEntries(Object.entries(pu).filter(([k]) => unmanaged(k)))),
       };
       adoptPuExtras();
       if (typeof pu.consume === "boolean"){
         const def = PU_DEFAULT_CONSUME[state.pu.type] ?? true;
         state.pu.consume = pu.consume === def ? null : pu.consume;
       }
-      const a = pu.area;
+      const a = combo ? undefined : pu.area;
       state.area.cells = regionCellsFromObject(a);
       state.area.extras = regionExtras(a);
       state.area.orig = clone(a);
-      state.area.margin = clamp(Math.max(3, regionReach(state.area.cells)), 0, 30);
+      state.area.margin = clamp(Math.max(3, regionReach(state.area.cells), ...state.pu.parts.map(q => regionReach(q.cells))), 0, 30);
       // fill art
-      const fill = pu.fill;
+      const fill = combo ? undefined : pu.fill;
       if (Array.isArray(fill) && Array.isArray(fill[0])){
         const k = clamp(fill.length, 1, 7);
-        state.fill = { ...state.fill, mode: "pixel", k, data: new Uint32Array(k * k), solidHex: normHex(fill[0][0]) || "#ffffff" };
+        state.fill = { ...state._fill, mode: "pixel", k, data: new Uint32Array(k * k), solidHex: normHex(fill[0][0]) || "#ffffff" };
         for (let y = 0; y < k; y++) for (let x = 0; x < k; x++) state.fill.data[y * k + x] = argbFromHex(fill[y] && fill[y][x]);
       } else {
         const hx = normHex(fill) || state.colourHex;
-        state.fill = { ...state.fill, mode: "solid", solidHex: hx, k: P, data: new Uint32Array(P * P).fill(argbFromHex(hx)) };
+        state.fill = { ...state._fill, mode: "solid", solidHex: hx, k: P, data: new Uint32Array(P * P).fill(argbFromHex(hx)) };
       }
     } else {
       state.pu = defaultPu();
       state.area.margin = 3;
-      state.fill = { ...state.fill, mode: "solid", solidHex: "#ffffff", k: P, data: new Uint32Array(P * P) };
+      state.fill = { ...state._fill, mode: "solid", solidHex: "#ffffff", k: P, data: new Uint32Array(P * P) };
     }
 
     state.source = fromFile ? { id: state.id, original: clone(shape) } : null;
@@ -3372,7 +3764,7 @@
     state.pu = defaultPu();
     state.area.cells = {}; state.area.margin = 3; state.area.extras = {}; state.area.orig = undefined;
     state.zones.list = []; state.zones.active = 0; state.zones.margin = 3;
-    state.fill = { mode: "solid", solidHex: "#ffffff", k: 7, data: new Uint32Array(49), tool: state.fill.tool || "draw" };
+    state.fill = { mode: "solid", solidHex: "#ffffff", k: 7, data: new Uint32Array(49), tool: state._fill.tool || "draw" };
     state.source = null; state.previewPos = null;
     resetHistory(); setDirty(false);
     state.zoom = 24; el.zoom.value = "24";
@@ -3908,7 +4300,8 @@
       }
     } else if (type === "phantom") ghost = { dy: m.h + 1 };
     const extra = puddle.concat(ghost ? m.blocks.map(b => ({ x: b.x, y: b.y + ghost.dy, ch: "#" })) : []);
-    for (const c of [...(m.area || []), ...(m.touch || []), ...zoneCells.flat(), ...extra]){
+    const partCells = (m.parts || []).map(p => p.cells.concat(p.touch));
+    for (const c of [...(m.area || []), ...(m.touch || []), ...zoneCells.flat(), ...partCells.flat(), ...extra]){
       x0 = Math.min(x0, c.x); y0 = Math.min(y0, c.y); x1 = Math.max(x1, c.x); y1 = Math.max(y1, c.y);
       if (c.ch !== "#") lines = true;
     }
@@ -3926,6 +4319,17 @@
     if (m.touch){
       ctx.fillStyle = "rgba(120,255,90,0.22)";
       for (const c of m.touch) ctx.fillRect(ox + c.x * cell, oy + c.y * cell, cell, cell);
+    }
+    // combo: each part's area tinted in its type's colour, outlined so overlaps stay readable
+    if (m.parts && m.parts.length){
+      m.parts.forEach((p, i) => {
+        const set = affectedCells(partCells[i], x0, y0, rw, rh), col = partColour(p.type);
+        ctx.fillStyle = rgba(col, 0.26);
+        for (const k of set){ const [x, y] = parseKey(k); ctx.fillRect(ox + x * cell, oy + y * cell, cell, cell); }
+        if (cell >= 4) drawSetOutline(ctx, set, (x) => ox + x * cell, (y) => oy + y * cell, cell, rgba(col, 0.8), cell >= 8 ? [3, 2] : null);
+      });
+      ctx.strokeStyle = "rgba(255,255,255,0.10)"; ctx.lineWidth = 1;
+      ctx.strokeRect(ox + x0 * cell + 0.5, oy + y0 * cell + 0.5, rw * cell - 1, rh * cell - 1);
     }
     if (puddle.length){
       ctx.save(); ctx.globalAlpha = 0.55;
@@ -3991,8 +4395,11 @@
       const pu = isPlainObject(s.powerup) ? s.powerup : null;
       const freq = Number(s.frequency);
       const mode = typeof s.color === "string" ? "solid" : (Array.isArray(s.color) && Array.isArray(s.color[0]) ? `${Math.round(s.color.length / Math.max(1, gridLines(s.grid).length))}×` : "?");
+      const partsTxt = pu && pu.type === "combo" && Array.isArray(pu.parts)
+        ? `: ${pu.parts.map(q => isPlainObject(q) ? `<span style="color:${partColour(q.type)}">${escapeHtml(q.type ?? "?")}</span>` : "?").join(" + ") || "no parts"}` : "";
+      const help = pu && pu.help !== undefined ? ` · help ${escapeHtml(pu.help)}` : "";
       const stats = pu
-        ? `${escapeHtml(pu.type || "?")}${pu.type === "gravity" ? " " + escapeHtml(pu.direction || "down") : ""}${PU_NUM_PARAMS.filter(q => q.type === pu.type && pu[q.key] !== undefined).map(q => ` ${q.key}=${escapeHtml(pu[q.key])}`).join("")}<br>tier ${escapeHtml(pu.tier ?? "?")} · f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>${mode}`
+        ? `${escapeHtml(pu.type || "?")}${partsTxt}${pu.type === "gravity" ? " " + escapeHtml(pu.direction || "down") : ""}${PU_NUM_PARAMS.filter(q => q.type === pu.type && pu[q.key] !== undefined).map(q => ` ${q.key}=${escapeHtml(pu[q.key])}`).join("")}<br>tier ${escapeHtml(pu.tier ?? "?")}${help} · f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>${mode}`
         : `f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>d=${escapeHtml(s.difficulty ?? "—")}<br>${mode}`;
       const links = Array.isArray(s.nextShapes) && s.nextShapes.length ? ` · → ${s.nextShapes.map(escapeHtml).join(", ")}` : "";
       const tags = Array.isArray(s.tags) && s.tags.length ? ` <span class="tagMini">${s.tags.map(t => "#" + escapeHtml(t)).join(" ")}</span>` : "";
@@ -4056,8 +4463,9 @@
       shape: {
         kind: state.kind, name: state.name, id: state.id, difficulty: state.difficulty, frequency: state.frequency,
         rotationMode: state.rotationMode, rotationExtras: state.rotationExtras, links: state.links, extras: state.extras,
-        pu: state.pu, areaCells: state.area.cells, areaMargin: state.area.margin, areaExtras: state.area.extras,
-        fill: { mode: state.fill.mode, solidHex: state.fill.solidHex, k: state.fill.k, data: hex(state.fill.data) },
+        pu: { ...state.pu, parts: state.pu.parts.map(p => ({ ...p, fill: { mode: p.fill.mode, solidHex: p.fill.solidHex, k: p.fill.k, data: hex(p.fill.data) } })) },
+        areaCells: state.area.cells, areaMargin: state.area.margin, areaExtras: state.area.extras,
+        fill: { mode: state._fill.mode, solidHex: state._fill.solidHex, k: state._fill.k, data: hex(state._fill.data) },
         tags: state.tags,
         zones: state.zones.list.map(z => ({ name: z.name, cells: z.cells, extras: z.extras })), zonesMargin: state.zones.margin,
       },
@@ -4115,14 +4523,23 @@
       state.rotationExtras = s.rotationExtras || {};
       state.links = Array.isArray(s.links) ? s.links.map(r => ({ id: String(r.id || ""), prob: r.prob == null ? null : Number(r.prob) })) : [];
       state.extras = s.extras || {};
-      if (s.pu) state.pu = { ...defaultPu(), ...s.pu, extras: s.pu.extras || {} };
+      if (s.pu){
+        state.pu = { ...defaultPu(), ...s.pu, extras: s.pu.extras || {} };
+        state.pu.parts = (Array.isArray(s.pu.parts) ? s.pu.parts : []).filter(isPlainObject).map(q => {
+          const f = isPlainObject(q.fill) ? q.fill : {}, k = clamp(parseInt(f.k, 10) || 7, 1, 7);
+          return newPart(String(q.type || "destroyer"), { ...q, uid: partSeq++, cells: isPlainObject(q.cells) ? { ...q.cells } : {}, areaOrig: undefined, orig: undefined,
+            extras: isPlainObject(q.extras) ? q.extras : {}, areaExtras: isPlainObject(q.areaExtras) ? q.areaExtras : {},
+            fill: { mode: f.mode === "pixel" ? "pixel" : "solid", solidHex: normHex(f.solidHex) || "#ffffff", k, data: parseHexWords(f.data, k * k), tool: "draw" } });
+        });
+        state.pu.partSel = clamp(parseInt(state.pu.partSel, 10) || 0, 0, Math.max(0, state.pu.parts.length - 1));
+      }
       state.area.cells = s.areaCells || {};
       state.area.margin = clamp(parseInt(s.areaMargin, 10) || 3, 0, 30);
       state.area.extras = isPlainObject(s.areaExtras) ? s.areaExtras : {};
       state.area.orig = undefined;
       if (s.fill){
         const k = clamp(parseInt(s.fill.k, 10) || 7, 1, 7);
-        state.fill = { ...state.fill, mode: s.fill.mode === "pixel" ? "pixel" : "solid", solidHex: normHex(s.fill.solidHex) || "#ffffff", k, data: parseHexWords(s.fill.data, k * k) };
+        state.fill = { ...state._fill, mode: s.fill.mode === "pixel" ? "pixel" : "solid", solidHex: normHex(s.fill.solidHex) || "#ffffff", k, data: parseHexWords(s.fill.data, k * k) };
       }
       state.tags = Array.isArray(s.tags) ? s.tags.map(String) : [];
       state.zones.list = Array.isArray(s.zones)
@@ -4256,7 +4673,8 @@
   // Save writes all of it. Each entry is edited in place, so unknown properties survive.
   // ============================================================
   const ACH_ID_RE = /^[a-z0-9_]+$/;
-  const ACH_MODES = ["any", "normal", "extreme"];
+  const ACH_MODES = ["any", "easy", "normal", "extreme", "powerups"];
+  const ACH_MODE_NOTES = { easy: "Easy mode only.", normal: "Normal mode only.", extreme: "Extreme mode only.", powerups: "Only in modes with powerups (Easy or Normal)." };
   const ICON_MIN = 8, ICON_MAX = 32, ICON_DEFAULT = 12;
   const RECENT_KEY = "extris_block_designer_recent_icon_colours";
   const MODE_KEY = "extris_block_designer_mode";
@@ -4268,6 +4686,8 @@
       params: [{ key: "count", kind: "int", label: "Rows", def: 1 }, { key: "scope", kind: "scope", label: "Scope" }] },
     { type: "multiRow", doc: "Destroy at least `rows` rows in one go.",
       params: [{ key: "rows", kind: "int", label: "Rows", def: 2 }] },
+    { type: "rowWith", doc: "A line clear destroys part of a matching piece.",
+      params: [{ key: "match", kind: "match", label: "Piece" }] },
     { type: "pieceServed", doc: "A matching piece arrives.",
       params: [{ key: "match", kind: "match", label: "Piece" }] },
     { type: "pieceSequence", doc: "These pieces arrive one straight after another, in order (e.g. [\"spam\", \"spam\", \"spam\"]).",
@@ -4283,6 +4703,8 @@
     { type: "score", doc: "Reach this score in one game.", params: [{ key: "value", kind: "int", label: "Score", required: true }] },
     { type: "level", doc: "Reach this level in one game.", params: [{ key: "value", kind: "int", label: "Level", required: true }] },
     { type: "drops", doc: "Place this many pieces in one game.", params: [{ key: "count", kind: "int", label: "Pieces", required: true }] },
+    { type: "blocksDestroyed", doc: "Destroy `count` blocks (line clears and powerups); scope \"game\" (default) or \"lifetime\".",
+      params: [{ key: "count", kind: "int", label: "Blocks", def: 1 }, { key: "scope", kind: "scope", label: "Scope" }] },
     { type: "together", doc: "Pieces are on the board at the same time: one for each match in `groups` (e.g. [{ids:[\"david\"]}, {ids:[\"lisa\"]}]), or `count` different pieces that all match `match`.",
       custom: "together", sig: "groups } or { match, count",
       params: [{ key: "groups", kind: "groups", label: "Pieces" }, { key: "match", kind: "match", label: "Pieces" }, { key: "count", kind: "int", label: "Different pieces" }] },
@@ -4378,12 +4800,19 @@
   const triggerSpec = (type) => ach.triggers.find(d => d.type === type) || null;
 
   // ---------- matching (same rule as the game) ----------
+  // match.levels: regular pieces by difficulty (numbers only, like the game's includes())
+  const levelsOf = (v) => Array.isArray(v) ? v.filter(x => typeof x === "number" && Number.isFinite(x)) : [];
+  const difficultyOf = (s) => Number.isFinite(+s.difficulty) && s.difficulty !== null && s.difficulty !== "" ? +s.difficulty : 1;
+  const matchEmpty = (m) => !arrOf(m && m.ids).length && !arrOf(m && m.tags).length && !arrOf(m && m.types).length && !levelsOf(m && m.levels).length;
+  // "a giant" (5), "a difficulty 3 piece", "a difficulty 4 or 5 piece"
+  const levelPhrase = (lv, noun = "piece") => lv.length === 1 && lv[0] === 5 ? (noun === "piece" ? "a giant" : "giant") : `${noun === "piece" ? "a " : ""}difficulty ${listJoin(lv.map(String))}${noun === "piece" ? " piece" : ""}`;
   function matchesShape(s, m){
     if (!s) return false;
     if (!isPlainObject(m)) return true;
-    const ids = arrOf(m.ids), tags = arrOf(m.tags), types = arrOf(m.types);
-    if (!ids.length && !tags.length && !types.length) return true;
+    const ids = arrOf(m.ids), tags = arrOf(m.tags), types = arrOf(m.types), levels = levelsOf(m.levels);
+    if (!ids.length && !tags.length && !types.length && !levels.length) return true;
     if (ids.includes(s.id)) return true;
+    if (levels.length && !isPlainObject(s.powerup) && levels.includes(difficultyOf(s))) return true;
     if (tags.length && Array.isArray(s.tags) && s.tags.some(t => tags.includes(t))) return true;
     if (types.length && isPlainObject(s.powerup) && types.includes(s.powerup.type)) return true;
     return false;
@@ -4401,11 +4830,12 @@
   }
   // noun: "piece" | "powerup"; bare: tags without a noun ("a mouth", for containers)
   function matchPhrase(m, noun = "piece", bare = false){
-    const ids = arrOf(m && m.ids), tags = arrOf(m && m.tags), types = arrOf(m && m.types);
+    const ids = arrOf(m && m.ids), tags = arrOf(m && m.tags), types = arrOf(m && m.types), levels = levelsOf(m && m.levels);
     const parts = [];
     if (ids.length) parts.push(listJoin(ids.map(blockLabel)));
     if (tags.length) parts.push(`${art(tags[0])} ${listJoin(tags)}${bare ? "" : " " + noun}`);
     if (types.length) parts.push(`${art(types[0])} ${listJoin(types)} powerup`);
+    if (levels.length) parts.push(levelPhrase(levels));
     if (!parts.length) return noun === "powerup" ? "a powerup" : "any piece";
     return listJoin(parts);
   }
@@ -4418,6 +4848,8 @@
     switch (t.type){
       case "rowsDestroyed": { const c = val("count"); return `Unlocks when you destroy ${c === 1 ? "a row" : `${num(c)} rows`} ${scope}`; }
       case "multiRow": return `Unlocks when you destroy at least ${num(val("rows"))} rows in one go`;
+      case "rowWith": return t.match ? `Unlocks when a destroyed row has part of ${matchPhrase(t.match)} in it` : "Unlocks when you destroy a row with part of any piece in it";
+      case "blocksDestroyed": { const c = val("count"); return `Unlocks when you destroy ${c === 1 ? "a block" : `${num(c)} blocks`} ${scope}`; }
       case "pieceServed": return `Unlocks when ${matchPhrase(t.match)} arrives`;
       case "pieceSequence": {
         const ids = arrOf(t.ids);
@@ -4432,8 +4864,10 @@
         return `Unlocks when ${matchPhrase(t.piece)} lands ${where}`;
       }
       case "seenAll": {
-        const ids = arrOf(t.match && t.match.ids), tags = arrOf(t.match && t.match.tags), types = arrOf(t.match && t.match.types);
-        if (!ids.length && !tags.length && !types.length) return "Unlocks when every piece has arrived at least once in one game";
+        const ids = arrOf(t.match && t.match.ids), tags = arrOf(t.match && t.match.tags), types = arrOf(t.match && t.match.types), lv = levelsOf(t.match && t.match.levels);
+        if (matchEmpty(t.match)) return "Unlocks when every piece has arrived at least once in one game";
+        if (lv.length && !ids.length && !tags.length && !types.length) return `Unlocks when every ${levelPhrase(lv, "")} piece has arrived at least once in one game`;
+        if (lv.length) return `Unlocks when every piece that is ${matchPhrase(t.match)} has arrived at least once in one game`;
         if (ids.length && !tags.length && !types.length) return `Unlocks when ${listJoin(ids.map(blockLabel), "and")} have all arrived at least once in one game`;
         if (!ids.length && tags.length && !types.length) return `Unlocks when every ${listJoin(tags)} piece has arrived at least once in one game`;
         if (!ids.length && !tags.length) return `Unlocks when every ${listJoin(types)} powerup has arrived at least once in one game`;
@@ -4466,11 +4900,12 @@
           return `Unlocks when ${joined} are on the board at the same time`;
         }
         const m = isPlainObject(t.match) ? t.match : null, c = t.count;
-        const ids = arrOf(m && m.ids), tags = arrOf(m && m.tags), types = arrOf(m && m.types);
+        const ids = arrOf(m && m.ids), tags = arrOf(m && m.tags), types = arrOf(m && m.types), lv = levelsOf(m && m.levels);
         if (c === 1) return `Unlocks when ${matchPhrase(m)} is on the board`;
         const n = num(c);
         let what;
-        if (!ids.length && !tags.length && !types.length) what = `${n} different pieces`;
+        if (matchEmpty(m)) what = `${n} different pieces`;
+        else if (lv.length) what = !ids.length && !tags.length && !types.length ? `${n} different ${levelPhrase(lv, "")} pieces` : `${n} different pieces, each ${matchPhrase(m)},`;
         else if (!ids.length && tags.length && !types.length) what = `${n} different ${listJoin(tags)} pieces`;
         else if (!ids.length && !tags.length) what = `${n} different ${listJoin(types)} powerups`;
         else if (ids.length && !tags.length && !types.length){
@@ -4507,8 +4942,18 @@
     }
     if (typeof a.name !== "string" || !a.name.trim()) errors.push("Name is empty.");
     if (typeof a.description !== "string" || !a.description.trim()) warnings.push("Description is empty.");
-    if (a.mode !== undefined && !ACH_MODES.includes(a.mode)) warnings.push(`Unknown mode "${a.mode}" (any, normal or extreme).`);
+    if (a.mode !== undefined && !ACH_MODES.includes(a.mode)) warnings.push(`Unknown mode "${a.mode}" (${listJoin(ACH_MODES)}).`);
     if (a.secret !== undefined && typeof a.secret !== "boolean") warnings.push("secret should be true or false.");
+    if (a.variants !== undefined){
+      if (!Array.isArray(a.variants)) warnings.push("variants should be a list like [{ name, description }].");
+      else a.variants.forEach((x, i) => {
+        const label = `Variant ${i + 1}`;
+        if (!isPlainObject(x)){ warnings.push(`${label} should be an object like { name, description }.`); return; }
+        if (typeof x.name !== "string" || !x.name.trim()) warnings.push(`${label} has no name.`);
+        else if (typeof a.name === "string" && x.name.trim() === a.name.trim()) warnings.push(`${label} has the same name as the main one.`);
+        if (typeof x.description !== "string" || !x.description.trim()) warnings.push(`${label} has no description.`);
+      });
+    }
     if (a.icon !== undefined){
       if (!isIconGrid(a.icon)) warnings.push("icon should be a square grid of hex colours.");
       else {
@@ -4538,6 +4983,13 @@
       }
       const unkTy = arrOf(v.types).filter(x => !PU_TYPES.includes(x));
       if (unkTy.length) warnings.push(`${key}: unknown powerup type(s) ${unkTy.join(", ")}.`);
+      if (v.levels !== undefined){
+        if (!Array.isArray(v.levels) || levelsOf(v.levels).length !== v.levels.length) warnings.push(`${key}: levels should be a list of difficulties (numbers 0–5), e.g. [5].`);
+        else if (haveBlocks){
+          const none = v.levels.filter(l => !BLOCKS.items.some(s => s && !isPlainObject(s.powerup) && difficultyOf(s) === l));
+          if (none.length) warnings.push(`${key}: no regular block has difficulty ${listJoin(none.map(String))}.`);
+        }
+      }
       return true;
     };
     for (const p of spec.params){
@@ -4563,7 +5015,7 @@
         v.forEach((g, i) => {
           const label = `Piece ${i + 1}`;
           if (!isPlainObject(g)){ warnings.push(`${label} should be an object like { ids, tags, types }.`); return; }
-          if (!arrOf(g.ids).length && !arrOf(g.tags).length && !arrOf(g.types).length) warnings.push(`${label} matches any piece.`);
+          if (matchEmpty(g)) warnings.push(`${label} matches any piece.`);
           else if (checkMatch(label, g) && haveBlocks && !BLOCKS.items.some(s => s && matchesShape(s, g))) warnings.push(`${label}: no block matches.`);
         });
       }
@@ -4586,7 +5038,7 @@
       if (!containers.some(s => isPlainObject(s.zones) && isPlainObject(s.zones[zone])))
         warnings.push(`No ${t.container ? "matching container" : "block"} has a zone called "${zone}" (add it in Blocks → Zones).`);
     }
-    if (haveBlocks && t.type === "seenAll" && !BLOCKS.items.some(s => s && matchesShape(s, t.match))) warnings.push("No block matches, so this can never unlock.");
+    if (haveBlocks && (t.type === "seenAll" || t.type === "rowWith") && !BLOCKS.items.some(s => s && matchesShape(s, t.match))) warnings.push("No block matches, so this can never unlock.");
     return { errors, warnings };
   }
 
@@ -4663,7 +5115,8 @@
     const a = w.data;
     if (!isPlainObject(a)) return false;
     const t = isPlainObject(a.trigger) ? a.trigger.type : "";
-    return [a.id, a.name, a.description, t, a.mode, a.secret ? "secret" : ""].map(v => String(v ?? "").toLowerCase()).join(" ").includes(f);
+    const vn = Array.isArray(a.variants) ? a.variants.filter(isPlainObject).map(x => `${x.name ?? ""} ${x.description ?? ""}`) : [];
+    return [a.id, a.name, a.description, t, a.mode, a.secret ? "secret" : "", ...vn].map(v => String(v ?? "").toLowerCase()).join(" ").includes(f);
   }
   function renderAchList(){
     const f = ach.filter.trim().toLowerCase();
@@ -4715,6 +5168,7 @@
     else if (is.warnings.length) b += `<span class="pill warn" title="${escapeHtml(is.warnings.join("\n"))}">check</span>`;
     if (a && a.mode !== undefined && a.mode !== "any") b += `<span class="pill accent">${escapeHtml(a.mode)}</span>`;
     if (a && a.secret) b += `<span class="pill">secret</span>`;
+    if (a && Array.isArray(a.variants) && a.variants.length) b += `<span class="pill" title="${escapeHtml(a.variants.map(x => isPlainObject(x) ? String(x.name ?? "") : "?").join("\n"))}">+${a.variants.length} name${a.variants.length === 1 ? "" : "s"}</span>`;
     badges.innerHTML = b;
     row.append(thumb, mid, badges);
   }
@@ -4797,7 +5251,8 @@
     ensureOption(el.achMode, mode);
     el.achMode.value = mode;
     el.achSecret.checked = !!a.secret;
-    const extra = Object.keys(a).filter(k => !ACH_FORMAT.preferred.includes(k));
+    achRenderVariants();
+    const extra = Object.keys(a).filter(k => !ACH_FORMAT.preferred.includes(k) && !(k === "variants" && Array.isArray(a.variants)));
     el.achExtras.innerHTML = extra.length ? `Preserved on save: ${extra.map(k => `<span class="pill mono">${escapeHtml(k)}</span>`).join(" ")}` : "";
   }
   function achRenderIdHint(){
@@ -4827,6 +5282,75 @@
     if (el.achMode.value === "any") delete a.mode; else a.mode = el.achMode.value;
     achAfterChange();
   });
+  // ---------- variants: [{ name, description }] ----------
+  function achRenderVariants(){
+    const a = achData();
+    el.achVariants.innerHTML = "";
+    const v = a ? a.variants : undefined;
+    const list = Array.isArray(v) ? v : [];
+    el.achVarCount.textContent = String(list.length);
+    el.achVarAdd.disabled = !a || (v !== undefined && !Array.isArray(v));
+    if (v !== undefined && !Array.isArray(v)){
+      el.achVariants.innerHTML = `<div class="hint" style="color:var(--warn);">variants isn't a list, so it is kept as written: <span class="mono">${escapeHtml(JSON.stringify(v))}</span></div>`;
+      return;
+    }
+    list.forEach((x, i) => {
+      const box = document.createElement("div");
+      box.className = "variantBox";
+      box.dataset.variant = String(i);
+      const top = document.createElement("div");
+      top.className = "varTop";
+      const num = document.createElement("span");
+      num.className = "varNum mono"; num.textContent = String(i + 1);
+      const rm = document.createElement("button");
+      rm.type = "button"; rm.className = "small danger"; rm.textContent = "×"; rm.title = "Remove this variant";
+      rm.dataset.removeVariant = String(i);
+      rm.addEventListener("click", () => {
+        a.variants.splice(i, 1);
+        if (!a.variants.length) delete a.variants;
+        achRenderVariants(); achAfterChange();
+      });
+      if (!isPlainObject(x)){
+        const raw = document.createElement("span");
+        raw.className = "hint mono"; raw.style.color = "var(--warn)";
+        raw.textContent = `${JSON.stringify(x)} (not { name, description }; kept)`;
+        top.append(num, raw, rm);
+        box.appendChild(top);
+        el.achVariants.appendChild(box);
+        return;
+      }
+      const name = document.createElement("input");
+      name.type = "text"; name.placeholder = "Variant name"; name.spellcheck = false;
+      name.value = x.name == null ? "" : String(x.name);
+      name.dataset.field = "name";
+      name.addEventListener("input", () => { x.name = name.value; achAfterChange(); });
+      const desc = document.createElement("textarea");
+      desc.className = "desc"; desc.rows = 2; desc.placeholder = "Its description";
+      desc.value = x.description == null ? "" : String(x.description);
+      desc.dataset.field = "description";
+      desc.addEventListener("input", () => { x.description = desc.value; achAfterChange(); });
+      top.append(num, name, rm);
+      box.append(top, desc);
+      const other = Object.keys(x).filter(k => k !== "name" && k !== "description");
+      if (other.length){
+        const n = document.createElement("div");
+        n.className = "hint"; n.style.marginTop = "4px";
+        n.textContent = `Also kept: ${other.join(", ")}`;
+        box.appendChild(n);
+      }
+      el.achVariants.appendChild(box);
+    });
+  }
+  el.achVarAdd.addEventListener("click", () => {
+    const a = achData(); if (!a) return;
+    if (a.variants === undefined) a.variants = [];
+    if (!Array.isArray(a.variants)) return;
+    a.variants.push({ name: "", description: a.description == null ? "" : String(a.description) });
+    achPreviewVariant.set(curAch().uid, a.variants.length);
+    achRenderVariants(); achAfterChange();
+    const boxes = el.achVariants.querySelectorAll('input[data-field="name"]');
+    if (boxes.length) boxes[boxes.length - 1].focus();
+  });
   el.achSecret.addEventListener("change", () => {
     const a = achData(); if (!a) return;
     if (el.achSecret.checked) a.secret = true; else delete a.secret;
@@ -4839,10 +5363,10 @@
     if (!a){ el.achSummary.innerHTML = ""; return; }
     let html = escapeHtml(triggerSummary(a.trigger)) + ".";
     const notes = [];
-    if (a.mode === "normal") notes.push("Normal mode only.");
-    else if (a.mode === "extreme") notes.push("Extreme mode only.");
+    if (ACH_MODE_NOTES[a.mode]) notes.push(ACH_MODE_NOTES[a.mode]);
     else if (a.mode !== undefined && a.mode !== "any") notes.push(`Mode "${a.mode}".`);
     if (a.secret) notes.push("Secret: listed as ??? until unlocked.");
+    if (Array.isArray(a.variants) && a.variants.length) notes.push(`Shows one of ${a.variants.length + 1} names at random.`);
     if (notes.length) html += `<small>${escapeHtml(notes.join(" "))}</small>`;
     el.achSummary.innerHTML = html;
   }
@@ -5046,7 +5570,7 @@
       if (groups.length){
         const note = document.createElement("div");
         note.className = "hint"; note.style.marginTop = "6px";
-        note.textContent = "Each group matches a piece whose id is listed, OR that has one of the tags, OR (powerups) whose type is ticked. An empty group matches any piece.";
+        note.textContent = "Each group matches a piece whose id is listed, OR that has one of the tags, OR (powerups) whose type is ticked, OR (regular pieces) whose difficulty is ticked. An empty group matches any piece.";
         host.appendChild(note);
       }
     } else {
@@ -5133,11 +5657,30 @@
       types.appendChild(lab);
       return cb;
     });
+    // levels: regular pieces by difficulty (0–5, 5 = the giants)
+    const levels = document.createElement("div");
+    levels.className = "typeChecks";
+    levels.style.gap = "8px";
+    levels.dataset.levels = "1";
+    const curLevels = levelsOf(m0 && m0.levels);
+    const allLevels = [...new Set([0, 1, 2, 3, 4, 5, ...curLevels])].sort((a, b) => a - b);
+    const lboxes = allLevels.map(lv => {
+      const lab = document.createElement("label");
+      lab.title = lv === 5 ? "difficulty 5: the giants" : `regular pieces with difficulty ${lv}`;
+      const cb = document.createElement("input");
+      cb.type = "checkbox"; cb.value = String(lv); cb.checked = curLevels.includes(lv);
+      cb.addEventListener("change", () => setList("levels", lboxes.filter(b => b.checked).map(b => Number(b.value))));
+      lab.append(cb, document.createTextNode(" " + lv + (lv === 5 ? " giants" : "")));
+      levels.appendChild(lab);
+      return cb;
+    });
+    // (powerup matches: levels only match regular pieces, so the row is shown only if already set)
     box.append(row("Ids", ids), row("Tags", tags), row("Types", types));
-    const other = m0 ? Object.keys(m0).filter(k => !["ids", "tags", "types"].includes(k)) : [];
+    if (!p.powerup || (m0 && m0.levels !== undefined)) box.append(row("Levels", levels));
+    const other = m0 ? Object.keys(m0).filter(k => !["ids", "tags", "types", "levels"].includes(k)) : [];
     const note = document.createElement("div");
     note.className = "hint"; note.style.marginTop = "6px";
-    note.textContent = "Matches a piece whose id is listed, OR that has one of the tags, OR (powerups) whose type is ticked. Leave it all empty to match anything."
+    note.textContent = "Matches a piece whose id is listed, OR that has one of the tags, OR (powerups) whose type is ticked, OR (regular pieces) whose difficulty is ticked. Leave it all empty to match anything."
       + (other.length ? ` Also kept: ${other.join(", ")}.` : "");
     box.appendChild(note);
     updateCount();
@@ -5399,14 +5942,30 @@
     const tctx = el.toastIcon.getContext("2d");
     tctx.clearRect(0, 0, 36, 36);
     drawIconBox(tctx, ic, 0, 0, 36);
-    el.toastName.textContent = a ? (String(a.name ?? "") || "(unnamed)") : "";
-    el.toastDesc.textContent = a ? String(a.description ?? "") : "";
+    // variants: preview the main name or one of the variants
+    const vars = a && Array.isArray(a.variants) ? a.variants : [];
+    const w = curAch();
+    let vi = w ? (achPreviewVariant.get(w.uid) || 0) : 0;
+    if (vi > vars.length) vi = 0;
+    const shown = vi > 0 && isPlainObject(vars[vi - 1]) ? vars[vi - 1] : a;
+    el.toastName.textContent = a ? (String(shown.name ?? "") || "(unnamed)") : "";
+    el.toastDesc.textContent = a ? String(shown.description ?? "") : "";
+    el.toastVariantSeg.classList.toggle("hidden", !vars.length);
+    const segHtml = vars.length ? ["Main", ...vars.map((_, i) => `V${i + 1}`)].map((l, i) => `<button type="button" data-v="${i}" class="${i === vi ? "on" : ""}">${l}</button>`).join("") : "";
+    if (el.toastVariantSeg.dataset.html !== segHtml){ el.toastVariantSeg.dataset.html = segHtml; el.toastVariantSeg.innerHTML = segHtml; }
     const notes = [];
     if (a && !ic) notes.push("No icon yet: the game shows its default icon instead of the ?.");
     if (ic){ const d = iconDims(ic); if (d.w !== 12 || d.h !== 12) notes.push(`The game draws icons in a 36px square: exactly 3× for 12×12, so ${d.w}×${d.h} gets scaled.`); }
     if (a && a.secret) notes.push("Secret: listed as ??? until it unlocks.");
     el.toastNote.textContent = notes.join(" ");
   }
+  const achPreviewVariant = new Map();   // achievement uid -> which name the toast shows (0 = main)
+  el.toastVariantSeg.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-v]"), w = curAch();
+    if (!b || !w) return;
+    achPreviewVariant.set(w.uid, +b.dataset.v);
+    achRenderPreviews();
+  });
   function achRenderIcon(){
     const a = achData();
     const ic = curIcon(), N = iconSizeNow();
@@ -5681,7 +6240,8 @@
     buildShapeFromEditor, loadShapeIntoEditor, deepEqual, toJsonCompatible, renderNow, setKind, setCentreTab, generate,
     zoneGenerate, regionSignature, exportRegion, setAppMode, achSelect, achIssues, triggerSummary, normaliseAchievement,
     serialiseAchievements, saveAchievements, saveCurrent, parseTriggerHeader, bitmapToIcon, iconPasteBitmap, setSlotText,
-    BLOCK_FORMAT, ACH_FORMAT, touchCells, shapeModel, gooGuess,
+    BLOCK_FORMAT, ACH_FORMAT, touchCells, shapeModel, gooGuess, matchesShape, curPart, areaTarget, drawThumb, makeProjectObject, loadProjectObject,
+    undo, redo,
   };
 
   // ============================================================

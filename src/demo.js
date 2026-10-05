@@ -11,8 +11,8 @@ import { drawBlockWithPaintStatic, drawPowerupMark } from "./render.js";
 
 const COLS = 9, ROWS = 8;
 const PALETTE = ["#e8794a", "#5fb0e8", "#9ad45b", "#e85fa8", "#e8d35f", "#9a7be8", "#5fd4c4", "#d45f5f"];
-const T_FALL = 1000, T_CHARGE = 300, T_EFFECT = 850, T_HOLD = 1300;
-const LOOP = T_FALL + T_CHARGE + T_EFFECT + T_HOLD;
+const T_FALL = 1000, T_CHARGE = 300, T_HOLD = 1300;
+const BLAST_TIME_SCALE = 1.7;
 
 function filler(seed) {
   const c = PALETTE[seed % PALETTE.length];
@@ -93,6 +93,15 @@ function simulate(board, shape, x) {
   return { x, y, placed, centre, fx, after, preview, layers, score };
 }
 
+function pathAt(path, t) {
+  if (t <= path[0].t) return path[0];
+  for (let i = 1; i < path.length; i++) {
+    const a = path[i - 1], b = path[i];
+    if (t <= b.t) { const u = (t - a.t) / Math.max(1e-6, b.t - a.t); return { x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u }; }
+  }
+  return path[path.length - 1];
+}
+
 export function createDemo(canvas, shape, { cell = 16 } = {}) {
   const dpr = Math.max(1, Math.round(window.devicePixelRatio || 1));
   canvas.width = COLS * cell * dpr;
@@ -112,6 +121,10 @@ export function createDemo(canvas, shape, { cell = 16 } = {}) {
   const movedTo = new Map(best ? best.fx.moves.map(m => [m.toY * COLS + m.toX, m]) : []);
   const filledAt = new Map(best ? best.fx.filled.map(f => [f.y * COLS + f.x, f]) : []);
   const consumed = !!shape.powerup.consume;
+  // blasts take as long as their slowest flight
+  const maxFlight = best ? Math.max(0, ...best.fx.moves.map(m => m.flight ?? 0)) : 0;
+  const T_EFFECT = Math.max(850, maxFlight * 1000 * BLAST_TIME_SCALE);
+  const LOOP = T_FALL + T_CHARGE + T_EFFECT + T_HOLD;
   const mat = shape.rotations[0];
 
   function cellAt(b, x, y) { return b[y]?.[x] ?? null; }
@@ -182,7 +195,16 @@ export function createDemo(canvas, shape, { cell = 16 } = {}) {
       if (!c) continue;
       const m = movedTo.get(i);
       const f = filledAt.get(i);
-      if (m) {
+      if (m && m.path) {
+        const tt = u * T_EFFECT / 1000 / BLAST_TIME_SCALE;
+        const at = pathAt(m.path, tt);
+        const rot = tt < m.flight ? m.spin * (tt / m.flight) : 0;
+        ctx.save();
+        ctx.translate(at.x * cell + cell / 2, at.y * cell + cell / 2);
+        ctx.rotate(rot);
+        drawBlockWithPaintStatic(ctx, -cell / 2, -cell / 2, cell, c.paint, c.style ?? {});
+        ctx.restore();
+      } else if (m) {
         let ox, oy;
         if (m.viaX != null && (m.viaX !== m.toX || m.viaY !== m.toY)) {
           if (u < 0.4) { const k = 1 - Math.pow(1 - u / 0.4, 2); ox = m.fromX + (m.viaX - m.fromX) * k; oy = m.fromY + (m.viaY - m.fromY) * k; }

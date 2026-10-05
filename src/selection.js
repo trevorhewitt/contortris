@@ -9,7 +9,7 @@
 
 import { CONFIG } from "../config.js";
 import { clamp01, lerp, sampleByWeight } from "./util.js";
-import { analyseBoard } from "./powerups.js";
+import { analyseBoard, resolvePowerupArea, computeEffect, phantomLandingY } from "./powerups.js";
 
 const DEBUG_LINK = false; // verbose console logging for linked shapes
 
@@ -423,6 +423,89 @@ function noteHardDropped(sel, lvl = 5) {
 }
 
 /* =========================================
+   Usability: could this powerup do anything useful on the board right now?
+   =========================================
+   Tries every rotation and column (dropped straight down, like a player would) and
+   runs the real effect on a copy of the board. Phantoms only count if some spot lets
+   them sink below where a normal piece would land (into a gap they fit).
+   Returns the best "blocks helped" count (0 = useless right now).
+*/
+const usefulCache = { version: -1, board: null, map: new Map() };
+export function powerupUsefulnessCached(state, shape) {
+  if (usefulCache.version !== state.boardVersion || usefulCache.board !== state.board) {
+    usefulCache.version = state.boardVersion; usefulCache.board = state.board; usefulCache.map.clear();
+  }
+  let v = usefulCache.map.get(shape.id);
+  if (v === undefined) { v = powerupUsefulness(state.board, shape); usefulCache.map.set(shape.id, v); }
+  return v;
+}
+
+export function powerupUsefulness(board, shape) {
+  const rows = board.length, cols = board[0].length;
+  const pu = shape.powerup;
+  const occupied = board.map(r => r.map(Boolean));
+  const collides = (mat, px, py) => {
+    for (let y = 0; y < mat.length; y++) for (let x = 0; x < mat[0].length; x++) {
+      if (!mat[y][x]) continue;
+      const bx = px + x, by = py + y;
+      if (bx < 0 || bx >= cols || by >= rows) return true;
+      if (by >= 0 && occupied[by][bx]) return true;
+    }
+    return false;
+  };
+  let best = 0;
+  for (let r = 0; r < shape.rotations.length; r++) {
+    const mat = shape.rotations[r];
+    for (let x = -mat[0].length + 1; x < cols; x++) {
+      let y = -mat.length;
+      if (collides(mat, x, y)) continue;
+      while (!collides(mat, x, y + 1)) y++;
+      if (pu.type === "phantom") {
+        const deep = phantomLandingY(board, x, mat);
+        if (deep != null && deep > y) best = Math.max(best, deep - y);
+        if (best >= 4) return best;
+        continue;
+      }
+      const copy = board.map(row => row.slice());
+      const placed = [];
+      for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) {
+        if (!mat[j][i] || y + j < 0) continue;
+        copy[y + j][x + i] = { pid: -7 };
+        placed.push({ x: x + i, y: y + j });
+      }
+      const area = resolvePowerupArea(pu, r, x, y, cols, rows);
+      if (pu.type === "destroyer" || pu.type === "acid" || pu.type === "blast" || pu.type === "combo") {
+        // these always do something if their area has blocks in it (cheap: no physics)
+        let hit = 0;
+        for (const i of area.indices) { const c = copy[(i / cols) | 0][i % cols]; if (c && c.pid !== -7) hit++; }
+        best = Math.max(best, hit);
+        if (best >= 4) return best;
+        continue;
+      }
+      const fx = computeEffect(copy, pu, {
+        area, placed, pid: -7, centre: { x: x + (mat[0].length - 1) / 2, y: y + (mat.length - 1) / 2 },
+        cols, rows, rng: () => 0.5, makeFill: () => ({ pid: -8 }),
+      });
+      // filling only helps in a gap: a cell under a block, or walled in on two sides
+      // (a pit or a notch); filling open air just adds height
+      let filledGaps = 0;
+      const solid = (xx, yy) => xx < 0 || xx >= cols || yy >= rows || (yy >= 0 && !!copy[yy][xx] && copy[yy][xx].pid !== -8);
+      for (const f of fx.filled) {
+        let covered = false;
+        for (let yy = f.y - 1; yy >= 0 && !covered; yy--) covered = solid(f.x, yy) && copy[yy][f.x]?.pid !== -7;
+        const walls = solid(f.x - 1, f.y) + solid(f.x + 1, f.y) + solid(f.x, f.y + 1);
+        if (covered || walls >= 3) filledGaps++;
+      }
+      const moved = fx.moves.filter(m => m.toY > m.fromY || m.toX !== m.fromX).length;
+      const score = fx.destroyed.length + moved + filledGaps + (fx.collapsed ? fx.collapsed.rows.length * cols : 0);
+      best = Math.max(best, score);
+      if (best >= 4) return best; // plenty: no need to look further
+    }
+  }
+  return best;
+}
+
+/* =========================================
    Powerup scheduler (Normal mode)
    =========================================
    Decides IF a powerup is due (an accumulating chance, boosted by danger and
@@ -482,8 +565,15 @@ function maybeSelectPowerup(state, danger01) {
   const lucky = state.rng() < (st.luckyChance ?? 0);
   const power = lucky ? (st.helpPower ?? 2) : lerp(st.calmHelpPower ?? 0, st.helpPower ?? 2, sel.struggle);
 
+  // usable-now bias (CONFIG...usability): useless powerups are much rarer, but not impossible
+  const use = cfg.usability ?? {};
+  const useful = new Map();
+  if (use.enabled !== false) for (const p of candidates) useful.set(p.id, powerupUsefulnessCached(state, p) >= (use.minUseful ?? 1));
+  ps.lastUsable = useful.size ? [...useful.values()].filter(Boolean).length + "/" + useful.size : "–";
+
   ps.sinceClass++;
   return sampleByWeight(candidates, (p) => {
+    const usableW = useful.size && !useful.get(p.id) ? (use.unusableWeight ?? 0.1) : 1;
     const sideways = p.powerup.type === "gravity" && (p.powerup.direction === "left" || p.powerup.direction === "right");
     const n = (sideways ? need.gravitySideways : null) ?? need[p.powerup.type] ?? { base: 1 };
     const needW = (n.base ?? 1) + (n.holes ?? 0) * holes01 + (n.danger ?? 0) * danger01;
@@ -491,7 +581,7 @@ function maybeSelectPowerup(state, danger01) {
     const comboW = p.powerup.type === "combo" ? (combos.weight ?? 1) : 1;
     // a class's pieces share its weight, so big classes don't crowd out small ones
     const classSize = candidates.filter(c => c.powerup.type === p.powerup.type).length;
-    return (p.frequency ?? 1) * needW * helpW * comboW * varietyMultiplier(sel, p) * (6 / (classSize + 5));
+    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * varietyMultiplier(sel, p) * (6 / (classSize + 5));
   }, state.rng);
 }
 
@@ -506,7 +596,14 @@ function unlockNextClass(state, pool) {
     const simple = remaining.filter(t => (prog.firstClassPool ?? remaining).includes(t));
     if (simple.length) remaining = simple;
   }
-  const next = remaining[Math.floor(state.rng() * remaining.length)];
+  // prefer a class that has something usable on the board right now
+  const use = CONFIG.assist.powerups.usability ?? {};
+  const classW = (t) => {
+    if (use.enabled === false) return 1;
+    const anyUsable = pool.some(p => p.powerup.type === t && powerupUsefulnessCached(state, p) >= (use.minUseful ?? 1));
+    return anyUsable ? 1 : (use.unusableClassWeight ?? 0.1);
+  };
+  const next = sampleByWeight(remaining, classW, state.rng);
   ps.classes.push(next);
   ps.sinceClass = 0;
   ps.classAtDrop = state.pieceSel.dropIndex;

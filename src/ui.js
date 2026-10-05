@@ -677,6 +677,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
       ["stack / holes", `${stats.stackHeight} · ${stats.holes}`],
       ["powerup chance", ps && state.powerups.length ? `${(ps.lastChance * 100).toFixed(0)}% · cd ${ps.cooldown} · rate ×${state.devPowerups.rate}` : "off"],
       ["struggle", (state.pieceSel?.struggle ?? 0).toFixed(2)],
+      ["usable powerups", ps?.lastUsable ?? "–"],
       ["first giant", state.pieceSel?.giantDueAt == null ? "none (easy)" : state.pieceSel.hadGiant ? "done" : `due at piece ${state.pieceSel.giantDueAt}`],
       ["classes", ps ? (ps.classes.join(", ") || "none yet") : "–"],
       ["powerups seen", ps ? `${ps.shown.size}/${state.powerups.length} · ${state.devPowerups.disabled.size} disabled` : "–"],

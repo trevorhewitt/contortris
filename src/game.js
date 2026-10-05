@@ -107,6 +107,7 @@ export function createGameState(shapes, powerups, { rng = Math.random } = {}) {
       flash: { active: false, elapsedMs: 0, durationMs: 0, cells: [] },
       // Floating text ("DOUBLE!", "+24")
       callouts: [],
+      shockwaves: [],  // expanding rings where a blast went off
       quake: {
         trauma: 0,
         seed: Math.random() * 1000,
@@ -195,6 +196,7 @@ export function resetGame(state) {
   const fx = state.fx;
   fx.particles.length = 0;
   fx.callouts.length = 0;
+  fx.shockwaves.length = 0;
   fx.rowFall.active = false;
   fx.rowFall.elapsedMs = 0;
   fx.rowFall.rowDropDistances = Array(CONFIG.board.rows).fill(0);
@@ -735,6 +737,11 @@ function firePowerupEffect(state, e) {
   let settleMs = 0;
 
   const fillPid = state.nextPid++;
+  const blasts = pu.type === "blast" || pu.parts?.some(p => p.type === "blast");
+  if (blasts) {
+    const reach = Math.max(2, ...e.area.indices.map(i => Math.hypot(i % cols - e.centre.x, ((i / cols) | 0) - e.centre.y)));
+    state.fx.shockwaves.push({ x: e.centre.x + 0.5, y: e.centre.y + 0.5, radius: reach + 1, elapsedMs: 0, durationMs: 420 });
+  }
   const fx = computeEffect(state.board, pu, {
     area: e.area, placed: e.placed, pid: e.pid, centre: e.centre, cols, rows, rng: state.rng,
     makeFill: () => ({ paint: pu.fillPaint, style: pu.fillStyle, pid: fillPid }),
@@ -816,6 +823,14 @@ function startMoveAnim(state, moves) {
   for (const m of moves) {
     const ox = m.fromX - m.toX;
     const oy = m.fromY - m.toY;
+    if (m.path) {
+      // a block thrown by a blast: follow its flight path (slowed a little so you can see it)
+      const scale = cfg.blastTimeScale ?? 1;
+      const dur = m.flight * 1000 * scale;
+      anim.byIndex.set(m.toY * cols + m.toX, { ox, oy, dur, path: m.path, flight: m.flight, spin: m.spin, toX: m.toX, toY: m.toY });
+      longest = Math.max(longest, dur);
+      continue;
+    }
     const hasVia = m.viaX != null && (m.viaX !== m.toX || m.viaY !== m.toY);
     const dist = Math.abs(ox) + Math.abs(oy) + (hasVia ? Math.abs(m.viaY - m.toY) : 0);
     const dur = Math.min(cfg.gravityMaxMs * (hasVia ? 1.6 : 1), cfg.gravityBaseMs + cfg.gravityMsPerSqrtCell * Math.sqrt(dist));
@@ -957,6 +972,13 @@ function updateFX(state, dt) {
       parts[n++] = p;
     }
     parts.length = n; // compact in place (no per-frame allocation)
+  }
+
+  const sw = state.fx.shockwaves;
+  if (sw.length) {
+    let n = 0;
+    for (const w of sw) { w.elapsedMs += dt; if (w.elapsedMs < w.durationMs) sw[n++] = w; }
+    sw.length = n;
   }
 
   const co = state.fx.callouts;

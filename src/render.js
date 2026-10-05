@@ -580,7 +580,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       ctx.fillStyle = rgba(e.shadow, k);
       ctx.beginPath();
       for (const b of list) {
-        if (b.s < 1) continue;
+        if (b.s < 1 || b.rot) continue;
         ctx.rect(b.px + so, b.py + so, cell, cell);
       }
       ctx.fill();
@@ -588,7 +588,13 @@ export function createRenderer(boardCanvas, nextCanvas) {
 
     for (const b of list) {
       const spr = getSprite(b.paint, b.style);
-      if (b.s >= 1) {
+      if (b.rot) {
+        ctx.save();
+        ctx.translate(b.px + cell / 2, b.py + cell / 2);
+        ctx.rotate(b.rot);
+        ctx.drawImage(spr, -cell / 2, -cell / 2, cell, cell);
+        ctx.restore();
+      } else if (b.s >= 1) {
         ctx.drawImage(spr, b.px, b.py, cell, cell);
       } else if (b.s > 0) {
         const d = cell * b.s;
@@ -603,6 +609,19 @@ export function createRenderer(boardCanvas, nextCanvas) {
       }
       fillEdgePaths(ctx, paths);
     }
+  }
+
+  // Position along a blast flight path at time t (seconds).
+  function pathPoint(path, t) {
+    if (t <= path[0].t) return path[0];
+    for (let i = 1; i < path.length; i++) {
+      const a = path[i - 1], b = path[i];
+      if (t <= b.t) {
+        const u = (t - a.t) / Math.max(1e-6, b.t - a.t);
+        return { x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u };
+      }
+    }
+    return path[path.length - 1];
   }
 
   function collectBoardBlocks(state, animated) {
@@ -622,6 +641,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
         let px = x * cell;
         let py = y * cell - rowOffset;
         let s = 1;
+        let rot = 0;
 
         if (animated) {
           const idx = y * cols + x;
@@ -629,7 +649,12 @@ export function createRenderer(boardCanvas, nextCanvas) {
             const m = mv.byIndex.get(idx);
             if (m) {
               const t = clamp01(mv.elapsedMs / m.dur);
-              if (m.vx !== undefined) {
+              if (m.path) {
+                const at = pathPoint(m.path, t * m.flight);
+                px += (at.x - m.toX) * cell;
+                py += (at.y - m.toY) * cell;
+                rot = t < 1 ? m.spin * t : 0;
+              } else if (m.vx !== undefined) {
                 // thrown out to (vx, vy), then falls to its resting place
                 const split = 0.4;
                 if (t < split) {
@@ -659,10 +684,11 @@ export function createRenderer(boardCanvas, nextCanvas) {
         }
 
         list.push({
-          px, py, s,
+          px, py, s, rot,
           paint: c.paint,
           style: c.style,
-          mask: enhanced ? boardEdgeMask(board, x, y, c.pid) : 0,
+          // flying blocks lose their joined-up edges until they land
+          mask: enhanced && !rot ? boardEdgeMask(board, x, y, c.pid) : 0,
         });
       }
     }
@@ -918,6 +944,29 @@ export function createRenderer(boardCanvas, nextCanvas) {
   }
 
   // Floating text: "DOUBLE!", "+24".
+  // Blast shockwaves: a bright ring racing out from the centre, plus a quick flash.
+  function drawShockwaves(state) {
+    const list = state.fx.shockwaves;
+    if (!list.length) return;
+    bctx.save();
+    for (const w of list) {
+      const t = clamp01(w.elapsedMs / w.durationMs);
+      const r = (0.3 + w.radius * (1 - Math.pow(1 - t, 3))) * cell;
+      const cx = w.x * cell, cy = w.y * cell;
+      if (t < 0.25) {
+        bctx.fillStyle = `rgba(255,240,200,${(0.5 * (1 - t / 0.25)).toFixed(3)})`;
+        bctx.beginPath(); bctx.arc(cx, cy, r * 0.9, 0, Math.PI * 2); bctx.fill();
+      }
+      bctx.lineWidth = Math.max(2, cell * 0.45 * (1 - t));
+      bctx.strokeStyle = `rgba(255,${(200 - 120 * t) | 0},90,${(0.9 * (1 - t)).toFixed(3)})`;
+      bctx.beginPath(); bctx.arc(cx, cy, r, 0, Math.PI * 2); bctx.stroke();
+      bctx.lineWidth = Math.max(1, cell * 0.15 * (1 - t));
+      bctx.strokeStyle = `rgba(255,255,255,${(0.8 * (1 - t)).toFixed(3)})`;
+      bctx.beginPath(); bctx.arc(cx, cy, r * 0.82, 0, Math.PI * 2); bctx.stroke();
+    }
+    bctx.restore();
+  }
+
   function drawCallouts(state, now) {
     const list = state.fx.callouts;
     if (!list.length) return;
@@ -1063,6 +1112,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     }
 
     drawParticles(state);
+    if (!hide) drawShockwaves(state);
     if (!hide) drawCallouts(state, now);
     bctx.drawImage(enhanced ? layers.screen : layers.classicTop, 0, 0, bw, bh);
 

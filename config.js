@@ -191,6 +191,18 @@ export const CONFIG = {
         newClassAfterDrops: 28,    // ...or after this many drops since the last new class
       },
 
+      // Usability: before picking, every candidate powerup is tried on the current board.
+      // Ones that couldn't help anywhere (e.g. gravity with no air pockets to fill, a phantom
+      // whose shape fits no gap) get their weight × unusableWeight, so they still turn up
+      // now and then (it shouldn't feel like hand-holding) but rarely. The same goes for
+      // which class is introduced next (× unusableClassWeight if none of it is usable).
+      usability: {
+        enabled: true,
+        minUseful: 1,            // "useful" = destroys, moves down/sideways or plugs at least this many blocks
+        unusableWeight: 0.1,     // 0 = never serve an unusable powerup, 1 = no bias
+        unusableClassWeight: 0.1,
+      },
+
       // Combos (two powerups in one) turn up mid-to-late game, built only from classes
       // that are already in.
       combos: {
@@ -305,6 +317,7 @@ export const CONFIG = {
       gravityBaseMs: 60,
       gravityMsPerSqrtCell: 70,
       gravityMaxMs: 420,
+      blastTimeScale: 1.7,  // blast flights play this much slower than "real" time
       gravityQuakePerBlock: 0.8,
 
       // Expander: fill cells pop in rings outward from the powerup.

@@ -396,53 +396,122 @@ export function analyseBoard(board) {
   return { highest, holes, filled, stackHeight: rows - highest };
 }
 
-// Blast: blocks in the area are thrown away from `centre` by up to `push` cells
-// (outermost first), then the thrown blocks fall. Moves carry the throw point
-// (viaX, viaY) for the animation.
+// Blast: every block in the area is launched away from `centre` (harder the closer it
+// is, always with some lift), flies on a ballistic arc under gravity, bounces off the
+// walls, and lands where it comes down. All blocks fly at once, so they land on each
+// other in the order they come down. `push` scales how far they go.
+// Moves carry `path` ([{x, y, t}] in cells and seconds), `flight` (seconds) and `spin`
+// (radians, a whole number of turns) for the animation.
+export const BLAST_PHYSICS = { gravity: 40, speedPerPush: 3.1, lift: 11, dt: 1 / 120, sampleEvery: 1 / 40, maxFlight: 3 };
+
 export function applyBlast(board, area, cols, rows, centre, push = 3, rng = Math.random) {
-  const blocks = [];
+  const P = BLAST_PHYSICS;
+  const flyers = [];
+  let maxD = 0;
   for (const i of area.indices) {
     const x = i % cols, y = (i / cols) | 0;
-    if (board[y][x]) blocks.push({ x, y, d: Math.hypot(x - centre.x, y - centre.y) });
+    if (!board[y][x]) continue;
+    const d = Math.hypot(x - centre.x, y - centre.y);
+    maxD = Math.max(maxD, d);
+    flyers.push({ x, y, d, cell: board[y][x] });
   }
-  blocks.sort((a, b) => b.d - a.d);
+  if (!flyers.length) return [];
+  for (const f of flyers) board[f.y][f.x] = null; // everything in the blast takes off at once
+
+  for (const f of flyers) {
+    let ux = f.x - centre.x, uy = f.y - centre.y;
+    let len = Math.hypot(ux, uy);
+    if (len < 0.01) { ux = rng() * 2 - 1; uy = -1; len = Math.hypot(ux, uy); }
+    ux /= len; uy /= len;
+    const near = 1 - f.d / (maxD + 1.5);                 // closer to the centre = harder
+    const power = push * P.speedPerPush * (0.6 + 0.7 * near) * (0.85 + 0.3 * rng());
+    f.px = f.x; f.py = f.y;
+    const lift = P.lift * (0.75 + 0.5 * rng()) * (0.6 + 0.4 * Math.min(1, push / 4));
+    f.vx = ux * power * (uy > 0 ? 0.8 : 1);
+    // blocks below the centre can't go down through the floor: they're thrown up and out
+    f.vy = uy > 0 ? -(lift + 0.45 * uy * power) : uy * power - lift * 0.6;
+    f.path = [{ x: f.x, y: f.y, t: 0 }];
+    f.t = 0;
+    f.nextSample = P.sampleEvery;
+    f.spin = (rng() < 0.5 ? -1 : 1) * Math.PI * 2 * (1 + Math.floor(rng() * Math.min(3, push / 2)));
+  }
+
+  const occupied = (x, y) => y >= rows || (y >= 0 && !!board[y][x]);
+  const land = (f, x, y) => {
+    // settle into the nearest free cell at or above (x, y) in that column
+    let yy = Math.min(y, rows - 1);
+    while (yy >= 0 && board[yy][x]) yy--;
+    if (yy < 0) { // column full to the top: back where it started, or anywhere free nearby
+      if (!board[f.y][f.x]) { x = f.x; yy = f.y; }
+      else return false;
+    }
+    board[yy][x] = f.cell;
+    f.toX = x; f.toY = yy;
+    f.path.push({ x, y: yy, t: f.t });
+    return true;
+  };
 
   const moves = [];
-  for (const b of blocks) {
-    const cell = board[b.y][b.x];
-    let dx = b.x - centre.x, dy = b.y - centre.y;
-    let len = Math.hypot(dx, dy);
-    if (len < 0.01) { dx = rng() * 2 - 1; dy = -1; len = Math.hypot(dx, dy); }
-    dx /= len; dy /= len;
-    // straight out first; blocked (e.g. by the floor) -> sideways, then up and out
-    const side = Math.sign(dx) || (rng() < 0.5 ? -1 : 1);
-    const dirs = [[dx, dy], [side, 0], [side * 0.7, -0.7], [0, -1]];
-    let target = null;
-    for (const [ux, uy] of dirs) {
-      for (let d = push; d >= 1 && !target; d -= 0.5) {
-        const tx = Math.round(b.x + ux * d), ty = Math.round(b.y + uy * d);
-        if (tx < 0 || tx >= cols || ty < 0 || ty >= rows) continue;
-        if (tx === b.x && ty === b.y) continue;
-        if (!board[ty][tx]) target = { x: tx, y: ty };
+  let flying = flyers.slice();
+  while (flying.length) {
+    const still = [];
+    for (const f of flying) {
+      f.t += P.dt;
+      f.vy += P.gravity * P.dt;
+      let nx = f.px + f.vx * P.dt;
+      const ny = f.py + f.vy * P.dt;
+      if (nx < 0) { nx = -nx; f.vx = -f.vx * 0.45; }
+      if (nx > cols - 1) { nx = 2 * (cols - 1) - nx; f.vx = -f.vx * 0.45; }
+      const cx = Math.round(nx), cy = Math.round(ny);
+      if (f.vy < 0 && cy >= 0 && occupied(cx, cy)) {
+        f.vy = 0; // bonk on an overhang
+        f.px = nx;
+      } else if (f.vy > 0 && (occupied(cx, cy) || occupied(cx, cy + 1) && ny >= cy)) {
+        if (!land(f, cx, occupied(cx, cy) ? cy - 1 : cy)) still.push(f);
+        continue;
+      } else {
+        f.px = nx; f.py = ny;
       }
-      if (target) break;
+      if (f.t >= f.nextSample) { f.path.push({ x: f.px, y: f.py, t: f.t }); f.nextSample += P.sampleEvery; }
+      if (f.t > P.maxFlight) { if (!land(f, Math.round(f.px), Math.round(Math.max(0, f.py)))) board[f.y][f.x] = f.cell; continue; }
+      still.push(f);
     }
-    if (!target) continue;
-    board[b.y][b.x] = null;
-    board[target.y][target.x] = cell;
-    moves.push({ fromX: b.x, fromY: b.y, viaX: target.x, viaY: target.y, toX: target.x, toY: target.y, cell });
+    if (still.length === flying.length && still.every(f => f.t > P.maxFlight * 2)) break;
+    flying = still;
   }
 
-  // thrown blocks fall (lowest first so they stack)
-  moves.sort((a, b) => b.viaY - a.viaY);
-  for (const m of moves) {
-    let y = m.viaY;
-    while (y + 1 < rows && !board[y + 1][m.viaX]) y++;
-    if (y !== m.viaY) {
-      board[m.viaY][m.viaX] = null;
-      board[y][m.viaX] = m.cell;
+  for (const f of flyers) {
+    if (f.toX == null) { f.toX = f.x; f.toY = f.y; if (!board[f.y][f.x]) board[f.y][f.x] = f.cell; }
+    if (f.toX === f.x && f.toY === f.y) continue;
+    moves.push({ fromX: f.x, fromY: f.y, toX: f.toX, toY: f.toY, cell: f.cell, path: f.path, flight: f.t, spin: f.spin });
+  }
+
+  // The crater caves in: in the columns the blast covered, whatever is left hanging over
+  // the hole (down to the bottom of the blast) falls into it.
+  let minX = cols, maxX = -1, maxY = -1;
+  for (const i of area.indices) {
+    const x = i % cols, y = (i / cols) | 0;
+    minX = Math.min(minX, x); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+  }
+  const settleArea = { flags: new Uint8Array(cols * rows) };
+  for (let y = 0; y <= maxY; y++) for (let x = minX; x <= maxX; x++) settleArea.flags[y * cols + x] = 1;
+  const settled = applyGravity(board, settleArea, cols, rows, "down");
+  const landedAt = new Map(moves.map(m => [m.toY * cols + m.toX, m]));
+  const lastLanding = Math.max(0, ...moves.map(m => m.flight));
+  for (const g of settled) {
+    const m = landedAt.get(g.fromY * cols + g.fromX);
+    if (m) {
+      // a block that flew, landed on the rubble, then slid down with it
+      const fall = 0.07 * Math.sqrt(g.toY - g.fromY);
+      m.toX = g.toX; m.toY = g.toY; m.flight += fall;
+      m.path.push({ x: g.toX, y: g.toY, t: m.flight });
+    } else {
+      // it waits for the blast, then drops
+      const fall = 0.07 * Math.sqrt(g.toY - g.fromY);
+      const t0 = lastLanding * 0.6;
+      moves.push({ fromX: g.fromX, fromY: g.fromY, toX: g.toX, toY: g.toY, cell: g.cell, flight: t0 + fall, spin: 0,
+        path: [{ x: g.fromX, y: g.fromY, t: 0 }, { x: g.fromX, y: g.fromY, t: t0 }, { x: g.toX, y: g.toY, t: t0 + fall }] });
     }
-    m.toY = y;
   }
   return moves;
 }
@@ -576,7 +645,14 @@ function mergeEffect(out, sub) {
     const i = at(m.fromX, m.fromY);
     if (i >= 0) {
       const prev = out.moves[i];
-      out.moves[i] = { ...m, fromX: prev.fromX, fromY: prev.fromY, viaX: prev.viaX ?? m.viaX, viaY: prev.viaY ?? m.viaY };
+      if (prev.path) {
+        // it flew, landed, then fell further: add the fall to the end of its flight
+        const fall = 0.06 * Math.sqrt(Math.abs(m.toY - m.fromY) + Math.abs(m.toX - m.fromX));
+        out.moves[i] = { ...prev, toX: m.toX, toY: m.toY, flight: prev.flight + fall,
+          path: [...prev.path, { x: m.toX, y: m.toY, t: prev.flight + fall }] };
+      } else {
+        out.moves[i] = { ...m, fromX: prev.fromX, fromY: prev.fromY };
+      }
     } else {
       out.moves.push(m);
     }

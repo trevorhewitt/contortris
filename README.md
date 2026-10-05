@@ -2,7 +2,8 @@
 
 A Tetris-like game where every piece is a silly pixel-art object.
 
-- **Normal mode**: the game plus powerups, introduced one at a time. Destroyers always come first,
+- **Easy mode**: Normal without the giant (difficulty 4 and 5) pieces.
+- **Normal mode**: the game plus powerups, introduced one class at a time. Destroyers always come first,
   then a new random class joins every so often: gravity, expanders, acid, blasts, goo and phantoms.
   Each new powerup pauses the game with an intro screen (tick "skip powerup intro screens" to turn
   them off for the session). The pause menu's **Powerups** page lists every one you've met.
@@ -61,14 +62,20 @@ Otherwise it downloads the updated file for you to drop in.
 - `render.enhanced.edgeStrength`: 0 = pieces melt into one mess of pixel art, 1 = chunky outlines.
 - `assist.variety`: how strongly the picker avoids pieces served recently / still on the board.
 - `assist.powerups`: how often powerups appear and which ones; `progression` controls how they are
-  introduced (`firstClass`, `newPowerupEvery`, `newClassEvery`, or `enabled: false` for all at once).
+  introduced (`firstClassPool`, `newClassEvery`, or `enabled: false` for all at once), `combos`
+  (when combo powerups start), `struggle` (how much the helpful ones are favoured when you're in
+  trouble) and `usability` (how strongly powerups that can't help on the current board are avoided).
+- `assist.pieceMix.hard.firstGiantBetween`: the first giant always lands in this range of pieces.
+- `assist.variety.giants.repeatPenalty`: how strongly a giant you've already had is avoided.
+- `scoring`: points for placing, destroying and clearing.
 - `sound.enabled`, `sound.volume`.
 
 ## Dev mode
 
 Open `index.html?devmode=1` for a live dev-info panel on the left (tap it to fold/unfold on phones),
 and a dev section in the pause menu: pick exactly which piece comes next, unlock every powerup,
-clear the board or fill it with a messy stack.
+clear the board or fill it with a messy stack, tick which powerups are enabled, and override how
+often powerups turn up.
 
 ## Debug keys
 
