@@ -175,6 +175,7 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
           if (have >= (t.count ?? 1)) unlock(def);
         });
         each("multiRow", (def, t) => { if (n >= (t.rows ?? 2)) unlock(def); });
+        each("rowWith", (def, t) => { if ((d.shapes ?? []).some(sh => matchShape(sh, t.match))) unlock(def); });
         break;
       }
 

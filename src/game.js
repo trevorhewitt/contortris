@@ -574,6 +574,12 @@ function clearFullLines(state) {
 
   const fullRowsSet = new Set(fullRows);
   const fallingBlocks = countFallingBlocksAfterClear(state.board, fullRowsSet);
+  // which pieces had blocks in the destroyed rows (for achievements)
+  const hitShapes = new Set();
+  for (const y of fullRows) for (const c of state.board[y]) {
+    const sh = c?.pid ? state.instances.get(c.pid)?.shape : null;
+    if (sh) hitShapes.add(sh);
+  }
 
   const { removed, dropDistances } = collapseRows(state.board, fullRows, cols);
   markBoardDirty(state);
@@ -604,7 +610,7 @@ function clearFullLines(state) {
     addCallout(state, word, cols / 2, midY, { big: true });
   }
 
-  emit(state, "rowsDestroyed", { count: cleared, source: "clear" });
+  emit(state, "rowsDestroyed", { count: cleared, source: "clear", shapes: [...hitShapes] });
   if (isBoardEmpty(state)) emit(state, "boardCleared");
 
   return cleared;

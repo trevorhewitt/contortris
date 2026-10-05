@@ -30,7 +30,7 @@ export const CLASS_INFO = {
   blast: { name: "Blasts", text: "Throws the highlighted blocks outwards, then they fall back down somewhere new." },
   goo: { name: "Goo", text: "Melts when it lands and flows down into the lowest gaps it can reach." },
   phantom: { name: "Phantoms", text: "Falls straight through other blocks and settles in the deepest gap it fits." },
-  combo: { name: "Combos", text: "Two powerups in one: each colour of highlight does its own thing, one after the other." },
+  combo: { name: "Combos", text: "Two powerups in one: each kind of highlight does its own thing, one after the other." },
 };
 
 // Which consume by default (vanish when they fire).

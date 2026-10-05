@@ -24,6 +24,7 @@
  *                                     or "lifetime" (all games). Line clears and rows a
  *                                     powerup collapses both count.
  *   multiRow       { rows }           destroy at least `rows` rows in one go
+ *   rowWith        { match }          a line clear destroys part of a matching piece
  *   pieceServed    { match }          a matching piece arrives
  *   pieceSequence  { ids }            these pieces arrive one straight after another, in order
  *                                     (e.g. ["spam", "spam", "spam"])
@@ -50,9 +51,10 @@
  *                                     the game ends; optionally only if the piece that topped
  *                                     you out matches `killer`, or within `maxDrops` pieces
  *
- * match: { ids: ["spam"], tags: ["food"], types: ["destroyer"] }
+ * match: { ids: ["spam"], tags: ["food"], types: ["destroyer"], levels: [5] }
  *   matches a piece whose id is listed, OR that has one of the tags, OR (powerups) whose type
- *   is listed. Leave it out to match anything.
+ *   is listed, OR (regular pieces) whose difficulty is listed (5 = the giants). Leave it out
+ *   to match anything.
  */
 
 export const ACHIEVEMENTS = [

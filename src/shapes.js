@@ -267,7 +267,9 @@ export function matchShape(shape, match) {
   const ids = match.ids ?? [];
   const tags = match.tags ?? [];
   const types = match.types ?? [];
-  if (!ids.length && !tags.length && !types.length) return true;
+  const levels = match.levels ?? [];
+  if (!ids.length && !tags.length && !types.length && !levels.length) return true;
+  if (levels.length && !shape.powerup && levels.includes(shape.difficulty ?? 1)) return true;
   if (ids.includes(shape.id)) return true;
   if (tags.length && shape.tags?.some(t => tags.includes(t))) return true;
   if (types.length && shape.powerup && types.includes(shape.powerup.type)) return true;
