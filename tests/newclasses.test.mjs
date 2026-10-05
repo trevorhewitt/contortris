@@ -66,8 +66,8 @@ test("progression: classes open one at a time, starting with a simple one", () =
     const seen = [];
     on(state, (t, d) => {
       if (t !== "spawn" || !d.shape.powerup) return;
-      seen.push(d.shape.powerup.type);
-      if (d.isNew) news.push(d.shape.powerup.type);
+      seen.push(d.shape.powerup.cls);
+      if (d.isNew) news.push(d.shape.powerup.cls);
     });
     startRun(state, "normal");
     for (let i = 0; i < 300; i++) {
@@ -83,7 +83,10 @@ test("progression: classes open one at a time, starting with a simple one", () =
     // the first few powerups all belong to the first class, and there's variety inside it
     const opening = seen.slice(0, 4);
     assert.ok(opening.every(t => t === news[0]), opening.join());
-    assert.ok(!seen.slice(0, 10).includes("combo"), "no combos early");
+    // combos only once two classes are in
+    const firstCombo = seen.indexOf("combo");
+    if (firstCombo >= 0) assert.ok(new Set(seen.slice(0, firstCombo)).size >= 2, "combo before two classes");
+    assert.ok(!seen.includes("blast") && !seen.includes("goo"), "switched-off classes never turn up");
   }
   assert.ok(firsts.size >= 2, "the first class varies between games");
 });

@@ -21,16 +21,19 @@ export const DEFAULT_EFFECT_TEXT = {
   combo: "does several things at once",
 };
 
-// Longer explanations for intro / help screens, one per class.
+// Powerup classes as the player sees them. Several types can share a class: acid pieces
+// are Dissolverz too (they dissolve what's around them). The order is the display order.
+export const CLASS_OF = { acid: "destroyer" };
+export const classOf = (type) => CLASS_OF[type] ?? type;
 export const CLASS_INFO = {
-  destroyer: { name: "Destroyers", text: "When it lands, every highlighted block is destroyed." },
-  gravity: { name: "Gravity", text: "Highlighted blocks fall until they hit something, squashing out air pockets." },
-  expander: { name: "Expanders", text: "Fills every highlighted empty cell with stuff, plugging gaps." },
-  acid: { name: "Acid", text: "Dissolves every block it touches where it lands. Rub it up against the mess." },
+  destroyer: { name: "Dissolverz", text: "When it lands, every highlighted block dissolves into nothing." },
+  gravity: { name: "Gravitizerz", text: "Highlighted blocks fall until they hit something, squashing out air pockets." },
+  expander: { name: "Expanderz", text: "Fills every highlighted empty cell with stuff, plugging gaps." },
+  phantom: { name: "Phantomz", text: "Falls straight through other blocks and settles in the deepest gap it fits. You can rotate it on the way down." },
+  combo: { name: "Comboz", text: "Two powerups in one: each kind of highlight does its own thing, one after the other." },
+  // switched off (CONFIG.assist.powerups.disabledTypes), kept for the data
   blast: { name: "Blasts", text: "Throws the highlighted blocks outwards, then they fall back down somewhere new." },
   goo: { name: "Goo", text: "Melts when it lands and flows down into the lowest gaps it can reach." },
-  phantom: { name: "Phantoms", text: "Falls straight through other blocks and settles in the deepest gap it fits." },
-  combo: { name: "Combos", text: "Two powerups in one: each kind of highlight does its own thing, one after the other." },
 };
 
 // Which consume by default (vanish when they fire).
@@ -169,6 +172,7 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
 
   return {
     type,
+    cls: classOf(type), // the class the player sees (acid -> destroyer)
     direction,
     tier,
     description: (typeof raw.description === "string" && raw.description.trim())

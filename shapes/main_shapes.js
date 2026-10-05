@@ -1632,27 +1632,20 @@ export const SHAPES = [
       ],
     color: [["#161e8a","#242fcc","#5664ff","#5664ff","#5664ff","#5664ff","#3341ff"],["#161e8a","#242fcc","#2a36e5","#e8d930","#e8d930","#e8d930","#3341ff"],["#161e8a","#242fcc","#2a36e5","#3341ff","#3341ff","#3341ff","#3341ff"],["#161e8a","#242fcc","#2a36e5","#e8d930","#e8d930","#3341ff","#3341ff"],["#161e8a","#242fcc","#2a36e5","#3341ff","#3341ff","#3341ff","#3341ff"],["#161e8a","#242fcc","#2a36e5","#e8d930","#e8d930","#e8d930","#3341ff"],["#161e8a","#242fcc","#2a36e5","#3341ff","#3341ff","#3341ff","#3341ff"],["#161e8a","#242fcc","#2a36e5","#b9a922","#b9a922","#b9a922","#3341ff"],["#161e8a","#242fcc","#2a36e5","#3341ff","#3341ff","#3341ff","#3341ff"],["#161e8a","#242fcc","#2a36e5","#3341ff","#3341ff","#3341ff","#3341ff"],["#161e8a","#242fcc","#2a36e5","#3341ff","#3341ff","#3341ff","#3341ff"],["#161e8a","#242fcc","#2a36e5","#3341ff","#e8d930","#3341ff","#3341ff"],["#161e8a","#242fcc","#2a36e5","#3341ff","#3341ff","#3341ff","#3341ff"],["#161e8a","#242fcc","#242fcc","#242fcc","#242fcc","#242fcc","#242fcc"]],
     powerup: {
-        "type": "blast",
+        "type": "gravity",
+        "direction": "down",
         "tier": 2,
-        "push": 6,
-        "intro": "Hello! Knocks on every door: the blocks in a big star around it go flying out two by two in every direction, then land wherever they come down. They just want to talk.",
+        "intro": "Hello! Knocks on every door in the four columns under it, and everything in them comes down to answer, filling the gaps. They just want to talk.",
         "area": {
           "origin": [
-            3,
-            3
+            1,
+            0
           ],
           "grid": [
-            "#######",
-            "#######",
-            "#######",
-            "#######",
-            "#######",
-            "#######",
-            "#######",
-            "#######"
+            "....",
+            "||||"
           ]
-        },
-        "help": 2.5
+        }
       },
     rotation: {
         "mode": "none"

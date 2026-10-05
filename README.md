@@ -4,7 +4,9 @@ A Tetris-like game where every piece is a silly pixel-art object.
 
 - **Easy mode**: Normal without the giant (difficulty 4 and 5) pieces.
 - **Normal mode**: the game plus powerups, introduced one class at a time. Destroyers always come first,
-  then a new random class joins every so often: gravity, expanders, acid, blasts, goo and phantoms.
+  then a new random class joins every so often: Dissolverz (destroyers and acid), Gravitizerz,
+  Expanderz and Phantomz, plus Comboz once two classes are in. (Blasts and goo still exist in
+  the code but are switched off: `assist.powerups.disabledTypes` in `config.js`.)
   Each new powerup pauses the game with an intro screen (tick "skip powerup intro screens" to turn
   them off for the session). The pause menu's **Powerups** page lists every one you've met.
 - **Extreme mode**: the original game. No powerups, no mercy.

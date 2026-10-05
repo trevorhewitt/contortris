@@ -128,12 +128,20 @@ export function createGameState(shapes, powerups, { rng = Math.random } = {}) {
   return state;
 }
 
+// False for powerups whose type is switched off (CONFIG.assist.powerups.disabledTypes),
+// including combos with a part of that type.
+export function isPowerupEnabled(p) {
+  const off = CONFIG.assist.powerups.disabledTypes ?? [];
+  return !off.includes(p.powerup.type) && !(p.powerup.parts ?? []).some(part => off.includes(part.type));
+}
+
 export function configureMode(state, modeId) {
   state.mode = CONFIG.modes[modeId] ? modeId : CONFIG.defaultMode;
   const mode = CONFIG.modes[state.mode];
   // Easy mode: no giant (difficulty 4/5) pieces
   state.shapes = mode.giants === false ? state.allShapes.filter(s => (s.difficulty ?? 1) < 4) : state.allShapes;
-  state.powerups = mode.powerups ? state.allPowerups : [];
+  // switched-off powerup types (and combos using them) never turn up
+  state.powerups = mode.powerups ? state.allPowerups.filter(isPowerupEnabled) : [];
   state.idToShape = new Map();
   for (const s of [...state.shapes, ...state.powerups]) state.idToShape.set(s.id, s);
 }
@@ -401,7 +409,7 @@ function spawnPiece(state) {
   if (ok) {
     // First powerup of a class in this game: the UI shows that class's intro screen.
     const ps = state.pieceSel.powerup;
-    const type = shape.powerup?.type;
+    const type = shape.powerup?.cls;
     const isNew = !!type && !ps.shownClasses.has(type);
     if (type) {
       ps.shown.add(shape.id);

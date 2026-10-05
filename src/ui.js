@@ -6,7 +6,7 @@ import { CONFIG } from "../config.js";
 import { escapeHtml, store } from "./util.js";
 import { getDifficultyZone } from "./selection.js";
 import {
-  on, startRun, resetGame, tryMove, tryRotate, beginLockIfNeeded, markInput, setNextPiece, markBoardDirty,
+  on, startRun, resetGame, tryMove, tryRotate, beginLockIfNeeded, markInput, setNextPiece, markBoardDirty, isPowerupEnabled,
 } from "./game.js";
 import { makeShapePreviewCanvas, drawIcon } from "./render.js";
 import { createDemo, runDemos } from "./demo.js";
@@ -480,10 +480,14 @@ export function bindUI({ state, renderer, sound, achievements }) {
     stopDemoLoop = runDemos(demos, () => currentPanel === panelName);
   }
 
+  // Powerups that can turn up at all (not switched off), and the classes they make.
+  const livePowerups = () => state.allPowerups.filter(p => isPowerupEnabled(p) && (p.frequency ?? 1) > 0);
+  const liveClasses = () => Object.keys(CLASS_INFO).filter(c => livePowerups().some(p => p.powerup.cls === c));
+  const ofClass = (cls) => livePowerups().filter(p => p.powerup.cls === cls);
+
   // The gentlest powerup of a class, to show it off.
-  const exampleOf = (type) => state.allPowerups
-    .filter(p => p.powerup.type === type)
-    .sort((a, b) => a.powerup.tier - b.powerup.tier || (b.frequency ?? 1) - (a.frequency ?? 1))[0];
+  const exampleOf = (cls) => ofClass(cls)
+    .sort((a, b) => a.powerup.tier - b.powerup.tier || (b.powerup.help ?? 0) - (a.powerup.help ?? 0))[0];
 
   function demoCard(shape, { cell = 14, title = null, text = "" } = {}) {
     const row = document.createElement("div");
@@ -503,7 +507,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
       howToBuilt = [];
       const box = $("howtoClasses");
       box.innerHTML = "";
-      for (const type of Object.keys(CLASS_INFO)) {
+      for (const type of liveClasses()) {
         const ex = exampleOf(type);
         if (!ex) continue;
         const info = CLASS_INFO[type];
@@ -521,8 +525,8 @@ export function bindUI({ state, renderer, sound, achievements }) {
     state.paused = true;
     state.softDropping = false;
     const pu = shape.powerup;
-    const info = CLASS_INFO[pu.type];
-    const inClass = state.powerups.filter(p => p.powerup.type === pu.type && !state.devPowerups?.disabled?.has(p.id)).length;
+    const info = CLASS_INFO[pu.cls];
+    const inClass = state.powerups.filter(p => p.powerup.cls === pu.cls && !state.devPowerups?.disabled?.has(p.id)).length;
     $("introKicker").textContent = `New powerup class: ${info.name}!`;
     $("introName").textContent = shape.name;
     $("introEffect").textContent = pu.description;
@@ -537,36 +541,28 @@ export function bindUI({ state, renderer, sound, achievements }) {
     playDemos([demo]);
   }
 
+  // Pause-menu help: one card per powerup class met so far this game (not every piece),
+  // with a demo of a piece from that class you've actually seen.
   function renderPowerupHelp() {
     const list = $("powerupList");
     list.innerHTML = "";
     const demos = [];
-    const shown = [...state.pieceSel.powerup.shown].map(id => state.idToShape.get(id)).filter(Boolean);
-    for (const type of Object.keys(CLASS_INFO)) {
-      const ofType = shown.filter(s => s.powerup.type === type);
-      if (!ofType.length) continue;
-      const h = document.createElement("h3");
-      h.textContent = CLASS_INFO[type].name;
-      list.appendChild(h);
-      const p = document.createElement("p");
-      p.textContent = CLASS_INFO[type].text;
-      list.appendChild(p);
-      for (const shape of ofType) {
-        const card = demoCard(shape, { cell: 12, text: `<b>${escapeHtml(shape.powerup.description)}</b>${shape.powerup.intro ? "<br>" + escapeHtml(shape.powerup.intro) : ""}` });
-        list.appendChild(card.row);
-        demos.push(card.demo);
-      }
+    const ps = state.pieceSel.powerup;
+    const shown = [...ps.shown].map(id => state.idToShape.get(id)).filter(Boolean);
+    for (const cls of Object.keys(CLASS_INFO)) {
+      if (!ps.shownClasses.has(cls)) continue;
+      const seen = shown.filter(s => s.powerup.cls === cls);
+      const ex = seen[seen.length - 1] ?? exampleOf(cls);
+      if (!ex) continue;
+      const total = state.powerups.filter(p => p.powerup.cls === cls).length;
+      const info = CLASS_INFO[cls];
+      const text = `${escapeHtml(info.text)}<div class="demoEg">${seen.length} of ${total} met so far` +
+        (seen.length ? `: ${seen.slice(-4).map(s => escapeHtml(s.name)).join(", ")}${seen.length > 4 ? "…" : ""}` : "") + `</div>`;
+      const card = demoCard(ex, { cell: 12, title: info.name, text });
+      list.appendChild(card.row);
+      demos.push(card.demo);
     }
-    if (!shown.length) list.textContent = "No powerups yet this game.";
-    else {
-      const left = state.powerups.filter(p => state.pieceSel.powerup.classes.includes(p.powerup.type) && !state.pieceSel.powerup.shown.has(p.id)).length;
-      if (left) {
-        const p = document.createElement("p");
-        p.className = "small";
-        p.textContent = `…and ${left} more from these classes still to turn up.`;
-        list.appendChild(p);
-      }
-    }
+    if (!demos.length) list.textContent = "No powerups yet this game.";
     playDemos(demos);
   }
 
@@ -593,8 +589,8 @@ export function bindUI({ state, renderer, sound, achievements }) {
       }
       sel.appendChild(g);
     };
-    for (const type of Object.keys(CLASS_INFO)) {
-      add(`Powerups: ${CLASS_INFO[type].name}`, state.allPowerups.filter(p => p.powerup.type === type));
+    for (const type of liveClasses()) {
+      add(`Powerups: ${CLASS_INFO[type].name}`, ofClass(type));
     }
     for (let d = 0; d <= 5; d++) add(`Difficulty ${d}`, state.allShapes.filter(s => s.difficulty === d));
     $("btnDevNext").addEventListener("click", () => {
@@ -639,8 +635,8 @@ export function bindUI({ state, renderer, sound, achievements }) {
     rate.addEventListener("input", () => { dev.rate = Number(rate.value); rateLabel(); saveDev(); });
     const box = $("devEnabled");
     box.innerHTML = "";
-    for (const type of Object.keys(CLASS_INFO)) {
-      const items = state.allPowerups.filter(p => p.powerup.type === type);
+    for (const type of liveClasses()) {
+      const items = ofClass(type);
       if (!items.length) continue;
       const det = document.createElement("details");
       const sum = document.createElement("summary");
@@ -730,6 +726,11 @@ export function bindUI({ state, renderer, sound, achievements }) {
     b.addEventListener("change", () => setSkipIntros(b.checked));
   }
   setupDevMode();
+
+  // No text selection / long-press menus (CSS covers most browsers; this catches the rest).
+  const editable = (t) => t instanceof Element && t.closest("input, textarea, select");
+  document.addEventListener("selectstart", (e) => { if (!editable(e.target)) e.preventDefault(); });
+  document.addEventListener("contextmenu", (e) => { if (!editable(e.target)) e.preventDefault(); });
   $("btnAgain").addEventListener("click", () => startGame(state.mode));
   $("btnGameOverMenu").addEventListener("click", () => goToMenu());
   $("btnResetAch").addEventListener("click", () => {

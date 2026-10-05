@@ -551,7 +551,7 @@ function maybeSelectPowerup(state, danger01) {
       || ps.sinceClass >= (prog.newClassEvery ?? 5)
       || sel.dropIndex - ps.classAtDrop >= (prog.newClassAfterDrops ?? Infinity);
     if (due) unlockNextClass(state, candidates);
-    candidates = candidates.filter(p => ps.classes.includes(p.powerup.type));
+    candidates = candidates.filter(p => ps.classes.includes(p.powerup.cls));
   }
 
   // Combos: mid-to-late game, and only built from classes that are already in.
@@ -559,7 +559,7 @@ function maybeSelectPowerup(state, danger01) {
   const combosOpen = sel.dropIndex >= (combos.minDrop ?? 0) &&
     (!prog?.enabled || ps.classes.filter(c => c !== "combo").length >= (combos.minClasses ?? 2));
   candidates = candidates.filter(p => p.powerup.type !== "combo" ||
-    (combosOpen && (!prog?.enabled || p.powerup.parts.every(part => ps.classes.includes(part.type)))));
+    (combosOpen && (!prog?.enabled || p.powerup.parts.every(part => ps.classes.includes(part.cls)))));
   if (prog?.enabled && combosOpen && !ps.classes.includes("combo") && candidates.some(p => p.powerup.type === "combo")) {
     ps.classes.push("combo");
   }
@@ -586,7 +586,7 @@ function maybeSelectPowerup(state, danger01) {
     const helpW = Math.pow((p.powerup.help ?? 3) / 3, power);
     const comboW = p.powerup.type === "combo" ? (combos.weight ?? 1) : 1;
     // a class's pieces share its weight, so big classes don't crowd out small ones
-    const classSize = candidates.filter(c => c.powerup.type === p.powerup.type).length;
+    const classSize = candidates.filter(c => c.powerup.cls === p.powerup.cls).length;
     return (p.frequency ?? 1) * needW * helpW * comboW * usableW * varietyMultiplier(sel, p) * (6 / (classSize + 5));
   }, state.rng);
 }
@@ -596,7 +596,7 @@ function maybeSelectPowerup(state, danger01) {
 function unlockNextClass(state, pool) {
   const prog = CONFIG.assist.powerups.progression;
   const ps = state.pieceSel.powerup;
-  let remaining = [...new Set(pool.map(p => p.powerup.type))].filter(t => t !== "combo" && !ps.classes.includes(t));
+  let remaining = [...new Set(pool.map(p => p.powerup.cls))].filter(t => t !== "combo" && !ps.classes.includes(t));
   if (!remaining.length) return null;
   if (!ps.classes.length) {
     const simple = remaining.filter(t => (prog.firstClassPool ?? remaining).includes(t));
@@ -606,7 +606,7 @@ function unlockNextClass(state, pool) {
   const use = CONFIG.assist.powerups.usability ?? {};
   const classW = (t) => {
     if (use.enabled === false) return 1;
-    const anyUsable = pool.some(p => p.powerup.type === t && powerupUsefulnessCached(state, p) >= (use.minUseful ?? 1));
+    const anyUsable = pool.some(p => p.powerup.cls === t && powerupUsefulnessCached(state, p) >= (use.minUseful ?? 1));
     return anyUsable ? 1 : (use.unusableClassWeight ?? 0.1);
   };
   const next = sampleByWeight(remaining, classW, state.rng);
@@ -620,7 +620,7 @@ function unlockNextClass(state, pool) {
 export function introduceAllPowerups(state) {
   const ps = state.pieceSel.powerup;
   for (const p of state.powerups) {
-    if (!ps.classes.includes(p.powerup.type)) ps.classes.push(p.powerup.type);
+    if (!ps.classes.includes(p.powerup.cls)) ps.classes.push(p.powerup.cls);
   }
 }
 

@@ -25,7 +25,7 @@ function emptyData() {
 }
 
 export function createAchievements(defs, { storage = localStorageAdapter, onUnlock = () => {}, now = () => Date.now() } = {}) {
-  const list = (Array.isArray(defs) ? defs : []).filter(d => d && d.id && d.trigger?.type);
+  const list = (Array.isArray(defs) ? defs : []).filter(d => d && d.id && d.trigger?.type && !d.retired);
   const data = { ...emptyData(), ...(storage.load() ?? {}) };
   data.stats = { ...emptyData().stats, ...(data.stats ?? {}) };
   data.unlocked = data.unlocked ?? {};

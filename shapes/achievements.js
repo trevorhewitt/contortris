@@ -17,6 +17,7 @@
  *                             (main or a variant) is picked at random when it unlocks, so
  *                             different players see different jokes.
  *   secret: false,            optional: shows as "???" until unlocked
+ *   retired: true,            optional: switched off (hidden, can't unlock) but kept in the file
  * }
  *
  * trigger types:
@@ -9783,6 +9784,7 @@ export const ACHIEVEMENTS = [
         ]
       ],
     mode: "powerups",
+    retired: true,
     trigger: {
         "type": "powerupUsed",
         "match": {
@@ -9977,6 +9979,7 @@ export const ACHIEVEMENTS = [
         ]
       ],
     mode: "powerups",
+    retired: true,
     trigger: {
         "type": "powerupUsed",
         "match": {

@@ -7,6 +7,16 @@
   <title>Extris</title>
 
   <style>
+    /* A game, not a document: no text selection or long-press callouts anywhere
+       (holding a finger on the board used to select the HUD / achievement text on phones). */
+    html, body, * {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    input, textarea, select { -webkit-user-select: auto; user-select: auto; }
+
     @font-face{
       font-family: "PressStart2P";
       src: url("./fonts/PressStart2P-Regular.ttf") format("truetype");
@@ -855,7 +865,7 @@
 
           <div class="msg panel" id="panelMenu" hidden>
             <div class="big title">Extris</div>
-            <div class="small" id="gameVersion">version 202610051913</div>
+            <div class="small" id="gameVersion">version 202610052030</div>
             <div class="menuBtns">
               <button id="btnEasy" class="secondary">Easy mode</button>
               <button id="btnNormal">Normal mode</button>
@@ -883,7 +893,7 @@
               <h3>Powerups (Easy and Normal)</h3>
               <p>Some pieces are powerups: their name glows rainbow and says what they do. While one falls, the cells it will affect light up where it is going to land.</p>
               <div id="howtoClasses"></div>
-              <p>Powerups come in classes, introduced one class at a time as you play, each with a quick intro; once a class is in, any of its pieces can turn up. Later on, combo powerups do two things at once. When you're in trouble, powerups turn up more often and the more helpful ones get picked. The pause menu lists every powerup you've met so far.</p>
+              <p>Powerups come in four classes (Dissolverz, Gravitizerz, Expanderz and Phantomz), introduced one class at a time as you play, each with a quick intro; once a class is in, any of its pieces can turn up. Once two classes are in, Comboz (two powerups in one) start turning up too. When you're in trouble, powerups turn up more often and the more helpful ones get picked. The pause menu explains every class you've met so far.</p>
 
               <h3>Modes</h3>
               <p><b>Easy:</b> powerups, and none of the giant pieces.<br><b>Normal:</b> the full game, with powerups. Watch out for the giants.<br><b>Extreme:</b> the original. No powerups, no mercy.</p>
@@ -891,7 +901,7 @@
               <h3>Achievements</h3>
               <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
 
-              <p class="small menuFoot">[Extris version 202610051913 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610052030 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>

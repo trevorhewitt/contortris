@@ -183,13 +183,17 @@ export const CONFIG = {
       chancePerDrop: 0.07,
       maxChance: 0.8,
 
+      // Powerup types that are switched off: their pieces stay in shapes/main_shapes.js but are
+      // never served (combos with a part of these types are off too).
+      disabledTypes: ["blast", "goo"],
+
       // Powerups are introduced class by class (each class with an intro screen). Once a
       // class is in, every powerup of that class can turn up.
       progression: {
         enabled: true,
         // the first class is picked at random from these (the simpler ones), so every
         // game starts differently
-        firstClassPool: ["destroyer", "gravity", "expander", "acid"],
+        firstClassPool: ["destroyer", "gravity", "expander"],
         newClassEvery: 5,          // after this many powerups, the next one opens a new class
         newClassAfterDrops: 28,    // ...or after this many drops since the last new class
       },
@@ -209,8 +213,8 @@ export const CONFIG = {
       // Combos (two powerups in one) turn up mid-to-late game, built only from classes
       // that are already in.
       combos: {
-        minDrop: 45,      // not before this many drops...
-        minClasses: 3,    // ...and not until this many classes are in
+        minDrop: 15,      // not before this many drops...
+        minClasses: 2,    // ...and not until this many classes are in (they're built from those)
         weight: 0.6,      // how often a combo is picked compared with a normal powerup
       },
 
