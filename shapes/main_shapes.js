@@ -11668,4 +11668,879 @@ export const SHAPES = [
       },
     frequency: 1,
   },
+  {
+    id: "ghost_train",
+    name: "a ghost train",
+    grid: [
+        "XXX"
+      ],
+    color: [["#adaabf","#c9c5dd","#c9c5dd","#7e66be","#7e66be","#c9c5dd","#c9c5dd","#c9c5dd","#c9c5dd","#c9c5dd","#c9c5dd","#c9c5dd","#7e66be","#7e66be","#7e66be","#7e66be","#7e66be","#6d58a4"],["#c9c5dd","#e4e0fb","#e4e0fb","#b4ecfa","#b4ecfa","#e4e0fb","#e4e0fb","#b4ecfa","#b4ecfa","#e4e0fb","#e4e0fb","#e4e0fb","#b4ecfa","#effeff","#effeff","#effeff","#effeff","#9ed0dc"],["#9ed0dc","#fee761","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#effeff","#ffffff","#effeff","#effeff","#9ed0dc"],["#9ed0dc","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#3d3480","#b4ecfa","#3d3480","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#9ed0dc"],["#4f92b6","#86cfe8","#86cfe8","#8f74d8","#8f74d8","#86cfe8","#86cfe8","#86cfe8","#8f74d8","#8f74d8","#86cfe8","#86cfe8","#86cfe8","#8f74d8","#8f74d8","#86cfe8","#86cfe8","#76b6cc"],["#adaabf","#4f92b6","#7e66be","#afa0d9","#7e66be","#c9c5dd","#c9c5dd","#7e66be","#afa0d9","#7e66be","#c9c5dd","#c9c5dd","#c9c5dd","#7e66be","#afa0d9","#7e66be","#c9c5dd","#adaabf"]],
+    powerup: {
+        "type": "combo",
+        "tier": 3,
+        "intro": "Rolls down through your blocks into the deepest gap it fits, then wipes out the whole row it lands in, wall to wall (itself included), and the rows above drop down like a line clear. Last stop.",
+        "parts": [
+          {
+            "type": "phantom"
+          },
+          {
+            "type": "destroyer",
+            "collapse": true,
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "-.."
+              ]
+            }
+          }
+        ],
+        "help": 4
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.7,
+  },
+  {
+    id: "sneaky_saboteur",
+    name: "a sneaky saboteur (with a tiny saw)",
+    grid: [
+        "XX"
+      ],
+    color: [["#999cb0","#d7d7e0","#d7d7e0","#d7d7e0","#d7d7e0","#d7d7e0","#b1b4cc","#a26246","#a26246","#a26246","#a26246","#ccd1d8","#ccd1d8","#b0b5bb"],["#d7d7e0","#f4f4ff","#f4f4ff","#f4f4ff","#f4f4ff","#f4f4ff","#f4f4ff","#b86f50","#e4a672","#b86f50","#b86f50","#e8eef6","#e8eef6","#ccd1d8"],["#5d528b","#6a5d9e","#6a5d9e","#6a5d9e","#6a5d9e","#6a5d9e","#6a5d9e","#b86f50","#b86f50","#b86f50","#b86f50","#e8eef6","#e8eef6","#ccd1d8"],["#5d528b","#f4f4ff","#2b2350","#6a5d9e","#f4f4ff","#2b2350","#6a5d9e","#e8eef6","#e8eef6","#e8eef6","#e8eef6","#e8eef6","#e8eef6","#ccd1d8"],["#d7d7e0","#f4f4ff","#f4f4ff","#f4f4ff","#f4f4ff","#f4f4ff","#f4f4ff","#e8eef6","#e8eef6","#e8eef6","#e8eef6","#e8eef6","#e8eef6","#ccd1d8"],["#d7d7e0","#f4f4ff","#f4f4ff","#f4f4ff","#c9cde8","#c9cde8","#f4f4ff","#e8eef6","#7d8db0","#e8eef6","#7d8db0","#e8eef6","#7d8db0","#ccd1d8"],["#b9b9c2","#b1b4cc","#d7d7e0","#b1b4cc","#d7d7e0","#b1b4cc","#d7d7e0","#6e7c9b","#ccd1d8","#6e7c9b","#ccd1d8","#6e7c9b","#ccd1d8","#5f6b86"]],
+    powerup: {
+        "type": "combo",
+        "tier": 3,
+        "intro": "Sneaks down through your blocks into the deepest gap it fits, then saws out the two rows above it, wall to wall, so everything higher drops down onto it. It stays there, looking innocent.",
+        "parts": [
+          {
+            "type": "phantom"
+          },
+          {
+            "type": "destroyer",
+            "collapse": true,
+            "area": {
+              "origin": [
+                0,
+                2
+              ],
+              "grid": [
+                "-.",
+                "-.",
+                ".."
+              ]
+            }
+          }
+        ],
+        "help": 5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.7,
+  },
+  {
+    id: "poltergeist",
+    name: "a poltergeist (it moves things)",
+    grid: [
+        "XX"
+      ],
+    color: [["#6daa84","#b0e0be","#b0e0be","#b0e0be","#b0e0be","#b0e0be","#7ec599","#8f212d","#c9343c","#c9343c","#c9343c","#c9343c","#c9343c","#b2a181"],["#b0e0be","#c8ffd8","#c8ffd8","#c8ffd8","#c8ffd8","#c8ffd8","#c8ffd8","#a22633","#e43b44","#fee761","#fee761","#fee761","#e43b44","#cebb96"],["#b0e0be","#c8ffd8","#2f5a46","#c8ffd8","#2f5a46","#c8ffd8","#c8ffd8","#a22633","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#cebb96"],["#b0e0be","#c8ffd8","#2f5a46","#c8ffd8","#2f5a46","#c8ffd8","#c8ffd8","#a22633","#e43b44","#fee761","#fee761","#e43b44","#e43b44","#cebb96"],["#b0e0be","#c8ffd8","#c8ffd8","#c8ffd8","#c8ffd8","#c8ffd8","#c8ffd8","#a22633","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#cebb96"],["#b0e0be","#c8ffd8","#c8ffd8","#4f9f72","#c8ffd8","#c8ffd8","#c8ffd8","#a22633","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#cebb96"],["#98c2a4","#7ec599","#b0e0be","#7ec599","#b0e0be","#7ec599","#b0e0be","#8f212d","#8f212d","#8f212d","#8f212d","#8f212d","#8f212d","#b2a181"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Floats down through your blocks into the deepest gap it fits, then everything in its two columns and one either side drops down into the gaps. It stays to rearrange the furniture.",
+        "parts": [
+          {
+            "type": "phantom"
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "||||"
+              ]
+            }
+          }
+        ],
+        "help": 3
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.8,
+  },
+  {
+    id: "ghost_lantern",
+    name: "a ghost in a lantern",
+    grid: [
+        "X",
+        "X"
+      ],
+    color: [["#c18428","#e0992e","#e0992e","#e0992e","#e0992e","#e0992e","#c18428"],["#e0992e","#feae34","#c77b1e","#fee761","#c77b1e","#feae34","#e0992e"],["#e0992e","#feae34","#feae34","#c77b1e","#feae34","#feae34","#e0992e"],["#af6c1a","#feae34","#feae34","#feae34","#feae34","#feae34","#af6c1a"],["#e0992e","#feae34","#feae34","#feae34","#feae34","#feae34","#e0992e"],["#af6c1a","#b8ffe0","#b8ffe0","#b8ffe0","#b8ffe0","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#ffffff","#b8ffe0","#b8ffe0","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#2f6b57","#b8ffe0","#2f6b57","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#2f6b57","#b8ffe0","#2f6b57","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#b8ffe0","#5fbf96","#b8ffe0","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#b8ffe0","#b8ffe0","#b8ffe0","#b8ffe0","#af6c1a"],["#e0992e","#feae34","#feae34","#feae34","#feae34","#feae34","#e0992e"],["#af6c1a","#feae34","#feae34","#feae34","#feae34","#feae34","#af6c1a"],["#c18428","#af6c1a","#e0992e","#af6c1a","#e0992e","#af6c1a","#c18428"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Drifts down through your blocks into the deepest gap it fits, then fills every empty cell one step around it (corners too) with glowing mist. It stays to keep the light on.",
+        "parts": [
+          {
+            "type": "phantom"
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#9edbc1",
+                "#abedd0",
+                "#abedd0",
+                "#abedd0",
+                "#abedd0",
+                "#abedd0",
+                "#9edbc1"
+              ],
+              [
+                "#abedd0",
+                "#86eec6",
+                "#b8ffe0",
+                "#b8ffe0",
+                "#b8ffe0",
+                "#ffffff",
+                "#abedd0"
+              ],
+              [
+                "#abedd0",
+                "#b8ffe0",
+                "#86eec6",
+                "#86eec6",
+                "#b8ffe0",
+                "#b8ffe0",
+                "#abedd0"
+              ],
+              [
+                "#abedd0",
+                "#b8ffe0",
+                "#b8ffe0",
+                "#b8ffe0",
+                "#86eec6",
+                "#b8ffe0",
+                "#abedd0"
+              ],
+              [
+                "#abedd0",
+                "#ffffff",
+                "#b8ffe0",
+                "#b8ffe0",
+                "#b8ffe0",
+                "#86eec6",
+                "#abedd0"
+              ],
+              [
+                "#abedd0",
+                "#b8ffe0",
+                "#b8ffe0",
+                "#86eec6",
+                "#b8ffe0",
+                "#b8ffe0",
+                "#abedd0"
+              ],
+              [
+                "#9edbc1",
+                "#abedd0",
+                "#abedd0",
+                "#abedd0",
+                "#abedd0",
+                "#abedd0",
+                "#9edbc1"
+              ]
+            ],
+            "area": {
+              "origin": [
+                1,
+                1
+              ],
+              "grid": [
+                "###",
+                "#.#",
+                "#.#",
+                "###"
+              ]
+            }
+          }
+        ],
+        "help": 2.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.8,
+  },
+  {
+    id: "spectral_moth",
+    name: "a spectral moth",
+    grid: [
+        "XX"
+      ],
+    color: [["#9587b8","#cbc2e0","#cbc2e0","#cbc2e0","#cbc2e0","#d9bb78","#ac9dd5","#ac9dd5","#d9bb78","#cbc2e0","#cbc2e0","#cbc2e0","#cbc2e0","#9587b8"],["#cbc2e0","#e7dcff","#e7dcff","#e7dcff","#e7dcff","#e7dcff","#6a52a8","#6a52a8","#e7dcff","#e7dcff","#e7dcff","#e7dcff","#e7dcff","#cbc2e0"],["#cbc2e0","#fee761","#fee761","#e7dcff","#e7dcff","#e7dcff","#9a84d8","#9a84d8","#e7dcff","#e7dcff","#e7dcff","#fee761","#fee761","#cbc2e0"],["#cbc2e0","#fee761","#9c84d8","#fee761","#e7dcff","#e7dcff","#6a52a8","#6a52a8","#e7dcff","#e7dcff","#fee761","#9c84d8","#fee761","#cbc2e0"],["#8974be","#9c84d8","#9c84d8","#9c84d8","#9c84d8","#9c84d8","#9a84d8","#9a84d8","#9c84d8","#9c84d8","#9c84d8","#9c84d8","#9c84d8","#8974be"],["#ac9dd5","#e7dcff","#e7dcff","#ffffff","#e7dcff","#e7dcff","#6a52a8","#6a52a8","#e7dcff","#e7dcff","#ffffff","#e7dcff","#e7dcff","#ac9dd5"],["#7764a4","#ac9dd5","#8974be","#ac9dd5","#8974be","#8974be","#8874be","#8874be","#8974be","#8974be","#ac9dd5","#8974be","#ac9dd5","#7764a4"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "Flutters down through your blocks into the deepest gap it fits, eats every block touching it and a tunnel two wide and six high straight up, then flies off out of it. It saw a light.",
+        "parts": [
+          {
+            "type": "phantom"
+          },
+          {
+            "type": "acid",
+            "reach": 1,
+            "area": {
+              "origin": [
+                0,
+                7
+              ],
+              "grid": [
+                "##",
+                "##",
+                "##",
+                "##",
+                "##",
+                "##",
+                ".."
+              ]
+            }
+          }
+        ],
+        "consume": true,
+        "help": 2
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.8,
+  },
+  {
+    id: "pencil_eraser",
+    name: "a pencil with an eraser on the end",
+    grid: [
+        "XXX"
+      ],
+    color: [["#c27986","#e08c9b","#e08c9b","#e08c9b","#a9b3c2","#7a889e","#e0cb55","#e0cb55","#e0cb55","#e0cb55","#e0cb55","#e0cb55","#e0cb55","#cebb96","#cebb96","#c99264","#c99264","#ad7e57"],["#e08c9b","#ffffff","#ff9fb0","#ff9fb0","#c0cbdc","#8b9bb4","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#ead4aa","#ead4aa","#ead4aa","#e4a672","#4f5c78"],["#e08c9b","#ff9fb0","#ff9fb0","#ff9fb0","#c0cbdc","#8b9bb4","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#ead4aa","#ead4aa","#ead4aa","#5a6988","#4f5c78"],["#e08c9b","#ff9fb0","#ff9fb0","#ff9fb0","#c0cbdc","#8b9bb4","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#ead4aa","#ead4aa","#ead4aa","#5a6988","#4f5c78"],["#e08c9b","#ff9fb0","#ff9fb0","#ff9fb0","#c0cbdc","#8b9bb4","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#ead4aa","#ead4aa","#ead4aa","#e4a672","#4f5c78"],["#b05165","#cc5d75","#cc5d75","#cc5d75","#a9b3c2","#7a889e","#d9681e","#d9681e","#d9681e","#d9681e","#d9681e","#d9681e","#d9681e","#cebb96","#cebb96","#c99264","#c99264","#ad7e57"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "The eraser end rubs out the three blocks under it, then the pointy end draws blocks into the empty cells of the four under it. Do not chew it.",
+        "parts": [
+          {
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "...",
+                "#..",
+                "#..",
+                "#.."
+              ]
+            }
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#d2d2d5",
+                "#e3e3e7",
+                "#e3e3e7",
+                "#e3e3e7",
+                "#e3e3e7",
+                "#e3e3e7",
+                "#d2d2d5"
+              ],
+              [
+                "#e3e3e7",
+                "#6a7998",
+                "#f4f4f8",
+                "#f4f4f8",
+                "#f4f4f8",
+                "#6a7998",
+                "#e3e3e7"
+              ],
+              [
+                "#e3e3e7",
+                "#f4f4f8",
+                "#6a7998",
+                "#f4f4f8",
+                "#6a7998",
+                "#f4f4f8",
+                "#e3e3e7"
+              ],
+              [
+                "#e3e3e7",
+                "#f4f4f8",
+                "#f4f4f8",
+                "#6a7998",
+                "#f4f4f8",
+                "#f4f4f8",
+                "#e3e3e7"
+              ],
+              [
+                "#e3e3e7",
+                "#f4f4f8",
+                "#6a7998",
+                "#f4f4f8",
+                "#6a7998",
+                "#f4f4f8",
+                "#e3e3e7"
+              ],
+              [
+                "#e3e3e7",
+                "#6a7998",
+                "#f4f4f8",
+                "#f4f4f8",
+                "#f4f4f8",
+                "#6a7998",
+                "#e3e3e7"
+              ],
+              [
+                "#d2d2d5",
+                "#e3e3e7",
+                "#e3e3e7",
+                "#e3e3e7",
+                "#e3e3e7",
+                "#e3e3e7",
+                "#d2d2d5"
+              ]
+            ],
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "...",
+                "..#",
+                "..#",
+                "..#",
+                "..#"
+              ]
+            }
+          }
+        ],
+        "help": 2
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "fire_ice_dragon",
+    name: "a two-headed dragon (fire and ice)",
+    grid: [
+        ".XX.",
+        "XXXX"
+      ],
+    color: [["","","","","","","#7b1d27","#8f212d","#8f212d","#8f212d","#8f212d","#8f212d","#256ca9","#256ca9","#256ca9","#256ca9","#256ca9","#205d92","","","","","",""],["","","","","","","#d9681e","#f77622","#f77622","#f77622","#f77622","#a22633","#2a7bc0","#c8f0ff","#c8f0ff","#c8f0ff","#c8f0ff","#b0d3e0","","","","","",""],["","","","","","","#d9681e","#f77622","#f77622","#f77622","#f77622","#a22633","#2a7bc0","#c8f0ff","#c8f0ff","#c8f0ff","#c8f0ff","#b0d3e0","","","","","",""],["","","","","","","#8f212d","#f77622","#f77622","#a22633","#f77622","#a22633","#2a7bc0","#c8f0ff","#2a7bc0","#c8f0ff","#c8f0ff","#256ca9","","","","","",""],["","","","","","","#c9343c","#a22633","#f77622","#a22633","#f77622","#a22633","#2a7bc0","#c8f0ff","#2a7bc0","#c8f0ff","#2a7bc0","#46a2d0","","","","","",""],["","","","","","","#c9343c","#e43b44","#a22633","#e43b44","#a22633","#a22633","#2a7bc0","#2a7bc0","#4fb8ec","#2a7bc0","#4fb8ec","#46a2d0","","","","","",""],["#ad2d34","#c9343c","#c9343c","#c9343c","#8f212d","#c9343c","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#4fb8ec","#4fb8ec","#4fb8ec","#4fb8ec","#4fb8ec","#4fb8ec","#46a2d0","#256ca9","#46a2d0","#46a2d0","#46a2d0","#3c8cb3"],["#c9343c","#e43b44","#e43b44","#ffffff","#2b1d30","#e43b44","#e43b44","#a22633","#e43b44","#e43b44","#a22633","#e43b44","#4fb8ec","#2a7bc0","#4fb8ec","#4fb8ec","#2a7bc0","#4fb8ec","#4fb8ec","#2b1d30","#ffffff","#4fb8ec","#4fb8ec","#46a2d0"],["#e0cb55","#e43b44","#e43b44","#e43b44","#e43b44","#a22633","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#4fb8ec","#4fb8ec","#4fb8ec","#4fb8ec","#4fb8ec","#4fb8ec","#2a7bc0","#4fb8ec","#4fb8ec","#4fb8ec","#4fb8ec","#b0d3e0"],["#e0992e","#fee761","#e43b44","#e43b44","#e43b44","#e43b44","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#c8f0ff","#c8f0ff","#c8f0ff","#c8f0ff","#c8f0ff","#c8f0ff","#4fb8ec","#4fb8ec","#4fb8ec","#4fb8ec","#c8f0ff","#e0e0e0"],["#e0cb55","#feae34","#e43b44","#e43b44","#e43b44","#e43b44","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#c8f0ff","#c8f0ff","#c8f0ff","#c8f0ff","#c8f0ff","#c8f0ff","#4fb8ec","#4fb8ec","#4fb8ec","#4fb8ec","#ffffff","#b0d3e0"],["#bc5a1a","#e0cb55","#c9343c","#c9343c","#8f212d","#c9343c","#8f212d","#c9343c","#8f212d","#c9343c","#8f212d","#c9343c","#256ca9","#46a2d0","#256ca9","#46a2d0","#256ca9","#46a2d0","#46a2d0","#256ca9","#46a2d0","#46a2d0","#b0d3e0","#c2c2c2"]],
+    powerup: {
+        "type": "combo",
+        "tier": 2,
+        "intro": "The fire head burns away five blocks under its left end, then the ice head freezes the empty cells of the five under its right end solid. They have never agreed on anything.",
+        "parts": [
+          {
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "......",
+                "#.....",
+                "##....",
+                "##...."
+              ]
+            }
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#accedb",
+                "#badfed",
+                "#badfed",
+                "#badfed",
+                "#badfed",
+                "#badfed",
+                "#accedb"
+              ],
+              [
+                "#badfed",
+                "#ffffff",
+                "#ffffff",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#badfed"
+              ],
+              [
+                "#badfed",
+                "#ffffff",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#7dbadd"
+              ],
+              [
+                "#badfed",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#7dbadd"
+              ],
+              [
+                "#badfed",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#86c8ee",
+                "#badfed"
+              ],
+              [
+                "#badfed",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#c8f0ff",
+                "#86c8ee",
+                "#c8f0ff",
+                "#badfed"
+              ],
+              [
+                "#accedb",
+                "#badfed",
+                "#7dbadd",
+                "#7dbadd",
+                "#7dbadd",
+                "#7dbadd",
+                "#accedb"
+              ]
+            ],
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "......",
+                ".....#",
+                "....##",
+                "....##"
+              ]
+            }
+          }
+        ],
+        "help": 1.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 1,
+  },
+  {
+    id: "ghost_swiss_knife",
+    name: "a ghostly swiss army knife",
+    grid: [
+        "XXX"
+      ],
+    color: [["#ad2d34","#c9343c","#c9343c","#c9343c","#c9343c","#c9343c","#c9343c","#c9343c","#c9343c","#c9343c","#9ed0dc","#9ed0dc","#9ed0dc","#9ed0dc","#9ed0dc","#9ed0dc","#9ed0dc","#669db0"],["#c9343c","#e43b44","#e43b44","#ffffff","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#b4ecfa","#effeff","#effeff","#effeff","#effeff","#effeff","#b4ecfa","#76b6cc"],["#c9343c","#e43b44","#ffffff","#ffffff","#ffffff","#e43b44","#e43b44","#c0cbdc","#e43b44","#e43b44","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#b4ecfa","#86cfe8","#76b6cc"],["#c9343c","#e43b44","#e43b44","#ffffff","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#86cfe8","#86cfe8","#86cfe8","#b4ecfa","#86cfe8","#b4ecfa","#86cfe8","#9ed0dc"],["#c9343c","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#86cfe8","#b4ecfa","#b4ecfa","#86cfe8","#b4ecfa","#86cfe8","#b4ecfa","#76b6cc"],["#7b1d27","#8f212d","#8f212d","#8f212d","#8f212d","#8f212d","#8f212d","#8f212d","#8f212d","#8f212d","#76b6cc","#76b6cc","#76b6cc","#76b6cc","#76b6cc","#76b6cc","#76b6cc","#669db0"]],
+    powerup: {
+        "type": "combo",
+        "tier": 3,
+        "intro": "Slips down through your blocks into the deepest gap it fits. Then it destroys the row it lands in, wall to wall (itself included), which closes up like a line clear, lets everything in its five columns settle, and fills every empty cell of the 5x4 patch under where it was. There is a tool for that.",
+        "parts": [
+          {
+            "type": "phantom"
+          },
+          {
+            "type": "destroyer",
+            "collapse": true,
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "-.."
+              ]
+            }
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "|||||"
+              ]
+            }
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#90c2d2",
+                "#9cd2e3",
+                "#9cd2e3",
+                "#9cd2e3",
+                "#9cd2e3",
+                "#9cd2e3",
+                "#90c2d2"
+              ],
+              [
+                "#9cd2e3",
+                "#5aa6cf",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#5aa6cf",
+                "#9cd2e3"
+              ],
+              [
+                "#9cd2e3",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#9cd2e3"
+              ],
+              [
+                "#9cd2e3",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#effeff",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#9cd2e3"
+              ],
+              [
+                "#9cd2e3",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#9cd2e3"
+              ],
+              [
+                "#9cd2e3",
+                "#5aa6cf",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#a8e2f4",
+                "#5aa6cf",
+                "#9cd2e3"
+              ],
+              [
+                "#90c2d2",
+                "#9cd2e3",
+                "#9cd2e3",
+                "#9cd2e3",
+                "#9cd2e3",
+                "#9cd2e3",
+                "#90c2d2"
+              ]
+            ],
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                ".....",
+                "#####",
+                "#####",
+                "#####",
+                "#####"
+              ]
+            }
+          }
+        ],
+        "help": 5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.4,
+  },
+  {
+    id: "time_builder",
+    name: "a time-travelling builder (from next tuesday)",
+    grid: [
+        "XX",
+        "XX"
+      ],
+    color: [["#c1b04a","#e0cb55","#e0cb55","#e0cb55","#e0cb55","#e0cb55","#e0cb55","#e0cb55","#e0cb55","#e0cb55","#e0cb55","#e0cb55","#e0cb55","#c1b04a"],["#e0cb55","#fee761","#fee761","#fee761","#fee761","#ead4aa","#262b44","#ead4aa","#ead4aa","#fee761","#fee761","#fee761","#fee761","#e0cb55"],["#e0cb55","#fee761","#fee761","#fee761","#ead4aa","#ead4aa","#262b44","#262b44","#ead4aa","#ead4aa","#fee761","#fee761","#fee761","#e0cb55"],["#e0992e","#feae34","#feae34","#feae34","#feae34","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#feae34","#feae34","#feae34","#feae34","#e0992e"],["#e0992e","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#e0992e"],["#c99264","#e4a672","#e4a672","#e4a672","#e4a672","#e4a672","#e4a672","#e4a672","#e4a672","#e4a672","#e4a672","#e4a672","#e4a672","#c99264"],["#c99264","#e4a672","#2ce8f5","#2ce8f5","#2ce8f5","#e4a672","#e4a672","#e4a672","#2ce8f5","#2ce8f5","#2ce8f5","#e4a672","#e4a672","#c99264"],["#c99264","#e4a672","#2ce8f5","#262b44","#2ce8f5","#e4a672","#e4a672","#e4a672","#2ce8f5","#262b44","#2ce8f5","#e4a672","#e4a672","#c99264"],["#c99264","#e4a672","#e4a672","#e4a672","#e4a672","#e4a672","#e4a672","#c47a52","#e4a672","#e4a672","#e4a672","#e4a672","#e4a672","#c99264"],["#c99264","#e4a672","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#b86f50","#e4a672","#c99264"],["#d9681e","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#d9681e"],["#d9681e","#c0cbdc","#c0cbdc","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#c0cbdc","#c0cbdc","#d9681e"],["#d9681e","#f77622","#f77622","#f77622","#0099db","#0099db","#0099db","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#d9681e"],["#bc5a1a","#d9681e","#d9681e","#d9681e","#d9681e","#d9681e","#d9681e","#d9681e","#d9681e","#d9681e","#d9681e","#d9681e","#d9681e","#bc5a1a"]],
+    powerup: {
+        "type": "combo",
+        "tier": 3,
+        "intro": "Phases down through your blocks into the deepest gap it fits, dissolves every block touching it, lets everything in the six columns around it settle, then builds bricks into every empty cell of the 4x4 patch under where it landed. He finished this job next Tuesday.",
+        "parts": [
+          {
+            "type": "phantom"
+          },
+          {
+            "type": "acid",
+            "reach": 1
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                2,
+                0
+              ],
+              "grid": [
+                "||||||"
+              ]
+            }
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#ac4934",
+                "#ba4f39",
+                "#ba4f39",
+                "#91c1c3",
+                "#ba4f39",
+                "#ba4f39",
+                "#ac4934"
+              ],
+              [
+                "#ba4f39",
+                "#e07a5f",
+                "#c8553d",
+                "#9ccfd2",
+                "#c8553d",
+                "#e07a5f",
+                "#ba4f39"
+              ],
+              [
+                "#91c1c3",
+                "#9ccfd2",
+                "#9ccfd2",
+                "#9ccfd2",
+                "#9ccfd2",
+                "#9ccfd2",
+                "#91c1c3"
+              ],
+              [
+                "#ba4f39",
+                "#9ccfd2",
+                "#c8553d",
+                "#c8553d",
+                "#c8553d",
+                "#9ccfd2",
+                "#ba4f39"
+              ],
+              [
+                "#ba4f39",
+                "#9ccfd2",
+                "#c8553d",
+                "#e07a5f",
+                "#c8553d",
+                "#9ccfd2",
+                "#ba4f39"
+              ],
+              [
+                "#91c1c3",
+                "#9ccfd2",
+                "#9ccfd2",
+                "#9ccfd2",
+                "#9ccfd2",
+                "#9ccfd2",
+                "#91c1c3"
+              ],
+              [
+                "#ac4934",
+                "#ba4f39",
+                "#ba4f39",
+                "#91c1c3",
+                "#ba4f39",
+                "#ba4f39",
+                "#ac4934"
+              ]
+            ],
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "....",
+                "....",
+                "####",
+                "####",
+                "####",
+                "####"
+              ]
+            }
+          }
+        ],
+        "help": 3.5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.4,
+  },
+  {
+    id: "wizard_all_trades",
+    name: "a wizard of all trades (just the hat)",
+    grid: [
+        ".X.",
+        "XXX"
+      ],
+    color: [["","","","","","","#8660b0","#9b6fcc","#7a4ab1","#7a4ab1","#7a4ab1","#472c74","","","","","",""],["","","","","","","#7a4ab1","#b07ee8","#b07ee8","#8b54c9","#8b54c9","#7a4ab1","","","","","",""],["","","","","","","#7a4ab1","#8b54c9","#8b54c9","#fee761","#fee761","#7a4ab1","","","","","",""],["","","","","","","#7a4ab1","#8b54c9","#fee761","#8b54c9","#8b54c9","#7a4ab1","","","","","",""],["","","","","","","#7a4ab1","#8b54c9","#8b54c9","#fee761","#fee761","#7a4ab1","","","","","",""],["","","","","","","#7a4ab1","#ffffff","#8b54c9","#8b54c9","#8b54c9","#7a4ab1","","","","","",""],["#8660b0","#7a4ab1","#7a4ab1","#7a4ab1","#7a4ab1","#7a4ab1","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#7a4ab1","#7a4ab1","#7a4ab1","#7a4ab1","#7a4ab1","#8660b0"],["#7a4ab1","#8b54c9","#8b54c9","#fee761","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#ffffff","#8b54c9","#8b54c9","#8b54c9","#7a4ab1"],["#7a4ab1","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#8b54c9","#7a4ab1"],["#e0992e","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#e0992e"],["#9b6fcc","#b07ee8","#b07ee8","#b07ee8","#b07ee8","#b07ee8","#b07ee8","#b07ee8","#fee761","#fee761","#b07ee8","#b07ee8","#b07ee8","#b07ee8","#b07ee8","#b07ee8","#b07ee8","#9b6fcc"],["#472c74","#533387","#533387","#533387","#533387","#533387","#533387","#533387","#533387","#533387","#533387","#533387","#533387","#533387","#533387","#533387","#533387","#472c74"]],
+    powerup: {
+        "type": "combo",
+        "tier": 3,
+        "intro": "Sinks down through your blocks into the deepest gap it fits, then zaps away both rows it lands in, wall to wall (hat included), which close up like a line clear. Everything in its five columns settles, and every empty cell of the 5x4 patch below gets filled with magic. Master of none.",
+        "parts": [
+          {
+            "type": "phantom"
+          },
+          {
+            "type": "destroyer",
+            "collapse": true,
+            "area": {
+              "origin": [
+                0,
+                0
+              ],
+              "grid": [
+                "-..",
+                "-.."
+              ]
+            }
+          },
+          {
+            "type": "gravity",
+            "direction": "down",
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                "|||||"
+              ]
+            }
+          },
+          {
+            "type": "expander",
+            "fill": [
+              [
+                "#7848ad",
+                "#814ebb",
+                "#814ebb",
+                "#814ebb",
+                "#814ebb",
+                "#814ebb",
+                "#7848ad"
+              ],
+              [
+                "#814ebb",
+                "#8b54c9",
+                "#8b54c9",
+                "#fee761",
+                "#8b54c9",
+                "#8b54c9",
+                "#814ebb"
+              ],
+              [
+                "#814ebb",
+                "#8b54c9",
+                "#fee761",
+                "#fee761",
+                "#fee761",
+                "#8b54c9",
+                "#814ebb"
+              ],
+              [
+                "#814ebb",
+                "#8b54c9",
+                "#8b54c9",
+                "#fee761",
+                "#8b54c9",
+                "#8b54c9",
+                "#814ebb"
+              ],
+              [
+                "#814ebb",
+                "#e8d8ff",
+                "#8b54c9",
+                "#8b54c9",
+                "#8b54c9",
+                "#8b54c9",
+                "#814ebb"
+              ],
+              [
+                "#814ebb",
+                "#8b54c9",
+                "#8b54c9",
+                "#8b54c9",
+                "#8b54c9",
+                "#e8d8ff",
+                "#814ebb"
+              ],
+              [
+                "#7848ad",
+                "#814ebb",
+                "#814ebb",
+                "#814ebb",
+                "#814ebb",
+                "#814ebb",
+                "#7848ad"
+              ]
+            ],
+            "area": {
+              "origin": [
+                1,
+                0
+              ],
+              "grid": [
+                ".....",
+                ".....",
+                "#####",
+                "#####",
+                "#####",
+                "#####"
+              ]
+            }
+          }
+        ],
+        "help": 5
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.4,
+  },
 ];
