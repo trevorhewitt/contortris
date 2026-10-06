@@ -34,7 +34,7 @@
   
       /* Natural board geometry (used for fit calculations) */
       --cols: 14;
-      --rows: 28;
+      --rows: 24; /* main.js sets --cols / --rows from config.js */
       --cell: 18px;
       --natural-board-w: calc(var(--cols) * var(--cell));
       --natural-board-h: calc(var(--rows) * var(--cell));
@@ -867,7 +867,7 @@
 
           <div class="msg panel" id="panelMenu" hidden>
             <div class="big title">Extris</div>
-            <div class="small" id="gameVersion">version 202610061118</div>
+            <div class="small" id="gameVersion">version 202610061442</div>
             <div class="menuBtns">
               <button id="btnEasy" class="secondary">Easy mode</button>
               <button id="btnNormal">Normal mode</button>
@@ -903,7 +903,7 @@
               <h3>Achievements</h3>
               <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
 
-              <p class="small menuFoot">[Extris version 202610061118 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610061442 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>
@@ -1028,8 +1028,11 @@
       const boardCanvas = document.getElementById("boardCanvas");
       const bottomBar = document.querySelector(".bottomBar");
 
-      const NAT_W = 14 * 18; // must match --cols * --cell
-      const NAT_H = 28 * 18; // must match --rows * --cell
+      // board size in cells: read from the CSS variables, which main.js sets from config.js
+      const dims = () => {
+        const cs = getComputedStyle(document.documentElement);
+        return { cols: Number(cs.getPropertyValue("--cols")) || 14, rows: Number(cs.getPropertyValue("--rows")) || 24 };
+      };
 
       function viewportSize(){
         if (window.visualViewport) {
@@ -1052,14 +1055,11 @@
         const availW = vp.w - 16; // boardRegion padding + breathing room
         const availH = (vp.h - bb.height) - 16; // boardRegion padding + breathing room
 
-        // Uniform scale
-        const scale = Math.min(availW / NAT_W, availH / NAT_H);
-
-        // Guard against tiny sizes
-        const s = Math.max(0.1, scale);
-
-        const scaledW = Math.floor(NAT_W * s);
-        const scaledH = Math.floor(NAT_H * s);
+        // A whole number of pixels per cell, the same both ways, so cells are exactly square
+        const { cols, rows } = dims();
+        const cellPx = Math.max(4, Math.floor(Math.min(availW / cols, availH / rows)));
+        const scaledW = cellPx * cols;
+        const scaledH = cellPx * rows;
 
         shell.style.width = scaledW + "px";
         shell.style.height = scaledH + "px";
@@ -1080,6 +1080,8 @@
         window.visualViewport.addEventListener("scroll", fit, { passive: true });
       }
       window.addEventListener("orientationchange", fit, { passive: true });
+
+      window.__fitBoard = fit; // main.js calls this once the board size is known
 
       // Initial fit after layout settles
       requestAnimationFrame(() => requestAnimationFrame(fit));

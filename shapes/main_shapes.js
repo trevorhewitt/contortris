@@ -275,7 +275,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "pill",
@@ -1124,7 +1124,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "floppy_disk",
@@ -1151,7 +1151,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     tags: [
         "sport"
       ],
@@ -1267,7 +1267,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     tags: [
         "science"
       ],
@@ -1318,7 +1318,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     tags: [
         "sport"
       ],
@@ -1425,7 +1425,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "pea_pod",
@@ -1455,7 +1455,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "little_teapot",
@@ -1692,7 +1692,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "lone_sprinkle",
@@ -1721,7 +1721,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "blank_domino",
@@ -1778,7 +1778,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     tags: [
         "weather"
       ],
@@ -1828,7 +1828,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     tags: [
         "space"
       ],
@@ -1961,7 +1961,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "lighthouse_lunchbox",
@@ -2007,7 +2007,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "unicycle",
@@ -2370,7 +2370,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     tags: [
         "landmark"
       ],

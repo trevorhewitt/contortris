@@ -15,6 +15,11 @@ import { bindUI } from "./ui.js";
 const { shapes, powerups } = loadShapes(RAW_SHAPES);
 const state = createGameState(shapes, powerups);
 
+// the page layout sizes the board from these (index.html fit script)
+document.documentElement.style.setProperty("--cols", String(CONFIG.board.cols));
+document.documentElement.style.setProperty("--rows", String(CONFIG.board.rows));
+window.__fitBoard?.();
+
 const renderer = createRenderer(document.getElementById("boardCanvas"), document.getElementById("nextCanvas"));
 const sound = createSound(CONFIG.sound);
 
