@@ -50,6 +50,16 @@ Then open <http://localhost:8000> for the game and <http://localhost:8000/block_
 
 ## Making blocks, powerups and achievements
 
+The easiest way: run the local server, which also lets the designer save straight into your files:
+
+```sh
+python3 serve.py          # http://localhost:8000/block_designer.html
+```
+
+Every save keeps the previous version in `shapes/.backups/` (the newest 30 per file; not
+committed). Only `shapes/main_shapes.js` and `shapes/achievements.js` can be written, and the
+server only listens on your own computer.
+
 Open `block_designer.html`, pick `shapes/main_shapes.js` (or `shapes/achievements.js` in the
 Achievements tab) with the file picker once (Chrome/Edge), and it saves straight into the file.
 Otherwise it downloads the updated file for you to drop in.

@@ -728,7 +728,7 @@
       <h2>File</h2>
       <div id="slotList"></div>
       <input id="fallbackFile" type="file" accept=".js" style="display:none;">
-      <div class="hint" style="margin-top:8px;">Regular blocks and powerups live in one file. Pick it (Chrome/Edge) for in-place saving; the handle is remembered. Otherwise it is fetched for browsing when served over http, and saving downloads the updated file.</div>
+      <div class="hint" style="margin-top:8px;">Regular blocks and powerups live in one file. Easiest: run <span class="mono">python3 serve.py</span> in the repo and open the designer from it; then saving goes straight into your files (with backups in shapes/.backups/). Or pick the file (Chrome/Edge) for in-place saving. Otherwise saving downloads the updated file.</div>
     </div>
 
     <div class="card">
@@ -4050,6 +4050,7 @@
   }
 
   function slotModeText(slot){
+    if (viaServer(slot)) return "saves to your files";
     if (slot.handle) return "saves in place";
     if (slot.text != null) return "saves by download";
     return "not loaded";
@@ -4062,7 +4063,7 @@
     div.innerHTML = `
       <div class="slotHead">
         <span class="slotName">${escapeHtml(slot.label)} file</span>
-        <span class="pill ${slot.handle ? "good" : loaded ? "warn" : ""}">${escapeHtml(slotModeText(slot))}</span>
+        <span class="pill ${slot.handle || viaServer(slot) ? "good" : loaded ? "warn" : ""}">${escapeHtml(slotModeText(slot))}</span>
       </div>
       <div class="slotInfo">
         <span class="mono">${escapeHtml(slot.fileName || slot.defaultPath)}</span><br>
@@ -4128,7 +4129,27 @@
     el.allIds.innerHTML = [...allKnownIds()].sort().map(id => `<option value="${escapeHtml(id)}"></option>`).join("");
   }
 
+  // Local server (python3 serve.py): saves straight into the repo files, no downloads.
+  let localServer = false;
+  const localServerReady = fetch("/api/ping", { cache: "no-store" })
+    .then(r => r.ok ? r.json() : null)
+    .then(j => { localServer = !!(j && j.ok); if (localServer) { renderSlots(); renderSaveHint(); } return localServer; })
+    .catch(() => false);
+  const viaServer = (slot) => localServer && !slot.handle && slot.origin === "fetch";
+  async function writeViaServer(slot, text){
+    const res = await fetch("/api/save", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: slot.defaultPath, text }),
+    });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok || !j.ok) throw new Error(j.error || `HTTP ${res.status}`);
+  }
+
   async function writeSlot(slot, text){
+    if (viaServer(slot)){
+      try { await writeViaServer(slot, text); return "written"; }
+      catch (e){ toast("Saving through the local server failed, downloading instead: " + (e.message || e), "bad"); }
+    }
     if (slot.handle){
       try {
         let perm = await slot.handle.queryPermission({ mode: "readwrite" });
@@ -4148,7 +4169,8 @@
   }
 
   function renderSaveHint(){
-    el.saveModeHint.textContent = BLOCKS.handle ? `writes ${BLOCKS.handle.name} in place`
+    el.saveModeHint.textContent = viaServer(BLOCKS) ? `saves straight into ${BLOCKS.defaultPath} (local server)`
+      : BLOCKS.handle ? `writes ${BLOCKS.handle.name} in place`
       : BLOCKS.text != null ? "downloads the updated blocks file" : "no file loaded: downloads a new file";
   }
 
@@ -4156,6 +4178,12 @@
   // Save / delete flow (blocks)
   // ============================================================
   async function freshParsed(slot){
+    if (viaServer(slot)){
+      try {
+        const res = await fetch(slot.defaultPath, { cache: "no-store" });
+        if (res.ok) return parseArrayFile(await res.text());
+      } catch {}
+    }
     if (slot.handle){
       try { const f = await slot.handle.getFile(); return parseArrayFile(await f.text()); } catch {}
     }
