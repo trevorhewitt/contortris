@@ -5,7 +5,7 @@
 // ============================================================
 
 import { clamp01, easeOutBack, makeRng } from "./util.js";
-import { resolvePowerupArea, computeEffect, phantomLandingY } from "./powerups.js";
+import { resolvePowerupArea, computeEffect, phantomLandingY, isPhantomPowerup } from "./powerups.js";
 import { getShapePaint } from "./shapes.js";
 import { drawBlockWithPaintStatic, drawPowerupMark } from "./render.js";
 
@@ -36,7 +36,7 @@ function makeBoard(shape, rng) {
   if (gravityish || type === "phantom" || type === "goo") {
     for (const x of [1, 2, 6, 7]) { b[ROWS - 4][x] = filler(x + 11); b[ROWS - 3][x] = null; }
   }
-  if (type === "phantom") {
+  if (isPhantomPowerup(shape.powerup)) {
     // a sealed gap shaped exactly like the phantom, under a solid lid
     const mat = shape.rotations[0];
     const gx = Math.max(0, Math.floor((COLS - mat[0].length) / 2));
@@ -50,7 +50,7 @@ function makeBoard(shape, rng) {
 
 function landingY(board, shape, x) {
   const mat = shape.rotations[0];
-  if (shape.powerup.type === "phantom") return phantomLandingY(board, x, mat);
+  if (isPhantomPowerup(shape.powerup)) return phantomLandingY(board, x, mat);
   let y = -mat.length;
   const hits = (yy) => {
     for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) {
@@ -86,7 +86,7 @@ function simulate(board, shape, x) {
     makeFill: () => ({ paint: pu.fillPaint, style: pu.fillStyle }),
   });
   let preview = area.indices;
-  const layers = pu.parts && area.parts ? pu.parts.map((p, k) => [p, area.parts[k].indices]) : null;
+  const layers = pu.parts && area.parts ? pu.parts.map((p, k) => [p, p.type === "phantom" ? placed.map(q => q.y * COLS + q.x) : area.parts[k].indices]) : null;
   if (pu.type === "goo") preview = fx.filled.map(f => f.y * COLS + f.x);
   if (pu.type === "phantom") preview = placed.map(p => p.y * COLS + p.x);
   const score = fx.destroyed.length * 2 + fx.moves.length + fx.filled.length + (pu.type === "phantom" ? y : 0);
@@ -155,7 +155,7 @@ export function createDemo(canvas, shape, { cell = 16 } = {}) {
 
     const t = now % LOOP;
     const pu = shape.powerup;
-    const phantom = pu.type === "phantom";
+    const phantom = isPhantomPowerup(pu);
 
     if (t < T_FALL + T_CHARGE) {
       // before: the board as it was, the piece falling, the highlight at its landing spot

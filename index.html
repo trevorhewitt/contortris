@@ -349,10 +349,12 @@
 
     /* Powerup intro screen */
     #panelIntro, #panelPowerups{ background: rgba(8,8,20,0.97); }
-    #panelIntro.slideIn{ animation: introSlide 380ms steps(8, end); }
+    /* the intro slides straight over the board: no backdrop, no fade */
+    .overlay.intro{ background: none; transition: none; }
+    #panelIntro.slideIn{ animation: introSlide 200ms cubic-bezier(0.2, 0.9, 0.3, 1.05); }
     @keyframes introSlide{
-      from{ transform: translateX(110%); opacity: 0; }
-      to{ transform: translateX(0); opacity: 1; }
+      from{ transform: translateX(115%); }
+      to{ transform: translateX(0); }
     }
     .introKicker{
       font-family: var(--font-display);
@@ -360,7 +362,7 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: rgba(255,207,63,0.95);
-      margin-bottom: 8px;
+      margin-bottom: 16px;
     }
     .introName{
       font-family: var(--font-display);
@@ -376,9 +378,9 @@
       color: rgba(245,245,255,0.85);
       margin: 6px 0 10px;
     }
-    canvas.introDemo{ margin: 0 auto 10px; }
-    .introText{ font-size: 13px !important; color: rgba(245,245,255,0.9) !important; margin-bottom: 6px; }
-    .introClass{ margin-bottom: 4px; }
+    canvas.introDemo{ margin: 12px auto 6px; }
+    .introPiece{ font-size: 11px !important; opacity: 0.7; margin-bottom: 10px; }
+    .introClass{ font-size: 14px !important; color: rgba(245,245,255,0.92) !important; margin-bottom: 4px; }
     .skipBox{
       display: flex;
       gap: 8px;
@@ -865,7 +867,7 @@
 
           <div class="msg panel" id="panelMenu" hidden>
             <div class="big title">Extris</div>
-            <div class="small" id="gameVersion">version 202610052321</div>
+            <div class="small" id="gameVersion">version 202610061111</div>
             <div class="menuBtns">
               <button id="btnEasy" class="secondary">Easy mode</button>
               <button id="btnNormal">Normal mode</button>
@@ -901,7 +903,7 @@
               <h3>Achievements</h3>
               <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
 
-              <p class="small menuFoot">[Extris version 202610052321 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610061111 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>
@@ -950,11 +952,10 @@
           </div>
 
           <div class="msg panel" id="panelIntro" hidden>
-            <div class="introKicker" id="introKicker">New powerup!</div>
+            <div class="introKicker" id="introKicker">Shiny Piece!</div>
             <div class="introName" id="introName"></div>
-            <div class="introEffect" id="introEffect"></div>
             <canvas id="introDemo" class="demo introDemo"></canvas>
-            <div class="small introText" id="introText"></div>
+            <div class="small introPiece" id="introPiece"></div>
             <div class="small introClass" id="introClass"></div>
             <div class="panelBtns">
               <button id="btnIntroContinue">Got it</button>

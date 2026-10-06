@@ -188,6 +188,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
   function showPanel(name) {
     currentPanel = name;
     overlay.classList.toggle("show", !!name);
+    overlay.classList.toggle("intro", name === "intro"); // slides over the board, no fade
     for (const [key, el] of Object.entries(panels)) el.hidden = key !== name;
     if (name === "menu") renderMenu();
     if (name === "achievements") renderAchievements();
@@ -246,7 +247,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
     if (state.gameOver || !state.running) return;
     state.paused = true;
     state.softDropping = false;
-    $("pauseMode").textContent = `${modeLabel(state.mode)} mode · level ${state.level}`;
+    $("pauseMode").textContent = `${modeLabel(state.mode)} mode`;
     showPanel("pause");
   }
 
@@ -527,11 +528,11 @@ export function bindUI({ state, renderer, sound, achievements }) {
     const pu = shape.powerup;
     const info = CLASS_INFO[pu.cls];
     const inClass = state.powerups.filter(p => p.powerup.cls === pu.cls && !state.devPowerups?.disabled?.has(p.id)).length;
-    $("introKicker").textContent = `New powerup class: ${info.name}!`;
-    $("introName").textContent = shape.name;
-    $("introEffect").textContent = pu.description;
-    $("introText").textContent = pu.intro || "";
-    $("introClass").textContent = info.text + (inClass > 1 ? ` There are ${inClass} different ${info.name.toLowerCase()} to find.` : "");
+    void inClass;
+    $("introKicker").textContent = "Shiny Piece!";
+    $("introName").textContent = info.name;
+    $("introPiece").textContent = shape.name;
+    $("introClass").textContent = info.text;
     const cvs = $("introDemo");
     const demo = createDemo(cvs, shape, { cell: 22 });
     panels.intro.classList.remove("slideIn");
@@ -556,8 +557,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
       if (!ex) continue;
       const total = state.powerups.filter(p => p.powerup.cls === cls).length;
       const info = CLASS_INFO[cls];
-      const text = `${escapeHtml(info.text)}<div class="demoEg">${seen.length} of ${total} met so far` +
-        (seen.length ? `: ${seen.slice(-4).map(s => escapeHtml(s.name)).join(", ")}${seen.length > 4 ? "…" : ""}` : "") + `</div>`;
+      const text = `${escapeHtml(info.text)}<div class="demoEg">${seen.length} of ${total} found so far</div>`;
       const card = demoCard(ex, { cell: 12, title: info.name, text });
       list.appendChild(card.row);
       demos.push(card.demo);

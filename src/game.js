@@ -18,7 +18,7 @@ import { CONFIG } from "../config.js";
 import { clamp01, lerp } from "./util.js";
 import { getShapePaint } from "./shapes.js";
 import { initPieceSelectionState, selectPiece } from "./selection.js";
-import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY } from "./powerups.js";
+import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup } from "./powerups.js";
 
 /* =========================
    State
@@ -294,7 +294,7 @@ function cancelLock(state) {
 // Phantom powerups pass through blocks: only walls stop them, and they land in the
 // deepest spot their columns have room for.
 export function isPhantom(state) {
-  return state.active?.shape.powerup?.type === "phantom";
+  return isPhantomPowerup(state.active?.shape.powerup);
 }
 
 function canFall(state) {
@@ -405,7 +405,7 @@ function spawnPiece(state) {
     y: -mat.length,
   };
 
-  const ok = shape.powerup?.type === "phantom" || !collides(state, state.active.x, state.active.y, mat);
+  const ok = isPhantomPowerup(shape.powerup) || !collides(state, state.active.x, state.active.y, mat);
   if (ok) {
     // First powerup of a class in this game: the UI shows that class's intro screen.
     const ps = state.pieceSel.powerup;
@@ -465,8 +465,12 @@ function lockPiece(state) {
   state.lastLockedShape = shape;
   state.drops++;
 
-  if ((shape.difficulty ?? 0) >= (CONFIG.fx.largePieceLock.minDifficulty ?? 5) && !shape.powerup) {
+  const big = CONFIG.fx.largePieceLock;
+  if ((shape.difficulty ?? 0) >= (big.minDifficulty ?? 5) && !shape.powerup && CONFIG.fx.quake.enabled) {
     addQuakeFromBlocks(state, placed.length);
+    // every big piece lands with a proper thud, whatever its size
+    const floor = big.minTraumaByDifficulty?.[shape.difficulty] ?? 0;
+    state.fx.quake.trauma = Math.max(state.fx.quake.trauma ?? 0, floor);
   }
 
   const info = { shape, rotIdx, x: state.active.x, y: state.active.y, pid, placed };
@@ -813,6 +817,13 @@ function firePowerupEffect(state, e) {
 
   if (affected >= (CONFIG.fx.callouts.powerupBlocksMin ?? 8)) {
     addCallout(state, `+${affected}`, e.centre.x + 0.5, e.centre.y, {});
+  }
+  // learning: a class counts as understood once a powerup of it does something; wasting
+  // one (it did nothing) puts the class back to only serving usable pieces
+  const psel = state.pieceSel?.powerup;
+  if (psel) {
+    if (affected > 0) { psel.usedOk.add(pu.cls); psel.relearn.delete(pu.cls); }
+    else psel.relearn.add(pu.cls);
   }
   emit(state, "powerupFire", { shape: e.shape, type: pu.type, affected });
   if (isBoardEmpty(state) && state.drops > 1) emit(state, "boardCleared");

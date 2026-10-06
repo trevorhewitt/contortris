@@ -3,7 +3,7 @@
 // ============================================================
 
 export const CONFIG = {
-  board: { cols: 14, rows: 28 },
+  board: { cols: 14, rows: 24 },
 
   // Game modes. Extreme = the original game. Normal = the same game plus powerups.
   modes: {
@@ -87,8 +87,8 @@ export const CONFIG = {
     openingNoLevel0UntilDrop: 17, // no level-0 (tiny) pieces in the first 17 drops
 
     // “Danger” bands (rows-from-top). Higher = assistance kicks in earlier.
-    topRowsForDiff2Only: 22,
-    topRowsForDiff1Only: 12,
+    topRowsForDiff2Only: 19,  // (scaled with the board: it was 22 of 28 rows)
+    topRowsForDiff1Only: 10,  // (was 12 of 28)
 
     pieceMix: {
       // Baseline level weights (0–5). Keep 4/5 at 0: they’re injected via the “hard” scheduler below.
@@ -207,7 +207,9 @@ export const CONFIG = {
         enabled: true,
         minUseful: 1,            // "useful" = destroys, moves down/sideways or plugs at least this many blocks
         unusableWeight: 0.1,     // 0 = never serve an unusable powerup, 1 = no bias
-        unusableClassWeight: 0.1,
+        // Hard rules (always on while usability is enabled): a new class only opens when one
+        // of its pieces is usable, and a class only serves usable pieces until one of its
+        // powerups has done something, and again after one is wasted.
       },
 
       // Combos (two powerups in one) turn up mid-to-late game, built only from classes
@@ -215,7 +217,9 @@ export const CONFIG = {
       combos: {
         minDrop: 15,      // not before this many drops...
         minClasses: 2,    // ...and not until this many classes are in (they're built from those)
-        weight: 0.6,      // how often a combo is picked compared with a normal powerup
+        firstBoost: 25,   // until the first combo has turned up, combos are this much likelier,
+                          // so players see one soon after they open; then back to `weight`
+        weight: 0.5,      // how often a combo is picked compared with a normal powerup
       },
 
       // Helpfulness: each powerup has `help` (1–5) in its data. The worse you're doing
@@ -309,6 +313,8 @@ export const CONFIG = {
     largePieceLock: {
       quakePerCell: 0.03,
       minDifficulty: 4,
+      // the least shake a big piece makes when it lands (0-1, maxTrauma is 0.5)
+      minTraumaByDifficulty: { 4: 0.3, 5: 0.42 },
     },
 
     powerup: {

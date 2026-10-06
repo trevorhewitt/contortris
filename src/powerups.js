@@ -8,7 +8,10 @@
 export const POWERUP_TYPES = ["destroyer", "gravity", "expander", "acid", "blast", "goo", "phantom", "combo"];
 
 // Classes a combo can be built from, in the order their parts fire.
-export const COMBO_PART_TYPES = ["destroyer", "acid", "blast", "gravity", "expander"];
+export const COMBO_PART_TYPES = ["phantom", "destroyer", "acid", "blast", "gravity", "expander"];
+
+// Moves like a phantom (falls through blocks): a phantom, or a combo with a phantom part.
+export const isPhantomPowerup = (pu) => !!pu && (pu.type === "phantom" || !!pu.parts?.some(p => p.type === "phantom"));
 
 export const DEFAULT_EFFECT_TEXT = {
   destroyer: "destroys highlighted blocks",
@@ -26,13 +29,13 @@ export const DEFAULT_EFFECT_TEXT = {
 export const CLASS_OF = { acid: "destroyer" };
 export const classOf = (type) => CLASS_OF[type] ?? type;
 export const CLASS_INFO = {
-  destroyer: { name: "Dissolverz", text: "When it lands, every highlighted block dissolves into nothing." },
-  gravity: { name: "Gravitizerz", text: "Highlighted blocks fall until they hit something, squashing out air pockets." },
-  expander: { name: "Expanderz", text: "Fills every highlighted empty cell with stuff, plugging gaps." },
-  phantom: { name: "Phantomz", text: "Falls straight through other blocks and settles in the deepest gap it fits. You can rotate it on the way down." },
-  combo: { name: "Comboz", text: "Two powerups in one: each kind of highlight does its own thing, one after the other." },
+  destroyer: { name: "Dissolverz", text: "When it lands, every block in the highlighted area is destroyed." },
+  gravity: { name: "Gravitizerz", text: "When it lands, the blocks in the highlighted area drop down as far as they can, filling the gaps under them." },
+  expander: { name: "Expanderz", text: "When it lands, every empty cell in the highlighted area fills up with new blocks." },
+  phantom: { name: "Phantomz", text: "Falls straight through other blocks into the deepest gap it fits, and stays there. You can still move and rotate it." },
+  combo: { name: "Comboz", text: "Does more than one of these at once. Each kind of highlight shows what will happen there." },
   // switched off (CONFIG.assist.powerups.disabledTypes), kept for the data
-  blast: { name: "Blasts", text: "Throws the highlighted blocks outwards, then they fall back down somewhere new." },
+  blast: { name: "Blasts", text: "When it lands, the blocks in the highlighted area are thrown outwards and fall back down." },
   goo: { name: "Goo", text: "Melts when it lands and flows down into the lowest gaps it can reach." },
 };
 
@@ -143,7 +146,7 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
     // each part is a small powerup of its own (no goo / phantom / nested combos)
     parts = (Array.isArray(raw.parts) ? raw.parts : [])
       .filter(p => p && COMBO_PART_TYPES.includes(p.type))
-      .map(p => normalisePowerup({ ...p, consume: false, tier: raw.tier }, rotations, trim, `${id}/${p.type}`))
+      .map(p => normalisePowerup({ ...p, consume: false, tier: raw.tier, area: p.type === "phantom" ? undefined : p.area }, rotations, trim, `${id}/${p.type}`))
       .filter(Boolean)
       .sort((a, b) => COMBO_PART_TYPES.indexOf(a.type) - COMBO_PART_TYPES.indexOf(b.type));
     if (parts.length < 2) console.warn(`[${id}] a combo needs at least two parts.`);
@@ -179,7 +182,9 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
       ? raw.description.trim()
       : DEFAULT_EFFECT_TEXT[type],
     intro: typeof raw.intro === "string" ? raw.intro.trim() : "",
-    consume: (typeof raw.consume === "boolean") ? raw.consume : CONSUMES[type],
+    consume: (typeof raw.consume === "boolean") ? raw.consume
+      : (type === "combo" && Array.isArray(raw.parts) && raw.parts.some(p => p?.type === "phantom")) ? false
+      : CONSUMES[type],
     collapse: (type === "destroyer" || type === "acid") && raw.collapse === true,
     reach: Math.max(1, Math.round(Number(raw.reach) || 1)),
     push: Math.max(1, Number(raw.push) || 3),

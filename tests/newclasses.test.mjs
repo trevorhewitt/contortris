@@ -157,3 +157,22 @@ test("phantoms rotate, even while overlapping blocks", () => {
   assert.ok(tryRotate(state), "rotated inside the stack");
   assert.equal(state.active.rotIdx, 1);
 });
+
+test("combos actually turn up, and soon after two classes are in", () => {
+  const { shapes, powerups } = loadShapes(SHAPES);
+  let games = 0, withCombo = 0;
+  for (const seed of [1, 2, 3, 4, 5, 6]) {
+    const state = createGameState(shapes, powerups, { rng: makeRng(seed * 97) });
+    let first = null, i = 0;
+    on(state, (t, d) => { if (t === "spawn") { i++; if (d.shape.powerup?.type === "combo" && first == null) first = i; } });
+    startRun(state, "normal");
+    for (let k = 0; k < 120 && !state.gameOver; k++) {
+      hardDropAndLock(state);
+      for (let j = 0; j < 200 && state.effect; j++) updateGame(state, 16);
+      state.board = state.board.map(r => r.fill(null));
+    }
+    games++;
+    if (first != null && first <= 80) withCombo++;
+  }
+  assert.ok(withCombo >= games - 1, `combo within 80 pieces in ${withCombo}/${games} games`);
+});

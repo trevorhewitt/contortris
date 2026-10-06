@@ -9,7 +9,7 @@
 
 import { CONFIG } from "../config.js";
 import { clamp01, lerp, sampleByWeight } from "./util.js";
-import { analyseBoard, resolvePowerupArea, computeEffect, phantomLandingY } from "./powerups.js";
+import { analyseBoard, resolvePowerupArea, computeEffect, phantomLandingY, isPhantomPowerup } from "./powerups.js";
 
 const DEBUG_LINK = false; // verbose console logging for linked shapes
 
@@ -47,6 +47,10 @@ export function initPieceSelectionState(state) {
       classes: [],             // powerup classes unlocked so far, in order
       shown: new Set(),        // ids that have turned up this game
       shownClasses: new Set(), // classes whose intro has been shown
+      // "learning" classes: until a powerup of the class has been used successfully, and
+      // again after one is wasted (did nothing), only usable ones of that class are served
+      usedOk: new Set(),       // classes used successfully at least once
+      relearn: new Set(),      // classes whose last powerup did nothing
       sinceClass: 0,           // powerups served since the last new class
       classAtDrop: 0,          // dropIndex when the last class came in
     },
@@ -472,6 +476,11 @@ export function powerupUsefulness(board, shape) {
         if (best >= 4) return best;
         continue;
       }
+      if (isPhantomPowerup(pu)) { // a combo with a phantom part lands in the deepest gap, then fires
+        const deep = phantomLandingY(board, x, mat);
+        if (deep == null) continue;
+        y = deep;
+      }
       const copy = board.map(row => row.slice());
       const placed = [];
       for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) {
@@ -551,19 +560,35 @@ function maybeSelectPowerup(state, danger01) {
       || ps.sinceClass >= (prog.newClassEvery ?? 5)
       || sel.dropIndex - ps.classAtDrop >= (prog.newClassAfterDrops ?? Infinity);
     if (due) unlockNextClass(state, candidates);
-    candidates = candidates.filter(p => ps.classes.includes(p.powerup.cls));
+    // (combos are let through here and checked below: they open on their own)
+    candidates = candidates.filter(p => p.powerup.cls === "combo" || ps.classes.includes(p.powerup.cls));
   }
 
   // Combos: mid-to-late game, and only built from classes that are already in.
   const combos = cfg.combos ?? {};
+  // (counted from classes the player has actually met, not just unlocked)
+  const met = [...ps.shownClasses].filter(c => c !== "combo");
   const combosOpen = sel.dropIndex >= (combos.minDrop ?? 0) &&
-    (!prog?.enabled || ps.classes.filter(c => c !== "combo").length >= (combos.minClasses ?? 2));
+    (!prog?.enabled || met.length >= (combos.minClasses ?? 2));
   candidates = candidates.filter(p => p.powerup.type !== "combo" ||
-    (combosOpen && (!prog?.enabled || p.powerup.parts.every(part => ps.classes.includes(part.cls)))));
+    (combosOpen && (!prog?.enabled || p.powerup.parts.every(part => ps.shownClasses.has(part.cls)))));
   if (prog?.enabled && combosOpen && !ps.classes.includes("combo") && candidates.some(p => p.powerup.type === "combo")) {
     ps.classes.push("combo");
+    ps.comboOpenedAt = ps.count;
   }
   if (!candidates.length) return null;
+
+  // usable-now check (CONFIG...usability)
+  const use = cfg.usability ?? {};
+  const useful = new Map();
+  if (use.enabled !== false) for (const p of candidates) useful.set(p.id, powerupUsefulnessCached(state, p) >= (use.minUseful ?? 1));
+  ps.lastUsable = useful.size ? [...useful.values()].filter(Boolean).length + "/" + useful.size : "–";
+  // hard rule: a class still being learned only ever serves usable pieces
+  if (useful.size) {
+    const learning = (cls) => !ps.usedOk.has(cls) || ps.relearn.has(cls);
+    candidates = candidates.filter(p => !learning(p.powerup.cls) || useful.get(p.id));
+    if (!candidates.length) return null;
+  }
 
   const need = cfg.need ?? {};
   const st = cfg.struggle ?? {};
@@ -571,11 +596,8 @@ function maybeSelectPowerup(state, danger01) {
   const lucky = state.rng() < (st.luckyChance ?? 0);
   const power = lucky ? (st.helpPower ?? 2) : lerp(st.calmHelpPower ?? 0, st.helpPower ?? 2, sel.struggle);
 
-  // usable-now bias (CONFIG...usability): useless powerups are much rarer, but not impossible
-  const use = cfg.usability ?? {};
-  const useful = new Map();
-  if (use.enabled !== false) for (const p of candidates) useful.set(p.id, powerupUsefulnessCached(state, p) >= (use.minUseful ?? 1));
-  ps.lastUsable = useful.size ? [...useful.values()].filter(Boolean).length + "/" + useful.size : "–";
+  // the first combo comes soon after they open, so everyone gets to see one
+  const firstComboDue = !ps.shownClasses.has("combo") && ps.comboOpenedAt != null;
 
   ps.sinceClass++;
   return sampleByWeight(candidates, (p) => {
@@ -584,7 +606,7 @@ function maybeSelectPowerup(state, danger01) {
     const n = (sideways ? need.gravitySideways : null) ?? need[p.powerup.type] ?? { base: 1 };
     const needW = (n.base ?? 1) + (n.holes ?? 0) * holes01 + (n.danger ?? 0) * danger01;
     const helpW = Math.pow((p.powerup.help ?? 3) / 3, power);
-    const comboW = p.powerup.type === "combo" ? (combos.weight ?? 1) : 1;
+    const comboW = p.powerup.type === "combo" ? (firstComboDue ? (combos.firstBoost ?? 1) : (combos.weight ?? 1)) : 1;
     // a class's pieces share its weight, so big classes don't crowd out small ones
     const classSize = candidates.filter(c => c.powerup.cls === p.powerup.cls).length;
     return (p.frequency ?? 1) * needW * helpW * comboW * usableW * varietyMultiplier(sel, p) * (6 / (classSize + 5));
@@ -604,12 +626,13 @@ function unlockNextClass(state, pool) {
   }
   // prefer a class that has something usable on the board right now
   const use = CONFIG.assist.powerups.usability ?? {};
-  const classW = (t) => {
-    if (use.enabled === false) return 1;
-    const anyUsable = pool.some(p => p.powerup.cls === t && powerupUsefulnessCached(state, p) >= (use.minUseful ?? 1));
-    return anyUsable ? 1 : (use.unusableClassWeight ?? 0.1);
-  };
-  const next = sampleByWeight(remaining, classW, state.rng);
+  // the first piece of a new class must be usable: only open a class that has a usable
+  // piece on the board right now (otherwise wait and try again next time)
+  if (use.enabled !== false) {
+    remaining = remaining.filter(t => pool.some(p => p.powerup.cls === t && powerupUsefulnessCached(state, p) >= (use.minUseful ?? 1)));
+    if (!remaining.length) return null;
+  }
+  const next = remaining[Math.floor(state.rng() * remaining.length)];
   ps.classes.push(next);
   ps.sinceClass = 0;
   ps.classAtDrop = state.pieceSel.dropIndex;

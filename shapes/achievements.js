@@ -6400,7 +6400,7 @@ export const ACHIEVEMENTS = [
   {
     id: "extreme_level_5",
     name: "Extreme Survivor",
-    description: "Reach level 5 in Extreme mode.",
+    description: "Destroy 15 rows in one game of Extreme mode.",
     icon: [
         [
           "",
@@ -6573,8 +6573,8 @@ export const ACHIEVEMENTS = [
       ],
     mode: "extreme",
     trigger: {
-        "type": "level",
-        "value": 5
+        "type": "rowsDestroyed",
+        "count": 15
       },
   },
   {
@@ -12964,7 +12964,7 @@ export const ACHIEVEMENTS = [
   {
     id: "easy_level_5",
     name: "Training Wheels",
-    description: "Reach level 5 in Easy mode.",
+    description: "Destroy 15 rows in one game of Easy mode.",
     icon: [
         [
           "",
@@ -13137,8 +13137,8 @@ export const ACHIEVEMENTS = [
       ],
     mode: "easy",
     trigger: {
-        "type": "level",
-        "value": 5
+        "type": "rowsDestroyed",
+        "count": 15
       },
   },
   {

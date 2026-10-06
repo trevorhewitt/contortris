@@ -6,7 +6,7 @@ import { CONFIG } from "../config.js";
 import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour } from "./util.js";
 import { getShapePaint } from "./shapes.js";
 import { getActiveMatrix, getGhostDropY } from "./game.js";
-import { resolvePowerupArea, computeEffect } from "./powerups.js";
+import { resolvePowerupArea, computeEffect, isPhantomPowerup } from "./powerups.js";
 
 const DEFAULT_STYLE = {};
 
@@ -223,7 +223,11 @@ export function drawIcon(ctx, grid, x, y, sizePx) {
 //   x, y: board cell coords (for the rainbow); dist: distance from the powerup (ripple)
 //   effective: does the effect change this cell (strong) or not (faint)
 // Which animation each class uses for its highlighted cells.
-const MARK_STYLE = { destroyer: "shrink", acid: "shrink", expander: "grow", goo: "grow", phantom: "grow", gravity: "line", blast: "out" };
+// Each class has a mark you can tell apart in a single frame:
+//   shrink (Dissolverz): squares closing in; line (Gravitizerz): falling streaks;
+//   burst (Expanderz): + and x rays shooting out of each cell's centre;
+//   ghost (Phantomz): faint diagonal stripes drifting past, flickering in and out.
+const MARK_STYLE = { destroyer: "shrink", acid: "shrink", expander: "burst", goo: "burst", phantom: "ghost", gravity: "line", blast: "out" };
 
 export function drawPowerupMark(ctx, { type, direction }, px, py, cell, now, x, y, dist, effective, intensity = 1, centre = null) {
   const o = CONFIG.fx.powerup.overlay;
@@ -261,6 +265,42 @@ export function drawPowerupMark(ctx, { type, direction }, px, py, cell, now, x, 
     ctx.lineTo(cxp + vx * cell * 0.15, cyp + vy * cell * 0.15);
     ctx.stroke();
     ctx.globalAlpha = 1;
+  } else if (style === "burst") {
+    // 8 rays (+ and x) growing out from the centre of the cell, rippling out from the powerup
+    const p = frac(cycle - dist * o.ripplePerCell);
+    const cx = px + cell / 2, cy = py + cell / 2;
+    // rays are always at least a third of the cell long, so a single frame reads as a star
+    const r0 = cell * 0.1, r1 = cell * (0.3 + 0.22 * p);
+    ctx.globalAlpha *= p > 0.8 ? 0.4 + 0.6 * (1 - p) / 0.2 : 1;
+    ctx.lineWidth = Math.max(1.5, cell / 7);
+    ctx.beginPath();
+    for (let k = 0; k < 8; k++) {
+      const a = k * Math.PI / 4;
+      const diag = k % 2 ? 0.8 : 1; // diagonals a touch shorter so they stay inside the cell
+      ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+      ctx.lineTo(cx + Math.cos(a) * r1 * diag, cy + Math.sin(a) * r1 * diag);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  } else if (style === "ghost") {
+    // faint diagonal stripes drifting through the cell, the whole thing flickering like
+    // it's only half there
+    const flicker = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(now / 260 + hash01(x * 5 + y * 11) * 6.28));
+    const gap = cell / 3;
+    const off = frac(cycle * 1.5) * gap;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(px, py, cell, cell);
+    ctx.clip();
+    ctx.globalAlpha *= flicker;
+    ctx.lineWidth = Math.max(1, cell / 10);
+    ctx.beginPath();
+    for (let d = -cell + off; d < cell * 2; d += gap) {
+      ctx.moveTo(px + d, py + cell);
+      ctx.lineTo(px + d + cell, py);
+    }
+    ctx.stroke();
+    ctx.restore();
   } else if (style === "shrink") {
     // squares shrink, rippling in towards the powerup
     const p = frac(cycle + dist * o.ripplePerCell);
@@ -810,7 +850,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
         });
       }
     }
-    const phantom = shape.powerup?.type === "phantom";
+    const phantom = isPhantomPowerup(shape.powerup);
     if (phantom) bctx.globalAlpha = 0.7;
     drawBlockList(bctx, list);
     bctx.globalAlpha = 1;
@@ -914,7 +954,9 @@ export function createRenderer(boardCanvas, nextCanvas) {
     const board = state.board;
     bctx.save();
     // combos: each part draws its own kind of highlight over its own area
-    const layers = pu.parts && area.parts ? pu.parts.map((p, k) => [p, area.parts[k]]) : [[pu, area]];
+    const layers = pu.parts && area.parts
+      ? pu.parts.map((p, k) => [p, p.type === "phantom" ? { indices: [...pieceCells] } : area.parts[k]])
+      : [[pu, area]];
     for (const [lp, la] of layers) {
       for (const i of la.indices) {
         const x = i % cols, y = (i / cols) | 0;
