@@ -51,6 +51,8 @@ export function initPieceSelectionState(state) {
       // again after one is wasted (did nothing), only usable ones of that class are served
       usedOk: new Set(),       // classes used successfully at least once
       relearn: new Set(),      // classes whose last powerup did nothing
+      lastIntroDrop: null,     // dropIndex of the last powerup that brought up an intro
+      pendingIntro: new Set(), // classes picked for their intro, not spawned yet
       sinceClass: 0,           // powerups served since the last new class
       classAtDrop: 0,          // dropIndex when the last class came in
     },
@@ -596,11 +598,25 @@ function maybeSelectPowerup(state, danger01) {
   const lucky = state.rng() < (st.luckyChance ?? 0);
   const power = lucky ? (st.helpPower ?? 2) : lerp(st.calmHelpPower ?? 0, st.helpPower ?? 2, sel.struggle);
 
+  // Intros: a powerup of a class not met yet brings up its intro screen. Keep those spaced
+  // out (they interrupt the game), and always introduce a class with a starter piece.
+  const minGap = prog?.minDropsBetweenIntros ?? 0;
+  const introducing = (p) => !ps.shownClasses.has(p.powerup.cls) && !ps.pendingIntro.has(p.powerup.cls);
+  if (ps.lastIntroDrop != null && sel.dropIndex - ps.lastIntroDrop < minGap) {
+    candidates = candidates.filter(p => !introducing(p));
+  }
+  // (strict: a class that has starters waits until one of them is usable)
+  // (combo starters only count once every class they're built from has been met)
+  const hasStarter = new Set(state.powerups.filter(p => p.powerup.starter && (p.frequency ?? 1) > 0 && !dev?.disabled?.has(p.id)
+    && (!p.powerup.parts || p.powerup.parts.every(part => ps.shownClasses.has(part.cls)))).map(p => p.powerup.cls));
+  candidates = candidates.filter(p => !introducing(p) || p.powerup.starter || !hasStarter.has(p.powerup.cls));
+  if (!candidates.length) return null;
+
   // the first combo comes soon after they open, so everyone gets to see one
   const firstComboDue = !ps.shownClasses.has("combo") && ps.comboOpenedAt != null;
 
   ps.sinceClass++;
-  return sampleByWeight(candidates, (p) => {
+  const chosen = sampleByWeight(candidates, (p) => {
     const usableW = useful.size && !useful.get(p.id) ? (use.unusableWeight ?? 0.1) : 1;
     const sideways = p.powerup.type === "gravity" && (p.powerup.direction === "left" || p.powerup.direction === "right");
     const n = (sideways ? need.gravitySideways : null) ?? need[p.powerup.type] ?? { base: 1 };
@@ -611,6 +627,8 @@ function maybeSelectPowerup(state, danger01) {
     const classSize = candidates.filter(c => c.powerup.cls === p.powerup.cls).length;
     return (p.frequency ?? 1) * needW * helpW * comboW * usableW * varietyMultiplier(sel, p) * (6 / (classSize + 5));
   }, state.rng);
+  if (chosen && introducing(chosen)) { ps.lastIntroDrop = sel.dropIndex; ps.pendingIntro.add(chosen.powerup.cls); }
+  return chosen;
 }
 
 // Open the next powerup class: the first is random from progression.firstClassPool,

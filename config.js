@@ -194,8 +194,11 @@ export const CONFIG = {
         // the first class is picked at random from these (the simpler ones), so every
         // game starts differently
         firstClassPool: ["destroyer", "gravity", "expander"],
-        newClassEvery: 5,          // after this many powerups, the next one opens a new class
-        newClassAfterDrops: 28,    // ...or after this many drops since the last new class
+        newClassEvery: 6,          // after this many powerups, the next one opens a new class
+        newClassAfterDrops: 32,    // ...or after this many drops since the last new class
+        // intro screens interrupt the game: at least this many pieces between two of them
+        // (new classes and the first combo). The first of a class is always a `starter`.
+        minDropsBetweenIntros: 18,
       },
 
       // Usability: before picking, every candidate powerup is tried on the current board.

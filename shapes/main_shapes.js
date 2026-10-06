@@ -42,6 +42,8 @@
  *   push: 3,                  blast only: how far blocks get thrown (cells, default 3)
  *   volume: 1.5,              goo only: how many cells it fills, × its own block count (default 1)
  *   intro: "...",             optional: a line or two for the powerup's intro screen
+ *   starter: true,            optional: a good, simple first example of its class. The first
+ *                             piece of each class in a game is always a starter (if one is usable).
  *   help: 1-5,                how helpful it is (1 = barely, 5 = a lifesaver). The more the
  *                             player is struggling, the more the helpful ones are picked
  *                             (CONFIG.assist.powerups.struggle). Default from tier.
@@ -2419,7 +2421,8 @@ export const SHAPES = [
             "||||"
           ]
         },
-        "help": 4
+        "help": 4,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -3739,7 +3742,8 @@ export const SHAPES = [
           ]
         },
         "intro": "Slices its whole row clean off, and everything above drops down. It is very cool and knows it.",
-        "help": 4
+        "help": 4,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -3835,7 +3839,8 @@ export const SHAPES = [
           ]
         },
         "intro": "Puffs up and fills every empty cell around it. Don't get it in your hair.",
-        "help": 3
+        "help": 3,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -3895,7 +3900,8 @@ export const SHAPES = [
           ]
         },
         "intro": "Vaporises every block in its whole column, top to bottom. Funded by a billionaire, aimed by nobody.",
-        "help": 3
+        "help": 3,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -3983,7 +3989,8 @@ export const SHAPES = [
           ]
         },
         "intro": "Mows the whole row underneath it clean away, and everything above drops down. Nobody is pushing it.",
-        "help": 4
+        "help": 4,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -4049,7 +4056,8 @@ export const SHAPES = [
         },
         "collapse": true,
         "intro": "Blows away its whole row plus a few blocks above and below. It knows, and it is not okay.",
-        "help": 4.5
+        "help": 4.5,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -4077,7 +4085,8 @@ export const SHAPES = [
           ]
         },
         "intro": "So heavy that the four columns under it collapse, squashing out air pockets. Nobody has finished it.",
-        "help": 3.5
+        "help": 3.5,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -4105,7 +4114,8 @@ export const SHAPES = [
           ]
         },
         "intro": "Gravity is discovered all over again: five columns collapse and the air pockets disappear.",
-        "help": 3
+        "help": 3,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -4281,7 +4291,8 @@ export const SHAPES = [
           ]
         },
         "intro": "Floods the entire row underneath it, which usually means that row is done. Call a plumber.",
-        "help": 3
+        "help": 3,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -4479,7 +4490,8 @@ export const SHAPES = [
           ]
         },
         "intro": "Pops into a puff of popcorn that fills the empty cells around it. You can't stop at one.",
-        "help": 2.5
+        "help": 2.5,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -4670,7 +4682,8 @@ export const SHAPES = [
           ]
         },
         "intro": "Escapes and fills the empty cells around and below it. It has a name now and it is Gerald.",
-        "help": 3
+        "help": 3,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -5795,7 +5808,8 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "It floats straight down through your blocks and settles into the deepest gap it fits, where it stays. It just wanted to help.",
-        "help": 2
+        "help": 2,
+        "starter": true
       },
     rotation: {
         "mode": "any"
@@ -5832,7 +5846,8 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "Lost in the dryer, now at peace. It drifts through your blocks and lies down in the deepest gap it fits. Its partner is still out there.",
-        "help": 2.5
+        "help": 2.5,
+        "starter": true
       },
     rotation: {
         "mode": "any"
@@ -6045,7 +6060,8 @@ export const SHAPES = [
             "|||||"
           ]
         },
-        "help": 3.5
+        "help": 3.5,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -8092,7 +8108,8 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "So hot it went straight through the stack. It falls through blocks into the deepest gap it fits and stays there, still burning.",
-        "help": 2.5
+        "help": 2.5,
+        "starter": true
       },
     rotation: {
         "mode": "any"
@@ -8110,7 +8127,8 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "Floats down through the blocks and settles into the deepest gap it fits. The tea is still hot. Nobody poured it.",
-        "help": 3
+        "help": 3,
+        "starter": true
       },
     rotation: {
         "mode": "any"
@@ -8309,7 +8327,8 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 5
+        "help": 5,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -9090,7 +9109,8 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 4
+        "help": 4,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -9127,7 +9147,8 @@ export const SHAPES = [
             "###"
           ]
         },
-        "help": 3.5
+        "help": 3.5,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -9227,7 +9248,8 @@ export const SHAPES = [
             ".#####."
           ]
         },
-        "help": 3
+        "help": 3,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -10383,7 +10405,8 @@ export const SHAPES = [
         "type": "phantom",
         "tier": 1,
         "intro": "Passes straight through your blocks and stops in the deepest gap it fits, where it stays. Trillions of them go through you every second. This one finally sat down.",
-        "help": 2.5
+        "help": 2.5,
+        "starter": true
       },
     rotation: {
         "mode": "any"
@@ -10737,7 +10760,8 @@ export const SHAPES = [
             "##"
           ]
         },
-        "help": 3
+        "help": 3,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -10938,7 +10962,8 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 3.5
+        "help": 3.5,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -11051,7 +11076,8 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 3.5
+        "help": 3.5,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -11165,7 +11191,8 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 3
+        "help": 3,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -11217,7 +11244,8 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 3.5
+        "help": 3.5,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -11266,7 +11294,8 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 3.5
+        "help": 3.5,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -11697,7 +11726,8 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 4
+        "help": 4,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -11771,7 +11801,8 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 3
+        "help": 3,
+        "starter": true
       },
     rotation: {
         "mode": "none"
@@ -11875,7 +11906,8 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 2.5
+        "help": 2.5,
+        "starter": true
       },
     rotation: {
         "mode": "any"

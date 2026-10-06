@@ -176,6 +176,7 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
   return {
     type,
     cls: classOf(type), // the class the player sees (acid -> destroyer)
+    starter: raw.starter === true, // may be the first of its class in a game
     direction,
     tier,
     description: (typeof raw.description === "string" && raw.description.trim())
