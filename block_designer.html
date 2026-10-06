@@ -396,7 +396,7 @@
     </div>
 
     <div class="card">
-      <h2>Tools <span class="pill mono">D B F E I M</span></h2>
+      <h2>Tools <span class="pill mono">D B F E I M S</span></h2>
       <div class="row tools">
         <button class="toolBtn active" data-tool="draw" title="Draw pixels (D). Right-click erases.">Draw</button>
         <button class="toolBtn" data-tool="brush" title="Paint a whole block (B). Right-click erases the block.">Brush</button>
@@ -404,7 +404,8 @@
         <button class="toolBtn" data-tool="erase" title="Erase pixels (E)">Erase</button>
         <button class="toolBtn" data-tool="dropper" title="Pick a colour (I)">Dropper</button>
         <button class="toolBtn" data-tool="mask" title="Toggle filled/empty blocks (M). Drag to paint; right-click empties.">Mask</button>
-        <button id="pasteBtn" class="primary" title="Paste image from clipboard onto active layer (Ctrl/Cmd+V)">Paste</button>
+        <button class="toolBtn" data-tool="select" title="Select pixels (S). Drag a rectangle; drag inside it to move. Esc deselects.">Select</button>
+        <button id="pasteBtn" class="primary" title="Paste an image from the system clipboard onto the active layer, scaled to the canvas (Ctrl/Cmd+V with an image copied)">Paste image</button>
       </div>
       <div class="row">
         <label>Colour <input id="colour" type="color" value="#ff7300"></label>
@@ -412,6 +413,24 @@
         <button id="clearActive" class="danger small">Clear active layer</button>
       </div>
       <div id="palette" class="palette" title="Colours used in the art"></div>
+
+      <div class="sep"></div>
+      <h3 class="row" style="justify-content:space-between;">Selection <span><span id="selInfo" class="pill mono">none</span> <span id="clipInfo" class="pill mono" title="Pixel clipboard (kept when you load another block)">clip —</span></span></h3>
+      <div class="row">
+        <button id="selCopy" class="small" title="Copy selected pixels (Ctrl/Cmd+C)">Copy</button>
+        <button id="selCut" class="small" title="Cut selected pixels (Ctrl/Cmd+X)">Cut</button>
+        <button id="selPaste" class="small" title="Paste copied pixels as a floating selection (Ctrl/Cmd+V). Drag it, then Enter or click outside to place; Esc cancels.">Paste</button>
+        <button id="selDelete" class="small danger" title="Clear selected pixels (Delete / Backspace)">Delete</button>
+        <button id="selAll" class="small" title="Select all (Ctrl/Cmd+A)">All</button>
+        <button id="selNone" class="small" title="Deselect / place (Esc, Enter)">None</button>
+      </div>
+      <div class="row">
+        <button id="selFlipH" class="small" title="Flip selection horizontally">Flip H</button>
+        <button id="selFlipV" class="small" title="Flip selection vertically">Flip V</button>
+        <label title="Select, copy, move and delete on every layer instead of only the active one"><input id="selAllLayers" type="checkbox"> All layers</label>
+        <label title="Moved / pasted transparent pixels overwrite what is underneath"><input id="selOpaque" type="checkbox"> Paste transparent</label>
+      </div>
+      <div class="hint" style="margin-top:6px;">Arrows nudge 1 px, Shift+arrows one block. Enter or click outside places a paste, Esc cancels it.</div>
 
       <div class="sep"></div>
       <h3>Block mask</h3>
@@ -460,6 +479,7 @@
           <div id="canvasStage" class="canvasStage">
             <canvas id="renderCanvas" class="renderCanvas"></canvas>
             <canvas id="overlayCanvas" class="overlayCanvas"></canvas>
+            <canvas id="selCanvas" class="overlayCanvas"></canvas>
           </div>
         </div>
         <div id="solidBanner" class="modeBanner hidden">Solid colour mode: filled blocks show (and save as) the current colour. Art layers are kept but not saved. Mask + dropper still work.</div>
@@ -504,6 +524,7 @@
               <div class="field top"><span>Intro</span><textarea id="puIntro" class="desc" rows="3" spellcheck="true" placeholder="Optional: a line or two for the powerup's intro screen"></textarea></div>
               <div class="field"><span></span><label><input id="puConsume" type="checkbox"> Consume <span id="puConsumeNote" class="pill">default</span></label></div>
               <div class="field" id="puCollapseField"><span></span><label title="Rows wiped wall-to-wall collapse like a line clear"><input id="puCollapse" type="checkbox"> Collapse wiped rows</label></div>
+              <div class="field"><span></span><label title="A good, simple first example of its class: the first piece of each class in a game is always a starter (saved as starter: true)"><input id="puStarter" type="checkbox"> Starter (can be the first of its class)</label></div>
             </div>
 
             <div class="box hidden" id="puPartsBox">
@@ -959,10 +980,10 @@
     { key: "push", type: "blast", def: 3, min: 1, int: false },
     { key: "volume", type: "goo", def: 1, min: 0.1, int: false },
   ];
-  const defaultPu = () => ({ type: "destroyer", direction: "down", tier: 1, description: "", intro: "", help: null, consume: null, collapse: false, reach: null, push: null, volume: null, parts: [], partSel: 0, extras: {} });
+  const defaultPu = () => ({ type: "destroyer", direction: "down", tier: 1, description: "", intro: "", help: null, consume: null, collapse: false, starter: false, reach: null, push: null, volume: null, parts: [], partSel: 0, extras: {} });
   // Keys the editor manages itself; everything else on a loaded shape is preserved as-is.
   const MANAGED_KEYS = ["id", "name", "grid", "color", "powerup", "difficulty", "rotation", "frequency", "nextShapes", "nextShapeProbs", "tags", "zones"];
-  const MANAGED_PU_KEYS = ["type", "direction", "tier", "description", "intro", "help", "parts", "area", "fill", "consume", "collapse"];
+  const MANAGED_PU_KEYS = ["type", "direction", "tier", "description", "intro", "help", "parts", "area", "fill", "consume", "collapse", "starter"];
   // Keys a combo part's editor manages (the rest of a part is kept as written)
   const MANAGED_PART_KEYS = ["type", "area", "direction", "reach", "push", "fill", "collapse"];
   // Serialisation key order (rest sorted alphabetically, like shape_encoder): ... nextShapeProbs, nextShapes, tags, zones
@@ -1241,6 +1262,8 @@
     layers: [],                    // layers[0] = frontmost; data = Uint32Array ARGB
     mask: new Uint8Array(4).fill(1), // blocksW*blocksH, 1 = filled ("X")
     colourMode: "pixel",           // "pixel" | "solid"
+    // pixel selection: null | { x, y, w, h, float } (see "Pixel selection" below)
+    sel: null,
 
     // shape metadata
     kind: "regular",               // "regular" | "powerup"
@@ -1320,6 +1343,7 @@
       zones: state.zones.list.map(z => ({ ...z, cells: { ...z.cells } })),
       zoneActive: state.zones.active,
       parts: state.pu.parts.map(clonePart), partSel: state.pu.partSel,
+      sel: cloneSel(state.sel),
     };
   }
   function restoreSnapshot(s){
@@ -1334,6 +1358,7 @@
     state.pu.partSel = clamp(s.partSel, 0, Math.max(0, state.pu.parts.length - 1));
     state.zones.list = s.zones.map(z => ({ ...z, cells: { ...z.cells } }));
     state.zones.active = clamp(s.zoneActive, 0, Math.max(0, state.zones.list.length - 1));
+    state.sel = cloneSel(s.sel); selPtr.mode = null;
     syncAllUI();
   }
   function beginAction(){
@@ -1377,6 +1402,7 @@
   }
   function resetHistory(){
     hist.undo.length = 0; hist.redo.length = 0; hist.pending = null; hist.changed = false;
+    state.sel = null; selPtr.mode = null; // a selection belongs to the art it was made on (the clipboard survives)
     updateHistUI();
   }
   function updateHistUI(){
@@ -1550,6 +1576,8 @@
     el.renderCanvas.style.height = (H * z) + "px";
     if (el.overlayCanvas.width !== W * z) el.overlayCanvas.width = W * z;
     if (el.overlayCanvas.height !== H * z) el.overlayCanvas.height = H * z;
+    if (el.selCanvas.width !== W * z) el.selCanvas.width = W * z;
+    if (el.selCanvas.height !== H * z) el.selCanvas.height = H * z;
     // checkerboard behind transparent pixels
     el.canvasStage.style.background = `repeating-conic-gradient(#151515 0 25%, #0b0b0b 0 50%) 0 0 / ${z * 2}px ${z * 2}px`;
 
@@ -1589,6 +1617,7 @@
       octx.restore();
     }
     el.solidBanner.classList.toggle("hidden", state.colourMode !== "solid");
+    drawSelOverlay();
   }
 
   function rebuildPieceCanvas(flatAll){
@@ -1798,6 +1827,7 @@
   el.renderCanvas.addEventListener("pointerdown", (evt) => {
     evt.preventDefault();
     blurFields();
+    if (state.tool === "select"){ selPointerDown(evt); return; }
     const p = artPixelFromEvent(evt);
     if (!p) return;
     let tool = state.tool;
@@ -1850,6 +1880,390 @@
   el.renderCanvas.addEventListener("pointercancel", endArtStroke);
   el.renderCanvas.addEventListener("pointerleave", () => { el.ptrLabel.textContent = "—"; });
   el.renderCanvas.addEventListener("contextmenu", (e) => e.preventDefault());
+
+  // ============================================================
+  // Pixel selection (Select tool): rectangle select, move, copy / cut / paste, flip, nudge
+  // state.sel = { x, y, w, h, float } in native pixels. float is null for a plain selection, or, once the
+  // pixels are lifted (moved, flipped, nudged, pasted):
+  //   { planes:  [{ id, data }]  the floating pixels (w*h each), one per layer they came from / go to,
+  //     base:    [{ id, data }]  each of those layers without the floating pixels,
+  //     stamped: [{ id, data }]  each layer as last written (= base + planes at x,y),
+  //     paste:   true while it is an unplaced paste (Esc cancels it) }
+  // The layers always hold the stamped result, so saving / exporting never sees the float. If something
+  // else edits those layers, the float is dropped (its pixels stay where they are). Arrays in a selection
+  // are never mutated, so undo snapshots share them.
+  // ============================================================
+  const SEL_CLIP_KEY = "extris_block_designer_pixel_clipboard";
+  const selOpts = { allLayers: false, opaque: false };
+  const selPtr = { mode: null, start: null, origin: null, moved: false };
+  const sctx = el.selCanvas.getContext("2d");
+  let pixelClip = loadPixelClip();         // { w, h, x, y, multi, planes } — survives loading another block
+  let clipMarker = null, clipMarkerOk = false; // text put on the system clipboard by our copy
+  let selNudging = false, antsPhase = 0, selUIKey = "", selPasteKey = false;
+
+  function cloneSel(s){ return s ? { ...s, float: s.float ? { ...s.float } : null } : null; }
+  const layerById = (id) => state.layers.find(L => L.id === id) || null;
+  const selLayerIds = () => selOpts.allLayers ? state.layers.map(L => L.id) : [state.activeLayerId];
+  const isClear = (u) => ((u >>> 24) & 255) === 0;
+  const inSel = (s, p) => !!s && p.x >= s.x && p.y >= s.y && p.x < s.x + s.w && p.y < s.y + s.h;
+  function sameData(a, b){
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+    return true;
+  }
+
+  // The current selection, after dropping a float the layers no longer match and clipping a plain
+  // selection to the canvas (null if nothing is left)
+  function checkSel(){
+    const s = state.sel;
+    if (!s) return null;
+    if (s.float){
+      const n = state.pxW * state.pxH;
+      const ok = s.float.stamped.every(st => { const L = layerById(st.id); return L && L.data.length === n && sameData(L.data, st.data); });
+      if (!ok) s.float = null;
+    }
+    if (!s.float){
+      const x0 = Math.max(0, s.x), y0 = Math.max(0, s.y);
+      const x1 = Math.min(state.pxW, s.x + s.w), y1 = Math.min(state.pxH, s.y + s.h);
+      if (x1 <= x0 || y1 <= y0){ state.sel = null; return null; }
+      s.x = x0; s.y = y0; s.w = x1 - x0; s.h = y1 - y0;
+    }
+    return s;
+  }
+  function readRect(L, x, y, w, h){
+    const out = new Uint32Array(w * h), W = state.pxW, H = state.pxH;
+    for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++){
+      const sx = x + xx, sy = y + yy;
+      if (sx >= 0 && sy >= 0 && sx < W && sy < H) out[yy * w + xx] = L.data[sy * W + sx];
+    }
+    return out;
+  }
+  // Write base + floating pixels into the layers. Transparent floating pixels keep what is underneath
+  // unless "Paste transparent" is on. Returns true if any layer changed.
+  function stampSel(){
+    const s = state.sel, f = s && s.float;
+    if (!f) return false;
+    const W = state.pxW, H = state.pxH;
+    let changed = false;
+    const stamped = [];
+    f.base.forEach((b, i) => {
+      const L = layerById(b.id);
+      if (!L) return;
+      const nd = b.data.slice(), pl = f.planes[i].data;
+      for (let yy = 0; yy < s.h; yy++){
+        const ty = s.y + yy;
+        if (ty < 0 || ty >= H) continue;
+        for (let xx = 0; xx < s.w; xx++){
+          const tx = s.x + xx, u = pl[yy * s.w + xx];
+          if (tx < 0 || tx >= W || (!selOpts.opaque && isClear(u))) continue;
+          nd[ty * W + tx] = u;
+        }
+      }
+      if (!sameData(nd, L.data)) changed = true;
+      L.data = nd;
+      stamped.push({ id: b.id, data: nd.slice() });
+    });
+    f.stamped = stamped;
+    return changed;
+  }
+  // Lift the selected pixels into a float, leaving transparent pixels behind (what you see doesn't change)
+  function liftSel(){
+    const s = checkSel();
+    if (!s || s.float) return s;
+    const planes = [], base = [];
+    for (const id of selLayerIds()){
+      const L = layerById(id);
+      if (!L) continue;
+      planes.push({ id, data: readRect(L, s.x, s.y, s.w, s.h) });
+      const b = L.data.slice();
+      for (let yy = s.y; yy < s.y + s.h; yy++) b.fill(0, yy * state.pxW + s.x, yy * state.pxW + s.x + s.w);
+      base.push({ id, data: b });
+    }
+    s.float = { planes, base, stamped: [], paste: false };
+    stampSel();
+    return s;
+  }
+  function artEditable(){
+    if (state.colourMode !== "solid") return true;
+    toast("Solid colour mode: switch Colour mode to Pixel art to edit pixels.");
+    return false;
+  }
+  function showArtSelect(){
+    if (state.tool !== "select") setTool("select");
+    if (state.centreTab !== "art") setCentreTab("art");
+  }
+
+  // ---------- selection commands ----------
+  // Deselect = place: the layers already hold the floating pixels
+  function deselect(){
+    endSelNudge();
+    state.sel = null;
+    drawSelOverlay();
+  }
+  function selectAll(){
+    endSelNudge();
+    state.sel = { x: 0, y: 0, w: state.pxW, h: state.pxH, float: null };
+    showArtSelect();
+    drawSelOverlay();
+  }
+  // Put the layers back as they were before the float (cancels a paste, deletes moved pixels)
+  function restoreSelBase(f){
+    let changed = false;
+    for (const b of f.base){
+      const L = layerById(b.id);
+      if (!L) continue;
+      if (!sameData(L.data, b.data)) changed = true;
+      L.data = b.data.slice();
+    }
+    return changed;
+  }
+  function cancelPaste(){
+    const s = checkSel();
+    if (!s || !s.float || !s.float.paste) return deselect();
+    endSelNudge();
+    commit(() => { const ch = restoreSelBase(s.float); state.sel = null; return ch; });
+    drawSelOverlay();
+  }
+  function deleteSel(){
+    const s = checkSel();
+    if (!s){ toast("Nothing selected."); return; }
+    if (!artEditable()) return;
+    endSelNudge();
+    commit(() => {
+      if (s.float){ const ch = restoreSelBase(s.float); s.float = null; checkSel(); return ch; }
+      let changed = false;
+      const W = state.pxW;
+      for (const id of selLayerIds()){
+        const L = layerById(id);
+        if (!L) continue;
+        for (let y = s.y; y < s.y + s.h; y++) for (let x = s.x; x < s.x + s.w; x++){
+          const i = y * W + x;
+          if (L.data[i] !== 0){ L.data[i] = 0; changed = true; }
+        }
+      }
+      return changed;
+    });
+    drawSelOverlay();
+  }
+  function copySel(cut){
+    const s = checkSel();
+    if (!s){ toast("Nothing selected."); return false; }
+    const planes = s.float
+      ? s.float.planes.map(p => ({ id: p.id, data: p.data.slice() }))
+      : selLayerIds().map(layerById).filter(Boolean).map(L => ({ id: L.id, data: readRect(L, s.x, s.y, s.w, s.h) }));
+    if (!planes.length) return false;
+    pixelClip = { w: s.w, h: s.h, x: s.x, y: s.y, multi: planes.length > 1, planes };
+    savePixelClip();
+    clipMarker = `Extris block designer pixels ${s.w}x${s.h} #${Date.now().toString(36)}`;
+    clipMarkerOk = false;
+    const mark = clipMarker;
+    try { navigator.clipboard.writeText(mark).then(() => { if (clipMarker === mark) clipMarkerOk = true; }, () => {}); } catch {}
+    if (cut) deleteSel();
+    toast(`${cut ? "Cut" : "Copied"} ${s.w}×${s.h} px${planes.length > 1 ? " (all layers)" : ""}`);
+    drawSelOverlay();
+    return true;
+  }
+  // Top-left native pixel of the part of the canvas that is scrolled into view
+  function visibleTopLeft(){
+    const cr = el.renderCanvas.getBoundingClientRect(), wr = el.canvasWrap.getBoundingClientRect();
+    const z = cr.width / state.pxW || 1;
+    return {
+      x: clamp(Math.ceil((Math.max(wr.left, 0) - cr.left) / z), 0, state.pxW - 1),
+      y: clamp(Math.ceil((Math.max(wr.top, 0) - cr.top) / z), 0, state.pxH - 1),
+    };
+  }
+  // Paste the pixel clipboard as a floating selection: where it was copied if that fits, else at the
+  // top-left of the visible area. All-layer copies go back to their layers, others to the active layer.
+  function pasteSel(){
+    if (state.mode !== "blocks") return;
+    if (!pixelClip){ toast("Nothing copied yet: select pixels and press Ctrl/Cmd+C."); return; }
+    if (!artEditable()) return;
+    endSelNudge();
+    const c = pixelClip;
+    const targets = c.multi ? c.planes.filter(p => layerById(p.id)) : [{ id: state.activeLayerId, data: c.planes[0].data }];
+    if (!targets.length) return;
+    showArtSelect();
+    let x = c.x, y = c.y;
+    if (x < 0 || y < 0 || x + c.w > state.pxW || y + c.h > state.pxH){ const v = visibleTopLeft(); x = v.x; y = v.y; }
+    commit(() => {
+      state.sel = { x, y, w: c.w, h: c.h, float: {
+        planes: targets.map(p => ({ id: p.id, data: p.data.slice() })),
+        base: targets.map(p => ({ id: p.id, data: layerById(p.id).data.slice() })),
+        stamped: [], paste: true,
+      } };
+      stampSel();
+      return true;
+    });
+    drawSelOverlay();
+  }
+  function flipSel(horizontal){
+    const s = checkSel();
+    if (!s){ toast("Nothing selected."); return; }
+    if (!artEditable()) return;
+    endSelNudge();
+    commit(() => {
+      liftSel();
+      const f = s.float, w = s.w, h = s.h;
+      f.planes = f.planes.map(p => {
+        const d = new Uint32Array(w * h);
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++)
+          d[y * w + x] = p.data[horizontal ? y * w + (w - 1 - x) : (h - 1 - y) * w + x];
+        return { id: p.id, data: d };
+      });
+      return stampSel();
+    });
+    drawSelOverlay();
+  }
+  // Arrow keys: consecutive nudges (incl. key repeat) are one undo step, ended on key release
+  function nudgeSel(dx, dy){
+    const s = checkSel();
+    if (!s || !artEditable()) return;
+    if (!selNudging){ endAction(); beginAction(); selNudging = true; }
+    liftSel();
+    s.x = clamp(s.x + dx, 1 - s.w, state.pxW - 1);
+    s.y = clamp(s.y + dy, 1 - s.h, state.pxH - 1);
+    if (stampSel()) markChanged();
+    scheduleRender(); drawSelOverlay();
+  }
+  function endSelNudge(){
+    if (!selNudging) return;
+    selNudging = false;
+    endAction();
+  }
+
+  // ---------- pointer ----------
+  function selPixelFromEvent(evt){ // not clamped: drags may leave the canvas
+    const rect = el.renderCanvas.getBoundingClientRect();
+    return { x: Math.floor((evt.clientX - rect.left) / rect.width * state.pxW), y: Math.floor((evt.clientY - rect.top) / rect.height * state.pxH) };
+  }
+  function selPointerDown(evt){
+    endSelNudge();
+    if (evt.button === 2){ deselect(); return; }
+    const p = selPixelFromEvent(evt), s = checkSel();
+    selPtr.start = p; selPtr.moved = false; selPtr.mode = null;
+    if (inSel(s, p)){
+      if (!artEditable()) return;
+      beginAction();
+      liftSel();
+      selPtr.mode = "move"; selPtr.origin = { x: s.x, y: s.y };
+    } else {
+      deselect(); // clicking outside places / drops the old selection
+      selPtr.mode = "rect";
+    }
+    try { el.renderCanvas.setPointerCapture(evt.pointerId); } catch {}
+    drawSelOverlay();
+  }
+  function selPointerMove(evt){
+    const p = selPixelFromEvent(evt);
+    if (!selPtr.mode){
+      if (state.tool === "select") el.renderCanvas.style.cursor = inSel(state.sel, p) ? "move" : "";
+      return;
+    }
+    if (selPtr.mode === "rect"){
+      if (!selPtr.moved && p.x === selPtr.start.x && p.y === selPtr.start.y) return;
+      selPtr.moved = true;
+      const cx = (v) => clamp(v, 0, state.pxW - 1), cy = (v) => clamp(v, 0, state.pxH - 1);
+      const x0 = cx(Math.min(p.x, selPtr.start.x)), x1 = cx(Math.max(p.x, selPtr.start.x));
+      const y0 = cy(Math.min(p.y, selPtr.start.y)), y1 = cy(Math.max(p.y, selPtr.start.y));
+      state.sel = { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1, float: null };
+      drawSelOverlay();
+      return;
+    }
+    const s = state.sel;
+    if (!s || !s.float){ selPtr.mode = null; endAction(); return; }
+    // keep at least one pixel of the selection on the canvas
+    const nx = clamp(selPtr.origin.x + p.x - selPtr.start.x, 1 - s.w, state.pxW - 1);
+    const ny = clamp(selPtr.origin.y + p.y - selPtr.start.y, 1 - s.h, state.pxH - 1);
+    if (nx === s.x && ny === s.y) return;
+    s.x = nx; s.y = ny;
+    if (stampSel()) markChanged();
+    scheduleRender(); drawSelOverlay();
+  }
+  function selPointerUp(evt){
+    if (!selPtr.mode) return;
+    const mode = selPtr.mode, s = state.sel;
+    selPtr.mode = null;
+    try { el.renderCanvas.releasePointerCapture(evt.pointerId); } catch {}
+    if (mode === "move"){
+      if (s && s.x === selPtr.origin.x && s.y === selPtr.origin.y) hist.changed = false; // dropped where it was
+      endAction(); scheduleRender();
+    }
+    drawSelOverlay();
+  }
+  el.renderCanvas.addEventListener("pointermove", selPointerMove);
+  el.renderCanvas.addEventListener("pointerup", selPointerUp);
+  el.renderCanvas.addEventListener("pointercancel", selPointerUp);
+  // clicking the empty area around the canvas places / drops the selection
+  el.canvasWrap.addEventListener("pointerdown", (evt) => {
+    if ((evt.target === el.canvasWrap || evt.target === el.canvasStage) && state.tool === "select" && state.sel) deselect();
+  });
+
+  // ---------- marching ants + selection UI ----------
+  function drawSelOverlay(){
+    const c = el.selCanvas;
+    sctx.clearRect(0, 0, c.width, c.height);
+    const s = checkSel();
+    syncSelUI(s);
+    if (!s || !c.width) return;
+    const z = c.width / state.pxW;
+    if (s.float){ sctx.fillStyle = "rgba(106,166,255,0.12)"; sctx.fillRect(s.x * z, s.y * z, s.w * z, s.h * z); }
+    const x = s.x * z + 0.5, y = s.y * z + 0.5, w = Math.max(1, s.w * z - 1), h = Math.max(1, s.h * z - 1);
+    sctx.lineWidth = 1;
+    sctx.setLineDash([]); sctx.strokeStyle = "#000"; sctx.strokeRect(x, y, w, h);
+    sctx.setLineDash([4, 4]); sctx.lineDashOffset = -antsPhase;
+    sctx.strokeStyle = s.float && s.float.paste ? "#ffcf6a" : "#fff"; sctx.strokeRect(x, y, w, h);
+    sctx.setLineDash([]);
+  }
+  function syncSelUI(s){
+    const info = !s ? "none" : `${s.w}×${s.h} @ ${s.x},${s.y}${s.float ? (s.float.paste ? " · paste" : " · floating") : ""}`;
+    const clip = pixelClip ? `clip ${pixelClip.w}×${pixelClip.h}${pixelClip.multi ? " · all" : ""}` : "clip —";
+    const key = info + "|" + clip;
+    if (key === selUIKey) return;
+    selUIKey = key;
+    el.selInfo.textContent = info;
+    el.selInfo.className = "pill mono" + (s ? " accent" : "");
+    el.clipInfo.textContent = clip;
+    for (const b of [el.selCopy, el.selCut, el.selDelete, el.selFlipH, el.selFlipV, el.selNone]) b.disabled = !s;
+    el.selPaste.disabled = !pixelClip;
+  }
+  setInterval(() => {
+    if (!state.sel || state.mode !== "blocks" || document.hidden) return;
+    antsPhase = (antsPhase + 1) % 8;
+    drawSelOverlay();
+  }, 100);
+
+  function loadPixelClip(){
+    try {
+      const o = JSON.parse(localStorage.getItem(SEL_CLIP_KEY) || "null");
+      if (!o || !(o.w > 0) || !(o.h > 0) || !Array.isArray(o.planes) || !o.planes.length) return null;
+      const n = o.w * o.h;
+      const planes = o.planes.map(p => ({ id: p.id | 0, data: Uint32Array.from(p.data || [], v => v >>> 0) }));
+      if (planes.some(p => p.data.length !== n)) return null;
+      return { w: o.w | 0, h: o.h | 0, x: o.x | 0, y: o.y | 0, multi: !!o.multi, planes };
+    } catch { return null; }
+  }
+  function savePixelClip(){
+    try {
+      localStorage.setItem(SEL_CLIP_KEY, JSON.stringify({ ...pixelClip, planes: pixelClip.planes.map(p => ({ id: p.id, data: Array.from(p.data) })) }));
+    } catch {}
+  }
+
+  el.selCopy.addEventListener("click", () => copySel(false));
+  el.selCut.addEventListener("click", () => copySel(true));
+  el.selPaste.addEventListener("click", pasteSel);
+  el.selDelete.addEventListener("click", deleteSel);
+  el.selFlipH.addEventListener("click", () => flipSel(true));
+  el.selFlipV.addEventListener("click", () => flipSel(false));
+  el.selAll.addEventListener("click", selectAll);
+  el.selNone.addEventListener("click", deselect);
+  // (the checkboxes give focus back so Esc / Delete / arrows keep working on the selection)
+  el.selAllLayers.addEventListener("change", () => { selOpts.allLayers = el.selAllLayers.checked; el.selAllLayers.blur(); });
+  el.selOpaque.addEventListener("change", () => {
+    selOpts.opaque = el.selOpaque.checked;
+    el.selOpaque.blur();
+    const s = checkSel();
+    if (s && s.float) commit(() => stampSel()); // re-place the floating pixels with the new rule
+  });
 
   // palette of colours used in the art
   let lastPaletteKey = "";
@@ -1919,8 +2333,14 @@
     const tag = (e.target && e.target.tagName || "").toLowerCase();
     if (tag === "input" || tag === "textarea") return;
     const items = e.clipboardData?.items;
-    if (!items) return;
-    const imgItem = Array.from(items).find(it => it.type && it.type.startsWith("image/"));
+    selPasteKey = false;
+    const imgItem = items ? Array.from(items).find(it => it.type && it.type.startsWith("image/")) : null;
+    if (state.mode === "blocks" && pixelClip){
+      // our pixels win unless an image was copied after them (our copy put clipMarker on the clipboard)
+      let text = "";
+      try { text = e.clipboardData ? e.clipboardData.getData("text/plain") : ""; } catch {}
+      if (!imgItem || (clipMarker && (text === clipMarker || !clipMarkerOk))){ e.preventDefault(); pasteSel(); return; }
+    }
     if (!imgItem) return;
     e.preventDefault();
     const blob = imgItem.getAsFile();
@@ -2110,6 +2530,7 @@
     el.puDirectionField.classList.toggle("hidden", type !== "gravity");
     el.puCollapseField.classList.toggle("hidden", !PU_COLLAPSE_TYPES.includes(type));
     el.puCollapse.checked = !!state.pu.collapse;
+    el.puStarter.checked = !!state.pu.starter;
     if (document.activeElement !== el.puHelp) el.puHelp.value = state.pu.help == null ? "" : String(state.pu.help);
     el.puHelp.placeholder = String(DEFAULT_HELP_BY_TIER[state.pu.tier] ?? 2);
     el.puHelpHint.textContent = state.pu.help == null ? `default ${DEFAULT_HELP_BY_TIER[state.pu.tier] ?? 2} (from tier) · 1 barely – 5 a lifesaver` : "1 barely – 5 a lifesaver";
@@ -2326,6 +2747,7 @@
     setDirty(true); syncPowerupUI(); scheduleRender();
   });
   el.puCollapse.addEventListener("change", () => { state.pu.collapse = el.puCollapse.checked; setDirty(true); scheduleRender(); });
+  el.puStarter.addEventListener("change", () => { state.pu.starter = el.puStarter.checked; setDirty(true); scheduleRender(); });
 
   // ============================================================
   // Region editors: the powerup area and the zones share one cell format
@@ -3562,7 +3984,9 @@
       }
       const def = PU_DEFAULT_CONSUME[p.type] ?? true;
       if (p.consume !== null && p.consume !== def) pu.consume = p.consume;
+      else if (origPu && origPu.consume === def) pu.consume = def; // a default the file spelled out stays
       if (PU_COLLAPSE_TYPES.includes(p.type) && p.collapse) pu.collapse = true;
+      if (p.starter) pu.starter = true;
       out.powerup = origPu ? inOriginalKeyOrder(pu, origPu) : pu;
     } else {
       out.difficulty = state.difficulty;
@@ -3703,7 +4127,7 @@
       const helpManaged = typeof pu.help === "number" && Number.isFinite(pu.help);
       const partsManaged = combo && Array.isArray(pu.parts) && pu.parts.every(q => isPlainObject(q) && typeof q.type === "string");
       const unmanaged = (k) => !MANAGED_PU_KEYS.includes(k) || (k === "intro" && typeof pu.intro !== "string")
-        || (k === "help" && !helpManaged) || (k === "parts" && !partsManaged) || (combo && (k === "area" || k === "fill"));
+        || (k === "help" && !helpManaged) || (k === "starter" && pu.starter !== true) || (k === "parts" && !partsManaged) || (combo && (k === "area" || k === "fill"));
       state.pu = {
         type: String(pu.type || "destroyer"),
         direction: typeof pu.direction === "string" ? pu.direction : "down",
@@ -3714,6 +4138,7 @@
         help: helpManaged ? pu.help : null,
         consume: null,
         collapse: pu.collapse === true,
+        starter: pu.starter === true,
         reach: null, push: null, volume: null,
         parts: partsManaged ? pu.parts.map(q => partFromObject(q, P)) : [],
         partSel: 0,
@@ -4432,7 +4857,7 @@
       const mode = typeof s.color === "string" ? "solid" : (Array.isArray(s.color) && Array.isArray(s.color[0]) ? `${Math.round(s.color.length / Math.max(1, gridLines(s.grid).length))}×` : "?");
       const partsTxt = pu && pu.type === "combo" && Array.isArray(pu.parts)
         ? `: ${pu.parts.map(q => isPlainObject(q) ? `<span style="color:${partColour(q.type)}">${escapeHtml(q.type ?? "?")}</span>` : "?").join(" + ") || "no parts"}` : "";
-      const help = pu && pu.help !== undefined ? ` · help ${escapeHtml(pu.help)}` : "";
+      const help = (pu && pu.help !== undefined ? ` · help ${escapeHtml(pu.help)}` : "") + (pu && pu.starter === true ? " · starter" : "");
       const stats = pu
         ? `${escapeHtml(pu.type || "?")}${partsTxt}${pu.type === "gravity" ? " " + escapeHtml(pu.direction || "down") : ""}${PU_NUM_PARAMS.filter(q => q.type === pu.type && pu[q.key] !== undefined).map(q => ` ${q.key}=${escapeHtml(pu[q.key])}`).join("")}<br>tier ${escapeHtml(pu.tier ?? "?")}${help} · f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>${mode}`
         : `f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>d=${escapeHtml(s.difficulty ?? "—")}<br>${mode}`;
@@ -6254,9 +6679,19 @@
       if (iconKeys[k]) setIconTool(iconKeys[k]);
       return;
     }
+    const onArt = state.centreTab === "art";
     if (mod){
       if (k === "z" && !e.shiftKey){ e.preventDefault(); undo(); return; }
       if (k === "y" || (k === "z" && e.shiftKey)){ e.preventDefault(); redo(); return; }
+      if (k === "a" && onArt){ e.preventDefault(); selectAll(); return; }
+      if ((k === "c" || k === "x") && onArt && checkSel()){ e.preventDefault(); copySel(k === "x"); return; }
+      if (k === "v" && !e.shiftKey && pixelClip){
+        // the paste event decides between an image on the system clipboard and our pixels;
+        // if no paste event arrives, paste our pixels
+        selPasteKey = true;
+        setTimeout(() => { if (selPasteKey){ selPasteKey = false; pasteSel(); } }, 120);
+        return;
+      }
       if (k === "c" && !String(window.getSelection() || "")){
         e.preventDefault();
         try { await copyBlobToClipboard(await flattenedImageBlob(Math.max(1, state.zoom))); toast("Scaled PNG copied"); } catch {}
@@ -6264,9 +6699,18 @@
       return;
     }
     if (e.altKey) return;
-    const toolKeys = { d: "draw", b: "brush", f: "fill", e: "erase", i: "dropper", m: "mask" };
+    if (onArt && state.sel){
+      const arrows = { arrowleft: [-1, 0], arrowright: [1, 0], arrowup: [0, -1], arrowdown: [0, 1] };
+      if (arrows[k]){ e.preventDefault(); const d = e.shiftKey ? state.ppb : 1; nudgeSel(arrows[k][0] * d, arrows[k][1] * d); return; }
+      if (k === "escape"){ e.preventDefault(); cancelPaste(); return; }
+      if (k === "enter"){ e.preventDefault(); deselect(); return; }
+      if (k === "delete" || k === "backspace"){ e.preventDefault(); deleteSel(); return; }
+    }
+    const toolKeys = { d: "draw", b: "brush", f: "fill", e: "erase", i: "dropper", m: "mask", s: "select" };
     if (toolKeys[k]){ setTool(toolKeys[k]); if (state.centreTab !== "art") setCentreTab("art"); }
   });
+  window.addEventListener("keyup", (e) => { if (/^Arrow/.test(e.key || "")) endSelNudge(); });
+  window.addEventListener("blur", () => endSelNudge());
   window.addEventListener("resize", () => { if (state.mode === "achievements") achRenderIcon(); else scheduleRender(); });
 
   // test / debugging hook (used by automated checks; harmless otherwise)
@@ -6277,6 +6721,7 @@
     serialiseAchievements, saveAchievements, saveCurrent, parseTriggerHeader, bitmapToIcon, iconPasteBitmap, setSlotText,
     BLOCK_FORMAT, ACH_FORMAT, touchCells, shapeModel, gooGuess, matchesShape, curPart, areaTarget, drawThumb, makeProjectObject, loadProjectObject,
     undo, redo,
+    sel: { selectAll, deselect, copySel, pasteSel, deleteSel, flipSel, nudgeSel, cancelPaste, checkSel, opts: selOpts, clip: () => pixelClip },
   };
 
   // ============================================================
