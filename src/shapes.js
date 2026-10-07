@@ -194,12 +194,14 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
     if (s.powerup) {
       powerup = normalisePowerup(s.powerup, allRotations, trim, id);
       if (powerup) {
-        powerup.areaRotations = allowed.map(i => powerup.areaRotations[i]);
+        // Effects never rotate: a rotated powerup keeps its rotation-0 area, in board
+        // orientation, centred on the piece the same way.
+        powerup.areaRotations = allowed.map(i => fixedArea(powerup.areaRotations[0], allRotations[0], allRotations[i]));
         const fill = normaliseFillPaint(powerup.fill, style.baseColor);
         powerup.fillPaint = fill.paint;
         powerup.fillStyle = { ...style, baseColor: fill.baseColor };
         for (const part of powerup.parts ?? []) {
-          part.areaRotations = allowed.map(i => part.areaRotations[i]);
+          part.areaRotations = allowed.map(i => fixedArea(part.areaRotations[0], allRotations[0], allRotations[i]));
           const pf = part.fill != null ? normaliseFillPaint(part.fill, style.baseColor) : fill;
           part.fillPaint = pf.paint;
           part.fillStyle = { ...style, baseColor: pf.baseColor };
@@ -234,6 +236,7 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
       frequency,
       style,
       tags,
+      noShake: s.noShake === true, // lands without shaking the board (e.g. a swarm of bees)
 
       // Keep original colour spec for future extension
       color: s.color,
@@ -257,6 +260,19 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
       zones,
     };
   });
+}
+
+// The rotation-0 area `base` (offsets from the piece's top-left), moved so it sits the same
+// way around the centre of the piece's rotated matrix `mat`.
+function fixedArea(base, mat0, mat) {
+  if (!base) return base;
+  const sx = Math.floor((mat[0].length - mat0[0].length) / 2);
+  const sy = Math.floor((mat.length - mat0.length) / 2);
+  return {
+    cells: base.cells.map(({ dx, dy }) => ({ dx: dx + sx, dy: dy + sy })),
+    rows: base.rows.map(dy => dy + sy),
+    cols: base.cols.map(dx => dx + sx),
+  };
 }
 
 // Does `shape` match an achievement-style match object {ids, tags, types}?

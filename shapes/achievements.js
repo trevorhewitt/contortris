@@ -9590,6 +9590,7 @@ export const ACHIEVEMENTS = [
         ]
       ],
     mode: "powerups",
+    retired: true,
     trigger: {
         "type": "powerupUsed",
         "match": {

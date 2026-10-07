@@ -177,3 +177,15 @@ test("combos actually turn up, and soon after two classes are in", () => {
   // (the board is cleared every drop here, which makes combos less often usable than in play)
   assert.ok(withCombo >= games - 2, `combo within 100 pieces in ${withCombo}/${games} games`);
 });
+
+test("powerup effects never rotate with the piece", () => {
+  const raw = [{ id: "rot_test", name: "t", grid: ["XXX"], color: "#ff0000", frequency: 1, rotation: { mode: "any" },
+    powerup: { type: "destroyer", tier: 1, area: { origin: [0, 0], grid: ["...", "###"] } } }];
+  const { powerups } = loadShapes(raw);
+  const p = powerups[0];
+  assert.ok(p.rotations.length > 1);
+  // rotation 0: the three cells under a 3x1 piece. Rotation 1 (1x3 upright): still three cells side
+  // by side (a row, not a column), centred on the piece the same way.
+  const rowOf = (a) => new Set(a.cells.map(c => c.dy)).size === 1;
+  for (const a of p.powerup.areaRotations) assert.ok(rowOf(a), JSON.stringify(a.cells));
+});

@@ -466,7 +466,8 @@ function lockPiece(state) {
   state.drops++;
 
   const big = CONFIG.fx.largePieceLock;
-  if ((shape.difficulty ?? 0) >= (big.minDifficulty ?? 5) && !shape.powerup && CONFIG.fx.quake.enabled) {
+  // (pieces marked noShake, like a swarm of bees, land without a thud)
+  if ((shape.difficulty ?? 0) >= (big.minDifficulty ?? 5) && !shape.powerup && !shape.noShake && CONFIG.fx.quake.enabled) {
     addQuakeFromBlocks(state, placed.length);
     // every big piece lands with a proper thud, whatever its size
     const floor = big.minTraumaByDifficulty?.[shape.difficulty] ?? 0;

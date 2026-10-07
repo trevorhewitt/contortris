@@ -19,6 +19,8 @@
  *   Optional:
  *   nextShapes: ["id"],       blocks that may come straight after this one ("back to back")...
  *   nextShapeProbs: [0.5],    ...with these probabilities
+ *   noShake: true,            big pieces (difficulty 4-5) shake the board when they land; this
+ *                             one doesn't (e.g. a swarm of bees)
  *   tags: ["food"],           labels used by achievements (shapes/achievements.js), e.g.
  *                             "food", "medicine", "squelchy"
  *   zones: {                  named regions around the piece, in the same format as powerup
@@ -75,7 +77,7 @@
 export const SHAPES = [
   {
     id: "david",
-    name: "The Satue of David",
+    name: "The Statue of David",
     grid: [
         "XX",
         "XX",
@@ -389,6 +391,7 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    noShake: true,
   },
   {
     id: "log",
@@ -903,6 +906,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    noShake: true,
   },
   {
     id: "repugnant",
@@ -935,7 +939,7 @@ export const SHAPES = [
   },
   {
     id: "pizza_t",
-    name: "a slice of pizza that is somehow a T-piece",
+    name: "a slice of pizza",
     grid: [
         "XXX",
         ".X."
@@ -999,7 +1003,7 @@ export const SHAPES = [
   },
   {
     id: "sad_avocado",
-    name: "a rock-solid avocadoi",
+    name: "a rock-solid avocado",
     grid: [
         "XX",
         "XX",
@@ -1017,7 +1021,7 @@ export const SHAPES = [
   },
   {
     id: "garden_gnome",
-    name: "a garden gnome who doesn't even know how to gardeni",
+    name: "a garden gnome who doesn't even know how to garden",
     grid: [
         ".X.",
         "XXX",
@@ -1048,7 +1052,7 @@ export const SHAPES = [
   },
   {
     id: "disguise",
-    name: "a very convincing disguise",
+    name: "a disguise",
     grid: [
         "XXXX",
         ".XX."
@@ -1093,7 +1097,7 @@ export const SHAPES = [
   },
   {
     id: "rubber_chicken",
-    name: "a rubber chicken, for emergencies",
+    name: "a rubber chicken",
     grid: [
         "XX.",
         ".XX"
@@ -1169,7 +1173,7 @@ export const SHAPES = [
   },
   {
     id: "amber_light",
-    name: "a traffic lighti",
+    name: "a traffic light",
     grid: [
         "X",
         "X",
@@ -1287,7 +1291,7 @@ export const SHAPES = [
   },
   {
     id: "saxophone",
-    name: "a smooth, smooth saxaphone",
+    name: "a smooth, smooth saxophone",
     grid: [
         "XX..",
         ".X..",
@@ -1320,7 +1324,7 @@ export const SHAPES = [
   },
   {
     id: "dumbbell",
-    name: "a big heavy dumbell",
+    name: "a big heavy dumbbell",
     grid: [
         "X.X",
         "XXX",
@@ -1395,7 +1399,7 @@ export const SHAPES = [
   },
   {
     id: "baguette",
-    name: "a baguette, much too long for the bag",
+    name: "a baguette",
     grid: [
         "XXXXX"
       ],
@@ -1444,7 +1448,7 @@ export const SHAPES = [
   },
   {
     id: "pea_pod",
-    name: "a pea pod. one of them has moved out.",
+    name: "a pea pod",
     grid: [
         "XXX"
       ],
@@ -1553,7 +1557,7 @@ export const SHAPES = [
   },
   {
     id: "sofa_remote",
-    name: "the sofa that are the remote",
+    name: "the sofa that ate the remote",
     grid: [
         "X..X",
         "XXXX"
@@ -1880,7 +1884,7 @@ export const SHAPES = [
   },
   {
     id: "sad_asteroid",
-    name: "a loney astroid, floating through space",
+    name: "a lonely asteroid, floating through space",
     grid: [
         ".XX",
         "XX."
@@ -1977,7 +1981,7 @@ export const SHAPES = [
   },
   {
     id: "dragon_egg",
-    name: "a hard-boiled dragon eggo",
+    name: "a hard-boiled dragon egg",
     grid: [
         ".X.",
         "XXX",
@@ -3016,6 +3020,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    noShake: true,
   },
   {
     id: "cookie",
@@ -3753,7 +3758,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
     claudeDraft: true,
@@ -3762,41 +3767,70 @@ export const SHAPES = [
     id: "large_black_hole",
     name: "a large black hole",
     grid: [
-        "XX",
-        "XX"
+        "X"
       ],
-    color: [["#381f81","#3c2188","#492997","#492997","#492997","#492997","#492997","#492997","#3c2188","#3c2188","#3c2188","#492997","#5e35b1","#522ea0"],["#3c2188","#5a32b0","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#5a32b0","#45269a","#45269a","#45269a","#5a32b0","#5e35b1"],["#5e35b1","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#5a32b0","#45269a","#45269a","#45269a","#5e35b1"],["#5e35b1","#7a44d8","#7a44d8","#5a32b0","#5a32b0","#5a32b0","#c8389a","#ff6a3d","#7a44d8","#7a44d8","#5a32b0","#45269a","#45269a","#492997"],["#5e35b1","#7a44d8","#5a32b0","#45269a","#9a3ad0","#9a3ad0","#9a3ad0","#c8389a","#ff6a3d","#ff6a3d","#5a32b0","#45269a","#45269a","#492997"],["#5e35b1","#5a32b0","#45269a","#45269a","#9a3ad0","#ff9a3c","#2c0f55","#2c0f55","#ffe27a","#ff6a3d","#5a32b0","#45269a","#45269a","#492997"],["#5e35b1","#45269a","#45269a","#9a3ad0","#c8389a","#2c0f55","#2c0f55","#2c0f55","#2c0f55","#ff6a3d","#c8389a","#45269a","#45269a","#492997"],["#492997","#45269a","#45269a","#c8389a","#ff6a3d","#2c0f55","#2c0f55","#2c0f55","#2c0f55","#c8389a","#9a3ad0","#45269a","#45269a","#5e35b1"],["#492997","#45269a","#45269a","#5a32b0","#ff6a3d","#ffe27a","#2c0f55","#2c0f55","#ff9a3c","#9a3ad0","#45269a","#45269a","#5a32b0","#5e35b1"],["#492997","#45269a","#45269a","#5a32b0","#ff6a3d","#ff6a3d","#c8389a","#9a3ad0","#9a3ad0","#9a3ad0","#45269a","#5a32b0","#7a44d8","#5e35b1"],["#492997","#45269a","#45269a","#5a32b0","#7a44d8","#7a44d8","#ff6a3d","#c8389a","#5a32b0","#5a32b0","#5a32b0","#7a44d8","#7a44d8","#5e35b1"],["#5e35b1","#45269a","#45269a","#45269a","#5a32b0","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#5e35b1"],["#5e35b1","#5a32b0","#45269a","#45269a","#45269a","#5a32b0","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#7a44d8","#5a32b0","#3c2188"],["#522ea0","#5e35b1","#492997","#3c2188","#3c2188","#3c2188","#492997","#492997","#492997","#492997","#492997","#492997","#3c2188","#381f81"]],
+    color: [["#522ea0","#5e35b1","#5e35b1","#5e35b1","#5e35b1","#492997","#381f81"],["#492997","#45269a","#9a3ad0","#c8389a","#ff6a3d","#7a44d8","#3c2188"],["#3c2188","#9a3ad0","#ff9a3c","#ff9a3c","#ffe27a","#ff6a3d","#3c2188"],["#3c2188","#ff6a3d","#ffe27a","#2c0f55","#ffe27a","#ff6a3d","#3c2188"],["#3c2188","#ff6a3d","#ffe27a","#ff9a3c","#ff9a3c","#9a3ad0","#3c2188"],["#3c2188","#7a44d8","#ff6a3d","#c8389a","#9a3ad0","#45269a","#492997"],["#381f81","#492997","#5e35b1","#5e35b1","#5e35b1","#5e35b1","#522ea0"]],
     powerup: {
-        "type": "destroyer",
+        "type": "combo",
         "tier": 3,
-        "area": {
-          "origin": [
-            3,
-            3
-          ],
-          "grid": [
-            "..####..",
-            ".######.",
-            "########",
-            "########",
-            "########",
-            "########",
-            ".######.",
-            "..####.."
-          ]
-        },
-        "intro": "Swallows a big circle of blocks around it. Physicists are very excited and also very worried.",
-        "help": 3.5
+        "intro": "Sinks into the deepest gap it fits, then swallows every block in a huge circle around it, wider than the board.",
+        "parts": [
+          {
+            "type": "phantom"
+          },
+          {
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                15,
+                15
+              ],
+              "grid": [
+                "............#######............",
+                ".........#############.........",
+                ".......#################.......",
+                "......###################......",
+                ".....#####################.....",
+                "....#######################....",
+                "...#########################...",
+                "..###########################..",
+                "..###########################..",
+                ".#############################.",
+                ".#############################.",
+                ".#############################.",
+                "###############################",
+                "###############################",
+                "###############################",
+                "###############.###############",
+                "###############################",
+                "###############################",
+                "###############################",
+                ".#############################.",
+                ".#############################.",
+                ".#############################.",
+                "..###########################..",
+                "..###########################..",
+                "...#########################...",
+                "....#######################....",
+                ".....#####################.....",
+                "......###################......",
+                ".......#################.......",
+                ".........#############.........",
+                "............#######............"
+              ]
+            }
+          }
+        ]
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
-    frequency: 0.6,
+    frequency: 0.3,
     claudeDraft: true,
   },
   {
     id: "katana",
-    name: "a cool katana",
+    name: "a katana",
     grid: [
         "XXXXX"
       ],
@@ -3924,7 +3958,7 @@ export const SHAPES = [
   },
   {
     id: "mole",
-    name: "a mole with a grudge",
+    name: "a mole",
     grid: [
         "X"
       ],
@@ -4018,7 +4052,7 @@ export const SHAPES = [
   },
   {
     id: "scissors",
-    name: "a pair of scissors, for running with",
+    name: "a pair of scissors",
     grid: [
         "X"
       ],
@@ -4047,7 +4081,7 @@ export const SHAPES = [
   },
   {
     id: "lawnmower",
-    name: "an unattended lawnmower",
+    name: "a lawnmower",
     grid: [
         "XX"
       ],
@@ -4078,7 +4112,7 @@ export const SHAPES = [
   },
   {
     id: "tax_audit",
-    name: "an unexpected tax audit",
+    name: "a tax audit",
     grid: [
         "X",
         "X"
@@ -4109,7 +4143,7 @@ export const SHAPES = [
   },
   {
     id: "dynamite",
-    name: "a stick of dynamite (it knows)",
+    name: "a stick of dynamite",
     grid: [
         "X",
         "X"
@@ -4147,7 +4181,7 @@ export const SHAPES = [
   },
   {
     id: "heavy_book",
-    name: "a copy of War and Peace that no one's readi",
+    name: "a copy of War and Peace that no one's read",
     grid: [
         "XX"
       ],
@@ -4176,7 +4210,7 @@ export const SHAPES = [
   },
   {
     id: "newtons_apple",
-    name: "isaac newton's apple",
+    name: "newton's apple",
     grid: [
         "X"
       ],
@@ -4285,7 +4319,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.7,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -4488,7 +4522,7 @@ export const SHAPES = [
   },
   {
     id: "popcorn",
-    name: "a single popcorn kernel",
+    name: "a popcorn kernel",
     grid: [
         "X"
       ],
@@ -4579,7 +4613,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
     claudeDraft: true,
@@ -4779,20 +4813,32 @@ export const SHAPES = [
   },
   {
     id: "acid_candy",
-    name: "a blob of extremely sour candy",
+    name: "a sour candy",
     grid: [
         "X"
       ],
     color: [["#68386c","#68386c","#a8e61d","#a8e61d","#a8e61d","#68386c","#68386c"],["#68386c","#eaff9e","#a8e61d","#ffffff","#a8e61d","#5fa81a","#68386c"],["#eaff9e","#a8e61d","#1e3a10","#a8e61d","#1e3a10","#a8e61d","#5fa81a"],["#a8e61d","#ffffff","#a8e61d","#a8e61d","#a8e61d","#ffffff","#5fa81a"],["#a8e61d","#a8e61d","#5fa81a","#1e3a10","#5fa81a","#a8e61d","#5fa81a"],["#68386c","#5fa81a","#a8e61d","#a8e61d","#a8e61d","#5fa81a","#68386c"],["#68386c","#68386c","#68386c","#5fa81a","#68386c","#c8f05a","#68386c"]],
     powerup: {
-        "type": "acid",
-        "reach": 2,
+        "type": "destroyer",
         "tier": 1,
         "intro": "So sour it dissolves every block within two steps of it. The packet says \"ages 40 and up\".",
-        "help": 2
+        "help": 2,
+        "area": {
+          "origin": [
+            2,
+            2
+          ],
+          "grid": [
+            "..#..",
+            ".###.",
+            "##.##",
+            ".###.",
+            "..#.."
+          ]
+        }
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
     claudeDraft: true,
@@ -4806,11 +4852,24 @@ export const SHAPES = [
       ],
     color: [["#262b44","#9be86a","#262b44","#262b44","#262b44","#9be86a","#262b44"],["#262b44","#262b44","#9be86a","#262b44","#9be86a","#262b44","#262b44"],["#262b44","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#262b44"],["#262b44","#8b9bb4","#c0cbdc","#c0cbdc","#c0cbdc","#8b9bb4","#262b44"],["#8fb8d4","#3d5a78","#3d5a78","#d8ff9a","#3d5a78","#3d5a78","#8fb8d4"],["#8fb8d4","#7cf02a","#d8ff9a","#7cf02a","#7cf02a","#d8ff9a","#8fb8d4"],["#8fb8d4","#7cf02a","#7cf02a","#7cf02a","#7cf02a","#3ec41a","#8fb8d4"],["#8fb8d4","#fee761","#181425","#181425","#181425","#fee761","#8fb8d4"],["#8fb8d4","#181425","#fee761","#181425","#fee761","#181425","#8fb8d4"],["#8fb8d4","#fee761","#181425","#181425","#181425","#fee761","#8fb8d4"],["#8fb8d4","#fee761","#181425","#fee761","#181425","#fee761","#8fb8d4"],["#8fb8d4","#7cf02a","#3ec41a","#7cf02a","#d8ff9a","#7cf02a","#8fb8d4"],["#8fb8d4","#3ec41a","#7cf02a","#7cf02a","#7cf02a","#3ec41a","#8fb8d4"],["#262b44","#8fb8d4","#8fb8d4","#8fb8d4","#8fb8d4","#8fb8d4","#262b44"]],
     powerup: {
-        "type": "acid",
-        "reach": 2,
+        "type": "destroyer",
         "tier": 1,
         "intro": "Dissolves every block within two steps of the jar. Somebody labelled it \"juice\" and we need to talk about that.",
-        "help": 2
+        "help": 2,
+        "area": {
+          "origin": [
+            2,
+            2
+          ],
+          "grid": [
+            "..#..",
+            ".###.",
+            "##.##",
+            "##.##",
+            ".###.",
+            "..#.."
+          ]
+        }
       },
     rotation: {
         "mode": "none"
@@ -4820,17 +4879,29 @@ export const SHAPES = [
   },
   {
     id: "piranha",
-    name: "a hungry piranha",
+    name: "a piranha",
     grid: [
         "XX"
       ],
     color: [["#1f5f78","#1f5f78","#1f5f78","#1f5f78","#1f5f78","#5a6988","#5a6988","#5a6988","#1f5f78","#1f5f78","#1f5f78","#1f5f78","#9fd8f2","#1f5f78"],["#5a6988","#1f5f78","#1f5f78","#1f5f78","#5a6988","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#1f5f78","#1f5f78","#1f5f78"],["#5a6988","#5a6988","#1f5f78","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#fee761","#181425","#7a8aa6","#1f5f78"],["#5a6988","#5a6988","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6","#7a8aa6"],["#5a6988","#5a6988","#7a8aa6","#7a8aa6","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#ffffff","#4a0f20","#ffffff","#4a0f20","#1f5f78"],["#5a6988","#1f5f78","#7a8aa6","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#4a0f20","#ffffff","#4a0f20","#ffffff","#e43b44"],["#1f5f78","#1f5f78","#1f5f78","#1f5f78","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#1f5f78"]],
     powerup: {
-        "type": "acid",
-        "reach": 2,
+        "type": "destroyer",
         "tier": 1,
         "intro": "Eats every block within two bites of it, then stares at you like you're next. It skipped breakfast.",
-        "help": 2
+        "help": 2,
+        "area": {
+          "origin": [
+            2,
+            2
+          ],
+          "grid": [
+            "..##..",
+            ".####.",
+            "##..##",
+            ".####.",
+            "..##.."
+          ]
+        }
       },
     rotation: {
         "mode": "none"
@@ -4846,11 +4917,23 @@ export const SHAPES = [
       ],
     color: [["#ffd25e","#ffd25e","#ffd25e","#c97f1e","#ffd25e","#ffd25e","#ffd25e","#ffd25e","#ffd25e","#ffd25e","#c97f1e","#ffd25e","#ffd25e","#ffd25e"],["#c97f1e","#ffd25e","#e05a8a","#e05a8a","#e05a8a","#e05a8a","#e05a8a","#e05a8a","#e05a8a","#e05a8a","#e05a8a","#e05a8a","#ffd25e","#ffd25e"],["#c97f1e","#7a4a10","#e05a8a","#ffffff","#d8dce8","#ffffff","#d8dce8","#ffffff","#d8dce8","#ffffff","#d8dce8","#e05a8a","#e05a8a","#ffd25e"],["#c97f1e","#ffd25e","#4a0f20","#4a0f20","#4a0f20","#4a0f20","#4a0f20","#4a0f20","#4a0f20","#4a0f20","#4a0f20","#4a0f20","#e05a8a","#ffd25e"],["#c97f1e","#7a4a10","#e05a8a","#d8dce8","#ffffff","#d8dce8","#ffffff","#d8dce8","#ffffff","#d8dce8","#ffffff","#e05a8a","#e05a8a","#ffd25e"],["#ffd25e","#ffd25e","#ffd25e","#e05a8a","#e05a8a","#e05a8a","#e05a8a","#e05a8a","#e05a8a","#e05a8a","#e05a8a","#ffd25e","#ffd25e","#ffd25e"],["#ffd25e","#ffd25e","#ffd25e","#be4a2f","#f77622","#f77622","#be4a2f","#ffd25e","#ffd25e","#be4a2f","#f77622","#f77622","#be4a2f","#ffd25e"]],
     powerup: {
-        "type": "acid",
-        "reach": 2,
+        "type": "destroyer",
         "tier": 1,
         "intro": "Wind them up and they chomp through every block within two steps. Nobody knows whose teeth these were.",
-        "help": 2
+        "help": 2,
+        "area": {
+          "origin": [
+            2,
+            2
+          ],
+          "grid": [
+            "..##..",
+            ".####.",
+            "##..##",
+            ".####.",
+            "..##.."
+          ]
+        }
       },
     rotation: {
         "mode": "none"
@@ -4859,18 +4942,31 @@ export const SHAPES = [
   },
   {
     id: "bleach",
-    name: "a slug of pure bleach",
+    name: "a bottle of bleach",
     grid: [
         "X.",
         "XX"
       ],
     color: [["#2a5d9a","#181425","#2a5d9a","#2a5d9a","#2a5d9a","#181425","#2a5d9a","","","","","","",""],["#2a5d9a","#dfe9f5","#2a5d9a","#3a74b8","#2a5d9a","#dfe9f5","#2a5d9a","","","","","","",""],["#2a5d9a","#2a5d9a","#dfe9f5","#2a5d9a","#dfe9f5","#2a5d9a","#2a5d9a","","","","","","",""],["#2a5d9a","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#2a5d9a","","","","","","",""],["#ffffff","#ffffff","#181425","#ffffff","#181425","#ffffff","#b8cde6","","","","","","",""],["#ffffff","#ffffff","#e05a8a","#e05a8a","#e05a8a","#ffffff","#b8cde6","","","","","","",""],["#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#b8cde6","","","","","","",""],["#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#b8cde6","#2a5d9a","#2a5d9a","#2a5d9a","#2a5d9a","#3a74b8","#2a5d9a","#2a5d9a"],["#ffffff","#2ce8f5","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#b8cde6","#2a5d9a","#2a5d9a","#2a5d9a","#2a5d9a","#2a5d9a"],["#ffffff","#ffffff","#ffffff","#2ce8f5","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#b8cde6","#2a5d9a","#2a5d9a","#2a5d9a"],["#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#2ce8f5","#ffffff","#ffffff","#2ce8f5","#ffffff","#ffffff","#b8cde6","#2a5d9a","#2a5d9a"],["#b8cde6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#b8cde6","#2a5d9a"],["#a8f4ff","#a8f4ff","#a8f4ff","#a8f4ff","#a8f4ff","#a8f4ff","#fee761","#a8f4ff","#a8f4ff","#a8f4ff","#a8f4ff","#a8f4ff","#a8f4ff","#2a5d9a"],["#2a5d9a","#3a74b8","#2a5d9a","#2a5d9a","#2a5d9a","#2a5d9a","#2a5d9a","#2a5d9a","#3a74b8","#2a5d9a","#2a5d9a","#2a5d9a","#2a5d9a","#2a5d9a"]],
     powerup: {
-        "type": "acid",
-        "reach": 2,
+        "type": "destroyer",
         "tier": 1,
         "intro": "Dissolves every block within two steps and leaves a lemon-fresh trail. Kills 99.9% of blocks.",
-        "help": 2
+        "help": 2,
+        "area": {
+          "origin": [
+            2,
+            2
+          ],
+          "grid": [
+            "..#...",
+            ".###..",
+            "##.##.",
+            "##..##",
+            ".####.",
+            "..##.."
+          ]
+        }
       },
     rotation: {
         "mode": "none"
@@ -4886,32 +4982,61 @@ export const SHAPES = [
       ],
     color: [["#fee761","#e43b44","#fee761","#3e2731","#3e2731","#3e2731","#3e2731"],["#feae34","#feae34","#feae34","#3e2731","#3e2731","#3e2731","#3e2731"],["#f77622","#181425","#f77622","#3e2731","#3e2731","#3e2731","#3e2731"],["#e4a672","#f77622","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#3e2731"],["#3e2731","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a"],["#e4a672","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a"],["#3e2731","#3e2731","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#3e2731"]],
     powerup: {
-        "type": "acid",
-        "reach": 3,
+        "type": "destroyer",
         "tier": 2,
         "intro": "Her loyal colony devours every block within three steps of her. Long may she reign over your stack.",
-        "help": 2.5
+        "help": 2.5,
+        "area": {
+          "origin": [
+            3,
+            3
+          ],
+          "grid": [
+            "...#...",
+            "..###..",
+            ".#####.",
+            "###.###",
+            ".#####.",
+            "..###..",
+            "...#..."
+          ]
+        }
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.8,
     claudeDraft: true,
   },
   {
     id: "lava_lamp",
-    name: "a lava lamp that got too hot",
+    name: "a lava lamp",
     grid: [
         "X",
         "X"
       ],
     color: [["#262b44","#262b44","#262b44","#fee761","#262b44","#262b44","#262b44"],["#262b44","#262b44","#262b44","#f77622","#262b44","#262b44","#262b44"],["#262b44","#262b44","#c0cbdc","#c0cbdc","#c0cbdc","#262b44","#262b44"],["#262b44","#262b44","#c0306a","#f77622","#c0306a","#262b44","#262b44"],["#262b44","#262b44","#c0306a","#c0306a","#ff0044","#262b44","#262b44"],["#262b44","#c0306a","#f77622","#f77622","#c0306a","#ff0044","#262b44"],["#262b44","#c0306a","#f77622","#c0306a","#ffffff","#c0306a","#262b44"],["#262b44","#c0306a","#c0306a","#ffffff","#f77622","#ff0044","#262b44"],["#262b44","#c0306a","#f77622","#f77622","#c0306a","#ff0044","#262b44"],["#262b44","#262b44","#c0306a","#c0306a","#f77622","#c0306a","#262b44"],["#262b44","#262b44","#c0cbdc","#c0cbdc","#c0cbdc","#262b44","#262b44"],["#262b44","#c0cbdc","#8b9bb4","#c0cbdc","#8b9bb4","#c0cbdc","#262b44"],["#c0cbdc","#8b9bb4","#c0cbdc","#c0cbdc","#c0cbdc","#8b9bb4","#c0cbdc"],["#5a6988","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#5a6988"]],
     powerup: {
-        "type": "acid",
-        "reach": 3,
+        "type": "destroyer",
         "tier": 2,
         "intro": "It has been on since 1974 and now melts every block within three steps. Still very relaxing to watch.",
-        "help": 2.5
+        "help": 2.5,
+        "area": {
+          "origin": [
+            3,
+            3
+          ],
+          "grid": [
+            "...#...",
+            "..###..",
+            ".#####.",
+            "###.###",
+            "###.###",
+            ".#####.",
+            "..###..",
+            "...#..."
+          ]
+        }
       },
     rotation: {
         "mode": "none"
@@ -4927,11 +5052,23 @@ export const SHAPES = [
       ],
     color: [["#d52500","#f57c00","#ff741a","#ffe63a","#f57900","#ea3000","#f79805","#f07f12","#df3f00","#e74400","#fd9709","#da1b00","#f26000","#ff4e11","#d92000","#d14500","#fe5813","#ce0b00","#e01900","#ff6710","#e22d04","#ec0900","#fe8d09","#d80400","#d41700","#c50102","#ca180a","#e01d01"],["#ff780b","#fc4a1c","#d11d00","#e0290b","#ea0b09","#d30b00","#dc2805","#f99c06","#fe6a12","#ff8216","#d2000e","#ef6f00","#bc1106","#dd1400","#f65700","#e00800","#ff7d05","#e62f08","#e81902","#e80600","#fc4e14","#fc9e09","#f92b1a","#de0e00","#9d0000","#c30e05","#bd0e06","#d10c05"],["#fb812c","#ce2000","#f65300","#cf1b00","#d70502","#bc0e0c","#970000","#a00008","#ff970b","#ff4215","#cf0e00","#e84602","#d31b00","#e92700","#fc4019","#ea3403","#b70008","#e62d01","#fc5a11","#fe990b","#f35d04","#d8010d","#df000a","#b80b00","#c00f07","#cb0000","#cc0d07","#a70001"],["#840600","#a70d03","#a60107","#af0103","#9d0200","#790007","#ad0301","#830000","#c00d02","#d7130b","#f44d02","#d12d00","#fc7700","#c90300","#fc7c00","#de3d02","#e02f07","#b70300","#d02003","#d72409","#ff6d00","#a10700","#df0201","#b10100","#930000","#9a0201","#920303","#810300"],["#6a0203","#9b0e05","#d32717","#dc3f05","#b70a05","#c21d0d","#580002","#870103","#b01005","#d70802","#e5110a","#d40400","#e91500","#f43714","#fd6114","#e51301","#d30000","#ca0500","#ca1517","#ea270e","#b00000","#ee0701","#ce070d","#c60600","#b70000","#9e0004","#930000","#6d0200"],["#900100","#810b00","#780000","#af1200","#a40d00","#c61e00","#a31000","#a50200","#c60301","#d52800","#bc0200","#ed0100","#fe0700","#e82100","#f50907","#f72904","#f51807","#ca0100","#c20000","#da2a09","#d21b00","#fb8a02","#c20d05","#b00b04","#d10c00","#f11700","#da0001","#b20002"],["#7e0000","#610105","#9b1115","#b30a00","#aa0800","#ec5804","#b01106","#b70000","#9c0300","#8e0000","#a80708","#af0000","#b60000","#cf0004","#e12c0b","#b10300","#c90a0a","#fd3514","#e50309","#ff321b","#f30008","#de0400","#d8260f","#be1400","#d50906","#ce0504","#ffa72b","#eb4002"]],
     powerup: {
-        "type": "acid",
-        "reach": 2,
+        "type": "destroyer",
         "tier": 2,
         "intro": "Every block within two steps becomes lava, and lava means gone. You know the rules.",
-        "help": 2
+        "help": 2,
+        "area": {
+          "origin": [
+            2,
+            2
+          ],
+          "grid": [
+            "..####..",
+            ".######.",
+            "##....##",
+            ".######.",
+            "..####.."
+          ]
+        }
       },
     rotation: {
         "mode": "none"
@@ -4970,7 +5107,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5007,7 +5144,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5072,7 +5209,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.8,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5109,7 +5246,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.8,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5146,7 +5283,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.8,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5217,7 +5354,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.5,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5302,7 +5439,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5388,7 +5525,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.8,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5558,7 +5695,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5644,7 +5781,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.8,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5730,7 +5867,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.8,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5815,7 +5952,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.7,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5901,12 +6038,12 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.5,
+    frequency: 0,
     claudeDraft: true,
   },
   {
     id: "friendly_ghost",
-    name: "a ghost (the friendly kind)",
+    name: "a friendly ghost",
     grid: [
         "X"
       ],
@@ -5966,7 +6103,7 @@ export const SHAPES = [
   },
   {
     id: "phasing_cat",
-    name: "a cat that can walk through walls",
+    name: "a cat that walks through walls",
     grid: [
         "XX"
       ],
@@ -6020,7 +6157,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.7,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -6040,7 +6177,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.8,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -6060,12 +6197,12 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.7,
+    frequency: 0,
     claudeDraft: true,
   },
   {
     id: "hungry_caterpillar",
-    name: "a very hungry caterpillar",
+    name: "a hungry caterpillar",
     grid: [
         "XX"
       ],
@@ -6095,7 +6232,7 @@ export const SHAPES = [
   },
   {
     id: "eraser",
-    name: "an eraser (the good kind)",
+    name: "an eraser",
     grid: [
         "XX"
       ],
@@ -6501,7 +6638,7 @@ export const SHAPES = [
   },
   {
     id: "hippo_bellyflop",
-    name: "a hippo in a tutui",
+    name: "a hippo in a tutu",
     grid: [
         "XXX",
         "XXX"
@@ -7453,29 +7590,30 @@ export const SHAPES = [
         "help": 1
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.78,
   },
   {
     id: "rotten_lemon",
-    name: "a rotten lemoni",
+    name: "a rotten lemon",
     grid: [
         "X"
       ],
     color: [["#6e5b26","#6e5b26","#fee761","#fee761","#fee761","#3e8948","#63c74d"],["#fee761","#fee761","#fee761","#fee761","#fee761","#3e8948","#e8b830"],["#fee761","#fee761","#fff6b0","#fee761","#a8c060","#a8c060","#e8b830"],["#fee761","#fff6b0","#fee761","#6f8a3a","#fee761","#fee761","#e8b830"],["#fee761","#fee761","#a8c060","#fee761","#fee761","#e8b830","#6e5b26"],["#e8b830","#6f8a3a","#fee761","#fee761","#e8b830","#e8b830","#6e5b26"],["#b6ff3a","#e8b830","#e8b830","#e8b830","#6e5b26","#6e5b26","#6e5b26"]],
     powerup: {
-        "type": "acid",
-        "reach": 1,
+        "type": "destroyer",
         "tier": 1,
         "intro": "Dissolves the blocks right next to it, and squirts three cells to each side along its row. Straight in the eye, every time.",
         "area": {
           "origin": [
             3,
-            0
+            1
           ],
           "grid": [
-            "###.###"
+            "...#...",
+            "###.###",
+            "...#..."
           ]
         },
         "help": 2
@@ -7493,24 +7631,24 @@ export const SHAPES = [
       ],
     color: [["#72951e","#90bb25","#90bb25","#c7c7c7","#90bb25","#90bb25","#72951e"],["#90bb25","#b8f030","#e8ff8a","#ffffff","#e8ff8a","#b8f030","#90bb25"],["#90bb25","#e8ff8a","#ffffff","#b8f030","#b8f030","#dfff9a","#90bb25"],["#90bb25","#e8ff8a","#b8f030","#b8f030","#b8f030","#80b818","#90bb25"],["#90bb25","#b8f030","#b8f030","#b8f030","#b8f030","#b8f030","#649013"],["#90bb25","#80b818","#b8f030","#b8f030","#b8f030","#80b818","#649013"],["#72951e","#90bb25","#649013","#649013","#90bb25","#90bb25","#72951e"]],
     powerup: {
-        "type": "acid",
-        "reach": 1,
+        "type": "destroyer",
         "tier": 2,
         "intro": "Dissolves the blocks next to it, then eats straight down through the seven cells underneath it. It's not personal, it's just very acidic.",
         "area": {
           "origin": [
-            0,
-            0
+            1,
+            1
           ],
           "grid": [
-            ".",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#"
+            ".#.",
+            "#.#",
+            ".#.",
+            ".#.",
+            ".#.",
+            ".#.",
+            ".#.",
+            ".#.",
+            ".#."
           ]
         },
         "help": 2.5
@@ -7529,11 +7667,24 @@ export const SHAPES = [
       ],
     color: [["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","",""],["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","",""],["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","",""],["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#f0a0b8","#e0708f","#e0708f","#7a1f3d","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#f0a0b8","#f0a0b8","#e0708f","#7a1f3d","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#ffd8e4","#f0a0b8","#f0a0b8","#e0708f","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#451c2a"],["#7a1f3d","#f0a0b8","#ffd8e4","#3e2731","#f0a0b8","#e0708f","#e0708f","#e0708f","#3e2731","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#7a1f3d"],["#7a1f3d","#f0a0b8","#e0708f","#e0708f","#3e2731","#3e2731","#3e2731","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#7a1f3d"],["#7a1f3d","#e0708f","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#f4ffd0","#9ae83a","#9ae83a","#9ae83a","#e0708f","#e0708f","#7a1f3d"],["#451c2a","#7a1f3d","#9ae83a","#f4ffd0","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#5aa020","#9ae83a","#9ae83a","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#7a1f3d","#451c2a"],["#451c2a","#451c2a","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#451c2a","#451c2a"]],
     powerup: {
-        "type": "acid",
-        "reach": 2,
+        "type": "destroyer",
         "tier": 2,
         "intro": "Digests every block within two steps of it, all the way round its bend. It has been empty since lunch and it is not happy about it.",
-        "help": 2
+        "help": 2,
+        "area": {
+          "origin": [
+            2,
+            2
+          ],
+          "grid": [
+            "..#....",
+            ".####..",
+            "##.###.",
+            "##...##",
+            ".#####.",
+            "..###.."
+          ]
+        }
       },
     rotation: {
         "mode": "none"
@@ -7550,11 +7701,25 @@ export const SHAPES = [
       ],
     color: [["#262b44","#262b44","#e43b44","#e43b44","#262b44","#262b44"],["#262b44","#a22633","#e43b44","#e43b44","#a22633","#262b44"],["#262b44","#262b44","#c0cbdc","#c0cbdc","#262b44","#262b44"],["#262b44","#262b44","#c0cbdc","#e4a672","#262b44","#262b44"],["#262b44","#c0cbdc","#b86f50","#e4a672","#b86f50","#262b44"],["#c0cbdc","#b86f50","#b86f50","#b86f50","#b86f50","#c0cbdc"],["#c0cbdc","#b86f50","#e4a672","#b86f50","#b86f50","#c0cbdc"],["#c0cbdc","#ffffff","#ffffff","#ffffff","#ffffff","#c0cbdc"],["#c0cbdc","#262b44","#ffffff","#ffffff","#262b44","#c0cbdc"],["#c0cbdc","#ffffff","#262b44","#262b44","#ffffff","#c0cbdc"],["#c0cbdc","#ffffff","#ffffff","#ffffff","#ffffff","#c0cbdc"],["#c0cbdc","#b86f50","#b86f50","#b86f50","#b86f50","#c0cbdc"],["#c0cbdc","#b86f50","#e4a672","#b86f50","#b86f50","#c0cbdc"],["#c0cbdc","#b86f50","#e4a672","#b86f50","#8a4a30","#c0cbdc"],["#c0cbdc","#b86f50","#b86f50","#b86f50","#b86f50","#c0cbdc"],["#c0cbdc","#b86f50","#b86f50","#b86f50","#8a4a30","#c0cbdc"],["#c0cbdc","#8a4a30","#8a4a30","#8a4a30","#8a4a30","#c0cbdc"],["#262b44","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#262b44"]],
     powerup: {
-        "type": "acid",
-        "reach": 2,
+        "type": "destroyer",
         "tier": 2,
         "intro": "Dissolves every block within two steps of the bottle, top to bottom. Great on chips, terrible on everything else.",
-        "help": 2.5
+        "help": 2.5,
+        "area": {
+          "origin": [
+            2,
+            2
+          ],
+          "grid": [
+            "..#..",
+            ".###.",
+            "##.##",
+            "##.##",
+            "##.##",
+            ".###.",
+            "..#.."
+          ]
+        }
       },
     rotation: {
         "mode": "none"
@@ -7570,21 +7735,21 @@ export const SHAPES = [
       ],
     color: [["#2a5d31","#4f9f3e","#92cc2e","#bfcca0","#4f9f3e","#326e3a","#4f9f3e","#92cc2e","#4f9f3e","#bfcca0","#4f9f3e","#2a5d31"],["#4f9f3e","#b6ff3a","#63c74d","#3e8948","#63c74d","#b6ff3a","#b6ff3a","#63c74d","#3e8948","#63c74d","#b6ff3a","#4f9f3e"],["#92cc2e","#63c74d","#b6ff3a","#b6ff3a","#63c74d","#b6ff3a","#63c74d","#b6ff3a","#b6ff3a","#63c74d","#b6ff3a","#92cc2e"],["#686f8e","#3e4870","#63c74d","#3e4870","#3e4870","#3e4870","#3e4870","#3e4870","#3e4870","#63c74d","#3e4870","#686f8e"],["#cb8b2a","#feae34","#63c74d","#fee761","#fee761","#f4f4f4","#fee761","#fee761","#f4f4f4","#63c74d","#feae34","#a16618"],["#cb8b2a","#fee761","#63c74d","#f4f4f4","#3e4870","#f4f4f4","#f4f4f4","#3e4870","#f4f4f4","#63c74d","#feae34","#a16618"],["#cb8b2a","#fee761","#fee761","#f4f4f4","#f4f4f4","#f4f4f4","#f4f4f4","#f4f4f4","#f4f4f4","#fee761","#fee761","#a16618"],["#cb8b2a","#fee761","#fee761","#fee761","#f4f4f4","#3e4870","#3e4870","#f4f4f4","#fee761","#fee761","#feae34","#a16618"],["#686f8e","#3e4870","#3e4870","#3e4870","#3e4870","#3e4870","#3e4870","#3e4870","#3e4870","#63c74d","#3e4870","#686f8e"],["#cb8b2a","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#63c74d","#feae34","#a16618"],["#cb8b2a","#feae34","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#63c74d","#c97f1e","#a16618"],["#787f99","#686f8e","#686f8e","#686f8e","#686f8e","#686f8e","#686f8e","#686f8e","#686f8e","#92cc2e","#686f8e","#787f99"]],
     powerup: {
-        "type": "acid",
-        "reach": 1,
+        "type": "destroyer",
         "tier": 2,
         "intro": "Dissolves every block touching the vat, and it leaks: the 2x3 patch underneath goes too. The label just says \"HYDRO\" and then a skull.",
         "area": {
           "origin": [
-            0,
-            0
+            1,
+            1
           ],
           "grid": [
-            "..",
-            "..",
-            "##",
-            "##",
-            "##"
+            ".##.",
+            "#..#",
+            "#..#",
+            ".##.",
+            ".##.",
+            ".##."
           ]
         },
         "help": 2.5
@@ -8011,7 +8176,7 @@ export const SHAPES = [
   },
   {
     id: "grumblesac_given_up",
-    name: "a grumblesaci",
+    name: "a grumblesac",
     grid: [
         "XX",
         "X."
@@ -8092,7 +8257,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
+    frequency: 0,
   },
   {
     id: "schlopwort_drain",
@@ -8757,8 +8922,20 @@ export const SHAPES = [
         "intro": "Swallows every block within two steps of it, then everything in the five columns under it slumps down into the hole. The traffic cone was a nice touch.",
         "parts": [
           {
-            "type": "acid",
-            "reach": 2
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                2,
+                2
+              ],
+              "grid": [
+                "..###..",
+                ".#####.",
+                "##...##",
+                ".#####.",
+                "..###.."
+              ]
+            }
           },
           {
             "type": "gravity",
@@ -8792,7 +8969,7 @@ export const SHAPES = [
     color: [["#262b44","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#5a6988","#5a6988","#262b44"],["#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#5a6988"],["#8b9bb4","#c0cbdc","#ffffff","#181425","#ffffff","#ffffff","#c0cbdc","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc"],["#5a6988","#8b9bb4","#ffffff","#ffffff","#181425","#ffffff","#f6757a","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#5a6988"],["#262b44","#5a6988","#181425","#8b9bb4","#5a6988","#181425","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#5a6988","#262b44"],["#262b44","#262b44","#262b44","#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#5a6988","#262b44","#262b44"],["","","","","","","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","","","","","",""],["","","","","","","#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#5a6988","","","","","",""],["","","","","","","#262b44","#8b9bb4","#c0cbdc","#8b9bb4","#c0cbdc","#262b44","","","","","",""],["","","","","","","#262b44","#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#8b9bb4","#c0cbdc","#8b9bb4","#141519","","","","","",""],["","","","","","","#141519","#262b44","#c0cbdc","#8b9bb4","#5a6988","#262b44","","","","","",""],["","","","","","","#141519","#262b44","#8b9bb4","#c0cbdc","#262b44","#262b44","","","","","",""],["","","","","","","#141519","#141519","#262b44","#8b9bb4","#c0cbdc","#262b44","","","","","",""],["","","","","","","#141519","#262b44","#262b44","#c0cbdc","#8b9bb4","#141519","","","","","",""],["","","","","","","#262b44","#262b44","#c0cbdc","#8b9bb4","#262b44","#262b44","","","","","",""],["","","","","","","#262b44","#c0cbdc","#c0cbdc","#262b44","#262b44","#262b44","","","","","",""],["","","","","","","#141519","#262b44","#262b44","#141519","#141519","#141519","","","","","",""]],
     difficulty: 2,
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -8810,8 +8987,19 @@ export const SHAPES = [
         "intro": "Melts every block it touches, then squirts glue into every empty cell under it (a 3x3 patch). Your fingers will be fine. Eventually.",
         "parts": [
           {
-            "type": "acid",
-            "reach": 1
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                1,
+                1
+              ],
+              "grid": [
+                ".###.",
+                "#...#",
+                "#.##.",
+                ".#..."
+              ]
+            }
           },
           {
             "type": "expander",
@@ -9251,67 +9439,67 @@ export const SHAPES = [
         "tier": 2,
         "fill": [
           [
-            "#efdcae",
-            "#a3561c",
-            "#e39a45",
-            "#e39a45",
-            "#e39a45",
-            "#a3561c",
-            "#efdcae"
+            "#d6b872",
+            "#dcc07e",
+            "#d6b872",
+            "#cfb06a",
+            "#e8d29a",
+            "#d6b872",
+            "#f2e2b6"
           ],
           [
-            "#a3561c",
-            "#e39a45",
-            "#9a4c18",
-            "#e39a45",
-            "#9a4c18",
-            "#e39a45",
-            "#a3561c"
+            "#cfb06a",
+            "#e8d29a",
+            "#cfb06a",
+            "#e3ca8c",
+            "#e3ca8c",
+            "#cfb06a",
+            "#e8d29a"
           ],
           [
-            "#a3561c",
-            "#e39a45",
-            "#e39a45",
-            "#e39a45",
-            "#e39a45",
-            "#e39a45",
-            "#a3561c"
+            "#efdcab",
+            "#e8d29a",
+            "#e8d29a",
+            "#e8d29a",
+            "#cfb06a",
+            "#f2e2b6",
+            "#e8d29a"
           ],
           [
-            "#efdcae",
-            "#a3561c",
-            "#a3561c",
-            "#a3561c",
-            "#a3561c",
-            "#a3561c",
-            "#efdcae"
+            "#e8d29a",
+            "#d6b872",
+            "#efdcab",
+            "#e3ca8c",
+            "#cfb06a",
+            "#e8d29a",
+            "#f2e2b6"
           ],
           [
-            "#efdcae",
-            "#7fb2dc",
-            "#7fb2dc",
-            "#7fb2dc",
-            "#efdcae",
-            "#7fb2dc",
-            "#efdcae"
+            "#e3ca8c",
+            "#e8d29a",
+            "#e8d29a",
+            "#e8d29a",
+            "#f2e2b6",
+            "#f2e2b6",
+            "#f2e2b6"
           ],
           [
-            "#7fb2dc",
-            "#16162a",
-            "#7fb2dc",
-            "#7fb2dc",
-            "#7fb2dc",
-            "#7fb2dc",
-            "#efdcae"
+            "#e8d29a",
+            "#e8d29a",
+            "#dcc07e",
+            "#e3ca8c",
+            "#e8d29a",
+            "#efdcab",
+            "#dcc07e"
           ],
           [
-            "#efdcae",
-            "#7fb2dc",
-            "#7fb2dc",
-            "#7fb2dc",
-            "#efdcae",
-            "#7fb2dc",
-            "#efdcae"
+            "#f2e2b6",
+            "#dcc07e",
+            "#f2e2b6",
+            "#d6b872",
+            "#e3ca8c",
+            "#efdcab",
+            "#d6b872"
           ]
         ],
         "intro": "Loaves and fishes: fills every empty cell beside it and in a wide basket below it with bread and fish. Somehow there are leftovers.",
@@ -9413,7 +9601,7 @@ export const SHAPES = [
   },
   {
     id: "time_machine",
-    name: "a granchfather clock time machine",
+    name: "a grandfather clock time machine",
     grid: [
         "X",
         "X",
@@ -9592,24 +9780,25 @@ export const SHAPES = [
       ],
     color: [["#6198ba","#b0d0e0","#d8dade","#d8dade","#d8dade","#b0d0e0","#6198ba"],["#b0d0e0","#f6f8fc","#f6f8fc","#f6f8fc","#f6f8fc","#f6f8fc","#70b0d8"],["#d8dade","#f6f8fc","#f6f8fc","#f6f8fc","#f6f8fc","#f6f8fc","#d8dade"],["#acb2be","#c3cad8","#c3cad8","#c3cad8","#c3cad8","#c3cad8","#acb2be"],["#d8dade","#f6f8fc","#f6f8fc","#f6f8fc","#f6f8fc","#f6f8fc","#d8dade"],["#70b0d8","#f6f8fc","#f6f8fc","#f6f8fc","#f6f8fc","#f6f8fc","#b0d0e0"],["#98b3c2","#70b0d8","#d8dade","#d8dade","#d8dade","#70b0d8","#98b3c2"]],
     powerup: {
-        "type": "acid",
-        "reach": 1,
+        "type": "destroyer",
         "tier": 3,
         "collapse": true,
         "area": {
           "origin": [
-            0,
-            0
+            1,
+            1
           ],
           "grid": [
-            "-"
+            ".#.",
+            "#.#",
+            ".#."
           ]
         },
         "intro": "Fizzes away every block touching it and then its whole row, wall to wall, and everything above drops down. Take two and call the stack in the morning.",
         "help": 4.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.6,
   },
@@ -9622,14 +9811,29 @@ export const SHAPES = [
       ],
     color: [["#932234","#ab283c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#ab283c","#932234"],["#ab283c","#ff9a9a","#c22d44","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#c22d44","#ff9a9a","#ab283c"],["#ab283c","#c22d44","#ef4656","#ef4656","#ff9a9a","#ff9a9a","#ef4656","#ef4656","#ef4656","#ef4656","#c22d44","#ab283c"],["#d23e4c","#ef4656","#ef4656","#ff9a9a","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ef4656","#7a1428","#ef4656","#ef4656","#7a1428","#ef4656","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ff7272","#ff7272","#ff7272","#ff7272","#ff7272","#ef4656","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ff7272","#ff7272","#9a1f33","#9a1f33","#9a1f33","#ff7272","#ff7272","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ff7272","#ff7272","#ff7272","#9a1f33","#ff7272","#ff7272","#ff7272","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ff7272","#ff7272","#ff7272","#ff7272","#ff7272","#ff7272","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#d23e4c"],["#b63541","#ab283c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#ab283c","#b63541"]],
     powerup: {
-        "type": "acid",
-        "reach": 3,
+        "type": "destroyer",
         "tier": 3,
         "intro": "Dissolves every block within three steps of it. Everything. Do not read the reviews.",
-        "help": 3
+        "help": 3,
+        "area": {
+          "origin": [
+            3,
+            3
+          ],
+          "grid": [
+            "...##...",
+            "..####..",
+            ".######.",
+            "###..###",
+            "###..###",
+            ".######.",
+            "..####..",
+            "...##..."
+          ]
+        }
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.5,
   },
@@ -9641,26 +9845,26 @@ export const SHAPES = [
       ],
     color: [["#997cb5","#e0e0e0","#b18fd1","#b18fd1","#b18fd1","#e0e0e0","#997cb5"],["#b18fd1","#c9a3ee","#ff9ccf","#c9a3ee","#c9a3ee","#8fe0c0","#b18fd1"],["#b18fd1","#a97fd6","#c9a3ee","#ffe36b","#c9a3ee","#c9a3ee","#b18fd1"],["#b18fd1","#c9a3ee","#ffe36b","#ffe36b","#ffe36b","#c9a3ee","#e089b6"],["#e089b6","#c9a3ee","#c9a3ee","#ffe36b","#a97fd6","#c9a3ee","#b18fd1"],["#b18fd1","#c9a3ee","#8fe0c0","#c9a3ee","#c9a3ee","#ff9ccf","#b18fd1"],["#c2c2c2","#b18fd1","#b18fd1","#b18fd1","#e0e0e0","#b18fd1","#997cb5"]],
     powerup: {
-        "type": "acid",
-        "reach": 2,
+        "type": "destroyer",
         "tier": 2,
         "area": {
           "origin": [
             2,
-            1
+            2
           ],
           "grid": [
-            "-...",
-            "-...",
-            "-...",
-            ".|||"
+            "..#..",
+            ".###.",
+            "##.##",
+            ".###.",
+            "..#.."
           ]
         },
         "intro": "Fizzes away every block within two steps of it, then sinks and dissolves the four cells below that too. The bath is now purple. The bath will always be purple.",
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.77,
   },
@@ -9672,16 +9876,16 @@ export const SHAPES = [
       ],
     color: [["#61a48a","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#61a48a"],["#4ba280","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#4ba280"],["#d9d9dc","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#cad1da"],["#d9d9dc","#f7f7fa","#85d4d5","#61d9db","#abd2d3","#85d4d5","#85d4d5","#abd2d3","#61d9db","#abd2d3","#85d4d5","#f7f7fa","#f7f7fa","#d9d9dc"],["#d9d9dc","#f7f7fa","#85d4d5","#abd2d3","#85d4d5","#85d4d5","#85d4d5","#85d4d5","#85d4d5","#85d4d5","#abd2d3","#f7f7fa","#e6eef8","#b2bece"],["#d9d9dc","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#e6eef8","#e6eef8","#e6eef8","#afb5bc"],["#bcbcbe","#d9d9dc","#d9d9dc","#d9d9dc","#d9d9dc","#d9d9dc","#d9d9dc","#b2bece","#d9d9dc","#cad1da","#d9d9dc","#b2bece","#afb5bc","#afb5bc"]],
     powerup: {
-        "type": "acid",
-        "reach": 1,
+        "type": "destroyer",
         "tier": 2,
         "area": {
           "origin": [
             1,
-            0
+            1
           ],
           "grid": [
-            "....",
+            ".##.",
+            "#..#",
             "####"
           ]
         },
@@ -9908,6 +10112,125 @@ export const SHAPES = [
     frequency: 0.9,
   },
   {
+    id: "shitting_cat",
+    name: "a shitting cat",
+    grid: [
+        "X"
+      ],
+    color: [["#b87a2e","#b66b27","#d58d36","#d58d36","#d58d36","#b66b27","#b87a2e"],["#d58d36","#ffb3c6","#cf7a2c","#f2a03d","#cf7a2c","#ffb3c6","#d58d36"],["#d58d36","#f2a03d","#f2a03d","#f2a03d","#f2a03d","#f2a03d","#d58d36"],["#d58d36","#9be26a","#4a3420","#f2a03d","#4a3420","#9be26a","#d58d36"],["#d58d36","#f2a03d","#f2a03d","#f2a03d","#ff8fa8","#f2a03d","#d58d36"],["#d58d36","#ffe2b8","#ffe2b8","#ff8fa8","#ffe2b8","#ffe2b8","#d58d36"],["#9d5d21","#e0c7a2","#e0c7a2","#e0c7a2","#e0c7a2","#e0c7a2","#9d5d21"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#83582f",
+            "#7a4f2a",
+            "#6b4423",
+            "#7a4f2a",
+            "#7a4f2a",
+            "#83582f",
+            "#6b4423"
+          ],
+          [
+            "#83582f",
+            "#6b4423",
+            "#83582f",
+            "#6b4423",
+            "#7a4f2a",
+            "#6b4423",
+            "#6b4423"
+          ],
+          [
+            "#6b4423",
+            "#83582f",
+            "#6b4423",
+            "#5f3b1d",
+            "#4e3016",
+            "#5f3b1d",
+            "#6b4423"
+          ],
+          [
+            "#83582f",
+            "#7a4f2a",
+            "#83582f",
+            "#83582f",
+            "#4e3016",
+            "#4e3016",
+            "#7a4f2a"
+          ],
+          [
+            "#5a381c",
+            "#6b4423",
+            "#4e3016",
+            "#5a381c",
+            "#6b4423",
+            "#5a381c",
+            "#5f3b1d"
+          ],
+          [
+            "#6b4423",
+            "#5a381c",
+            "#6b4423",
+            "#6b4423",
+            "#6b4423",
+            "#4e3016",
+            "#5a381c"
+          ],
+          [
+            "#5a381c",
+            "#6b4423",
+            "#4e3016",
+            "#7a4f2a",
+            "#6b4423",
+            "#5a381c",
+            "#83582f"
+          ]
+        ],
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            ".",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#",
+            "#"
+          ]
+        },
+        "intro": "Fills its column, all the way down to the floor."
+      },
+    rotation: {
+        "mode": "none"
+      },
+    frequency: 0.9,
+    claudeDraft: true,
+  },
+  {
     id: "swelling_sponge",
     name: "a big sponge",
     grid: [
@@ -10001,7 +10324,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -10517,7 +10840,7 @@ export const SHAPES = [
   },
   {
     id: "schrodingers_box",
-    name: "schrödinger's cat,,, maybei",
+    name: "schrödinger's cat... maybe",
     grid: [
         "XX"
       ],
@@ -10698,7 +11021,7 @@ export const SHAPES = [
   },
   {
     id: "tiptoe_elephant",
-    name: "an tiptoeing elephant",
+    name: "a tiptoeing elephant",
     grid: [
         "XXX",
         "X.X"
@@ -11295,21 +11618,21 @@ export const SHAPES = [
         "intro": "Dissolves every block touching it, plus a winding tunnel up to six blocks deep underneath. Then everything in its three columns settles down. The ants have a five-year plan.",
         "parts": [
           {
-            "type": "acid",
-            "reach": 1,
+            "type": "destroyer",
             "area": {
               "origin": [
-                0,
-                0
+                1,
+                1
               ],
               "grid": [
-                "...",
-                "...",
-                "#..",
-                "#.#",
-                ".##",
-                "..#",
-                ".##"
+                ".###.",
+                "#...#",
+                ".###.",
+                ".#...",
+                ".#.#.",
+                "..##.",
+                "...#.",
+                "..##."
               ]
             }
           },
@@ -11515,8 +11838,18 @@ export const SHAPES = [
         "intro": "Scrapes off every block touching it, then lays a course of bricks in every empty cell of the row under it, wall to wall. It whistles the whole time.",
         "parts": [
           {
-            "type": "acid",
-            "reach": 1
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                1,
+                1
+              ],
+              "grid": [
+                ".##.",
+                "#..#",
+                ".##."
+              ]
+            }
           },
           {
             "type": "expander",
@@ -11744,18 +12077,18 @@ export const SHAPES = [
         "intro": "Sucks up every block touching it plus two more under its head, then everything in the six columns around it drops down into the gaps. You will not hear the phone.",
         "parts": [
           {
-            "type": "acid",
-            "reach": 1,
+            "type": "destroyer",
             "area": {
               "origin": [
-                0,
-                0
+                1,
+                1
               ],
               "grid": [
-                "..",
-                "..",
-                "##",
-                "##"
+                ".#..",
+                "#.#.",
+                "#..#",
+                ".##.",
+                ".##."
               ]
             }
           },
@@ -11894,7 +12227,7 @@ export const SHAPES = [
   },
   {
     id: "ghost_lantern",
-    name: "a haunted ilantern",
+    name: "a haunted lantern",
     grid: [
         "X",
         "X"
@@ -12013,21 +12346,22 @@ export const SHAPES = [
             "type": "phantom"
           },
           {
-            "type": "acid",
-            "reach": 1,
+            "type": "destroyer",
             "area": {
               "origin": [
-                0,
+                1,
                 7
               ],
               "grid": [
-                "##",
-                "##",
-                "##",
-                "##",
-                "##",
-                "##",
-                ".."
+                ".##.",
+                ".##.",
+                ".##.",
+                ".##.",
+                ".##.",
+                ".##.",
+                ".##.",
+                "#..#",
+                ".##."
               ]
             }
           }
@@ -12419,8 +12753,19 @@ export const SHAPES = [
             "type": "phantom"
           },
           {
-            "type": "acid",
-            "reach": 1
+            "type": "destroyer",
+            "area": {
+              "origin": [
+                1,
+                1
+              ],
+              "grid": [
+                ".##.",
+                "#..#",
+                "#..#",
+                ".##."
+              ]
+            }
           },
           {
             "type": "gravity",

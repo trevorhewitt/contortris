@@ -242,7 +242,7 @@ test("movement and rotation respect walls", () => {
   assert.equal(tryMove(state, -1, 0), false);
   assert.equal(tryMove(state, 1, 0), true);
   placeActive(state, "katana", 3, 5);
-  assert.equal(tryRotate(state), false, "powerups don't rotate");
+  assert.equal(tryRotate(state), false, "this powerup doesn't rotate");
   setNextPiece(state, byId("pea"));
   assert.equal(state.next.id, "pea");
 });
