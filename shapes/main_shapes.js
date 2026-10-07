@@ -3275,7 +3275,7 @@ export const SHAPES = [
   },
   {
     id: "florgnorfepus_egg",
-    name: "a florgnorfepus egg. it's warm.",
+    name: "a warm pkforfer egg",
     grid: [
         "X"
       ],
@@ -3285,7 +3285,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
     nextShapeProbs: [
         0.2,
         0.1
@@ -3300,7 +3299,7 @@ export const SHAPES = [
   },
   {
     id: "snorfwiggle",
-    name: "a snorfwiggle with a head cold",
+    name: "a snorfwiggle",
     grid: [
         "X",
         "X"
@@ -3311,7 +3310,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
     nextShapeProbs: [
         0.12,
         0.1,
@@ -3380,7 +3378,7 @@ export const SHAPES = [
   },
   {
     id: "schlopwort",
-    name: "a schlopwort, fresh from the drain",
+    name: "a schlopwort",
     grid: [
         "XX.",
         ".XX"
@@ -3391,7 +3389,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
     nextShapeProbs: [
         0.15,
         0.15
@@ -6458,7 +6455,7 @@ export const SHAPES = [
   },
   {
     id: "black_cat",
-    name: "a black cat (it walked under a ladder)",
+    name: "an unlucky black cat",
     grid: [
         "XX"
       ],
@@ -6488,7 +6485,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "pogo_stick",
@@ -6544,17 +6540,16 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "hippo_bellyflop",
-    name: "a hippo in a tutu (belly flop)",
+    name: "a hippo in a tutui",
     grid: [
         "XXX",
         "XXX"
       ],
-    color: [["#8fd3ff","#8fd3ff","#8fd3ff","#9a8fc4","#9a8fc4","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff"],["#8fd3ff","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#8fd3ff","#8fd3ff","#8fd3ff"],["#8fd3ff","#9a8fc4","#1a1424","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#8fd3ff","#8fd3ff"],["#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#8fd3ff"],["#f2a5b8","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4"],["#f2a5b8","#f2a5b8","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#6b6196"],["#7a3050","#f2a5b8","#f2a5b8","#9a8fc4","#9a8fc4","#9a8fc4","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#6b6196"],["#f2a5b8","#f2a5b8","#f2a5b8","#9a8fc4","#9a8fc4","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#9a8fc4","#6b6196","#6b6196"],["#8fd3ff","#f2a5b8","#f2a5b8","#6b6196","#9a8fc4","#9a8fc4","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#9a8fc4","#6b6196","#6b6196","#8fd3ff"],["#8fd3ff","#8fd3ff","#8fd3ff","#6b6196","#6b6196","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#6b6196","#6b6196","#8fd3ff","#8fd3ff"],["#8fd3ff","#8fd3ff","#8fd3ff","#6b6196","#6b6196","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#6b6196","#6b6196","#8fd3ff","#8fd3ff","#8fd3ff"],["#3b7dd8","#e8f6ff","#3b7dd8","#6b6196","#6b6196","#3b7dd8","#e8f6ff","#3b7dd8","#3b7dd8","#e8f6ff","#3b7dd8","#3b7dd8","#3b7dd8","#6b6196","#6b6196","#3b7dd8","#e8f6ff","#3b7dd8"]],
+    color: [["#8fd3ff","#8fd3ff","#8fd3ff","#9a8fc4","#9a8fc4","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#ff7ccf","#ff7ccf","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff"],["#8fd3ff","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#8fd3ff","#8fd3ff","#8fd3ff"],["#8fd3ff","#9a8fc4","#1a1424","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#ff7ccf","#ff7ccf","#d062a8","#9a8fc4","#9a8fc4","#8fd3ff","#8fd3ff"],["#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#ff7ccf","#ff7ccf","#d062a8","#9a8fc4","#9a8fc4","#9a8fc4","#8fd3ff"],["#f2a5b8","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#ff7ccf","#ff7ccf","#ff7ccf","#ff7ccf","#9a8fc4","#9a8fc4","#9a8fc4"],["#f2a5b8","#f2a5b8","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#ff7ccf","#ff7ccf","#d062a8","#d062a8","#9a8fc4","#9a8fc4","#6b6196"],["#7a3050","#f2a5b8","#f2a5b8","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#ff7ccf","#ff7ccf","#d062a8","#9a8fc4","#9a8fc4","#9a8fc4","#6b6196"],["#f2a5b8","#f2a5b8","#f2a5b8","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#ff7ccf","#ff7ccf","#ff7ccf","#9a8fc4","#9a8fc4","#6b6196","#6b6196"],["#8fd3ff","#f2a5b8","#f2a5b8","#6b6196","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#ff7ccf","#ff7ccf","#d062a8","#d062a8","#6b6196","#6b6196","#8fd3ff"],["#8fd3ff","#8fd3ff","#8fd3ff","#6b6196","#6b6196","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#9a8fc4","#ff7ccf","#ff7ccf","#d062a8","#ff7ccf","#6b6196","#8fd3ff","#8fd3ff"],["#8fd3ff","#8fd3ff","#8fd3ff","#6b6196","#6b6196","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#ff7ccf","#ff7ccf","#6b6196","#8fd3ff","#8fd3ff","#8fd3ff"],["#8fd3ff","#8fd3ff","#8fd3ff","#6b6196","#6b6196","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#8fd3ff","#6b6196","#6b6196","#8fd3ff","#8fd3ff","#8fd3ff"]],
     powerup: {
         "type": "gravity",
         "tier": 3,
@@ -6580,7 +6575,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "ton_of_bricks",
@@ -6610,16 +6604,15 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0.9,
   },
   {
     id: "lost_marbles",
-    name: "your marbles (you have lost them)",
+    name: "lost marbles",
     grid: [
         "X"
       ],
-    color: [["#2b2d42","#2b2d42","#5cc8ff","#5cc8ff","#5cc8ff","#2b2d42","#2b2d42"],["#2b2d42","#5cc8ff","#ffffff","#5cc8ff","#5cc8ff","#2a7fbf","#2b2d42"],["#5cc8ff","#ffffff","#ff9a3c","#ff9a3c","#5cc8ff","#5cc8ff","#2a7fbf"],["#5cc8ff","#5cc8ff","#5cc8ff","#ff9a3c","#ff9a3c","#2a7fbf","#2a7fbf"],["#5cc8ff","#5cc8ff","#ff9a3c","#ff9a3c","#5cc8ff","#2a7fbf","#2a7fbf"],["#2b2d42","#5cc8ff","#5cc8ff","#2a7fbf","#2a7fbf","#2a7fbf","#2b2d42"],["#2b2d42","#2b2d42","#2a7fbf","#2a7fbf","#2a7fbf","#2b2d42","#2b2d42"]],
+    color: [["#061d28","#38a2d6","#5cc8ff","#5cc8ff","#5cc8ff","#0f3e61","#061d28"],["#38a2d6","#5cc8ff","#ffffff","#5cc8ff","#5cc8ff","#2a7fbf","#0f3e61"],["#5cc8ff","#ffffff","#5cc8ff","#5cc8ff","#5cc8ff","#5cc8ff","#2a7fbf"],["#5cc8ff","#5cc8ff","#5cc8ff","#5cc8ff","#5cc8ff","#38a2d6","#2a7fbf"],["#5cc8ff","#5cc8ff","#5cc8ff","#5cc8ff","#5cc8ff","#2a7fbf","#2a7fbf"],["#0f3e61","#5cc8ff","#5cc8ff","#38a2d6","#38a2d6","#2a7fbf","#0f3e61"],["#061d28","#0f3e61","#2a7fbf","#2a7fbf","#2a7fbf","#0f3e61","#061d28"]],
     powerup: {
         "type": "expander",
         "tier": 1,
@@ -6704,7 +6697,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "lawn_sprinkler",
@@ -6799,8 +6791,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "bouncy_castle",
@@ -6881,8 +6872,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "pancake_stack",
@@ -6890,7 +6880,7 @@ export const SHAPES = [
     grid: [
         "XX"
       ],
-    color: [["#ffe9c7","#ffe9c7","#ffe9c7","#ffe9c7","#ffe9c7","#ffe9c7","#fff27a","#fff27a","#ffe9c7","#ffe9c7","#ffe9c7","#ffe9c7","#ffe9c7","#ffe9c7"],["#ffe9c7","#ffe9c7","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#8a3d10","#ffe9c7","#ffe9c7"],["#ffe9c7","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#8a3d10","#8a3d10","#b8732e","#ffe9c7"],["#ffe9c7","#f6d08a","#f6d08a","#f6d08a","#f6d08a","#f6d08a","#f6d08a","#f6d08a","#f6d08a","#8a3d10","#f6d08a","#f6d08a","#e8a654","#ffe9c7"],["#ffe9c7","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#8a3d10","#e8a654","#e8a654","#ffe9c7"],["#ffe9c7","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#ffe9c7"],["#c9ccd6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#c9ccd6"]],
+    color: [["#ffe9c7","#ffe9c7","#ffe9c7","#ffe9c7","#ffe9c7","#ffe9c7","#fff27a","#fff27a","#ffe9c7","#ffe9c7","#ffe9c7","#ffe9c7","#ffe9c7","#ffe9c7"],["#ffe9c7","#ffe9c7","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#8a3d10","#ffe9c7","#ffe9c7"],["#ffe9c7","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#8a3d10","#8a3d10","#b8732e","#ffe9c7"],["#ffe9c7","#f6d08a","#f6d08a","#f6d08a","#f6d08a","#f6d08a","#f6d08a","#f6d08a","#f6d08a","#8a3d10","#f6d08a","#f6d08a","#e8a654","#ffe9c7"],["#ffe9c7","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#e8a654","#8a3d10","#e8a654","#e8a654","#ffe9c7"],["#ffe9c7","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#b8732e","#ffe9c7"],["#8a3d10","#8a3d10","#8a3d10","#8a3d10","#8a3d10","#8a3d10","#8a3d10","#8a3d10","#8a3d10","#8a3d10","#8a3d10","#8a3d10","#8a3d10","#8a3d10"]],
     powerup: {
         "type": "expander",
         "tier": 1,
@@ -6979,11 +6969,10 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "ball_pit",
-    name: "a ball pit (do not dive in)",
+    name: "a ball pit",
     grid: [
         "XX"
       ],
@@ -7074,15 +7063,14 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "lego_brick",
-    name: "a lego brick (barefoot warning)",
+    name: "lego bricks",
     grid: [
         "X"
       ],
-    color: [["#2b2d42","#ff8a8a","#e8333f","#2b2d42","#ff8a8a","#e8333f","#2b2d42"],["#2b2d42","#e8333f","#9e1f2a","#2b2d42","#e8333f","#9e1f2a","#2b2d42"],["#ff8a8a","#ff8a8a","#e8333f","#e8333f","#e8333f","#e8333f","#e8333f"],["#ff8a8a","#e8333f","#e8333f","#e8333f","#e8333f","#e8333f","#9e1f2a"],["#e8333f","#e8333f","#e8333f","#e8333f","#e8333f","#e8333f","#9e1f2a"],["#e8333f","#e8333f","#e8333f","#e8333f","#e8333f","#9e1f2a","#9e1f2a"],["#9e1f2a","#9e1f2a","#9e1f2a","#9e1f2a","#9e1f2a","#9e1f2a","#9e1f2a"]],
+    color: [["#3d0a0e","#ff8a8a","#e8333f","#3d0a0e","#ff8a8a","#e8333f","#3d0a0e"],["#3d0a0e","#e8333f","#9e1f2a","#3d0a0e","#e8333f","#9e1f2a","#3d0a0e"],["#ff8a8a","#ff8a8a","#e8333f","#e8333f","#e8333f","#e8333f","#e8333f"],["#ff8a8a","#e8333f","#e8333f","#e8333f","#e8333f","#e8333f","#9e1f2a"],["#e8333f","#e8333f","#e8333f","#e8333f","#e8333f","#e8333f","#9e1f2a"],["#e8333f","#e8333f","#e8333f","#e8333f","#e8333f","#9e1f2a","#9e1f2a"],["#9e1f2a","#9e1f2a","#9e1f2a","#9e1f2a","#9e1f2a","#9e1f2a","#9e1f2a"]],
     powerup: {
         "type": "expander",
         "tier": 2,
@@ -7171,7 +7159,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "cotton_candy",
@@ -7180,7 +7167,7 @@ export const SHAPES = [
         "X",
         "X"
       ],
-    color: [["#7fd0ff","#ffb3dc","#ffe3f3","#ffe3f3","#ffb3dc","#ff7cc4","#7fd0ff"],["#ffb3dc","#ffe3f3","#ffe3f3","#ffb3dc","#ffb3dc","#ffb3dc","#ff7cc4"],["#ffe3f3","#ffb3dc","#ffb3dc","#ffb3dc","#ff7cc4","#ffb3dc","#ff7cc4"],["#ffb3dc","#ffb3dc","#ffb3dc","#ff7cc4","#ffb3dc","#ffb3dc","#ff7cc4"],["#ff7cc4","#ffb3dc","#ffb3dc","#ffb3dc","#ff7cc4","#ff7cc4","#ff7cc4"],["#7fd0ff","#ff7cc4","#ff7cc4","#ff7cc4","#ff7cc4","#ff7cc4","#7fd0ff"],["#7fd0ff","#a8d8ff","#ff7cc4","#ff7cc4","#ff7cc4","#a8d8ff","#7fd0ff"],["#7fd0ff","#7fd0ff","#a8d8ff","#ff7cc4","#a8d8ff","#7fd0ff","#7fd0ff"],["#7fd0ff","#7fd0ff","#7fd0ff","#c9b99a","#7fd0ff","#7fd0ff","#7fd0ff"],["#7fd0ff","#7fd0ff","#7fd0ff","#c9b99a","#7fd0ff","#7fd0ff","#7fd0ff"],["#7fd0ff","#7fd0ff","#7fd0ff","#c9b99a","#7fd0ff","#7fd0ff","#7fd0ff"],["#7fd0ff","#7fd0ff","#7fd0ff","#c9b99a","#7fd0ff","#7fd0ff","#7fd0ff"],["#7fd0ff","#7fd0ff","#7fd0ff","#c9b99a","#7fd0ff","#7fd0ff","#7fd0ff"],["#7fd0ff","#7fd0ff","#7fd0ff","#c9b99a","#7fd0ff","#7fd0ff","#7fd0ff"]],
+    color: [["#963169","#ff7cc4","#ff7cc4","#ffe3f3","#ffb3dc","#ffb3dc","#ff7cc4"],["#ff7cc4","#d982b2","#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc","#ff7cc4"],["#963169","#ffb3dc","#ff7cc4","#ffb3dc","#ffb3dc","#ffe3f3","#ffb3dc"],["#963169","#d982b2","#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc"],["#963169","#d982b2","#ffb3dc","#ff7cc4","#ffb3dc","#ffb3dc","#ffb3dc"],["#ffe3f3","#d982b2","#ffb3dc","#ffb3dc","#ffe3f3","#ffb3dc","#963169"],["#d982b2","#ff7cc4","#ffb3dc","#ffb3dc","#ffb3dc","#963169","#963169"],["#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc","#963169"],["#963169","#ffb3dc","#ffe3f3","#ffb3dc","#ff7cc4","#d982b2","#963169"],["#963169","#d982b2","#ffb3dc","#ffb3dc","#ffb3dc","#d982b2","#d982b2"],["#ff7cc4","#d982b2","#ffb3dc","#ff7cc4","#ffb3dc","#ffb3dc","#ff7cc4"],["#ff7cc4","#d982b2","#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc","#ff7cc4"],["#d982b2","#ff7cc4","#ffb3dc","#ffb3dc","#ffb3dc","#ff7cc4","#963169"],["#963169","#d982b2","#ffb3dc","#ff7cc4","#ff7cc4","#963169","#963169"]],
     powerup: {
         "type": "expander",
         "tier": 1,
@@ -7266,11 +7253,10 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "foam_cousin",
-    name: "expanding foam's cousin from out of town",
+    name: "expanding foam: extreme",
     grid: [
         "X",
         "X"
@@ -7387,7 +7373,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "zeus_bolt",
@@ -7416,12 +7401,11 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "pacman",
-    name: "a hungry yellow chomper (legally distinct)",
+    name: "pacman with lips",
     grid: [
         "X"
       ],
@@ -7445,16 +7429,15 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "cheese_grater",
-    name: "a cheese grater (the scary side)",
+    name: "a cheese grater",
     grid: [
         "X",
         "X"
       ],
-    color: [["#ffd27a","#ffd27a","#262b44","#262b44","#262b44","#ffd27a","#ffd27a"],["#ffd27a","#ffd27a","#262b44","#ffd27a","#262b44","#ffd27a","#ffd27a"],["#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#7d879c","#c9d1df"],["#c9d1df","#262b44","#c9d1df","#262b44","#c9d1df","#262b44","#7d879c"],["#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#7d879c"],["#c9d1df","#262b44","#c9d1df","#262b44","#c9d1df","#262b44","#7d879c"],["#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#7d879c"],["#c9d1df","#262b44","#c9d1df","#262b44","#c9d1df","#262b44","#7d879c"],["#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#7d879c"],["#c9d1df","#262b44","#c9d1df","#262b44","#c9d1df","#262b44","#7d879c"],["#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#7d879c"],["#c9d1df","#262b44","#c9d1df","#262b44","#c9d1df","#262b44","#7d879c"],["#ffd23f","#ffd23f","#ffd23f","#ffd23f","#ffd23f","#ffd23f","#7d879c"],["#ffd23f","#e0a316","#ffd23f","#e0a316","#ffd23f","#e0a316","#7d879c"]],
+    color: [["#7d879c","#7d879c","#262b44","#262b44","#262b44","#7d879c","#7d879c"],["#7d879c","#7d879c","#262b44","#7d879c","#262b44","#7d879c","#7d879c"],["#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#7d879c"],["#c9d1df","#262b44","#c9d1df","#262b44","#c9d1df","#262b44","#7d879c"],["#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#7d879c"],["#c9d1df","#262b44","#c9d1df","#262b44","#c9d1df","#262b44","#7d879c"],["#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#7d879c"],["#c9d1df","#262b44","#c9d1df","#262b44","#c9d1df","#262b44","#7d879c"],["#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#7d879c"],["#c9d1df","#262b44","#c9d1df","#262b44","#c9d1df","#262b44","#7d879c"],["#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#7d879c"],["#c9d1df","#262b44","#c9d1df","#262b44","#c9d1df","#262b44","#7d879c"],["#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#c9d1df","#7d879c"],["#c9d1df","#262b44","#c9d1df","#262b44","#c9d1df","#262b44","#7d879c"]],
     powerup: {
         "type": "destroyer",
         "tier": 3,
@@ -7481,7 +7464,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "shuriken",
@@ -7516,16 +7498,15 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0.78,
   },
   {
     id: "rotten_lemon",
-    name: "a lemon that has gone off",
+    name: "a rotten lemoni",
     grid: [
         "X"
       ],
-    color: [["#262b44","#262b44","#262b44","#262b44","#262b44","#3e8948","#63c74d"],["#262b44","#262b44","#fee761","#fee761","#fee761","#3e8948","#262b44"],["#262b44","#fee761","#fff6b0","#fee761","#a8c060","#a8c060","#262b44"],["#fee761","#3e2731","#fee761","#6f8a3a","#3e2731","#fee761","#e8b830"],["#fee761","#fee761","#a8c060","#fee761","#fee761","#fee761","#e8b830"],["#262b44","#6f8a3a","#3e2731","#3e2731","#3e2731","#e8b830","#262b44"],["#b6ff3a","#262b44","#e8b830","#e8b830","#e8b830","#262b44","#262b44"]],
+    color: [["#6e5b26","#6e5b26","#fee761","#fee761","#fee761","#3e8948","#63c74d"],["#fee761","#fee761","#fee761","#fee761","#fee761","#3e8948","#e8b830"],["#fee761","#fee761","#fff6b0","#fee761","#a8c060","#a8c060","#e8b830"],["#fee761","#fff6b0","#fee761","#6f8a3a","#fee761","#fee761","#e8b830"],["#fee761","#fee761","#a8c060","#fee761","#fee761","#e8b830","#6e5b26"],["#e8b830","#6f8a3a","#fee761","#fee761","#e8b830","#e8b830","#6e5b26"],["#b6ff3a","#e8b830","#e8b830","#e8b830","#6e5b26","#6e5b26","#6e5b26"]],
     powerup: {
         "type": "acid",
         "reach": 1,
@@ -7546,7 +7527,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "alien_blood",
@@ -7581,17 +7561,16 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.8,
-    claudeDraft: true,
+    frequency: 0.89,
   },
   {
     id: "stomach",
-    name: "a stomach (with acid in)",
+    name: "a leaky stomach full of acid",
     grid: [
         "X..",
         "XXX"
       ],
-    color: [["#262b44","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#262b44","","","","","","","","","","","",""],["#262b44","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#262b44","","","","","","","","","","","",""],["#262b44","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#262b44","","","","","","","","","","","",""],["#262b44","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#262b44","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#f0a0b8","#e0708f","#e0708f","#7a1f3d","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#f0a0b8","#f0a0b8","#e0708f","#e0708f","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#ffd8e4","#f0a0b8","#f0a0b8","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#7a1f3d","#262b44"],["#7a1f3d","#f0a0b8","#ffd8e4","#3e2731","#f0a0b8","#e0708f","#e0708f","#e0708f","#3e2731","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#7a1f3d"],["#7a1f3d","#f0a0b8","#e0708f","#e0708f","#3e2731","#3e2731","#3e2731","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#7a1f3d"],["#7a1f3d","#e0708f","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#f4ffd0","#9ae83a","#9ae83a","#9ae83a","#e0708f","#e0708f","#7a1f3d"],["#262b44","#7a1f3d","#9ae83a","#f4ffd0","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#5aa020","#9ae83a","#9ae83a","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#7a1f3d","#262b44"],["#262b44","#262b44","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#262b44","#262b44"]],
+    color: [["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","",""],["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","",""],["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","",""],["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#f0a0b8","#e0708f","#e0708f","#7a1f3d","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#f0a0b8","#f0a0b8","#e0708f","#7a1f3d","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#ffd8e4","#f0a0b8","#f0a0b8","#e0708f","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#451c2a"],["#7a1f3d","#f0a0b8","#ffd8e4","#3e2731","#f0a0b8","#e0708f","#e0708f","#e0708f","#3e2731","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#7a1f3d"],["#7a1f3d","#f0a0b8","#e0708f","#e0708f","#3e2731","#3e2731","#3e2731","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#7a1f3d"],["#7a1f3d","#e0708f","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#f4ffd0","#9ae83a","#9ae83a","#9ae83a","#e0708f","#e0708f","#7a1f3d"],["#451c2a","#7a1f3d","#9ae83a","#f4ffd0","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#5aa020","#9ae83a","#9ae83a","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#7a1f3d","#451c2a"],["#451c2a","#451c2a","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#451c2a","#451c2a"]],
     powerup: {
         "type": "acid",
         "reach": 2,
@@ -7603,7 +7582,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "vinegar_bottle",
@@ -7624,8 +7602,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.8,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "acid_vat",
@@ -7658,8 +7635,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.5,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "champagne",
@@ -7688,8 +7664,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.8,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "jack_in_the_box",
@@ -7718,8 +7693,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.8,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "popped_balloon",
@@ -7753,8 +7727,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "volcano",
@@ -7789,8 +7762,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.5,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "mentos_cola",
@@ -7826,8 +7798,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.8,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "fondue",
@@ -7911,8 +7882,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.7,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "lava_blob",
@@ -7996,8 +7966,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.7,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "hair_gel",
@@ -8081,17 +8050,16 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "grumblesac_given_up",
-    name: "a grumblesac that has given up",
+    name: "a grumblesaci",
     grid: [
         "XX",
         "X."
       ],
-    color: [["#984c61","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#ad8892"],["#b35a72","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ffc8d6","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#b35a72"],["#b35a72","#ff9fb5","#ff9fb5","#ffc8d6","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#9a3aa8","#ff9fb5","#ff9fb5","#b35a72"],["#b35a72","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#b35a72"],["#cc7f91","#e0708f","#e0708f","#e0708f","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#e0708f","#e0708f","#e0708f","#ff9fb5","#ff9fb5","#b35a72"],["#cc7f91","#3a0e1e","#3a0e1e","#3a0e1e","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#3a0e1e","#3a0e1e","#3a0e1e","#ff9fb5","#ff9fb5","#b35a72"],["#cc7f91","#ff9fb5","#ff9fb5","#ff9fb5","#a8325a","#a8325a","#972d51","#862848","#862848","#cc7f91","#cc7f91","#cc7f91","#b35a72","#984c61"],["#b35a72","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#b35a72","","","","","","",""],["#b35a72","#ff9fb5","#9a3aa8","#ff9fb5","#ff9fb5","#ff9fb5","#b35a72","","","","","","",""],["#b35a72","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#e0708f","#cc7f91","","","","","","",""],["#b35a72","#ff9fb5","#ff9fb5","#e0708f","#ff9fb5","#ff9fb5","#cc7f91","","","","","","",""],["#cc7f91","#ff9fb5","#8fd8ff","#ff9fb5","#ff9fb5","#ff9fb5","#b35a72","","","","","","",""],["#cc7f91","#e0708f","#ff9fb5","#ff9fb5","#9a3aa8","#ff9fb5","#cc7f91","","","","","","",""],["#984c61","#b35a72","#b35a72","#7b2e86","#b35a72","#b35a72","#984c61","","","","","","",""]],
+    color: [["#984c61","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#b35a72","#ad8892"],["#b35a72","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ffc8d6","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#b35a72"],["#b35a72","#ff9fb5","#ff9fb5","#ffc8d6","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#9a3aa8","#ff9fb5","#ff9fb5","#b35a72"],["#b35a72","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#b35a72"],["#cc7f91","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#b35a72"],["#cc7f91","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#b35a72"],["#cc7f91","#ff9fb5","#ff9fb5","#ff9fb5","#b35a72","#b35a72","#984c61","#984c61","#b35a72","#cc7f91","#cc7f91","#cc7f91","#b35a72","#984c61"],["#b35a72","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#b35a72","","","","","","",""],["#b35a72","#ff9fb5","#9a3aa8","#ff9fb5","#ff9fb5","#ff9fb5","#b35a72","","","","","","",""],["#b35a72","#ff9fb5","#ff9fb5","#ff9fb5","#ff9fb5","#e0708f","#cc7f91","","","","","","",""],["#b35a72","#ff9fb5","#ff9fb5","#e0708f","#ff9fb5","#ff9fb5","#cc7f91","","","","","","",""],["#cc7f91","#ff9fb5","#8fd8ff","#ff9fb5","#ff9fb5","#ff9fb5","#b35a72","","","","","","",""],["#cc7f91","#e0708f","#ff9fb5","#ff9fb5","#9a3aa8","#ff9fb5","#cc7f91","","","","","","",""],["#984c61","#b35a72","#b35a72","#7b2e86","#b35a72","#b35a72","#984c61","","","","","","",""]],
     powerup: {
         "type": "goo",
         "tier": 1,
@@ -8168,7 +8136,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "schlopwort_drain",
@@ -8253,8 +8220,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.7,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "will_o_wisp",
@@ -8272,12 +8238,11 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0.84,
   },
   {
     id: "quantum_electron",
-    name: "a quantum tunnelling electron",
+    name: "an electron",
     grid: [
         "X"
       ],
@@ -8292,7 +8257,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "ghost_pepper",
@@ -8301,7 +8265,7 @@ export const SHAPES = [
         "X",
         "X"
       ],
-    color: [["#2d593c","#4c865e","#346645","#86bc94","#346645","#4c865e","#2d593c"],["#4c865e","#5aa070","#5aa070","#5aa070","#5aa070","#5aa070","#4c865e"],["#346645","#5aa070","#3e7a52","#5aa070","#3e7a52","#5aa070","#346645"],["#c35e72","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#6a2a40","#ffb0b8","#6a2a40","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#6a2a40","#ffb0b8","#6a2a40","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffb0b8","#ffe0e4","#a03050","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffb0b8","#ffe0e4","#ffb0b8","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffb0b8","#ffb0b8","#ffb0b8","#e87088","#ffb0b8","#c35e72"],["#c35e72","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#e87088","#c35e72"],["#aa5263","#c35e72","#d6949b","#d6949b","#d6949b","#c35e72","#aa5263"]],
+    color: [["#2d593c","#4c865e","#346645","#86bc94","#346645","#4c865e","#2d593c"],["#4c865e","#5aa070","#5aa070","#5aa070","#5aa070","#5aa070","#4c865e"],["#346645","#5aa070","#3e7a52","#5aa070","#3e7a52","#5aa070","#346645"],["#c35e72","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#6a2a40","#ffb0b8","#6a2a40","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#6a2a40","#ffb0b8","#6a2a40","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffb0b8","#ffe0e4","#a03050","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffb0b8","#ffe0e4","#ffb0b8","#ffb0b8","#ffb0b8","#aa5263"],["#d6949b","#ffb0b8","#ffb0b8","#ffb0b8","#e87088","#ffb0b8","#6a2a40"],["#aa5263","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#d6949b","#6a2a40"],["#6a2a40","#ffb0b8","#aa5263","#ffb0b8","#aa5263","#d6949b","#6a2a40"]],
     powerup: {
         "type": "phantom",
         "tier": 1,
@@ -8313,7 +8277,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "poltergeist_teacup",
@@ -8332,12 +8295,11 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.9,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "bar_of_soap",
-    name: "a wet bar of soap",
+    name: "prison soap",
     grid: [
         "XX"
       ],
@@ -8352,7 +8314,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "spirit_level",
@@ -8370,12 +8331,11 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.8,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "greased_piglet",
-    name: "a greased piglet",
+    name: "a greasy piglet",
     grid: [
         "XXX"
       ],
@@ -8390,11 +8350,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "phantom_finger",
-    name: "a phantom finger",
+    name: "the ghost of a finger",
     grid: [
         "X.",
         "XX"
@@ -8410,7 +8369,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "ghost_eel",
@@ -8428,8 +8386,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.6,
-    claudeDraft: true,
+    frequency: 0.67,
   },
   {
     id: "ninja",
@@ -8448,8 +8405,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.6,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "buttered_cat",
@@ -8468,17 +8424,16 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
-    claudeDraft: true,
+    frequency: 0.54,
   },
   {
     id: "cat_burglar",
     name: "a cat burglar",
     grid: [
-        "X..",
-        "XXX"
+        "X.",
+        "XX"
       ],
-    color: [["#71717c","#d685a5","#81818f","#81818f","#d685a5","#71717c","","","","","","","","","","","",""],["#81818f","#9a9aaa","#9a9aaa","#9a9aaa","#9a9aaa","#81818f","","","","","","","","","","","",""],["#272c56","#2e3466","#2e3466","#2e3466","#2e3466","#272c56","","","","","","","","","","","",""],["#272c56","#fee761","#2e3466","#2e3466","#fee761","#272c56","","","","","","","","","","","",""],["#81818f","#9a9aaa","#9a9aaa","#ff9ec4","#9a9aaa","#81818f","","","","","","","","","","","",""],["#81818f","#6e6e82","#9a9aaa","#6e6e82","#9a9aaa","#5c5c6d","","","","","","","","","","","",""],["#31375e","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#31375e","#31375e","#31375e","#31375e","#31375e","#31375e","#664328","#8d654a","#664328","#664328","#8d654a","#593a23"],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#9a9aaa","#a87858","#a87858","#7a5030","#7a5030","#a87858","#8d654a"],["#31375e","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#9a9aaa","#9a9aaa","#9a9aaa","#a87858","#a87858","#fee761","#a87858","#8d654a"],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#9a9aaa","#9a9aaa","#a87858","#fee761","#fee761","#fee761","#a87858","#8d654a"],["#31375e","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#a87858","#a87858","#a87858","#fee761","#a87858","#8d654a"],["#71717c","#81818f","#5c5c6d","#31375e","#31375e","#31375e","#31375e","#31375e","#81818f","#81818f","#5c5c6d","#31375e","#664328","#8d654a","#8d654a","#8d654a","#8d654a","#593a23"]],
+    color: [["#71717c","#d685a5","#81818f","#81818f","#d685a5","#71717c","","","","","",""],["#81818f","#9a9aaa","#9a9aaa","#9a9aaa","#9a9aaa","#81818f","","","","","",""],["#272c56","#2e3466","#2e3466","#2e3466","#2e3466","#272c56","","","","","",""],["#272c56","#fee761","#2e3466","#2e3466","#fee761","#272c56","","","","","",""],["#81818f","#9a9aaa","#9a9aaa","#ff9ec4","#9a9aaa","#81818f","","","","","",""],["#81818f","#6e6e82","#9a9aaa","#6e6e82","#9a9aaa","#5c5c6d","","","","","",""],["#31375e","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#31375e","#31375e","#31375e","#31375e","#31375e","#31375e"],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#9a9aaa"],["#31375e","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#9a9aaa","#9a9aaa"],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#9a9aaa","#9a9aaa"],["#31375e","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270"],["#71717c","#81818f","#5c5c6d","#31375e","#31375e","#31375e","#31375e","#31375e","#81818f","#81818f","#5c5c6d","#31375e"]],
     powerup: {
         "type": "phantom",
         "tier": 2,
@@ -8489,7 +8444,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "pile_driver",
@@ -8541,8 +8495,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0.98,
   },
   {
     id: "dentist_drill",
@@ -8661,17 +8614,16 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "cement_mixer",
-    name: "a cement mixer",
+    name: "a cement mixer full of piss",
     grid: [
         "XXX",
         "XXX"
       ],
-    color: [["#262b44","#262b44","#262b44","#262b44","#262b44","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44"],["#262b44","#262b44","#262b44","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#262b44","#262b44","#262b44","#262b44"],["#262b44","#262b44","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#262b44","#262b44","#262b44"],["#262b44","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#262b44","#e43b44","#e43b44"],["#262b44","#c0cbdc","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#c0cbdc","#262b44","#e43b44","#a6e4ff"],["#262b44","#262b44","#c0cbdc","#c0cbdc","#c0cbdc","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#c0cbdc","#c0cbdc","#c0cbdc","#262b44","#262b44","#e43b44","#a6e4ff"],["#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#e43b44","#e43b44","#e43b44","#e43b44"],["#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#a22633","#a22633","#a22633","#a22633"],["#8b9bb4","#181425","#181425","#181425","#181425","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#181425","#181425","#181425","#181425","#8b9bb4","#181425","#181425","#181425","#181425"],["#262b44","#181425","#c0cbdc","#c0cbdc","#181425","#262b44","#262b44","#262b44","#262b44","#181425","#c0cbdc","#c0cbdc","#181425","#262b44","#181425","#c0cbdc","#c0cbdc","#181425"],["#262b44","#181425","#c0cbdc","#c0cbdc","#181425","#262b44","#262b44","#262b44","#262b44","#181425","#c0cbdc","#c0cbdc","#181425","#262b44","#181425","#c0cbdc","#c0cbdc","#181425"],["#262b44","#262b44","#181425","#181425","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#181425","#181425","#262b44","#262b44","#262b44","#181425","#181425","#262b44"]],
+    color: [["#262b44","#262b44","#262b44","#262b44","#262b44","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44"],["#262b44","#262b44","#262b44","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#262b44","#262b44","#262b44","#262b44"],["#262b44","#262b44","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#e43b44","#e43b44","#e43b44"],["#262b44","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#e43b44","#a6e4ff","#a6e4ff"],["#262b44","#c0cbdc","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#ffffff","#f77622","#c0cbdc","#e43b44","#a6e4ff","#a6e4ff"],["#262b44","#262b44","#c0cbdc","#c0cbdc","#c0cbdc","#ffffff","#ffffff","#ffffff","#f77622","#ffffff","#ffffff","#c0cbdc","#c0cbdc","#c0cbdc","#262b44","#e43b44","#a6e4ff","#a6e4ff"],["#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#c0cbdc","#e43b44","#e43b44","#e43b44","#e43b44"],["#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#a22633","#a22633","#a22633","#a22633"],["#8b9bb4","#181425","#181425","#181425","#181425","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#181425","#181425","#181425","#181425","#8b9bb4","#181425","#181425","#181425","#181425"],["#262b44","#181425","#c0cbdc","#c0cbdc","#181425","#262b44","#262b44","#262b44","#262b44","#181425","#c0cbdc","#c0cbdc","#181425","#262b44","#181425","#c0cbdc","#c0cbdc","#181425"],["#262b44","#181425","#c0cbdc","#c0cbdc","#181425","#262b44","#262b44","#262b44","#262b44","#181425","#c0cbdc","#c0cbdc","#181425","#262b44","#181425","#c0cbdc","#c0cbdc","#181425"],["#262b44","#262b44","#181425","#181425","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#181425","#181425","#262b44","#262b44","#262b44","#181425","#181425","#262b44"]],
     powerup: {
         "type": "combo",
         "tier": 2,
@@ -8777,7 +8729,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "erupting_volcano",
@@ -8834,8 +8785,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "sinkhole",
@@ -8843,7 +8793,7 @@ export const SHAPES = [
     grid: [
         "XXX"
       ],
-    color: [["#5ca848","#4fa545","#4fa545","#69c153","#4fa545","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#4fa545","#4fa545","#69c153","#4fa545","#45903c"],["#4fa545","#5cc050","#d8a468","#d8a468","#b07a44","#b07a44","#8a5a30","#8a5a30","#8a5a30","#ffa050","#8a5a30","#8a5a30","#c8b090","#b07a44","#d8a468","#d8a468","#5cc050","#69c153"],["#4fa545","#d8a468","#b07a44","#b07a44","#c8b090","#6e4424","#6e4424","#5a3418","#ff7a1a","#ffffff","#ff7a1a","#6e4424","#6e4424","#8a5a30","#b07a44","#b07a44","#d8a468","#4fa545"],["#69c153","#d8a468","#b07a44","#b07a44","#8a5a30","#6e4424","#6e4424","#5a3418","#ff7a1a","#ff7a1a","#ff7a1a","#6e4424","#6e4424","#c8b090","#b07a44","#b07a44","#d8a468","#4fa545"],["#4fa545","#5cc050","#d8a468","#d8a468","#b07a44","#b07a44","#c8b090","#8a5a30","#8a5a30","#8a5a30","#8a5a30","#8a5a30","#b07a44","#b07a44","#d8a468","#d8a468","#5cc050","#69c153"],["#45903c","#69c153","#4fa545","#4fa545","#69c153","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#69c153","#4fa545","#4fa545","#69c153","#45903c"]],
+    color: [["#5ca848","#4fa545","#4fa545","#69c153","#4fa545","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#4fa545","#4fa545","#69c153","#4fa545","#45903c"],["#4fa545","#5cc050","#d8a468","#d8a468","#b07a44","#b07a44","#8a5a30","#8a5a30","#8a5a30","#ffa050","#8a5a30","#8a5a30","#c8b090","#b07a44","#d8a468","#d8a468","#5cc050","#69c153"],["#4fa545","#d8a468","#b07a44","#b07a44","#c8b090","#6e4424","#6e4424","#5a3418","#2e2e2e","#2e2e2e","#2e2e2e","#6e4424","#6e4424","#8a5a30","#b07a44","#b07a44","#d8a468","#4fa545"],["#69c153","#d8a468","#b07a44","#b07a44","#8a5a30","#6e4424","#6e4424","#5a3418","#2e2e2e","#2e2e2e","#2e2e2e","#6e4424","#6e4424","#c8b090","#b07a44","#b07a44","#d8a468","#4fa545"],["#4fa545","#5cc050","#d8a468","#d8a468","#b07a44","#b07a44","#c8b090","#8a5a30","#8a5a30","#8a5a30","#8a5a30","#8a5a30","#b07a44","#b07a44","#d8a468","#d8a468","#5cc050","#69c153"],["#45903c","#69c153","#4fa545","#4fa545","#69c153","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#ba8d59","#69c153","#4fa545","#4fa545","#69c153","#45903c"]],
     powerup: {
         "type": "combo",
         "tier": 2,
@@ -8873,62 +8823,21 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "tornado",
-    name: "a tornado (with a cow in it)",
+    name: "a tornado with a cow in it",
     grid: [
         "XXX",
         ".X.",
         ".X."
       ],
-    color: [["#262b44","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#5a6988","#5a6988","#262b44"],["#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#5a6988"],["#8b9bb4","#c0cbdc","#ffffff","#181425","#ffffff","#ffffff","#c0cbdc","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc"],["#5a6988","#8b9bb4","#ffffff","#ffffff","#181425","#ffffff","#f6757a","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#5a6988"],["#262b44","#5a6988","#181425","#8b9bb4","#5a6988","#181425","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#5a6988","#262b44"],["#262b44","#262b44","#262b44","#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#5a6988","#262b44","#262b44"],["","","","","","","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","","","","","",""],["","","","","","","#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#5a6988","","","","","",""],["","","","","","","#262b44","#8b9bb4","#c0cbdc","#8b9bb4","#c0cbdc","#262b44","","","","","",""],["","","","","","","#262b44","#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#8b9bb4","#c0cbdc","#8b9bb4","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#c0cbdc","#8b9bb4","#5a6988","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#8b9bb4","#c0cbdc","#262b44","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#262b44","#8b9bb4","#c0cbdc","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#262b44","#c0cbdc","#8b9bb4","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#c0cbdc","#8b9bb4","#262b44","#262b44","","","","","",""],["","","","","","","#262b44","#ead4aa","#c0cbdc","#ead4aa","#b86f50","#262b44","","","","","",""],["","","","","","","#ead4aa","#b86f50","#ead4aa","#ead4aa","#b86f50","#ead4aa","","","","","",""]],
-    powerup: {
-        "type": "combo",
-        "tier": 3,
-        "intro": "Picks up the blocks around it and flings them high into the air, then everything in the five columns under it settles down into the gaps. The cow is fine. The cow has seen things.",
-        "parts": [
-          {
-            "type": "blast",
-            "push": 5,
-            "area": {
-              "origin": [
-                2,
-                1
-              ],
-              "grid": [
-                "#######",
-                "#######",
-                "#######",
-                "#######",
-                "#######",
-                "#######",
-                "#######"
-              ]
-            }
-          },
-          {
-            "type": "gravity",
-            "direction": "down",
-            "area": {
-              "origin": [
-                1,
-                0
-              ],
-              "grid": [
-                "|||||"
-              ]
-            }
-          }
-        ],
-        "help": 3
-      },
+    color: [["#262b44","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#5a6988","#8b9bb4","#5a6988","#5a6988","#5a6988","#5a6988","#262b44"],["#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#5a6988"],["#8b9bb4","#c0cbdc","#ffffff","#181425","#ffffff","#ffffff","#c0cbdc","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc"],["#5a6988","#8b9bb4","#ffffff","#ffffff","#181425","#ffffff","#f6757a","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#5a6988"],["#262b44","#5a6988","#181425","#8b9bb4","#5a6988","#181425","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#5a6988","#262b44"],["#262b44","#262b44","#262b44","#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","#8b9bb4","#5a6988","#262b44","#262b44"],["","","","","","","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#8b9bb4","#c0cbdc","","","","","",""],["","","","","","","#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#8b9bb4","#5a6988","","","","","",""],["","","","","","","#262b44","#8b9bb4","#c0cbdc","#8b9bb4","#c0cbdc","#262b44","","","","","",""],["","","","","","","#262b44","#5a6988","#8b9bb4","#c0cbdc","#8b9bb4","#262b44","","","","","",""],["","","","","","","#262b44","#262b44","#8b9bb4","#c0cbdc","#8b9bb4","#141519","","","","","",""],["","","","","","","#141519","#262b44","#c0cbdc","#8b9bb4","#5a6988","#262b44","","","","","",""],["","","","","","","#141519","#262b44","#8b9bb4","#c0cbdc","#262b44","#262b44","","","","","",""],["","","","","","","#141519","#141519","#262b44","#8b9bb4","#c0cbdc","#262b44","","","","","",""],["","","","","","","#141519","#262b44","#262b44","#c0cbdc","#8b9bb4","#141519","","","","","",""],["","","","","","","#262b44","#262b44","#c0cbdc","#8b9bb4","#262b44","#262b44","","","","","",""],["","","","","","","#262b44","#c0cbdc","#c0cbdc","#262b44","#262b44","#262b44","","","","","",""],["","","","","","","#141519","#262b44","#262b44","#141519","#141519","#141519","","","","","",""]],
+    difficulty: 2,
     rotation: {
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "hot_glue_gun",
@@ -9033,8 +8942,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "car_airbag",
@@ -9153,12 +9061,11 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "hard_hats",
-    name: "a demolition crew (two tiny hard hats)",
+    name: "a tiny demolition crew",
     grid: [
         "XX"
       ],
@@ -9281,11 +9188,10 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "plunger",
-    name: "a plumber's plunger",
+    name: "a big plunger",
     grid: [
         "X",
         "X"
@@ -9333,7 +9239,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "old_testament",
@@ -9342,7 +9247,7 @@ export const SHAPES = [
         "X",
         "X"
       ],
-    color: [["#d9a63a","#4a2410","#9a5e34","#9a5e34","#9a5e34","#d9a63a","#d9a63a"],["#d9a63a","#c9952e","#6b3519","#d9a63a","#d9a63a","#d9a63a","#7a4020"],["#d9a63a","#4a2410","#6b3519","#7a4020","#7a4020","#7a4020","#7a4020"],["#2a1408","#4a2410","#6b3519","#a6782a","#a6782a","#a6782a","#7a4020"],["#d9a63a","#c9952e","#6b3519","#7a4020","#ff8a1c","#7a4020","#7a4020"],["#2a1408","#4a2410","#6b3519","#7a4020","#ff8a1c","#d8401a","#7a4020"],["#2a1408","#4a2410","#6b3519","#d8401a","#ff8a1c","#ff8a1c","#7a4020"],["#d9a63a","#c9952e","#6b3519","#7a4020","#ff8a1c","#ffe066","#ff8a1c"],["#2a1408","#4a2410","#6b3519","#d8401a","#ffe066","#ffe066","#ff8a1c"],["#2a1408","#4a2410","#6b3519","#ff8a1c","#ffe066","#ffe066","#d8401a"],["#2a1408","#4a2410","#6b3519","#7a4020","#d8401a","#ff8a1c","#d8401a"],["#d9a63a","#c9952e","#6b3519","#7a4020","#7a4020","#7a4020","#7a4020"],["#d9a63a","#4a2410","#6b3519","#a6782a","#a6782a","#a6782a","#7a4020"],["#d9a63a","#4a2410","#4a2410","#4a2410","#4a2410","#d9a63a","#d9a63a"]],
+    color: [["#d9a63a","#4a2410","#9a5e34","#9a5e34","#9a5e34","#d9a63a","#d9a63a"],["#d9a63a","#c9952e","#6b3519","#d9a63a","#d9a63a","#d9a63a","#7a4020"],["#d9a63a","#4a2410","#6b3519","#7a4020","#7a4020","#7a4020","#7a4020"],["#2a1408","#4a2410","#6b3519","#a6782a","#a6782a","#a6782a","#7a4020"],["#d9a63a","#c9952e","#6b3519","#7a4020","#7a4020","#7a4020","#7a4020"],["#2a1408","#4a2410","#6b3519","#7a4020","#7a4020","#7a4020","#7a4020"],["#2a1408","#4a2410","#6b3519","#7a4020","#a6782a","#a6782a","#7a4020"],["#d9a63a","#c9952e","#6b3519","#7a4020","#a6782a","#a6782a","#7a4020"],["#2a1408","#4a2410","#6b3519","#7a4020","#a6782a","#a6782a","#7a4020"],["#2a1408","#4a2410","#6b3519","#7a4020","#a6782a","#a6782a","#7a4020"],["#2a1408","#4a2410","#6b3519","#7a4020","#7a4020","#7a4020","#7a4020"],["#d9a63a","#c9952e","#6b3519","#7a4020","#7a4020","#7a4020","#7a4020"],["#d9a63a","#4a2410","#6b3519","#a6782a","#a6782a","#a6782a","#7a4020"],["#d9a63a","#4a2410","#4a2410","#4a2410","#4a2410","#d9a63a","#d9a63a"]],
     powerup: {
         "type": "destroyer",
         "tier": 2,
@@ -9372,7 +9277,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
-    claudeDraft: true,
     tags: [
         "scripture"
       ],
@@ -9384,7 +9288,7 @@ export const SHAPES = [
         "X",
         "X"
       ],
-    color: [["#3a0810","#6a1220","#c84058","#c84058","#c84058","#c84058","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#f0c94a","#f0c94a","#f0c94a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#a8243a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#f0c94a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#a8243a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#f0c94a","#f0c94a","#f0c94a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#a8243a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#b08a20","#b08a20","#b08a20","#a8243a"],["#3a0810","#6a1220","#6a1220","#6a1220","#6a1220","#6a1220","#6a1220"]],
+    color: [["#3a0810","#6a1220","#c84058","#c84058","#c84058","#c84058","#a8243a"],["#3a0810","#6a1220","#f0c94a","#f0c94a","#f0c94a","#f0c94a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#a8243a","#a8243a","#a8243a"],["#3a0810","#6a1220","#f0c94a","#f0c94a","#f0c94a","#f0c94a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#a8243a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#f0c94a","#f0c94a","#f0c94a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#a8243a","#a8243a","#a8243a"],["#3a0810","#6a1220","#b08a20","#b08a20","#b08a20","#b08a20","#a8243a"],["#3a0810","#6a1220","#6a1220","#6a1220","#6a1220","#6a1220","#6a1220"]],
     powerup: {
         "type": "expander",
         "tier": 2,
@@ -9474,7 +9378,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
-    claudeDraft: true,
     tags: [
         "scripture"
       ],
@@ -9487,7 +9390,7 @@ export const SHAPES = [
         "X.X",
         "XXX"
       ],
-    color: [["#93691b","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#93691b"],["#ad7b20","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#ff8a2a","#fee761","#ff8a2a","#ff8a2a","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#ff8a2a","#ff8a2a","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#f2c040","#ff8a2a","#ff8a2a","#f2c040","#f2c040","#f2c040","#f2c040","#f2c040","#f2c040","#f2c040","#f2c040","#f2c040","#fee761","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#f2c040","#d89a28","#d89a28","#d89a28","#d89a28","#d89a28","#d89a28","#d89a28","#d89a28","#d89a28","#d89a28","#f2c040","#fee761","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#f2c040","#d89a28","#9e651d","#8d5a1a","#8d5a1a","#8d5a1a","#8d5a1a","#8d5a1a","#8d5a1a","#9e651d","#d89a28","#f2c040","#fee761","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#f2c040","#d89a28","#8d5a1a","","","","","","","#8d5a1a","#d89a28","#f2c040","#fee761","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#f2c040","#d89a28","#8d5a1a","","","","","","","#8d5a1a","#d89a28","#f2c040","#fee761","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#f2c040","#d89a28","#8d5a1a","","","","","","","#8d5a1a","#d89a28","#f2c040","#fee761","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#ff8a2a","#f2c040","#d89a28","#8d5a1a","","","","","","","#8d5a1a","#d89a28","#f2c040","#fee761","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#e43b44","#ff8a2a","#d89a28","#8d5a1a","","","","","","","#8d5a1a","#d89a28","#f2c040","#e43b44","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#e43b44","#d89a28","#8d5a1a","","","","","","","#8d5a1a","#d89a28","#ff8a2a","#ff8a2a","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#ff8a2a","#f2c040","#d89a28","#9e651d","#8d5a1a","#8d5a1a","#8d5a1a","#8d5a1a","#8d5a1a","#8d5a1a","#9e651d","#d89a28","#e43b44","#fee761","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#ff8a2a","#d89a28","#d89a28","#d89a28","#d89a28","#d89a28","#d89a28","#d89a28","#d89a28","#d89a28","#d89a28","#f2c040","#e43b44","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#ff8a2a","#f2c040","#f2c040","#f2c040","#ff8a2a","#ff8a2a","#f2c040","#ff8a2a","#ff8a2a","#f2c040","#f2c040","#f2c040","#ff8a2a","#fee761","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#fee761","#fee761","#ff8a2a","#ff8a2a","#fee761","#ff8a2a","#fee761","#e43b44","#ff8a2a","#fee761","#fee761","#fee761","#ff8a2a","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#ad7b20"],["#93691b","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#93691b"]],
+    color: [["#93691b","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#93691b"],["#ad7b20","#968e5e","#fff7c7","#fff2a0","#968e5e","#968e5e","#fff7c7","#968e5e","#fff7c7","#fff2a0","#968e5e","#fff7c7","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#fff2a0","#ad7b20"],["#ad7b20","#fff7c7","#fef1a2","#958839","#fef1a2","#958839","#fef1a2","#958839","#fef1a2","#fee761","#958839","#fef1a2","#fee761","#958839","#958839","#958839","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#8e7126","#f7da8f","#f7da8f","#f2c040","#8e7126","#f7da8f","#f2c040","#8e7126","#f7da8f","#8e7126","#f7da8f","#f7da8f","#fef1a2","#968e5e","#ad7b20"],["#ad7b20","#fff2a0","#958839","#8e7126","#d89a28","#d89a28","#7f5b18","#d89a28","#d89a28","#7f5b18","#d89a28","#d89a28","#d89a28","#d89a28","#8e7126","#fee761","#968e5e","#ad7b20"],["#ad7b20","#968e5e","#fef1a2","#f7da8f","#d89a28","#9e651d","#8d5a1a","#8d5a1a","#8d5a1a","#8d5a1a","#8d5a1a","#8d5a1a","#9e651d","#7f5b18","#f2c040","#fee761","#968e5e","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#8e7126","#d89a28","#8d5a1a","","","","","","","#8d5a1a","#7f5b18","#f7da8f","#fef1a2","#fff7c7","#ad7b20"],["#ad7b20","#968e5e","#958839","#8e7126","#d89a28","#8d5a1a","","","","","","","#8d5a1a","#d89a28","#8e7126","#958839","#968e5e","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#f7da8f","#d89a28","#8d5a1a","","","","","","","#8d5a1a","#d89a28","#f2c040","#fee761","#fff2a0","#ad7b20"],["#ad7b20","#968e5e","#fee761","#f2c040","#7f5b18","#8d5a1a","","","","","","","#8d5a1a","#d89a28","#8e7126","#fee761","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#8e7126","#7f5b18","#8d5a1a","","","","","","","#8d5a1a","#d89a28","#f7da8f","#fef1a2","#fff7c7","#ad7b20"],["#ad7b20","#968e5e","#958839","#8e7126","#d89a28","#8d5a1a","","","","","","","#8d5a1a","#d89a28","#8e7126","#958839","#968e5e","#ad7b20"],["#ad7b20","#968e5e","#fef1a2","#f7da8f","#d89a28","#9e651d","#8d5a1a","#8d5a1a","#8d5a1a","#8d5a1a","#8d5a1a","#8d5a1a","#9e651d","#d89a28","#f7da8f","#fef1a2","#fff2a0","#ad7b20"],["#ad7b20","#fff2a0","#fee761","#f2c040","#d89a28","#7f5b18","#d89a28","#d89a28","#d89a28","#7f5b18","#d89a28","#d89a28","#7f5b18","#7f5b18","#8e7126","#fef1a2","#fff2a0","#ad7b20"],["#ad7b20","#968e5e","#958839","#8e7126","#8e7126","#8e7126","#f2c040","#f2c040","#f2c040","#8e7126","#f2c040","#f2c040","#f2c040","#f2c040","#8e7126","#fef1a2","#968e5e","#ad7b20"],["#ad7b20","#968e5e","#fee761","#958839","#fee761","#fee761","#fee761","#958839","#fee761","#958839","#fef1a2","#958839","#958839","#fef1a2","#958839","#fef1a2","#968e5e","#ad7b20"],["#ad7b20","#968e5e","#968e5e","#968e5e","#fff2a0","#fff2a0","#fff2a0","#968e5e","#968e5e","#968e5e","#fff7c7","#fff2a0","#fff2a0","#fff2a0","#968e5e","#fff7c7","#fff2a0","#ad7b20"],["#93691b","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#ad7b20","#93691b"]],
     powerup: {
         "type": "destroyer",
         "tier": 3,
@@ -9509,8 +9412,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.5,
-    claudeDraft: true,
+    frequency: 0.57,
     tags: [
         "lotr"
       ],
@@ -9547,20 +9449,21 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.5,
-    claudeDraft: true,
+    frequency: 0.58,
     tags: [
         "lotr"
       ],
   },
   {
     id: "time_machine",
-    name: "a time machine (slightly used)",
+    name: "a granchfather clock time machine",
     grid: [
+        "X",
+        "X",
         "X",
         "X"
       ],
-    color: [["#a57d31","#d8be79","#d8be79","#d8be79","#d8be79","#d8be79","#a57d31"],["#bf9039","#f6d88a","#fff3d6","#fff3d6","#fff3d6","#f6d88a","#bf9039"],["#bf9039","#fff3d6","#fff3d6","#6a4320","#fff3d6","#fff3d6","#bf9039"],["#bf9039","#fff3d6","#fff3d6","#6a4320","#6a4320","#fff3d6","#bf9039"],["#bf9039","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#bf9039"],["#bf9039","#a8742c","#fff3d6","#fff3d6","#fff3d6","#a8742c","#bf9039"],["#946627","#a8742c","#a8742c","#a8742c","#a8742c","#a8742c","#946627"],["#bf9039","#2f86d6","#2f86d6","#2f86d6","#2f86d6","#2f86d6","#bf9039"],["#bf9039","#2f86d6","#5fd4ff","#5fd4ff","#5fd4ff","#2f86d6","#bf9039"],["#bf9039","#5fd4ff","#d6f7ff","#2f86d6","#d6f7ff","#5fd4ff","#bf9039"],["#bf9039","#2f86d6","#5fd4ff","#d6f7ff","#5fd4ff","#2f86d6","#bf9039"],["#bf9039","#2f86d6","#2f86d6","#2f86d6","#2f86d6","#2f86d6","#bf9039"],["#bf9039","#a8742c","#f6d88a","#ff4d5e","#f6d88a","#a8742c","#bf9039"],["#a57d31","#bf9039","#bf9039","#bf9039","#bf9039","#bf9039","#a57d31"]],
+    color: [["#a57d31","#d8be79","#d8be79","#d8be79","#d8be79","#d8be79","#a57d31"],["#bf9039","#f6d88a","#fff3d6","#fff3d6","#fff3d6","#f6d88a","#bf9039"],["#bf9039","#fff3d6","#fff3d6","#6a4320","#fff3d6","#fff3d6","#bf9039"],["#bf9039","#fff3d6","#fff3d6","#6a4320","#6a4320","#fff3d6","#bf9039"],["#bf9039","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#fff3d6","#bf9039"],["#bf9039","#a8742c","#fff3d6","#fff3d6","#fff3d6","#a8742c","#bf9039"],["#946627","#a8742c","#a57d31","#a8742c","#a8742c","#a8742c","#946627"],["#bf9039","#bf9039","#bf9039","#bf9039","#bf9039","#bf9039","#bf9039"],["#bf9039","#2f86d6","#5fd4ff","#5fd4ff","#5fd4ff","#2f86d6","#bf9039"],["#bf9039","#5fd4ff","#d6f7ff","#2f86d6","#d6f7ff","#5fd4ff","#bf9039"],["#bf9039","#2f86d6","#5fd4ff","#d6f7ff","#5fd4ff","#2f86d6","#bf9039"],["#bf9039","#2f86d6","#2f86d6","#2f86d6","#2f86d6","#2f86d6","#bf9039"],["#bf9039","#a8742c","#f6d88a","#ff4d5e","#f6d88a","#a8742c","#bf9039"],["#bf9039","#bf9039","#bf9039","#bf9039","#bf9039","#bf9039","#a57d31"],["#bf9039","#f6d88a","#946627","#f6d88a","#946627","#f6d88a","#bf9039"],["#bf9039","#f6d88a","#946627","#f6d88a","#946627","#f6d88a","#bf9039"],["#bf9039","#f6d88a","#946627","#f6d88a","#946627","#f6d88a","#bf9039"],["#bf9039","#f6d88a","#946627","#f6d88a","#946627","#f6d88a","#bf9039"],["#bf9039","#f6d88a","#946627","#f6d88a","#946627","#f6d88a","#bf9039"],["#bf9039","#f6d88a","#946627","#f6d88a","#946627","#f6d88a","#bf9039"],["#bf9039","#f6d88a","#946627","#f6d88a","#946627","#f6d88a","#bf9039"],["#bf9039","#f6d88a","#946627","#f6d88a","#946627","#f6d88a","#bf9039"],["#bf9039","#f6d88a","#946627","#f6d88a","#946627","#f6d88a","#bf9039"],["#bf9039","#f6d88a","#946627","#f6d88a","#946627","#f6d88a","#bf9039"],["#bf9039","#f6d88a","#946627","#f6d88a","#946627","#f6d88a","#bf9039"],["#bf9039","#f6d88a","#946627","#f6d88a","#946627","#f6d88a","#bf9039"],["#bf9039","#f6d88a","#946627","#f6d88a","#946627","#f6d88a","#bf9039"],["#bf9039","#a57d31","#a57d31","#a57d31","#a57d31","#a57d31","#bf9039"]],
     powerup: {
         "type": "destroyer",
         "tier": 3,
@@ -9573,6 +9476,8 @@ export const SHAPES = [
           "grid": [
             "-",
             ".",
+            "-",
+            "-",
             ".",
             "-"
           ]
@@ -9584,11 +9489,10 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "pinking_shears",
-    name: "a pair of pinking shears",
+    name: "topiary shears",
     grid: [
         "X",
         "X"
@@ -9622,7 +9526,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "black_hole_intern",
@@ -9655,8 +9558,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "delete_key",
@@ -9687,33 +9589,34 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0.95,
   },
   {
     id: "egg_timer",
-    name: "an egg timer that has run out",
+    name: "a time bomb controlled by an hour glass",
     grid: [
+        "X",
         "X",
         "X"
       ],
-    color: [["#69411e","#794b23","#794b23","#794b23","#794b23","#794b23","#69411e"],["#a26937","#dff6ff","#dff6ff","#dff6ff","#dff6ff","#dff6ff","#a26937"],["#a26937","#a8d8ef","#f5c242","#f5c242","#f5c242","#a8d8ef","#a26937"],["#a26937","#a8d8ef","#dff6ff","#f5c242","#dff6ff","#a8d8ef","#a26937"],["#a26937","#b8773f","#a8d8ef","#f5c242","#a8d8ef","#b8773f","#a26937"],["#a26937","#b8773f","#b8773f","#f5c242","#b8773f","#b8773f","#a26937"],["#a26937","#b8773f","#b8773f","#f5c242","#b8773f","#b8773f","#a26937"],["#a26937","#b8773f","#b8773f","#f5c242","#b8773f","#b8773f","#a26937"],["#a26937","#b8773f","#a8d8ef","#f5c242","#a8d8ef","#b8773f","#a26937"],["#a26937","#a8d8ef","#dff6ff","#f5c242","#dff6ff","#a8d8ef","#a26937"],["#a26937","#a8d8ef","#f5c242","#f5c242","#f5c242","#a8d8ef","#a26937"],["#a26937","#f5c242","#d99a2b","#f5c242","#d99a2b","#f5c242","#a26937"],["#a26937","#d99a2b","#f5c242","#d99a2b","#f5c242","#d99a2b","#a26937"],["#69411e","#794b23","#794b23","#794b23","#794b23","#794b23","#69411e"]],
+    color: [["#69411e","#794b23","#794b23","#794b23","#794b23","#794b23","#69411e"],["#a26937","#dff6ff","#dff6ff","#dff6ff","#dff6ff","#dff6ff","#a26937"],["#a26937","#a8d8ef","#dff6ff","#dff6ff","#dff6ff","#a8d8ef","#a26937"],["#a26937","#a8d8ef","#dff6ff","#dff6ff","#dff6ff","#a8d8ef","#a26937"],["#a26937","#b8773f","#a8d8ef","#f5c242","#a8d8ef","#b8773f","#a26937"],["#a26937","#b8773f","#b8773f","#f5c242","#b8773f","#b8773f","#a26937"],["#a26937","#b8773f","#b8773f","#f5c242","#b8773f","#b8773f","#a26937"],["#a26937","#b8773f","#b8773f","#f5c242","#b8773f","#b8773f","#a26937"],["#a26937","#b8773f","#a8d8ef","#f5c242","#a8d8ef","#b8773f","#a26937"],["#a26937","#a8d8ef","#dff6ff","#f5c242","#dff6ff","#a8d8ef","#a26937"],["#a26937","#a8d8ef","#f5c242","#f5c242","#f5c242","#a8d8ef","#a26937"],["#a26937","#f5c242","#d99a2b","#f5c242","#d99a2b","#f5c242","#a26937"],["#a26937","#d99a2b","#f5c242","#d99a2b","#f5c242","#d99a2b","#a26937"],["#69411e","#794b23","#794b23","#794b23","#794b23","#794b23","#69411e"],["#080926","#24093e","#24093e","#24093e","#24093e","#24093e","#24093e"],["#080926","#2e0754","#2e0754","#2e0754","#2e0754","#2e0754","#24093e"],["#080926","#2e0754","#2e0754","#080926","#69411e","#69411e","#69411e"],["#080926","#24093e","#2e0754","#080926","#080926","#2e0754","#24093e"],["#080926","#24093e","#2e0754","#2e0754","#2e0754","#2e0754","#24093e"],["#080926","#24093e","#24093e","#24093e","#2e0754","#2e0754","#24093e"],["#080926","#080926","#080926","#080926","#080926","#080926","#080926"]],
     powerup: {
         "type": "destroyer",
         "tier": 2,
         "area": {
           "origin": [
-            2,
+            5,
             0
           ],
           "grid": [
-            ".....",
-            ".....",
-            "#####",
-            ".###.",
-            "..#..",
-            ".###.",
-            "#####"
+            "...........",
+            "...........",
+            "...........",
+            "...#####...",
+            "....###....",
+            "###..#..###",
+            "....###....",
+            "...#####..."
           ]
         },
         "intro": "Destroys an hourglass of blocks under it: 5 wide, then 3, 1, 3 and 5 wide again, five rows deep. Time's up for them. Also for the egg.",
@@ -9723,11 +9626,10 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "fizzing_aspirin",
-    name: "a dissolving aspirin",
+    name: "an alka-seltzer tablet",
     grid: [
         "X"
       ],
@@ -9753,7 +9655,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.6,
-    claudeDraft: true,
   },
   {
     id: "sugar_free_gummy",
@@ -9762,7 +9663,7 @@ export const SHAPES = [
         "XX",
         "XX"
       ],
-    color: [["#932234","#ab283c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#ab283c","#932234"],["#ab283c","#ff9a9a","#c22d44","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#c22d44","#ff9a9a","#ab283c"],["#ab283c","#c22d44","#ef4656","#ef4656","#ff9a9a","#ff9a9a","#ef4656","#ef4656","#ef4656","#ef4656","#c22d44","#ab283c"],["#d23e4c","#ef4656","#ef4656","#ff9a9a","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#7a1428","#ef4656","#7a1428","#ef4656","#ef4656","#7a1428","#ef4656","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ff7272","#ff7272","#ff7272","#ff7272","#ff7272","#ef4656","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ff7272","#ff7272","#9a1f33","#9a1f33","#9a1f33","#ff7272","#ff7272","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ff7272","#ff7272","#ff7272","#9a1f33","#ff7272","#ff7272","#ff7272","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ff7272","#ff7272","#ff7272","#ff7272","#ff7272","#ff7272","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#d23e4c"],["#b63541","#ab283c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#ab283c","#b63541"]],
+    color: [["#932234","#ab283c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#ab283c","#932234"],["#ab283c","#ff9a9a","#c22d44","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#c22d44","#ff9a9a","#ab283c"],["#ab283c","#c22d44","#ef4656","#ef4656","#ff9a9a","#ff9a9a","#ef4656","#ef4656","#ef4656","#ef4656","#c22d44","#ab283c"],["#d23e4c","#ef4656","#ef4656","#ff9a9a","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ef4656","#7a1428","#ef4656","#ef4656","#7a1428","#ef4656","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ff7272","#ff7272","#ff7272","#ff7272","#ff7272","#ef4656","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ff7272","#ff7272","#9a1f33","#9a1f33","#9a1f33","#ff7272","#ff7272","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ff7272","#ff7272","#ff7272","#9a1f33","#ff7272","#ff7272","#ff7272","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ff7272","#ff7272","#ff7272","#ff7272","#ff7272","#ff7272","#ef4656","#d23e4c"],["#d23e4c","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#ef4656","#d23e4c"],["#b63541","#ab283c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#d23e4c","#ab283c","#b63541"]],
     powerup: {
         "type": "acid",
         "reach": 3,
@@ -9774,11 +9675,10 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "bath_bomb",
-    name: "a bath bomb (lavender, apparently)",
+    name: "a nuclear bath bomb",
     grid: [
         "X"
       ],
@@ -9789,17 +9689,14 @@ export const SHAPES = [
         "tier": 2,
         "area": {
           "origin": [
-            0,
-            0
+            2,
+            1
           ],
           "grid": [
-            ".",
-            ".",
-            ".",
-            "#",
-            "#",
-            "#",
-            "#"
+            "-...",
+            "-...",
+            "-...",
+            ".|||"
           ]
         },
         "intro": "Fizzes away every block within two steps of it, then sinks and dissolves the four cells below that too. The bath is now purple. The bath will always be purple.",
@@ -9808,8 +9705,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
-    claudeDraft: true,
+    frequency: 0.77,
   },
   {
     id: "vanishing_cream",
@@ -9817,19 +9713,19 @@ export const SHAPES = [
     grid: [
         "XX"
       ],
-    color: [["#61a48a","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#cad1da","#70be9f","#b2bece","#70be9f","#cad1da","#b2bece","#afb5bc"],["#4ba280","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#cad8ea","#e6eef8","#55b892","#e6eef8","#cad8ea","#e6eef8","#b2bece"],["#d9d9dc","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#e6eef8","#f7f7fa","#cad8ea","#e6eef8","#f7f7fa","#cad8ea","#cad1da"],["#d9d9dc","#ffc2d8","#ffc2d8","#ffc2d8","#ffc2d8","#f7f7fa","#f7f7fa","#e6eef8","#cad8ea","#f7f7fa","#e6eef8","#cad8ea","#e6eef8","#d9d9dc"],["#d9d9dc","#ffc2d8","#f7f7fa","#f7f7fa","#ffc2d8","#f7f7fa","#f7f7fa","#cad8ea","#f7f7fa","#e6eef8","#cad8ea","#f7f7fa","#e6eef8","#b2bece"],["#d9d9dc","#ffc2d8","#ffc2d8","#ffc2d8","#ffc2d8","#f7f7fa","#f7f7fa","#e6eef8","#cad8ea","#f7f7fa","#e6eef8","#cad8ea","#e6eef8","#d9d9dc"],["#bcbcbe","#d9d9dc","#d9d9dc","#d9d9dc","#d9d9dc","#d9d9dc","#d9d9dc","#b2bece","#d9d9dc","#cad1da","#d9d9dc","#b2bece","#d9d9dc","#afb5bc"]],
+    color: [["#61a48a","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#70be9f","#61a48a"],["#4ba280","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#55b892","#4ba280"],["#d9d9dc","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#cad1da"],["#d9d9dc","#f7f7fa","#85d4d5","#61d9db","#abd2d3","#85d4d5","#85d4d5","#abd2d3","#61d9db","#abd2d3","#85d4d5","#f7f7fa","#f7f7fa","#d9d9dc"],["#d9d9dc","#f7f7fa","#85d4d5","#abd2d3","#85d4d5","#85d4d5","#85d4d5","#85d4d5","#85d4d5","#85d4d5","#abd2d3","#f7f7fa","#e6eef8","#b2bece"],["#d9d9dc","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#f7f7fa","#e6eef8","#e6eef8","#e6eef8","#afb5bc"],["#bcbcbe","#d9d9dc","#d9d9dc","#d9d9dc","#d9d9dc","#d9d9dc","#d9d9dc","#b2bece","#d9d9dc","#cad1da","#d9d9dc","#b2bece","#afb5bc","#afb5bc"]],
     powerup: {
         "type": "acid",
         "reach": 1,
         "tier": 2,
         "area": {
           "origin": [
-            4,
+            1,
             0
           ],
           "grid": [
-            "..........",
-            "##########"
+            "....",
+            "####"
           ]
         },
         "intro": "Dissolves every block touching the pot, and a thin layer of the row underneath, four cells out to each side. Half the pot has already vanished. It works.",
@@ -9839,15 +9735,14 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "bubble_bath",
-    name: "an overflowing bubble bath",
+    name: "a bubble bath with too many bubbles",
     grid: [
         "XX"
       ],
-    color: [["#c2c2c2","#e0e0e0","#b6cee0","#e0e0e0","#e0e0e0","#b6cee0","#b6cee0","#e0be41","#e0be41","#e0e0e0","#e0e0e0","#b6cee0","#e0e0e0","#c2c2c2"],["#e0e0e0","#cfeaff","#ffffff","#ffffff","#cfeaff","#ffffff","#ffd84a","#ffd84a","#ffd84a","#ffd84a","#ff9a3a","#cfeaff","#ffffff","#b6cee0"],["#b6cee0","#ffffff","#ffffff","#cfeaff","#ffffff","#ffffff","#ffd84a","#3a3a4a","#ffd84a","#ffd84a","#ff9a3a","#ff9a3a","#ffffff","#b6cee0"],["#e0e0e0","#ffffff","#cfeaff","#ffffff","#ffffff","#cfeaff","#ffd84a","#ffd84a","#ffd84a","#ffd84a","#ffffff","#cfeaff","#ffffff","#e0e0e0"],["#b6cee0","#ffffff","#ffffff","#ffffff","#cfeaff","#ffffff","#ffffff","#ffd84a","#ffd84a","#ffffff","#ffffff","#ffffff","#cfeaff","#e0e0e0"],["#8cb7d8","#cfeaff","#ffffff","#9fd0f5","#cfeaff","#ffffff","#9fd0f5","#cfeaff","#ffffff","#9fd0f5","#cfeaff","#ffffff","#9fd0f5","#b6cee0"],["#799eba","#8cb7d8","#b6cee0","#8cb7d8","#8cb7d8","#b6cee0","#8cb7d8","#8cb7d8","#b6cee0","#8cb7d8","#8cb7d8","#b6cee0","#8cb7d8","#799eba"]],
+    color: [["#c2c2c2","#e0e0e0","#b6cee0","#e0e0e0","#e0e0e0","#b6cee0","#b6cee0","#e0e0e0","#e0e0e0","#e0e0e0","#e0e0e0","#b6cee0","#e0e0e0","#c2c2c2"],["#e0e0e0","#cfeaff","#ffffff","#ffffff","#cfeaff","#ffffff","#ffffff","#fdf0bf","#ffd84a","#735d0c","#ffffff","#cfeaff","#ffffff","#b6cee0"],["#b6cee0","#ffffff","#ffffff","#cfeaff","#ffffff","#ffffff","#cfeaff","#ffd84a","#ffd84a","#ffd84a","#ff9a3a","#cfeaff","#ffffff","#b6cee0"],["#e0e0e0","#ffffff","#cfeaff","#ffffff","#ffffff","#cfeaff","#fdf0bf","#fdf0bf","#ffd84a","#fdf0bf","#ffffff","#cfeaff","#ffffff","#e0e0e0"],["#b6cee0","#ffffff","#ffffff","#ffffff","#fdf0bf","#ffd84a","#ffd84a","#ffd84a","#ffd84a","#ffd84a","#fdf0bf","#ffffff","#cfeaff","#e0e0e0"],["#8cb7d8","#cfeaff","#ffffff","#9fd0f5","#cfeaff","#ffffff","#ffd84a","#ffd84a","#ffd84a","#fdf0bf","#cfeaff","#ffffff","#9fd0f5","#b6cee0"],["#799eba","#8cb7d8","#b6cee0","#8cb7d8","#8cb7d8","#b6cee0","#8cb7d8","#8cb7d8","#b6cee0","#8cb7d8","#8cb7d8","#b6cee0","#8cb7d8","#799eba"]],
     powerup: {
         "type": "expander",
         "tier": 1,
@@ -9935,11 +9830,10 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "liquid_cat",
-    name: "a cat (currently a liquid)",
+    name: "liquid cat",
     grid: [
         "X"
       ],
@@ -9968,10 +9862,10 @@ export const SHAPES = [
           ],
           [
             "#f2a03d",
-            "#9be26a",
             "#f2a03d",
             "#f2a03d",
-            "#9be26a",
+            "#f2a03d",
+            "#f2a03d",
             "#f2a03d",
             "#f2a03d"
           ],
@@ -9979,7 +9873,7 @@ export const SHAPES = [
             "#f2a03d",
             "#f2a03d",
             "#f2a03d",
-            "#ff8fa8",
+            "#f2a03d",
             "#f2a03d",
             "#f2a03d",
             "#f2a03d"
@@ -9987,9 +9881,9 @@ export const SHAPES = [
           [
             "#cf7a2c",
             "#f2a03d",
-            "#ffe2b8",
-            "#ffe2b8",
-            "#ffe2b8",
+            "#f2a03d",
+            "#f2a03d",
+            "#f2a03d",
             "#f2a03d",
             "#f2a03d"
           ],
@@ -10055,15 +9949,14 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "swelling_sponge",
-    name: "a sponge that keeps swelling",
+    name: "a big sponge",
     grid: [
         "X"
       ],
-    color: [["#3a9147","#29823e","#43a853","#29823e","#43a853","#29823e","#3a9147"],["#29823e","#4cbf5e","#2f9446","#4cbf5e","#2f9446","#4cbf5e","#29823e"],["#e0bc41","#ffd64a","#ffd64a","#ffd64a","#fff0a0","#ffd64a","#e0bc41"],["#e0bc41","#e0ae2a","#ffd64a","#ffd64a","#ffd64a","#e0ae2a","#e0bc41"],["#e0bc41","#ffd64a","#fff0a0","#e0ae2a","#ffd64a","#ffd64a","#e0bc41"],["#e0bc41","#e0ae2a","#ffd64a","#ffd64a","#ffd64a","#fff0a0","#e0bc41"],["#c2a338","#e0bc41","#e0bc41","#c59925","#e0bc41","#e0bc41","#c2a338"]],
+    color: [["#ffd64a","#ffd64a","#ffd64a","#e0ae2a","#ffd64a","#ffd64a","#ffd64a"],["#ffd64a","#e0ae2a","#ffd64a","#ffd64a","#ffd64a","#fff0a0","#ffd64a"],["#ffd64a","#ffd64a","#ffd64a","#ffd64a","#e0ae2a","#ffd64a","#ffd64a"],["#fff0a0","#ffd64a","#e0ae2a","#ffd64a","#ffd64a","#ffd64a","#ffd64a"],["#ffd64a","#ffd64a","#ffd64a","#ffd64a","#ffd64a","#e0ae2a","#ffd64a"],["#ffd64a","#e0ae2a","#ffd64a","#fff0a0","#ffd64a","#ffd64a","#ffd64a"],["#ffd64a","#ffd64a","#ffd64a","#ffd64a","#ffd64a","#ffd64a","#e0ae2a"]],
     powerup: {
         "type": "expander",
         "tier": 1,
@@ -10140,9 +10033,9 @@ export const SHAPES = [
           "grid": [
             "...#...",
             "...#...",
-            "...#...",
+            "..###..",
             "###.###",
-            "...#...",
+            "..###..",
             "...#...",
             "...#..."
           ]
@@ -10154,7 +10047,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "packing_peanuts",
@@ -10250,8 +10142,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
-    claudeDraft: true,
+    frequency: 0.98,
   },
   {
     id: "stuffed_duvet",
@@ -10345,12 +10236,11 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.5,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "snow_drift",
-    name: "a snowball that wants to be a drift",
+    name: "an exploding snowball",
     grid: [
         "X"
       ],
@@ -10425,13 +10315,14 @@ export const SHAPES = [
         ],
         "area": {
           "origin": [
-            0,
-            0
+            6,
+            1
           ],
           "grid": [
-            ".##....",
-            "#####..",
-            "#######"
+            ".....###.....",
+            "....##.##....",
+            "..#########..",
+            "#############"
           ]
         },
         "intro": "Drifts off to the right, filling empty cells: two beside it, five in the row under it, seven in the row under that. The wind only ever blows one way here.",
@@ -10441,11 +10332,10 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "autumn_leaves",
-    name: "a pile of autumn leaves",
+    name: "a pile of leaves",
     grid: [
         "XX"
       ],
@@ -10538,7 +10428,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "self_raising_cake",
@@ -10630,12 +10519,11 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.6,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "neutrino",
-    name: "a neutrino (it went straight through you)",
+    name: "a neutrino",
     grid: [
         "X"
       ],
@@ -10651,7 +10539,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "vanishing_coin",
@@ -10669,16 +10556,15 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.9,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "schrodingers_box",
-    name: "schrödinger's cat box",
+    name: "schrödinger's cat,,, maybei",
     grid: [
         "XX"
       ],
-    color: [["#865c33","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#ceb384","#ceb384","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#865c33"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#fff7e6","#fff7e6","#fff7e6","#d9a061","#bb8a53"],["#bb8a53","#4a2f2a","#4a2f2a","#4a2f2a","#4a2f2a","#4a2f2a","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#fff7e6","#d9a061","#bb8a53"],["#bb8a53","#4a2f2a","#9dff6a","#4a2f2a","#9dff6a","#4a2f2a","#efd09a","#efd09a","#d9a061","#d9a061","#fff7e6","#d9a061","#d9a061","#bb8a53"],["#bb8a53","#4a2f2a","#4a2f2a","#4a2f2a","#4a2f2a","#4a2f2a","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#bb8a53"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#d9a061","#fff7e6","#d9a061","#d9a061","#bb8a53"],["#865c33","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#ceb384","#ceb384","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#865c33"]],
+    color: [["#865c33","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#ceb384","#ceb384","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#865c33"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#bb8a53"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#bb8a53"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#bb8a53"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#bb8a53"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#bb8a53"],["#865c33","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#ceb384","#ceb384","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#865c33"]],
     powerup: {
         "type": "phantom",
         "tier": 1,
@@ -10689,7 +10575,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "trenchcoat_spy",
@@ -10709,12 +10594,11 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.8,
-    claudeDraft: true,
+    frequency: 0.86,
   },
   {
     id: "jellyfish",
-    name: "a jellyfish (mostly water, partly sneaking)",
+    name: "a hammerhead jellyfish",
     grid: [
         "XXX",
         ".X."
@@ -10730,11 +10614,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
-    claudeDraft: true,
   },
   {
     id: "slippery_seal",
-    name: "a slippery seal",
+    name: "a wet seal",
     grid: [
         "..X",
         "XXX"
@@ -10750,11 +10633,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
-    claudeDraft: true,
   },
   {
     id: "greased_lightning",
-    name: "greased lightning",
+    name: "greasy lightning",
     grid: [
         "X.",
         "XX",
@@ -10771,11 +10653,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
   },
   {
     id: "fish_got_away",
-    name: "the fish that got away",
+    name: "a slippery fish",
     grid: [
         "XXX"
       ],
@@ -10790,7 +10671,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "wisp_of_fog",
@@ -10808,12 +10688,11 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.6,
-    claudeDraft: true,
+    frequency: 0.66,
   },
   {
     id: "pickpockets_hand",
-    name: "a pickpocket's hand",
+    name: "the sneaky hand of a pickpocket",
     grid: [
         "XXX",
         "X.."
@@ -10829,15 +10708,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
   },
   {
     id: "flour_sack",
-    name: "a sack of flour",
+    name: "a isack of potatoes",
     grid: [
         "XX"
       ],
-    color: [["#a09373","#cec3a9","#baaa86","#cec3a9","#baaa86","#cec3a9","#baaa86","#cec3a9","#baaa86","#cec3a9","#baaa86","#845b32","#dbdbdb","#a09373"],["#446da5","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#efe3c4","#9a6a3a","#ffffff","#dbdbdb"],["#cec3a9","#efe3c4","#e0a838","#efe3c4","#e0a838","#efe3c4","#efe3c4","#d8c69c","#efe3c4","#efe3c4","#efe3c4","#9a6a3a","#9a6a3a","#dbdbdb"],["#cec3a9","#d8c69c","#e0a838","#e0a838","#e0a838","#efe3c4","#efe3c4","#efe3c4","#efe3c4","#d8c69c","#efe3c4","#9a6a3a","#ffffff","#dbdbdb"],["#cec3a9","#efe3c4","#efe3c4","#a8772a","#efe3c4","#d8c69c","#efe3c4","#efe3c4","#efe3c4","#efe3c4","#efe3c4","#9a6a3a","#9a6a3a","#dbdbdb"],["#446da5","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#efe3c4","#9a6a3a","#ffffff","#dbdbdb"],["#a09373","#cec3a9","#baaa86","#cec3a9","#baaa86","#cec3a9","#baaa86","#cec3a9","#baaa86","#cec3a9","#baaa86","#845b32","#dbdbdb","#a09373"]],
+    color: [["#504a3a","#8c8473","#7e735b","#8c8473","#7e735b","#cec3a9","#baaa86","#cec3a9","#7e735b","#8c8473","#baaa86","#8c8473","#7e735b","#5a3e22"],["#8c8473","#365682","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#365682","#9a6a3a"],["#8c8473","#efe3c4","#e0a838","#e0a838","#e0a838","#efe3c4","#efe3c4","#d8c69c","#efe3c4","#efe3c4","#efe3c4","#d8c69c","#efe3c4","#9a6a3a"],["#cec3a9","#d8c69c","#e0a838","#e0a838","#e0a838","#efe3c4","#efe3c4","#efe3c4","#efe3c4","#d8c69c","#efe3c4","#efe3c4","#efe3c4","#9a6a3a"],["#8c8473","#efe3c4","#efe3c4","#a8772a","#efe3c4","#d8c69c","#efe3c4","#efe3c4","#d8c69c","#efe3c4","#efe3c4","#d8c69c","#efe3c4","#684827"],["#2e4a70","#365682","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#4f7fc0","#365682","#365682","#684827"],["#504a3a","#8c8473","#7e735b","#cec3a9","#baaa86","#cec3a9","#7e735b","#8c8473","#baaa86","#cec3a9","#7e735b","#8c8473","#7e735b","#5a3e22"]],
     powerup: {
         "type": "gravity",
         "direction": "down",
@@ -10860,11 +10738,10 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "tiptoe_elephant",
-    name: "an elephant tiptoeing past",
+    name: "an tiptoeing elephant",
     grid: [
         "XXX",
         "X.X"
@@ -10890,7 +10767,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "gravity_boot",
@@ -10926,17 +10802,15 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "lead_balloon",
     name: "a lead balloon",
     grid: [
-        "X",
         "X"
       ],
-    color: [["#515965","#5e6776","#79828f","#79828f","#79828f","#5e6776","#515965"],["#5e6776","#8d97a6","#c3cad4","#c3cad4","#8d97a6","#8d97a6","#5e6776"],["#79828f","#c3cad4","#3e4656","#3e4656","#3e4656","#8d97a6","#79828f"],["#79828f","#8d97a6","#3e4656","#8d97a6","#3e4656","#8d97a6","#79828f"],["#79828f","#c3cad4","#3e4656","#3e4656","#3e4656","#8d97a6","#79828f"],["#79828f","#8d97a6","#3e4656","#8d97a6","#8d97a6","#8d97a6","#79828f"],["#79828f","#8d97a6","#3e4656","#8d97a6","#3e4656","#8d97a6","#79828f"],["#79828f","#8d97a6","#8d97a6","#8d97a6","#3e4656","#8d97a6","#79828f"],["#79828f","#8d97a6","#8d97a6","#8d97a6","#3e4656","#3e4656","#353c4a"],["#79828f","#8d97a6","#8d97a6","#8d97a6","#3e4656","#8d97a6","#353c4a"],["#636c79","#8d97a6","#8d97a6","#8d97a6","#3e4656","#3e4656","#353c4a"],["#636c79","#737d8d","#8d97a6","#8d97a6","#8d97a6","#737d8d","#636c79"],["#636c79","#737d8d","#737d8d","#5a6272","#737d8d","#737d8d","#636c79"],["#555c68","#636c79","#4d5462","#4d5462","#4d5462","#636c79","#555c68"]],
+    color: [["#515965","#5e6776","#79828f","#79828f","#79828f","#5e6776","#515965"],["#5e6776","#8d97a6","#c3cad4","#c3cad4","#8d97a6","#8d97a6","#5e6776"],["#79828f","#c3cad4","#8d97a6","#8d97a6","#8d97a6","#8d97a6","#79828f"],["#79828f","#8d97a6","#8d97a6","#8d97a6","#8d97a6","#8d97a6","#79828f"],["#515965","#c3cad4","#8d97a6","#8d97a6","#8d97a6","#79828f","#515965"],["#34373c","#515965","#8d97a6","#8d97a6","#8d97a6","#515965","#34373c"],["#34373c","#515965","#5e6776","#8d97a6","#5e6776","#515965","#34373c"]],
     powerup: {
         "type": "gravity",
         "direction": "down",
@@ -10963,7 +10837,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "sinking_stone",
@@ -11019,8 +10892,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "ambitious_paperweight",
@@ -11056,8 +10928,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "sideways_apple",
@@ -11087,8 +10958,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "falling_accordion",
@@ -11123,8 +10993,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "mole_family",
@@ -11174,8 +11043,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "snow_plough",
@@ -11226,8 +11094,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "tidy_robot",
@@ -11341,8 +11208,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "busy_beaver",
@@ -11457,8 +11323,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "ant_farm",
@@ -11511,8 +11376,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "dustpan_brush",
@@ -11562,12 +11426,11 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "jelly_mould",
-    name: "a lime jelly, freshly turned out",
+    name: "jiggly green jello",
     grid: [
         "XXX",
         "XXX"
@@ -11681,7 +11544,6 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "bricklayer",
@@ -11783,8 +11645,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "bulldozer_cement",
@@ -11910,8 +11771,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "upright_vacuum",
@@ -11961,8 +11821,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "ghost_train",
@@ -11999,8 +11858,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.7,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "sneaky_saboteur",
@@ -12038,16 +11896,15 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.7,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "poltergeist",
-    name: "a poltergeist (it moves things)",
+    name: "a cute poltergeist",
     grid: [
         "XX"
       ],
-    color: [["#6daa84","#b0e0be","#b0e0be","#b0e0be","#b0e0be","#b0e0be","#7ec599","#8f212d","#c9343c","#c9343c","#c9343c","#c9343c","#c9343c","#b2a181"],["#b0e0be","#c8ffd8","#c8ffd8","#c8ffd8","#c8ffd8","#c8ffd8","#c8ffd8","#a22633","#e43b44","#fee761","#fee761","#fee761","#e43b44","#cebb96"],["#b0e0be","#c8ffd8","#2f5a46","#c8ffd8","#2f5a46","#c8ffd8","#c8ffd8","#a22633","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#cebb96"],["#b0e0be","#c8ffd8","#2f5a46","#c8ffd8","#2f5a46","#c8ffd8","#c8ffd8","#a22633","#e43b44","#fee761","#fee761","#e43b44","#e43b44","#cebb96"],["#b0e0be","#c8ffd8","#c8ffd8","#c8ffd8","#c8ffd8","#c8ffd8","#c8ffd8","#a22633","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#cebb96"],["#b0e0be","#c8ffd8","#c8ffd8","#4f9f72","#c8ffd8","#c8ffd8","#c8ffd8","#a22633","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#cebb96"],["#98c2a4","#7ec599","#b0e0be","#7ec599","#b0e0be","#7ec599","#b0e0be","#8f212d","#8f212d","#8f212d","#8f212d","#8f212d","#8f212d","#b2a181"]],
+    color: [["#4d4a6d","#231b34","#2d3141","#8495a0","#233e3a","#354580","#7969a5","#596e81","#9e8bd6","#44454e","#5e92c1","#879f89","#678189","#505d62"],["#5a656b","#481f7f","#697fc4","#0f1611","#13111f","#829aa5","#8d9db4","#918e9b","#838ba8","#93c1af","#10161d","#1c1f26","#718c9c","#56717f"],["#3b3a46","#161b16","#191916","#1c2019","#051416","#110c14","#4e6589","#7683a6","#0e1112","#040e11","#1c201e","#1f211e","#141319","#59676d"],["#342d61","#405a80","#74afd8","#57384d","#827796","#b9dde1","#4d51a1","#526885","#9ecddc","#505587","#2c616a","#91a5c8","#737165","#776795"],["#6b6f79","#464692","#ec8fff","#866cb8","#9983ae","#ec8fff","#ab89e0","#8da583","#ec8fff","#c896c5","#588c7a","#ec8fff","#d0a1ec","#61606f"],["#5d5249","#264462","#674575","#ec8fff","#7171c6","#a489cd","#ec8fff","#5b6d9b","#c9a8dd","#ec8fff","#3a509c","#b487d4","#ec8fff","#35393f"],["#454065","#455265","#4f565a","#383f54","#c2cad1","#617ea8","#b092b8","#91ccc2","#7466b6","#937065","#5b676f","#333757","#152f4a","#5a6268"]],
     powerup: {
         "type": "combo",
         "tier": 2,
@@ -12077,16 +11934,15 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "ghost_lantern",
-    name: "a ghost in a lantern",
+    name: "a haunted ilantern",
     grid: [
         "X",
         "X"
       ],
-    color: [["#c18428","#e0992e","#e0992e","#e0992e","#e0992e","#e0992e","#c18428"],["#e0992e","#feae34","#c77b1e","#fee761","#c77b1e","#feae34","#e0992e"],["#e0992e","#feae34","#feae34","#c77b1e","#feae34","#feae34","#e0992e"],["#af6c1a","#feae34","#feae34","#feae34","#feae34","#feae34","#af6c1a"],["#e0992e","#feae34","#feae34","#feae34","#feae34","#feae34","#e0992e"],["#af6c1a","#b8ffe0","#b8ffe0","#b8ffe0","#b8ffe0","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#ffffff","#b8ffe0","#b8ffe0","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#2f6b57","#b8ffe0","#2f6b57","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#2f6b57","#b8ffe0","#2f6b57","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#b8ffe0","#5fbf96","#b8ffe0","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#b8ffe0","#b8ffe0","#b8ffe0","#b8ffe0","#af6c1a"],["#e0992e","#feae34","#feae34","#feae34","#feae34","#feae34","#e0992e"],["#af6c1a","#feae34","#feae34","#feae34","#feae34","#feae34","#af6c1a"],["#c18428","#af6c1a","#e0992e","#af6c1a","#e0992e","#af6c1a","#c18428"]],
+    color: [["#af6c1a","#af6c1a","#e0992e","#e0992e","#e0992e","#af6c1a","#af6c1a"],["#af6c1a","#feae34","#c77b1e","#fee761","#c77b1e","#feae34","#af6c1a"],["#e0992e","#feae34","#feae34","#c77b1e","#feae34","#feae34","#e0992e"],["#af6c1a","#feae34","#feae34","#feae34","#feae34","#feae34","#af6c1a"],["#e0992e","#feae34","#b8ffe0","#b8ffe0","#b8ffe0","#feae34","#e0992e"],["#af6c1a","#b8ffe0","#b8ffe0","#b8ffe0","#b8ffe0","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#ffffff","#b8ffe0","#b8ffe0","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#2f6b57","#b8ffe0","#2f6b57","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#2f6b57","#b8ffe0","#2f6b57","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#b8ffe0","#5fbf96","#b8ffe0","#b8ffe0","#af6c1a"],["#af6c1a","#b8ffe0","#b8ffe0","#b8ffe0","#b8ffe0","#b8ffe0","#af6c1a"],["#e0992e","#b8ffe0","#feae34","#b8ffe0","#feae34","#b8ffe0","#e0992e"],["#af6c1a","#feae34","#feae34","#feae34","#feae34","#feae34","#af6c1a"],["#c18428","#af6c1a","#e0992e","#af6c1a","#e0992e","#af6c1a","#c18428"]],
     powerup: {
         "type": "combo",
         "tier": 2,
@@ -12183,7 +12039,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "spectral_moth",
@@ -12226,8 +12081,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.8,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "pencil_eraser",
