@@ -25,6 +25,9 @@
  *     inside: { origin, grid } areas (below). Used by achievements, e.g. the inside of a mouth.
  *   },
  *   powerup: { ... },         makes this block a powerup (Normal mode only), see below
+ *   claudeDraft: true,        made by Claude and not yet reviewed by a human. The block
+ *                             designer shows these with a badge and removes the flag as soon
+ *                             as you edit and save the piece. The game ignores it.
  * }
  *
  * powerup: {
@@ -385,6 +388,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "log",
@@ -942,6 +946,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -960,6 +965,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "pickle_jar",
@@ -974,6 +980,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -991,6 +998,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "sad_avocado",
@@ -1006,6 +1014,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -1024,6 +1033,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "hug_cactus",
@@ -1040,6 +1050,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "disguise",
@@ -1054,6 +1065,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "mullet",
@@ -1069,6 +1081,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "evil_sock",
@@ -1084,6 +1097,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "rubber_chicken",
@@ -1098,6 +1112,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "trombone",
@@ -1113,6 +1128,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "no_stamp",
@@ -1127,6 +1143,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "floppy_disk",
@@ -1141,6 +1158,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "skateboard",
@@ -1154,6 +1172,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
     tags: [
         "sport"
       ],
@@ -1172,6 +1191,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "set_square",
@@ -1186,6 +1206,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "magnet_s",
@@ -1200,6 +1221,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "hockey_stick",
@@ -1215,6 +1237,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "sport"
       ],
@@ -1233,6 +1256,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "music"
       ],
@@ -1251,6 +1275,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "sport"
       ],
@@ -1270,6 +1295,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
     tags: [
         "science"
       ],
@@ -1289,6 +1315,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "music"
       ],
@@ -1306,6 +1333,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "dumbbell",
@@ -1321,6 +1349,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
     tags: [
         "sport"
       ],
@@ -1340,6 +1369,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "science"
       ],
@@ -1359,6 +1389,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "art"
       ],
@@ -1378,6 +1409,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "science"
       ],
@@ -1394,6 +1426,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -1411,6 +1444,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -1428,6 +1462,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "pea_pod",
@@ -1441,6 +1476,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -1458,6 +1494,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "little_teapot",
@@ -1472,6 +1509,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "candy_cane",
@@ -1487,6 +1525,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -1504,6 +1543,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "knowing_owl",
@@ -1519,6 +1559,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "inside_out_umbrella",
@@ -1535,6 +1576,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "sofa_remote",
@@ -1549,6 +1591,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "goldfish",
@@ -1563,6 +1606,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "thirsty_plant",
@@ -1578,6 +1622,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "just_boiled_kettle",
@@ -1593,6 +1638,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "lily_frog",
@@ -1608,6 +1654,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "lonely_wellie",
@@ -1624,6 +1671,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "stubborn_sugar_cube",
@@ -1637,6 +1685,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -1653,6 +1702,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "ambitious_sesame",
@@ -1666,6 +1716,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -1682,6 +1733,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "barefoot_lego",
@@ -1695,6 +1747,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "lone_sprinkle",
@@ -1708,6 +1761,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -1724,6 +1778,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "blank_domino",
@@ -1738,6 +1793,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "overpacked_suitcase",
@@ -1752,6 +1808,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "blinking_photo_strip",
@@ -1767,6 +1824,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "drizzle_cloud",
@@ -1781,6 +1839,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
     tags: [
         "weather"
       ],
@@ -1798,6 +1857,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "weather"
       ],
@@ -1815,6 +1875,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "travel"
       ],
@@ -1831,6 +1892,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
     tags: [
         "space"
       ],
@@ -1847,6 +1909,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "food",
         "space"
@@ -1865,6 +1928,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "space"
       ],
@@ -1882,6 +1946,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "space"
       ],
@@ -1899,6 +1964,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "travel"
       ],
@@ -1917,6 +1983,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "frog_prince",
@@ -1932,6 +1999,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "rapunzel_brush",
@@ -1948,6 +2016,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "dragon_egg",
@@ -1964,6 +2033,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "lighthouse_lunchbox",
@@ -1979,6 +2049,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "postbag_cards",
@@ -1994,6 +2065,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "dentist_chair",
@@ -2010,6 +2082,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "unicycle",
@@ -2026,6 +2099,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "tiny_armour",
@@ -2042,6 +2116,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "genie_lamp",
@@ -2057,6 +2132,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "knitting_mishap",
@@ -2073,6 +2149,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "model_railway",
@@ -2088,6 +2165,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "stubborn_knight",
@@ -2373,6 +2451,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
     tags: [
         "landmark"
       ],
@@ -3193,6 +3272,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
     nextShapeProbs: [
         0.2,
         0.1
@@ -3218,6 +3298,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
     nextShapeProbs: [
         0.12,
         0.1,
@@ -3245,6 +3326,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
     nextShapeProbs: [
         0.15,
         0.15
@@ -3270,6 +3352,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
     nextShapeProbs: [
         0.15,
         0.1
@@ -3295,6 +3378,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
     nextShapeProbs: [
         0.15,
         0.15
@@ -3479,6 +3563,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "swiss_cheese",
@@ -3528,6 +3613,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "pisa",
@@ -3550,6 +3636,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "landmark"
       ],
@@ -3573,6 +3660,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "landmark"
       ],
@@ -3593,6 +3681,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "landmark"
       ],
@@ -3623,6 +3712,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     tags: [
         "landmark"
       ],
@@ -3654,6 +3744,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "small_black_hole",
@@ -3685,6 +3776,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "large_black_hole",
@@ -3720,6 +3812,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.6,
+    claudeDraft: true,
   },
   {
     id: "katana",
@@ -3749,6 +3842,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "expanding_foam",
@@ -3846,6 +3940,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "mole",
@@ -3879,6 +3974,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "space_laser",
@@ -3907,6 +4003,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "fart",
@@ -3938,6 +4035,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "scissors",
@@ -3966,6 +4064,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "lawnmower",
@@ -3996,6 +4095,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "tax_audit",
@@ -4026,6 +4126,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "dynamite",
@@ -4063,6 +4164,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "heavy_book",
@@ -4092,6 +4194,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "newtons_apple",
@@ -4121,6 +4224,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "earthquake",
@@ -4149,6 +4253,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.4,
+    claudeDraft: true,
   },
   {
     id: "gust_of_wind",
@@ -4204,6 +4309,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "leaky_tap",
@@ -4298,6 +4404,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "wall_filler",
@@ -4400,6 +4507,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "popcorn",
@@ -4497,6 +4605,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "sneeze",
@@ -4591,6 +4700,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "sourdough",
@@ -4689,6 +4799,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "acid_candy",
@@ -4708,6 +4819,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "battery_acid",
@@ -4728,6 +4840,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "piranha",
@@ -4747,6 +4860,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "chattering_teeth",
@@ -4766,6 +4880,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "bleach",
@@ -4786,6 +4901,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "termite_queen",
@@ -4805,6 +4921,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "lava_lamp",
@@ -4825,6 +4942,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "floor_is_lava",
@@ -4844,6 +4962,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "whoopee_cushion",
@@ -4878,6 +4997,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "party_popper",
@@ -4914,6 +5034,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "microwaved_egg",
@@ -4946,6 +5067,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "firework_sideways",
@@ -4978,6 +5100,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "fizzy_pop",
@@ -5014,6 +5137,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "cartoon_bomb",
@@ -5050,6 +5174,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "big_burp",
@@ -5083,6 +5208,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "small_meteor",
@@ -5119,6 +5245,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "florg_goo",
@@ -5203,6 +5330,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "melting_snorfwiggle",
@@ -5288,6 +5416,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "unset_jelly",
@@ -5372,6 +5501,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "sad_ice_cream",
@@ -5457,6 +5587,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "bee_honey",
@@ -5542,6 +5673,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "custard",
@@ -5627,6 +5759,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "liquid_florg",
@@ -5711,6 +5844,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "bucket_of_slime",
@@ -5796,6 +5930,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "friendly_ghost",
@@ -5815,6 +5950,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "quantum_lentil",
@@ -5833,6 +5969,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "ghost_sock",
@@ -5853,6 +5990,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "phasing_cat",
@@ -5871,6 +6009,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "ghost_worm",
@@ -5891,6 +6030,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "forgotten_memories",
@@ -5909,6 +6049,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "ghost_tetromino",
@@ -5928,6 +6069,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "haunted_bedsheet",
@@ -5947,6 +6089,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "hungry_caterpillar",
@@ -5976,6 +6119,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "eraser",
@@ -6005,6 +6149,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "wrecking_ball",
@@ -6037,6 +6182,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "anvil",
@@ -6067,6 +6213,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "existential_sigh",
@@ -6095,6 +6242,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "dropped_lasagne",
@@ -6190,6 +6338,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "bowling_ball",
@@ -6223,6 +6372,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "sumo_wrestler",
@@ -6258,6 +6408,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "potato_sack",
@@ -6290,6 +6441,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "black_cat",
@@ -6323,6 +6475,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "pogo_stick",
@@ -6379,6 +6532,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "hippo_bellyflop",
@@ -6413,6 +6567,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "ton_of_bricks",
@@ -6443,6 +6598,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "lost_marbles",
@@ -6535,6 +6691,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "lawn_sprinkler",
@@ -6630,6 +6787,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "bouncy_castle",
@@ -6711,6 +6869,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "pancake_stack",
@@ -6807,6 +6966,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "ball_pit",
@@ -6901,6 +7061,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "lego_brick",
@@ -6997,6 +7158,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "cotton_candy",
@@ -7091,6 +7253,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "foam_cousin",
@@ -7211,6 +7374,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "zeus_bolt",
@@ -7240,6 +7404,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "pacman",
@@ -7267,6 +7432,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "cheese_grater",
@@ -7302,6 +7468,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "shuriken",
@@ -7337,6 +7504,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "rotten_lemon",
@@ -7365,6 +7533,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "alien_blood",
@@ -7400,6 +7569,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "stomach",
@@ -7420,6 +7590,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "vinegar_bottle",
@@ -7441,6 +7612,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "acid_vat",
@@ -7474,6 +7646,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "champagne",
@@ -7503,6 +7676,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "jack_in_the_box",
@@ -7532,6 +7706,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "popped_balloon",
@@ -7566,6 +7741,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "volcano",
@@ -7601,6 +7777,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "mentos_cola",
@@ -7637,6 +7814,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "fondue",
@@ -7721,6 +7899,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "lava_blob",
@@ -7805,6 +7984,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "hair_gel",
@@ -7889,6 +8069,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "grumblesac_given_up",
@@ -7974,6 +8155,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "schlopwort_drain",
@@ -8059,6 +8241,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "will_o_wisp",
@@ -8077,6 +8260,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "quantum_electron",
@@ -8095,6 +8279,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "ghost_pepper",
@@ -8115,6 +8300,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "poltergeist_teacup",
@@ -8134,6 +8320,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "bar_of_soap",
@@ -8152,6 +8339,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "spirit_level",
@@ -8170,6 +8358,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "greased_piglet",
@@ -8188,6 +8377,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "phantom_finger",
@@ -8207,6 +8397,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "ghost_eel",
@@ -8225,6 +8416,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
+    claudeDraft: true,
   },
   {
     id: "ninja",
@@ -8244,6 +8436,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
+    claudeDraft: true,
   },
   {
     id: "buttered_cat",
@@ -8263,6 +8456,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "cat_burglar",
@@ -8282,6 +8476,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "pile_driver",
@@ -8334,6 +8529,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "dentist_drill",
@@ -8453,6 +8649,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "cement_mixer",
@@ -8567,6 +8764,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "erupting_volcano",
@@ -8624,6 +8822,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "sinkhole",
@@ -8661,6 +8860,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "tornado",
@@ -8715,6 +8915,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "hot_glue_gun",
@@ -8820,6 +9021,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "car_airbag",
@@ -8939,6 +9141,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "hard_hats",
@@ -9065,6 +9268,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "plunger",
@@ -9116,6 +9320,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "old_testament",
@@ -9154,6 +9359,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
     tags: [
         "scripture"
       ],
@@ -9255,6 +9461,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
     tags: [
         "scripture"
       ],
@@ -9290,6 +9497,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.5,
+    claudeDraft: true,
     tags: [
         "lotr"
       ],
@@ -9327,6 +9535,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.5,
+    claudeDraft: true,
     tags: [
         "lotr"
       ],
@@ -9362,6 +9571,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "pinking_shears",
@@ -9399,6 +9609,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "black_hole_intern",
@@ -9432,6 +9643,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "delete_key",
@@ -9463,6 +9675,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "egg_timer",
@@ -9497,6 +9710,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "fizzing_aspirin",
@@ -9526,6 +9740,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.6,
+    claudeDraft: true,
   },
   {
     id: "sugar_free_gummy",
@@ -9546,6 +9761,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "bath_bomb",
@@ -9580,6 +9796,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "vanishing_cream",
@@ -9609,6 +9826,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "bubble_bath",
@@ -9704,6 +9922,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "liquid_cat",
@@ -9823,6 +10042,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "swelling_sponge",
@@ -9921,6 +10141,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "packing_peanuts",
@@ -10017,6 +10238,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "stuffed_duvet",
@@ -10111,6 +10333,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "snow_drift",
@@ -10205,6 +10428,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "autumn_leaves",
@@ -10301,6 +10525,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "self_raising_cake",
@@ -10393,6 +10618,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.6,
+    claudeDraft: true,
   },
   {
     id: "neutrino",
@@ -10412,6 +10638,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "vanishing_coin",
@@ -10430,6 +10657,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "schrodingers_box",
@@ -10448,6 +10676,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "trenchcoat_spy",
@@ -10468,6 +10697,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "jellyfish",
@@ -10487,6 +10717,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "slippery_seal",
@@ -10506,6 +10737,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "greased_lightning",
@@ -10526,6 +10758,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
+    claudeDraft: true,
   },
   {
     id: "fish_got_away",
@@ -10544,6 +10777,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "wisp_of_fog",
@@ -10562,6 +10796,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
+    claudeDraft: true,
   },
   {
     id: "pickpockets_hand",
@@ -10581,6 +10816,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
+    claudeDraft: true,
   },
   {
     id: "flour_sack",
@@ -10611,6 +10847,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "tiptoe_elephant",
@@ -10640,6 +10877,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "gravity_boot",
@@ -10676,6 +10914,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "lead_balloon",
@@ -10711,6 +10950,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "sinking_stone",
@@ -10767,6 +11007,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "ambitious_paperweight",
@@ -10803,6 +11044,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "sideways_apple",
@@ -10833,6 +11075,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "falling_accordion",
@@ -10868,6 +11111,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "mole_family",
@@ -10918,6 +11162,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "snow_plough",
@@ -10969,6 +11214,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "tidy_robot",
@@ -11083,6 +11329,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "busy_beaver",
@@ -11198,6 +11445,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "ant_farm",
@@ -11251,6 +11499,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "dustpan_brush",
@@ -11301,6 +11550,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "jelly_mould",
@@ -11418,6 +11668,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "bricklayer",
@@ -11520,6 +11771,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "bulldozer_cement",
@@ -11646,6 +11898,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "upright_vacuum",
@@ -11696,6 +11949,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "ghost_train",
@@ -11733,6 +11987,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "sneaky_saboteur",
@@ -11771,6 +12026,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "poltergeist",
@@ -11808,6 +12064,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "ghost_lantern",
@@ -11913,6 +12170,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "spectral_moth",
@@ -11956,6 +12214,7 @@ export const SHAPES = [
         "mode": "none"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "pencil_eraser",
