@@ -18,7 +18,7 @@ import { CONFIG } from "../config.js";
 import { clamp01, lerp } from "./util.js";
 import { getShapePaint } from "./shapes.js";
 import { initPieceSelectionState, selectPiece } from "./selection.js";
-import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup } from "./powerups.js";
+import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
 
 /* =========================
    State
@@ -389,9 +389,9 @@ export function tryRotate(state) {
    ========================= */
 
 function spawnPiece(state) {
-  if (!state.next) state.next = selectPiece(state);
+  if (!state.next) state.next = rollScatter(selectPiece(state));
   const shape = state.next;
-  state.next = selectPiece(state);
+  state.next = rollScatter(selectPiece(state));
 
   const rotIdx = 0;
   const mat = shape.rotations[rotIdx];
@@ -423,7 +423,7 @@ function spawnPiece(state) {
 
 // Debug helper: make `shape` the next piece.
 export function setNextPiece(state, shape) {
-  state.next = shape;
+  state.next = rollScatter(shape);
   emit(state, "next", { next: shape });
 }
 

@@ -26,6 +26,7 @@ export const CONFIG = {
     lockDelayMsTouch: 520,
     tapRepeatStartMs: 140,
     tapRepeatEveryMs: 55,
+    doubleTapMs: 300,      // double tap the bottom of the board (or press down twice) to drop instantly
   },
 
   scoring: {
@@ -145,6 +146,9 @@ export const CONFIG = {
     // multipliers, so the same things don't keep turning up. Both are soft (never zero),
     // and linked "back to back" pieces (nextShapes) ignore them.
     variety: {
+      // Hard rule: the same piece never comes again within this many pieces (linked
+      // "back to back" pieces like the fish are the only exception). 0 = off.
+      noRepeatWithin: 5,
       // The big level 4 and 5 pieces are the most noticeable, so one already served this
       // game is much less likely to come again: its weight × repeatPenalty per time served
       // (it can still happen, just rarely, e.g. when every giant has had a turn).
@@ -225,6 +229,13 @@ export const CONFIG = {
         weight: 0.5,      // how often a combo is picked compared with a normal powerup
       },
 
+      // "Bad" powerups (powerup.bad in the data, e.g. existential horror): they mostly make
+      // things worse. Rare by their frequency and help 1; on top of that, never before this
+      // many drops, and never while their class is still being learned.
+      bad: {
+        minDrop: 40,
+      },
+
       // Helpfulness: each powerup has `help` (1–5) in its data. The worse you're doing
       // (the struggle tally: stack height, air pockets, how long since you cleared a row),
       // the more the helpful ones are preferred. helpPower is how strongly, at full struggle.
@@ -264,7 +275,8 @@ export const CONFIG = {
   achievements: {
     enabled: true,
     toastMs: 3200,     // how long an unlock toast stays up
-    maxToastsAtOnce: 2, // more unlocks than this wait their turn
+    maxToastsAtOnce: 1, // more unlocks than this wait their turn...
+    maxToastsQueued: 3, // ...up to this many in all; any more unlock quietly (no toast)
   },
 
   sound: {

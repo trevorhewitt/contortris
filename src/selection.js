@@ -205,6 +205,12 @@ export function varietyMultiplier(sel, shape) {
     r.minMultiplier ?? 0.15
   );
 
+  // hard rule: never the same piece twice within `noRepeatWithin` pieces (only a linked
+  // "back to back" piece, like the fish, can break it). Near-zero rather than zero, so a
+  // pool with nothing else left still picks something.
+  const within = v.noRepeatWithin ?? 0;
+  if (within > 0 && sel.recentShapeIds.slice(-within).includes(shape.id)) mult *= 1e-9;
+
   // pieces that opened recent games (state.openingMemory, filled in by the UI)
   const ag = v.acrossGames;
   if (ag && sel.openingMemory?.has(shape.id) && sel.dropIndex <= (ag.drops ?? 20)) mult *= ag.penalty ?? 1;
@@ -591,6 +597,12 @@ function maybeSelectPowerup(state, danger01) {
     candidates = candidates.filter(p => !learning(p.powerup.cls) || useful.get(p.id));
     if (!candidates.length) return null;
   }
+
+  // "bad" powerups (the existential ones): rare, never early, never while a class is new
+  const bad = cfg.bad ?? {};
+  candidates = candidates.filter(p => !p.powerup.bad ||
+    (sel.dropIndex >= (bad.minDrop ?? 0) && ps.usedOk.has(p.powerup.cls) && !ps.relearn.has(p.powerup.cls)));
+  if (!candidates.length) return null;
 
   const need = cfg.need ?? {};
   const st = cfg.struggle ?? {};

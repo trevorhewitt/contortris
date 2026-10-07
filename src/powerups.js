@@ -166,6 +166,9 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
     });
   } else if (type === "goo" || type === "phantom") {
     areaRotations = rotations.map(() => ({ cells: [], rows: [], cols: [] }));
+  } else if (raw.scatter && type === "destroyer") {
+    // a random spray of cells, re-rolled each time the piece spawns (rollScatter)
+    areaRotations = scatterAreas(rotations, raw.scatter, Math.random);
   } else {
     areaRotations = areaRotationsFor(raw.area, rotations, trim);
     if (isEmptyArea(areaRotations[0])) {
@@ -196,7 +199,72 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
       : DEFAULT_HELP_BY_TIER[tier],
     parts,
     areaRotations,
+    bad: raw.bad === true,
+    scatter: (raw.scatter && type === "destroyer") ? {
+      radius: Math.max(1, Number(raw.scatter.radius) || 5),
+      density: Math.max(0.05, Math.min(1, Number(raw.scatter.density) || 0.5)),
+    } : null,
   };
+}
+
+/* =========================
+   Scatter areas (random, noise-shaped)
+   ========================= */
+
+// Smooth value noise in 2D (lattice of random values, smoothstep-blended).
+function valueNoise(rng, scale) {
+  const lattice = new Map();
+  const at = (i, j) => {
+    const key = i + "," + j;
+    if (!lattice.has(key)) lattice.set(key, rng());
+    return lattice.get(key);
+  };
+  const fade = t => t * t * (3 - 2 * t);
+  return (x, y) => {
+    x /= scale; y /= scale;
+    const i = Math.floor(x), j = Math.floor(y);
+    const u = fade(x - i), v = fade(y - j);
+    const a = at(i, j) + (at(i + 1, j) - at(i, j)) * u;
+    const b = at(i, j + 1) + (at(i + 1, j + 1) - at(i, j + 1)) * u;
+    return a + (b - a) * v;
+  };
+}
+
+// Offsets (relative to the piece's centre) of a spray of cells that thins out from the
+// centre, in streaks (angular noise) and clumps (2D noise).
+export function scatterOffsets(sc, rng) {
+  const R = sc.radius, density = sc.density;
+  const blobs = valueNoise(rng, 2.2);
+  const rays = valueNoise(rng, 1);
+  const nRays = 5 + Math.floor(rng() * 4);
+  const out = [];
+  for (let oy = -R; oy <= R; oy++) for (let ox = -R; ox <= R; ox++) {
+    const d = Math.hypot(ox, oy);
+    if (d > R + 0.3) continue;
+    const t = (Math.atan2(oy, ox) / (2 * Math.PI) + 0.5) * nRays;
+    // wrap the angular noise so the streaks join up all the way round
+    const ray = rays(t, 0.5) * (1 - t / nRays) + rays(t - nRays, 0.5) * (t / nRays);
+    const fall = Math.max(0, 1 - d / (R + 1));
+    const p = density * (0.35 + 1.3 * fall) * (0.25 + 1.5 * ray * blobs(ox, oy));
+    if (d < 1.5 || rng() < p) out.push({ ox, oy });
+  }
+  return out;
+}
+
+// The scatter as an area for every rotation, centred on the piece (it never rotates).
+export function scatterAreas(rotations, sc, rng) {
+  const offs = scatterOffsets({ radius: Number(sc?.radius) || 5, density: Number(sc?.density) || 0.5 }, rng);
+  return rotations.map(mat => {
+    const cx = Math.floor(mat[0].length / 2), cy = Math.floor(mat.length / 2);
+    return { cells: offs.map(({ ox, oy }) => ({ dx: cx + ox, dy: cy + oy })), rows: [], cols: [] };
+  });
+}
+
+// A copy of a scatter powerup piece with a freshly rolled spray.
+export function rollScatter(shape, rng = Math.random) {
+  const pu = shape?.powerup;
+  if (!pu?.scatter) return shape;
+  return { ...shape, powerup: { ...pu, areaRotations: scatterAreas(shape.rotations, pu.scatter, rng) } };
 }
 
 function unionAreas(list) {

@@ -6,7 +6,7 @@ import { CONFIG } from "../config.js";
 import { escapeHtml, store } from "./util.js";
 import { getDifficultyZone } from "./selection.js";
 import {
-  on, startRun, resetGame, tryMove, tryRotate, beginLockIfNeeded, markInput, setNextPiece, markBoardDirty, isPowerupEnabled,
+  on, startRun, resetGame, tryMove, tryRotate, beginLockIfNeeded, markInput, setNextPiece, markBoardDirty, isPowerupEnabled, hardDropAndLock,
 } from "./game.js";
 import { makeShapePreviewCanvas, drawIcon } from "./render.js";
 import { createDemo, runDemos } from "./demo.js";
@@ -397,6 +397,8 @@ export function bindUI({ state, renderer, sound, achievements }) {
 
   function toast(def) {
     if (!CONFIG.achievements.enabled) return;
+    // past the cap they still unlock (see the achievements page), just without a toast
+    if (toastsShowing + toastQueue.length >= (CONFIG.achievements.maxToastsQueued ?? Infinity)) return;
     toastQueue.push(def);
     pumpToasts();
   }
@@ -825,10 +827,26 @@ export function bindUI({ state, renderer, sound, achievements }) {
         break;
       case "ArrowDown":
         e.preventDefault();
+        if (!e.repeat && isDoubleDown()) { teleportDown(); break; }
         state.softDropping = true;
         break;
     }
   });
+
+  // Double tap / double press down: the piece drops straight to where it will land.
+  let lastDownAt = 0;
+  function isDoubleDown() {
+    const now = performance.now();
+    const double = now - lastDownAt < (CONFIG.timing.doubleTapMs ?? 300);
+    lastDownAt = double ? 0 : now;
+    return double;
+  }
+  function teleportDown() {
+    if (!canAct()) return;
+    state.softDropping = false;
+    stopRepeat();
+    if (hardDropAndLock(state)) sound.play("lock");
+  }
 
   window.addEventListener("keyup", (e) => {
     if (e.code === "ArrowDown") state.softDropping = false;
@@ -914,6 +932,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
     const zone = getZone(e.clientX, e.clientY);
     state.touch.zone = zone;
 
+    if (zone === "bottom" && isDoubleDown()) { applyGlow(zone); teleportDown(); return; }
     if (zone) {
       applyGlow(zone);
       stopRepeat();
