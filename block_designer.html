@@ -187,6 +187,67 @@
     .itemStats{ color:#bdbdbd; font-size:11px; text-align:right; line-height:1.35; }
     .miniCanvas{ width:100%; height:auto; image-rendering: pixelated; border-radius:6px; display:block; background:#000; }
 
+    /* blocks library: the right column stays in view and the list scrolls inside its card */
+    /* (the top bar is ~50px: the column fits below it before the page is scrolled, and stays in view after) */
+    #blocksApp > .col.right{ position:sticky; top:12px; max-height:calc(100vh - 76px); }
+    #blocksApp > .col.right > .card{ flex:0 0 auto; }
+    #blocksApp > .col.right > .libCard{ flex:1 1 auto; min-height:280px; display:flex; flex-direction:column; }
+    #issues{ max-height:110px; overflow:auto; }
+    .libCard .listTabs button{ padding:3px 7px; font-size:11px; border-radius:8px; }
+    .libCard .row + .row{ margin-top:6px; }
+    #recentList{ flex:1 1 auto; min-height:120px; max-height:none; margin-top:8px; gap:4px; align-content:start; }
+    .item.compact{ grid-template-columns: 66px minmax(0,1fr); gap:8px; padding:4px 6px; align-items:center; border-radius:8px; }
+    .item.compact .itemLine{ text-align:left; line-height:1.3; color:#bdbdbd; font-size:10.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .fileCard{ padding:9px 12px; }
+    .fileCard > details > summary{ cursor:pointer; display:flex; align-items:center; gap:8px; list-style:none; }
+    .fileCard > details > summary::-webkit-details-marker{ display:none; }
+    .fileCard > details > summary::before{ content:"▸"; color:var(--muted); font-size:11px; }
+    .fileCard > details[open] > summary::before{ content:"▾"; }
+    .fileSumHead{ font-size:14px; font-weight:650; color:#fff; }
+    #fileSumText{ overflow:hidden; text-overflow:ellipsis; min-width:0; }
+    #gridBody:focus{ outline:none; }
+    .item.compact .thumbSm{ width:66px; height:44px; image-rendering:pixelated; border-radius:4px; display:block; background:#000; }
+    .item.compact .itemName{ font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .item.compact .itemMeta{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .item.ghost{ cursor:default; border-style:dashed; color:var(--muted); font-size:11.5px; padding:6px 8px; display:block; background:transparent; }
+    .badge{ display:inline-block; font-size:10px; line-height:14px; padding:0 5px; border-radius:999px; border:1px solid var(--line); margin-right:4px; vertical-align:1px; white-space:nowrap; font-weight:600; }
+    .badge.pu{ color:#cfe0ff; border-color:rgba(106,166,255,.45); }
+    .badge.draft{ color:#ffd98a; border-color:rgba(255,207,106,.55); background:#2a2210; }
+    .badge.untouched{ color:#e6c2ff; border-color:rgba(199,139,255,.6); background:#22142e; }
+    .badge.banished{ color:#bbb; border-color:#444; }
+    .libHead{ display:flex; gap:6px; align-items:center; }
+    @media (max-width: 1350px){
+      #blocksApp > .col.right{ position:static; max-height:none; align-items:start; }
+      #blocksApp > .col.right > .libCard{ max-height:calc(100vh - 24px); }
+    }
+
+    /* top bar: piece navigation + draft state */
+    #dirtyPill.draft{ color:#1a1206; background:var(--warn); border-color:var(--warn); font-weight:650; }
+    .navBtn{ padding:6px 9px; }
+    .untouchedBox{ margin-top:8px; padding:6px 8px; border:1px solid rgba(199,139,255,.45); background:#1a1224; border-radius:8px; font-size:12px; color:#e6c2ff; display:flex; gap:8px; align-items:center; justify-content:space-between; }
+    .untouchedBox button{ white-space:nowrap; }
+    .untouchedBox.reviewed{ border-color:rgba(123,224,165,.4); background:#0f1a14; color:var(--good); }
+
+    /* full-window library grid */
+    #gridOverlay{ position:fixed; inset:0; z-index:30; background:rgba(6,6,8,.97); display:flex; flex-direction:column; padding:12px 16px 14px; }
+    .gridHead{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .gridHead .listTabs button{ padding:5px 10px; font-size:12px; }
+    .gridBody{ flex:1 1 auto; overflow:auto; display:grid; grid-template-columns:repeat(auto-fill, minmax(var(--cell, 150px), 1fr)); gap:8px; align-content:start; margin-top:10px; padding-right:4px; }
+    .gcell{ border:1px solid #232323; border-radius:10px; background:#0f0f0f; padding:6px; cursor:pointer; display:flex; flex-direction:column; gap:4px; min-width:0; }
+    .gcell:hover{ border-color:#4a4a4a; }
+    .gcell.current{ border-color:rgba(106,166,255,.85); background:#111722; }
+    .gcell canvas{ width:100%; aspect-ratio:4 / 3; image-rendering:pixelated; background:#000; border-radius:6px; display:block; }
+    .gcell .gname{ font-size:12px; font-weight:650; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .gcell .gsub{ font-size:10.5px; color:#9a9a9a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    /* adjust colours panel */
+    #adjPanel{ position:fixed; right:16px; top:64px; width:350px; z-index:25; background:#141414; border:1px solid #3a3a3a; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,.65); padding:10px 12px 12px; }
+    #adjPanel .adjHead{ cursor:move; display:flex; justify-content:space-between; align-items:center; font-weight:700; font-size:13px; margin:-2px 0 6px; user-select:none; }
+    #adjPanel .adjRow label{ width:86px; }
+    #adjPanel .adjRow input[type="range"]{ width:160px; }
+    #adjPanel h4{ font-size:12px; margin:10px 0 4px; color:#fff; font-weight:650; }
+    #adjHist{ display:block; width:100%; height:44px; background:#0b0b0b; border:1px solid var(--line); border-radius:6px; margin-bottom:4px; }
+
     /* modal + toast */
     dialog#modal{ background:#141414; color:var(--text); border:1px solid #333; border-radius:14px; padding:16px; max-width:520px; width:calc(100% - 40px); }
     dialog#modal::backdrop{ background:rgba(0,0,0,.6); }
@@ -305,10 +366,13 @@
     </div>
   </div>
   <div class="row" id="blocksTop">
+    <button id="topPrev" class="navBtn" title="Previous piece in the library view ( [ or Alt+← )">◀ Prev</button>
     <span id="sourcePill" class="pill mono">new block</span>
+    <button id="topNext" class="navBtn" title="Next piece in the library view ( ] or Alt+→ )">Next ▶</button>
+    <button id="topGrid" title="Browse the library as a full-window grid (G)">Library grid</button>
     <span id="dirtyPill" class="pill">no changes</span>
+    <button id="revertBtn" class="danger" disabled title="Throw away this piece's unsaved draft and go back to the version in the file">Discard draft</button>
     <button id="newBtn">New block</button>
-    <button id="revertBtn" disabled title="Reload the loaded entry, discarding edits">Revert</button>
   </div>
   <div class="row hidden" id="achTop">
     <span id="achFilePill" class="pill mono">achievements.js</span>
@@ -359,6 +423,7 @@
         </div>
       </div>
       <div class="field"><span>Tags</span><div id="tagsInput" class="chips" title="Labels used by achievements, e.g. food, medicine, mouth. Enter or comma adds a tag."></div></div>
+      <div id="untouchedBox" class="untouchedBox hidden"><span id="untouchedText"></span><button id="untouchedBtn" class="small"></button></div>
 
       <div class="sep"></div>
       <h3>Linked next shapes</h3>
@@ -412,6 +477,9 @@
         <label>Hex <input id="hexText" type="text" value="#ff7300" class="mono" spellcheck="false" style="width:90px;"></label>
         <button id="clearActive" class="danger small">Clear active layer</button>
       </div>
+      <div class="row">
+        <button id="openAdjust2" class="small" title="Hue, saturation, lightness, contrast and levels for the whole piece or the selection, with a live preview">Adjust colours…</button>
+      </div>
       <div id="palette" class="palette" title="Colours used in the art"></div>
 
       <div class="sep"></div>
@@ -425,12 +493,16 @@
         <button id="selNone" class="small" title="Deselect / place (Esc, Enter)">None</button>
       </div>
       <div class="row">
-        <button id="selFlipH" class="small" title="Flip selection horizontally">Flip H</button>
-        <button id="selFlipV" class="small" title="Flip selection vertically">Flip V</button>
+        <button id="selRotCCW" class="small" title="Rotate the selection 90° counter-clockwise (Shift+R)">⟲ Rotate</button>
+        <button id="selRotCW" class="small" title="Rotate the selection 90° clockwise (R)">⟳ Rotate</button>
+        <button id="selFlipH" class="small" title="Mirror the selection left ↔ right (H)">⇆ Flip H</button>
+        <button id="selFlipV" class="small" title="Mirror the selection top ↕ bottom (V)">⇅ Flip V</button>
+      </div>
+      <div class="row">
         <label title="Select, copy, move and delete on every layer instead of only the active one"><input id="selAllLayers" type="checkbox"> All layers</label>
         <label title="Moved / pasted transparent pixels overwrite what is underneath"><input id="selOpaque" type="checkbox"> Paste transparent</label>
       </div>
-      <div class="hint" style="margin-top:6px;">Arrows nudge 1 px, Shift+arrows one block. Enter or click outside places a paste, Esc cancels it.</div>
+      <div class="hint" style="margin-top:6px;">Arrows nudge 1 px, Shift+arrows one block. R / Shift+R rotate, H / V flip. Enter or click outside places a paste, Esc cancels it.</div>
 
       <div class="sep"></div>
       <h3>Block mask</h3>
@@ -694,15 +766,10 @@
       </div>
 
       <div class="subCard">
-        <h3>Colour adjustments (preview)</h3>
-        <div class="hint" style="margin-bottom:8px;">Preview only until you click Apply (they are included in saves/exports).</div>
-        <div class="adjRow"><label>Brightness</label><input id="brightness" type="range" min="-100" max="100" value="0"><span id="brightnessPill" class="pill mono">0</span></div>
-        <div class="adjRow"><label>Contrast</label><input id="contrast" type="range" min="-100" max="100" value="0"><span id="contrastPill" class="pill mono">0</span></div>
-        <div class="adjRow"><label>Hue</label><input id="hue" type="range" min="-180" max="180" value="0"><span id="huePill" class="pill mono">0°</span></div>
-        <div class="adjRow"><label>Saturation</label><input id="sat" type="range" min="0" max="200" value="100"><span id="satPill" class="pill mono">100%</span></div>
+        <h3>Colours &amp; noise</h3>
+        <div class="hint" style="margin-bottom:8px;">Adjust the hue, saturation, lightness, contrast and levels of the whole piece (all layers or the active one) or of the selection, with a live preview on the canvas.</div>
         <div class="row" style="margin-top:8px;">
-          <button id="applyAdjustments" class="primary">Apply to layers</button>
-          <button id="resetAdjustments">Reset</button>
+          <button id="openAdjust" class="primary">Adjust colours…</button>
           <button id="rerollSeed" title="Re-randomise the procedural noise seed">Reroll noise seed</button>
           <span class="pill mono">seed <span id="seedLabel">—</span></span>
         </div>
@@ -742,34 +809,40 @@
         <button id="deleteBtn" class="danger small" disabled>Delete loaded entry</button>
       </div>
       <div class="row"><span id="saveModeHint" class="hint"></span></div>
+      <div class="row"><span id="draftHint" class="hint"></span></div>
       <ul id="issues" class="issues"></ul>
     </div>
 
-    <div class="card">
-      <h2>File</h2>
-      <div id="slotList"></div>
+    <div class="card fileCard">
+      <details id="fileDetails">
+      <summary><span class="fileSumHead">File</span> <span id="fileSumText" class="pill"></span></summary>
+      <div id="slotList" style="margin-top:8px;"></div>
       <input id="fallbackFile" type="file" accept=".js" style="display:none;">
-      <div class="hint" style="margin-top:8px;">Regular blocks and powerups live in one file. Easiest: run <span class="mono">python3 serve.py</span> in the repo and open the designer from it; then saving goes straight into your files (with backups in shapes/.backups/). Or pick the file (Chrome/Edge) for in-place saving. Otherwise saving downloads the updated file.</div>
+      <details class="hint" style="margin-top:6px;"><summary style="cursor:pointer;">How saving and drafts work</summary>
+        <div style="margin-top:4px;">Regular blocks and powerups live in one file. Easiest: run <span class="mono">python3 serve.py</span> in the repo and open the designer from it; then saving goes straight into your files (with backups in shapes/.backups/). Or pick the file (Chrome/Edge) for in-place saving. Otherwise saving downloads the updated file.<br><br>
+        Unsaved edits are kept as a <b>draft</b> per piece (in this browser, and in <span class="mono">shapes/.drafts.json</span> when the local server runs), so you can move between pieces freely and reload the page. Saving a piece clears its draft.</div>
+      </details>
+      </details>
     </div>
 
-    <div class="card">
-      <h2>Library <span id="listCount" class="pill mono">0</span></h2>
-      <div class="listTabs" id="listTabs">
-        <button data-lkind="all" class="on">All</button>
-        <button data-lkind="regular">Regular</button>
-        <button data-lkind="powerup">Powerups</button>
-        <button data-lkind="banished" title="Pieces with frequency 0: never served in the game, kept here to bring back later">Banished</button>
-      </div>
-      <div class="row" style="margin-top:8px;">
+    <div class="card libCard">
+      <h2><span class="libHead">Library <span id="listCount" class="pill mono">0</span></span>
+        <span class="libHead">
+          <button id="libPrev" class="small" title="Previous piece in this view ( [ or Alt+← )">◀ Prev</button>
+          <button id="libNext" class="small" title="Next piece in this view ( ] or Alt+→ )">Next ▶</button>
+          <button id="libGrid" class="small primary" title="Browse this view as a full-window grid of pieces (G)">⊞ Grid</button>
+        </span></h2>
+      <div class="listTabs" id="listTabs"></div>
+      <div class="row" style="margin-top:6px;">
         <input id="listFilter" type="text" placeholder="Filter by name, id or tag" spellcheck="false">
       </div>
       <div class="row">
         <label>Show <input id="pageSize" type="number" min="5" max="200" step="5" value="20"></label>
-        <button id="prevPage" class="small">Prev</button>
-        <button id="nextPage" class="small">Next</button>
+        <button id="prevPage" class="small">Prev page</button>
+        <button id="nextPage" class="small">Next page</button>
         <span id="pageLabel" class="pill mono">1/1</span>
+        <span class="hint" title="Newest first. Click an entry to open it. To banish a piece, set its frequency to 0 and save: it moves to the Banished tab and never turns up in the game. Give it a frequency above 0 again to bring it back. Untouched = made by Claude and not reviewed yet; draft = has unsaved edits.">newest first ⓘ</span>
       </div>
-      <div class="hint" style="margin-top:4px;">Newest first. Click an entry to load it into the editor. To banish a piece, set its frequency to 0 and save: it moves to the Banished tab and never turns up in the game. To bring it back, give it a frequency above 0 again.</div>
       <div id="recentList" class="recentList"></div>
     </div>
   </aside>
@@ -920,6 +993,48 @@
       <div id="achList" class="recentList achList"></div>
     </div>
   </aside>
+</div>
+
+<!-- full-window library grid -->
+<div id="gridOverlay" class="hidden" role="dialog" aria-label="Library grid">
+  <div class="gridHead">
+    <b style="font-size:15px;">Library</b>
+    <span id="gridCount" class="pill mono">0</span>
+    <div class="listTabs" id="gridTabs"></div>
+    <input id="gridFilter" type="text" placeholder="Filter…" spellcheck="false" style="width:240px;" title="Filter by name, id or tag">
+    <label>Size <input id="gridSize" type="range" min="90" max="280" value="150" style="width:110px;"></label>
+    <span style="flex:1"></span>
+    <button id="gridClose" title="Close the grid (Esc). Click a piece to open it.">Close (Esc)</button>
+  </div>
+  <div id="gridBody" class="gridBody"></div>
+</div>
+
+<!-- adjust colours (floating, the canvas stays visible) -->
+<div id="adjPanel" class="hidden" role="dialog" aria-label="Adjust colours">
+  <div class="adjHead" id="adjHead"><span>Adjust colours <span id="adjScopePill" class="pill mono" style="font-weight:500;"></span></span><button id="adjX" class="small" title="Cancel (Esc)">✕</button></div>
+  <div class="row" style="margin-top:0;">
+    <div class="seg" id="adjLayerSeg">
+      <button data-adjlayers="all" class="on" title="Every layer">All layers</button>
+      <button data-adjlayers="active" title="Only the active layer">Active layer</button>
+    </div>
+    <label id="adjSelLabel" title="Only change pixels inside the selection"><input id="adjSelOnly" type="checkbox"> Selection only</label>
+  </div>
+  <h4>Hue / saturation / lightness</h4>
+  <div class="adjRow"><label>Hue</label><input id="adjHue" type="range" min="-180" max="180" value="0"><span id="adjHuePill" class="pill mono">0°</span></div>
+  <div class="adjRow"><label>Saturation</label><input id="adjSat" type="range" min="-100" max="100" value="0"><span id="adjSatPill" class="pill mono">0%</span></div>
+  <div class="adjRow"><label>Lightness</label><input id="adjLight" type="range" min="-100" max="100" value="0"><span id="adjLightPill" class="pill mono">0</span></div>
+  <div class="adjRow"><label>Contrast</label><input id="adjContrast" type="range" min="-100" max="100" value="0"><span id="adjContrastPill" class="pill mono">0</span></div>
+  <h4>Levels (input)</h4>
+  <canvas id="adjHist" width="320" height="44" title="Brightness histogram of the pixels being adjusted (before adjusting); the markers are the black and white points"></canvas>
+  <div class="adjRow"><label>Black point</label><input id="adjBlack" type="range" min="0" max="254" value="0"><span id="adjBlackPill" class="pill mono">0</span></div>
+  <div class="adjRow"><label>White point</label><input id="adjWhite" type="range" min="1" max="255" value="255"><span id="adjWhitePill" class="pill mono">255</span></div>
+  <div class="adjRow"><label>Gamma</label><input id="adjGamma" type="range" min="0" max="100" value="50"><span id="adjGammaPill" class="pill mono">1.00</span></div>
+  <div class="hint" style="margin-top:6px;">Live preview on the canvas. Double-click a slider to reset it. Transparent pixels stay transparent. Apply is one undo step.</div>
+  <div class="row" style="margin-top:8px;">
+    <button id="adjApply" class="primary">Apply</button>
+    <button id="adjReset">Reset</button>
+    <button id="adjCancel">Cancel</button>
+  </div>
 </div>
 
 <dialog id="modal">
@@ -1273,6 +1388,7 @@
     links: [],                     // [{ id, prob|null }]
     tags: [],                      // ["food", ...] (written only when non-empty)
     extras: {},                    // unknown properties of a loaded shape (preserved)
+    claudeDraft: false,            // loaded with claudeDraft: true (made by Claude, not reviewed): kept only while unchanged
 
     // powerup
     pu: defaultPu(),
@@ -1288,8 +1404,9 @@
     mode: "blocks",                // top-level: "blocks" | "achievements"
     source: null,                  // { id, original } of the entry loaded from the blocks file
     dirty: false,
+    draftKey: "",                  // the current piece's draft key: "id:<id>" (from the file) or "new:<…>" (not saved yet)
     centreTab: "art",
-    list: { kind: "all", page: 0, pageSize: 20, filter: "" },
+    list: { kind: "all", page: 0, pageSize: 20, filter: "", cursor: null },
     previewPos: null, previewStack: true, previewZones: true, previewModel: null,
     lastBuild: null,
   };
@@ -1411,11 +1528,303 @@
     el.histLabel.textContent = `${hist.undo.length}/${hist.undo.length + hist.redo.length}`;
   }
 
-  function setDirty(v){
+  // noDraft: the state was just restored from its draft (nothing new to autosave)
+  function setDirty(v, noDraft = false){
     state.dirty = !!v;
-    el.dirtyPill.textContent = state.dirty ? "unsaved changes" : "no changes";
-    el.dirtyPill.className = "pill " + (state.dirty ? "warn" : "");
+    syncDirtyUI();
+    if (state.dirty && !noDraft) scheduleDraftSave();
   }
+  function syncDirtyUI(){
+    const d = state.dirty && drafts.get(state.draftKey);
+    el.dirtyPill.textContent = !state.dirty ? "no changes" : d ? `unsaved draft · ${timeAgo(d.updated)}` : "unsaved draft";
+    el.dirtyPill.className = "pill " + (state.dirty ? "draft" : "");
+    el.dirtyPill.title = state.dirty ? "Your edits to this piece are kept as a draft (autosaved) until you save it into the file or discard the draft." : "";
+    el.revertBtn.disabled = !state.dirty;
+    el.draftHint.textContent = !state.dirty ? "" : draftStoreText();
+  }
+
+  // ============================================================
+  // Drafts: every piece with unsaved edits keeps a draft of the whole editor state, so moving
+  // between pieces never asks to discard anything. Drafts are autosaved (debounced) into
+  // localStorage and, with the local server (serve.py), into shapes/.drafts.json. Saving a piece
+  // into the file removes its draft. Undo history is kept in memory for recently visited pieces.
+  // record: { key, updated, sourceId, name, id, preview (the built entry), state (encoded) }
+  // ============================================================
+  const DRAFT_PREFIX = "extris_block_designer_draft:";
+  const DRAFT_TOMBS_KEY = "extris_block_designer_draft_tombstones";
+  const LAST_PIECE_KEY = "extris_block_designer_last_piece";
+  const LIST_PREFS_KEY = "extris_block_designer_list_prefs";
+  const drafts = new Map();
+  const histCache = new Map();   // key -> { stamp, undo, redo } (most recent last)
+  const HIST_CACHE_MAX = 24;
+  let draftTimer = 0, draftServer = false, draftLocalFull = false, draftLocalWarned = false;
+  let draftTombs = {};
+  const keyForId = (id) => "id:" + id;
+  const newTempKey = () => "new:" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  function timeAgo(t){
+    const s = Math.max(0, Math.round((Date.now() - t) / 1000));
+    if (s < 45) return "just now";
+    if (s < 3600) return `${Math.round(s / 60)} min ago`;
+    if (s < 86400) return `${Math.round(s / 3600)} h ago`;
+    return new Date(t).toLocaleDateString();
+  }
+  function draftStoreText(){
+    const where = [draftLocalFull ? null : "this browser", draftServer ? "shapes/.drafts.json" : null].filter(Boolean);
+    return where.length ? `Draft autosaved in ${where.join(" and ")}. Save writes it into the file.` : "Warning: the draft could not be stored (browser storage full and no local server). Save or discard some drafts.";
+  }
+  function setDraftKey(k){
+    state.draftKey = k;
+    try { localStorage.setItem(LAST_PIECE_KEY, k); } catch {}
+  }
+
+  // ---- encoding (typed arrays as base64; all-zero arrays as a length) ----
+  function b64FromBytes(u8){
+    let s = "";
+    for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
+    return btoa(s);
+  }
+  function bytesFromB64(b){
+    const s = atob(b), u = new Uint8Array(s.length);
+    for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i);
+    return u;
+  }
+  function encodeDraftValue(v){
+    return JSON.parse(JSON.stringify(v, (k, x) => {
+      if (x instanceof Uint32Array){
+        if (x.every(u => u === 0)) return { $u32z: x.length };
+        return { $u32: b64FromBytes(new Uint8Array(x.buffer, x.byteOffset, x.byteLength)) };
+      }
+      if (x instanceof Uint8Array) return { $u8: b64FromBytes(x) };
+      return x;
+    }));
+  }
+  function decodeDraftValue(v){
+    if (Array.isArray(v)) return v.map(decodeDraftValue);
+    if (!v || typeof v !== "object") return v;
+    if (typeof v.$u32z === "number") return new Uint32Array(v.$u32z);
+    if (typeof v.$u32 === "string"){ const b = bytesFromB64(v.$u32); return new Uint32Array(b.buffer, 0, b.length >> 2).slice(); }
+    if (typeof v.$u8 === "string") return bytesFromB64(v.$u8);
+    const out = {};
+    for (const [k, x] of Object.entries(v)) out[k] = decodeDraftValue(x);
+    return out;
+  }
+
+  // ---- the full editor state of the current piece ----
+  function captureEditorState(){
+    return {
+      v: 1,
+      blocksW: state.blocksW, blocksH: state.blocksH, ppb: state.ppb, zoom: state.zoom, seed: state.seed,
+      activeLayerId: state.activeLayerId, colourMode: state.colourMode, colourHex: state.colourHex, centreTab: state.centreTab,
+      layers: state.layers.map(L => ({ id: L.id, name: L.name, visible: L.visible, noise: L.noise, opacity: L.opacity, data: L.data })),
+      mask: state.mask,
+      kind: state.kind, name: state.name, id: state.id, difficulty: state.difficulty, frequency: state.frequency,
+      rotationMode: state.rotationMode, rotationExtras: state.rotationExtras, links: state.links, tags: state.tags,
+      extras: state.extras, claudeDraft: state.claudeDraft,
+      pu: { ...state.pu, parts: state.pu.parts },
+      area: { cells: state.area.cells, margin: state.area.margin, tool: state.area.tool, extras: state.area.extras, orig: state.area.orig },
+      fill: state._fill,
+      zones: { list: state.zones.list, active: state.zones.active, tool: state.zones.tool, margin: state.zones.margin },
+      source: state.source,
+    };
+  }
+  function applyEditorState(d){
+    state.blocksW = clamp(d.blocksW | 0, 1, MAX_BLOCKS); state.blocksH = clamp(d.blocksH | 0, 1, MAX_BLOCKS); state.ppb = clamp(d.ppb | 0, 1, 7);
+    state.pxW = state.blocksW * state.ppb; state.pxH = state.blocksH * state.ppb;
+    const n = state.pxW * state.pxH;
+    state.zoom = clamp(d.zoom | 0 || state.zoom, 2, 60); el.zoom.value = String(state.zoom);
+    state.seed = d.seed | 0;
+    state.adj = { brightness: 0, contrast: 0, hue: 0, sat: 1 };
+    state.layers = (d.layers || []).map((L, i) => ({ ...makeEmptyLayer(L.id ?? i, n), ...L, data: L.data instanceof Uint32Array && L.data.length === n ? L.data : new Uint32Array(n) }));
+    while (state.layers.length < LAYER_COUNT) state.layers.push(makeEmptyLayer(Math.max(-1, ...state.layers.map(L => L.id)) + 1, n));
+    state.activeLayerId = state.layers.some(L => L.id === d.activeLayerId) ? d.activeLayerId : state.layers[0].id;
+    const nb = state.blocksW * state.blocksH;
+    state.mask = d.mask instanceof Uint8Array && d.mask.length === nb ? d.mask : new Uint8Array(nb).fill(1);
+    state.colourMode = d.colourMode === "solid" ? "solid" : "pixel";
+    state.kind = d.kind === "powerup" ? "powerup" : "regular";
+    state.name = String(d.name ?? ""); state.id = String(d.id ?? "");
+    state.difficulty = d.difficulty; state.frequency = d.frequency;
+    state.rotationMode = String(d.rotationMode || "any"); state.rotationExtras = d.rotationExtras || {};
+    state.links = Array.isArray(d.links) ? d.links : [];
+    state.tags = Array.isArray(d.tags) ? d.tags : [];
+    state.extras = isPlainObject(d.extras) ? d.extras : {};
+    state.claudeDraft = d.claudeDraft === true;
+    const pu = isPlainObject(d.pu) ? d.pu : {};
+    state.pu = { ...defaultPu(), ...pu, extras: isPlainObject(pu.extras) ? pu.extras : {},
+      parts: (Array.isArray(pu.parts) ? pu.parts : []).filter(isPlainObject).map(q => newPart(String(q.type), { ...q, uid: partSeq++, cells: isPlainObject(q.cells) ? q.cells : {},
+        fill: isPlainObject(q.fill) && q.fill.data instanceof Uint32Array ? { tool: "draw", ...q.fill } : newFillState() })) };
+    state.pu.partSel = clamp(state.pu.partSel | 0, 0, Math.max(0, state.pu.parts.length - 1));
+    const a = isPlainObject(d.area) ? d.area : {};
+    state.area.cells = isPlainObject(a.cells) ? a.cells : {}; state.area.margin = clamp(a.margin ?? 3, 0, 30);
+    state.area.tool = a.tool || "#"; state.area.extras = isPlainObject(a.extras) ? a.extras : {}; state.area.orig = a.orig;
+    const f = isPlainObject(d.fill) && d.fill.data instanceof Uint32Array ? d.fill : null;
+    state.fill = f ? { tool: "draw", ...f } : newFillState("#ffffff", state.ppb);
+    const z = isPlainObject(d.zones) ? d.zones : {};
+    state.zones.list = Array.isArray(z.list) ? z.list.filter(isPlainObject).map(q => ({ ...q, cells: isPlainObject(q.cells) ? q.cells : {}, extras: isPlainObject(q.extras) ? q.extras : {} })) : [];
+    state.zones.active = clamp(z.active | 0, 0, Math.max(0, state.zones.list.length - 1));
+    state.zones.tool = z.tool || "#"; state.zones.margin = clamp(z.margin ?? 3, 0, 30);
+    state.source = isPlainObject(d.source) && typeof d.source.id === "string" ? d.source : null;
+    setColour(d.colourHex || state.colourHex);
+    if (d.centreTab && d.centreTab !== state.centreTab) setCentreTab(d.centreTab);
+  }
+
+  // ---- storage ----
+  function persistDraftLocal(rec){
+    try { localStorage.setItem(DRAFT_PREFIX + rec.key, JSON.stringify(rec)); draftLocalFull = false; return true; }
+    catch {
+      draftLocalFull = true;
+      if (!draftLocalWarned){
+        draftLocalWarned = true;
+        toast(draftServer ? "Browser storage is full: drafts are now kept only in shapes/.drafts.json (local server)." : "Browser storage is full: this draft could not be stored. Save or discard some drafts.", "bad");
+      }
+      return false;
+    }
+  }
+  function saveTombs(){
+    const ks = Object.keys(draftTombs);
+    if (ks.length > 400) for (const k of ks.sort((a, b) => draftTombs[a] - draftTombs[b]).slice(0, ks.length - 400)) delete draftTombs[k];
+    try { localStorage.setItem(DRAFT_TOMBS_KEY, JSON.stringify(draftTombs)); } catch {}
+  }
+  // the server gets one request at a time; a newer version of a key replaces a queued one
+  const serverQueue = new Map();
+  let serverBusy = false;
+  const draftBody = (key, rec) => rec ? { key, draft: rec } : { key, draft: null, deletedAt: draftTombs[key] || Date.now() };
+  function queueDraftServer(key, rec){
+    if (!draftServer) return;
+    serverQueue.set(key, rec);
+    kickDraftServer();
+  }
+  async function kickDraftServer(){
+    if (serverBusy || !draftServer) return;
+    serverBusy = true;
+    try {
+      while (serverQueue.size){
+        const [key, rec] = serverQueue.entries().next().value;
+        serverQueue.delete(key);
+        try {
+          const res = await fetch("/api/draft", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(draftBody(key, rec)) });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+        } catch {
+          if (!serverQueue.has(key)) serverQueue.set(key, rec);
+          setTimeout(kickDraftServer, 5000);
+          break;
+        }
+      }
+    } finally { serverBusy = false; }
+  }
+  function cacheHistory(key, stamp){
+    histCache.delete(key);
+    histCache.set(key, { stamp, undo: hist.undo.slice(), redo: hist.redo.slice() });
+    while (histCache.size > HIST_CACHE_MAX) histCache.delete(histCache.keys().next().value);
+  }
+  function scheduleDraftSave(){
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(() => { draftTimer = 0; saveDraftNow(); }, 400);
+  }
+  // Write the current piece's draft now (if it has unsaved edits)
+  function saveDraftNow(){
+    clearTimeout(draftTimer); draftTimer = 0;
+    if (!state.dirty || !state.draftKey) return null;
+    let preview = null;
+    try { preview = toJsonCompatible(buildShapeFromEditor(compositeFlattened({ raw: true })).shape); } catch {}
+    const isNew = !drafts.has(state.draftKey);
+    const rec = { key: state.draftKey, updated: Date.now(), sourceId: state.source ? state.source.id : null, name: state.name, id: state.id,
+      preview, state: encodeDraftValue(captureEditorState()) };
+    drafts.set(rec.key, rec);
+    if (draftTombs[rec.key]){ delete draftTombs[rec.key]; saveTombs(); }
+    persistDraftLocal(rec);
+    queueDraftServer(rec.key, rec);
+    cacheHistory(rec.key, rec.updated);
+    syncDirtyUI();
+    if (isNew) renderList(); else updateDraftThumb(rec);
+    return rec;
+  }
+  // Before leaving the current piece: finish any stroke and store its draft
+  function flushDraft(){
+    endSelNudge();
+    endAction();
+    if (state.dirty) saveDraftNow();
+    else clearTimeout(draftTimer);
+  }
+  function deleteDraft(key){
+    if (!key) return;
+    const had = drafts.delete(key);
+    try { localStorage.removeItem(DRAFT_PREFIX + key); } catch {}
+    histCache.delete(key);
+    if (!had && !serverQueue.has(key)) return; // there was no draft
+    draftTombs[key] = Date.now(); saveTombs();
+    queueDraftServer(key, null);
+    histCache.delete(key);
+    if (had) renderList();
+  }
+  // Open a draft in the editor (with its undo history if it is still in memory)
+  function restoreDraft(rec){
+    flushDraft();
+    cancelAdjust();
+    const d = decodeDraftValue(rec.state);
+    applyEditorState(d);
+    setDraftKey(rec.key);
+    state.previewPos = null;
+    resetHistory();
+    const hc = histCache.get(rec.key);
+    if (hc && hc.stamp === rec.updated){ hist.undo = hc.undo.slice(); hist.redo = hc.redo.slice(); }
+    clearTimeout(draftTimer); draftTimer = 0;
+    setDirty(true, true);
+    syncAllUI();
+    fitZoom();
+    renderList();
+  }
+  function updateDraftThumb(){ if (state.list.kind === "drafts") renderList(); }
+  setInterval(() => { if (state.dirty) syncDirtyUI(); }, 30000);
+  function loadLocalDrafts(){
+    try { draftTombs = JSON.parse(localStorage.getItem(DRAFT_TOMBS_KEY) || "{}") || {}; } catch { draftTombs = {}; }
+    try {
+      for (let i = 0; i < localStorage.length; i++){
+        const k = localStorage.key(i);
+        if (!k || !k.startsWith(DRAFT_PREFIX)) continue;
+        try { const rec = JSON.parse(localStorage.getItem(k)); if (rec && rec.key && rec.state) drafts.set(rec.key, rec); } catch {}
+      }
+    } catch {}
+  }
+  // Merge with shapes/.drafts.json: the newer copy of each draft wins; deletions made while the
+  // server was away are sent again
+  async function syncServerDrafts(){
+    if (!draftServer) return;
+    let server = {};
+    try {
+      const res = await fetch("/api/drafts", { cache: "no-store" });
+      const j = await res.json();
+      if (j && j.ok && isPlainObject(j.drafts)) server = j.drafts;
+    } catch { return; }
+    for (const [key, rec] of Object.entries(server)){
+      if (!rec) continue;
+      const local = drafts.get(key);
+      // deleted (saved or discarded) elsewhere after this browser's copy was made: drop ours
+      if (!rec.state && typeof rec.deleted === "number"){
+        if (local && (local.updated || 0) <= rec.deleted){
+          drafts.delete(key);
+          try { localStorage.removeItem(DRAFT_PREFIX + key); } catch {}
+          draftTombs[key] = rec.deleted; saveTombs();
+        }
+        continue;
+      }
+      if (!rec.state) continue;
+      const tomb = draftTombs[key];
+      if (tomb && tomb >= (rec.updated || 0)){ queueDraftServer(key, null); continue; }
+      if (!local || (rec.updated || 0) > (local.updated || 0)){ drafts.set(key, rec); persistDraftLocal(rec); }
+    }
+    for (const [key, rec] of drafts){
+      const sv = server[key];
+      if (!sv || !sv.state || (sv.updated || 0) < rec.updated) queueDraftServer(key, rec);
+    }
+  }
+  // the page is closing: store the draft locally and send it to the server
+  window.addEventListener("pagehide", () => {
+    if (state.dirty) saveDraftNow();
+    if (!draftServer || !navigator.sendBeacon) return;
+    for (const [key, rec] of serverQueue){
+      try { if (navigator.sendBeacon("/api/draft", JSON.stringify(draftBody(key, rec)))) serverQueue.delete(key); } catch {}
+    }
+  });
 
   // ============================================================
   // Sizing (resize keeps art, resampled per block when ppb changes)
@@ -1470,16 +1879,20 @@
     return hslToRgb(hsl.h + state.adj.hue, clamp01(hsl.s * state.adj.sat), hsl.l);
   }
 
-  function compositeFlattened({ onlyActive = false } = {}){
+  // raw: leave out the live preview of the Adjust colours panel
+  function compositeFlattened({ onlyActive = false, raw = false } = {}){
     const w = state.pxW, n = state.pxW * state.pxH;
     const out = new Uint32Array(n);
+    const ap = raw ? null : adjustPreviewTargets();
     for (let li = state.layers.length - 1; li >= 0; li--){
       const L = state.layers[li];
       if (onlyActive && L.id !== state.activeLayerId) continue;
       if (!L.visible) continue;
       const noiseAmt = L.noise, op = clamp01(L.opacity);
+      const adj = ap && ap.ids.has(L.id) ? ap : null;
       for (let p = 0; p < n; p++){
-        const src = L.data[p] >>> 0;
+        let src = L.data[p] >>> 0;
+        if (adj && src >>> 24 && inAdjustRect(adj, p % w, (p / w) | 0)) src = adjustARGB(src);
         let sa = (src >>> 24) & 255;
         if (sa === 0) continue;
         sa = Math.round(sa * op);
@@ -1529,7 +1942,7 @@
   // Flattened art with the mask applied (empty blocks transparent) / solid mode honoured
   function maskedFlat(flat){
     const out = new Uint32Array(flat.length);
-    const solid = argbFromHex(state.colourHex);
+    const solid = argbFromHex(solidHexNow());
     const P = state.ppb, W = state.pxW;
     for (let y = 0; y < state.pxH; y++){
       for (let x = 0; x < W; x++){
@@ -1657,6 +2070,7 @@
     el.activeLabel.textContent = String(state.layers.findIndex(l => l.id === state.activeLayerId) + 1);
     el.maskCount.textContent = `${filledCount()}/${state.blocksW * state.blocksH}`;
     renderIdHint(built);
+    renderUntouched(built);
     ensureAnimation();
   }
 
@@ -2114,6 +2528,34 @@
     });
     drawSelOverlay();
   }
+  // Rotate the selection 90° about its centre (snapped to whole pixels: a w×h selection becomes h×w;
+  // clockwise then counter-clockwise lands exactly where it started)
+  function rotateSel(cw){
+    const s = checkSel();
+    if (!s){ toast("Nothing selected: drag a rectangle with the Select tool (S), or Ctrl/Cmd+A."); return; }
+    if (!artEditable()) return;
+    endSelNudge();
+    commit(() => {
+      liftSel();
+      const f = s.float, w = s.w, h = s.h;
+      f.planes = f.planes.map(p => {
+        const d = new Uint32Array(w * h);
+        // new image is h wide, w tall
+        for (let y = 0; y < w; y++) for (let x = 0; x < h; x++)
+          d[y * h + x] = cw ? p.data[(h - 1 - x) * w + y] : p.data[x * w + (w - 1 - y)];
+        return { id: p.id, data: d };
+      });
+      // wide -> tall rounds down, tall -> wide rounds up, so any rotation followed by any other undoes
+      // the offset exactly (CW then CCW, or 4 × CW, end where they started)
+      const d2 = (w - h) / 2, rnd = w > h ? Math.floor : Math.ceil;
+      const nx = s.x + rnd(d2), ny = s.y + rnd(-d2);
+      s.w = h; s.h = w;
+      s.x = clamp(nx, 1 - s.w, state.pxW - 1);
+      s.y = clamp(ny, 1 - s.h, state.pxH - 1);
+      return stampSel() || w !== h;
+    });
+    drawSelOverlay();
+  }
   // Arrow keys: consecutive nudges (incl. key repeat) are one undo step, ended on key release
   function nudgeSel(dx, dy){
     const s = checkSel();
@@ -2223,7 +2665,7 @@
     el.selInfo.textContent = info;
     el.selInfo.className = "pill mono" + (s ? " accent" : "");
     el.clipInfo.textContent = clip;
-    for (const b of [el.selCopy, el.selCut, el.selDelete, el.selFlipH, el.selFlipV, el.selNone]) b.disabled = !s;
+    for (const b of [el.selCopy, el.selCut, el.selDelete, el.selFlipH, el.selFlipV, el.selRotCW, el.selRotCCW, el.selNone]) b.disabled = !s;
     el.selPaste.disabled = !pixelClip;
   }
   setInterval(() => {
@@ -2254,6 +2696,8 @@
   el.selDelete.addEventListener("click", deleteSel);
   el.selFlipH.addEventListener("click", () => flipSel(true));
   el.selFlipV.addEventListener("click", () => flipSel(false));
+  el.selRotCW.addEventListener("click", () => rotateSel(true));
+  el.selRotCCW.addEventListener("click", () => rotateSel(false));
   el.selAll.addEventListener("click", selectAll);
   el.selNone.addEventListener("click", deselect);
   // (the checkboxes give focus back so Esc / Delete / arrows keep working on the selection)
@@ -2263,6 +2707,194 @@
     el.selOpaque.blur();
     const s = checkSel();
     if (s && s.float) commit(() => stampSel()); // re-place the floating pixels with the new rule
+  });
+
+
+  // ============================================================
+  // Adjust colours: hue / saturation / lightness / contrast / levels for the whole piece (all layers
+  // or the active one) or only the selection. Previewed live while the panel is open (the layers are
+  // untouched until Apply, which is one undo step). Transparent pixels stay transparent.
+  // ============================================================
+  const ADJ_DEFAULTS = { hue: 0, sat: 0, light: 0, contrast: 0, black: 0, white: 255, gamma: 1 };
+  const adjust = { open: false, p: { ...ADJ_DEFAULTS }, layers: "all", selOnly: false, lut: null, cache: new Map() };
+  const adjustIdentity = (p = adjust.p) => Object.keys(ADJ_DEFAULTS).every(k => p[k] === ADJ_DEFAULTS[k]);
+  // levels then contrast, per channel
+  function adjustPrepare(){
+    const p = adjust.p, lut = new Uint8Array(256);
+    const lo = Math.min(p.black, p.white - 1), hi = Math.max(p.white, lo + 1);
+    const c = p.contrast * 2.55, f = (259 * (c + 255)) / (255 * (259 - c));
+    for (let v = 0; v < 256; v++){
+      let x = clamp01((v - lo) / (hi - lo));
+      x = Math.pow(x, 1 / p.gamma) * 255;
+      x = f * (x - 128) + 128;
+      lut[v] = clamp255(Math.round(x));
+    }
+    adjust.lut = lut;
+    adjust.cache.clear();
+  }
+  // one ARGB pixel through the adjustment (alpha kept)
+  function adjustARGB(u){
+    u = u >>> 0;
+    const a = u >>> 24;
+    if (!a) return u;
+    const rgb = u & 0xffffff;
+    let o = adjust.cache.get(rgb);
+    if (o === undefined){
+      const p = adjust.p, lut = adjust.lut;
+      let r = lut[(rgb >>> 16) & 255], g = lut[(rgb >>> 8) & 255], b = lut[rgb & 255];
+      if (p.hue || p.sat || p.light){
+        const hsl = rgbToHsl(r, g, b);
+        let { h, s, l } = hsl;
+        h += p.hue;
+        s = clamp01(s * (1 + p.sat / 100));            // −100 grey … +100 twice as saturated
+        l = clamp01(p.light >= 0 ? l + (1 - l) * (p.light / 100) : l * (1 + p.light / 100));
+        ({ r, g, b } = hslToRgb(h, s, l));
+      }
+      o = ((r << 16) | (g << 8) | b) >>> 0;
+      adjust.cache.set(rgb, o);
+    }
+    return ((a << 24) | o) >>> 0;
+  }
+  // which layers / pixels the adjustment covers: { ids: Set, rect: {x0,y0,x1,y1} | null }
+  function adjustTargets(){
+    const ids = new Set(adjust.layers === "active" ? [state.activeLayerId] : state.layers.map(L => L.id));
+    const s = adjust.selOnly ? checkSel() : null;
+    const rect = s ? { x0: s.x, y0: s.y, x1: s.x + s.w, y1: s.y + s.h } : null;
+    return { ids, rect };
+  }
+  const adjustPreviewTargets = () => adjust.open && !adjustIdentity() ? adjustTargets() : null;
+  const inAdjustRect = (t, x, y) => !t.rect || (x >= t.rect.x0 && y >= t.rect.y0 && x < t.rect.x1 && y < t.rect.y1);
+  // solid colour mode: the piece's colour (adjusted while previewing a whole-piece adjustment)
+  function solidHexNow(){
+    if (!adjust.open || adjustIdentity() || (adjust.selOnly && checkSel())) return state.colourHex;
+    return hexFromARGB(adjustARGB(argbFromHex(state.colourHex))) || state.colourHex;
+  }
+  function applyAdjust(){
+    if (!adjust.open) return;
+    if (adjustIdentity()){ cancelAdjust(); return; }
+    if (state.colourMode === "solid" && !(adjust.selOnly && checkSel())) setColour(solidHexNow());
+    const t = adjustTargets(), W = state.pxW;
+    commit(() => {
+      let changed = false;
+      for (const L of state.layers){
+        if (!t.ids.has(L.id)) continue;
+        const d = L.data.slice();
+        for (let i = 0; i < d.length; i++){
+          const u = d[i] >>> 0;
+          if (!(u >>> 24) || !inAdjustRect(t, i % W, (i / W) | 0)) continue;
+          const v = adjustARGB(u);
+          if (v !== u){ d[i] = v; changed = true; }
+        }
+        L.data = d;
+      }
+      return changed;
+    });
+    closeAdjustPanel();
+    toast("Colour adjustment applied (Ctrl/Cmd+Z undoes it).");
+  }
+  function closeAdjustPanel(){
+    adjust.open = false;
+    adjust.p = { ...ADJ_DEFAULTS };
+    el.adjPanel.classList.add("hidden");
+    scheduleRender();
+  }
+  function cancelAdjust(){ if (adjust.open) closeAdjustPanel(); }
+  function openAdjust(){
+    if (state.mode !== "blocks") return;
+    if (state.centreTab !== "art") setCentreTab("art");
+    endSelNudge(); endAction();
+    adjust.open = true;
+    adjust.p = { ...ADJ_DEFAULTS };
+    adjust.selOnly = !!checkSel();
+    adjustPrepare();
+    el.adjPanel.classList.remove("hidden");
+    // keep the canvas (the live preview) in view
+    const r = el.canvasWrap.getBoundingClientRect();
+    if (r.top < 0 || r.top > window.innerHeight - 120) window.scrollBy(0, r.top - 70);
+    syncAdjustUI();
+    scheduleRender();
+  }
+  const gammaFromSlider = (v) => Math.round(Math.pow(5, (v - 50) / 50) * 100) / 100;
+  const sliderFromGamma = (g) => Math.round(50 + 50 * Math.log(g) / Math.log(5));
+  const ADJ_SLIDERS = [
+    { key: "hue", input: "adjHue", pill: "adjHuePill", fmt: (v) => `${v > 0 ? "+" : ""}${v}°` },
+    { key: "sat", input: "adjSat", pill: "adjSatPill", fmt: (v) => `${v > 0 ? "+" : ""}${v}%` },
+    { key: "light", input: "adjLight", pill: "adjLightPill", fmt: (v) => `${v > 0 ? "+" : ""}${v}` },
+    { key: "contrast", input: "adjContrast", pill: "adjContrastPill", fmt: (v) => `${v > 0 ? "+" : ""}${v}` },
+    { key: "black", input: "adjBlack", pill: "adjBlackPill", fmt: String },
+    { key: "white", input: "adjWhite", pill: "adjWhitePill", fmt: String },
+    { key: "gamma", input: "adjGamma", pill: "adjGammaPill", fmt: (v) => v.toFixed(2), toSlider: sliderFromGamma, fromSlider: gammaFromSlider },
+  ];
+  function syncAdjustUI(){
+    for (const d of ADJ_SLIDERS){
+      const v = adjust.p[d.key];
+      el[d.input].value = String(d.toSlider ? d.toSlider(v) : v);
+      el[d.pill].textContent = d.fmt(v);
+    }
+    document.querySelectorAll("#adjLayerSeg button").forEach(b => b.classList.toggle("on", b.dataset.adjlayers === adjust.layers));
+    const s = checkSel();
+    el.adjSelOnly.disabled = !s;
+    el.adjSelOnly.checked = !!s && adjust.selOnly;
+    el.adjSelLabel.lastChild.textContent = s ? ` Selection only (${s.w}×${s.h})` : " Selection only (no selection)";
+    el.adjScopePill.textContent = (s && adjust.selOnly ? "selection" : "whole piece") + " · " + (adjust.layers === "active" ? "active layer" : "all layers");
+    drawAdjustHistogram();
+  }
+  // brightness histogram of the pixels being adjusted (before adjusting), with the black / white points
+  function drawAdjustHistogram(){
+    const c = el.adjHist, ctx = c.getContext("2d"), W = c.width, H = c.height;
+    ctx.clearRect(0, 0, W, H);
+    const bins = new Uint32Array(64), t = adjustTargets(), PW = state.pxW;
+    let any = 0;
+    for (const L of state.layers){
+      if (!t.ids.has(L.id) || !L.visible) continue;
+      for (let i = 0; i < L.data.length; i++){
+        const u = L.data[i] >>> 0;
+        if (!(u >>> 24) || !inAdjustRect(t, i % PW, (i / PW) | 0)) continue;
+        const y = 0.299 * ((u >>> 16) & 255) + 0.587 * ((u >>> 8) & 255) + 0.114 * (u & 255);
+        bins[Math.min(63, (y / 4) | 0)]++; any++;
+      }
+    }
+    const max = Math.max(1, ...bins);
+    ctx.fillStyle = "rgba(200,200,200,0.75)";
+    const bw = W / 64;
+    for (let i = 0; i < 64; i++){ const h = Math.round(Math.sqrt(bins[i] / max) * (H - 4)); if (h) ctx.fillRect(i * bw, H - h, Math.max(1, bw - 1), h); }
+    if (!any){ ctx.fillStyle = "#777"; ctx.font = "11px system-ui"; ctx.fillText("no pixels to adjust", 8, 26); }
+    ctx.fillStyle = "#6aa6ff";
+    ctx.fillRect(Math.round(adjust.p.black / 255 * (W - 2)), 0, 2, H);
+    ctx.fillRect(Math.round(adjust.p.white / 255 * (W - 2)), 0, 2, H);
+  }
+  for (const d of ADJ_SLIDERS){
+    const inp = el[d.input];
+    inp.addEventListener("input", () => {
+      let v = Number(inp.value);
+      if (d.fromSlider) v = d.fromSlider(v);
+      if (d.key === "black" && v >= adjust.p.white) v = adjust.p.white - 1;
+      if (d.key === "white" && v <= adjust.p.black) v = adjust.p.black + 1;
+      adjust.p[d.key] = v;
+      adjustPrepare();
+      syncAdjustUI(); scheduleRender();
+    });
+    inp.addEventListener("dblclick", () => { adjust.p[d.key] = ADJ_DEFAULTS[d.key]; adjustPrepare(); syncAdjustUI(); scheduleRender(); });
+  }
+  document.querySelectorAll("#adjLayerSeg button").forEach(b => b.addEventListener("click", () => { adjust.layers = b.dataset.adjlayers; syncAdjustUI(); scheduleRender(); }));
+  el.adjSelOnly.addEventListener("change", () => { adjust.selOnly = el.adjSelOnly.checked; el.adjSelOnly.blur(); syncAdjustUI(); scheduleRender(); });
+  el.adjApply.addEventListener("click", applyAdjust);
+  el.adjReset.addEventListener("click", () => { adjust.p = { ...ADJ_DEFAULTS }; adjustPrepare(); syncAdjustUI(); scheduleRender(); });
+  el.adjCancel.addEventListener("click", cancelAdjust);
+  el.adjX.addEventListener("click", cancelAdjust);
+  el.openAdjust.addEventListener("click", openAdjust);
+  el.openAdjust2.addEventListener("click", openAdjust);
+  // drag the panel by its title
+  el.adjHead.addEventListener("pointerdown", (e) => {
+    if (e.target.closest("button")) return;
+    const r = el.adjPanel.getBoundingClientRect(), dx = e.clientX - r.left, dy = e.clientY - r.top;
+    const move = (ev) => {
+      el.adjPanel.style.left = clamp(ev.clientX - dx, 0, window.innerWidth - 60) + "px";
+      el.adjPanel.style.top = clamp(ev.clientY - dy, 0, window.innerHeight - 40) + "px";
+      el.adjPanel.style.right = "auto";
+    };
+    const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
+    window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
   });
 
   // palette of colours used in the art
@@ -3920,7 +4552,7 @@
 
     let color;
     if (state.colourMode === "solid"){
-      color = state.colourHex;
+      color = solidHexNow();
       if (orig && typeof orig.color === "string" && normHex(orig.color) === color) color = orig.color;
     } else {
       color = colourGridFor(b, flat);
@@ -4018,6 +4650,12 @@
     }
     const zones = exportZones(b, errors, warnings);
     if (zones) out.zones = zones;
+    // an unreviewed Claude piece keeps claudeDraft: true only while nothing about it has changed
+    const o = state.source && state.source.original;
+    if (state.claudeDraft && isPlainObject(o) && o.claudeDraft === true){
+      const rest = { ...o }; delete rest.claudeDraft;
+      if (deepEqual(toJsonCompatible(out), toJsonCompatible(rest))) out.claudeDraft = true;
+    }
     return { shape: out, errors, warnings };
   }
 
@@ -4030,6 +4668,27 @@
     el.issues.innerHTML = items.join("");
     el.saveBtn.disabled = built.errors.length > 0;
   }
+
+  // read-only "untouched" indicator (claudeDraft is not an editable field)
+  function renderUntouched(built){
+    const o = state.source && state.source.original;
+    const wasDraft = isPlainObject(o) && o.claudeDraft === true;
+    let txt = "", btn = "", reviewed = false;
+    if (state.claudeDraft && built.shape.claudeDraft === true){ txt = "Untouched: made by Claude, not reviewed yet. Saving any change marks it reviewed."; btn = "Mark reviewed"; }
+    else if (state.claudeDraft){ txt = "Was untouched (made by Claude): saving your changes marks it reviewed."; reviewed = true; }
+    else if (wasDraft){ txt = "Marked reviewed: saving removes the untouched flag."; btn = "Undo"; reviewed = true; }
+    el.untouchedBox.classList.toggle("hidden", !txt);
+    el.untouchedBox.classList.toggle("reviewed", reviewed);
+    if (el.untouchedText.textContent !== txt) el.untouchedText.textContent = txt;
+    el.untouchedBtn.classList.toggle("hidden", !btn);
+    el.untouchedBtn.textContent = btn;
+  }
+  el.untouchedBtn.addEventListener("click", () => {
+    const o = state.source && state.source.original;
+    if (state.claudeDraft) state.claudeDraft = false;
+    else if (isPlainObject(o) && o.claudeDraft === true) state.claudeDraft = true;
+    setDirty(true); scheduleRender();
+  });
 
   function renderIdHint(built){
     const id = built.shape.id;
@@ -4046,6 +4705,8 @@
   // ============================================================
   // fromFile: the entry comes from the blocks file (becomes state.source, used by save/revert/delete)
   function loadShapeIntoEditor(shape, fromFile){
+    flushDraft();
+    cancelAdjust();
     const lines = gridLines(shape.grid);
     const h = clamp(lines.length || 1, 1, MAX_BLOCKS);
     const w = clamp(Math.max(1, ...lines.map(l => l.length)), 1, MAX_BLOCKS);
@@ -4110,6 +4771,9 @@
       if (managed) continue;
       state.extras[k] = clone(v);
     }
+    // claudeDraft: true (made by Claude, never reviewed) is not an editable field: it stays while the entry is unchanged
+    state.claudeDraft = state.extras.claudeDraft === true;
+    if (state.claudeDraft) delete state.extras.claudeDraft;
 
     // zones
     state.zones.list = zonesManaged
@@ -4171,6 +4835,7 @@
     }
 
     state.source = fromFile ? { id: state.id, original: clone(shape) } : null;
+    setDraftKey(fromFile ? keyForId(state.id) : newTempKey());
     state.previewPos = null;
     resetHistory();
     setDirty(false);
@@ -4180,42 +4845,34 @@
   }
 
   function newBlock(){
+    flushDraft();
+    cancelAdjust();
     state.blocksW = 2; state.blocksH = 2; state.ppb = 7; state.pxW = 14; state.pxH = 14;
     initLayers();
     state.mask = new Uint8Array(4).fill(1);
     state.colourMode = "pixel";
     state.adj = { brightness: 0, contrast: 0, hue: 0, sat: 1 };
     state.kind = "regular"; state.name = ""; state.id = ""; state.difficulty = 2; state.frequency = 1;
-    state.rotationMode = "any"; state.rotationExtras = {}; state.links = []; state.tags = []; state.extras = {};
+    state.rotationMode = "any"; state.rotationExtras = {}; state.links = []; state.tags = []; state.extras = {}; state.claudeDraft = false;
     state.pu = defaultPu();
     state.area.cells = {}; state.area.margin = 3; state.area.extras = {}; state.area.orig = undefined;
     state.zones.list = []; state.zones.active = 0; state.zones.margin = 3;
     state.fill = { mode: "solid", solidHex: "#ffffff", k: 7, data: new Uint32Array(49), tool: state._fill.tool || "draw" };
     state.source = null; state.previewPos = null;
+    setDraftKey(newTempKey());
     resetHistory(); setDirty(false);
     state.zoom = 24; el.zoom.value = "24";
     syncAllUI(); renderList();
   }
 
-  function syncAdjustmentUI(){
-    el.brightness.value = String(state.adj.brightness);
-    el.contrast.value = String(state.adj.contrast);
-    el.hue.value = String(state.adj.hue);
-    el.sat.value = String(Math.round(state.adj.sat * 100));
-    el.brightnessPill.textContent = String(state.adj.brightness);
-    el.contrastPill.textContent = String(state.adj.contrast);
-    el.huePill.textContent = `${state.adj.hue}°`;
-    el.satPill.textContent = `${Math.round(state.adj.sat * 100)}%`;
-  }
   function syncAllUI(){
     syncSizeUI();
-    syncAdjustmentUI();
     syncMetaUI();
     renderLayerList();
     el.sourcePill.textContent = state.source ? `${state.kind === "powerup" ? "powerup" : "block"}: ${state.source.id}` : "new block";
     el.sourcePill.className = "pill mono " + (state.source ? "accent" : "");
-    el.revertBtn.disabled = !state.source;
     el.deleteBtn.disabled = !state.source;
+    syncDirtyUI();
     renderSaveHint();
     updateHistUI();
     scheduleRender();
@@ -4521,6 +5178,11 @@
   }
   function renderSlots(){
     el.slotList.innerHTML = ""; el.slotList.appendChild(slotCard(BLOCKS));
+    // the File card stays folded to one line unless something needs attention
+    const okFile = BLOCKS.text != null && !BLOCKS.error;
+    el.fileSumText.textContent = BLOCKS.text != null ? `${basename(BLOCKS.fileName || BLOCKS.defaultPath)} · ${BLOCKS.items.length} entries · ${slotModeText(BLOCKS)}` : (BLOCKS.error ? "error" : "not loaded");
+    el.fileSumText.className = "pill " + (BLOCKS.error ? "bad" : BLOCKS.handle || viaServer(BLOCKS) ? "good" : okFile ? "warn" : "");
+    if (BLOCKS.error || BLOCKS.pendingHandle || (!isServed() && BLOCKS.text == null)) el.fileDetails.open = true;
     el.achSlotList.innerHTML = ""; el.achSlotList.appendChild(slotCard(ACH));
     el.achBlocksInfo.innerHTML = BLOCKS.text != null
       ? `Blocks file <span class="mono">${escapeHtml(BLOCKS.fileName || BLOCKS.defaultPath)}</span>: ${BLOCKS.items.length} blocks, ${blockTagCounts().size} tags, zones ${[...blockZoneNames()].map(z => `<span class="mono">${escapeHtml(z)}</span>`).join(", ") || "none"} — used for id / tag / zone suggestions and checks.`
@@ -4558,7 +5220,7 @@
   let localServer = false;
   const localServerReady = fetch("/api/ping", { cache: "no-store" })
     .then(r => r.ok ? r.json() : null)
-    .then(j => { localServer = !!(j && j.ok); if (localServer) { renderSlots(); renderSaveHint(); } return localServer; })
+    .then(j => { localServer = !!(j && j.ok); draftServer = !!(j && j.ok && j.drafts); if (localServer) { renderSlots(); renderSaveHint(); syncDirtyUI(); } return localServer; })
     .catch(() => false);
   const viaServer = (slot) => localServer && !slot.handle && slot.origin === "fetch";
   async function writeViaServer(slot, text){
@@ -4629,6 +5291,8 @@
   }
 
   async function saveCurrent(){
+    if (adjust.open && !adjustIdentity()){ applyAdjust(); toast("Applied the colour adjustment before saving."); }
+    else cancelAdjust();
     endAction();
     flushChipInputs();
     const built = buildShapeFromEditor();
@@ -4677,14 +5341,19 @@
     }
 
     if (action === "replace") items[index] = shape; else items.push(shape);
+    const oldKey = state.draftKey;
     try {
       const how = await writeItems(slot, parsed, items);
       state.source = { id: shape.id, original: clone(shape) };
+      state.claudeDraft = shape.claudeDraft === true;
       if (!state.id.trim()){ state.id = shape.id; }
+      // the saved piece's draft is done with; the editor stays on it, the library stays where it was
+      clearTimeout(draftTimer); draftTimer = 0;
       setDirty(false);
-      // keep the saved entry visible in the library
-      if (!kindOk(shape, state.list.kind)) state.list.kind = isBanished(shape) ? "banished" : "all";
-      if (action === "add") state.list.page = 0;
+      deleteDraft(oldKey);
+      setDraftKey(keyForId(shape.id));
+      if (oldKey !== state.draftKey) deleteDraft(state.draftKey);
+      if (state.list.cursor && state.list.cursor.key === oldKey) state.list.cursor.key = state.draftKey;
       syncAllUI(); renderList();
       toast(`${action === "replace" ? "Updated" : "Added"} "${shape.id}" — ${how === "written" ? "saved to " + slot.handle.name : "file downloaded"}`, "good");
     } catch (e){
@@ -4707,7 +5376,10 @@
     try {
       const how = await writeItems(slot, parsed, items);
       const id = state.source.id;
-      state.source = null; setDirty(true); syncAllUI(); renderList();
+      // the editor keeps the contents as a new, unsaved piece (with its own draft)
+      deleteDraft(state.draftKey);
+      setDraftKey(newTempKey());
+      state.source = null; state.claudeDraft = false; setDirty(true); syncAllUI(); renderList();
       toast(`Deleted "${id}" — ${how === "written" ? "saved" : "file downloaded"}`, "good");
     } catch (e){ toast(e.message || String(e), "bad"); }
   }
@@ -4715,18 +5387,31 @@
   el.saveBtn.addEventListener("click", saveCurrent);
   el.deleteBtn.addEventListener("click", deleteLoaded);
 
-  async function confirmDiscard(){
-    if (!state.dirty) return true;
-    const k = await ask("Unsaved changes", "Discard the changes to this block?", [{ key: "discard", label: "Discard", cls: "danger" }, { key: "cancel", label: "Cancel" }]);
-    return k === "discard";
+  // Discard draft: the only blocks-mode confirmation besides deleting (switching pieces keeps drafts)
+  async function discardDraft(){
+    if (!state.dirty) return;
+    endAction();
+    const what = state.source ? `"${state.source.id}"` : "this new piece";
+    const k = await ask("Discard draft", `Throw away your unsaved changes to ${what}? ${state.source ? "It goes back to the version in the blocks file." : "The editor starts a new empty block."} This can't be undone.`,
+      [{ key: "discard", label: "Discard draft", cls: "danger" }, { key: "cancel", label: "Cancel" }]);
+    if (k !== "discard") return;
+    const key = state.draftKey, src = state.source;
+    clearTimeout(draftTimer); draftTimer = 0;
+    setDirty(false);
+    deleteDraft(key);
+    if (src){
+      const fresh = BLOCKS.items.find(s => s && s.id === src.id);
+      loadShapeIntoEditor(clone(fresh || src.original), true);
+    } else newBlock();
+    toast("Draft discarded.");
   }
-  el.newBtn.addEventListener("click", async () => { if (await confirmDiscard()) newBlock(); });
-  el.revertBtn.addEventListener("click", async () => {
-    if (!state.source || !(await confirmDiscard())) return;
-    loadShapeIntoEditor(clone(state.source.original), true);
+  el.newBtn.addEventListener("click", () => newBlock());
+  el.revertBtn.addEventListener("click", discardDraft);
+  // unsaved-changes guard: blocks keep drafts, so only warn if the draft couldn't be stored anywhere
+  window.addEventListener("beforeunload", (e) => {
+    if (state.dirty) saveDraftNow();
+    if (ach.dirty || (state.dirty && draftLocalFull && !draftServer)){ e.preventDefault(); e.returnValue = ""; }
   });
-  // unsaved-changes guard for both modes
-  window.addEventListener("beforeunload", (e) => { if (state.dirty || ach.dirty){ e.preventDefault(); e.returnValue = ""; } });
 
   // ============================================================
   // Library list (newest first, paginated, mini previews)
@@ -4817,78 +5502,340 @@
   //  link even at frequency 0, so they aren't banished)
   const linkedTargets = () => new Set(BLOCKS.items.flatMap(x => Array.isArray(x?.nextShapes) ? x.nextShapes : []));
   const isBanished = (s, linked = linkedTargets()) => !!s && s.frequency !== undefined && Number(s.frequency) === 0 && !linked.has(s.id);
-  const kindOk = (s, kind) => kind === "banished" ? isBanished(s)
-    : !isBanished(s) && (kind === "all" || (kind === "powerup") === isPowerupEntry(s));
-  function listEntries(){
-    const f = state.list.filter.trim().toLowerCase();
-    const all = BLOCKS.items.map((s, i) => ({ s, i })).reverse().filter(({ s }) => kindOk(s, state.list.kind));
+  // claudeDraft: true = made by Claude and not reviewed yet
+  const isUntouched = (s) => !!s && s.claudeDraft === true;
+  const LIST_KINDS = [
+    { k: "all", label: "All", title: "Every piece the game can serve (not banished)" },
+    { k: "regular", label: "Regular", title: "Regular blocks (not banished)" },
+    { k: "powerup", label: "Powerups", title: "Powerups (not banished)" },
+    { k: "banished", label: "Banished", title: "Pieces with frequency 0: never served in the game, kept here to bring back later" },
+    { k: "untouched", label: "Untouched", title: "Made by Claude and not reviewed yet (claudeDraft: true). Saving a piece with any change marks it reviewed." },
+    { k: "drafts", label: "Drafts", title: "Pieces with unsaved edits (autosaved drafts), most recent first" },
+  ];
+  const kindLabel = (k) => (LIST_KINDS.find(x => x.k === k) || LIST_KINDS[0]).label;
+  const kindOk = (s, kind, linked) => kind === "banished" ? isBanished(s, linked) : kind === "untouched" ? isUntouched(s)
+    : !isBanished(s, linked) && (kind === "all" || (kind === "powerup") === isPowerupEntry(s));
+  const viewSig = () => state.list.kind + "|" + state.list.filter.trim().toLowerCase();
+
+  // The pieces in a library view: [{ s (entry to show), key (draft key), fileIdx, draft }]
+  function listEntries(kind = state.list.kind, filter = state.list.filter){
+    const f = String(filter || "").trim().toLowerCase();
+    let all = [];
+    if (kind === "drafts"){
+      const byId = blocksById();
+      all = [...drafts.values()].sort((a, b) => (b.updated || 0) - (a.updated || 0)).map(d => {
+        const fileEntry = d.key.startsWith("id:") ? byId.get(d.key.slice(3)) : null;
+        const s = isPlainObject(d.preview) ? d.preview : (fileEntry || { id: d.id || "", name: d.name || "(unnamed)", grid: ["X"], color: "#444444" });
+        return { s, key: d.key, fileIdx: fileEntry ? BLOCKS.items.indexOf(fileEntry) : -1, draft: d, fileEntry };
+      });
+    } else {
+      const linked = linkedTargets();
+      for (let i = BLOCKS.items.length - 1; i >= 0; i--){
+        const s = BLOCKS.items[i];
+        if (s && typeof s === "object" && kindOk(s, kind, linked)) all.push({ s, key: keyForId(s.id), fileIdx: i, fileEntry: s });
+      }
+    }
     if (!f) return all;
     return all.filter(({ s }) => s && (String(s.name || "").toLowerCase().includes(f) || String(s.id || "").toLowerCase().includes(f)
       || (Array.isArray(s.tags) && s.tags.some(t => String(t).toLowerCase().includes(f)))));
   }
-  function renderList(){
-    const counts = {};
-    for (const k of ["all", "regular", "powerup", "banished"]) counts[k] = BLOCKS.items.filter(x => kindOk(x, k)).length;
-    const labels = { all: "All", regular: "Regular", powerup: "Powerups", banished: "Banished" };
-    document.querySelectorAll("#listTabs button").forEach(b => {
+  function listCounts(){
+    const linked = linkedTargets(), c = { drafts: drafts.size };
+    for (const { k } of LIST_KINDS) if (k !== "drafts") c[k] = 0;
+    for (const s of BLOCKS.items){
+      if (!s || typeof s !== "object") continue;
+      const ban = isBanished(s, linked);
+      if (ban) c.banished++; else { c.all++; c[isPowerupEntry(s) ? "powerup" : "regular"]++; }
+      if (isUntouched(s)) c.untouched++;
+    }
+    return c;
+  }
+  function renderTabs(host, counts){
+    if (!host.children.length){
+      for (const t of LIST_KINDS){
+        const b = document.createElement("button");
+        b.dataset.lkind = t.k; b.title = t.title;
+        b.addEventListener("click", () => setListKind(t.k));
+        host.appendChild(b);
+      }
+    }
+    for (const b of host.children){
       b.classList.toggle("on", b.dataset.lkind === state.list.kind);
-      b.textContent = `${labels[b.dataset.lkind]} (${counts[b.dataset.lkind]})`;
-    });
+      const txt = `${kindLabel(b.dataset.lkind)} (${counts[b.dataset.lkind] ?? 0})`;
+      if (b.textContent !== txt) b.textContent = txt;
+    }
+  }
+  function saveListPrefs(){
+    try { localStorage.setItem(LIST_PREFS_KEY, JSON.stringify({ kind: state.list.kind, pageSize: state.list.pageSize, gridSize: +el.gridSize.value })); } catch {}
+  }
+  function loadListPrefs(){
+    try {
+      const p = JSON.parse(localStorage.getItem(LIST_PREFS_KEY) || "null");
+      if (!p) return;
+      if (LIST_KINDS.some(x => x.k === p.kind)) state.list.kind = p.kind;
+      if (p.pageSize) { state.list.pageSize = clamp(p.pageSize | 0, 5, 200); el.pageSize.value = String(state.list.pageSize); }
+      if (p.gridSize) { el.gridSize.value = String(clamp(p.gridSize | 0, 90, 280)); el.gridBody.style.setProperty("--cell", el.gridSize.value + "px"); }
+    } catch {}
+  }
+  function setListKind(k){
+    state.list.kind = k; state.list.page = 0;
+    saveListPrefs();
+    renderList();
+    if (grid.open) renderGrid(true);
+  }
+  function setListFilter(v){
+    state.list.filter = v; state.list.page = 0;
+    if (el.listFilter.value !== v) el.listFilter.value = v;
+    if (el.gridFilter.value !== v) el.gridFilter.value = v;
+    renderList();
+    if (grid.open) renderGrid(false);
+  }
+
+  // ---- thumbnails (cached per entry contents and size) ----
+  const thumbCache = new Map(), sigCache = new WeakMap();
+  function entrySig(s){
+    if (!s || typeof s !== "object") return String(s);
+    let g = sigCache.get(s);
+    if (g === undefined){ try { g = JSON.stringify(s); } catch { g = ""; } sigCache.set(s, g); }
+    return g;
+  }
+  function thumbFor(s, w, h){
+    const key = w + "x" + h + ":" + entrySig(s);
+    let c = thumbCache.get(key);
+    if (!c){
+      c = document.createElement("canvas"); c.width = w; c.height = h;
+      drawThumb(c, s);
+      thumbCache.set(key, c);
+      if (thumbCache.size > 1600) thumbCache.delete(thumbCache.keys().next().value);
+    }
+    return c;
+  }
+
+  function entryBadges(e, { banished = false } = {}){
+    const s = e.s, pu = isPlainObject(s.powerup) ? s.powerup : null;
+    const fileS = e.fileEntry || null;
+    const out = [];
+    if (pu) out.push(`<span class="badge pu" title="Powerup">${escapeHtml(pu.type || "powerup")}</span>`);
+    if (isUntouched(fileS || s)) out.push(`<span class="badge untouched" title="Made by Claude, not reviewed yet (claudeDraft). Saving it with any change marks it reviewed.">untouched</span>`);
+    if (drafts.has(e.key)) out.push(`<span class="badge draft" title="Unsaved edits are kept as a draft${e.draft ? " (" + escapeHtml(timeAgo(e.draft.updated)) + ")" : ""}">${e.key.startsWith("new:") || (e.draft && !fileS) ? "new draft" : "draft"}</span>`);
+    if (banished) out.push(`<span class="badge banished" title="Frequency 0: never served">banished</span>`);
+    return out.join("");
+  }
+  // The piece that was open but is no longer in this view (e.g. banished and saved): a placeholder
+  // keeps its place in the list
+  function ghostRow(){
+    const id = state.source ? state.source.id : state.id;
+    const s = BLOCKS.items.find(x => x && x.id === id);
+    const where = s ? (isBanished(s) ? "Banished" : isPowerupEntry(s) ? "Powerups / All" : "Regular / All") : "the Drafts tab";
+    const div = document.createElement("div");
+    div.className = "item ghost";
+    div.innerHTML = `<b>${escapeHtml(state.name || id || "This piece")}</b> (open in the editor) is no longer in this view: it's in ${escapeHtml(where)} now. Prev / Next carry on from here.`;
+    return div;
+  }
+  let listRenderKey = "";
+  function renderList(){
+    const counts = listCounts();
+    renderTabs(el.listTabs, counts);
+    if (grid.open) renderTabs(el.gridTabs, counts);
     const entries = listEntries();
     const ps = state.list.pageSize;
     const pages = Math.max(1, Math.ceil(entries.length / ps));
+    // where the open piece is in this view (kept when it drops out of the view, e.g. after banishing it)
+    const vs = viewSig();
+    const idx = entries.findIndex(e => e.key === state.draftKey);
+    const cur = state.list.cursor;
+    if (idx >= 0) state.list.cursor = { key: state.draftKey, index: idx, view: vs };
+    else if (!(cur && cur.key === state.draftKey && cur.view === vs)) state.list.cursor = null;
     state.list.page = clamp(state.list.page, 0, pages - 1);
     el.pageLabel.textContent = `${state.list.page + 1}/${pages}`;
     el.prevPage.disabled = state.list.page === 0;
     el.nextPage.disabled = state.list.page >= pages - 1;
     el.listCount.textContent = String(entries.length);
+    // keep the scroll position unless the page or the view changed
+    const rk = vs + "#" + state.list.page + "#" + ps;
+    const keepScroll = rk === listRenderKey ? el.recentList.scrollTop : 0;
+    listRenderKey = rk;
     el.recentList.innerHTML = "";
+    const ghostAt = idx < 0 && state.list.cursor ? clamp(state.list.cursor.index, 0, entries.length) : -1;
     if (!entries.length){
-      el.recentList.innerHTML = `<div class="hint">${BLOCKS.text == null ? "File not loaded. Pick it in File (or serve the repo over http)." : "No entries."}</div>`;
+      el.recentList.innerHTML = `<div class="hint">${BLOCKS.text == null && state.list.kind !== "drafts" ? "File not loaded. Pick it in File (or serve the repo over http)." : state.list.kind === "drafts" ? "No drafts: every piece is saved." : "No entries."}</div>`;
+      if (ghostAt >= 0) el.recentList.prepend(ghostRow());
+      el.recentList.scrollTop = keepScroll;
       return;
     }
-    for (const { s } of entries.slice(state.list.page * ps, (state.list.page + 1) * ps)){
-      if (!s || typeof s !== "object") continue;
+    const showBan = state.list.kind === "untouched" || state.list.kind === "drafts";
+    const linked = showBan ? linkedTargets() : null;
+    const from = state.list.page * ps, to = Math.min(entries.length, from + ps);
+    for (let i = from; i < to; i++){
+      if (i === ghostAt) el.recentList.appendChild(ghostRow());
+      const e = entries[i], s = e.s;
       const item = document.createElement("div");
-      item.className = "item" + (state.source && state.source.id === s.id ? " current" : "");
-      item.title = "Click to load into the editor";
+      item.className = "item compact" + (e.key === state.draftKey ? " current" : "");
       const pu = isPlainObject(s.powerup) ? s.powerup : null;
       const freq = Number(s.frequency);
+      const fq = `f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}`;
       const mode = typeof s.color === "string" ? "solid" : (Array.isArray(s.color) && Array.isArray(s.color[0]) ? `${Math.round(s.color.length / Math.max(1, gridLines(s.grid).length))}×` : "?");
       const partsTxt = pu && pu.type === "combo" && Array.isArray(pu.parts)
-        ? `: ${pu.parts.map(q => isPlainObject(q) ? `<span style="color:${partColour(q.type)}">${escapeHtml(q.type ?? "?")}</span>` : "?").join(" + ") || "no parts"}` : "";
+        ? ` ${pu.parts.map(q => isPlainObject(q) ? `<span style="color:${partColour(q.type)}">${escapeHtml(q.type ?? "?")}</span>` : "?").join("+") || "no parts"}` : "";
       const help = (pu && pu.help !== undefined ? ` · help ${escapeHtml(pu.help)}` : "") + (pu && pu.starter === true ? " · starter" : "");
+      const params = pu ? `${pu.type === "gravity" ? " " + escapeHtml(pu.direction || "down") : ""}${PU_NUM_PARAMS.filter(q => q.type === pu.type && pu[q.key] !== undefined).map(q => ` ${q.key}=${escapeHtml(pu[q.key])}`).join("")}` : "";
       const stats = pu
-        ? `${escapeHtml(pu.type || "?")}${partsTxt}${pu.type === "gravity" ? " " + escapeHtml(pu.direction || "down") : ""}${PU_NUM_PARAMS.filter(q => q.type === pu.type && pu[q.key] !== undefined).map(q => ` ${q.key}=${escapeHtml(pu[q.key])}`).join("")}<br>tier ${escapeHtml(pu.tier ?? "?")}${help} · f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>${mode}`
-        : `f=${Number.isFinite(freq) ? freq.toFixed(2) : "—"}<br>d=${escapeHtml(s.difficulty ?? "—")}<br>${mode}`;
+        ? `tier ${escapeHtml(pu.tier ?? "?")}${help} · ${fq}${params} · ${mode}`
+        : `${fq} · d=${escapeHtml(s.difficulty ?? "—")} · ${mode}`;
       const links = Array.isArray(s.nextShapes) && s.nextShapes.length ? ` · → ${s.nextShapes.map(escapeHtml).join(", ")}` : "";
       const tags = Array.isArray(s.tags) && s.tags.length ? ` <span class="tagMini">${s.tags.map(t => "#" + escapeHtml(t)).join(" ")}</span>` : "";
       const zones = isPlainObject(s.zones) && Object.keys(s.zones).length ? ` <span class="zoneMini">◇ ${Object.keys(s.zones).map(escapeHtml).join(", ")}</span>` : "";
-      item.innerHTML = `
-        <div class="itemHead">
-          <div><div class="itemName">${pu ? `<span class="pill accent" style="padding:0 6px;margin-right:5px;">powerup</span>` : ""}${escapeHtml(s.name || "(unnamed)")}</div><div class="itemMeta mono">${escapeHtml(s.id || "(no id)")}${links}${tags}${zones}</div></div>
-          <div class="itemStats mono">${stats}</div>
-        </div>`;
       const mini = document.createElement("canvas");
-      mini.className = "miniCanvas"; mini.width = 300; mini.height = 110;
-      item.appendChild(mini);
-      drawThumb(mini, s);
-      item.addEventListener("click", async () => {
-        if (!(await confirmDiscard())) return;
-        loadShapeIntoEditor(clone(s), true);
-      });
+      mini.className = "thumbSm"; mini.width = 132; mini.height = 88;
+      mini.getContext("2d").drawImage(thumbFor(s, 132, 88), 0, 0);
+      const main = document.createElement("div");
+      main.style.minWidth = "0";
+      main.innerHTML = `<div class="itemName">${escapeHtml(s.name || "(unnamed)")}</div>`
+        + `<div class="itemMeta mono">${entryBadges(e, { banished: showBan && isBanished(e.fileEntry || s, linked) })}${escapeHtml(s.id || "(no id)")}${partsTxt}${links}${tags}${zones}</div>`
+        + `<div class="itemLine itemStats mono">${stats}</div>`;
+      item.append(mini, main);
+      item.title = `${s.name || ""} (${s.id || "no id"}): click to open${drafts.has(e.key) ? " (with its unsaved draft)" : ""}`;
+      item.addEventListener("click", () => { openEntry(e); renderList(); });
       el.recentList.appendChild(item);
     }
+    if (ghostAt === to) el.recentList.appendChild(ghostRow());
+    el.recentList.scrollTop = keepScroll;
   }
-  document.querySelectorAll("#listTabs button").forEach(b => b.addEventListener("click", () => { state.list.kind = b.dataset.lkind; state.list.page = 0; renderList(); }));
-  el.listFilter.addEventListener("input", () => { state.list.filter = el.listFilter.value; state.list.page = 0; renderList(); });
+  // Scroll the library list (only the list, not the page) so the open piece is visible
+  function scrollCurrentIntoView(){
+    const L = el.recentList, c = L.querySelector(".item.current, .item.ghost");
+    if (!c) return;
+    const lr = L.getBoundingClientRect(), cr = c.getBoundingClientRect();
+    if (cr.top < lr.top) L.scrollTop += cr.top - lr.top - 4;
+    else if (cr.bottom > lr.bottom) L.scrollTop += cr.bottom - lr.bottom + 4;
+  }
+  // Open a library entry: its draft if it has one, else the entry from the file. Never asks.
+  function openEntry(e){
+    if (!e) return;
+    if (e.key === state.draftKey && (state.source || drafts.has(e.key))) return; // already open
+    const d = drafts.get(e.key);
+    if (d){
+      try {
+        restoreDraft(d);
+        const changed = e.fileEntry && d.state && d.state.source && !deepEqual(toJsonCompatible(e.fileEntry), toJsonCompatible(d.state.source.original));
+        toast(`Restored your unsaved draft of "${d.name || d.id || "new piece"}" (${timeAgo(d.updated)})${changed ? ". Note: the file's version changed since the draft was made" : ""}.`);
+        return;
+      } catch (err){
+        console.warn("Could not restore draft", err);
+        toast("That draft could not be restored: opening the file's version.", "bad");
+      }
+    }
+    if (e.fileEntry) loadShapeIntoEditor(clone(e.fileEntry), true);
+  }
+  // Prev / Next piece in the current library view (the list follows to the right page)
+  function navPiece(dir){
+    if (state.mode !== "blocks") return;
+    const entries = listEntries();
+    if (!entries.length){ toast("No pieces in this library view."); return; }
+    const idx = entries.findIndex(e => e.key === state.draftKey), cur = state.list.cursor;
+    let t;
+    if (idx >= 0) t = idx + dir;
+    else if (cur && cur.key === state.draftKey && cur.view === viewSig()) t = dir > 0 ? cur.index : cur.index - 1;
+    else t = dir > 0 ? 0 : entries.length - 1;
+    if (t < 0 || t >= entries.length){ toast(dir > 0 ? "That's the last piece in this view." : "That's the first piece in this view."); return; }
+    state.list.page = Math.floor(t / state.list.pageSize);
+    openEntry(entries[t]);
+    renderList();
+    scrollCurrentIntoView();
+  }
+  el.listFilter.addEventListener("input", () => setListFilter(el.listFilter.value));
   el.pageSize.addEventListener("change", () => {
     state.list.pageSize = clamp(parseInt(el.pageSize.value, 10) || 20, 5, 200);
     el.pageSize.value = String(state.list.pageSize);
-    state.list.page = 0; renderList();
+    // stay on the page that shows the open piece
+    const c = state.list.cursor;
+    state.list.page = c ? Math.floor(c.index / state.list.pageSize) : 0;
+    saveListPrefs();
+    renderList(); scrollCurrentIntoView();
   });
   el.prevPage.addEventListener("click", () => { state.list.page--; renderList(); });
   el.nextPage.addEventListener("click", () => { state.list.page++; renderList(); });
+  for (const [b, d] of [[el.libPrev, -1], [el.libNext, 1], [el.topPrev, -1], [el.topNext, 1]]) b.addEventListener("click", () => navPiece(d));
+
+  // ---- full-window grid of the current library view ----
+  const grid = { open: false, io: null, filterTimer: 0 };
+  function openGrid(){
+    if (state.mode !== "blocks") return;
+    grid.open = true;
+    el.gridOverlay.classList.remove("hidden");
+    el.gridFilter.value = state.list.filter;
+    document.body.style.overflow = "hidden";
+    renderGrid(true);
+    el.gridBody.focus({ preventScroll: true });
+  }
+  function closeGrid(){
+    if (!grid.open) return;
+    grid.open = false;
+    el.gridOverlay.classList.add("hidden");
+    document.body.style.overflow = "";
+    if (grid.io) grid.io.disconnect();
+    el.gridBody.innerHTML = "";
+  }
+  function renderGrid(scrollToCurrent){
+    renderTabs(el.gridTabs, listCounts());
+    const entries = listEntries();
+    el.gridCount.textContent = String(entries.length);
+    if (grid.io) grid.io.disconnect();
+    const io = grid.io = new IntersectionObserver((list) => {
+      for (const en of list){
+        if (!en.isIntersecting) continue;
+        const cv = en.target;
+        io.unobserve(cv);
+        cv.getContext("2d").drawImage(thumbFor(cv._entry.s, 200, 150), 0, 0);
+      }
+    }, { root: el.gridBody, rootMargin: "400px 0px" });
+    el.gridBody.innerHTML = "";
+    if (!entries.length){
+      el.gridBody.innerHTML = `<div class="hint">${state.list.kind === "drafts" ? "No drafts: every piece is saved." : "No pieces in this view."}</div>`;
+      return;
+    }
+    const showBan = state.list.kind === "untouched" || state.list.kind === "drafts";
+    const linked = showBan ? linkedTargets() : null;
+    const frag = document.createDocumentFragment();
+    entries.forEach((e, i) => {
+      const s = e.s;
+      const cell = document.createElement("div");
+      cell.className = "gcell" + (e.key === state.draftKey ? " current" : "");
+      cell.title = `${s.name || ""} (${s.id || "no id"})`;
+      const cv = document.createElement("canvas");
+      cv.width = 200; cv.height = 150; cv._entry = e;
+      const nm = document.createElement("div");
+      nm.className = "gname"; nm.textContent = s.name || "(unnamed)";
+      const sub = document.createElement("div");
+      sub.className = "gsub";
+      sub.innerHTML = entryBadges(e, { banished: showBan && isBanished(e.fileEntry || s, linked) }) + `<span class="mono">${escapeHtml(s.id || "")}</span>`;
+      cell.append(cv, nm, sub);
+      cell.addEventListener("click", () => {
+        closeGrid();
+        state.list.page = Math.floor(i / state.list.pageSize);
+        openEntry(e);
+        renderList();
+        scrollCurrentIntoView();
+      });
+      frag.appendChild(cell);
+      io.observe(cv);
+    });
+    el.gridBody.appendChild(frag);
+    if (scrollToCurrent){
+      const c = el.gridBody.querySelector(".gcell.current");
+      if (c) el.gridBody.scrollTop = Math.max(0, c.offsetTop - el.gridBody.offsetTop - el.gridBody.clientHeight / 2 + c.offsetHeight / 2);
+      else el.gridBody.scrollTop = 0;
+    }
+  }
+  el.gridBody.tabIndex = -1;
+  el.libGrid.addEventListener("click", openGrid);
+  el.topGrid.addEventListener("click", openGrid);
+  el.gridClose.addEventListener("click", closeGrid);
+  el.gridFilter.addEventListener("input", () => {
+    clearTimeout(grid.filterTimer);
+    grid.filterTimer = setTimeout(() => setListFilter(el.gridFilter.value), 120);
+  });
+  el.gridSize.addEventListener("input", () => { el.gridBody.style.setProperty("--cell", el.gridSize.value + "px"); saveListPrefs(); });
 
   // ============================================================
   // PNG / project / text exports
@@ -4943,6 +5890,8 @@
   // Accepts this tool's projects (v3/v4) and shape_drawer projects (v1/v2, no mask -> all filled)
   function loadProjectObject(obj){
     if (!obj || !obj.meta || !Array.isArray(obj.layers)) throw new Error("Invalid project file.");
+    flushDraft();
+    cancelAdjust();
     const m = obj.meta;
     state.blocksW = clamp(parseInt(m.blocksW, 10) || 1, 1, MAX_BLOCKS);
     state.blocksH = clamp(parseInt(m.blocksH, 10) || 1, 1, MAX_BLOCKS);
@@ -4983,6 +5932,8 @@
       state.rotationExtras = s.rotationExtras || {};
       state.links = Array.isArray(s.links) ? s.links.map(r => ({ id: String(r.id || ""), prob: r.prob == null ? null : Number(r.prob) })) : [];
       state.extras = s.extras || {};
+      state.claudeDraft = false;
+      if (state.extras.claudeDraft === true) delete state.extras.claudeDraft;
       if (s.pu){
         state.pu = { ...defaultPu(), ...s.pu, extras: s.pu.extras || {} };
         state.pu.parts = (Array.isArray(s.pu.parts) ? s.pu.parts : []).filter(isPlainObject).map(q => {
@@ -5008,7 +5959,19 @@
       state.zones.active = 0;
       state.zones.margin = clamp(parseInt(s.zonesMargin, 10) || 3, 0, 30);
     }
+    // older projects kept brightness / contrast / hue / saturation as a preview: bake it into the layers
+    const a = state.adj;
+    if (a.brightness !== 0 || a.contrast !== 0 || a.hue !== 0 || a.sat !== 1){
+      for (const L of state.layers) for (let i = 0; i < L.data.length; i++){
+        const u = L.data[i] >>> 0, al = (u >>> 24) & 255;
+        if (!al) continue;
+        const c = applyPreviewAdjustmentsToRGB((u >>> 16) & 255, (u >>> 8) & 255, u & 255);
+        L.data[i] = packARGB(al, c.r, c.g, c.b);
+      }
+    }
+    state.adj = { brightness: 0, contrast: 0, hue: 0, sat: 1 };
     state.source = null;
+    setDraftKey(newTempKey());
     resetHistory(); setDirty(true); syncAllUI(); renderList();
   }
   el.dlProject.addEventListener("click", () => {
@@ -5029,7 +5992,6 @@
       if (end > first) { try { obj = JSON.parse(text.slice(first, end + 1)); } catch {} }
     }
     if (!obj){ toast("Could not read the project file.", "bad"); return; }
-    if (!(await confirmDiscard())) return;
     try { loadProjectObject(obj); toast("Project loaded", "good"); } catch (e){ toast(e.message || String(e), "bad"); }
   });
 
@@ -5088,32 +6050,6 @@
   el.undoBtn.addEventListener("click", undo);
   el.redoBtn.addEventListener("click", redo);
 
-  // adjustments (preview only until applied)
-  const adjInput = (input, key, conv, pill, fmt) => input.addEventListener("input", () => {
-    state.adj[key] = conv(input.value); pill.textContent = fmt(state.adj[key]); scheduleRender();
-  });
-  adjInput(el.brightness, "brightness", v => parseInt(v, 10) || 0, el.brightnessPill, v => String(v));
-  adjInput(el.contrast, "contrast", v => parseInt(v, 10) || 0, el.contrastPill, v => String(v));
-  adjInput(el.hue, "hue", v => parseInt(v, 10) || 0, el.huePill, v => `${v}°`);
-  adjInput(el.sat, "sat", v => (parseInt(v, 10) || 0) / 100, el.satPill, v => `${Math.round(v * 100)}%`);
-  el.applyAdjustments.addEventListener("click", () => {
-    const { brightness, contrast, hue, sat } = state.adj;
-    if (brightness === 0 && contrast === 0 && hue === 0 && sat === 1) return;
-    commit(() => {
-      for (const L of state.layers){
-        for (let i = 0; i < L.data.length; i++){
-          const u = L.data[i] >>> 0, a = (u >>> 24) & 255;
-          if (!a) continue;
-          const c = applyPreviewAdjustmentsToRGB((u >>> 16) & 255, (u >>> 8) & 255, u & 255);
-          L.data[i] = packARGB(a, c.r, c.g, c.b);
-        }
-      }
-      return true;
-    });
-    state.adj = { brightness: 0, contrast: 0, hue: 0, sat: 1 };
-    syncAdjustmentUI(); scheduleRender();
-  });
-  el.resetAdjustments.addEventListener("click", () => { state.adj = { brightness: 0, contrast: 0, hue: 0, sat: 1 }; syncAdjustmentUI(); scheduleRender(); });
   el.rerollSeed.addEventListener("click", () => commit(() => { state.seed = (Math.random() * 1e9) | 0; return true; }));
 
   // centre tabs
@@ -6666,6 +7602,15 @@
     if (el.modal.open) return;
     const mod = e.ctrlKey || e.metaKey;
     const k = String(e.key || "").toLowerCase();
+    // the library grid: Esc closes it; other shortcuts wait until it is closed
+    if (grid.open){
+      if (k === "escape"){ e.preventDefault(); closeGrid(); }
+      return;
+    }
+    // the adjust colours panel: Esc cancels, Enter applies (also while one of its sliders has focus)
+    if (adjust.open && !mod && (k === "escape" || (k === "enter" && (!typing || el.adjPanel.contains(e.target))))){
+      e.preventDefault(); if (k === "escape") cancelAdjust(); else applyAdjust(); return;
+    }
     if (mod && k === "s"){ e.preventDefault(); if (state.mode === "achievements") saveAchievements(); else saveCurrent(); return; }
     if (typing) return;
     if (state.mode === "achievements"){
@@ -6698,7 +7643,18 @@
       }
       return;
     }
+    // previous / next piece in the library view, library grid
+    if (!e.ctrlKey && !e.metaKey && ((!e.altKey && (k === "[" || k === "]")) || (e.altKey && (k === "arrowleft" || k === "arrowright")))){
+      e.preventDefault(); navPiece(k === "]" || k === "arrowright" ? 1 : -1); return;
+    }
     if (e.altKey) return;
+    if (k === "g" && !e.shiftKey){ e.preventDefault(); openGrid(); return; }
+    // selection: rotate (R / Shift+R) and flip (H / V)
+    if (onArt && (state.sel || state.tool === "select") && (k === "r" || k === "h" || k === "v")){
+      e.preventDefault();
+      if (k === "r") rotateSel(!e.shiftKey); else flipSel(k === "h");
+      return;
+    }
     if (onArt && state.sel){
       const arrows = { arrowleft: [-1, 0], arrowright: [1, 0], arrowup: [0, -1], arrowdown: [0, 1] };
       if (arrows[k]){ e.preventDefault(); const d = e.shiftKey ? state.ppb : 1; nudgeSel(arrows[k][0] * d, arrows[k][1] * d); return; }
@@ -6721,17 +7677,40 @@
     serialiseAchievements, saveAchievements, saveCurrent, parseTriggerHeader, bitmapToIcon, iconPasteBitmap, setSlotText,
     BLOCK_FORMAT, ACH_FORMAT, touchCells, shapeModel, gooGuess, matchesShape, curPart, areaTarget, drawThumb, makeProjectObject, loadProjectObject,
     undo, redo,
-    sel: { selectAll, deselect, copySel, pasteSel, deleteSel, flipSel, nudgeSel, cancelPaste, checkSel, opts: selOpts, clip: () => pixelClip },
+    sel: { selectAll, deselect, copySel, pasteSel, deleteSel, flipSel, rotateSel, nudgeSel, cancelPaste, checkSel, opts: selOpts, clip: () => pixelClip },
+    drafts, saveDraftNow, flushDraft, restoreDraft, deleteDraft, discardDraft, listEntries, openEntry, navPiece, openGrid, closeGrid, grid,
+    adjust, openAdjust, applyAdjust, cancelAdjust, adjustPrepare, syncAdjustUI, newBlock, hist,
   };
+
+  // After a reload: open the piece you were on (with its draft), if the editor is still untouched
+  function reopenLastPiece(){
+    const key = state.lastPiece;
+    if (!key || state.source || state.dirty || hist.undo.length) return;
+    const d = drafts.get(key);
+    const s = key.startsWith("id:") ? BLOCKS.items.find(x => x && keyForId(x.id) === key) : null;
+    try {
+      if (d) restoreDraft(d);
+      else if (s) loadShapeIntoEditor(clone(s), true);
+      else return;
+    } catch (e){ console.warn("Could not reopen the last piece", e); return; }
+    const idx = listEntries().findIndex(e => e.key === state.draftKey);
+    if (idx >= 0) state.list.page = Math.floor(idx / state.list.pageSize);
+    renderList(); scrollCurrentIntoView();
+    if (d) toast(`Reopened "${d.name || d.id || "new piece"}" with its unsaved draft.`);
+  }
 
   // ============================================================
   // Boot
   // ============================================================
   (async () => {
     initLayers();
+    try { state.lastPiece = localStorage.getItem(LAST_PIECE_KEY); } catch {}
+    state.draftKey = newTempKey();
     setColour(state.colourHex);
     setTool(state.tool);
     syncPreviewScale();
+    loadLocalDrafts();
+    loadListPrefs();
     syncAllUI();
     achInit();
     renderSlots();
@@ -6739,10 +7718,12 @@
     setAppMode(initialMode());
     // the separate powerups file is gone: drop a handle remembered for it by earlier versions
     idb("readwrite", s => s.delete("slot_powerups")).catch(() => {});
+    const draftsReady = localServerReady.then(() => syncServerDrafts()).catch(() => {});
     for (const slot of [BLOCKS, ACH]){
       let restored = false;
       try { restored = await restoreHandle(slot); } catch {}
       if (!restored && isServed()) await fetchDefault(slot);
+      if (slot === BLOCKS){ await draftsReady; reopenLastPiece(); }
     }
     renderSlots(); renderList();
     if (state.mode === "achievements") achRenderAll();
