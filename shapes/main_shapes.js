@@ -2103,11 +2103,11 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "bagpipes",
-    name: "a bagpipe. nobody knows which end to hold.",
+    name: "a bagpipe",
     grid: [
         "X.X..",
         "XXX..",
@@ -2135,7 +2135,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "big_spade",
@@ -2153,11 +2153,11 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "very_long_cat",
-    name: "a very long cat (it just keeps going)",
+    name: "a long cat",
     grid: [
         "X.X........X",
         "XXXXXXXXXXXX",
@@ -2187,7 +2187,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "unasked_bouquet",
@@ -2205,7 +2205,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "crisps_mostly_air",
@@ -2223,7 +2223,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     tags: [
         "food"
       ],
@@ -2243,7 +2243,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "grand_chandelier",
@@ -2262,7 +2262,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "eiffel_tower",
@@ -2285,7 +2285,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     tags: [
         "landmark"
       ],
@@ -2311,7 +2311,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     tags: [
         "landmark"
       ],
@@ -2331,7 +2331,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     tags: [
         "landmark"
       ],
@@ -2353,7 +2353,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     tags: [
         "landmark"
       ],
@@ -2379,7 +2379,7 @@ export const SHAPES = [
   },
   {
     id: "great_wall",
-    name: "The Great Wall of China (abridged)",
+    name: "The Mutianyu section of the Great Wall",
     grid: [
         ".X..........",
         ".XX.....X...",
@@ -3309,7 +3309,7 @@ export const SHAPES = [
   },
   {
     id: "squonch",
-    name: "a mildly alarmed squonch",
+    name: "a squaberflabbersnort",
     grid: [
         ".X.",
         "XXX",
@@ -3335,12 +3335,12 @@ export const SHAPES = [
   },
   {
     id: "blibbets",
-    name: "a litter of newborn blibbets",
+    name: "a slew of hingerflabberbwabs",
     grid: [
         "XX.",
         "XXX"
       ],
-    color: [["#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","","","","","",""],["#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#7a2050","#7a2050","#7a2050","#7a2050","#cbbb3c","#cbbb3c","","","","","",""],["#cbbb3c","#cbbb3c","#7a2050","#7a2050","#7a2050","#7a2050","#ffffff","#ff9ec4","#ff9ec4","#ff9ec4","#7a2050","#cbbb3c","","","","","",""],["#cbbb3c","#7a2050","#ffffff","#c8a0ff","#9a70e0","#7a2050","#ff9ec4","#1a0a14","#ff9ec4","#1a0a14","#7a2050","#cbbb3c","","","","","",""],["#cbbb3c","#7a2050","#1a0a14","#c8a0ff","#1a0a14","#7a2050","#ff9ec4","#ff9ec4","#ff9ec4","#e070a0","#7a2050","#cbbb3c","","","","","",""],["#cbbb3c","#cbbb3c","#7a2050","#7a2050","#7a2050","#cbbb3c","#7a2050","#7a2050","#7a2050","#7a2050","#cbbb3c","#cbbb3c","","","","","",""],["#cbbb3c","#7a2050","#7a2050","#7a2050","#7a2050","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#cbbb3c","#7a2050","#7a2050","#7a2050","#7a2050","#cbbb3c"],["#7a2050","#ffffff","#ff9ec4","#ff9ec4","#ff9ec4","#7a2050","#cbbb3c","#7a2050","#7a2050","#7a2050","#7a2050","#cbbb3c","#7a2050","#ffffff","#c8a0ff","#c8a0ff","#c8a0ff","#7a2050"],["#7a2050","#ff9ec4","#1a0a14","#ff9ec4","#1a0a14","#7a2050","#7a2050","#ffffff","#ffbf94","#ffbf94","#ffbf94","#7a2050","#7a2050","#c8a0ff","#1a0a14","#c8a0ff","#1a0a14","#7a2050"],["#7a2050","#ff9ec4","#ff9ec4","#ff9ec4","#e070a0","#7a2050","#7a2050","#ffbf94","#ffffff","#1a0a14","#ffbf94","#7a2050","#7a2050","#c8a0ff","#c8a0ff","#c8a0ff","#9a70e0","#7a2050"],["#f0e57a","#7a2050","#7a2050","#7a2050","#7a2050","#cbbb3c","#7a2050","#ffbf94","#ffbf94","#ffbf94","#e8906a","#7a2050","#cbbb3c","#7a2050","#7a2050","#7a2050","#7a2050","#cbbb3c"],["#9a8a1e","#9a8a1e","#9a8a1e","#9a8a1e","#9a8a1e","#9a8a1e","#9a8a1e","#7a2050","#7a2050","#7a2050","#7a2050","#9a8a1e","#9a8a1e","#9a8a1e","#9a8a1e","#9a8a1e","#9a8a1e","#9a8a1e"]],
+    color: [["#7a2050","#7a2050","#7a2050","#7a2050","#472437","#472437","#472437","#472437","#7a2050","#472437","#472437","#472437","","","","","",""],["#7a2050","#c8a0ff","#c8a0ff","#c8a0ff","#7a2050","#7a2050","#7a2050","#7a2050","#7a2050","#7a2050","#c8a0ff","#472437","","","","","",""],["#7a2050","#c8a0ff","#c8a0ff","#c8a0ff","#c8a0ff","#7a2050","#ffffff","#ff9ec4","#ff9ec4","#ff9ec4","#7a2050","#472437","","","","","",""],["#7a2050","#c8a0ff","#ffffff","#c8a0ff","#9a70e0","#7a2050","#ff9ec4","#1a0a14","#ff9ec4","#1a0a14","#7a2050","#7a2050","","","","","",""],["#7a2050","#c8a0ff","#1a0a14","#c8a0ff","#1a0a14","#7a2050","#ff9ec4","#ff9ec4","#ff9ec4","#e070a0","#7a2050","#472437","","","","","",""],["#472437","#7a2050","#7a2050","#7a2050","#7a2050","#472437","#7a2050","#7a2050","#7a2050","#7a2050","#472437","#472437","","","","","",""],["#7a2050","#7a2050","#7a2050","#7a2050","#7a2050","#472437","#472437","#472437","#472437","#472437","#7a2050","#472437","#472437","#7a2050","#7a2050","#7a2050","#7a2050","#472437"],["#7a2050","#ffffff","#ff9ec4","#ff9ec4","#ff9ec4","#7a2050","#472437","#7a2050","#7a2050","#7a2050","#7a2050","#472437","#7a2050","#ffffff","#c8a0ff","#c8a0ff","#c8a0ff","#7a2050"],["#7a2050","#ff9ec4","#1a0a14","#ff9ec4","#1a0a14","#7a2050","#7a2050","#ffffff","#ffbf94","#ffbf94","#ffbf94","#7a2050","#7a2050","#c8a0ff","#1a0a14","#c8a0ff","#1a0a14","#7a2050"],["#472437","#ff9ec4","#ff9ec4","#ff9ec4","#e070a0","#7a2050","#7a2050","#ffbf94","#ffffff","#1a0a14","#ffbf94","#7a2050","#7a2050","#c8a0ff","#c8a0ff","#c8a0ff","#9a70e0","#7a2050"],["#472437","#7a2050","#7a2050","#7a2050","#7a2050","#7a2050","#7a2050","#ffbf94","#ffbf94","#ffbf94","#e8906a","#7a2050","#7a2050","#7a2050","#7a2050","#7a2050","#7a2050","#472437"],["#472437","#472437","#472437","#7a2050","#7a2050","","#7a2050","#7a2050","#7a2050","#7a2050","#7a2050","#7a2050","#472437","#7a2050","#7a2050","#472437","#472437","#472437"]],
     difficulty: 2,
     rotation: {
         "mode": "any"
@@ -3362,7 +3362,7 @@ export const SHAPES = [
   },
   {
     id: "mumblethorpe",
-    name: "the great gurgling mumblethorpe",
+    name: "the mumblethorpe",
     grid: [
         ".XX.",
         "XXXX",
@@ -3390,7 +3390,7 @@ export const SHAPES = [
   },
   {
     id: "happy_pills",
-    name: "happy pills",
+    name: "a happy pill",
     grid: [
         "XX"
       ],
@@ -3412,11 +3412,11 @@ export const SHAPES = [
   },
   {
     id: "tooth",
-    name: "a tooth. not yours.",
+    name: "someone's tooth",
     grid: [
         "X"
       ],
-    color: [["#6e1426","#ffffff","#f6f0dc","#6e1426","#f6f0dc","#d6c99f","#6e1426"],["#ffffff","#f6f0dc","#f6f0dc","#f6f0dc","#f6f0dc","#f6f0dc","#a89870"],["#f6f0dc","#f6f0dc","#f6f0dc","#f6f0dc","#f6f0dc","#d6c99f","#a89870"],["#6e1426","#f6f0dc","#f6f0dc","#f6f0dc","#d6c99f","#d6c99f","#6e1426"],["#6e1426","#f6f0dc","#f6f0dc","#6e1426","#f6f0dc","#d6c99f","#6e1426"],["#6e1426","#f6f0dc","#d6c99f","#6e1426","#f6f0dc","#a89870","#6e1426"],["#6e1426","#d02040","#6e1426","#6e1426","#6e1426","#d02040","#6e1426"]],
+    color: [["#6e1426","#ffffff","#f6f0dc","#6e1426","#f6f0dc","#d6c99f","#6e1426"],["#ffffff","#f6f0dc","#f6f0dc","#f6f0dc","#f6f0dc","#f6f0dc","#a89870"],["#f6f0dc","#f6f0dc","#f6f0dc","#f6f0dc","#f6f0dc","#d6c99f","#a89870"],["#6e1426","#f6f0dc","#f6f0dc","#f6f0dc","#d6c99f","#d6c99f","#6e1426"],["#6e1426","#f6f0dc","#f6f0dc","#6e1426","#f6f0dc","#d6c99f","#6e1426"],["#6e1426","#f6f0dc","#d6c99f","#6e1426","#f6f0dc","#a89870","#6e1426"],["#6e1426","#f6f0dc","#6e1426","#6e1426","#6e1426","#f6f0dc","#6e1426"]],
     difficulty: 0,
     rotation: {
         "mode": "any"
@@ -3425,11 +3425,11 @@ export const SHAPES = [
   },
   {
     id: "breath_mint",
-    name: "a breath mint. it's for you.",
+    name: "a stinky breath mint",
     grid: [
         "X"
       ],
-    color: [["#1d3b3a","#1d3b3a","#8f9ba6","#8f9ba6","#8f9ba6","#1d3b3a","#1d3b3a"],["#1d3b3a","#8f9ba6","#ffffff","#ffffff","#e8283c","#8f9ba6","#1d3b3a"],["#8f9ba6","#e8283c","#e8283c","#ffffff","#ffffff","#e8283c","#8f9ba6"],["#8f9ba6","#e8283c","#ffffff","#e8283c","#e8283c","#ffffff","#8f9ba6"],["#8f9ba6","#ffffff","#e8283c","#e8283c","#ffffff","#dfe6ec","#8f9ba6"],["#1d3b3a","#8f9ba6","#dfe6ec","#e8283c","#e8283c","#8f9ba6","#1d3b3a"],["#1d3b3a","#1d3b3a","#8f9ba6","#8f9ba6","#8f9ba6","#1d3b3a","#1d3b3a"]],
+    color: [["#1d3b3a","#1d3b3a","#8f9ba6","#8f9ba6","#8f9ba6","#1d3b3a","#1d3b3a"],["#1d3b3a","#8f9ba6","#65d277","#ffffff","#dfe6ec","#8f9ba6","#1d3b3a"],["#8f9ba6","#dfe6ec","#ffffff","#ffffff","#ffffff","#65d277","#8f9ba6"],["#8f9ba6","#ffffff","#ffffff","#51a70c","#ffffff","#ffffff","#8f9ba6"],["#8f9ba6","#a8e1b2","#ffffff","#ffffff","#ffffff","#dfe6ec","#8f9ba6"],["#1d3b3a","#8f9ba6","#a8e1b2","#a8e1b2","#dfe6ec","#8f9ba6","#1d3b3a"],["#1d3b3a","#1d3b3a","#8f9ba6","#8f9ba6","#8f9ba6","#1d3b3a","#1d3b3a"]],
     difficulty: 0,
     rotation: {
         "mode": "any"
@@ -3445,7 +3445,7 @@ export const SHAPES = [
     grid: [
         "XX"
       ],
-    color: [["#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014"],["#5a2014","#e27a5a","#c4553a","#c4553a","#c4553a","#c4553a","#2f6fd6","#2f6fd6","#2f6fd6","#2f6fd6","#2f6fd6","#2f6fd6","#2f6fd6","#5a2014"],["#5a2014","#c4553a","#2a1010","#c4553a","#2a1010","#c4553a","#2f6fd6","#2f6fd6","#ff5a8a","#2f6fd6","#ff5a8a","#2f6fd6","#2f6fd6","#5a2014"],["#5a2014","#2a1010","#c4553a","#c4553a","#c4553a","#2a1010","#2f6fd6","#ff5a8a","#ff5a8a","#ff5a8a","#ff5a8a","#ff5a8a","#2f6fd6","#5a2014"],["#5a2014","#c4553a","#2a1010","#2a1010","#2a1010","#c4553a","#2f6fd6","#2f6fd6","#ff5a8a","#ff5a8a","#ff5a8a","#2f6fd6","#2f6fd6","#5a2014"],["#5a2014","#a8432c","#a8432c","#8a3420","#a8432c","#a8432c","#2152a8","#2f6fd6","#2f6fd6","#ff5a8a","#2f6fd6","#2f6fd6","#2152a8","#5a2014"],["#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014","#5a2014"]],
+    color: [["#5b1e17","#501d0c","#581e1b","#531905","#552213","#642f22","#5b1b0d","#4e1a0b","#551913","#5b2111","#56130c","#551510","#481208","#612214"],["#612514","#d2694d","#d16643","#bc4e38","#c0553f","#ce583e","#de7957","#b7482c","#bf4c36","#ce6146","#c85641","#d05e4a","#b94d30","#5b291b"],["#61221d","#d36047","#311a1b","#c55e3e","#1e0304","#b2462e","#e17850","#c65c3a","#f5537e","#cf5f45","#f25078","#d35e47","#c25b3a","#6a281f"],["#602312","#bc412d","#c95a3f","#c75139","#c85b3d","#c45135","#af3e27","#fb5c8a","#ff6998","#ff5c89","#f35385","#ff5e8b","#d36245","#541b0f"],["#471308","#ca5940","#150500","#270c10","#321720","#bc5338","#d46f49","#dc7558","#f95885","#f74e84","#ff5c8d","#c25536","#b84835","#5f2520"],["#64271f","#b34e36","#9e3c20","#8b3323","#ad4e38","#ac3f2d","#df785a","#bb452c","#dd765e","#ff6899","#cb5b47","#bd4d3c","#bc4d2b","#511809"],["#4c1408","#531714","#461004","#471106","#60301e","#632915","#612215","#632c1e","#5a2719","#622a1a","#5e251c","#6e2c22","#60271d","#64251b"]],
     difficulty: 0,
     rotation: {
         "mode": "any"
@@ -3454,12 +3454,12 @@ export const SHAPES = [
   },
   {
     id: "seen_things",
-    name: "a rubber duck that has seen things",
+    name: "a rubber duck that has seen some things",
     grid: [
         "XX",
         "XX"
       ],
-    color: [["#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee"],["#9fd6ee","#9fd6ee","#9fd6ee","#7a4a0c","#7a4a0c","#7a4a0c","#ffffff","#e05050","#ffffff","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee"],["#9fd6ee","#9fd6ee","#7a4a0c","#c27f10","#c27f10","#c27f10","#c27f10","#ffffff","#7a4a0c","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee"],["#9fd6ee","#9fd6ee","#7a4a0c","#ffffff","#1a1010","#ffffff","#ffffff","#f0ae1e","#7a4a0c","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee"],["#ff8a1f","#ff8a1f","#ff8a1f","#7a5aa0","#7a5aa0","#7a5aa0","#7a5aa0","#f0ae1e","#7a4a0c","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee"],["#d65a10","#d65a10","#d65a10","#ffd83a","#a07ac0","#a07ac0","#ffd83a","#f0ae1e","#7a4a0c","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee"],["#9fd6ee","#9fd6ee","#7a4a0c","#fff3a8","#ffd83a","#ffd83a","#ffd83a","#f0ae1e","#7a4a0c","#9fd6ee","#9fd6ee","#9fd6ee","#7a4a0c","#7a4a0c"],["#9fd6ee","#7a4a0c","#fff3a8","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#f0ae1e","#7a4a0c","#7a4a0c","#7a4a0c","#7a4a0c","#9fd6ee"],["#9fd6ee","#7a4a0c","#fff3a8","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#fff3a8","#fff3a8","#fff3a8","#f0ae1e","#7a4a0c"],["#9fd6ee","#7a4a0c","#f0ae1e","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#f0ae1e","#7a4a0c"],["#9fd6ee","#9fd6ee","#7a4a0c","#f0ae1e","#f0ae1e","#f0ae1e","#f0ae1e","#f0ae1e","#f0ae1e","#f0ae1e","#f0ae1e","#f0ae1e","#7a4a0c","#9fd6ee"],["#e6f6ff","#3d8fd1","#e6f6ff","#e6f6ff","#e6f6ff","#3d8fd1","#e6f6ff","#e6f6ff","#3d8fd1","#e6f6ff","#e6f6ff","#e6f6ff","#3d8fd1","#e6f6ff"],["#3d8fd1","#3d8fd1","#3d8fd1","#2a6fae","#3d8fd1","#3d8fd1","#3d8fd1","#3d8fd1","#3d8fd1","#2a6fae","#3d8fd1","#3d8fd1","#3d8fd1","#3d8fd1"],["#2a6fae","#3d8fd1","#3d8fd1","#3d8fd1","#3d8fd1","#2a6fae","#3d8fd1","#3d8fd1","#3d8fd1","#3d8fd1","#3d8fd1","#2a6fae","#3d8fd1","#3d8fd1"]],
+    color: [["#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee"],["#9fd6ee","#9fd6ee","#9fd6ee","#7a4a0c","#7a4a0c","#7a4a0c","#7a4a0c","#7a4a0c","#7a4a0c","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee"],["#9fd6ee","#9fd6ee","#7a4a0c","#c27f10","#c27f10","#c27f10","#c27f10","#f0ae1e","#7a4a0c","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee"],["#9fd6ee","#9fd6ee","#7a4a0c","#ffffff","#1a1010","#ffffff","#ffffff","#f0ae1e","#7a4a0c","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee"],["#ff8a1f","#ff8a1f","#ff8a1f","#7a5aa0","#7a5aa0","#7a5aa0","#7a5aa0","#f0ae1e","#7a4a0c","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee"],["#d65a10","#d65a10","#d65a10","#ffd83a","#a07ac0","#a07ac0","#ffd83a","#f0ae1e","#7a4a0c","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee","#9fd6ee"],["#9fd6ee","#9fd6ee","#7a4a0c","#fff3a8","#ffd83a","#ffd83a","#ffd83a","#f0ae1e","#7a4a0c","#9fd6ee","#9fd6ee","#9fd6ee","#7a4a0c","#7a4a0c"],["#9fd6ee","#7a4a0c","#fff3a8","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#f0ae1e","#7a4a0c","#7a4a0c","#7a4a0c","#7a4a0c","#9fd6ee"],["#9fd6ee","#7a4a0c","#fff3a8","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#fff3a8","#fff3a8","#fff3a8","#f0ae1e","#7a4a0c"],["#9fd6ee","#7a4a0c","#f0ae1e","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#ffd83a","#f0ae1e","#7a4a0c"],["#9fd6ee","#9fd6ee","#7a4a0c","#f0ae1e","#f0ae1e","#f0ae1e","#f0ae1e","#f0ae1e","#f0ae1e","#f0ae1e","#f0ae1e","#f0ae1e","#7a4a0c","#9fd6ee"],["#e6f6ff","#3d8fd1","#e6f6ff","#e6f6ff","#e6f6ff","#3d8fd1","#e6f6ff","#e6f6ff","#3d8fd1","#e6f6ff","#e6f6ff","#e6f6ff","#3d8fd1","#e6f6ff"],["#3d8fd1","#3d8fd1","#3d8fd1","#2a6fae","#3d8fd1","#3d8fd1","#3d8fd1","#3d8fd1","#3d8fd1","#2a6fae","#3d8fd1","#3d8fd1","#3d8fd1","#3d8fd1"],["#2a6fae","#3d8fd1","#3d8fd1","#3d8fd1","#3d8fd1","#2a6fae","#3d8fd1","#3d8fd1","#3d8fd1","#3d8fd1","#3d8fd1","#2a6fae","#3d8fd1","#3d8fd1"]],
     difficulty: 1,
     rotation: {
         "mode": "any"
@@ -3493,14 +3493,14 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.8,
+    frequency: 0,
     tags: [
         "food"
       ],
   },
   {
     id: "licked_sandwich",
-    name: "a sandwich that someone has already licked",
+    name: "a freshly licked sandwich",
     grid: [
         "XXX",
         "XXX"
@@ -12071,7 +12071,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "fire_ice_dragon",
@@ -12187,7 +12187,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "ghost_swiss_knife",
@@ -12317,7 +12317,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.4,
+    frequency: 0,
   },
   {
     id: "time_builder",
@@ -12440,11 +12440,11 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.4,
+    frequency: 0,
   },
   {
     id: "wizard_all_trades",
-    name: "a wizard of all trades (just the hat)",
+    name: "a cool wizard hat",
     grid: [
         ".X.",
         "XXX"
