@@ -404,6 +404,7 @@
           <span class="hint">0 (easy) – 5 (nasty)</span>
         </div>
       </div>
+      <div class="field" id="noShakeField"><span></span><label title="Big pieces (difficulty 4-5) shake the board when they land; this one doesn't (e.g. a swarm of bees). Saved as noShake: true."><input id="noShake" type="checkbox"> No landing shake</label></div>
       <div class="field"><span>Frequency</span>
         <div class="grow">
           <input id="freqRange" type="range" min="0" max="1" step="0.01" value="1">
@@ -806,6 +807,7 @@
       <h2>Save</h2>
       <div class="row">
         <button id="saveBtn" class="primary big" title="Save this block (regular or powerup) into the blocks file (Ctrl/Cmd+S)">Save block</button>
+        <button id="dupBtn" class="small" title="Make a copy of this piece as a new, unsaved piece (same art and fields, new id). The original stays as it is.">Duplicate</button>
         <button id="deleteBtn" class="danger small" disabled>Delete loaded entry</button>
       </div>
       <div class="row"><span id="saveModeHint" class="hint"></span></div>
@@ -1097,7 +1099,7 @@
   ];
   const defaultPu = () => ({ type: "destroyer", direction: "down", tier: 1, description: "", intro: "", help: null, consume: null, collapse: false, starter: false, reach: null, push: null, volume: null, parts: [], partSel: 0, extras: {} });
   // Keys the editor manages itself; everything else on a loaded shape is preserved as-is.
-  const MANAGED_KEYS = ["id", "name", "grid", "color", "powerup", "difficulty", "rotation", "frequency", "nextShapes", "nextShapeProbs", "tags", "zones"];
+  const MANAGED_KEYS = ["id", "name", "grid", "color", "powerup", "difficulty", "rotation", "frequency", "nextShapes", "nextShapeProbs", "tags", "zones", "noShake"];
   const MANAGED_PU_KEYS = ["type", "direction", "tier", "description", "intro", "help", "parts", "area", "fill", "consume", "collapse", "starter"];
   // Keys a combo part's editor manages (the rest of a part is kept as written)
   const MANAGED_PART_KEYS = ["type", "area", "direction", "reach", "push", "fill", "collapse"];
@@ -1389,6 +1391,8 @@
     tags: [],                      // ["food", ...] (written only when non-empty)
     extras: {},                    // unknown properties of a loaded shape (preserved)
     claudeDraft: false,            // loaded with claudeDraft: true (made by Claude, not reviewed): kept only while unchanged
+    noShake: false,                // regular blocks: lands without shaking the board (saved as noShake: true only when set)
+    copyOf: null,                  // a duplicated piece: the entry it was copied from (only for how values are written)
 
     // powerup
     pu: defaultPu(),
@@ -1619,12 +1623,12 @@
       mask: state.mask,
       kind: state.kind, name: state.name, id: state.id, difficulty: state.difficulty, frequency: state.frequency,
       rotationMode: state.rotationMode, rotationExtras: state.rotationExtras, links: state.links, tags: state.tags,
-      extras: state.extras, claudeDraft: state.claudeDraft,
+      extras: state.extras, claudeDraft: state.claudeDraft, noShake: state.noShake,
       pu: { ...state.pu, parts: state.pu.parts },
       area: { cells: state.area.cells, margin: state.area.margin, tool: state.area.tool, extras: state.area.extras, orig: state.area.orig },
       fill: state._fill,
       zones: { list: state.zones.list, active: state.zones.active, tool: state.zones.tool, margin: state.zones.margin },
-      source: state.source,
+      source: state.source, copyOf: state.copyOf,
     };
   }
   function applyEditorState(d){
@@ -1648,6 +1652,9 @@
     state.tags = Array.isArray(d.tags) ? d.tags : [];
     state.extras = isPlainObject(d.extras) ? d.extras : {};
     state.claudeDraft = d.claudeDraft === true;
+    state.noShake = d.noShake === true;
+    // drafts from before the checkbox kept noShake: true among the preserved properties
+    if (d.noShake === undefined && state.kind === "regular" && state.extras.noShake === true){ state.noShake = true; delete state.extras.noShake; }
     const pu = isPlainObject(d.pu) ? d.pu : {};
     state.pu = { ...defaultPu(), ...pu, extras: isPlainObject(pu.extras) ? pu.extras : {},
       parts: (Array.isArray(pu.parts) ? pu.parts : []).filter(isPlainObject).map(q => newPart(String(q.type), { ...q, uid: partSeq++, cells: isPlainObject(q.cells) ? q.cells : {},
@@ -1663,6 +1670,7 @@
     state.zones.active = clamp(z.active | 0, 0, Math.max(0, state.zones.list.length - 1));
     state.zones.tool = z.tool || "#"; state.zones.margin = clamp(z.margin ?? 3, 0, 30);
     state.source = isPlainObject(d.source) && typeof d.source.id === "string" ? d.source : null;
+    state.copyOf = isPlainObject(d.copyOf) ? d.copyOf : null;
     setColour(d.colourHex || state.colourHex);
     if (d.centreTab && d.centreTab !== state.centreTab) setCentreTab(d.centreTab);
   }
@@ -2215,8 +2223,38 @@
   // (otherwise Ctrl/Cmd+Z after a stroke would go to the focused input)
   function blurFields(){
     const a = document.activeElement;
-    if (a && a !== document.body && /^(input|textarea|select)$/i.test(a.tagName)) a.blur();
+    if (a && a !== document.body && (/^(input|textarea|select)$/i.test(a.tagName) || a.isContentEditable)) a.blur();
   }
+  // Is a form field (or editable text) the target of a key event / focused? Single-key shortcuts
+  // never fire then, so typing "a traffic light" in the name never picks the dropper (I) etc.
+  function isFieldNode(n){
+    return !!n && n.nodeType === 1 && (/^(input|textarea|select)$/i.test(n.tagName) || n.isContentEditable === true);
+  }
+  function typingInField(e){
+    if (e && isFieldNode(e.target)) return true;
+    if (e && typeof e.composedPath === "function" && e.composedPath().some(isFieldNode)) return true;
+    return isFieldNode(document.activeElement);
+  }
+  // Text fields that take typed characters (not sliders, checkboxes, colour wells or buttons)
+  const NON_TEXT_INPUTS = /^(range|checkbox|radio|color|button|submit|reset|file|image)$/i;
+  function isTextField(n){
+    if (!isFieldNode(n)) return false;
+    if (/^input$/i.test(n.tagName)) return !NON_TEXT_INPUTS.test(n.type || "text");
+    return !/^select$/i.test(n.tagName);
+  }
+  // A text field that still has focus after you have finished typing and moved the mouse onto a
+  // canvas would swallow the next shortcut key (I for the dropper ended up as a stray "i" at the
+  // end of piece names). Once the pointer is over a canvas and nothing has been typed for a
+  // moment, the field lets go of the focus, so the shortcut works and nothing leaks into the text.
+  let lastFieldKey = 0;
+  document.addEventListener("keydown", (e) => { if (isTextField(e.target)) lastFieldKey = performance.now(); }, true);
+  document.addEventListener("pointermove", (e) => {
+    const a = document.activeElement;
+    if (!isTextField(a) || !(e.target instanceof HTMLCanvasElement)) return;
+    if (el.modal.open || (a.closest && a.closest("dialog, #adjPanel, #gridOverlay"))) return;
+    if (performance.now() - lastFieldKey < 700) return;
+    a.blur();
+  }, { passive: true });
 
   const artPtr = { down: false, tool: null, last: null, maskValue: 1 };
 
@@ -2962,8 +3000,7 @@
     }
   });
   window.addEventListener("paste", async (e) => {
-    const tag = (e.target && e.target.tagName || "").toLowerCase();
-    if (tag === "input" || tag === "textarea") return;
+    if (typingInField(e)) return;
     const items = e.clipboardData?.items;
     selPasteKey = false;
     const imgItem = items ? Array.from(items).find(it => it.type && it.type.startsWith("image/")) : null;
@@ -3022,6 +3059,8 @@
     document.querySelectorAll("#kindSeg button").forEach(b => b.classList.toggle("on", b.dataset.kind === state.kind));
     document.querySelectorAll("#colourModeSeg button").forEach(b => b.classList.toggle("on", b.dataset.mode === state.colourMode));
     el.difficultyField.classList.toggle("hidden", state.kind !== "regular");
+    el.noShakeField.classList.toggle("hidden", state.kind !== "regular");
+    el.noShake.checked = state.noShake;
     const extraKeys = Object.keys(state.extras);
     el.extrasRow.innerHTML = extraKeys.length
       ? `Preserved on save: ${extraKeys.map(k => `<span class="pill mono">${escapeHtml(k)}</span>`).join(" ")}`
@@ -3057,6 +3096,7 @@
     el.freqRange.value = String(state.frequency);
     setDirty(true); scheduleRender();
   });
+  el.noShake.addEventListener("change", () => { state.noShake = el.noShake.checked; el.noShake.blur(); setDirty(true); scheduleRender(); });
   el.rotationMode.addEventListener("change", () => { state.rotationMode = el.rotationMode.value; setDirty(true); syncMetaUI(); scheduleRender(); });
 
   document.querySelectorAll("#kindSeg button").forEach(b => b.addEventListener("click", () => setKind(b.dataset.kind)));
@@ -3072,6 +3112,7 @@
         if (Number.isFinite(d)) state.difficulty = clamp(d, 0, 5);
         delete state.extras.difficulty;
       }
+      if (state.extras.noShake === true){ state.noShake = true; delete state.extras.noShake; }
     } else {
       // new powerups default to no rotation
       if (!(state.source && state.source.original && state.source.original.powerup)) state.rotationMode = "none";
@@ -4531,7 +4572,8 @@
   function buildShapeFromEditor(flatAll){
     const errors = [], warnings = [];
     const flat = flatAll || compositeFlattened();
-    const orig = state.source ? state.source.original : null;
+    // the entry as loaded (or, for a duplicate, the one it was copied from): keeps values written as they were
+    const orig = state.source ? state.source.original : state.copyOf;
 
     const name = state.name.trim();
     if (!name) errors.push("Name is empty.");
@@ -4622,6 +4664,7 @@
       out.powerup = origPu ? inOriginalKeyOrder(pu, origPu) : pu;
     } else {
       out.difficulty = state.difficulty;
+      if (state.noShake) out.noShake = true;
     }
     out.rotation = { ...clone(state.rotationExtras), mode: state.rotationMode };
     out.frequency = state.frequency;
@@ -4767,13 +4810,16 @@
     state.extras = {};
     for (const [k, v] of Object.entries(shape)){
       const managed = MANAGED_KEYS.includes(k) && !(k === "difficulty" && isPu)
-        && !(k === "tags" && !tagsManaged) && !(k === "zones" && !zonesManaged);
+        && !(k === "tags" && !tagsManaged) && !(k === "zones" && !zonesManaged)
+        && !(k === "noShake" && (isPu || v !== true)); // anything but noShake: true on a regular block is kept as written
       if (managed) continue;
       state.extras[k] = clone(v);
     }
     // claudeDraft: true (made by Claude, never reviewed) is not an editable field: it stays while the entry is unchanged
     state.claudeDraft = state.extras.claudeDraft === true;
     if (state.claudeDraft) delete state.extras.claudeDraft;
+    state.noShake = !isPu && shape.noShake === true;
+    state.copyOf = null;
 
     // zones
     state.zones.list = zonesManaged
@@ -4853,7 +4899,7 @@
     state.colourMode = "pixel";
     state.adj = { brightness: 0, contrast: 0, hue: 0, sat: 1 };
     state.kind = "regular"; state.name = ""; state.id = ""; state.difficulty = 2; state.frequency = 1;
-    state.rotationMode = "any"; state.rotationExtras = {}; state.links = []; state.tags = []; state.extras = {}; state.claudeDraft = false;
+    state.rotationMode = "any"; state.rotationExtras = {}; state.links = []; state.tags = []; state.extras = {}; state.claudeDraft = false; state.noShake = false; state.copyOf = null;
     state.pu = defaultPu();
     state.area.cells = {}; state.area.margin = 3; state.area.extras = {}; state.area.orig = undefined;
     state.zones.list = []; state.zones.active = 0; state.zones.margin = 3;
@@ -4864,6 +4910,42 @@
     state.zoom = 24; el.zoom.value = "24";
     syncAllUI(); renderList();
   }
+
+  // Duplicate: a copy of the open piece (art, grid, every field) as a new, unsaved piece with a new
+  // unique id and "<name> (copy)". The original is left as it is (its unsaved edits stay its draft);
+  // Discard draft on the copy throws the copy away.
+  function duplicatePiece(){
+    if (state.mode !== "blocks") return;
+    flushDraft();
+    cancelAdjust();
+    const snap = decodeDraftValue(encodeDraftValue(captureEditorState())); // deep copy
+    const taken = allKnownIds();
+    for (const d of drafts.values()) if (d && typeof d.id === "string" && d.id.trim()) taken.add(d.id.trim());
+    const srcId = state.id.trim() || (state.source && state.source.id) || suggestIdFromName(state.name) || "piece";
+    const base = srcId.replace(/_copy\d*$/, "") || srcId;
+    let id = base + "_copy";
+    for (let n = 2; taken.has(id); n++) id = `${base}_copy${n}`;
+    const names = new Set(BLOCKS.items.filter(x => x && typeof x.name === "string").map(x => x.name));
+    for (const d of drafts.values()) if (d && typeof d.name === "string") names.add(d.name);
+    const baseName = state.name.trim().replace(/ \(copy(?: \d+)?\)$/, "");
+    let name = "";
+    if (baseName){
+      name = `${baseName} (copy)`;
+      for (let n = 2; names.has(name); n++) name = `${baseName} (copy ${n})`;
+    }
+    snap.copyOf = state.source && isPlainObject(state.source.original) ? clone(state.source.original) : (state.copyOf ? clone(state.copyOf) : null);
+    snap.id = id; snap.name = name; snap.source = null; snap.claudeDraft = false;
+    if (isPlainObject(snap.extras)) delete snap.extras.claudeDraft;
+    applyEditorState(snap);
+    setDraftKey(newTempKey());
+    state.previewPos = null;
+    resetHistory();
+    setDirty(true); // a new piece with a draft of its own
+    syncAllUI();
+    renderList(); scrollCurrentIntoView();
+    toast(`Duplicated as "${id}": a new piece, not saved yet.`, "good");
+  }
+  el.dupBtn.addEventListener("click", () => { el.dupBtn.blur(); duplicatePiece(); });
 
   function syncAllUI(){
     syncSizeUI();
@@ -5232,10 +5314,13 @@
     if (!res.ok || !j.ok) throw new Error(j.error || `HTTP ${res.status}`);
   }
 
+  // A failed in-place write falls back to a download; why is kept in slot.writeNote (shown in the
+  // caller's one save message, so a save never shows two messages)
   async function writeSlot(slot, text){
+    slot.writeNote = "";
     if (viaServer(slot)){
       try { await writeViaServer(slot, text); return "written"; }
-      catch (e){ toast("Saving through the local server failed, downloading instead: " + (e.message || e), "bad"); }
+      catch (e){ slot.writeNote = "saving through the local server failed (" + (e.message || e) + "), downloaded instead"; }
     }
     if (slot.handle){
       try {
@@ -5248,11 +5333,17 @@
           return "written";
         }
       } catch (e){
-        toast("In-place write failed, downloading instead: " + (e.message || e), "bad");
+        slot.writeNote = "in-place write failed (" + (e.message || e) + "), downloaded instead";
       }
     }
     downloadText(text, slot.handle ? slot.handle.name : basename(slot.fileName || slot.defaultPath));
     return "downloaded";
+  }
+
+  // the end of a save message: where it went (+ why it was downloaded, if a write failed)
+  function savedWhere(slot, how, verb = "saved to"){
+    if (how !== "written") return slot.writeNote || "file downloaded";
+    return `${verb} ${slot.handle ? slot.handle.name : slot.defaultPath}`;
   }
 
   function renderSaveHint(){
@@ -5290,8 +5381,16 @@
     return how;
   }
 
+  // One save at a time (a double click or a held Ctrl+S must not save twice), one message per save
+  let saveBusy = false;
   async function saveCurrent(){
-    if (adjust.open && !adjustIdentity()){ applyAdjust(); toast("Applied the colour adjustment before saving."); }
+    if (saveBusy) return;
+    saveBusy = true;
+    try { await saveCurrentNow(); } finally { saveBusy = false; }
+  }
+  async function saveCurrentNow(){
+    const notes = [];
+    if (adjust.open && !adjustIdentity()){ applyAdjust(); notes.push("applied the colour adjustment first"); }
     else cancelAdjust();
     endAction();
     flushChipInputs();
@@ -5323,7 +5422,7 @@
 
     if (src && src.id === shape.id && idIdx >= 0){
       action = "replace"; index = idIdx;
-      if (nameIdx >= 0 && nameIdx !== idIdx) toast(`Note: the name is also used by "${items[nameIdx].id}".`);
+      if (nameIdx >= 0 && nameIdx !== idIdx) notes.push(`note: the name is also used by "${items[nameIdx].id}"`);
     } else if (idIdx >= 0 || nameIdx >= 0){
       const target = idIdx >= 0 ? idIdx : nameIdx;
       const parts = [];
@@ -5355,7 +5454,7 @@
       if (oldKey !== state.draftKey) deleteDraft(state.draftKey);
       if (state.list.cursor && state.list.cursor.key === oldKey) state.list.cursor.key = state.draftKey;
       syncAllUI(); renderList();
-      toast(`${action === "replace" ? "Updated" : "Added"} "${shape.id}" — ${how === "written" ? "saved to " + slot.handle.name : "file downloaded"}`, "good");
+      toast(`${action === "replace" ? "Updated" : "Added"} "${shape.id}" — ${[savedWhere(slot, how), ...notes].join("; ")}`, slot.writeNote ? "bad" : "good");
     } catch (e){
       toast(e.message || String(e), "bad");
     }
@@ -5380,7 +5479,7 @@
       deleteDraft(state.draftKey);
       setDraftKey(newTempKey());
       state.source = null; state.claudeDraft = false; setDirty(true); syncAllUI(); renderList();
-      toast(`Deleted "${id}" — ${how === "written" ? "saved" : "file downloaded"}`, "good");
+      toast(`Deleted "${id}" — ${savedWhere(slot, how)}`, slot.writeNote ? "bad" : "good");
     } catch (e){ toast(e.message || String(e), "bad"); }
   }
 
@@ -5681,7 +5780,7 @@
       const params = pu ? `${pu.type === "gravity" ? " " + escapeHtml(pu.direction || "down") : ""}${PU_NUM_PARAMS.filter(q => q.type === pu.type && pu[q.key] !== undefined).map(q => ` ${q.key}=${escapeHtml(pu[q.key])}`).join("")}` : "";
       const stats = pu
         ? `tier ${escapeHtml(pu.tier ?? "?")}${help} · ${fq}${params} · ${mode}`
-        : `${fq} · d=${escapeHtml(s.difficulty ?? "—")} · ${mode}`;
+        : `${fq} · d=${escapeHtml(s.difficulty ?? "—")}${s.noShake === true ? " · no shake" : ""} · ${mode}`;
       const links = Array.isArray(s.nextShapes) && s.nextShapes.length ? ` · → ${s.nextShapes.map(escapeHtml).join(", ")}` : "";
       const tags = Array.isArray(s.tags) && s.tags.length ? ` <span class="tagMini">${s.tags.map(t => "#" + escapeHtml(t)).join(" ")}</span>` : "";
       const zones = isPlainObject(s.zones) && Object.keys(s.zones).length ? ` <span class="zoneMini">◇ ${Object.keys(s.zones).map(escapeHtml).join(", ")}</span>` : "";
@@ -5873,7 +5972,7 @@
         pu: { ...state.pu, parts: state.pu.parts.map(p => ({ ...p, fill: { mode: p.fill.mode, solidHex: p.fill.solidHex, k: p.fill.k, data: hex(p.fill.data) } })) },
         areaCells: state.area.cells, areaMargin: state.area.margin, areaExtras: state.area.extras,
         fill: { mode: state._fill.mode, solidHex: state._fill.solidHex, k: state._fill.k, data: hex(state._fill.data) },
-        tags: state.tags,
+        tags: state.tags, noShake: state.noShake,
         zones: state.zones.list.map(z => ({ name: z.name, cells: z.cells, extras: z.extras })), zonesMargin: state.zones.margin,
       },
     };
@@ -5934,6 +6033,9 @@
       state.extras = s.extras || {};
       state.claudeDraft = false;
       if (state.extras.claudeDraft === true) delete state.extras.claudeDraft;
+      state.noShake = s.noShake === true;
+      if (state.extras.noShake === true && s.kind !== "powerup"){ state.noShake = true; delete state.extras.noShake; }
+      state.copyOf = null;
       if (s.pu){
         state.pu = { ...defaultPu(), ...s.pu, extras: s.pu.extras || {} };
         state.pu.parts = (Array.isArray(s.pu.parts) ? s.pu.parts : []).filter(isPlainObject).map(q => {
@@ -7528,7 +7630,13 @@
     el.achIssues.innerHTML = out.join("");
     el.achSaveBtn.disabled = all.some(is => is.errors.length > 0);
   }
+  let achSaveBusy = false;
   async function saveAchievements(){
+    if (achSaveBusy) return;
+    achSaveBusy = true;
+    try { await saveAchievementsNow(); } finally { achSaveBusy = false; }
+  }
+  async function saveAchievementsNow(){
     flushChipInputs();
     iconFinishStroke();
     const bad = ach.items.map((w, i) => ({ i, is: achIssues(w.data, i) })).find(x => x.is.errors.length);
@@ -7559,7 +7667,7 @@
       ach.base = achNormItems(items);
       if (!ach.headerTypes.length && slot.parsed){ ach.headerTypes = parseTriggerHeader(slot.text.slice(0, slot.parsed.start)); ach.triggers = buildTriggerList(); }
       achAfterChange(false);
-      toast(`Saved ${items.length} achievements — ${how === "written" ? "written to " + slot.handle.name : "file downloaded"}`, "good");
+      toast(`Saved ${items.length} achievements — ${savedWhere(slot, how, "written to")}`, slot.writeNote ? "bad" : "good");
     } catch (e){ toast(e.message || String(e), "bad"); }
   }
   el.achSaveBtn.addEventListener("click", saveAchievements);
@@ -7597,9 +7705,8 @@
 
   // keyboard shortcuts (per mode)
   window.addEventListener("keydown", async (e) => {
-    const tag = (e.target && e.target.tagName || "").toLowerCase();
-    const typing = tag === "input" || tag === "textarea" || tag === "select" || (e.target && e.target.isContentEditable);
-    if (el.modal.open) return;
+    const typing = typingInField(e);
+    if (el.modal.open || e.isComposing || e.keyCode === 229) return;
     const mod = e.ctrlKey || e.metaKey;
     const k = String(e.key || "").toLowerCase();
     // the library grid: Esc closes it; other shortcuts wait until it is closed
@@ -7611,8 +7718,12 @@
     if (adjust.open && !mod && (k === "escape" || (k === "enter" && (!typing || el.adjPanel.contains(e.target))))){
       e.preventDefault(); if (k === "escape") cancelAdjust(); else applyAdjust(); return;
     }
-    if (mod && k === "s"){ e.preventDefault(); if (state.mode === "achievements") saveAchievements(); else saveCurrent(); return; }
-    if (typing) return;
+    if (mod && k === "s"){ e.preventDefault(); if (e.repeat) return; if (state.mode === "achievements") saveAchievements(); else saveCurrent(); return; }
+    // in a field, keys belong to the field: no single-key shortcut fires (Esc leaves a text field)
+    if (typing){
+      if (k === "escape" && !mod && isTextField(e.target) && !(e.target.closest && e.target.closest("#gridOverlay"))){ e.preventDefault(); e.target.blur(); }
+      return;
+    }
     if (state.mode === "achievements"){
       if (mod){
         if (k === "z" && !e.shiftKey){ e.preventDefault(); iconUndo(); }
@@ -7679,7 +7790,7 @@
     undo, redo,
     sel: { selectAll, deselect, copySel, pasteSel, deleteSel, flipSel, rotateSel, nudgeSel, cancelPaste, checkSel, opts: selOpts, clip: () => pixelClip },
     drafts, saveDraftNow, flushDraft, restoreDraft, deleteDraft, discardDraft, listEntries, openEntry, navPiece, openGrid, closeGrid, grid,
-    adjust, openAdjust, applyAdjust, cancelAdjust, adjustPrepare, syncAdjustUI, newBlock, hist,
+    adjust, openAdjust, applyAdjust, cancelAdjust, adjustPrepare, syncAdjustUI, newBlock, hist, duplicatePiece,
   };
 
   // After a reload: open the piece you were on (with its draft), if the editor is still untouched
