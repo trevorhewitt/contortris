@@ -400,8 +400,9 @@
           <select id="difficulty">
             <option value="0">0</option><option value="1">1</option><option value="2" selected>2</option>
             <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+            <option value="6">6 (level 6: groups only)</option>
           </select>
-          <span class="hint">0 (easy) – 5 (nasty)</span>
+          <span class="hint">0 (easy) – 5 (nasty); 6 only comes in its group (shapes/groups.js)</span>
         </div>
       </div>
       <div class="field" id="noShakeField"><span></span><label title="Big pieces (difficulty 4-5) shake the board when they land; this one doesn't (e.g. a swarm of bees). Saved as noShake: true."><input id="noShake" type="checkbox"> No landing shake</label></div>
@@ -3083,7 +3084,7 @@
     setDirty(true); scheduleRender();
   });
   el.shapeId.addEventListener("input", () => { state.id = el.shapeId.value; setDirty(true); scheduleRender(); });
-  el.difficulty.addEventListener("change", () => { state.difficulty = clamp(parseInt(el.difficulty.value, 10) || 0, 0, 5); setDirty(true); scheduleRender(); });
+  el.difficulty.addEventListener("change", () => { state.difficulty = clamp(parseInt(el.difficulty.value, 10) || 0, 0, 6); setDirty(true); scheduleRender(); });
   el.freqRange.addEventListener("input", () => {
     state.frequency = clamp(Number(el.freqRange.value), 0, 1);
     el.freqNum.value = String(state.frequency);
@@ -3109,7 +3110,7 @@
       // a difficulty preserved from a loaded powerup becomes the managed difficulty again
       if (Object.prototype.hasOwnProperty.call(state.extras, "difficulty")){
         const d = parseInt(state.extras.difficulty, 10);
-        if (Number.isFinite(d)) state.difficulty = clamp(d, 0, 5);
+        if (Number.isFinite(d)) state.difficulty = clamp(d, 0, 6);
         delete state.extras.difficulty;
       }
       if (state.extras.noShake === true){ state.noShake = true; delete state.extras.noShake; }
@@ -4794,7 +4795,7 @@
     state.name = String(shape.name ?? "");
     state.id = String(shape.id ?? "");
     const d = parseInt(shape.difficulty, 10);
-    state.difficulty = Number.isFinite(d) ? clamp(d, 0, 5) : 2;
+    state.difficulty = Number.isFinite(d) ? clamp(d, 0, 6) : 2;
     const f = Number(shape.frequency);
     state.frequency = Number.isFinite(f) ? clamp(f, 0, 1) : 1;
     const rot = (shape.rotation && typeof shape.rotation === "object" && !Array.isArray(shape.rotation)) ? shape.rotation : {};
@@ -6025,7 +6026,7 @@
     if (s && typeof s === "object"){
       state.kind = s.kind === "powerup" ? "powerup" : "regular";
       state.name = String(s.name ?? ""); state.id = String(s.id ?? "");
-      state.difficulty = clamp(parseInt(s.difficulty, 10) || 0, 0, 5);
+      state.difficulty = clamp(parseInt(s.difficulty, 10) || 0, 0, 6);
       state.frequency = clamp(Number(s.frequency ?? 1), 0, 1);
       state.rotationMode = String(s.rotationMode || "any");
       state.rotationExtras = s.rotationExtras || {};
@@ -6207,6 +6208,7 @@
       custom: "together", sig: "groups } or { match, count",
       params: [{ key: "groups", kind: "groups", label: "Pieces" }, { key: "match", kind: "match", label: "Pieces" }, { key: "count", kind: "int", label: "Different pieces" }] },
     { type: "boardCleared", doc: "The board is completely empty after rows are destroyed.", params: [] },
+    { type: "level6", doc: "The level 6 pieces unlock in a game: build the stack up past row 10, then dig back down to row 5.", params: [] },
     { type: "gameOver", doc: "The game ends; optionally only if the piece that topped you out matches `killer`, or within `maxDrops` pieces.",
       params: [{ key: "killer", kind: "match", label: "Killer" }, { key: "maxDrops", kind: "int", label: "Max drops" }] },
   ];
@@ -6413,6 +6415,7 @@
         return `Unlocks when ${what} are on the board at once`;
       }
       case "boardCleared": return "Unlocks when the board is completely empty after rows are destroyed";
+      case "level6": return "Unlocks when the level 6 pieces unlock (build the stack past row 10, then dig back down to row 5)";
       case "gameOver": {
         let s = t.killer ? `Unlocks when you are topped out by ${matchPhrase(t.killer)}` : "Unlocks when the game ends";
         if (t.maxDrops !== undefined) s += ` within ${num(t.maxDrops)} pieces`;

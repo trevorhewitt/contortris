@@ -199,6 +199,11 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
         break;
       }
 
+      case "level6Unlocked": {
+        each("level6", (def) => unlock(def));
+        break;
+      }
+
       case "gameOver": {
         each("gameOver", (def, t) => {
           if (t.killer && !matchShape(d.killer, t.killer)) return;

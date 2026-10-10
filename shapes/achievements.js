@@ -48,6 +48,8 @@
  *                                     match in `groups` (e.g. [{ids:["david"]}, {ids:["lisa"]}]),
  *                                     or `count` different pieces that all match `match`
  *   boardCleared   {}                 the board is completely empty after rows are destroyed
+ *   level6         {}                 the level 6 pieces unlock in a game: build the stack up
+ *                                     past row 10, then dig back down to row 5 (config.js)
  *   gameOver       { killer, maxDrops }
  *                                     the game ends; optionally only if the piece that topped
  *                                     you out matches `killer`, or within `maxDrops` pieces

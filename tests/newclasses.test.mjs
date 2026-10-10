@@ -64,9 +64,11 @@ test("progression: classes open one at a time, starting with a simple one", () =
     const state = createGameState(shapes, powerups, { rng: makeRng(seed) });
     const news = [];
     const seen = [];
+    const at = [];
     on(state, (t, d) => {
       if (t !== "spawn" || !d.shape.powerup) return;
       seen.push(d.shape.powerup.cls);
+      at.push(state.pieceSel.dropIndex);
       if (d.isNew) news.push(d.shape.powerup.cls);
     });
     startRun(state, "normal");
@@ -81,9 +83,14 @@ test("progression: classes open one at a time, starting with a simple one", () =
     assert.ok(news.length >= 3, `classes introduced ${news.length}`);
     assert.ok(CONFIG.assist.powerups.progression.firstClassPool.includes(news[0]));
     firsts.add(news[0]);
-    // the first few powerups all belong to the first class, and there's variety inside it
-    const opening = seen.slice(0, 4);
-    assert.ok(opening.every(t => t === news[0]), opening.join());
+    // the second class only opens after newClassEvery powerups of the first, or once
+    // newClassAfterDrops pieces have gone by
+    const prog = CONFIG.assist.powerups.progression;
+    const second = seen.findIndex(t => t !== news[0]);
+    if (second >= 0) {
+      assert.ok(second >= prog.newClassEvery || at[second] - at[0] >= prog.newClassAfterDrops - 2,
+        `second class too soon: ${seen.slice(0, second + 1).join()} at ${at.slice(0, second + 1).join()}`);
+    }
     // combos only once two classes are in
     const firstCombo = seen.indexOf("combo");
     if (firstCombo >= 0) assert.ok(new Set(seen.slice(0, firstCombo)).size >= 2, "combo before two classes");

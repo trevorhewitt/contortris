@@ -258,8 +258,20 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
 
       // Named zones per rotation (null if none)
       zones,
+
+      // Rebuilt at random each time it arrives (src/remix.js), or null
+      remix: normaliseRemix(s.remix),
+      rotationSpec: s.rotation ?? null,
     };
   });
+}
+
+// remix: { mix: ["id", "id"] } or { scramble: "id" } (see src/remix.js)
+function normaliseRemix(r) {
+  if (!r || typeof r !== "object") return null;
+  if (Array.isArray(r.mix) && r.mix.length >= 2) return { mix: r.mix.slice(0, 2).map(String) };
+  if (typeof r.scramble === "string" && r.scramble) return { scramble: r.scramble };
+  return null;
 }
 
 // The rotation-0 area `base` (offsets from the piece's top-left), moved so it sits the same

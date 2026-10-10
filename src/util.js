@@ -47,6 +47,25 @@ export function sampleByWeight(items, getWeight, rng) {
   return items[items.length - 1];
 }
 
+// Smooth value noise in 2D (lattice of random values, smoothstep-blended).
+export function valueNoise(rng, scale) {
+  const lattice = new Map();
+  const at = (i, j) => {
+    const key = i + "," + j;
+    if (!lattice.has(key)) lattice.set(key, rng());
+    return lattice.get(key);
+  };
+  const fade = t => t * t * (3 - 2 * t);
+  return (x, y) => {
+    x /= scale; y /= scale;
+    const i = Math.floor(x), j = Math.floor(y);
+    const u = fade(x - i), v = fade(y - j);
+    const a = at(i, j) + (at(i + 1, j) - at(i, j)) * u;
+    const b = at(i, j + 1) + (at(i + 1, j + 1) - at(i, j + 1)) * u;
+    return a + (b - a) * v;
+  };
+}
+
 // A small seedable RNG (mulberry32) — handy for tests and replays.
 export function makeRng(seed = 1) {
   let a = seed >>> 0;

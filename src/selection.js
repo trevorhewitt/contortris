@@ -2,14 +2,18 @@
 // PIECE PICKER (no DOM)
 // ============================================================
 // Order of precedence for each drop:
+//   0. a level 6 group that is under way carries on (src/level6.js)
 //   1. linked shapes (prev.nextShapes / nextShapeProbs) — "back to back" pieces
-//   2. powerup scheduler (Normal mode only)
-//   3. regular level mix: (a) choose a difficulty level, (b) choose a shape in that
+//   2. a level 6 group may start (once unlocked)
+//   3. powerup scheduler (Normal mode only)
+//   4. regular level mix: (a) choose a difficulty level, (b) choose a shape in that
 //      level by frequency × variety (recently served / already on the board)
+// Level 6 pieces (difficulty 6) only ever come in their groups.
 
 import { CONFIG } from "../config.js";
 import { clamp01, lerp, sampleByWeight } from "./util.js";
 import { analyseBoard, resolvePowerupArea, computeEffect, phantomLandingY, isPhantomPowerup } from "./powerups.js";
+import { LEVEL6, initLevel6, nextGroupPiece, maybeStartGroup, groupUnderWay } from "./level6.js";
 
 const DEBUG_LINK = false; // verbose console logging for linked shapes
 
@@ -27,8 +31,8 @@ export function initPieceSelectionState(state) {
     // ids that opened the last few games (set by the UI from browser storage)
     openingMemory: state.openingMemory ?? null,
 
-    // counts by level (0–5)
-    levelCounts: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+    // counts by level (0–5, and 6 for the group pieces)
+    levelCounts: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 },
 
     // shared urge/cooldown for hard (4/5)
     urge: { hard: 0.0 },
@@ -69,6 +73,8 @@ export function initPieceSelectionState(state) {
     // board presence, recomputed once per selection: shapeId -> copies on the board
     presence: new Map(),
   };
+  // level 6 groups: unlock tracking and the group being served (src/level6.js)
+  state.pieceSel.level6 = initLevel6(state);
 }
 
 function pickGiantDue(state) {
@@ -247,12 +253,17 @@ function tryLinkedNextShape(state, prevShape, idToShape, debug = false) {
 
   // Only consider targets that exist in this mode's pool (e.g. powerup links
   // are ignored in Extreme mode), so a missing target never "uses up" the roll.
+  // A linked giant (4/5) follows the same safety rules as any giant: not straight after
+  // another one, and not on a dangerous stack. Level 6 pieces only come in their groups.
+  const hardOk = !state.pieceSel?.lastWasHard &&
+    computeStackDanger01(state) <= (CONFIG.assist.pieceMix.hard.hardMaxDanger ?? 0.32);
   const cand = [];
   for (let i = 0; i < ids.length; i++) {
     const shape = idToShape.get(ids[i]);
     const x = Number(ps[i]);
     const p = Number.isFinite(x) ? Math.max(0, Math.min(1, x)) : 0;
-    if (shape && p > 0) cand.push({ shape, p });
+    const lvl = shape?.powerup ? 0 : (shape?.difficulty ?? 1);
+    if (shape && p > 0 && lvl !== LEVEL6 && (lvl < 4 || hardOk)) cand.push({ shape, p });
     else if (!shape && debug) console.log("[LINK] id not in this mode's pool", ids[i]);
   }
   if (!cand.length) return null;
@@ -292,6 +303,14 @@ export function selectPiece(state) {
   const prevShape = sel.lastShapeId ? idToShape.get(sel.lastShapeId) : null;
   updateStruggle(state, danger01);
 
+  // A level 6 group that has started carries on, piece after piece, whatever else is going on.
+  const grouped = nextGroupPiece(state);
+  if (grouped) {
+    commitSelectedShape(sel, grouped);
+    if (!groupUnderWay(state)) noteHardDropped(sel, LEVEL6); // the group is over: rest a while
+    return grouped;
+  }
+
   // The first giant: always somewhere in CONFIG...hard.firstGiantBetween (unless it would
   // land on an already dangerous stack, then as soon as things calm down a bit).
   if (sel.giantDueAt != null && !sel.hadGiant && sel.dropIndex >= sel.giantDueAt && !sel.lastWasHard && danger01 < 0.55) {
@@ -316,6 +335,14 @@ export function selectPiece(state) {
       if (lvl === 4 || lvl === 5) noteHardDropped(sel, lvl);
     }
     return linked;
+  }
+
+  // Level 6: maybe a group starts here.
+  const groupStart = maybeStartGroup(state);
+  if (groupStart) {
+    commitSelectedShape(sel, groupStart);
+    if (!groupUnderWay(state)) noteHardDropped(sel, LEVEL6);
+    return groupStart;
   }
 
   // Powerups (Normal mode).
@@ -410,12 +437,13 @@ export function selectPiece(state) {
     (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) === chosenLevel
   );
 
-  // Fallback: if no shapes exist for that level, broaden to any frequency>0.
+  // Fallback: if no shapes exist for that level, broaden to any frequency>0 (never level 6).
   if (candidates.length === 0) {
-    candidates = state.shapes.filter(s => (s.frequency ?? 1) > 0);
+    candidates = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6);
   }
   if (candidates.length === 0) {
-    return state.shapes[Math.floor(state.rng() * state.shapes.length)];
+    const any = state.shapes.filter(s => (s.difficulty ?? 1) !== LEVEL6);
+    return any[Math.floor(state.rng() * any.length)] ?? state.shapes[0];
   }
 
   const chosenShape = sampleByWeight(
@@ -693,7 +721,7 @@ function commitSelectedShape(sel, shape) {
   } else {
     const lvl = (shape.difficulty ?? 1);
     sel.lastLevel = lvl;
-    sel.lastWasHard = (lvl === 4 || lvl === 5);
+    sel.lastWasHard = lvl >= 4; // the giants (4, 5) and the level 6 group pieces
     sel.levelCounts[lvl] = (sel.levelCounts[lvl] ?? 0) + 1;
   }
 

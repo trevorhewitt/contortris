@@ -5,6 +5,7 @@
 import { CONFIG } from "../config.js";
 import { SHAPES as RAW_SHAPES } from "../shapes/main_shapes.js";
 import { ACHIEVEMENTS } from "../shapes/achievements.js";
+import { GROUPS } from "../shapes/groups.js";
 import { loadShapes } from "./shapes.js";
 import { createGameState, on, updateGame, hardDropAndLock, setNextPiece } from "./game.js";
 import { createRenderer } from "./render.js";
@@ -13,7 +14,7 @@ import { createSound } from "./sound.js";
 import { bindUI } from "./ui.js";
 
 const { shapes, powerups } = loadShapes(RAW_SHAPES);
-const state = createGameState(shapes, powerups);
+const state = createGameState(shapes, powerups, { groups: GROUPS });
 
 // the page layout sizes the board from these (index.html fit script)
 document.documentElement.style.setProperty("--cols", String(CONFIG.board.cols));

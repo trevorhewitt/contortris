@@ -8,9 +8,10 @@ export const CONFIG = {
   // Game modes. Extreme = the original game. Normal = the same game plus powerups.
   modes: {
     // giants: whether the huge (difficulty 4 and 5) pieces turn up at all
-    easy: { label: "Easy", tagline: "powerups, and no giant pieces", powerups: true, giants: false },
-    normal: { label: "Normal", tagline: "powerups help you out", powerups: true, giants: true },
-    extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true },
+    // level6: whether the level 6 groups can unlock (see assist.level6)
+    easy: { label: "Easy", tagline: "powerups, and no giant pieces", powerups: true, giants: false, level6: false },
+    normal: { label: "Normal", tagline: "powerups help you out", powerups: true, giants: true, level6: true },
+    extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true },
   },
   defaultMode: "normal",
 
@@ -27,6 +28,14 @@ export const CONFIG = {
     tapRepeatStartMs: 140,
     tapRepeatEveryMs: 55,
     doubleTapMs: 300,      // double tap the bottom of the board (or press down twice) to drop instantly
+  },
+
+  // Turning pieces. A piece that would stick out past a wall when it turns is pushed back
+  // inside (so even a board-wide piece can turn), and goes back where it was on the next turn
+  // if you haven't moved it sideways in between.
+  rotation: {
+    centrePivotFrom: 5, // pieces this many blocks across (or more) turn about their centre;
+                        // smaller ones about their top-left corner
   },
 
   scoring: {
@@ -171,6 +180,23 @@ export const CONFIG = {
         penaltyPerCopy: 0.6,   // 0 = off
         minMultiplier: 0.1,
       },
+    },
+
+    // Level 6: the biggest pieces of all. They only ever come as whole groups, in order
+    // (shapes/groups.js: the Tower of Babel in three sections, nothing and then everything,
+    // a run of spam, the townhouses...). They are locked at the start of every game, and
+    // unlock when you build the stack up past row `unlockAbove` (counted from the bottom) and
+    // then dig back down to row `unlockBackTo` or lower. Normal and Extreme only.
+    level6: {
+      unlockAbove: 10,          // the stack has to have been taller than this many rows...
+      unlockBackTo: 5,          // ...and then come back down to this many rows or fewer
+      persist: false,           // true = once unlocked, stay unlocked in later games too
+                                //        (remembered in this browser)
+      firstAfter: [2, 5],       // the first group arrives this many pieces after the unlock
+      chancePerDrop: 0.05,      // after that: the chance a group starts on any given piece...
+      cooldownDrops: 25,        // ...once this many pieces have passed since the last group...
+      maxStackRows: 9,          // ...and only while the stack is this many rows tall or less
+      repeatPenalty: 0.15,      // a group already seen this game is this much less likely
     },
 
     // Powerup scheduler (Normal mode only). Runs before the regular level mix:
@@ -329,7 +355,7 @@ export const CONFIG = {
       quakePerCell: 0.03,
       minDifficulty: 4,
       // the least shake a big piece makes when it lands (0-1, maxTrauma is 0.5)
-      minTraumaByDifficulty: { 4: 0.3, 5: 0.42 },
+      minTraumaByDifficulty: { 4: 0.3, 5: 0.42, 6: 0.5 },
     },
 
     powerup: {

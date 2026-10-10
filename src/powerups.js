@@ -5,6 +5,8 @@
 // Board format (same as main.js): board[y][x] is null (empty) or a cell object.
 // Area format: see the doc comment at the top of shapes/powerup_shapes.js.
 
+import { valueNoise } from "./util.js";
+
 export const POWERUP_TYPES = ["destroyer", "gravity", "expander", "acid", "blast", "goo", "phantom", "combo"];
 
 // Classes a combo can be built from, in the order their parts fire.
@@ -210,25 +212,6 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
 /* =========================
    Scatter areas (random, noise-shaped)
    ========================= */
-
-// Smooth value noise in 2D (lattice of random values, smoothstep-blended).
-function valueNoise(rng, scale) {
-  const lattice = new Map();
-  const at = (i, j) => {
-    const key = i + "," + j;
-    if (!lattice.has(key)) lattice.set(key, rng());
-    return lattice.get(key);
-  };
-  const fade = t => t * t * (3 - 2 * t);
-  return (x, y) => {
-    x /= scale; y /= scale;
-    const i = Math.floor(x), j = Math.floor(y);
-    const u = fade(x - i), v = fade(y - j);
-    const a = at(i, j) + (at(i + 1, j) - at(i, j)) * u;
-    const b = at(i, j + 1) + (at(i + 1, j + 1) - at(i, j + 1)) * u;
-    return a + (b - a) * v;
-  };
-}
 
 // Offsets (relative to the piece's centre) of a spray of cells that thins out from the
 // centre, in streaks (angular noise) and clumps (2D noise).

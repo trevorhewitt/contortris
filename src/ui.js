@@ -12,6 +12,7 @@ import { makeShapePreviewCanvas, drawIcon } from "./render.js";
 import { createDemo, runDemos } from "./demo.js";
 import { CLASS_INFO, analyseBoard } from "./powerups.js";
 import { introduceAllPowerups, computeStackDanger01 } from "./selection.js";
+import { level6Status, startGroup, scheduleFirstGroup } from "./level6.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -290,6 +291,10 @@ export function bindUI({ state, renderer, sound, achievements }) {
 
   // Remember which pieces opened the last few games, so the next opening is different
   // (CONFIG.assist.variety.acrossGames).
+  // Level 6: remember that it has unlocked in this browser (only used if level6.persist)
+  const LEVEL6_KEY = "extris.level6.v1";
+  state.level6Remembered = store.get(LEVEL6_KEY) === "1";
+
   const OPENINGS_KEY = "extris.openings.v1";
   let opening = [];
   const agCfg = CONFIG.assist.variety.acrossGames;
@@ -330,6 +335,10 @@ export function bindUI({ state, renderer, sound, achievements }) {
         break;
       case "levelUp":
         sound.play("levelUp");
+        break;
+      case "level6Unlocked":
+        store.set(LEVEL6_KEY, "1");
+        state.level6Remembered = true;
         break;
       case "powerupCharge":
         sound.play("charge", CONFIG.fx.powerup.chargeMs);
@@ -595,6 +604,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
       add(`Powerups: ${CLASS_INFO[type].name}`, ofClass(type));
     }
     for (let d = 0; d <= 5; d++) add(`Difficulty ${d}`, state.allShapes.filter(s => s.difficulty === d));
+    add("Level 6 (groups only)", state.allShapes.filter(s => s.difficulty === 6));
     $("btnDevNext").addEventListener("click", () => {
       const shape = state.idToShape.get(sel.value) ?? [...state.allShapes, ...state.allPowerups].find(s => s.id === sel.value);
       if (shape) setNextPiece(state, shape);
@@ -625,11 +635,40 @@ export function bindUI({ state, renderer, sound, achievements }) {
     const dev = state.devPowerups;
     try {
       const saved = JSON.parse(sessionStorage.getItem("extris.dev") ?? "null");
-      if (saved) { dev.disabled = new Set(saved.disabled ?? []); dev.rate = Number(saved.rate ?? 1); }
+      if (saved) {
+        dev.disabled = new Set(saved.disabled ?? []);
+        dev.rate = Number(saved.rate ?? 1);
+        if (["auto", "on", "off"].includes(saved.level6)) state.devLevel6 = saved.level6;
+      }
     } catch { /* ignore */ }
     const saveDev = () => {
-      try { sessionStorage.setItem("extris.dev", JSON.stringify({ disabled: [...dev.disabled], rate: dev.rate })); } catch { /* ignore */ }
+      try { sessionStorage.setItem("extris.dev", JSON.stringify({ disabled: [...dev.disabled], rate: dev.rate, level6: state.devLevel6 })); } catch { /* ignore */ }
     };
+
+    // level 6: force it on or off, or start a group as the next piece
+    const l6 = $("devLevel6");
+    l6.value = state.devLevel6;
+    l6.addEventListener("change", () => {
+      state.devLevel6 = l6.value;
+      saveDev();
+      // forced on mid-game: the first group comes soon, as after a real unlock
+      const st = state.pieceSel?.level6;
+      if (state.devLevel6 === "on" && st && !st.seen.size && st.firstDueAt == null) scheduleFirstGroup(state);
+    });
+    const gsel = $("devGroup");
+    for (const g of state.groups) {
+      const o = document.createElement("option");
+      o.value = g.id;
+      o.textContent = g.name;
+      gsel.appendChild(o);
+    }
+    if (!state.groups.length) gsel.appendChild(new Option("(no groups: pieces missing)", ""));
+    $("btnDevGroup").addEventListener("click", () => {
+      const g = state.groups.find(x => x.id === gsel.value);
+      const first = g && state.pieceSel ? startGroup(state, g) : null;
+      if (first) setNextPiece(state, first);
+      $("devNextStatus").textContent = first ? `next: ${g.name} (${1 + state.pieceSel.level6.queue.length} pieces)` : "no group";
+    });
     const rate = $("devRate");
     const rateLabel = () => { $("devRateValue").textContent = dev.rate === 0 ? "off" : `×${dev.rate}`; };
     rate.value = String(dev.rate);
@@ -701,6 +740,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
       ["struggle", (state.pieceSel?.struggle ?? 0).toFixed(2)],
       ["usable powerups", ps?.lastUsable ?? "–"],
       ["first giant", state.pieceSel?.giantDueAt == null ? "none (easy)" : state.pieceSel.hadGiant ? "done" : `due at piece ${state.pieceSel.giantDueAt}`],
+      ["level 6", level6Status(state)],
       ["classes", ps ? (ps.classes.join(", ") || "none yet") : "–"],
       ["powerups seen", ps ? `${ps.shown.size}/${state.powerups.length} · ${state.devPowerups.disabled.size} disabled` : "–"],
       ["pieces on board", String(state.instances.size)],
