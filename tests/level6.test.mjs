@@ -33,8 +33,7 @@ function dropDot(state) {
   drop(state);
 }
 
-// (todo until the Babel / nothing & everything / townhouses art is merged)
-test("groups in the data are complete (every piece exists)", { todo: "level 6 art not merged yet" }, () => {
+test("groups in the data are complete (every piece exists)", () => {
   const all = normaliseGroups(GROUPS, shapes);
   for (const g of GROUPS) {
     for (const step of g.sequence) {

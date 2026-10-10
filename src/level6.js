@@ -143,14 +143,31 @@ export function maybeStartGroup(state) {
     if (state.rng() >= (cfg.chancePerDrop ?? 0.04)) return null;
   }
   const group = sampleByWeight(state.groups, g => g.frequency * Math.pow(cfg.repeatPenalty ?? 0.15, l6.seen.get(g.id) ?? 0), state.rng);
-  return startGroup(state, group);
+  const pieces = expandGroup(group, state.rng);
+  // only if the whole run fits on the board (a group can't be cleared until it's all down)
+  if (stackRows(state) + roomNeeded(pieces) > state.board.length - (cfg.headroom ?? 3)) return null;
+  return startGroup(state, group, pieces);
+}
+
+// Rows of board a run of pieces needs: their blocks spread over the width, plus some for the
+// gaps they leave (CONFIG.assist.level6.roomFactor) — or, if more, the full height of every
+// piece wider than half the board (those can't sit side by side, so they stack up).
+export function roomNeeded(pieces) {
+  const cols = CONFIG.board.cols;
+  let blocks = 0, stacked = 0;
+  for (const s of pieces) {
+    const mat = s.rotations[0];
+    blocks += mat.flat().filter(Boolean).length;
+    if (mat[0].length > cols / 2) stacked += mat.length;
+  }
+  return Math.max(stacked, Math.ceil((blocks / cols) * (CONFIG.assist.level6?.roomFactor ?? 1.25)));
 }
 
 // Start `group` now: returns its first piece (the rest follow, in order).
-export function startGroup(state, group) {
+export function startGroup(state, group, pieces = null) {
   if (!group) return null;
   const l6 = state.pieceSel.level6;
-  l6.queue = expandGroup(group, state.rng);
+  l6.queue = pieces ?? expandGroup(group, state.rng);
   l6.group = group.id;
   l6.seen.set(group.id, (l6.seen.get(group.id) ?? 0) + 1);
   return nextGroupPiece(state);

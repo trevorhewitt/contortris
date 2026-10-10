@@ -196,6 +196,11 @@ export const CONFIG = {
       chancePerDrop: 0.05,      // after that: the chance a group starts on any given piece...
       cooldownDrops: 25,        // ...once this many pieces have passed since the last group...
       maxStackRows: 9,          // ...and only while the stack is this many rows tall or less
+      // A group only starts if the board has room for all of it: its blocks spread over the
+      // width × roomFactor (for the gaps they leave), with `headroom` rows to spare at the top.
+      // (Three townhouses in a row need about 15 rows.)
+      roomFactor: 1.25,
+      headroom: 3,
       repeatPenalty: 0.15,      // a group already seen this game is this much less likely
     },
 
