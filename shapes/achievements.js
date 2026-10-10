@@ -50,6 +50,7 @@
  *   boardCleared   {}                 the board is completely empty after rows are destroyed
  *   level6         {}                 the level 6 pieces unlock in a game: build the stack up
  *                                     past row 10, then dig back down to row 5 (config.js)
+ *   endGameEscaped {}                 dig your way out of the end game (CONFIG.endGame)
  *   gameOver       { killer, maxDrops }
  *                                     the game ends; optionally only if the piece that topped
  *                                     you out matches `killer`, or within `maxDrops` pieces
@@ -13901,5 +13902,189 @@ export const ACHIEVEMENTS = [
           }
         ]
       },
+  },
+  {
+    id: "great_escape",
+    name: "The Great Escape",
+    description: "Dig your way out of the end game.",
+    icon: [
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "#1a1428",
+          "#1a1428",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "#1a1428",
+          "#ffcf3f",
+          "#ffcf3f",
+          "#1a1428",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "#1a1428",
+          "#ffcf3f",
+          "#ffcf3f",
+          "#ffcf3f",
+          "#c98d1d",
+          "#1a1428",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "#1a1428",
+          "#ffcf3f",
+          "#ffcf3f",
+          "#ffcf3f",
+          "#ffcf3f",
+          "#ffcf3f",
+          "#c98d1d",
+          "#1a1428",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "#1a1428",
+          "#1a1428",
+          "#1a1428",
+          "#ffcf3f",
+          "#c98d1d",
+          "#1a1428",
+          "#1a1428",
+          "#1a1428",
+          "",
+          ""
+        ],
+        [
+          "#e8384f",
+          "#e8384f",
+          "#e8384f",
+          "#e8384f",
+          "#1a1428",
+          "#ffcf3f",
+          "#c98d1d",
+          "#1a1428",
+          "#e8384f",
+          "#e8384f",
+          "#e8384f",
+          "#e8384f"
+        ],
+        [
+          "#e8384f",
+          "#2a2340",
+          "#3a2f55",
+          "#3a2f55",
+          "#1a1428",
+          "#ffcf3f",
+          "#c98d1d",
+          "#1a1428",
+          "#3a2f55",
+          "#3a2f55",
+          "#2a2340",
+          "#9a1f33"
+        ],
+        [
+          "#e8384f",
+          "#3a2f55",
+          "#3a2f55",
+          "#3a2f55",
+          "#1a1428",
+          "#ffcf3f",
+          "#c98d1d",
+          "#1a1428",
+          "#3a2f55",
+          "#3a2f55",
+          "#3a2f55",
+          "#9a1f33"
+        ],
+        [
+          "#e8384f",
+          "#3a2f55",
+          "#3a2f55",
+          "#3a2f55",
+          "#3a2f55",
+          "#1a1428",
+          "#1a1428",
+          "#3a2f55",
+          "#3a2f55",
+          "#3a2f55",
+          "#3a2f55",
+          "#9a1f33"
+        ],
+        [
+          "#e8384f",
+          "#3a2f55",
+          "#3a2f55",
+          "#2a2340",
+          "#3a2f55",
+          "#3a2f55",
+          "#3a2f55",
+          "#3a2f55",
+          "#2a2340",
+          "#3a2f55",
+          "#3a2f55",
+          "#9a1f33"
+        ],
+        [
+          "#e8384f",
+          "#2a2340",
+          "#3a2f55",
+          "#3a2f55",
+          "#3a2f55",
+          "#3a2f55",
+          "#2a2340",
+          "#3a2f55",
+          "#3a2f55",
+          "#3a2f55",
+          "#2a2340",
+          "#9a1f33"
+        ],
+        [
+          "#9a1f33",
+          "#9a1f33",
+          "#9a1f33",
+          "#9a1f33",
+          "#9a1f33",
+          "#9a1f33",
+          "#9a1f33",
+          "#9a1f33",
+          "#9a1f33",
+          "#9a1f33",
+          "#9a1f33",
+          "#9a1f33"
+        ]
+      ],
+    trigger: {
+        "type": "endGameEscaped"
+      },
+    variants: [
+        {
+          "name": "Not Today",
+          "description": "Dig your way out of the end game."
+        }
+      ],
   },
 ];

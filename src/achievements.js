@@ -204,6 +204,11 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
         break;
       }
 
+      case "endGame": {
+        if (d.escaped) each("endGameEscaped", (def) => unlock(def));
+        break;
+      }
+
       case "gameOver": {
         each("gameOver", (def, t) => {
           if (t.killer && !matchShape(d.killer, t.killer)) return;

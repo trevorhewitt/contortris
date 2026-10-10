@@ -13,6 +13,7 @@ import { createDemo, runDemos } from "./demo.js";
 import { CLASS_INFO, analyseBoard } from "./powerups.js";
 import { introduceAllPowerups, computeStackDanger01 } from "./selection.js";
 import { level6Status, startGroup, scheduleFirstGroup } from "./level6.js";
+import { endGameStatus } from "./endgame.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -200,10 +201,27 @@ export function bindUI({ state, renderer, sound, achievements }) {
     if (name) {
       const scroller = panels[name];
       if (scroller) scroller.scrollTop = 0;
+      fitPanel(name);
       // focus the main button for keyboard players
       panels[name]?.querySelector("button")?.focus({ preventScroll: true });
     }
   }
+
+  // The menu, pause and game over panels always fit on the board: if there isn't room, they're
+  // scaled down rather than scrolled. (How to play and the lists scroll as usual.)
+  const FIT_PANELS = new Set(["menu", "pause", "gameover", "intro"]);
+  function fitPanel(name = currentPanel) {
+    const el = panels[name];
+    if (!el || !FIT_PANELS.has(name)) return;
+    if (name === "pause" && devmode) return; // the dev tools make it long: it scrolls
+    el.style.transform = "";
+    el.classList.add("fit");
+    const room = overlay.clientHeight - 16, roomW = overlay.clientWidth - 16;
+    const s = Math.min(1, room / Math.max(1, el.scrollHeight), roomW / Math.max(1, el.scrollWidth));
+    if (s < 0.995) el.style.transform = `scale(${s.toFixed(3)})`;
+  }
+  window.addEventListener("resize", () => fitPanel());
+  document.fonts?.ready?.then(() => fitPanel());
 
   const overlayShowing = () => !!currentPanel;
 
@@ -211,9 +229,6 @@ export function bindUI({ state, renderer, sound, achievements }) {
     $("btnEasy").classList.toggle("secondary", lastMode !== "easy");
     $("btnNormal").classList.toggle("secondary", lastMode !== "normal");
     $("btnExtreme").classList.toggle("secondary", lastMode !== "extreme");
-    $("bestLine").textContent = Object.keys(CONFIG.modes)
-      .map(m => `${modeLabel(m)} best: ${bestScores.get(m)}`)
-      .join(" · ");
     $("achCount").textContent = `${achievements.unlockedCount()}/${achievements.defs.length}`;
     syncSoundButtons();
   }
@@ -340,6 +355,10 @@ export function bindUI({ state, renderer, sound, achievements }) {
         store.set(LEVEL6_KEY, "1");
         state.level6Remembered = true;
         break;
+      case "endGame":
+        $("boardShell").classList.toggle("endgame", !!d.on);
+        sound.play(d.on ? "endGame" : "endGameEscape");
+        break;
       case "powerupCharge":
         sound.play("charge", CONFIG.fx.powerup.chargeMs);
         break;
@@ -348,6 +367,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
         break;
       case "gameOver":
         saveOpening();
+        $("boardShell").classList.remove("endgame");
         nameLayer.clear();
         renderer.drawNextSilhouette(null);
         sound.play("gameOver");
@@ -355,6 +375,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
         setTimeout(showGameOver, 350);
         break;
       case "reset":
+        $("boardShell").classList.remove("endgame");
         nameLayer.clear();
         renderer.drawNextSilhouette(null);
         break;
@@ -639,10 +660,11 @@ export function bindUI({ state, renderer, sound, achievements }) {
         dev.disabled = new Set(saved.disabled ?? []);
         dev.rate = Number(saved.rate ?? 1);
         if (["auto", "on", "off"].includes(saved.level6)) state.devLevel6 = saved.level6;
+        if (["auto", "on", "off"].includes(saved.endGame)) state.devEndGame = saved.endGame;
       }
     } catch { /* ignore */ }
     const saveDev = () => {
-      try { sessionStorage.setItem("extris.dev", JSON.stringify({ disabled: [...dev.disabled], rate: dev.rate, level6: state.devLevel6 })); } catch { /* ignore */ }
+      try { sessionStorage.setItem("extris.dev", JSON.stringify({ disabled: [...dev.disabled], rate: dev.rate, level6: state.devLevel6, endGame: state.devEndGame })); } catch { /* ignore */ }
     };
 
     // level 6: force it on or off, or start a group as the next piece
@@ -655,6 +677,9 @@ export function bindUI({ state, renderer, sound, achievements }) {
       const st = state.pieceSel?.level6;
       if (state.devLevel6 === "on" && st && !st.seen.size && st.firstDueAt == null) scheduleFirstGroup(state);
     });
+    const eg = $("devEndGame");
+    eg.value = state.devEndGame;
+    eg.addEventListener("change", () => { state.devEndGame = eg.value; saveDev(); });
     const gsel = $("devGroup");
     for (const g of state.groups) {
       const o = document.createElement("option");
@@ -741,6 +766,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
       ["usable powerups", ps?.lastUsable ?? "–"],
       ["first giant", state.pieceSel?.giantDueAt == null ? "none (easy)" : state.pieceSel.hadGiant ? "done" : `due at piece ${state.pieceSel.giantDueAt}`],
       ["level 6", level6Status(state)],
+      ["end game", endGameStatus(state)],
       ["classes", ps ? (ps.classes.join(", ") || "none yet") : "–"],
       ["powerups seen", ps ? `${ps.shown.size}/${state.powerups.length} · ${state.devPowerups.disabled.size} disabled` : "–"],
       ["pieces on board", String(state.instances.size)],

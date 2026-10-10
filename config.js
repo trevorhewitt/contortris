@@ -30,6 +30,32 @@ export const CONFIG = {
     doubleTapMs: 300,      // double tap the bottom of the board (or press down twice) to drop instantly
   },
 
+  // Pieces come in at the centre ± a few random columns (most often near the middle), so
+  // holding down, or looking away, builds a pile rather than one tower in the middle.
+  spawn: {
+    jitter: 2,          // columns either way (0 = always dead centre)
+  },
+
+  // End game: once the stack reaches two thirds of the board, the game stops helping and goes
+  // for a frantic finale: bigger and worse pieces, fewer powerups, and the fall speeds up with
+  // every piece. Digging back down to `exitAtRows` gets you out (not easy). All modes. The
+  // board flashes red meanwhile. Games then end with a full board and, usually, a big piece.
+  endGame: {
+    enabled: true,
+    enterAtRows: 16,    // starts when the pile is this many rows tall (2/3 of 24)...
+    exitAtRows: 10,     // ...and stops if you dig it back down to this many rows or fewer
+    columns: 4,         // (the pile's height = the height at least this many columns reach,
+                        //  so one tall giant standing on its end doesn't count)
+    // what comes meanwhile (Easy has no giants: their share goes to the others)...
+    levelWeights: { 0: 0, 1: 0.1, 2: 0.2, 3: 0.35, 4: 0.2, 5: 0.15 },
+    giantsRamp: 0.05,   // ...and every piece moves this much more of the weight onto the giants
+    giantsRampMax: 0.45,
+    powerupRate: 0.3,   // powerups are this much rarer, and no longer favour the helpful ones
+    speedPerPiece: 0.93,// the fall gets this much faster with every piece...
+    minDropMs: 60,      // ...down to this many ms per row
+    spawnJitter: 3,     // pieces come in further off-centre, so the whole board fills up
+  },
+
   // Turning pieces. A piece that would stick out past a wall when it turns is pushed back
   // inside (so even a board-wide piece can turn), and goes back where it was on the next turn
   // if you haven't moved it sideways in between.

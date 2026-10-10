@@ -6209,6 +6209,7 @@
       params: [{ key: "groups", kind: "groups", label: "Pieces" }, { key: "match", kind: "match", label: "Pieces" }, { key: "count", kind: "int", label: "Different pieces" }] },
     { type: "boardCleared", doc: "The board is completely empty after rows are destroyed.", params: [] },
     { type: "level6", doc: "The level 6 pieces unlock in a game: build the stack up past row 10, then dig back down to row 5.", params: [] },
+    { type: "endGameEscaped", doc: "Dig your way out of the end game (it starts when the stack reaches two thirds of the board).", params: [] },
     { type: "gameOver", doc: "The game ends; optionally only if the piece that topped you out matches `killer`, or within `maxDrops` pieces.",
       params: [{ key: "killer", kind: "match", label: "Killer" }, { key: "maxDrops", kind: "int", label: "Max drops" }] },
   ];
@@ -6416,6 +6417,7 @@
       }
       case "boardCleared": return "Unlocks when the board is completely empty after rows are destroyed";
       case "level6": return "Unlocks when the level 6 pieces unlock (build the stack past row 10, then dig back down to row 5)";
+      case "endGameEscaped": return "Unlocks when you dig your way out of the end game";
       case "gameOver": {
         let s = t.killer ? `Unlocks when you are topped out by ${matchPhrase(t.killer)}` : "Unlocks when the game ends";
         if (t.maxDrops !== undefined) s += ` within ${num(t.maxDrops)} pieces`;

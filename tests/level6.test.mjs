@@ -205,3 +205,55 @@ test("stackRows counts from the bottom", () => {
   state.board = state.board.map(r => r.fill(null));
   assert.equal(stackRows(state), 0);
 });
+
+// ---------- end game (src/endgame.js) ----------
+import { pileRows, endGameOn } from "../src/endgame.js";
+
+test("end game: starts at two thirds full, serves giants faster and faster, can be escaped", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(21), groups: GROUPS });
+  const events = [];
+  on(state, (t, d) => { if (t === "endGame") events.push(d); });
+  startRun(state, "normal");
+  setStack(state, 12); dropDot(state);
+  assert.equal(endGameOn(state), false, "12 rows: not yet");
+  setStack(state, 17); dropDot(state);
+  assert.equal(endGameOn(state), true, "17 rows: end game");
+  assert.deepEqual(events[0], { on: true });
+  // pieces now are mostly big, and each falls faster than the last
+  const served = [], speeds = [];
+  on(state, (t, d) => { if (t === "spawn") { served.push(d.shape); speeds.push(state.dropMs); } });
+  for (let i = 0; i < 20; i++) { setStack(state, 17); dropDot(state); }
+  const giants = served.filter(s => !s.powerup && s.difficulty >= 4).length;
+  assert.ok(giants >= 8, `giants ${giants}/20`);
+  assert.ok(speeds[speeds.length - 1] < speeds[0], `speed ${speeds[0]} -> ${speeds[speeds.length - 1]}`);
+  assert.ok(speeds[speeds.length - 1] >= CONFIG.endGame.minDropMs);
+  // dig out: back to normal speed
+  setStack(state, 6); dropDot(state);
+  assert.equal(endGameOn(state), false, "escaped");
+  assert.deepEqual(events[events.length - 1], { on: false, escaped: true });
+  assert.ok(state.dropMs >= CONFIG.timing.minDropMs);
+});
+
+test("end game: a single tall giant on its end doesn't count as a full board", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(4) });
+  const R = state.board.length;
+  state.board = state.board.map((r, y) => r.map((_, x) => (x >= 5 && x <= 7 && y >= R - 18) || y >= R - 3 ? { ...filler } : null));
+  assert.equal(pileRows(state), 3, "three tall columns only");
+});
+
+test("pieces spawn a little off-centre, mostly near the middle", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(8) });
+  startRun(state, "extreme");
+  const xs = new Map();
+  for (let i = 0; i < 300; i++) {
+    const a = state.active, w = a.shape.rotations[0][0].length;
+    const off = a.x - Math.floor((14 - w) / 2);
+    xs.set(off, (xs.get(off) ?? 0) + 1);
+    assert.ok(a.x >= 0 && a.x + w <= 14);
+    state.board = state.board.map(r => r.fill(null));
+    dropDot(state);
+  }
+  assert.ok(xs.size >= 3, `offsets ${[...xs.keys()].join()}`);
+  assert.ok((xs.get(0) ?? 0) > (xs.get(2) ?? 0), "the middle is the most common");
+  assert.ok([...xs.keys()].every(o => Math.abs(o) <= CONFIG.spawn.jitter));
+});

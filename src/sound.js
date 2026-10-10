@@ -128,7 +128,18 @@ export function createSound(cfg) {
         tone({ freq: f / 2, dur: 0.16, vol: 0.05, type: "triangle", delay: i * 0.08 });
       });
     },
-    gameOver() {
+    // the end game starts: a two-tone alarm, falling
+    endGame() {
+      [0, 0.22, 0.44].forEach((d, i) => {
+        tone({ freq: 740 - i * 60, to: 520 - i * 60, dur: 0.18, vol: 0.09, type: "sawtooth", delay: d, filter: 2200 });
+      });
+      tone({ freq: 90, to: 55, dur: 0.7, vol: 0.12, type: "sine" });
+    },
+    // ...and is escaped: up and away
+    endGameEscape() {
+      [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => tone({ freq: f, dur: 0.1, vol: 0.08, type: "square", delay: i * 0.05, filter: 3500 }));
+    },
+        gameOver() {
       [392, 329.63, 261.63, 196].forEach((f, i) => tone({ freq: f, to: f * 0.97, dur: 0.22, vol: 0.12, type: "square", delay: i * 0.18, filter: 1600 }));
     },
   };

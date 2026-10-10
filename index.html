@@ -213,6 +213,15 @@
       scrollbar-width: thin;
     }
     .overlay .msg.panel[hidden]{ display: none; }
+    /* panels that always fit on the board (scaled down by ui.js fitPanel, never scrolled) */
+    .overlay .msg.panel.fit{
+      width: clamp(300px, calc(100% - 20px), 420px); /* never narrower than 300: no wrapped buttons */
+      flex: none;            /* (don't let the overlay squeeze it) */
+      max-width: none;
+      max-height: none;
+      overflow: visible;
+      transform-origin: center center;
+    }
 
     .overlay .msg .big.title{
       font-size: 26px;
@@ -838,6 +847,24 @@
       font-weight: 900;
     }
   
+    /* the end game: the board's edge pulses red */
+    #boardShell.endgame{
+      box-shadow:
+        0 18px 60px rgba(0,0,0,0.55),
+        0 0 0 2px rgba(255,70,90,0.75),
+        0 0 22px 4px rgba(255,40,60,0.35);
+    }
+    #boardShell.endgame::after{
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      box-shadow: inset 0 0 22px 4px rgba(255,40,60,0.5);
+      animation: endPulse 0.75s ease-in-out infinite alternate;
+    }
+    @keyframes endPulse{ from{ opacity: 0.35; } to{ opacity: 1; } }
+    @media (prefers-reduced-motion: reduce){ #boardShell.endgame::after{ animation: none; opacity: 0.7; } }
+
     #boardShell.glow-left{
       box-shadow:
         0 18px 60px rgba(0,0,0,0.55),
@@ -908,7 +935,7 @@
 
           <div class="msg panel" id="panelMenu" hidden>
             <div class="big title">Extris</div>
-            <div class="small" id="gameVersion">version 202610101051</div>
+            <div class="small" id="gameVersion">version 202610101113</div>
             <div class="menuBtns">
               <button id="btnEasy" class="secondary">Easy mode</button>
               <button id="btnNormal">Normal mode</button>
@@ -919,7 +946,6 @@
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
               <button class="secondary small soundToggle">Sound: on</button>
             </div>
-            <div class="small" id="bestLine"></div>
             <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
           </div>
 
@@ -928,6 +954,7 @@
             <div class="howto">
               <h3>The goal</h3>
               <p>Weird pieces fall from the top. Fill a whole row with blocks and the row is destroyed. Don't let the pile reach the top.</p>
+              <p>Once the pile reaches two thirds of the way up, the end game begins: the board flashes red, the pieces get bigger and the game gets faster. Dig your way out if you can.</p>
 
               <h3>Controls</h3>
               <p><b>Touch:</b> tap the left or right side to move, tap the top to rotate, tap the bottom middle to drop faster. Hold to keep going.</p>
@@ -944,7 +971,7 @@
               <h3>Achievements</h3>
               <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
 
-              <p class="small menuFoot">[Extris version 202610101051 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610101113 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>
@@ -995,6 +1022,12 @@
               <div class="menuRow">
                 <button id="btnDevGroup" class="small">Start group next</button>
               </div>
+              <div class="devTitle">dev: end game</div>
+              <select id="devEndGame">
+                <option value="auto">end game: auto (at two thirds full)</option>
+                <option value="on">end game: on now</option>
+                <option value="off">end game: never</option>
+              </select>
               <div class="devTitle">dev: powerup frequency <span id="devRateValue"></span></div>
               <input type="range" id="devRate" min="0" max="5" step="0.25" value="1">
               <div class="devTitle">dev: enabled powerups</div>

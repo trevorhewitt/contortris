@@ -14,6 +14,7 @@ import { CONFIG } from "../config.js";
 import { clamp01, lerp, sampleByWeight } from "./util.js";
 import { analyseBoard, resolvePowerupArea, computeEffect, phantomLandingY, isPhantomPowerup } from "./powerups.js";
 import { LEVEL6, initLevel6, nextGroupPiece, maybeStartGroup, groupUnderWay } from "./level6.js";
+import { initEndGame, endGameOn, endGameLevelWeights } from "./endgame.js";
 
 const DEBUG_LINK = false; // verbose console logging for linked shapes
 
@@ -75,6 +76,8 @@ export function initPieceSelectionState(state) {
   };
   // level 6 groups: unlock tracking and the group being served (src/level6.js)
   state.pieceSel.level6 = initLevel6(state);
+  // the end game (src/endgame.js)
+  state.pieceSel.endGame = initEndGame();
 }
 
 function pickGiantDue(state) {
@@ -255,8 +258,9 @@ function tryLinkedNextShape(state, prevShape, idToShape, debug = false) {
   // are ignored in Extreme mode), so a missing target never "uses up" the roll.
   // A linked giant (4/5) follows the same safety rules as any giant: not straight after
   // another one, and not on a dangerous stack. Level 6 pieces only come in their groups.
-  const hardOk = !state.pieceSel?.lastWasHard &&
-    computeStackDanger01(state) <= (CONFIG.assist.pieceMix.hard.hardMaxDanger ?? 0.32);
+  // (in the end game, anything goes)
+  const hardOk = endGameOn(state) || (!state.pieceSel?.lastWasHard &&
+    computeStackDanger01(state) <= (CONFIG.assist.pieceMix.hard.hardMaxDanger ?? 0.32));
   const cand = [];
   for (let i = 0; i < ids.length; i++) {
     const shape = idToShape.get(ids[i]);
@@ -302,6 +306,9 @@ export function selectPiece(state) {
   const idToShape = state.idToShape;
   const prevShape = sel.lastShapeId ? idToShape.get(sel.lastShapeId) : null;
   updateStruggle(state, danger01);
+
+  const endGame = endGameOn(state);
+  if (endGame) sel.endGame.pieces++;
 
   // A level 6 group that has started carries on, piece after piece, whatever else is going on.
   const grouped = nextGroupPiece(state);
@@ -357,6 +364,18 @@ export function selectPiece(state) {
 
   // Keys for level weights (0–5).
   const LEVELS = [0, 1, 2, 3, 4, 5];
+
+  // End game: no more help. Big, worse pieces (more giants the longer it lasts), back to back.
+  if (endGame) {
+    const w = normaliseWeights(endGameLevelWeights(state, CONFIG.modes[state.mode]?.giants !== false));
+    const lvl = sampleDiscrete(w, state.rng);
+    let pool = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) === lvl);
+    if (!pool.length) pool = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6);
+    const shape = sampleByWeight(pool, s => (s.frequency ?? 1) * varietyMultiplier(sel, s), state.rng);
+    commitSelectedShape(sel, shape);
+    if ((shape.difficulty ?? 1) >= 4) noteHardDropped(sel, shape.difficulty);
+    return shape;
+  }
 
   // 1) Opening blend -> base.
   const baseW = normaliseWeights({ ...mixCfg.baseLevelWeight });
@@ -574,8 +593,11 @@ function maybeSelectPowerup(state, danger01) {
   const stats = analyseBoard(state.board);
   const holes01 = clamp01(stats.holes / Math.max(1, cfg.holesForMax ?? 18));
 
-  const boost = (1 + (cfg.dangerBoost ?? 0) * danger01 + (cfg.holesBoost ?? 0) * holes01)
-    * (1 + (cfg.struggle?.chanceBoost ?? 0) * sel.struggle);
+  // (in the end game there's no more help: powerups get rarer, and struggling doesn't matter)
+  const endGame = endGameOn(state);
+  const struggle = endGame ? 0 : sel.struggle;
+  const boost = endGame ? (CONFIG.endGame?.powerupRate ?? 0.3)
+    : (1 + (cfg.dangerBoost ?? 0) * danger01 + (cfg.holesBoost ?? 0) * holes01) * (1 + (cfg.struggle?.chanceBoost ?? 0) * struggle);
   const rate = state.devPowerups?.rate ?? 1; // dev mode frequency override
   const chance = clamp01(ps.chance * boost * rate);
   ps.lastChance = chance;
@@ -635,8 +657,8 @@ function maybeSelectPowerup(state, danger01) {
   const need = cfg.need ?? {};
   const st = cfg.struggle ?? {};
   // help preference: from slightly favouring gentle ones (calm) to strongly helpful (struggling)
-  const lucky = state.rng() < (st.luckyChance ?? 0);
-  const power = lucky ? (st.helpPower ?? 2) : lerp(st.calmHelpPower ?? 0, st.helpPower ?? 2, sel.struggle);
+  const lucky = !endGame && state.rng() < (st.luckyChance ?? 0);
+  const power = endGame ? 0 : lucky ? (st.helpPower ?? 2) : lerp(st.calmHelpPower ?? 0, st.helpPower ?? 2, sel.struggle);
 
   // Intros: a powerup of a class not met yet brings up its intro screen. Keep those spaced
   // out (they interrupt the game), and always introduce a class with a starter piece.

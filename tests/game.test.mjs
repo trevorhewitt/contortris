@@ -227,7 +227,7 @@ test("achievements: game over triggers", () => {
 
 test("every achievement trigger in the data file is a known type", () => {
   const KNOWN = ["together", "blocksDestroyed", "rowWith", "rowsDestroyed", "multiRow", "pieceServed", "pieceSequence", "pieceInside", "seenAll",
-    "powerupUsed", "powerupBlocks", "score", "level", "drops", "boardCleared", "gameOver", "level6"];
+    "powerupUsed", "powerupBlocks", "score", "level", "drops", "boardCleared", "gameOver", "level6", "endGameEscaped"];
   const ids = new Set();
   for (const a of ACHIEVEMENTS) {
     assert.ok(KNOWN.includes(a.trigger.type), `${a.id}: ${a.trigger.type}`);

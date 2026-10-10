@@ -14,6 +14,7 @@
 //   "powerupFire"    { shape, type, affected }  affected = blocks destroyed/moved/filled
 //   "gameOver"       { killer, drops, score }
 //   "level6Unlocked" {}                         the comeback: the level 6 groups open up
+//   "endGame"        { on, escaped }            the end game starts (on) or is escaped
 
 import { CONFIG } from "../config.js";
 import { clamp01, lerp } from "./util.js";
@@ -21,6 +22,7 @@ import { getShapePaint } from "./shapes.js";
 import { initPieceSelectionState, selectPiece } from "./selection.js";
 import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
 import { normaliseGroups, trackLevel6, LEVEL6 } from "./level6.js";
+import { trackEndGame, endGameOn, spawnJitter } from "./endgame.js";
 import { remixShape } from "./remix.js";
 
 /* =========================
@@ -40,6 +42,8 @@ export function createGameState(shapes, powerups, { rng = Math.random, groups = 
     // Level 6 groups (shapes/groups.js, src/level6.js)
     groups: normaliseGroups(groups, shapes),
     devLevel6: "auto",         // dev mode override: "auto", "on" or "off"
+    devEndGame: "auto",        // dev mode override for the end game (src/endgame.js)
+    endGameMs: null,           // the end game's fall speed (ms per row), null when it's off
     level6Remembered: false,   // unlocked before in this browser (only used if level6.persist)
 
     // Pools for the current mode (see configureMode)
@@ -208,6 +212,7 @@ export function resetGame(state) {
   state.drops = 0;
   state.level = 1;
   state.dropMs = CONFIG.timing.baseDropMs;
+  state.endGameMs = null;
   state.dropAccum = 0;
   state.softDropping = false;
   cancelLock(state);
@@ -431,6 +436,8 @@ function rotationPivot(shape, cur, next) {
 function spawnPiece(state) {
   // the board has settled: did the player just dig back down far enough to open level 6?
   if (state.pieceSel && trackLevel6(state)) emit(state, "level6Unlocked", {});
+  // ...or reach two thirds of the board (the end game), or dig their way out of it?
+  if (state.pieceSel) updateEndGame(state, trackEndGame(state));
   if (!state.next) state.next = prepareShape(state, selectPiece(state));
   const shape = state.next;
   state.next = prepareShape(state, selectPiece(state));
@@ -439,10 +446,14 @@ function spawnPiece(state) {
   const mat = shape.rotations[rotIdx];
   const w = mat[0].length;
 
+  // a little off-centre, at random (mostly near the middle), so dropping without moving
+  // builds a pile instead of one central tower
+  const J = Math.min(spawnJitter(state), Math.floor((CONFIG.board.cols - w) / 2));
+  const off = J > 0 ? Math.round((state.rng() + state.rng() - 1) * J) : 0;
   state.active = {
     shape,
     rotIdx,
-    x: Math.floor((CONFIG.board.cols - w) / 2),
+    x: Math.max(0, Math.min(CONFIG.board.cols - w, Math.floor((CONFIG.board.cols - w) / 2) + off)),
     // Start fully above the board so entry is row-by-row, even for tall pieces
     y: -mat.length,
   };
@@ -718,6 +729,29 @@ function startRowFall(state, dropDistances) {
 function recomputeSpeed(state) {
   const mult = Math.pow(CONFIG.timing.speedMultiplierPerLevel, state.level - 1);
   state.dropMs = Math.max(CONFIG.timing.minDropMs, Math.floor(CONFIG.timing.baseDropMs * mult));
+  if (state.endGameMs != null) state.dropMs = Math.min(state.dropMs, state.endGameMs);
+}
+
+// The end game starts ("enter"), is escaped ("exit"), or carries on (null): every piece in it
+// falls a bit faster than the last (CONFIG.endGame.speedPerPiece).
+function updateEndGame(state, change) {
+  const cfg = CONFIG.endGame ?? {};
+  const cols = CONFIG.board.cols, rows = CONFIG.board.rows;
+  if (change === "enter") {
+    state.endGameMs = state.dropMs;
+    addCallout(state, "END GAME", cols / 2, rows * 0.2, { big: true, color: "#ff4d5e", durationMs: 1800 });
+    emit(state, "endGame", { on: true });
+  } else if (change === "exit") {
+    state.endGameMs = null;
+    recomputeSpeed(state);
+    addCallout(state, "ESCAPED!", cols / 2, rows / 2, { big: true });
+    emit(state, "endGame", { on: false, escaped: true });
+    return;
+  }
+  if (endGameOn(state) && state.endGameMs != null) {
+    state.endGameMs = Math.max(cfg.minDropMs ?? 60, Math.floor(state.endGameMs * (cfg.speedPerPiece ?? 0.92)));
+    recomputeSpeed(state);
+  }
 }
 
 function countFallingBlocksAfterClear(oldBoard, fullRowsSet) {
@@ -956,9 +990,9 @@ export function addQuakeFromBlocks(state, blockCount) {
 }
 
 // x, y in board cells (centre of the text).
-function addCallout(state, text, x, y, { big = false } = {}) {
+function addCallout(state, text, x, y, { big = false, color = null, durationMs = null } = {}) {
   if (!CONFIG.fx.callouts.enabled) return;
-  state.fx.callouts.push({ text, x, y, big, elapsedMs: 0, durationMs: CONFIG.fx.callouts.durationMs });
+  state.fx.callouts.push({ text, x, y, big, color, elapsedMs: 0, durationMs: durationMs ?? CONFIG.fx.callouts.durationMs });
 }
 
 // Particles burst from cells [{x, y, cell}] (board coords). `mult` scales the count.

@@ -1030,7 +1030,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       bctx.lineWidth = 4;
       bctx.strokeStyle = "rgba(0,0,0,0.85)";
       bctx.strokeText(text, x, y);
-      bctx.fillStyle = c.big ? hsla((now * 0.3) % 360, 100, 68, 1) : "#ffffff";
+      bctx.fillStyle = c.color ?? (c.big ? hsla((now * 0.3) % 360, 100, 68, 1) : "#ffffff");
       bctx.fillText(text, x, y);
     }
     bctx.restore();
