@@ -3757,19 +3757,18 @@ export const SHAPES = [
         "tier": 2,
         "area": {
           "origin": [
-            2,
-            2
+            1,
+            0
           ],
           "grid": [
-            ".###.",
-            "#####",
-            "#####",
-            "#####",
-            ".###."
+            "...",
+            "###",
+            "###",
+            "###"
           ]
         },
-        "intro": "Swallows every block in a small circle around where it lands. Mind the event horizon.",
-        "help": 2
+        "intro": "Swallows the 3x3 square of blocks right under it. Mind the event horizon.",
+        "help": 2.5
       },
     rotation: {
         "mode": "any"
@@ -3834,7 +3833,8 @@ export const SHAPES = [
               ]
             }
           }
-        ]
+        ],
+        "help": 5
       },
     rotation: {
         "mode": "any"
@@ -3950,17 +3950,16 @@ export const SHAPES = [
         "area": {
           "origin": [
             2,
-            1
+            0
           ],
           "grid": [
-            ".###.",
             "#####",
             "#####",
             "#####",
             ".###."
           ]
         },
-        "intro": "Puffs up and fills every empty cell around it. Don't get it in your hair.",
+        "intro": "Puffs up and fills every empty cell beside and below it. Don't get it in your hair.",
         "help": 3,
         "starter": true
       },
@@ -4001,7 +4000,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -4027,7 +4026,7 @@ export const SHAPES = [
         },
         "collapse": true,
         "intro": "Vaporises two rows, wall to wall: its own and the one two below. Funded by a billionaire, aimed by nobody.",
-        "help": 3,
+        "help": 5,
         "starter": true
       },
     rotation: {
@@ -4099,7 +4098,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.5,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -4177,22 +4176,18 @@ export const SHAPES = [
         "tier": 2,
         "area": {
           "origin": [
-            0,
-            3
+            1,
+            0
           ],
           "grid": [
-            "#",
-            "#",
-            "#",
-            "#",
-            "-",
-            "#",
-            "#",
-            "#"
+            "...",
+            "---",
+            "###",
+            "###"
           ]
         },
         "collapse": true,
-        "intro": "Blows away its whole row plus a few blocks above and below. It knows, and it is not okay.",
+        "intro": "Blows away its whole row, wall to wall, and a 3x2 crater under that. It knows, and it is not okay.",
         "help": 4.5,
         "starter": true
       },
@@ -4621,17 +4616,15 @@ export const SHAPES = [
         "area": {
           "origin": [
             2,
-            2
+            0
           ],
           "grid": [
-            "..#..",
-            ".###.",
             "##.##",
             ".###.",
             "..#.."
           ]
         },
-        "intro": "Pops into a puff of popcorn that fills the empty cells around it. You can't stop at one.",
+        "intro": "Pops into a puff of popcorn that fills the empty cells beside and below it. You can't stop at one.",
         "help": 2.5,
         "starter": true
       },
@@ -4815,17 +4808,16 @@ export const SHAPES = [
         "area": {
           "origin": [
             2,
-            1
+            0
           ],
           "grid": [
-            ".###.",
             "##.##",
             "##.##",
             "#####",
             ".###."
           ]
         },
-        "intro": "Escapes and fills the empty cells around and below it. It has a name now and it is Gerald.",
+        "intro": "Escapes and fills the empty cells beside and below it. It has a name now and it is Gerald.",
         "help": 3,
         "starter": true
       },
@@ -4863,7 +4855,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -4897,7 +4889,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -4929,7 +4921,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -4942,19 +4934,18 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 1,
-        "intro": "Wind them up and they chomp through every block within two steps. Nobody knows whose teeth these were.",
-        "help": 2,
+        "intro": "Wind them up and they chomp straight down through the 2x3 of blocks under them. Nobody knows whose teeth these were.",
+        "help": 2.5,
         "area": {
           "origin": [
-            2,
-            2
+            0,
+            0
           ],
           "grid": [
-            "..##..",
-            ".####.",
-            "##..##",
-            ".####.",
-            "..##.."
+            "..",
+            "##",
+            "##",
+            "##"
           ]
         }
       },
@@ -4994,7 +4985,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.8,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5007,21 +4998,15 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 2,
-        "intro": "Her loyal colony devours every block within three steps of her. Long may she reign over your stack.",
-        "help": 2.5,
+        "intro": "Her colony eats out every block in her column and the one either side of it, top to bottom. Long may she reign over your stack.",
+        "help": 3.5,
         "area": {
           "origin": [
-            3,
-            3
+            1,
+            0
           ],
           "grid": [
-            "...#...",
-            "..###..",
-            ".#####.",
-            "###.###",
-            ".#####.",
-            "..###..",
-            "...#..."
+            "|||"
           ]
         }
       },
@@ -5064,7 +5049,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 0.7,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -5077,19 +5062,19 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 2,
-        "intro": "Every block within two steps becomes lava, and lava means gone. You know the rules.",
-        "help": 2,
+        "intro": "The 4x4 block of the stack under it becomes lava, and lava means gone. You know the rules.",
+        "help": 3.5,
         "area": {
           "origin": [
-            2,
-            2
+            0,
+            0
           ],
           "grid": [
-            "..####..",
-            ".######.",
-            "##....##",
-            ".######.",
-            "..####.."
+            "....",
+            "####",
+            "####",
+            "####",
+            "####"
           ]
         }
       },
@@ -6514,21 +6499,14 @@ export const SHAPES = [
     powerup: {
         "type": "gravity",
         "tier": 2,
-        "intro": "Stomps so hard that every block in the 8x8 patch around and below him drops down into the gaps. He has done this once before. The floor remembers.",
+        "intro": "Stomps so hard that every block in the 8 columns around him drops down into the gaps. He has done this once before. The floor remembers.",
         "area": {
           "origin": [
             3,
             0
           ],
           "grid": [
-            "########",
-            "########",
-            "########",
-            "########",
-            "########",
-            "########",
-            "########",
-            "########"
+            "||||||||"
           ]
         },
         "help": 3
@@ -6549,21 +6527,17 @@ export const SHAPES = [
     powerup: {
         "type": "gravity",
         "tier": 1,
-        "intro": "Slumps down in a funnel: the blocks in a 7-wide V shape around and under it drop into the gaps. It's what potatoes do best, apart from chips.",
+        "intro": "Slumps down: every block in the five columns around it drops into the gaps. It's what potatoes do best, apart from chips.",
         "area": {
           "origin": [
-            3,
+            2,
             0
           ],
           "grid": [
-            "#######",
-            "#######",
-            ".#####.",
-            "..###..",
-            "...#..."
+            "|||||"
           ]
         },
-        "help": 2
+        "help": 2.5
       },
     rotation: {
         "mode": "none"
@@ -6596,12 +6570,13 @@ export const SHAPES = [
             ".#.#.#"
           ]
         },
-        "help": 1.5
+        "help": 1,
+        "bad": true
       },
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
+    frequency: 0.3,
   },
   {
     id: "pogo_stick",
@@ -6670,23 +6645,17 @@ export const SHAPES = [
     powerup: {
         "type": "gravity",
         "tier": 3,
-        "intro": "Belly flops into the stack: a shockwave five rows deep, getting wider as it goes (up to 13 cells), makes every block in it drop into the gaps. Ten out of ten from the judges.",
+        "intro": "Belly flops into the stack: a shockwave runs down the 9 columns around it and every block in them drops into the gaps. Ten out of ten from the judges.",
         "area": {
           "origin": [
-            5,
+            3,
             0
           ],
           "grid": [
-            ".............",
-            ".............",
-            "....#####....",
-            "...#######...",
-            "..#########..",
-            ".###########.",
-            "#############"
+            "|||||||||"
           ]
         },
-        "help": 2.5
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -6703,20 +6672,17 @@ export const SHAPES = [
     powerup: {
         "type": "gravity",
         "tier": 2,
-        "intro": "Lands like a ton of bricks: every block in its own row and the three rows under it, wall to wall, drops into the gaps. Exactly one ton. We weighed it.",
+        "intro": "Lands like a ton of bricks: every block in the 7 columns around it drops into the gaps. Exactly one ton. We weighed it.",
         "area": {
           "origin": [
-            0,
+            2,
             0
           ],
           "grid": [
-            "-",
-            "-",
-            "-",
-            "-"
+            "|||||||"
           ]
         },
-        "help": 2
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -7530,17 +7496,18 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 1,
-        "intro": "Eats the six blocks in a straight line in front of its mouth (rotate it to aim). Waka waka. It has not stopped saying waka since 1980.",
+        "intro": "Eats every block in its row, wall to wall, and the row closes up. Waka waka. It has not stopped saying waka since 1980.",
         "area": {
           "origin": [
             0,
             0
           ],
           "grid": [
-            ".######"
+            "-"
           ]
         },
-        "help": 2
+        "help": 4,
+        "collapse": true
       },
     rotation: {
         "mode": "any"
@@ -7610,12 +7577,13 @@ export const SHAPES = [
             "#.......#"
           ]
         },
-        "help": 1
+        "help": 1,
+        "bad": true
       },
     rotation: {
         "mode": "any"
       },
-    frequency: 0.78,
+    frequency: 0.3,
   },
   {
     id: "rotten_lemon",
@@ -7627,19 +7595,18 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 1,
-        "intro": "Dissolves the blocks right next to it, and squirts three cells to each side along its row. Straight in the eye, every time.",
+        "intro": "Squirts along the row under it, dissolving the block below it and three to each side. Straight in the eye, every time.",
         "area": {
           "origin": [
             3,
-            1
+            0
           ],
           "grid": [
-            "...#...",
-            "###.###",
-            "...#..."
+            ".......",
+            "#######"
           ]
         },
-        "help": 2
+        "help": 1.5
       },
     rotation: {
         "mode": "none"
@@ -7656,25 +7623,24 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 2,
-        "intro": "Dissolves the blocks next to it, then eats straight down through the seven cells underneath it. It's not personal, it's just very acidic.",
+        "intro": "Eats straight down through the 3-wide strip of blocks under it, seven deep. It's not personal, it's just very acidic.",
         "area": {
           "origin": [
             1,
-            1
+            0
           ],
           "grid": [
-            ".#.",
-            "#.#",
-            ".#.",
-            ".#.",
-            ".#.",
-            ".#.",
-            ".#.",
-            ".#.",
-            ".#."
+            "...",
+            "###",
+            "###",
+            "###",
+            "###",
+            "###",
+            "###",
+            "###"
           ]
         },
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -7692,20 +7658,18 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 2,
-        "intro": "Digests every block within two steps of it, all the way round its bend. It has been empty since lunch and it is not happy about it.",
-        "help": 2,
+        "intro": "Digests the 5x2 patch of blocks under it. It has been empty since lunch and it is not happy about it.",
+        "help": 2.5,
         "area": {
           "origin": [
-            2,
-            2
+            1,
+            0
           ],
           "grid": [
-            "..#....",
-            ".####..",
-            "##.###.",
-            "##...##",
-            ".#####.",
-            "..###.."
+            ".....",
+            ".....",
+            "#####",
+            "#####"
           ]
         }
       },
@@ -8942,7 +8906,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 2,
-        "intro": "Swallows every block within two steps of it, then everything in the five columns under it slumps down into the hole. The traffic cone was a nice touch.",
+        "intro": "Swallows every block within two steps of it, then everything in the seven columns around it slumps down into the hole. The traffic cone was a nice touch.",
         "parts": [
           {
             "type": "destroyer",
@@ -8965,16 +8929,16 @@ export const SHAPES = [
             "direction": "down",
             "area": {
               "origin": [
-                1,
+                2,
                 0
               ],
               "grid": [
-                "|||||"
+                "|||||||"
               ]
             }
           }
         ],
-        "help": 2.5
+        "help": 4
       },
     rotation: {
         "mode": "none"
@@ -9355,7 +9319,7 @@ export const SHAPES = [
     rotation: {
         "mode": "none"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "plunger",
@@ -9368,21 +9332,20 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 2,
-        "intro": "Shoves the clog out: destroys the three blocks straight under it, then everything in its column and the two beside it drains down into the gaps. Glug.",
+        "intro": "Shoves the clog out: destroys the 3x2 of blocks under it, then everything in those three columns drains down into the gaps. Glug.",
         "parts": [
           {
             "type": "destroyer",
             "area": {
               "origin": [
-                0,
+                1,
                 0
               ],
               "grid": [
-                ".",
-                ".",
-                "#",
-                "#",
-                "#"
+                "...",
+                "...",
+                "###",
+                "###"
               ]
             }
           },
@@ -9400,7 +9363,7 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 4,
+        "help": 3,
         "starter": true
       },
     rotation: {
@@ -9596,23 +9559,23 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 3,
-        "intro": "Its gaze burns a widening cone of blocks below it, 5 rows deep and up to 11 wide. It sees you. It sees everything. It is mostly a lighthouse.",
+        "intro": "Its gaze burns a cone into the stack below it: 9 wide under it, narrowing to a point five rows down. It sees you. It sees everything. It is mostly a lighthouse.",
         "area": {
           "origin": [
-            4,
+            3,
             0
           ],
           "grid": [
-            "...........",
-            "...........",
-            "....###....",
-            "...#####...",
-            "..#######..",
-            ".#########.",
-            "###########"
+            ".........",
+            ".........",
+            "#########",
+            ".#######.",
+            "..#####..",
+            "...###...",
+            "....#...."
           ]
         },
-        "help": 2.5
+        "help": 3
       },
     rotation: {
         "mode": "none"
@@ -9677,18 +9640,17 @@ export const SHAPES = [
           "grid": [
             ".....",
             ".....",
-            "##.##",
-            "##.##",
-            "##.##",
-            "##.##",
-            "##.##",
-            "##.##",
-            "##.##",
-            "##.##"
+            "#####",
+            "#####",
+            "#####",
+            "#####",
+            "#####",
+            "#####",
+            "#.#.#"
           ]
         },
-        "intro": "Snips two strips of blocks straight down, each 2 wide and 8 deep, one either side of it. It leaves the column in the middle, with a lovely zigzag edge.",
-        "help": 3
+        "intro": "Snips a strip of blocks 5 wide straight down under it, six deep, with a lovely zigzag edge at the bottom.",
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -9744,15 +9706,14 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            ".........",
-            "###......",
-            "..###....",
-            "....###..",
-            "......###"
+            "......",
+            "######",
+            "..####",
+            "....##"
           ]
         },
-        "intro": "Deletes a staircase of blocks stepping down to its right: three per step, four steps deep. Like the real key, it only ever deletes forwards.",
-        "help": 1.5
+        "intro": "Deletes a staircase of blocks under it and to its right, each step one deeper: six, then four, then two. Like the real key, it only ever deletes forwards.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -9773,21 +9734,19 @@ export const SHAPES = [
         "tier": 2,
         "area": {
           "origin": [
-            5,
+            2,
             0
           ],
           "grid": [
-            "...........",
-            "...........",
-            "...........",
-            "...#####...",
-            "....###....",
-            "###..#..###",
-            "....###....",
-            "...#####..."
+            ".....",
+            ".....",
+            ".....",
+            "#####",
+            ".###.",
+            "..#.."
           ]
         },
-        "intro": "Destroys an hourglass of blocks under it: 5 wide, then 3, 1, 3 and 5 wide again, five rows deep. Time's up for them. Also for the egg.",
+        "intro": "Destroys the top half of an hourglass of blocks under it: 5 wide, then 3, then 1. Time's up for them. Also for the egg.",
         "help": 2
       },
     rotation: {
@@ -9813,12 +9772,12 @@ export const SHAPES = [
           ],
           "grid": [
             ".#.",
-            "#.#",
+            "---",
             ".#."
           ]
         },
         "intro": "Fizzes away every block touching it and then its whole row, wall to wall, and everything above drops down. Take two and call the stack in the morning.",
-        "help": 4.5
+        "help": 4
       },
     rotation: {
         "mode": "any"
@@ -9836,22 +9795,20 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 3,
-        "intro": "Dissolves every block within three steps of it. Everything. Do not read the reviews.",
-        "help": 3,
+        "intro": "Dissolves every block in the big 6x4 block under it. Everything. Do not read the reviews.",
+        "help": 3.5,
         "area": {
           "origin": [
-            3,
-            3
+            2,
+            0
           ],
           "grid": [
-            "...##...",
-            "..####..",
-            ".######.",
-            "###..###",
-            "###..###",
-            ".######.",
-            "..####..",
-            "...##..."
+            "......",
+            "......",
+            "######",
+            "######",
+            "######",
+            "######"
           ]
         }
       },
@@ -9872,18 +9829,19 @@ export const SHAPES = [
         "tier": 2,
         "area": {
           "origin": [
-            2,
-            2
+            1,
+            0
           ],
           "grid": [
-            "..#..",
-            ".###.",
-            "##.##",
-            ".###.",
-            "..#.."
+            "...",
+            "###",
+            "###",
+            "###",
+            "###",
+            "###"
           ]
         },
-        "intro": "Fizzes away every block within two steps of it, then sinks and dissolves the four cells below that too. The bath is now purple. The bath will always be purple.",
+        "intro": "Sinks and fizzes down through the 3-wide strip of blocks under it, five deep. The bath is now purple. The bath will always be purple.",
         "help": 2.5
       },
     rotation: {
@@ -9903,17 +9861,16 @@ export const SHAPES = [
         "tier": 2,
         "area": {
           "origin": [
-            1,
-            1
+            2,
+            0
           ],
           "grid": [
-            ".##.",
-            "#..#",
-            "####"
+            "......",
+            "######"
           ]
         },
-        "intro": "Dissolves every block touching the pot, and a thin layer of the row underneath, four cells out to each side. Half the pot has already vanished. It works.",
-        "help": 1.5
+        "intro": "Dissolves a thin layer of the stack right under it, six cells wide. Half the pot has already vanished. It works.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -10245,7 +10202,8 @@ export const SHAPES = [
             "#"
           ]
         },
-        "intro": "Fills its column, all the way down to the floor."
+        "intro": "Fills its column, all the way down to the floor.",
+        "help": 2
       },
     rotation: {
         "mode": "none"
@@ -10331,20 +10289,17 @@ export const SHAPES = [
         "area": {
           "origin": [
             3,
-            3
+            0
           ],
           "grid": [
-            "...#...",
-            "...#...",
-            "..###..",
             "###.###",
             "..###..",
             "...#...",
             "...#..."
           ]
         },
-        "intro": "Swells into a plus sign, filling the empty cells three out from it in all four directions. It has absorbed a whole sink and it wants more.",
-        "help": 2
+        "intro": "Swells out, filling the empty cells three out from it to the left, the right and below. It has absorbed a whole sink and it wants more.",
+        "help": 3
       },
     rotation: {
         "mode": "any"
@@ -10619,17 +10574,16 @@ export const SHAPES = [
         "area": {
           "origin": [
             6,
-            1
+            0
           ],
           "grid": [
-            ".....###.....",
             "....##.##....",
             "..#########..",
             "#############"
           ]
         },
-        "intro": "Drifts off to the right, filling empty cells: two beside it, five in the row under it, seven in the row under that. The wind only ever blows one way here.",
-        "help": 2.5
+        "intro": "Explodes into a drift of snow, filling empty cells: two beside it, nine in the row under it and thirteen in the row under that.",
+        "help": 3.5
       },
     rotation: {
         "mode": "none"
@@ -11134,12 +11088,13 @@ export const SHAPES = [
             "....#...."
           ]
         },
-        "help": 1.5
+        "help": 1,
+        "bad": true
       },
     rotation: {
         "mode": "none"
       },
-    frequency: 0.9,
+    frequency: 0.3,
   },
   {
     id: "sinking_stone",
@@ -11742,10 +11697,11 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 2,
-        "intro": "Lands with a thwack and knocks out the three blocks under it, then wobbles into every empty cell of the big patch below that (7 wide, 3 deep). Nobody asked for lime.",
+        "starter": true,
         "parts": [
           {
             "type": "destroyer",
+            "collapse": true,
             "area": {
               "origin": [
                 0,
@@ -11753,8 +11709,7 @@ export const SHAPES = [
               ],
               "grid": [
                 "...",
-                "...",
-                "###"
+                "---"
               ]
             }
           },
@@ -11833,7 +11788,6 @@ export const SHAPES = [
               "grid": [
                 ".......",
                 ".......",
-                ".......",
                 "#######",
                 "#######",
                 ".#####."
@@ -11841,7 +11795,8 @@ export const SHAPES = [
             }
           }
         ],
-        "help": 3.5
+        "intro": "Lands with a thwack that wipes out its whole row, wall to wall, then wobbles into every empty cell of the big patch under it (7 wide, 3 deep). Nobody asked for lime.",
+        "help": 4.5
       },
     rotation: {
         "mode": "none"

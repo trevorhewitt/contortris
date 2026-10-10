@@ -120,6 +120,8 @@ test("level 6 pieces never turn up outside a group", () => {
       if (d6.has(id)) { if (!cur) runs.push(cur = []); cur.push(id); } else cur = null;
     }
     assert.ok(runs.length >= 3, `seed ${seed}: ${runs.length} groups`);
+    // (the last run can be cut short by the end of this loop)
+    if (d6.has(served[served.length - 1])) runs.pop();
     for (const r of runs) {
       const g = GROUPS.find(g => g.sequence[0] === r[0]);
       assert.ok(g, `run ${r.join(">")}`);
