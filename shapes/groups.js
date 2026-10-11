@@ -102,4 +102,10 @@ export const GROUPS = [
     frequency: 1,
     sequence: ["the_multiverse", "concept_of_existence", "nagging_doubt"],
   },
+  {
+    id: "portraits",
+    name: "two portraits",
+    frequency: 1,
+    sequence: ["portrait_claude", "portrait_trevor"],
+  },
 ];

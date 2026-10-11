@@ -83,10 +83,7 @@ test("level 6 is locked until the comeback: above row 10, then back down to row 
   let run = 0;
   while (served[first + run]?.difficulty === 6) run++;
   const ids = served.slice(first, first + run).map(s => s.id);
-  const g = GROUPS.find(g => (typeof g.sequence[0] === "string" ? g.sequence[0] : null) === ids[0]);
-  assert.ok(g, `run starts a group: ${ids.join(" > ")}`);
-  const fixed = g.sequence.filter(st => typeof st === "string");
-  assert.deepEqual(ids.slice(0, fixed.length), fixed, `in order: ${ids.join(" > ")}`);
+  assert.ok(GROUPS.some(g => matchesGroup(g, ids)), `a whole group, in order: ${ids.join(" > ")}`);
 });
 
 test("easy mode never unlocks level 6; dev override forces it either way", () => {
@@ -322,7 +319,7 @@ test("level 6: no set comes round again until every other one has, even into the
     startRun(state, "normal");
     state.devLevel6 = "on";
     const order = [];
-    for (let i = 0; i < 600 && !state.gameOver; i++) {
+    for (let i = 0; i < 1200 && !state.gameOver; i++) {
       const before = state.pieceSel.level6.seen.size + [...state.pieceSel.level6.seen.values()].reduce((a, b) => a + b, 0);
       setStack(state, 1); dropDot(state);
       const g = state.pieceSel.level6.group;
