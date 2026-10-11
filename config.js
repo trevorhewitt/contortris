@@ -97,7 +97,7 @@ export const CONFIG = {
       baseChance: 0.2,
       chancePerDrop: 0.08,
       maxChance: 0.7,
-      combos: { minDrop: 0 },
+      combos: { minDrop: 0, weight: 1 },
       bad: { minDrop: 0 },
     },
     // gravitizers that collapse at least `minCols` columns are this many times likelier

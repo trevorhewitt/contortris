@@ -108,4 +108,10 @@ export const GROUPS = [
     frequency: 1,
     sequence: ["portrait_claude", "portrait_trevor"],
   },
+  {
+    id: "universe",
+    name: "the universe and the stars",
+    frequency: 1,
+    sequence: ["shooting_star", "constellation", "spiral_galaxy", "the_universe"],
+  },
 ];
