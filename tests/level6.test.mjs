@@ -104,6 +104,20 @@ test("easy mode never unlocks level 6; dev override forces it either way", () =>
   assert.equal(level6Open(state), false, "forced off");
 });
 
+// a run of piece ids is one whole pass through group `g`: its fixed pieces exactly, and for
+// each pick step a number of its pieces within the count
+function matchesGroup(g, ids) {
+  let i = 0;
+  for (const st of g.sequence) {
+    if (typeof st === "string") { if (ids[i] !== st) return false; i++; continue; }
+    const [lo, hi] = Array.isArray(st.count) ? st.count : [st.count ?? 1, st.count ?? 1];
+    let n = 0;
+    while (i < ids.length && st.pick.includes(ids[i]) && n < hi) { i++; n++; }
+    if (n < lo) return false;
+  }
+  return i === ids.length;
+}
+
 test("level 6 pieces never turn up outside a group", () => {
   for (const seed of [1, 2, 3, 4]) {
     const state = createGameState(shapes, powerups, { rng: makeRng(seed * 17), groups: GROUPS });
@@ -122,12 +136,7 @@ test("level 6 pieces never turn up outside a group", () => {
     assert.ok(runs.length >= 3, `seed ${seed}: ${runs.length} groups`);
     // (the last run can be cut short by the end of this loop)
     if (d6.has(served[served.length - 1])) runs.pop();
-    for (const r of runs) {
-      const g = GROUPS.find(g => g.sequence[0] === r[0]);
-      assert.ok(g, `run ${r.join(">")}`);
-      const fixed = g.sequence.filter(st => typeof st === "string");
-      assert.deepEqual(r.slice(0, fixed.length), fixed);
-    }
+    for (const r of runs) assert.ok(GROUPS.some(g => matchesGroup(g, r)), `run ${r.join(">")}`);
   }
 });
 
@@ -329,4 +338,18 @@ test("level 6: no set comes round again until every other one has, even into the
   for (let i = 1; i < a.length; i++) assert.notEqual(a[i], a[i - 1]);
   const b = runGame();
   assert.notEqual(b[0], a[a.length - 1], "the next game doesn't open with the last set");
+});
+
+test("Noah's ark: the ark, three or four different pairs of animals, then the rain", () => {
+  const g = normaliseGroups(GROUPS, shapes).find(g => g.id === "noahs_ark");
+  const rng = makeRng(9);
+  for (let i = 0; i < 300; i++) {
+    const ids = expandGroup(g, rng).map(s => s.id);
+    assert.equal(ids[0], "noahs_ark");
+    assert.equal(ids[ids.length - 1], "forty_days_of_rain");
+    const pairs = ids.slice(1, -1);
+    assert.ok(pairs.length >= 3 && pairs.length <= 4, ids.join());
+    assert.ok(pairs.every(id => id.startsWith("two_")), ids.join());
+    assert.equal(new Set(pairs).size, pairs.length, `the same pair twice: ${ids.join()}`);
+  }
 });

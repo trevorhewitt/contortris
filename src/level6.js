@@ -46,7 +46,10 @@ export function normaliseGroups(rawGroups, shapes) {
         if (!picks.length) continue;
         const c = Array.isArray(step.count) ? step.count : [step.count ?? 1, step.count ?? 1];
         const lo = Math.max(0, c[0] | 0);
-        steps.push({ shapes: picks, weights, count: [lo, Math.max(lo, c[1] | 0)] });
+        const hi = Math.max(lo, c[1] | 0);
+        // (unique: each piece at most once, so never more of them than there are pieces)
+        const unique = step.unique === true;
+        steps.push({ shapes: picks, weights, count: unique ? [Math.min(lo, picks.length), Math.min(hi, picks.length)] : [lo, hi], unique });
       }
     }
     if (!ok || !steps.length) continue;
@@ -61,8 +64,11 @@ export function expandGroup(group, rng) {
   const out = [];
   for (const st of group.steps) {
     const n = st.count[0] + Math.floor(rng() * (st.count[1] - st.count[0] + 1));
-    for (let i = 0; i < n; i++) {
-      out.push(st.shapes.length === 1 ? st.shapes[0] : sampleByWeight(st.shapes.map((s, k) => ({ s, w: st.weights[k] })), it => it.w, rng).s);
+    let pool = st.shapes.map((s, k) => ({ s, w: st.weights[k] }));
+    for (let i = 0; i < n && pool.length; i++) {
+      const it = pool.length === 1 ? pool[0] : sampleByWeight(pool, it => it.w, rng);
+      out.push(it.s);
+      if (st.unique) pool = pool.filter(x => x !== it);
     }
   }
   return out;

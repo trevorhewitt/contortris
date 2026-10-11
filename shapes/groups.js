@@ -20,7 +20,8 @@
  *     "piece_id"                      that piece, or
  *     { pick: ["id", "id", ...],      a run of pieces picked at random from the list:
  *       weights: [3, 1, ...],         optional, how likely each one is (default all 1)
- *       count: [2, 5] }               how many (a random number from 2 to 5; or just 3)
+ *       count: [2, 5],                how many (a random number from 2 to 5; or just 3)
+ *       unique: true }                optional: each piece at most once in the run
  * }
  *
  * A group whose fixed ("piece_id") piece is banished (frequency 0) never turns up; banished
@@ -76,5 +77,29 @@ export const GROUPS = [
     name: "space",
     frequency: 1,
     sequence: ["moon", "earth", "asteroid_belt"],
+  },
+  {
+    id: "iceberg",
+    name: "the iceberg",
+    frequency: 1,
+    sequence: ["iceberg_tip", "iceberg_rest"],
+  },
+  {
+    id: "loch_ness",
+    name: "the Loch Ness monster",
+    frequency: 1,
+    sequence: ["nessie_hump", "nessie_hump_2", "nessie_hump_3", "nessie_head", "nessie_photo"],
+  },
+  {
+    id: "noahs_ark",
+    name: "Noah's ark",
+    frequency: 1,
+    sequence: ["noahs_ark", { pick: ["two_giraffes","two_elephants","two_penguins","two_snails","two_crocodiles"], count: [3, 4], unique: true }, "forty_days_of_rain"],
+  },
+  {
+    id: "existence",
+    name: "the multiverse, and the concept of existence",
+    frequency: 1,
+    sequence: ["the_multiverse", "concept_of_existence", "nagging_doubt"],
   },
 ];
