@@ -8,7 +8,7 @@ import { GROUPS } from "../shapes/groups.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, hardDropAndLock, on, updateGame } from "../src/game.js";
-import { selectPiece } from "../src/selection.js";
+import { selectPiece, destroyerCells } from "../src/selection.js";
 import { normaliseGroups, expandGroup, level6Open, bestPile, roomNeeded } from "../src/level6.js";
 import { gravityColumns } from "../src/godmode.js";
 
@@ -136,4 +136,23 @@ test("level 6: a set only starts if it has room", () => {
     const fit = groups.filter(g => roomNeeded(expandGroup(g, makeRng(5))) <= room - 1).map(g => g.id);
     for (const id of fit) assert.ok(started.has(id), `${id} never came on a ${rows}-row stack (${[...started]})`);
   }
+});
+
+test("after a level 6 set: a big destroyer comes soon", () => {
+  const big = CONFIG.assist.powerups.afterSet.bigDestroyer.minCells;
+  let sets = 0, soon = 0;
+  for (const seed of [1, 2, 3, 4, 5, 6]) {
+    const state = createGameState(shapes, powerups, { rng: makeRng(seed * 19), groups: GROUPS });
+    const served = [];
+    on(state, (t, d) => { if (t === "spawn") served.push(d.shape); });
+    startRun(state, "god");
+    for (let i = 0; i < 200 && !state.gameOver; i++) { setStack(state, 3); drop(state); }
+    for (let i = 1; i + 4 < served.length; i++) {
+      if (served[i - 1].difficulty !== 6 || served[i].difficulty === 6) continue;
+      sets++;
+      if (served.slice(i, i + 4).some(s => !s.powerup?.bad && destroyerCells(s) >= big)) soon++;
+    }
+  }
+  assert.ok(sets >= 6, `${sets} sets`);
+  assert.ok(soon / sets >= 0.6, `a big destroyer within 4 pieces after ${soon} of ${sets} sets`);
 });

@@ -616,7 +616,12 @@ function maybeSelectPowerup(state, danger01) {
   const boost = endGame ? (CONFIG.endGame?.powerupRate ?? 0.3)
     : (1 + (cfg.dangerBoost ?? 0) * danger01 + (cfg.holesBoost ?? 0) * holes01) * (1 + (cfg.struggle?.chanceBoost ?? 0) * struggle);
   const rate = state.devPowerups?.rate ?? 1; // dev mode frequency override
-  const chance = clamp01(ps.chance * boost * rate);
+  // just after a level 6 set: a powerup is very likely (a big destroyer, see below)
+  const after = cfg.afterSet ?? {};
+  const l6 = sel.level6;
+  const sinceSet = l6?.seen?.size && !l6.queue.length ? sel.dropIndex - l6.lastEnd : Infinity;
+  const afterSet = !endGame && sinceSet >= 1 && sinceSet <= (after.pieces ?? 0);
+  const chance = clamp01(Math.max(ps.chance * boost * rate, afterSet ? (after.chance ?? 0) : 0));
   ps.lastChance = chance;
 
   if (state.rng() >= chance) {
@@ -681,6 +686,9 @@ function maybeSelectPowerup(state, danger01) {
   if (god) power = Math.max(power, CONFIG.godMode?.helpPower ?? 0);
   const wide = CONFIG.godMode?.wideGravity ?? {};
   const wideW = (p) => god && gravityColumns(p) >= (wide.minCols ?? 6) ? (wide.weight ?? 1) : 1;
+  // ...and just after a level 6 set, the big destroyers
+  const big = after.bigDestroyer ?? {};
+  const bigW = (p) => afterSet && !p.powerup.bad && destroyerCells(p) >= (big.minCells ?? Infinity) ? (big.weight ?? 1) : 1;
 
   // Intros: a powerup of a class not met yet brings up its intro screen. Keep those spaced
   // out (they interrupt the game), and always introduce a class with a starter piece.
@@ -709,10 +717,23 @@ function maybeSelectPowerup(state, danger01) {
     const comboW = p.powerup.type === "combo" ? (firstComboDue ? (combos.firstBoost ?? 1) : (combos.weight ?? 1)) : 1;
     // a class's pieces share its weight, so big classes don't crowd out small ones
     const classSize = candidates.filter(c => c.powerup.cls === p.powerup.cls).length;
-    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * wideW(p) * varietyMultiplier(sel, p) * (6 / (classSize + 5));
+    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * wideW(p) * bigW(p) * varietyMultiplier(sel, p) * (6 / (classSize + 5));
   }, state.rng);
   if (chosen && introducing(chosen)) { ps.lastIntroDrop = sel.dropIndex; ps.pendingIntro.add(chosen.powerup.cls); }
   return chosen;
+}
+
+// Roughly how many cells a destroyer (or a combo's destroying part) wipes on a full board.
+export function destroyerCells(shape) {
+  const pu = shape?.powerup;
+  if (!pu) return 0;
+  let n = 0;
+  for (const p of pu.type === "combo" ? (pu.parts ?? []) : [pu]) {
+    if (p.type !== "destroyer" && p.type !== "acid") continue;
+    const a = p.areaRotations?.[0];
+    if (a) n += a.cells.length + a.rows.length * CONFIG.board.cols + a.cols.length * CONFIG.board.rows;
+  }
+  return n;
 }
 
 // Open the next powerup class: the first is random from progression.firstClassPool,

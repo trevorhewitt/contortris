@@ -337,6 +337,16 @@ export const CONFIG = {
         minDrop: 40,
       },
 
+      // After a level 6 set: the next few pieces are very likely a powerup, and the big
+      // destroyers (two rows or more, a wide area, several columns; never the bad ones) are the
+      // ones to pick, to clear up after it.
+      afterSet: {
+        pieces: 4,          // for this many pieces after a set...
+        chance: 0.75,       // ...each one is a powerup at least this often
+        bigDestroyer: { minCells: 24, weight: 10 }, // destroyers that wipe at least this many
+                                                     // cells are this many times likelier
+      },
+
       // Helpfulness: each powerup has `help` (1–5) in its data. The worse you're doing
       // (the struggle tally: stack height, air pockets, how long since you cleared a row),
       // the more the helpful ones are preferred. helpPower is how strongly, at full struggle.
