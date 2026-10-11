@@ -8,7 +8,7 @@ import { GROUPS } from "../shapes/groups.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, hardDropAndLock, on, updateGame, tryRotate, tryMove, setNextPiece } from "../src/game.js";
-import { normaliseGroups, expandGroup, level6Open, stackRows } from "../src/level6.js";
+import { normaliseGroups, expandGroup, level6Open, stackRows, startGroup } from "../src/level6.js";
 import { remixShape } from "../src/remix.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
@@ -209,16 +209,62 @@ test("stackRows counts from the bottom", () => {
 // ---------- end game (src/endgame.js) ----------
 import { pileRows, endGameOn } from "../src/endgame.js";
 
-test("end game: starts at two thirds full, serves giants faster and faster, can be escaped", () => {
+// a piece the player moved (still trying), dropped
+function dropSteered(state) {
+  state.active = { shape: dot, rotIdx: 0, x: 1, y: -1 };
+  tryMove(state, -1, 0);
+  drop(state);
+}
+
+test("end game: only once they've given up (stuck high, no rows), sooner if they stop steering", () => {
+  const cfg = CONFIG.endGame;
+  // stopped steering: pieces dropped where they appear
+  let state = createGameState(shapes, powerups, { rng: makeRng(21), groups: GROUPS });
+  startRun(state, "normal");
+  for (let i = 1; i < cfg.idleStuckPieces; i++) { setStack(state, 17); dropDot(state); }
+  assert.equal(endGameOn(state), false, "a few pieces high is not giving up");
+  setStack(state, 17); dropDot(state);
+  assert.equal(endGameOn(state), true, `idle and stuck for ${cfg.idleStuckPieces} pieces`);
+
+  // still steering: it takes a good while longer
+  state = createGameState(shapes, powerups, { rng: makeRng(22), groups: GROUPS });
+  startRun(state, "normal");
+  for (let i = 1; i < cfg.stuckPieces; i++) { setStack(state, 17); dropSteered(state); }
+  assert.equal(endGameOn(state), false, "still trying");
+  setStack(state, 17); dropSteered(state);
+  assert.equal(endGameOn(state), true, `stuck for ${cfg.stuckPieces} pieces`);
+
+  // destroying rows now and then means they're still fighting: never
+  state = createGameState(shapes, powerups, { rng: makeRng(23), groups: GROUPS });
+  startRun(state, "normal");
+  for (let i = 0; i < 40; i++) {
+    setStack(state, 17);
+    if (i % 2 === 1) state.rowsDestroyed++; // (as if a row had gone, every other piece)
+    dropDot(state);
+  }
+  assert.equal(endGameOn(state), false, "rows keep going");
+});
+
+test("end game: a level 6 group (and the pieces just after it) never set it off", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(24), groups: GROUPS });
+  startRun(state, "normal");
+  state.devLevel6 = "on";
+  setNextPiece(state, startGroup(state, normaliseGroups(GROUPS, shapes).find(g => g.id === "townhouses")));
+  const grace = CONFIG.endGame.graceAfterGroup;
+  for (let i = 0; i < 3 + grace - 1; i++) { setStack(state, 17); dropDot(state); }
+  assert.equal(endGameOn(state), false, "the group and its grace don't count");
+});
+
+test("end game: big pieces faster and faster, and it can be escaped (all unannounced)", () => {
   const state = createGameState(shapes, powerups, { rng: makeRng(21), groups: GROUPS });
   const events = [];
   on(state, (t, d) => { if (t === "endGame") events.push(d); });
   startRun(state, "normal");
-  setStack(state, 12); dropDot(state);
-  assert.equal(endGameOn(state), false, "12 rows: not yet");
+  state.devEndGame = "on";
   setStack(state, 17); dropDot(state);
-  assert.equal(endGameOn(state), true, "17 rows: end game");
-  assert.deepEqual(events[0], { on: true });
+  state.devEndGame = "auto";
+  assert.equal(endGameOn(state), true);
+  assert.equal(state.fx.callouts.length, 0, "no callout");
   // pieces now are mostly big, and each falls faster than the last
   const served = [], speeds = [];
   on(state, (t, d) => { if (t === "spawn") { served.push(d.shape); speeds.push(state.dropMs); } });

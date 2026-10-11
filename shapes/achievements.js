@@ -14077,6 +14077,7 @@ export const ACHIEVEMENTS = [
           "#9a1f33"
         ]
       ],
+    retired: true,
     trigger: {
         "type": "endGameEscaped"
       },

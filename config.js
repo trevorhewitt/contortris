@@ -36,20 +36,29 @@ export const CONFIG = {
     jitter: 2,          // columns either way (0 = always dead centre)
   },
 
-  // End game: once the stack reaches two thirds of the board, the game stops helping and goes
-  // for a frantic finale: bigger and worse pieces, fewer powerups, and the fall speeds up with
-  // every piece. Digging back down to `exitAtRows` gets you out (not easy). All modes. The
-  // board flashes red meanwhile. Games then end with a full board and, usually, a big piece.
+  // End game: a hidden part of the experience (never announced). Once it's clear the player has
+  // given up, the game quietly stops helping and goes for a frantic finale: bigger and worse
+  // pieces, fewer powerups, and the fall gets faster with every piece. Digging back down to
+  // `exitAtRows` gets you out (not easy). Games then end with a full board and, usually, a big
+  // piece, instead of a long slow fizzle on a central tower. All modes.
   endGame: {
     enabled: true,
-    enterAtRows: 16,    // starts when the pile is this many rows tall (2/3 of 24)...
-    exitAtRows: 10,     // ...and stops if you dig it back down to this many rows or fewer
+    // "Given up" = the pile has sat this high...
+    enterAtRows: 16,    // (rows: two thirds of 24)
     columns: 4,         // (the pile's height = the height at least this many columns reach,
                         //  so one tall giant standing on its end doesn't count)
+    // ...for this many pieces in a row without a single row being destroyed...
+    stuckPieces: 20,
+    // ...or for only this many if they've also stopped steering: `idleOf` [3, 4] = 3 of the
+    // last 4 pieces were dropped where they appeared, without being moved or turned
+    idleStuckPieces: 3,
+    idleOf: [3, 4],
+    graceAfterGroup: 8, // a level 6 group, and this many pieces after it, don't count
+    exitAtRows: 10,     // it stops if the pile is dug back down to this many rows or fewer
     // what comes meanwhile (Easy has no giants: their share goes to the others)...
-    levelWeights: { 0: 0, 1: 0.1, 2: 0.2, 3: 0.35, 4: 0.2, 5: 0.15 },
+    levelWeights: { 0: 0, 1: 0.05, 2: 0.1, 3: 0.25, 4: 0.3, 5: 0.3 },
     giantsRamp: 0.05,   // ...and every piece moves this much more of the weight onto the giants
-    giantsRampMax: 0.45,
+    giantsRampMax: 0.3,
     powerupRate: 0.3,   // powerups are this much rarer, and no longer favour the helpful ones
     speedPerPiece: 0.93,// the fall gets this much faster with every piece...
     minDropMs: 60,      // ...down to this many ms per row

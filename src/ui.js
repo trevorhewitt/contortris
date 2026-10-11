@@ -355,10 +355,6 @@ export function bindUI({ state, renderer, sound, achievements }) {
         store.set(LEVEL6_KEY, "1");
         state.level6Remembered = true;
         break;
-      case "endGame":
-        $("boardShell").classList.toggle("endgame", !!d.on);
-        sound.play(d.on ? "endGame" : "endGameEscape");
-        break;
       case "powerupCharge":
         sound.play("charge", CONFIG.fx.powerup.chargeMs);
         break;
@@ -367,7 +363,6 @@ export function bindUI({ state, renderer, sound, achievements }) {
         break;
       case "gameOver":
         saveOpening();
-        $("boardShell").classList.remove("endgame");
         nameLayer.clear();
         renderer.drawNextSilhouette(null);
         sound.play("gameOver");
@@ -375,7 +370,6 @@ export function bindUI({ state, renderer, sound, achievements }) {
         setTimeout(showGameOver, 350);
         break;
       case "reset":
-        $("boardShell").classList.remove("endgame");
         nameLayer.clear();
         renderer.drawNextSilhouette(null);
         break;

@@ -14,7 +14,7 @@
 //   "powerupFire"    { shape, type, affected }  affected = blocks destroyed/moved/filled
 //   "gameOver"       { killer, drops, score }
 //   "level6Unlocked" {}                         the comeback: the level 6 groups open up
-//   "endGame"        { on, escaped }            the end game starts (on) or is escaped
+//   "endGame"        { on, escaped }            the (hidden) end game starts or is escaped
 
 import { CONFIG } from "../config.js";
 import { clamp01, lerp } from "./util.js";
@@ -22,7 +22,7 @@ import { getShapePaint } from "./shapes.js";
 import { initPieceSelectionState, selectPiece } from "./selection.js";
 import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
 import { normaliseGroups, trackLevel6, LEVEL6 } from "./level6.js";
-import { trackEndGame, endGameOn, spawnJitter } from "./endgame.js";
+import { trackEndGame, endGameOn, spawnJitter, noteLanding } from "./endgame.js";
 import { remixShape } from "./remix.js";
 
 /* =========================
@@ -337,7 +337,7 @@ function tryMovePhantom(state, dx, dy) {
   const ny = state.active.y + dy;
   if (dy > 0 && ny > target) return false;
   if (dx !== 0 || dy !== 0) cancelLock(state);
-  if (dx !== 0) state.active.unkickedX = null;
+  if (dx !== 0) { state.active.unkickedX = null; state.active.steered = true; }
   state.active.x = nx;
   state.active.y = Math.min(ny, target);
   return true;
@@ -352,7 +352,7 @@ export function tryMove(state, dx, dy) {
   if (!collides(state, nx, ny, mat)) {
     // If player nudges a piece while it's in lock grace, reset the timer.
     if (dx !== 0 || dy !== 0) cancelLock(state);
-    if (dx !== 0) state.active.unkickedX = null; // moved sideways: no snapping back any more
+    if (dx !== 0) { state.active.unkickedX = null; state.active.steered = true; } // (no snapping back any more)
     state.active.x = nx;
     state.active.y = ny;
     return true;
@@ -411,6 +411,7 @@ export function tryRotate(state) {
     a.x = nx;
     a.y = ny;
     a.unkickedX = nx !== baseX ? baseX : null;
+    a.steered = true;
     cancelLock(state);
     return true;
   }
@@ -517,6 +518,7 @@ function lockPiece(state) {
 
   state.lastLockedShape = shape;
   state.drops++;
+  noteLanding(state, state.active.steered); // (the end game watches for a player who stopped trying)
 
   const big = CONFIG.fx.largePieceLock;
   // (pieces marked noShake, like a swarm of bees, land without a thud)
@@ -736,15 +738,13 @@ function recomputeSpeed(state) {
 // falls a bit faster than the last (CONFIG.endGame.speedPerPiece).
 function updateEndGame(state, change) {
   const cfg = CONFIG.endGame ?? {};
-  const cols = CONFIG.board.cols, rows = CONFIG.board.rows;
+  // (no callouts, no sounds: the end game is never announced)
   if (change === "enter") {
     state.endGameMs = state.dropMs;
-    addCallout(state, "END GAME", cols / 2, rows * 0.2, { big: true, color: "#ff4d5e", durationMs: 1800 });
     emit(state, "endGame", { on: true });
   } else if (change === "exit") {
     state.endGameMs = null;
     recomputeSpeed(state);
-    addCallout(state, "ESCAPED!", cols / 2, rows / 2, { big: true });
     emit(state, "endGame", { on: false, escaped: true });
     return;
   }
