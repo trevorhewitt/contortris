@@ -259,15 +259,18 @@ function tryLinkedNextShape(state, prevShape, idToShape, debug = false) {
   // A linked giant (4/5) follows the same safety rules as any giant: not straight after
   // another one, and not on a dangerous stack. Level 6 pieces only come in their groups.
   // (in the end game, anything goes)
+  // A linked giant also never comes back while it's still fresh (the pound of feathers and
+  // the pound of steel follow each other, but not round and round).
   const hardOk = endGameOn(state) || (!state.pieceSel?.lastWasHard &&
     computeStackDanger01(state) <= (CONFIG.assist.pieceMix.hard.hardMaxDanger ?? 0.32));
+  const fresh = (state.pieceSel?.recentShapeIds ?? []).slice(-(CONFIG.assist.variety?.noRepeatWithin ?? 5));
   const cand = [];
   for (let i = 0; i < ids.length; i++) {
     const shape = idToShape.get(ids[i]);
     const x = Number(ps[i]);
     const p = Number.isFinite(x) ? Math.max(0, Math.min(1, x)) : 0;
     const lvl = shape?.powerup ? 0 : (shape?.difficulty ?? 1);
-    if (shape && p > 0 && lvl !== LEVEL6 && (lvl < 4 || hardOk)) cand.push({ shape, p });
+    if (shape && p > 0 && lvl !== LEVEL6 && (lvl < 4 || (hardOk && !fresh.includes(shape.id)))) cand.push({ shape, p });
     else if (!shape && debug) console.log("[LINK] id not in this mode's pool", ids[i]);
   }
   if (!cand.length) return null;
