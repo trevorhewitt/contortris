@@ -180,7 +180,7 @@
   
     .nameText .nameMain{ display: block; }
 
-    /* Powerups: rainbow name + the effect line underneath */
+    /* Powerups: the name in its class's colours + the effect line underneath */
     .nameText.powerup .nameMain{
       animation: rainbowText 1.6s steps(12, end) infinite;
     }
@@ -200,6 +200,37 @@
       80%  { color: rgba(110,200,255,0.85); }
       100% { color: rgba(200,120,255,0.85); }
     }
+    /* each powerup class has its own colours (the same as its highlights on the board);
+       combos keep the rainbow */
+    @keyframes fireText{
+      0%, 100% { color: rgba(255,92,72,0.92); }
+      25%, 75% { color: rgba(255,146,58,0.92); }
+      50%      { color: rgba(255,206,92,0.92); }
+    }
+    @keyframes deepText{
+      0%, 100% { color: rgba(112,140,255,0.92); }
+      25%, 75% { color: rgba(146,116,255,0.92); }
+      50%      { color: rgba(190,128,255,0.92); }
+    }
+    @keyframes growText{
+      0%, 100% { color: rgba(170,240,80,0.92); }
+      25%, 75% { color: rgba(96,232,120,0.92); }
+      50%      { color: rgba(70,222,196,0.92); }
+    }
+    @keyframes ghostText{
+      0%, 100% { color: rgba(196,240,255,0.80); }
+      25%, 75% { color: rgba(236,236,255,0.62); }
+      50%      { color: rgba(222,204,255,0.86); }
+    }
+    .nameText.powerup.cls-destroyer .nameMain, .introName.cls-destroyer{ animation-name: fireText; }
+    .nameText.powerup.cls-gravity .nameMain, .introName.cls-gravity{ animation-name: deepText; }
+    .nameText.powerup.cls-expander .nameMain, .introName.cls-expander{ animation-name: growText; }
+    .nameText.powerup.cls-phantom .nameMain, .introName.cls-phantom{ animation-name: ghostText; }
+    .demoName.cls-destroyer{ animation: fireText 1.6s steps(12, end) infinite; }
+    .demoName.cls-gravity{ animation: deepText 1.6s steps(12, end) infinite; }
+    .demoName.cls-expander{ animation: growText 1.6s steps(12, end) infinite; }
+    .demoName.cls-phantom{ animation: ghostText 1.6s steps(12, end) infinite; }
+    .demoName.cls-combo{ animation: rainbowText 1.6s steps(12, end) infinite; }
 
     /* ---------- menu panels ---------- */
     .overlay .msg.panel{
@@ -917,7 +948,7 @@
 
           <div class="msg panel" id="panelMenu" hidden>
             <div class="big title">Extris</div>
-            <div class="small" id="gameVersion">version 202610111003</div>
+            <div class="small" id="gameVersion">version 202610112317</div>
             <div class="menuBtns">
               <button id="btnEasy" class="secondary">Easy mode</button>
               <button id="btnNormal">Normal mode</button>
@@ -952,7 +983,7 @@
               <h3>Achievements</h3>
               <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
 
-              <p class="small menuFoot">[Extris version 202610111003 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610112317 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>

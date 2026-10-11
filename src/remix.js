@@ -4,8 +4,8 @@
 // A piece with `remix` in its data gets fresh art (and sometimes a fresh outline) every time
 // it turns up:
 //   remix: { mix: ["townhouses", "schnauzers"] }
-//       a random blend of two pieces drawn on the same grid: clumps of blocks from one next
-//       to clumps from the other, with their outlines blended too
+//       this piece's own outline, filled with clumps of blocks from one source next to clumps
+//       from the other (taken from the same place in each), so it can be smaller than either
 //   remix: { scramble: "spam" }
 //       the blocks of another piece shuffled (and some turned round) into this piece's shape
 // The piece's own grid and colours in the data are what the designer and the lists show.
@@ -16,8 +16,16 @@ import { valueNoise } from "./util.js";
 // A fresh random version of `shape` (or `shape` itself if it has no remix, or its sources are
 // missing). `byId` finds the source pieces.
 export function remixShape(shape, byId, rng = Math.random) {
+  const raw = remixRaw(shape, byId, rng);
+  if (!raw) return shape;
+  const [built] = loadAndNormaliseShapes([raw]);
+  return built ?? shape;
+}
+
+// The same, as a raw entry ({ id, name, grid, color, ... } like in main_shapes.js), or null.
+export function remixRaw(shape, byId, rng = Math.random) {
   const r = shape?.remix;
-  if (!r) return shape;
+  if (!r) return null;
   let built = null;
   if (r.mix) {
     const a = byId.get(r.mix[0]), b = byId.get(r.mix[1]);
@@ -26,8 +34,7 @@ export function remixShape(shape, byId, rng = Math.random) {
     const src = byId.get(r.scramble);
     if (src) built = scrambleTiles(shape, tilesOf(src), rng);
   }
-  if (!built) return shape;
-  return toShape(shape, built.cells, built.k) ?? shape;
+  return built ? toRaw(shape, built.cells, built.k) : null;
 }
 
 /* ---------- tiles ---------- */
@@ -68,28 +75,35 @@ function turn(pix, turns) {
 
 /* ---------- the two kinds of remix ---------- */
 
+// Fills this piece's own outline with clumps of blocks taken from the two sources (from the
+// same place in each, scaled to fit), so the mix can be smaller than what it's made from.
 function mixTiles(shape, A, B, rng) {
-  const W = Math.max(A.w, B.w), H = Math.max(A.h, B.h);
+  const mat = shape.rotations[0];
+  const W = mat[0].length, H = mat.length;
   const k = Math.max(A.k, B.k);
-  // both sit on the same floor, centred
-  const offA = { x: Math.floor((W - A.w) / 2), y: H - A.h };
-  const offB = { x: Math.floor((W - B.w) / 2), y: H - B.h };
-  const which = valueNoise(rng, 1.6 + rng() * 1.2); // clumps of one or the other
-  const keep = valueNoise(rng, 1.3);                // which of the odd bits of outline stay
+  const which = valueNoise(rng, 1.4 + rng() * 1.2); // clumps of one or the other
   const bias = 0.35 + rng() * 0.3;                  // some mixes lean one way, some the other
-  const cells = new Map();
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    const ta = A.at(x - offA.x, y - offA.y), tb = B.at(x - offB.x, y - offB.y);
-    if (!ta && !tb) continue;
-    let tile;
-    if (ta && tb) tile = which(x, y) < bias ? ta : tb;
-    else {
-      if (keep(x, y) < 0.42) continue; // only one of them has a block here: keep it about half the time
-      tile = ta ?? tb;
+  // the source block at the same place, or the nearest one it has
+  const at = (S, x, y) => {
+    const sx = Math.min(S.w - 1, Math.floor(((x + 0.5) * S.w) / W));
+    const sy = Math.min(S.h - 1, Math.floor(((y + 0.5) * S.h) / H));
+    let best = null, bestD = Infinity;
+    for (let yy = 0; yy < S.h; yy++) for (let xx = 0; xx < S.w; xx++) {
+      const t = S.at(xx, yy);
+      if (!t) continue;
+      const d = Math.abs(xx - sx) + Math.abs(yy - sy);
+      if (d < bestD) { bestD = d; best = t; if (!d) return t; }
     }
-    cells.set(`${x},${y}`, { x, y, pixels: resize(tile, k) });
+    return best;
+  };
+  const cells = [];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    if (!mat[y][x]) continue;
+    const first = which(x, y) < bias ? A : B;
+    const tile = at(first, x, y) ?? at(first === A ? B : A, x, y);
+    if (tile) cells.push({ x, y, pixels: resize(tile, k) });
   }
-  return { cells: largestPart([...cells.values()]), k };
+  return { cells, k };
 }
 
 function scrambleTiles(shape, S, rng) {
@@ -116,31 +130,8 @@ function scrambleTiles(shape, S, rng) {
   return { cells, k };
 }
 
-// Keep the biggest connected lump (a random blend can leave a stray block floating about).
-function largestPart(cells) {
-  const key = (c) => `${c.x},${c.y}`;
-  const byKey = new Map(cells.map(c => [key(c), c]));
-  const seen = new Set();
-  let best = [];
-  for (const c of cells) {
-    if (seen.has(key(c))) continue;
-    const part = [], todo = [c];
-    seen.add(key(c));
-    while (todo.length) {
-      const cur = todo.pop();
-      part.push(cur);
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const nk = `${cur.x + dx},${cur.y + dy}`;
-        if (byKey.has(nk) && !seen.has(nk)) { seen.add(nk); todo.push(byKey.get(nk)); }
-      }
-    }
-    if (part.length > best.length) best = part;
-  }
-  return best;
-}
-
-// Cells -> a playable shape with the base piece's id, name, level, tags...
-function toShape(base, cells, k) {
+// Cells -> a raw entry with the base piece's id, name, level, tags...
+function toRaw(base, cells, k) {
   if (!cells.length) return null;
   const minX = Math.min(...cells.map(c => c.x)), minY = Math.min(...cells.map(c => c.y));
   const W = Math.max(...cells.map(c => c.x)) - minX + 1, H = Math.max(...cells.map(c => c.y)) - minY + 1;
@@ -151,10 +142,9 @@ function toShape(base, cells, k) {
     grid[by][bx] = "X";
     for (let py = 0; py < k; py++) for (let px = 0; px < k; px++) color[by * k + py][bx * k + px] = c.pixels[py][px];
   }
-  const [shape] = loadAndNormaliseShapes([{
+  return {
     id: base.id, name: base.name, grid: grid.map(r => r.join("")), color,
     difficulty: base.difficulty, frequency: base.frequency, tags: base.tags,
     noShake: base.noShake, rotation: base.rotationSpec ?? undefined,
-  }]);
-  return shape;
+  };
 }

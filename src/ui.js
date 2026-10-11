@@ -75,15 +75,15 @@ function createNameLayer(nameLayerEl) {
     nameLayerEl.innerHTML = "";
   }
 
-  // `effect`: optional line shown under the name (powerups).
-  function setName(name, effect = "") {
+  // `effect`: optional line shown under the name (powerups); `cls`: its class (for its colours).
+  function setName(name, effect = "", cls = "") {
     if (!name) {
       clear();
       return;
     }
 
     const nextEl = document.createElement("div");
-    nextEl.className = "nameText enterFromRight" + (effect ? " powerup" : "");
+    nextEl.className = "nameText enterFromRight" + (effect ? ` powerup cls-${cls || "combo"}` : "");
 
     const main = document.createElement("span");
     main.className = "nameMain";
@@ -113,7 +113,7 @@ function createNameLayer(nameLayerEl) {
 
   function setShape(shape) {
     if (!shape) { clear(); return; }
-    setName(shape.name, shape.powerup?.description ?? "");
+    setName(shape.name, shape.powerup?.description ?? "", shape.powerup?.cls ?? "");
   }
 
   return { setName, setShape, clear };
@@ -309,6 +309,10 @@ export function bindUI({ state, renderer, sound, achievements }) {
   // Level 6: remember that it has unlocked in this browser (only used if level6.persist)
   const LEVEL6_KEY = "extris.level6.v1";
   state.level6Remembered = store.get(LEVEL6_KEY) === "1";
+  // the last level 6 sets served, so the next game doesn't open with the same one
+  const LEVEL6_RECENT_KEY = "extris.level6.recent.v1";
+  state.level6Recent = store.getJSON(LEVEL6_RECENT_KEY, []);
+  let savedRecent = state.level6Recent;
 
   const OPENINGS_KEY = "extris.openings.v1";
   let opening = [];
@@ -334,6 +338,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
           opening.push(d.shape.id);
           if (opening.length >= (agCfg.drops ?? 20)) saveOpening();
         }
+        if (state.level6Recent !== savedRecent) { savedRecent = state.level6Recent; store.setJSON(LEVEL6_RECENT_KEY, savedRecent); }
         nameLayer.setShape(d.shape);
         renderer.drawNextSilhouette(d.next);
         if (d.shape.powerup) sound.play("powerupSpawn");
@@ -523,7 +528,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
     cvs.className = "demo";
     row.appendChild(cvs);
     const txt = document.createElement("div");
-    txt.innerHTML = `<div class="demoName">${escapeHtml(title ?? shape.name)}</div>${text}`;
+    txt.innerHTML = `<div class="demoName cls-${shape.powerup?.cls ?? "combo"}">${escapeHtml(title ?? shape.name)}</div>${text}`;
     row.appendChild(txt);
     return { row, demo: createDemo(cvs, shape, { cell }) };
   }
@@ -557,6 +562,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
     void inClass;
     $("introKicker").textContent = "Shiny Piece!";
     $("introName").textContent = info.name;
+    $("introName").className = `introName cls-${pu.cls}`;
     $("introPiece").textContent = shape.name;
     $("introClass").textContent = info.text;
     const cvs = $("introDemo");

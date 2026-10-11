@@ -87,9 +87,9 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
     return base.replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
   }
 
-  function allowedRotationIndices(rotation, isPowerup) {
-    // Powerups don't rotate unless their definition says so.
-    const mode = rotation?.mode ?? (isPowerup ? "none" : "any");
+  function allowedRotationIndices(rotation) {
+    // Every piece turns unless its definition says not to (a powerup's effect never turns with it)
+    const mode = rotation?.mode ?? "any";
     if (mode === "none") return [0];
     if (mode === "custom" && Array.isArray(rotation.allowed)) {
       const ok = [...new Set(rotation.allowed.map(n => n | 0).filter(n => n >= 0 && n <= 3))].sort();
@@ -119,7 +119,7 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
     // --- generate all 4 rotations, then keep the allowed ones ---
     const allRotations = [baseMat];
     for (let i = 1; i < 4; i++) allRotations.push(rotateMatrix90CW(allRotations[i - 1]));
-    const allowed = allowedRotationIndices(s.rotation, !!s.powerup);
+    const allowed = allowedRotationIndices(s.rotation);
     const rotations = allowed.map(i => allRotations[i]);
 
     // --- style defaults + baseColor selection for shading ---

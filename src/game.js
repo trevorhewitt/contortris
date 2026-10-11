@@ -333,13 +333,14 @@ function tryMovePhantom(state, dx, dy) {
     if (mat[y][x] && (nx + x < 0 || nx + x >= CONFIG.board.cols)) return false;
   }
   const target = phantomLandingY(state.board, nx, mat);
-  if (target === null) return false;
+  // (never upwards: no moving into a column whose landing spot is above where it already is)
+  if (target === null || target < state.active.y) return false;
   const ny = state.active.y + dy;
   if (dy > 0 && ny > target) return false;
   if (dx !== 0 || dy !== 0) cancelLock(state);
   if (dx !== 0) { state.active.unkickedX = null; state.active.steered = true; }
   state.active.x = nx;
-  state.active.y = Math.min(ny, target);
+  state.active.y = ny;
   return true;
 }
 
@@ -360,12 +361,12 @@ export function tryMove(state, dx, dy) {
   return false;
 }
 
-// Rotating. Small pieces turn about their top-left corner (as they always have); big ones
-// (CONFIG.rotation.centrePivotFrom blocks or more across) turn about their centre, so they don't
-// jump sideways. A turned piece that would stick out past a wall is pushed back inside, so even
-// a board-wide piece can always turn; then a few small nudges (sideways, then up) are tried if
-// it still doesn't fit. A piece pushed off a wall by one turn goes back where it was on the next
-// turn, as long as the player hasn't moved it sideways in between (active.unkickedX).
+// Turning a piece. It turns about its top-left corner, and if it doesn't fit there it may shift a
+// column or two sideways, but only to a spot it could have slid to (never through blocks) and
+// never upwards. Only when the turned piece would stick out past a wall (a very long piece near
+// an edge, like the giant hot dog) is it pushed back inside, however far that takes; the next
+// turn then puts it back where it was, as long as the player hasn't moved it sideways in between
+// (active.unkickedX).
 export function tryRotate(state) {
   const a = state.active;
   if (!a) return false;
@@ -375,59 +376,47 @@ export function tryRotate(state) {
   const nextIdx = (a.rotIdx + 1) % shape.rotations.length;
   const curMat = shape.rotations[a.rotIdx];
   const nextMat = shape.rotations[nextIdx];
-  const piv = rotationPivot(shape, curMat, nextMat);
-
-  // where the turned piece would sit with no nudging at all
-  const baseX = (a.unkickedX ?? a.x) + piv.dx;
-  const baseY = a.y + piv.dy;
+  const cols = CONFIG.board.cols;
   const w = nextMat[0].length;
-  const inX = Math.max(0, Math.min(CONFIG.board.cols - w, baseX)); // never cropped by a wall
+  const phantom = isPhantom(state);
 
-  const big = Math.max(w, nextMat.length) >= (CONFIG.rotation?.centrePivotFrom ?? 5);
-  const kicks = [[0, 0], [-1, 0], [1, 0], [-2, 0], [2, 0], [0, -1], [-1, -1], [1, -1]];
-  if (big) kicks.push([0, -2], [-1, -2], [1, -2]);
+  const baseX = a.unkickedX ?? a.x;                    // (back where it was before a push)
+  const inX = Math.max(0, Math.min(cols - w, baseX)); // pushed inside only if a wall would crop it
+  const pushed = inX !== baseX;
 
-  const fitsAt = isPhantom(state)
-    // phantoms only care about the walls, and must still have somewhere to land
-    ? (nx) => {
-      for (let y = 0; y < nextMat.length; y++) for (let x = 0; x < w; x++) {
-        if (nextMat[y][x] && (nx + x < 0 || nx + x >= CONFIG.board.cols)) return null;
-      }
-      return phantomLandingY(state.board, nx, nextMat);
+  const insideWalls = (nx, mat) => {
+    for (let y = 0; y < mat.length; y++) for (let x = 0; x < mat[0].length; x++) {
+      if (mat[y][x] && (nx + x < 0 || nx + x >= cols)) return false;
     }
-    : null;
+    return true;
+  };
+  // could the piece, as it is now, slide sideways from where it is to column nx?
+  const canSlide = (nx) => {
+    const step = Math.sign(nx - a.x);
+    for (let x = a.x + step; step !== 0 && x !== nx + step; x += step) {
+      if (phantom ? !insideWalls(x, curMat) : collides(state, x, a.y, curMat)) return false;
+    }
+    return true;
+  };
 
-  for (const [kx, ky] of kicks) {
-    const nx = inX + kx;
-    let ny = baseY + ky;
-    if (fitsAt) {
-      const target = fitsAt(nx);
-      if (target === null) continue;
-      ny = Math.min(ny, target);
-    } else if (collides(state, nx, ny, nextMat)) {
+  for (const k of pushed ? [0] : [0, -1, 1, -2, 2]) {
+    const nx = inX + k;
+    if (phantom) {
+      if (!insideWalls(nx, nextMat)) continue;
+      const target = phantomLandingY(state.board, nx, nextMat);
+      if (target === null || target < a.y) continue; // it would have to go up
+    } else if (collides(state, nx, a.y, nextMat)) {
       continue;
     }
+    if (k !== 0 && !canSlide(nx)) continue;
     a.rotIdx = nextIdx;
     a.x = nx;
-    a.y = ny;
-    a.unkickedX = nx !== baseX ? baseX : null;
+    a.unkickedX = pushed ? baseX : null;
     a.steered = true;
     cancelLock(state);
     return true;
   }
   return false;
-}
-
-// How far the top-left corner moves when a piece turns from `cur` to `next`. Big pieces keep
-// their centre (rounded so that two turns always add up to no movement at all: turning can never
-// walk a piece anywhere); small ones keep their top-left corner.
-function rotationPivot(shape, cur, next) {
-  const W = cur[0].length, H = cur.length;
-  if (W === next[0].length && H === next.length) return { dx: 0, dy: 0 };
-  if (Math.max(W, H) < (CONFIG.rotation?.centrePivotFrom ?? 5)) return { dx: 0, dy: 0 };
-  const W0 = shape.rotations[0][0].length, H0 = shape.rotations[0].length;
-  const sign = (W === W0 && H === H0) ? 1 : -1; // turning away from the drawn orientation, or back
-  return { dx: sign * Math.floor((W0 - H0) / 2), dy: sign * Math.ceil((H0 - W0) / 2) };
 }
 
 /* =========================

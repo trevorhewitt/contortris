@@ -6,7 +6,7 @@ import { touchArea, applyBlast, applyGoo, phantomLandingY, resolveArea, normalis
 import { loadShapes } from "../src/shapes.js";
 import { SHAPES } from "../shapes/main_shapes.js";
 import { makeRng } from "../src/util.js";
-import { createGameState, startRun, hardDropAndLock, on, updateGame, tryRotate } from "../src/game.js";
+import { createGameState, startRun, hardDropAndLock, on, updateGame, tryRotate, tryMove } from "../src/game.js";
 
 const mk = (lines) => lines.map(l => [...l].map(ch => (ch === "." ? null : { ch })));
 const show = (b) => b.map(r => r.map(c => (c ? c.ch : ".")).join(""));
@@ -152,17 +152,42 @@ test("combo: destroys a row, then its column falls", () => {
   assert.equal(fx.moves.length, 1, "the block in its column fell into the hole");
 });
 
-test("phantoms rotate, even while overlapping blocks", () => {
+test("phantoms rotate inside the stack, but never move up", () => {
   const { shapes, powerups } = loadShapes(SHAPES);
   const state = createGameState(shapes, powerups, { rng: makeRng(3) });
   startRun(state, "normal");
   const worm = powerups.find(p => p.id === "ghost_worm");
   assert.ok(worm.rotations.length > 1, "ghost_worm has rotations");
-  // fill the board's lower half so the phantom sits inside blocks
-  for (let y = 10; y < state.board.length; y++) for (let x = 0; x < state.board[0].length; x++) state.board[y][x] = (x === 5 && y > 20) ? null : { pid: 999 };
+  const R = state.board.length, C = state.board[0].length;
+  // the lower half full, with a 4x4 cavity at the bottom: the worm fits there either way round
+  const fill = (hole) => { for (let y = 10; y < R; y++) for (let x = 0; x < C; x++) state.board[y][x] = hole(x, y) ? null : { pid: 999 }; };
+  fill((x, y) => x >= 4 && x <= 7 && y >= R - 4);
   state.active = { shape: worm, rotIdx: 0, x: 5, y: 12 };
   assert.ok(tryRotate(state), "rotated inside the stack");
   assert.equal(state.active.rotIdx, 1);
+  assert.equal(state.active.y, 12, "no jump");
+  // a one-wide slot only fits it upright: turning it flat would mean going back up, so no
+  fill((x, y) => x === 5 && y >= R - 4);
+  state.active = { shape: worm, rotIdx: 0, x: 5, y: 14 };
+  assert.equal(tryRotate(state), false, "can't turn: it would have to go up");
+  assert.equal(state.active.y, 14);
+  // and it can't slide sideways into a column whose landing spot is above it
+  assert.equal(tryMove(state, 2, 0), false, "no sideways move upwards");
+  assert.equal(state.active.y, 14);
+});
+
+test("rotation: small pieces never hop over blocks, and never move up", () => {
+  const { shapes, powerups } = loadShapes(SHAPES);
+  const state = createGameState(shapes, powerups, { rng: makeRng(5) });
+  startRun(state, "extreme");
+  const [bar] = loadShapes([{ id: "bar3", name: "bar", grid: ["X", "X", "X"], difficulty: 1 }]).shapes;
+  const R = state.board.length;
+  // a one-wide well at x = 3, walls of blocks either side, open board beyond them
+  state.board = state.board.map((row, y) => row.map((_, x) => (y >= R - 6 && x !== 3 && x !== 7 && x !== 8) ? { pid: 999 } : null));
+  state.active = { shape: bar, rotIdx: 0, x: 3, y: R - 4 };
+  assert.equal(tryRotate(state), false, "no room to turn in the well, and no hopping out of it");
+  assert.equal(state.active.x, 3);
+  assert.equal(state.active.y, R - 4, "not lifted out either");
 });
 
 test("combos actually turn up, and soon after two classes are in", () => {

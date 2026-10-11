@@ -9,6 +9,8 @@
 //
 // state.devLevel6: "auto" (the rule above), "on" or "off" — the dev mode override.
 // state.level6Remembered: true if it ever unlocked in this browser (used if level6.persist).
+// state.level6Recent: ids of the last groups served (the UI keeps them across games), so the
+// same set doesn't come again straight away, even in the next game.
 
 import { CONFIG } from "../config.js";
 import { sampleByWeight } from "./util.js";
@@ -142,11 +144,24 @@ export function maybeStartGroup(state) {
     if (sel.dropIndex - l6.lastEnd < (cfg.cooldownDrops ?? 30)) return null;
     if (state.rng() >= (cfg.chancePerDrop ?? 0.04)) return null;
   }
-  const group = sampleByWeight(state.groups, g => g.frequency * Math.pow(cfg.repeatPenalty ?? 0.15, l6.seen.get(g.id) ?? 0), state.rng);
-  const pieces = expandGroup(group, state.rng);
-  // only if the whole run fits on the board (a group can't be cleared until it's all down)
-  if (stackRows(state) + roomNeeded(pieces) > state.board.length - (cfg.headroom ?? 3)) return null;
-  return startGroup(state, group, pieces);
+  // No set comes round again until every other one has had its turn this game, and the last
+  // ones served (this game or the one before) wait if anything else can go.
+  const live = state.groups.filter(g => g.frequency > 0);
+  const turns = (g) => l6.seen.get(g.id) ?? 0;
+  const least = Math.min(...live.map(turns));
+  let pool = live.filter(g => turns(g) === least);
+  const recent = state.level6Recent ?? [];
+  const fresh = pool.filter(g => !recent.includes(g.id));
+  if (fresh.length) pool = fresh;
+  // ...and only one whose whole run fits on the board (a set can't be cleared until it's down)
+  const room = state.board.length - (cfg.headroom ?? 3) - stackRows(state);
+  while (pool.length) {
+    const group = sampleByWeight(pool, g => g.frequency, state.rng);
+    const pieces = expandGroup(group, state.rng);
+    if (roomNeeded(pieces) <= room) return startGroup(state, group, pieces);
+    pool = pool.filter(g => g !== group);
+  }
+  return null;
 }
 
 // Rows of board a run of pieces needs: their blocks spread over the width, plus some for the
@@ -157,8 +172,11 @@ export function roomNeeded(pieces) {
   let blocks = 0, stacked = 0;
   for (const s of pieces) {
     const mat = s.rotations[0];
-    blocks += mat.flat().filter(Boolean).length;
-    if (mat[0].length > cols / 2) stacked += mat.length;
+    const n = mat.flat().filter(Boolean).length;
+    blocks += n;
+    // (a sparse one, like the asteroid belt, mostly falls into its own gaps)
+    const fill = n / (mat.length * mat[0].length);
+    if (mat[0].length > cols / 2) stacked += fill >= 0.5 ? mat.length : Math.ceil(mat.length * fill * 2);
   }
   return Math.max(stacked, Math.ceil((blocks / cols) * (CONFIG.assist.level6?.roomFactor ?? 1.25)));
 }
@@ -170,6 +188,7 @@ export function startGroup(state, group, pieces = null) {
   l6.queue = pieces ?? expandGroup(group, state.rng);
   l6.group = group.id;
   l6.seen.set(group.id, (l6.seen.get(group.id) ?? 0) + 1);
+  state.level6Recent = [group.id, ...(state.level6Recent ?? []).filter(id => id !== group.id)].slice(0, CONFIG.assist.level6?.rememberRecent ?? 2);
   return nextGroupPiece(state);
 }
 

@@ -303,3 +303,30 @@ test("pieces spawn a little off-centre, mostly near the middle", () => {
   assert.ok((xs.get(0) ?? 0) > (xs.get(2) ?? 0), "the middle is the most common");
   assert.ok([...xs.keys()].every(o => Math.abs(o) <= CONFIG.spawn.jitter));
 });
+
+test("level 6: no set comes round again until every other one has, even into the next game", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(31), groups: GROUPS });
+  const firsts = [];
+  const runGame = () => {
+    const seq = [];
+    on(state, (t, d) => { if (t === "spawn" && d.shape.difficulty === 6 && state.pieceSel.level6.group && state.pieceSel.level6.queue.length >= 0) seq.push(d.shape.id); });
+    startRun(state, "normal");
+    state.devLevel6 = "on";
+    const order = [];
+    for (let i = 0; i < 600 && !state.gameOver; i++) {
+      const before = state.pieceSel.level6.seen.size + [...state.pieceSel.level6.seen.values()].reduce((a, b) => a + b, 0);
+      setStack(state, 1); dropDot(state);
+      const g = state.pieceSel.level6.group;
+      if (g && order[order.length - 1] !== g) order.push(g);
+    }
+    return order;
+  };
+  const live = normaliseGroups(GROUPS, shapes).length;
+  const a = runGame();
+  assert.ok(a.length >= live + 1, `groups in game 1: ${a.join()}`);
+  // the first `live` groups are all different, and no group follows itself
+  assert.equal(new Set(a.slice(0, live)).size, live, a.join());
+  for (let i = 1; i < a.length; i++) assert.notEqual(a[i], a[i - 1]);
+  const b = runGame();
+  assert.notEqual(b[0], a[a.length - 1], "the next game doesn't open with the last set");
+});

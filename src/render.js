@@ -6,7 +6,7 @@ import { CONFIG } from "../config.js";
 import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour } from "./util.js";
 import { getShapePaint } from "./shapes.js";
 import { getActiveMatrix, getGhostDropY } from "./game.js";
-import { resolvePowerupArea, computeEffect, isPhantomPowerup } from "./powerups.js";
+import { resolvePowerupArea, computeEffect, isPhantomPowerup, classOf } from "./powerups.js";
 
 const DEFAULT_STYLE = {};
 
@@ -229,20 +229,33 @@ export function drawIcon(ctx, grid, x, y, sizePx) {
 //   ghost (Phantomz): faint diagonal stripes drifting past, flickering in and out.
 const MARK_STYLE = { destroyer: "shrink", acid: "shrink", expander: "burst", goo: "burst", phantom: "ghost", gravity: "line", blast: "out" };
 
+// The colour of a highlighted cell: its class's gradient (CONFIG.fx.powerup.classColours),
+// shimmering back and forth across the cells; full rainbow for anything without one.
+export function markColour(type, now, x, y) {
+  const o = CONFIG.fx.powerup.overlay;
+  const pal = CONFIG.fx.powerup.classColours?.[classOf(type)];
+  const t = now * o.hueDegPerMs + (x + y) * o.hueStepPerCell;
+  if (!pal) return { h: t % 360, s: 100, l: 60 };
+  const [h0, h1] = pal.hues;
+  const span = ((h1 - h0) % 360 + 360) % 360 || 360;
+  const tri = 1 - Math.abs(((t / span) % 2) - 1); // 0 -> 1 -> 0 ...
+  return { h: (h0 + span * tri) % 360, s: pal.sat ?? 100, l: pal.light ?? 60 };
+}
+
 export function drawPowerupMark(ctx, { type, direction }, px, py, cell, now, x, y, dist, effective, intensity = 1, centre = null) {
   const o = CONFIG.fx.powerup.overlay;
   const cycle = now / o.periodMs;
-  const hue = (now * o.hueDegPerMs + (x + y) * o.hueStepPerCell) % 360;
+  const c = markColour(type, now, x, y);
   const fillA = clamp01((effective ? o.fillAlpha : o.idleFillAlpha) * intensity);
   const markA = clamp01((effective ? o.markAlpha : o.idleMarkAlpha) * intensity);
 
   ctx.globalCompositeOperation = "source-over";
-  ctx.fillStyle = hsla(hue, 100, 60, fillA);
+  ctx.fillStyle = hsla(c.h, c.s, c.l, fillA);
   ctx.fillRect(px, py, cell, cell);
 
   // marks glow additively so they stay visible over bright pixel art
   ctx.globalCompositeOperation = "lighter";
-  const mark = hsla(hue, 100, 62, markA);
+  const mark = hsla(c.h, c.s, Math.min(92, c.l + 2), markA);
   ctx.strokeStyle = mark;
   ctx.fillStyle = mark;
 
@@ -856,16 +869,17 @@ export function createRenderer(boardCanvas, nextCanvas) {
     bctx.globalAlpha = 1;
   }
 
-  // Animated rainbow outline around a powerup piece (falling, or charging).
-  function drawPowerupShimmer(cells, now, boost = 0) {
+  // Animated outline around a powerup piece (falling, or charging), in its class's colours
+  // (rainbow for combos).
+  function drawPowerupShimmer(cells, now, boost = 0, type = "combo") {
     // cells: [{x, y, mask}] in board coords
     const alpha = clamp01(CONFIG.fx.powerup.shimmerAlpha + boost * 0.1);
     bctx.save();
     bctx.lineWidth = 1.5;
     for (const { x, y, mask } of cells) {
       const px = x * cell, py = y * cell;
-      const hue = (now * 0.25 + (x + y) * 40) % 360;
-      bctx.strokeStyle = hsla(hue, 100, 65, alpha);
+      const c = markColour(type, now * 2, x * 2, y * 2);
+      bctx.strokeStyle = hsla(c.h, c.s, Math.max(c.l, 62), alpha);
       bctx.beginPath();
       if (mask & EDGE_T) { bctx.moveTo(px, py + 0.75); bctx.lineTo(px + cell, py + 0.75); }
       if (mask & EDGE_B) { bctx.moveTo(px, py + cell - 0.75); bctx.lineTo(px + cell, py + cell - 0.75); }
@@ -873,7 +887,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       if (mask & EDGE_R) { bctx.moveTo(px + cell - 0.75, py); bctx.lineTo(px + cell - 0.75, py + cell); }
       bctx.stroke();
       if (boost > 0) {
-        bctx.fillStyle = hsla(hue, 100, 70, 0.25 * boost);
+        bctx.fillStyle = hsla(c.h, c.s, Math.max(c.l, 68), 0.25 * boost);
         bctx.fillRect(px, py, cell, cell);
       }
     }
@@ -1141,13 +1155,13 @@ export function createRenderer(boardCanvas, nextCanvas) {
       drawPowerupOverlay(state, ghostY, now);
 
       if (state.active?.shape.powerup) {
-        drawPowerupShimmer(activeShimmerCells(state), now);
+        drawPowerupShimmer(activeShimmerCells(state), now, 0, state.active.shape.powerup.type);
       } else if (state.effect?.phase === "charge") {
         const e = state.effect;
         const cells = e.placed
           .filter(({ x, y }) => state.board[y][x]?.pid === e.pid)
           .map(({ x, y }) => ({ x, y, mask: boardEdgeMask(state.board, x, y, e.pid) }));
-        drawPowerupShimmer(cells, now, clamp01(e.elapsedMs / e.durationMs));
+        drawPowerupShimmer(cells, now, clamp01(e.elapsedMs / e.durationMs), e.pu?.type);
       }
 
       drawFlash(state);

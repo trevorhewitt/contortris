@@ -82,9 +82,9 @@
  *                             (CONFIG.assist.powerups.bad). Keep these rare and help 1.
  * }
  *
- * For powerups, `frequency` is compared with the other powerups only. Powerups don't rotate
- * unless rotation.mode is "any". Even then only the piece turns: the highlighted area never
- * rotates (it stays as drawn, centred on the piece).
+ * For powerups, `frequency` is compared with the other powerups only. Powerups turn like any
+ * other piece, but only the piece turns: the highlighted area never rotates (it stays as drawn,
+ * centred on the piece).
  */
 
 export const SHAPES = [
@@ -2507,7 +2507,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.8,
     tags: [
@@ -3741,7 +3741,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -3867,7 +3867,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
     claudeDraft: true,
@@ -3964,7 +3964,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
     claudeDraft: true,
@@ -3998,7 +3998,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -4030,7 +4030,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.8,
   },
@@ -4061,7 +4061,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -4096,7 +4096,7 @@ export const SHAPES = [
         "help": 4.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -4127,7 +4127,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
     claudeDraft: true,
@@ -4158,7 +4158,7 @@ export const SHAPES = [
         "help": 5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.5,
     claudeDraft: true,
@@ -4192,7 +4192,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.7,
     claudeDraft: true,
@@ -4222,7 +4222,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -4251,7 +4251,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
     claudeDraft: true,
@@ -4280,7 +4280,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.4,
   },
@@ -4335,7 +4335,7 @@ export const SHAPES = [
         "help": 1.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -4430,7 +4430,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.8,
     claudeDraft: true,
@@ -4533,7 +4533,7 @@ export const SHAPES = [
         "help": 1.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
     claudeDraft: true,
@@ -4724,7 +4724,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -4822,7 +4822,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
   },
@@ -4887,7 +4887,7 @@ export const SHAPES = [
         }
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -4919,7 +4919,7 @@ export const SHAPES = [
         }
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -4950,7 +4950,7 @@ export const SHAPES = [
         }
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.8,
   },
@@ -4983,7 +4983,7 @@ export const SHAPES = [
         }
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5047,7 +5047,7 @@ export const SHAPES = [
         }
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5079,7 +5079,7 @@ export const SHAPES = [
         }
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.7,
   },
@@ -5113,7 +5113,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5150,7 +5150,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5183,7 +5183,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -5215,7 +5215,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5252,7 +5252,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5289,7 +5289,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5323,7 +5323,7 @@ export const SHAPES = [
         }
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5360,7 +5360,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5445,7 +5445,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5531,7 +5531,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5616,7 +5616,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -5701,7 +5701,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5787,7 +5787,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5873,7 +5873,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -5958,7 +5958,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -6044,7 +6044,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
     claudeDraft: true,
@@ -6233,7 +6233,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
     claudeDraft: true,
@@ -6263,7 +6263,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
     claudeDraft: true,
@@ -6296,7 +6296,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.7,
     claudeDraft: true,
@@ -6327,7 +6327,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.8,
   },
@@ -6355,7 +6355,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
     claudeDraft: true,
@@ -6451,7 +6451,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.7,
   },
@@ -6484,7 +6484,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -6512,7 +6512,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -6540,7 +6540,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -6574,7 +6574,7 @@ export const SHAPES = [
         "bad": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.3,
   },
@@ -6630,7 +6630,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -6658,7 +6658,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -6685,7 +6685,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
   },
@@ -6777,7 +6777,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -6872,7 +6872,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -6953,7 +6953,7 @@ export const SHAPES = [
         "help": 1
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -7049,7 +7049,7 @@ export const SHAPES = [
         "help": 1.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -7143,7 +7143,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -7239,7 +7239,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -7333,7 +7333,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -7453,7 +7453,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -7482,7 +7482,7 @@ export const SHAPES = [
         "help": 4
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -7545,7 +7545,7 @@ export const SHAPES = [
         "help": 5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -7609,7 +7609,7 @@ export const SHAPES = [
         "help": 1.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -7643,7 +7643,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.89,
   },
@@ -7674,7 +7674,7 @@ export const SHAPES = [
         }
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.8,
   },
@@ -7709,7 +7709,7 @@ export const SHAPES = [
         }
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -7742,7 +7742,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -7771,7 +7771,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -7800,7 +7800,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -7834,7 +7834,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -7869,7 +7869,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -7905,7 +7905,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -7989,7 +7989,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -8073,7 +8073,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -8157,7 +8157,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -8242,7 +8242,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -8327,7 +8327,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -8602,7 +8602,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.98,
   },
@@ -8721,7 +8721,7 @@ export const SHAPES = [
         "help": 1.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -8835,7 +8835,7 @@ export const SHAPES = [
         "help": 1.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -8892,7 +8892,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -8941,7 +8941,7 @@ export const SHAPES = [
         "help": 4
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -9072,7 +9072,7 @@ export const SHAPES = [
         "help": 1
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -9191,7 +9191,7 @@ export const SHAPES = [
         "help": 1
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -9317,7 +9317,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -9367,7 +9367,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -9405,7 +9405,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.8,
     tags: [
@@ -9506,7 +9506,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.8,
     tags: [
@@ -9541,7 +9541,7 @@ export const SHAPES = [
         "help": 5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.57,
     tags: [
@@ -9578,7 +9578,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.58,
     tags: [
@@ -9617,7 +9617,7 @@ export const SHAPES = [
         "help": 5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.5,
   },
@@ -9653,7 +9653,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
   },
@@ -9686,7 +9686,7 @@ export const SHAPES = [
         "help": 1
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -9716,7 +9716,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.95,
   },
@@ -9750,7 +9750,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
   },
@@ -9873,7 +9873,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
   },
@@ -9968,7 +9968,7 @@ export const SHAPES = [
         "help": 1.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -10087,7 +10087,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
   },
@@ -10206,7 +10206,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
     claudeDraft: true,
@@ -10398,7 +10398,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.98,
   },
@@ -10492,7 +10492,7 @@ export const SHAPES = [
         "help": 3
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -10586,7 +10586,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -10682,7 +10682,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -10774,7 +10774,7 @@ export const SHAPES = [
         "help": 1
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -10992,7 +10992,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -11021,7 +11021,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.9,
   },
@@ -11057,7 +11057,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -11092,7 +11092,7 @@ export const SHAPES = [
         "bad": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.3,
   },
@@ -11148,7 +11148,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -11184,7 +11184,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -11214,7 +11214,7 @@ export const SHAPES = [
         "help": 1
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -11249,7 +11249,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -11299,7 +11299,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -11350,7 +11350,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -11464,7 +11464,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -11579,7 +11579,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -11632,7 +11632,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -11682,7 +11682,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -11799,7 +11799,7 @@ export const SHAPES = [
         "help": 4.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 1,
   },
@@ -11911,7 +11911,7 @@ export const SHAPES = [
         "help": 2.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -12037,7 +12037,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -12087,7 +12087,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -12124,7 +12124,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -12162,7 +12162,7 @@ export const SHAPES = [
         "help": 5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -12199,7 +12199,7 @@ export const SHAPES = [
         "starter": true
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.8,
   },
@@ -12348,7 +12348,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -12464,7 +12464,7 @@ export const SHAPES = [
         "help": 2
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -12580,7 +12580,7 @@ export const SHAPES = [
         "help": 1.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -12710,7 +12710,7 @@ export const SHAPES = [
         "help": 5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -12844,7 +12844,7 @@ export const SHAPES = [
         "help": 3.5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0,
   },
@@ -12977,7 +12977,7 @@ export const SHAPES = [
         "help": 5
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.4,
   },
@@ -13051,7 +13051,7 @@ export const SHAPES = [
         "intro": "Deletes a large circle of blocks around where it lands. Some days are like this."
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.12,
     claudeDraft: true,
@@ -13087,7 +13087,7 @@ export const SHAPES = [
         "intro": "Deletes a random scatter of blocks around where it lands, never the same twice. Nothing means anything."
       },
     rotation: {
-        "mode": "none"
+        "mode": "any"
       },
     frequency: 0.12,
     claudeDraft: true,
@@ -13496,13 +13496,13 @@ export const SHAPES = [
     id: "schnauzers",
     name: "a bourgeois stock of brown schnauzers",
     grid: [
-        "..XXXXX..XX..",
-        "XXXXXXXXXXXXX",
-        "XXXXXXXXXXXXX",
-        "XXXXXXXXXXXXX",
-        "XX.....XX..XX"
+        "..XXXXX..XX",
+        "XXXXXXXXXXX",
+        "XXXXXXXXXXX",
+        "XXXXXXXXXXX",
+        "XX.....XX.."
       ],
-    color: [["","","","","","","","","","","#3f2618","#492d1c","#6b432c","#6b432c","#6b432c","#6b432c","#6b432c","#6b432c","#492d1c","#492d1c","#b8b3ab","#d6d0c6","#d6d0c6","#d6d0c6","#8c7eb4","#8c7eb4","#8c7eb4","#8c7eb4","#8c7eb4","#8c7eb4","#8c7eb4","#c46378","#96364d","#c46378","#5b814c","","","","","","","","","","","#442a1b","#50311f","#332d43","#332d43","#332d43","#332d43","#332d43","#332d43","#50311f","#442a1b","","","","","","","","","",""],["","","","","","","","","","","#492d1c","#573521","#573521","#7f5034","#9d6a46","#9d6a46","#7f5034","#573521","#573521","#573521","#c2b8aa","#fff8ec","#fff8ec","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#e9768f","#e9768f","#b2405c","#c46378","","","","","","","","","","","#50311f","#5f3a25","#3d3550","#625878","#3d3550","#3d3550","#3d3550","#3d3550","#5f3a25","#50311f","","","","","","","","","",""],["","","","","","","","","","","#6b432c","#573521","#573521","#7f5034","#7f5034","#7f5034","#7f5034","#573521","#573521","#7f5034","#7f5334","#e2d6c6","#fff8ec","#a796d6","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#a796d6","#7fb36a","#e9768f","#7c5132","","","","","","","","","","","#50311f","#5f3a25","#3d3550","#625878","#3d3550","#3d3550","#3d3550","#3d3550","#5f3a25","#50311f","","","","","","","","","",""],["","","","","","","","","","","#6b432c","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#9081b8","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#8c7eb4","","","","","","","","","","","#50311f","#5f3a25","#8dbbe6","#8dbbe6","#8dbbe6","#8dbbe6","#8dbbe6","#8dbbe6","#5f3a25","#50311f","","","","","","","","","",""],["","","","","","","","","","","#6b432c","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#583723","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#563622","","","","","","","","","","","#50311f","#3d3550","#3d3550","#3d3550","#3d3550","#3d3550","#3d3550","#3d3550","#3d3550","#50311f","","","","","","","","","",""],["#472c1c","#523321","#c0778a","#83334f","#784e32","#784e32","#83334f","#c0778a","#523321","#523321","#6d452d","#7f5034","#24150e","#fff8ec","#7f5034","#7f5034","#fff8ec","#24150e","#7f5034","#7f5034","#583723","#664029","#664029","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#664029","#664029","#664029","#422a1c","#4d3120","#714931","#714931","#714931","#714931","#714931","#714931","#4d3120","#4d3120","#774a30","#f1e2c4","#f1e2c4","#f1e2c4","#8a5638","#8a5638","#f1e2c4","#f1e2c4","#f1e2c4","#8a5638","#40281a","#4a2f1e","#6c4631","#6c4631","#6c4631","#6c4631","#6c4631","#6c4631","#4a2f1e","#3f281a"],["#523321","#623d27","#9c3d5e","#e58ea4","#9c3d5e","#9c3d5e","#e58ea4","#9c3d5e","#623d27","#623d27","#6d452d","#7f5034","#7f5034","#7f5034","#22140d","#22140d","#7f5034","#7f5034","#7f5034","#7f5034","#583723","#664029","#94603c","#94603c","#f1e2c4","#f1e2c4","#94603c","#94603c","#94603c","#f1e2c4","#f1e2c4","#94603c","#94603c","#664029","#664029","#4f3221","#5c3a26","#5c3a26","#86573a","#a5744f","#a5744f","#86573a","#5c3a26","#5c3a26","#5c3a26","#774a30","#8a5638","#24150e","#fff8ec","#8a5638","#efc85a","#fff8ec","#24150e","#efc85a","#8a5638","#4c301f","#583824","#583824","#80533a","#9f6d4a","#9f6d4a","#80533a","#583824","#583824","#4a2f1e"],["#784e32","#623d27","#623d27","#8f5d3b","#9c3d5e","#9c3d5e","#8f5d3b","#623d27","#623d27","#8f5d3b","#6d452d","#7f5034","#7f5034","#f1e2c4","#22140d","#22140d","#f1e2c4","#7f5034","#7f5034","#7f5034","#583723","#664029","#94603c","#94603c","#24150e","#fff8ec","#94603c","#94603c","#94603c","#fff8ec","#24150e","#94603c","#94603c","#664029","#664029","#734b32","#5c3a26","#5c3a26","#86573a","#86573a","#86573a","#86573a","#5c3a26","#5c3a26","#86573a","#774a30","#8a5638","#8a5638","#8a5638","#22140d","#22140d","#efc85a","#efc85a","#8a5638","#8a5638","#6e4732","#583824","#583824","#80533a","#80533a","#80533a","#80533a","#583824","#583824","#6c4631"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#8f5d3b","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#6d452d","#7f5034","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#7f5334","#664029","#94603c","#94603c","#94603c","#94603c","#22140d","#22140d","#22140d","#94603c","#94603c","#94603c","#94603c","#664029","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#86573a","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#774a30","#8a5638","#8a5638","#f1e2c4","#22140d","#22140d","#f1e2c4","#8a5638","#a8842c","#8a5638","#6e4732","#f1e2c4","#f1e2c4","#f1e2c4","#80533a","#80533a","#f1e2c4","#f1e2c4","#f1e2c4","#6c4631"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#8f5d3b","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#6d452d","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5334","#664029","#94603c","#94603c","#94603c","#f1e2c4","#22140d","#22140d","#22140d","#f1e2c4","#94603c","#94603c","#94603c","#664029","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#86573a","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#774a30","#8a5638","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#a8842c","#8a5638","#6e4732","#f1e2c4","#f1e2c4","#f1e2c4","#80533a","#80533a","#f1e2c4","#f1e2c4","#f1e2c4","#6c4631"],["#784e32","#8f5d3b","#24150e","#fff8ec","#8f5d3b","#8f5d3b","#fff8ec","#24150e","#8f5d3b","#8f5d3b","#6d452d","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5334","#94603c","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#94603c","#94603c","#94603c","#734b32","#86573a","#24150e","#fff8ec","#86573a","#86573a","#fff8ec","#24150e","#86573a","#86573a","#774a30","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#a8842c","#8a5638","#6e4732","#80533a","#24150e","#fff8ec","#80533a","#80533a","#fff8ec","#24150e","#80533a","#6c4631"],["#784e32","#8f5d3b","#8f5d3b","#8f5d3b","#22140d","#22140d","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#6d452d","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5334","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#94603c","#94603c","#734b32","#86573a","#86573a","#86573a","#22140d","#22140d","#86573a","#86573a","#86573a","#86573a","#774a30","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#a8842c","#6e4732","#80533a","#80533a","#80533a","#22140d","#22140d","#80533a","#80533a","#80533a","#6c4631"],["#784e32","#8f5d3b","#8f5d3b","#f1e2c4","#22140d","#22140d","#f1e2c4","#8f5d3b","#8f5d3b","#8f5d3b","#6d452d","#7f5034","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#7f5034","#7f5034","#7f5334","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#94603c","#94603c","#734b32","#86573a","#86573a","#f1e2c4","#22140d","#22140d","#f1e2c4","#86573a","#86573a","#86573a","#774a30","#8a5638","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#8a5638","#a8842c","#6e4732","#80533a","#80533a","#f1e2c4","#22140d","#22140d","#f1e2c4","#80533a","#80533a","#6c4631"],["#784e32","#8f5d3b","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#8f5d3b","#8f5d3b","#6d452d","#86c7a4","#3b7458","#7f5034","#3b7458","#3b7458","#7f5034","#3b7458","#86c7a4","#7f5034","#7f5334","#94603c","#94603c","#94603c","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#94603c","#94603c","#94603c","#94603c","#734b32","#86573a","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#86573a","#86573a","#774a30","#8a5638","#8a5638","#8a5638","#aa774f","#aa774f","#8a5638","#8a5638","#8a5638","#8a5638","#6e4732","#80533a","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#80533a","#6c4631"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#6d452d","#86c7a4","#86c7a4","#3b7458","#3b7458","#3b7458","#3b7458","#86c7a4","#86c7a4","#7f5034","#7f5334","#fbf8f2","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#fbf8f2","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#774a30","#aa774f","#8a5638","#8a5638","#8a5638","#8a5638","#8a5638","#8a5638","#aa774f","#8a5638","#6e4732","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#6c4631"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#6d452d","#9d6a46","#7f5034","#7f5034","#7f5034","#7f5034","#7f5034","#7f5034","#9d6a46","#7f5034","#7f5334","#94603c","#cfc6ba","#fbf8f2","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#fbf8f2","#cfc6ba","#94603c","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#774a30","#aa774f","#8a5638","#8a5638","#8a5638","#8a5638","#8a5638","#8a5638","#aa774f","#8a5638","#6e4732","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#6c4631"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#6d452d","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#7f5034","#7f5334","#b5825a","#94603c","#94603c","#cfc6ba","#fbf8f2","#cfc6ba","#fbf8f2","#cfc6ba","#fbf8f2","#cfc6ba","#94603c","#94603c","#b5825a","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#774a30","#f1e2c4","#f1e2c4","#8a5638","#8a5638","#8a5638","#8a5638","#f1e2c4","#f1e2c4","#8a5638","#6e4732","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#6c4631"],["#784e32","#8f5d3b","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#8f5d3b","#8f5d3b","#6d452d","#f1e2c4","#f1e2c4","#7f5034","#66402a","#66402a","#7f5034","#f1e2c4","#f1e2c4","#7f5034","#7f5334","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#94603c","#94603c","#764d30","#94603c","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#734b32","#86573a","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#86573a","#86573a","#774a30","#f1e2c4","#f1e2c4","#8a5638","#6e452d","#6e452d","#8a5638","#f1e2c4","#f1e2c4","#8a5638","#6e4732","#80533a","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#80533a","#6c4631"],["#784e32","#8f5d3b","#8f5d3b","#8f5d3b","#ad7b52","#ad7b52","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#6d452d","#f1e2c4","#f1e2c4","#f1e2c4","#66402a","#66402a","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5334","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#94603c","#764d30","#764d30","#764d30","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#734b32","#86573a","#efcf6e","#efcf6e","#efcf6e","#efcf6e","#efcf6e","#efcf6e","#86573a","#86573a","#774a30","#f1e2c4","#f1e2c4","#f1e2c4","#6e452d","#6e452d","#f1e2c4","#f1e2c4","#f1e2c4","#8a5638","#6e4732","#80533a","#80533a","#ef9f7c","#9e4630","#ef9f7c","#9e4630","#80533a","#80533a","#6c4631"],["#784e32","#ad7b52","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#ad7b52","#8f5d3b","#98866a","#cabea5","#cabea5","#b09b7b","#563623","#563623","#b09b7b","#cabea5","#cabea5","#b09b7b","#98866a","#cabea5","#cabea5","#cabea5","#b09b7b","#7c5132","#634128","#634128","#634128","#7c5132","#b09b7b","#cabea5","#cabea5","#cabea5","#b09b7b","#734b32","#a5744f","#86573a","#86573a","#efc85a","#efc85a","#86573a","#86573a","#a5744f","#86573a","#98866a","#cabea5","#cabea5","#b09b7b","#5c3a26","#5c3a26","#b09b7b","#cabea5","#cabea5","#b09b7b","#6e4732","#9f6d4a","#80533a","#9e4630","#ef9f7c","#efc85a","#ef9f7c","#9e4630","#9f6d4a","#6c4631"],["#784e32","#ad7b52","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#ad7b52","#784e32","","","","","","","","","","","","","","","","","","","","","","","","","","#714931","#a5744f","#86573a","#efc85a","#a8842c","#a8842c","#efc85a","#86573a","#a5744f","#714931","","","","","","","","","","","#6c4631","#9f6d4a","#80533a","#ef9f7c","#efc85a","#a8842c","#efc85a","#ef9f7c","#9f6d4a","#6c4631"],["#784e32","#f1e2c4","#f1e2c4","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#f1e2c4","#f1e2c4","#784e32","","","","","","","","","","","","","","","","","","","","","","","","","","#714931","#f1e2c4","#f1e2c4","#86573a","#efc85a","#efc85a","#86573a","#f1e2c4","#f1e2c4","#714931","","","","","","","","","","","#6c4631","#f1e2c4","#f1e2c4","#9e4630","#ef9f7c","#efc85a","#ef9f7c","#9e4630","#f1e2c4","#6c4631"],["#784e32","#f1e2c4","#f1e2c4","#8f5d3b","#724a2f","#724a2f","#8f5d3b","#f1e2c4","#f1e2c4","#784e32","","","","","","","","","","","","","","","","","","","","","","","","","","#714931","#f1e2c4","#f1e2c4","#86573a","#6b462e","#6b462e","#86573a","#f1e2c4","#f1e2c4","#714931","","","","","","","","","","","#6c4631","#f1e2c4","#f1e2c4","#80533a","#ef9f7c","#9e4630","#ef9f7c","#80533a","#f1e2c4","#6c4631"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#724a2f","#724a2f","#f1e2c4","#f1e2c4","#f1e2c4","#784e32","","","","","","","","","","","","","","","","","","","","","","","","","","#714931","#f1e2c4","#f1e2c4","#f1e2c4","#6b462e","#6b462e","#f1e2c4","#f1e2c4","#f1e2c4","#714931","","","","","","","","","","","#6c4631","#f1e2c4","#f1e2c4","#f1e2c4","#ef9f7c","#66422e","#ef9f7c","#f1e2c4","#f1e2c4","#6c4631"],["#97856a","#cabea5","#cabea5","#b09b7b","#603e27","#603e27","#b09b7b","#cabea5","#cabea5","#97856a","","","","","","","","","","","","","","","","","","","","","","","","","","#97856a","#cabea5","#cabea5","#b09b7b","#5a3b27","#5a3b27","#b09b7b","#cabea5","#cabea5","#97856a","","","","","","","","","","","#97856a","#cabea5","#cabea5","#b09b7b","#853b28","#563727","#853b28","#cabea5","#cabea5","#97856a"]],
+    color: [["","","","","","","","","","","#3f2618","#492d1c","#6b432c","#6b432c","#6b432c","#6b432c","#6b432c","#6b432c","#492d1c","#492d1c","#b8b3ab","#d6d0c6","#d6d0c6","#d6d0c6","#8c7eb4","#8c7eb4","#8c7eb4","#8c7eb4","#8c7eb4","#8c7eb4","#8c7eb4","#c46378","#96364d","#c46378","#5b814c","","","","","","","","","","","#442a1b","#50311f","#332d43","#332d43","#332d43","#332d43","#332d43","#332d43","#50311f","#442a1b"],["","","","","","","","","","","#492d1c","#573521","#573521","#7f5034","#9d6a46","#9d6a46","#7f5034","#573521","#573521","#573521","#c2b8aa","#fff8ec","#fff8ec","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#e9768f","#e9768f","#b2405c","#c46378","","","","","","","","","","","#50311f","#5f3a25","#3d3550","#625878","#3d3550","#3d3550","#3d3550","#3d3550","#5f3a25","#50311f"],["","","","","","","","","","","#6b432c","#573521","#573521","#7f5034","#7f5034","#7f5034","#7f5034","#573521","#573521","#7f5034","#7f5334","#e2d6c6","#fff8ec","#a796d6","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#a796d6","#7fb36a","#e9768f","#7c5132","","","","","","","","","","","#50311f","#5f3a25","#3d3550","#625878","#3d3550","#3d3550","#3d3550","#3d3550","#5f3a25","#50311f"],["","","","","","","","","","","#6b432c","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#9081b8","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#8c7eb4","","","","","","","","","","","#50311f","#5f3a25","#8dbbe6","#8dbbe6","#8dbbe6","#8dbbe6","#8dbbe6","#8dbbe6","#5f3a25","#50311f"],["","","","","","","","","","","#6b432c","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#583723","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#563622","","","","","","","","","","","#50311f","#3d3550","#3d3550","#3d3550","#3d3550","#3d3550","#3d3550","#3d3550","#3d3550","#50311f"],["#472c1c","#523321","#c0778a","#83334f","#784e32","#784e32","#83334f","#c0778a","#523321","#523321","#6d452d","#7f5034","#24150e","#fff8ec","#7f5034","#7f5034","#fff8ec","#24150e","#7f5034","#7f5034","#583723","#664029","#664029","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#664029","#664029","#664029","#422a1c","#4d3120","#714931","#714931","#714931","#714931","#714931","#714931","#4d3120","#4d3120","#774a30","#f1e2c4","#f1e2c4","#f1e2c4","#8a5638","#8a5638","#f1e2c4","#f1e2c4","#f1e2c4","#8a5638"],["#523321","#623d27","#9c3d5e","#e58ea4","#9c3d5e","#9c3d5e","#e58ea4","#9c3d5e","#623d27","#623d27","#6d452d","#7f5034","#7f5034","#7f5034","#22140d","#22140d","#7f5034","#7f5034","#7f5034","#7f5034","#583723","#664029","#94603c","#94603c","#f1e2c4","#f1e2c4","#94603c","#94603c","#94603c","#f1e2c4","#f1e2c4","#94603c","#94603c","#664029","#664029","#4f3221","#5c3a26","#5c3a26","#86573a","#a5744f","#a5744f","#86573a","#5c3a26","#5c3a26","#5c3a26","#774a30","#8a5638","#24150e","#fff8ec","#8a5638","#efc85a","#fff8ec","#24150e","#efc85a","#8a5638"],["#784e32","#623d27","#623d27","#8f5d3b","#9c3d5e","#9c3d5e","#8f5d3b","#623d27","#623d27","#8f5d3b","#6d452d","#7f5034","#7f5034","#f1e2c4","#22140d","#22140d","#f1e2c4","#7f5034","#7f5034","#7f5034","#583723","#664029","#94603c","#94603c","#24150e","#fff8ec","#94603c","#94603c","#94603c","#fff8ec","#24150e","#94603c","#94603c","#664029","#664029","#734b32","#5c3a26","#5c3a26","#86573a","#86573a","#86573a","#86573a","#5c3a26","#5c3a26","#86573a","#774a30","#8a5638","#8a5638","#8a5638","#22140d","#22140d","#efc85a","#efc85a","#8a5638","#8a5638"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#8f5d3b","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#6d452d","#7f5034","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#7f5334","#664029","#94603c","#94603c","#94603c","#94603c","#22140d","#22140d","#22140d","#94603c","#94603c","#94603c","#94603c","#664029","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#86573a","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#774a30","#8a5638","#8a5638","#f1e2c4","#22140d","#22140d","#f1e2c4","#8a5638","#a8842c","#8a5638"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#8f5d3b","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#6d452d","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5334","#664029","#94603c","#94603c","#94603c","#f1e2c4","#22140d","#22140d","#22140d","#f1e2c4","#94603c","#94603c","#94603c","#664029","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#86573a","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#774a30","#8a5638","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#a8842c","#8a5638"],["#784e32","#8f5d3b","#24150e","#fff8ec","#8f5d3b","#8f5d3b","#fff8ec","#24150e","#8f5d3b","#8f5d3b","#6d452d","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5334","#94603c","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#94603c","#94603c","#94603c","#734b32","#86573a","#24150e","#fff8ec","#86573a","#86573a","#fff8ec","#24150e","#86573a","#86573a","#774a30","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#a8842c","#8a5638"],["#784e32","#8f5d3b","#8f5d3b","#8f5d3b","#22140d","#22140d","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#6d452d","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5334","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#94603c","#94603c","#734b32","#86573a","#86573a","#86573a","#22140d","#22140d","#86573a","#86573a","#86573a","#86573a","#774a30","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#a8842c"],["#784e32","#8f5d3b","#8f5d3b","#f1e2c4","#22140d","#22140d","#f1e2c4","#8f5d3b","#8f5d3b","#8f5d3b","#6d452d","#7f5034","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#7f5034","#7f5034","#7f5334","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#94603c","#94603c","#734b32","#86573a","#86573a","#f1e2c4","#22140d","#22140d","#f1e2c4","#86573a","#86573a","#86573a","#774a30","#8a5638","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#8a5638","#a8842c"],["#784e32","#8f5d3b","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#8f5d3b","#8f5d3b","#6d452d","#86c7a4","#3b7458","#7f5034","#3b7458","#3b7458","#7f5034","#3b7458","#86c7a4","#7f5034","#7f5334","#94603c","#94603c","#94603c","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#94603c","#94603c","#94603c","#94603c","#734b32","#86573a","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#86573a","#86573a","#774a30","#8a5638","#8a5638","#8a5638","#aa774f","#aa774f","#8a5638","#8a5638","#8a5638","#8a5638"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#6d452d","#86c7a4","#86c7a4","#3b7458","#3b7458","#3b7458","#3b7458","#86c7a4","#86c7a4","#7f5034","#7f5334","#fbf8f2","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#fbf8f2","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#774a30","#aa774f","#8a5638","#8a5638","#8a5638","#8a5638","#8a5638","#8a5638","#aa774f","#8a5638"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#6d452d","#9d6a46","#7f5034","#7f5034","#7f5034","#7f5034","#7f5034","#7f5034","#9d6a46","#7f5034","#7f5334","#94603c","#cfc6ba","#fbf8f2","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#fbf8f2","#cfc6ba","#94603c","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#774a30","#aa774f","#8a5638","#8a5638","#8a5638","#8a5638","#8a5638","#8a5638","#aa774f","#8a5638"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#6d452d","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#7f5034","#7f5334","#b5825a","#94603c","#94603c","#cfc6ba","#fbf8f2","#cfc6ba","#fbf8f2","#cfc6ba","#fbf8f2","#cfc6ba","#94603c","#94603c","#b5825a","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#774a30","#f1e2c4","#f1e2c4","#8a5638","#8a5638","#8a5638","#8a5638","#f1e2c4","#f1e2c4","#8a5638"],["#784e32","#8f5d3b","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#8f5d3b","#8f5d3b","#6d452d","#f1e2c4","#f1e2c4","#7f5034","#66402a","#66402a","#7f5034","#f1e2c4","#f1e2c4","#7f5034","#7f5334","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#94603c","#94603c","#764d30","#94603c","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#734b32","#86573a","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#86573a","#86573a","#774a30","#f1e2c4","#f1e2c4","#8a5638","#6e452d","#6e452d","#8a5638","#f1e2c4","#f1e2c4","#8a5638"],["#784e32","#8f5d3b","#8f5d3b","#8f5d3b","#ad7b52","#ad7b52","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#6d452d","#f1e2c4","#f1e2c4","#f1e2c4","#66402a","#66402a","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5334","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#94603c","#764d30","#764d30","#764d30","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#734b32","#86573a","#efcf6e","#efcf6e","#efcf6e","#efcf6e","#efcf6e","#efcf6e","#86573a","#86573a","#774a30","#f1e2c4","#f1e2c4","#f1e2c4","#6e452d","#6e452d","#f1e2c4","#f1e2c4","#f1e2c4","#8a5638"],["#784e32","#ad7b52","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#ad7b52","#8f5d3b","#98866a","#cabea5","#cabea5","#b09b7b","#563623","#563623","#b09b7b","#cabea5","#cabea5","#b09b7b","#98866a","#cabea5","#cabea5","#cabea5","#b09b7b","#7c5132","#634128","#634128","#634128","#7c5132","#b09b7b","#cabea5","#cabea5","#cabea5","#b09b7b","#734b32","#a5744f","#86573a","#86573a","#efc85a","#efc85a","#86573a","#86573a","#a5744f","#86573a","#98866a","#cabea5","#cabea5","#b09b7b","#5c3a26","#5c3a26","#b09b7b","#cabea5","#cabea5","#b09b7b"],["#784e32","#ad7b52","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#ad7b52","#784e32","","","","","","","","","","","","","","","","","","","","","","","","","","#714931","#a5744f","#86573a","#efc85a","#a8842c","#a8842c","#efc85a","#86573a","#a5744f","#714931","","","","","","","","","",""],["#784e32","#f1e2c4","#f1e2c4","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#f1e2c4","#f1e2c4","#784e32","","","","","","","","","","","","","","","","","","","","","","","","","","#714931","#f1e2c4","#f1e2c4","#86573a","#efc85a","#efc85a","#86573a","#f1e2c4","#f1e2c4","#714931","","","","","","","","","",""],["#784e32","#f1e2c4","#f1e2c4","#8f5d3b","#724a2f","#724a2f","#8f5d3b","#f1e2c4","#f1e2c4","#784e32","","","","","","","","","","","","","","","","","","","","","","","","","","#714931","#f1e2c4","#f1e2c4","#86573a","#6b462e","#6b462e","#86573a","#f1e2c4","#f1e2c4","#714931","","","","","","","","","",""],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#724a2f","#724a2f","#f1e2c4","#f1e2c4","#f1e2c4","#784e32","","","","","","","","","","","","","","","","","","","","","","","","","","#714931","#f1e2c4","#f1e2c4","#f1e2c4","#6b462e","#6b462e","#f1e2c4","#f1e2c4","#f1e2c4","#714931","","","","","","","","","",""],["#97856a","#cabea5","#cabea5","#b09b7b","#603e27","#603e27","#b09b7b","#cabea5","#cabea5","#97856a","","","","","","","","","","","","","","","","","","","","","","","","","","#97856a","#cabea5","#cabea5","#b09b7b","#5a3b27","#5a3b27","#b09b7b","#cabea5","#cabea5","#97856a","","","","","","","","","",""]],
     difficulty: 6,
     rotation: {
         "mode": "any"
@@ -13514,19 +13514,41 @@ export const SHAPES = [
     id: "schnerzgerberz",
     name: "er berger flerg de schnerzgerberz",
     grid: [
-        "..XXXXX..XX..",
-        "XXXXXXXXXXXXX",
-        "XXXXXXXXXXXXX",
-        "XXXXXXXXXXXXX",
-        "XX.....XX..XX"
+        ".XXX..XX.",
+        "XXXXXXXXX",
+        "XXXXXXXXX",
+        "XX..XX.XX"
       ],
-    color: [["","","","","","","","","","","#434557","#4e5166","#424557","#4e5166","#4e5166","#4e5166","#ac9788","#a85834","#ac9788","#4e5166","#d6d0c6","#d6d0c6","#d6d0c6","#d6d0c6","#8c7eb4","#8c7eb4","#8c7eb4","#8c7eb4","#8c7eb4","#8c7eb4","#8c7eb4","#c46378","#96364d","#c46378","#5b814c","","","","","","","","","","","#442a1b","#50311f","#332d43","#332d43","#332d43","#332d43","#332d43","#332d43","#50311f","#442a1b","","","","","","","","","",""],["","","","","","","","","","","#424557","#5d6079","#5d6079","#5d6079","#4f5267","#5d6079","#a8472f","#a8472f","#a8472f","#4f5267","#e2d6c6","#fff8ec","#fff8ec","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#e9768f","#e9768f","#b2405c","#c46378","","","","","","","","","","","#50311f","#5f3a25","#3d3550","#625878","#3d3550","#3d3550","#3d3550","#3d3550","#5f3a25","#50311f","","","","","","","","","",""],["","","","","","","","","","","#cfd3cb","#f6fbf2","#f6fbf2","#f6fbf2","#f6fbf2","#f6fbf2","#f6fbf2","#a8472f","#cdb4a2","#f6fbf2","#94603c","#e2d6c6","#fff8ec","#a796d6","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#a796d6","#7fb36a","#e9768f","#7c5132","","","","","","","","","","","#50311f","#5f3a25","#3d3550","#625878","#3d3550","#3d3550","#3d3550","#3d3550","#5f3a25","#50311f","","","","","","","","","",""],["","","","","","","","","","","#6b432c","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#a796d6","#8c7eb4","","","","","","","","","","","#50311f","#5f3a25","#8dbbe6","#8dbbe6","#8dbbe6","#8dbbe6","#8dbbe6","#8dbbe6","#5f3a25","#50311f","","","","","","","","","",""],["","","","","","","","","","","#6b432c","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#664029","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#897baf","#563622","","","","","","","","","","","#50311f","#3d3550","#3d3550","#3d3550","#3d3550","#3d3550","#3d3550","#3d3550","#3d3550","#50311f","","","","","","","","","",""],["#5a424e","#694c5c","#694c5c","#694c5c","#cbb15a","#d6ccc6","#694c5c","#694c5c","#694c5c","#694c5c","#7f5034","#7f5034","#24150e","#fff8ec","#7f5034","#7f5034","#fff8ec","#24150e","#7f5034","#7f5034","#a796d6","#fbf6ff","#fbf6ff","#fbf6ff","#fbf6ff","#fbf6ff","#fbf6ff","#a796d6","#a796d6","#a796d6","#fbf6ff","#fbf6ff","#fbf6ff","#fbf6ff","#fbf6ff","#6c6249","#6c6249","#6c6249","#6c6249","#d6d3c5","#cbb15a","#6c6249","#6c6249","#6c6249","#6c6249","#8a5638","#f1e2c4","#f1e2c4","#f1e2c4","#8a5638","#8a5638","#f1e2c4","#f1e2c4","#f1e2c4","#8a5638","#4a2f1e","#4a2f1e","#4a2f1e","#4a2f1e","#d6cdc5","#d6cdc5","#4a2f1e","#4a2f1e","#4a2f1e","#3f281a"],["#694c5c","#7d5b6d","#7d5b6d","#fff3ec","#e58ea4","#e58ea4","#fff3ec","#7d5b6d","#7d5b6d","#7d5b6d","#7f5034","#7f5034","#7f5034","#7f5034","#22140d","#22140d","#7f5034","#7f5034","#7f5034","#7f5034","#a796d6","#28405a","#7fb0d6","#7fb0d6","#28405a","#8a78bd","#a796d6","#33506e","#33506e","#a796d6","#a796d6","#28405a","#7fb0d6","#28405a","#a796d6","#817557","#817557","#817557","#fffbea","#efcf6e","#efcf6e","#fffbea","#817557","#817557","#817557","#8a5638","#8a5638","#24150e","#fff8ec","#8a5638","#efc85a","#fff8ec","#24150e","#efc85a","#8a5638","#583824","#583824","#583824","#fff4ea","#ef9f7c","#ef9f7c","#fff4ea","#583824","#583824","#4a2f1e"],["#694c5c","#7d5b6d","#fff3ec","#e58ea4","#33506e","#33506e","#e58ea4","#fff3ec","#7d5b6d","#7d5b6d","#7f5034","#7f5034","#7f5034","#f1e2c4","#22140d","#22140d","#f1e2c4","#7f5034","#7f5034","#7f5034","#a796d6","#28405a","#7fb0d6","#7fb0d6","#28405a","#8a78bd","#a796d6","#7fb0d6","#33506e","#a796d6","#a796d6","#28405a","#7fb0d6","#28405a","#a796d6","#817557","#817557","#fffbea","#efcf6e","#33506e","#33506e","#efcf6e","#fffbea","#817557","#817557","#8a5638","#8a5638","#8a5638","#8a5638","#22140d","#22140d","#efc85a","#efc85a","#8a5638","#8a5638","#80533a","#583824","#fff4ea","#ef9f7c","#33506e","#33506e","#ef9f7c","#fff4ea","#583824","#6c4631"],["#694c5c","#fff3ec","#e58ea4","#e58ea4","#7fb0d6","#33506e","#e58ea4","#e58ea4","#fff3ec","#7d5b6d","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#a796d6","#28405a","#7fb0d6","#7fb0d6","#28405a","#8a78bd","#a796d6","#33506e","#33506e","#a796d6","#a796d6","#28405a","#7fb0d6","#28405a","#a796d6","#817557","#fffbea","#efcf6e","#efcf6e","#33506e","#7fb0d6","#efcf6e","#efcf6e","#fffbea","#817557","#8a5638","#8a5638","#8a5638","#f1e2c4","#22140d","#22140d","#f1e2c4","#8a5638","#a8842c","#8a5638","#80533a","#80533a","#ef9f7c","#ef9f7c","#7fb0d6","#33506e","#ef9f7c","#ef9f7c","#80533a","#6c4631"],["#d6ccc6","#fff3ec","#fff3ec","#fff3ec","#fff3ec","#fff3ec","#fff3ec","#fff3ec","#fff3ec","#fff3ec","#7f5034","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#a796d6","#cfc6ba","#fbf8f2","#cfc6ba","#fbf8f2","#cfc6ba","#fbf8f2","#cfc6ba","#fbf8f2","#cfc6ba","#fbf8f2","#cfc6ba","#fbf8f2","#cfc6ba","#a796d6","#fffbea","#fffbea","#fffbea","#fffbea","#fffbea","#fffbea","#fffbea","#fffbea","#fffbea","#fffbea","#8a5638","#8a5638","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#a8842c","#8a5638","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#d6cdc5"],["#c0778a","#fff3ec","#fff3ec","#fff3ec","#fff3ec","#fff3ec","#fff3ec","#e58ea4","#e58ea4","#e58ea4","#7f5034","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#a796d6","#fbf6ff","#4a4f6a","#fbf6ff","#4a4f6a","#fbf6ff","#4a4f6a","#fbf6ff","#a796d6","#fbf6ff","#4a4f6a","#fbf6ff","#4a4f6a","#fbf6ff","#4a4f6a","#efcf6e","#efcf6e","#efcf6e","#86573a","#f1e2c4","#f1e2c4","#86573a","#f1e2c4","#f1e2c4","#86573a","#8a5638","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#d2b993","#f1e2c4","#f1e2c4","#a8842c","#8a5638","#ef9f7c","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#ef9f7c","#ef9f7c","#c98668"],["#c0778a","#28405a","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#c96f87","#33506e","#33506e","#e58ea4","#7f5034","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#a796d6","#28405a","#7fb0d6","#7fb0d6","#28405a","#8a78bd","#a796d6","#7fb0d6","#7fb0d6","#a796d6","#a796d6","#28405a","#7fb0d6","#28405a","#a796d6","#efcf6e","#33506e","#33506e","#efcf6e","#86573a","#28405a","#7fb0d6","#7fb0d6","#28405a","#86573a","#8a5638","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#a8842c","#ef9f7c","#28405a","#7fb0d6","#7fb0d6","#28405a","#d58060","#ef9f7c","#33506e","#33506e","#c98668"],["#c0778a","#8f5d3b","#24150e","#8f5d3b","#8f5d3b","#24150e","#8f5d3b","#7fb0d6","#33506e","#e58ea4","#7f5034","#7f5034","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#7f5034","#7f5034","#a796d6","#28405a","#7fb0d6","#7fb0d6","#28405a","#8a78bd","#a796d6","#463874","#463874","#a796d6","#a796d6","#28405a","#7fb0d6","#28405a","#a796d6","#efcf6e","#33506e","#7fb0d6","#efcf6e","#86573a","#28405a","#7fb0d6","#7fb0d6","#28405a","#86573a","#8a5638","#8a5638","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#8a5638","#a8842c","#ef9f7c","#28405a","#7fb0d6","#7fb0d6","#28405a","#d58060","#ef9f7c","#7fb0d6","#33506e","#c98668"],["#c0778a","#8f5d3b","#8f5d3b","#22140d","#22140d","#8f5d3b","#8f5d3b","#33506e","#33506e","#e58ea4","#7f5034","#86c7a4","#3b7458","#7f5034","#3b7458","#3b7458","#7f5034","#3b7458","#86c7a4","#7f5034","#a796d6","#28405a","#7fb0d6","#7fb0d6","#28405a","#8a78bd","#a796d6","#463874","#f2d36b","#a796d6","#a796d6","#28405a","#7fb0d6","#28405a","#a796d6","#efcf6e","#33506e","#33506e","#efcf6e","#86573a","#86573a","#f1e2c4","#f1e2c4","#86573a","#86573a","#8dbbe6","#f4f9ff","#f4f9ff","#f4f9ff","#f4f9ff","#f4f9ff","#f4f9ff","#f4f9ff","#8dbbe6","#8dbbe6","#ef9f7c","#28405a","#7fb0d6","#7fb0d6","#28405a","#d58060","#ef9f7c","#33506e","#33506e","#c98668"],["#c0778a","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#e8607a","#5e9e4e","#e58ea4","#7f5034","#86c7a4","#86c7a4","#3b7458","#3b7458","#3b7458","#3b7458","#86c7a4","#86c7a4","#7f5034","#a796d6","#56468e","#56468e","#56468e","#56468e","#56468e","#f4efe6","#d3c7b2","#d3c7b2","#d3c7b2","#f4efe6","#56468e","#56468e","#56468e","#a796d6","#efcf6e","#5e9e4e","#e8607a","#efcf6e","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#8dbbe6","#28405a","#7fb0d6","#7fb0d6","#28405a","#8dbbe6","#f4f9ff","#f4f9ff","#8dbbe6","#8dbbe6","#ef9f7c","#9e4630","#9e4630","#9e4630","#9e4630","#9e4630","#d58060","#e8607a","#5e9e4e","#c98668"],["#c0778a","#fff3ec","#d2b993","#f1e2c4","#f1e2c4","#d2b993","#fff3ec","#fff3ec","#fff3ec","#e58ea4","#7f5034","#9d6a46","#7f5034","#7f5034","#7f5034","#7f5034","#7f5034","#7f5034","#9d6a46","#7f5034","#d3c7b2","#d3c7b2","#d3c7b2","#d3c7b2","#d3c7b2","#d3c7b2","#f4efe6","#a89a84","#a89a84","#a89a84","#f4efe6","#d3c7b2","#d3c7b2","#d3c7b2","#d3c7b2","#efcf6e","#fffbea","#fffbea","#efcf6e","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#8dbbe6","#28405a","#7fb0d6","#7fb0d6","#28405a","#8dbbe6","#2c4a7c","#2c4a7c","#8dbbe6","#8dbbe6","#ef9f7c","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#c98668"],["#c0778a","#28405a","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#c96f87","#7fb0d6","#7fb0d6","#e58ea4","#7f5034","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#7f5034","#d3c7b2","#56468e","#40346a","#56468e","#56468e","#d3c7b2","#f4efe6","#d3c7b2","#d3c7b2","#d3c7b2","#d3c7b2","#f4efe6","#56468e","#56468e","#d3c7b2","#efcf6e","#7fb0d6","#7fb0d6","#efcf6e","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#8a5638","#f1e2c4","#f1e2c4","#8a5638","#8dbbe6","#8dbbe6","#2c4a7c","#2c4a7c","#8dbbe6","#8a5638","#ef9f7c","#28405a","#7fb0d6","#7fb0d6","#28405a","#d58060","#ef9f7c","#7fb0d6","#7fb0d6","#c98668"],["#c0778a","#8f5d3b","#24150e","#8f5d3b","#8f5d3b","#24150e","#8f5d3b","#7a2c47","#7a2c47","#e58ea4","#7f5034","#f1e2c4","#f1e2c4","#7f5034","#66402a","#66402a","#7f5034","#f1e2c4","#f1e2c4","#7f5034","#d3c7b2","#56468e","#40346a","#56468e","#56468e","#d3c7b2","#f4efe6","#a89a84","#a89a84","#a89a84","#d3c7b2","#f4efe6","#56468e","#56468e","#d3c7b2","#efcf6e","#7c4c1c","#7c4c1c","#efcf6e","#86573a","#d2b993","#f1e2c4","#f1e2c4","#d2b993","#86573a","#8a5638","#f1e2c4","#f1e2c4","#8a5638","#8dbbe6","#8dbbe6","#2c4a7c","#f2d36b","#8dbbe6","#8a5638","#ef9f7c","#28405a","#7fb0d6","#7fb0d6","#28405a","#d58060","#ef9f7c","#7e3424","#7e3424","#c98668"],["#c0778a","#8f5d3b","#8f5d3b","#22140d","#22140d","#8f5d3b","#8f5d3b","#7a2c47","#f2d36b","#e58ea4","#7f5034","#f1e2c4","#f1e2c4","#f1e2c4","#66402a","#66402a","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#d3c7b2","#56468e","#40346a","#56468e","#56468e","#d3c7b2","#f4efe6","#d3c7b2","#d3c7b2","#d3c7b2","#d3c7b2","#f4efe6","#56468e","#56468e","#d3c7b2","#efcf6e","#f2d36b","#7c4c1c","#efcf6e","#86573a","#86573a","#d2b993","#d2b993","#86573a","#86573a","#8a5638","#f1e2c4","#f1e2c4","#f1e2c4","#f4efe6","#d3c7b2","#d3c7b2","#f4efe6","#f1e2c4","#8a5638","#ef9f7c","#28405a","#7fb0d6","#7fb0d6","#28405a","#d58060","#ef9f7c","#7e3424","#f2d36b","#c98668"],["#c0778a","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#d2b993","#d3c7b2","#d3c7b2","#f4efe6","#b09b7b","#cabea5","#cabea5","#b09b7b","#563623","#563623","#b09b7b","#cabea5","#cabea5","#b09b7b","#8d816f","#8d816f","#8d816f","#8d816f","#8d816f","#8d816f","#cdc9c1","#8d816f","#8d816f","#8d816f","#cdc9c1","#8d816f","#8d816f","#8d816f","#8d816f","#f4efe6","#d3c7b2","#d3c7b2","#f4efe6","#9a6428","#9a6428","#9a6428","#9a6428","#9a6428","#efcf6e","#b09b7b","#cabea5","#cabea5","#b09b7b","#cdc9c1","#8d816f","#8d816f","#cdc9c1","#cabea5","#b09b7b","#ef9f7c","#9e4630","#9e4630","#9e4630","#9e4630","#9e4630","#f4efe6","#d3c7b2","#d3c7b2","#cdc9c1"],["#b1a796","#d3c7b2","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#d3c7b2","#a89a84","#a89a84","#cdc9c1","","","","","","","","","","","","","","","","","","","","","","","","","","#cdc9c1","#a89a84","#a89a84","#f4efe6","#d3c7b2","#d3c7b2","#d3c7b2","#d3c7b2","#d3c7b2","#b1a796","","","","","","","","","","","#563727","#66422e","#66422e","#66422e","#66422e","#66422e","#66422e","#66422e","#66422e","#563727"],["#b1a796","#9c3d5e","#752e46","#9c3d5e","#9c3d5e","#d3c7b2","#f4efe6","#d3c7b2","#d3c7b2","#cdc9c1","","","","","","","","","","","","","","","","","","","","","","","","","","#cdc9c1","#d3c7b2","#d3c7b2","#f4efe6","#d3c7b2","#9a6428","#9a6428","#744b1e","#9a6428","#b1a796","","","","","","","","","","","#6c4631","#f1e2c4","#f1e2c4","#80533a","#80533a","#80533a","#80533a","#f1e2c4","#f1e2c4","#6c4631"],["#b1a796","#9c3d5e","#752e46","#9c3d5e","#9c3d5e","#d3c7b2","#f4efe6","#a89a84","#a89a84","#cdc9c1","","","","","","","","","","","","","","","","","","","","","","","","","","#cdc9c1","#a89a84","#a89a84","#f4efe6","#d3c7b2","#9a6428","#9a6428","#744b1e","#9a6428","#b1a796","","","","","","","","","","","#6c4631","#f1e2c4","#f1e2c4","#80533a","#66422e","#66422e","#80533a","#f1e2c4","#f1e2c4","#6c4631"],["#b1a796","#9c3d5e","#752e46","#9c3d5e","#9c3d5e","#d3c7b2","#f4efe6","#d3c7b2","#d3c7b2","#cdc9c1","","","","","","","","","","","","","","","","","","","","","","","","","","#cdc9c1","#d3c7b2","#d3c7b2","#f4efe6","#d3c7b2","#9a6428","#9a6428","#744b1e","#9a6428","#b1a796","","","","","","","","","","","#6c4631","#f1e2c4","#f1e2c4","#f1e2c4","#66422e","#66422e","#f1e2c4","#f1e2c4","#f1e2c4","#6c4631"],["#796f5f","#8d816f","#8d816f","#8d816f","#8d816f","#8d816f","#cdc9c1","#8d816f","#8d816f","#b0aca6","","","","","","","","","","","","","","","","","","","","","","","","","","#b0aca6","#8d816f","#8d816f","#cdc9c1","#8d816f","#8d816f","#8d816f","#8d816f","#8d816f","#796f5f","","","","","","","","","","","#97856a","#cabea5","#cabea5","#b09b7b","#563727","#563727","#b09b7b","#cabea5","#cabea5","#97856a"]],
+    color: [["","","","","","#3f2618","#492d1c","#6b432c","#6b432c","#6b432c","#6b432c","#6b432c","#6b432c","#492d1c","#492d1c","#b8b3ab","#d6d0c6","#d6d0c6","#d6d0c6","#8c7eb4","","","","","","","","","","","#404e61","#4b5c71","#4b5c71","#4b5c71","#cdd1d6","#cbb15a","#4b5c71","#4b5c71","#b6744c","#9c6341","","","","",""],["","","","","","#492d1c","#573521","#573521","#7f5034","#9d6a46","#9d6a46","#7f5034","#573521","#573521","#573521","#c2b8aa","#fff8ec","#fff8ec","#a796d6","#a796d6","","","","","","","","","","","#4b5c71","#596d87","#596d87","#f4f9ff","#8dbbe6","#8dbbe6","#f4f9ff","#596d87","#86392a","#944631","","","","",""],["","","","","","#6b432c","#573521","#573521","#7f5034","#7f5034","#7f5034","#7f5034","#573521","#573521","#7f5034","#7f5334","#e2d6c6","#fff8ec","#a796d6","#897baf","","","","","","","","","","","#4b5c71","#596d87","#f4f9ff","#8dbbe6","#33506e","#33506e","#8dbbe6","#f4f9ff","#b0533a","#713023","","","","",""],["","","","","","#6b432c","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#9081b8","#a796d6","#a796d6","#a796d6","#a796d6","","","","","","","","","","","#4b5c71","#f4f9ff","#8dbbe6","#8dbbe6","#33506e","#7fb0d6","#8dbbe6","#8dbbe6","#f4f9ff","#4b5c71","","","","",""],["","","","","","#6b432c","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#583723","#897baf","#897baf","#897baf","#897baf","","","","","","","","","","","#cdd1d6","#f4f9ff","#f4f9ff","#f4f9ff","#f4f9ff","#f4f9ff","#f4f9ff","#f4f9ff","#f4f9ff","#cdd1d6","","","","",""],["#472c1c","#523321","#c0778a","#83334f","#784e32","#784e32","#83334f","#c0778a","#523321","#523321","#7f5034","#fff8ec","#24150e","#7f5034","#7f5034","#fbf6ff","#fbf6ff","#a796d6","#a796d6","#a796d6","#f1e2c4","#94603c","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#664029","#664029","#664029","#422a1c","#4d3120","#714931","#714931","#714931","#774a30","#f1e2c4","#f1e2c4","#f1e2c4","#8a5638","#d6cdc5","#6c524d","#6c524d","#6c524d","#5d4742"],["#523321","#623d27","#9c3d5e","#e58ea4","#9c3d5e","#9c3d5e","#e58ea4","#9c3d5e","#623d27","#623d27","#22140d","#7f5034","#7f5034","#7f5034","#7f5034","#8a78bd","#a796d6","#33506e","#33506e","#a796d6","#f1e2c4","#94603c","#94603c","#94603c","#f1e2c4","#f1e2c4","#94603c","#94603c","#664029","#664029","#4f3221","#5c3a26","#5c3a26","#86573a","#a5744f","#774a30","#8a5638","#24150e","#fff8ec","#8a5638","#ef9f7c","#fff4ea","#81625c","#81625c","#6c524d"],["#784e32","#623d27","#623d27","#8f5d3b","#9c3d5e","#9c3d5e","#8f5d3b","#623d27","#623d27","#8f5d3b","#22140d","#f1e2c4","#7f5034","#7f5034","#7f5034","#8a78bd","#a796d6","#7fb0d6","#33506e","#a796d6","#fff8ec","#94603c","#94603c","#94603c","#fff8ec","#24150e","#94603c","#94603c","#664029","#664029","#734b32","#5c3a26","#5c3a26","#86573a","#86573a","#774a30","#8a5638","#8a5638","#8a5638","#22140d","#33506e","#ef9f7c","#fff4ea","#81625c","#6c524d"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#8f5d3b","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#d2b993","#f1e2c4","#f1e2c4","#7f5034","#7f5034","#8a78bd","#a796d6","#33506e","#33506e","#a796d6","#94603c","#22140d","#22140d","#22140d","#94603c","#94603c","#94603c","#94603c","#664029","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#774a30","#8a5638","#8a5638","#f1e2c4","#22140d","#33506e","#ef9f7c","#ef9f7c","#fff4ea","#6c524d"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#8f5d3b","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#d2b993","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#56468e","#8a78bd","#e8607a","#5e9e4e","#a796d6","#f1e2c4","#22140d","#22140d","#22140d","#f1e2c4","#94603c","#94603c","#94603c","#664029","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#86573a","#774a30","#8a5638","#f1e2c4","#f1e2c4","#d2b993","#fff4ea","#fff4ea","#fff4ea","#fff4ea","#d6cdc5"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#7f5034","#7f5034","#7f5034","#9d6a46","#7f5034","#d3c7b2","#f4efe6","#a89a84","#a89a84","#a89a84","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#fbf8f2","#cfc6ba","#94603c","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#774a30","#aa774f","#8a5638","#8a5638","#8a5638","#8a5638","#8a5638","#8a5638","#aa774f","#8a5638"],["#784e32","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#8f5d3b","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#7f5034","#d3c7b2","#f4efe6","#d3c7b2","#d3c7b2","#d3c7b2","#fbf8f2","#cfc6ba","#fbf8f2","#cfc6ba","#fbf8f2","#cfc6ba","#94603c","#94603c","#b5825a","#94603c","#734b32","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#774a30","#f1e2c4","#f1e2c4","#8a5638","#8a5638","#8a5638","#8a5638","#f1e2c4","#f1e2c4","#8a5638"],["#784e32","#8f5d3b","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","#8f5d3b","#8f5d3b","#66402a","#7f5034","#f1e2c4","#f1e2c4","#7f5034","#d3c7b2","#f4efe6","#a89a84","#a89a84","#a89a84","#94603c","#94603c","#764d30","#94603c","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#734b32","#86573a","#d2b993","#d2b993","#d2b993","#774a30","#f1e2c4","#f1e2c4","#8a5638","#6e452d","#6e452d","#8a5638","#f1e2c4","#f1e2c4","#8a5638"],["#784e32","#8f5d3b","#8f5d3b","#8f5d3b","#ad7b52","#ad7b52","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#66402a","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","#d3c7b2","#f4efe6","#d3c7b2","#d3c7b2","#d3c7b2","#94603c","#764d30","#764d30","#764d30","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","#734b32","#86573a","#efcf6e","#efcf6e","#efcf6e","#774a30","#f1e2c4","#f1e2c4","#f1e2c4","#6e452d","#6e452d","#f1e2c4","#f1e2c4","#f1e2c4","#8a5638"],["#784e32","#ad7b52","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#8f5d3b","#ad7b52","#8f5d3b","#563623","#b09b7b","#cabea5","#cabea5","#b09b7b","#8d816f","#cdc9c1","#8d816f","#8d816f","#8d816f","#7c5132","#634128","#634128","#634128","#7c5132","#b09b7b","#cabea5","#cabea5","#cabea5","#b09b7b","#734b32","#a5744f","#86573a","#86573a","#efc85a","#98866a","#cabea5","#cabea5","#b09b7b","#5c3a26","#5c3a26","#b09b7b","#cabea5","#cabea5","#b09b7b"],["#b1a796","#d3c7b2","#d3c7b2","#d3c7b2","#d3c7b2","#8f5d3b","#8f5d3b","#8f5d3b","#ad7b52","#784e32","","","","","","","","","","","#94603c","#94603c","#94603c","#94603c","#94603c","#94603c","#fbf8f2","#cfc6ba","#94603c","#94603c","","","","","","#774a30","#aa774f","#8a5638","#8a5638","#8a5638","#8a5638","#8a5638","#8a5638","#aa774f","#8a5638"],["#b1a796","#9c3d5e","#752e46","#9c3d5e","#9c3d5e","#8f5d3b","#8f5d3b","#f1e2c4","#f1e2c4","#784e32","","","","","","","","","","","#fbf8f2","#cfc6ba","#fbf8f2","#cfc6ba","#fbf8f2","#cfc6ba","#94603c","#94603c","#b5825a","#94603c","","","","","","#774a30","#f1e2c4","#f1e2c4","#8a5638","#8a5638","#8a5638","#8a5638","#f1e2c4","#f1e2c4","#8a5638"],["#b1a796","#9c3d5e","#752e46","#9c3d5e","#9c3d5e","#724a2f","#8f5d3b","#f1e2c4","#f1e2c4","#784e32","","","","","","","","","","","#94603c","#94603c","#764d30","#94603c","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","","","","","","#774a30","#f1e2c4","#f1e2c4","#8a5638","#6e452d","#6e452d","#8a5638","#f1e2c4","#f1e2c4","#8a5638"],["#b1a796","#9c3d5e","#752e46","#9c3d5e","#9c3d5e","#724a2f","#f1e2c4","#f1e2c4","#f1e2c4","#784e32","","","","","","","","","","","#94603c","#764d30","#764d30","#764d30","#94603c","#94603c","#f1e2c4","#f1e2c4","#f1e2c4","#94603c","","","","","","#774a30","#f1e2c4","#f1e2c4","#f1e2c4","#6e452d","#6e452d","#f1e2c4","#f1e2c4","#f1e2c4","#8a5638"],["#796f5f","#8d816f","#8d816f","#8d816f","#8d816f","#603e27","#b09b7b","#cabea5","#cabea5","#97856a","","","","","","","","","","","#7c5132","#634128","#634128","#634128","#7c5132","#b09b7b","#cabea5","#cabea5","#cabea5","#b09b7b","","","","","","#98866a","#cabea5","#cabea5","#b09b7b","#5c3a26","#5c3a26","#b09b7b","#cabea5","#cabea5","#b09b7b"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
     claudeDraft: true,
+    remix: {
+        "mix": [
+          "townhouses",
+          "schnauzers"
+        ]
+      },
+  },
+  {
+    id: "hergrr",
+    name: "er hergrr br",
+    grid: [
+        "X...X",
+        "..X..",
+        ".X..X"
+      ],
+    color: [["#3f2618","#492d1c","#6b432c","#6b432c","#6b432c","","","","","","","","","","","","","","","","#cbb15a","#4b5c71","#4b5c71","#b6744c","#9c6341"],["#492d1c","#573521","#573521","#7f5034","#9d6a46","","","","","","","","","","","","","","","","#8dbbe6","#f4f9ff","#596d87","#86392a","#944631"],["#6b432c","#573521","#573521","#7f5034","#7f5034","","","","","","","","","","","","","","","","#33506e","#8dbbe6","#f4f9ff","#b0533a","#713023"],["#6b432c","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","","","","","","","","","","","","","","","","#7fb0d6","#8dbbe6","#8dbbe6","#f4f9ff","#4b5c71"],["#6b432c","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","","","","","","","","","","","","","","","","#f4f9ff","#f4f9ff","#f4f9ff","#f4f9ff","#cdd1d6"],["","","","","","","","","","","#f1e2c4","#f1e2c4","#d2b993","#f1e2c4","#f1e2c4","","","","","","","","","",""],["","","","","","","","","","","#f1e2c4","#f1e2c4","#d2b993","#f1e2c4","#f1e2c4","","","","","","","","","",""],["","","","","","","","","","","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","#f1e2c4","","","","","","","","","",""],["","","","","","","","","","","#d2b993","#d2b993","#d2b993","#d2b993","#d2b993","","","","","","","","","",""],["","","","","","","","","","","#94603c","#94603c","#94603c","#94603c","#94603c","","","","","","","","","",""],["","","","","","#7f5034","#7f5034","#7f5034","#9d6a46","#7f5034","","","","","","","","","","","#774a30","#aa774f","#8a5638","#8a5638","#8a5638"],["","","","","","#7f5034","#7f5034","#f1e2c4","#f1e2c4","#7f5034","","","","","","","","","","","#774a30","#f1e2c4","#f1e2c4","#8a5638","#8a5638"],["","","","","","#66402a","#7f5034","#f1e2c4","#f1e2c4","#7f5034","","","","","","","","","","","#774a30","#f1e2c4","#f1e2c4","#8a5638","#6e452d"],["","","","","","#66402a","#f1e2c4","#f1e2c4","#f1e2c4","#7f5034","","","","","","","","","","","#774a30","#f1e2c4","#f1e2c4","#f1e2c4","#6e452d"],["","","","","","#563623","#b09b7b","#cabea5","#cabea5","#b09b7b","","","","","","","","","","","#98866a","#cabea5","#cabea5","#b09b7b","#5c3a26"]],
+    difficulty: 6,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+    noShake: true,
     remix: {
         "mix": [
           "townhouses",

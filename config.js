@@ -65,14 +65,6 @@ export const CONFIG = {
     spawnJitter: 3,     // pieces come in further off-centre, so the whole board fills up
   },
 
-  // Turning pieces. A piece that would stick out past a wall when it turns is pushed back
-  // inside (so even a board-wide piece can turn), and goes back where it was on the next turn
-  // if you haven't moved it sideways in between.
-  rotation: {
-    centrePivotFrom: 5, // pieces this many blocks across (or more) turn about their centre;
-                        // smaller ones about their top-left corner
-  },
-
   scoring: {
     lineClear: { 1: 100, 2: 250, 3: 450, 4: 700, 5: 1000, 6: 1400, 7: 1900, 8: 2500 },
     softDropPerCell: 1,
@@ -223,20 +215,23 @@ export const CONFIG = {
     // unlock when you build the stack up past row `unlockAbove` (counted from the bottom) and
     // then dig back down to row `unlockBackTo` or lower. Normal and Extreme only.
     level6: {
-      unlockAbove: 10,          // the stack has to have been taller than this many rows...
-      unlockBackTo: 5,          // ...and then come back down to this many rows or fewer
+      unlockAbove: 9,           // the stack has to have been taller than this many rows...
+      unlockBackTo: 6,          // ...and then come back down to this many rows or fewer
       persist: false,           // true = once unlocked, stay unlocked in later games too
                                 //        (remembered in this browser)
       firstAfter: [2, 5],       // the first group arrives this many pieces after the unlock
-      chancePerDrop: 0.05,      // after that: the chance a group starts on any given piece...
-      cooldownDrops: 25,        // ...once this many pieces have passed since the last group...
-      maxStackRows: 9,          // ...and only while the stack is this many rows tall or less
+      chancePerDrop: 0.07,      // after that: the chance a group starts on any given piece...
+      cooldownDrops: 20,        // ...once this many pieces have passed since the last group...
+      maxStackRows: 10,         // ...and only while the stack is this many rows tall or less
       // A group only starts if the board has room for all of it: its blocks spread over the
       // width × roomFactor (for the gaps they leave), with `headroom` rows to spare at the top.
       // (Three townhouses in a row need about 15 rows.)
       roomFactor: 1.25,
       headroom: 3,
-      repeatPenalty: 0.15,      // a group already seen this game is this much less likely
+      // No set comes round again until every other one has had its turn this game, and the last
+      // `rememberRecent` sets served (also in the previous game, in this browser) wait if any
+      // other set can go.
+      rememberRecent: 2,
     },
 
     // Powerup scheduler (Normal mode only). Runs before the regular level mix:
@@ -419,10 +414,20 @@ export const CONFIG = {
       expandGrowMs: 180,
 
       // Highlighted cells overlay.
+      // Each class has its own colours, a gradient that shimmers back and forth within them, so
+      // they're easy to tell apart at a glance (combos show each part in its own colours).
+      // hues: [from, to] in degrees (going round the colour wheel), sat/light in %.
+      classColours: {
+        destroyer: { hues: [350, 45], sat: 100, light: 58 },   // Dissolverz: fire
+        gravity:   { hues: [215, 275], sat: 95, light: 62 },   // Gravitizerz: deep blue-violet
+        expander:  { hues: [80, 165], sat: 90, light: 55 },    // Expanderz: lime to teal
+        phantom:   { hues: [175, 290], sat: 55, light: 80 },   // Phantomz: pale and ghostly
+        blast:     { hues: [20, 50], sat: 100, light: 60 },
+      },
       overlay: {
         periodMs: 900,           // one loop of the square / line animation
-        hueDegPerMs: 0.12,       // rainbow scroll speed
-        hueStepPerCell: 18,      // rainbow spread across cells
+        hueDegPerMs: 0.12,       // colour shimmer speed (rainbow for anything without classColours)
+        hueStepPerCell: 18,      // colour spread across cells
         fillAlpha: 0.30,         // cells the effect will change
         idleFillAlpha: 0.11,     // highlighted cells it won't change (e.g. empty cells for a destroyer)
         markAlpha: 0.95,

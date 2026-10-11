@@ -58,6 +58,6 @@ export const GROUPS = [
     id: "townhouses",
     name: "the townhouses",
     frequency: 1,
-    sequence: ["townhouses", "schnauzers", "schnerzgerberz"],
+    sequence: ["townhouses", "schnauzers", "schnerzgerberz", "hergrr"],
   },
 ];
