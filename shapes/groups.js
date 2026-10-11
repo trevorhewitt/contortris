@@ -65,7 +65,7 @@ export const GROUPS = [
     id: "everest",
     name: "Mt Everest",
     frequency: 1,
-    sequence: ["everest", "everest_trash"],
+    sequence: ["everest", "everest_trash", "everest_more_trash", "everest_even_more_trash"],
   },
   {
     id: "space",
