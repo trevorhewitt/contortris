@@ -50,7 +50,8 @@ export function normaliseGroups(rawGroups, shapes) {
       }
     }
     if (!ok || !steps.length) continue;
-    out.push({ id: String(g.id), name: String(g.name ?? g.id), frequency: Math.max(0, Number(g.frequency ?? 1) || 0), steps });
+    out.push({ id: String(g.id), name: String(g.name ?? g.id), frequency: Math.max(0, Number(g.frequency ?? 1) || 0), steps,
+      room: Math.max(0, Number(g.room) || 0) });
   }
   return out;
 }
@@ -165,7 +166,7 @@ export function maybeStartGroup(state) {
   while (pool.length) {
     const group = sampleByWeight(pool, g => g.frequency, state.rng);
     const pieces = expandGroup(group, state.rng);
-    if (roomNeeded(pieces) <= room) return startGroup(state, group, pieces);
+    if (Math.max(roomNeeded(pieces), group.room) <= room) return startGroup(state, group, pieces);
     pool = pool.filter(g => g !== group);
   }
   return null;

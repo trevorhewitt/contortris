@@ -13,6 +13,9 @@
  *   id: "tower_of_babel",           unique id
  *   name: "the Tower of Babel",     shown in dev mode
  *   frequency: 1,                   how often this group is picked compared with the others
+ *   room: 16,                       optional: rows of free board it needs before it can start
+ *                                   (default: worked out from its pieces, as if placed well;
+ *                                   set it higher for a set that's awkward to place)
  *   sequence: [ step, step, ... ],  the pieces, in order. A step is either:
  *     "piece_id"                      that piece, or
  *     { pick: ["id", "id", ...],      a run of pieces picked at random from the list:
@@ -65,6 +68,7 @@ export const GROUPS = [
     id: "everest",
     name: "Mt Everest",
     frequency: 1,
+    room: 16, // (the trash is awkward to build on)
     sequence: ["everest", "everest_trash", "everest_more_trash", "everest_even_more_trash"],
   },
   {

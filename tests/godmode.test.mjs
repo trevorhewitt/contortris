@@ -129,11 +129,12 @@ test("level 6: a set only starts if it has room", () => {
       const s = selectPiece(state);
       if (l6.group) {
         started.add(l6.group);
-        assert.ok(roomNeeded([s, ...l6.queue]) <= room, `${l6.group} started with ${room} rows of room`);
+        const g = groups.find(g => g.id === l6.group);
+        assert.ok(Math.max(roomNeeded([s, ...l6.queue]), g.room) <= room, `${l6.group} started with ${room} rows of room`);
       }
     }
     // (and the sets that do fit still come)
-    const fit = groups.filter(g => roomNeeded(expandGroup(g, makeRng(5))) <= room - 1).map(g => g.id);
+    const fit = groups.filter(g => Math.max(roomNeeded(expandGroup(g, makeRng(5))), g.room) <= room - 1).map(g => g.id);
     for (const id of fit) assert.ok(started.has(id), `${id} never came on a ${rows}-row stack (${[...started]})`);
   }
 });
