@@ -60,4 +60,17 @@ export const GROUPS = [
     frequency: 1,
     sequence: ["townhouses", "schnauzers", "schnerzgerberz", "hergrr"],
   },
+  {
+    // the trash fits on the mountain: drop both upright in the same place
+    id: "everest",
+    name: "Mt Everest",
+    frequency: 1,
+    sequence: ["everest", "everest_trash"],
+  },
+  {
+    id: "space",
+    name: "space",
+    frequency: 1,
+    sequence: ["moon", "earth", "asteroid_belt"],
+  },
 ];

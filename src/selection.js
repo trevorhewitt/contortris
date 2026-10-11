@@ -15,11 +15,13 @@ import { clamp01, lerp, sampleByWeight } from "./util.js";
 import { analyseBoard, resolvePowerupArea, computeEffect, phantomLandingY, isPhantomPowerup } from "./powerups.js";
 import { LEVEL6, initLevel6, nextGroupPiece, maybeStartGroup, groupUnderWay } from "./level6.js";
 import { initEndGame, endGameOn, endGameLevelWeights } from "./endgame.js";
+import { isGodMode, godConfig, gravityColumns } from "./godmode.js";
 
 const DEBUG_LINK = false; // verbose console logging for linked shapes
 
 export function initPieceSelectionState(state) {
   state.pieceSel = {
+    mode: state.mode,
     dropIndex: 0,
     lastLevel: null,
     lastWasHard: false,
@@ -44,7 +46,7 @@ export function initPieceSelectionState(state) {
 
     // powerup scheduler (Normal mode)
     powerup: {
-      chance: CONFIG.assist.powerups.baseChance,
+      chance: powerupCfg(state.mode).baseChance,
       cooldown: 0,
       count: 0,
       lastChance: 0, // for the debug panel
@@ -78,10 +80,22 @@ export function initPieceSelectionState(state) {
   state.pieceSel.level6 = initLevel6(state);
   // the end game (src/endgame.js)
   state.pieceSel.endGame = initEndGame();
+  // God mode: every powerup class and the combos are in from the first piece (counted as met,
+  // so there are no intro screens)
+  if (isGodMode(state.mode)) {
+    const ps = state.pieceSel.powerup;
+    ps.classes = [...new Set((state.powerups ?? []).map(p => p.powerup.cls))];
+    for (const c of ps.classes) ps.shownClasses.add(c);
+    if (ps.classes.includes("combo")) ps.comboOpenedAt = 0;
+  }
 }
 
+// The settings for the giants and the powerups in this mode (God mode changes a few).
+const hardCfg = (mode) => godConfig(mode, "hard", CONFIG.assist.pieceMix.hard);
+const powerupCfg = (mode) => godConfig(mode, "powerups", CONFIG.assist.powerups);
+
 function pickGiantDue(state) {
-  const range = CONFIG.assist.pieceMix.hard.firstGiantBetween;
+  const range = hardCfg(state.mode).firstGiantBetween;
   const mode = CONFIG.modes[state.mode];
   if (!range || mode?.giants === false) return null;
   const [a, b] = range;
@@ -262,7 +276,7 @@ function tryLinkedNextShape(state, prevShape, idToShape, debug = false) {
   // A linked giant also never comes back while it's still fresh (the pound of feathers and
   // the pound of steel follow each other, but not round and round).
   const hardOk = endGameOn(state) || (!state.pieceSel?.lastWasHard &&
-    computeStackDanger01(state) <= (CONFIG.assist.pieceMix.hard.hardMaxDanger ?? 0.32));
+    computeStackDanger01(state) <= (hardCfg(state.mode).hardMaxDanger ?? 0.32));
   const fresh = (state.pieceSel?.recentShapeIds ?? []).slice(-(CONFIG.assist.variety?.noRepeatWithin ?? 5));
   const cand = [];
   for (let i = 0; i < ids.length; i++) {
@@ -395,10 +409,10 @@ export function selectPiece(state) {
   for (const k of LEVELS) levelW[k] = lerp(levelW[k] ?? 0, dangerTarget[k] ?? 0, danger);
 
   // 3) Hard scheduler (4/5 share the same urge/cooldown).
-  const hardCfg = mixCfg.hard;
+  const hard = hardCfg(state.mode);
 
-  const pastMinHard = sel.dropIndex > (hardCfg.minDropIndex ?? 5);
-  const dangerAllowsHard = danger01 <= (hardCfg.hardMaxDanger ?? 0.32);
+  const pastMinHard = sel.dropIndex > (hard.minDropIndex ?? 5);
+  const dangerAllowsHard = danger01 <= (hard.hardMaxDanger ?? 0.32);
   const cooldownAllowsHard = (sel.cooldown.hard ?? 0) <= 0 && !sel.lastWasHard;
 
   const modeHasGiants = CONFIG.modes[state.mode]?.giants !== false;
@@ -406,11 +420,11 @@ export function selectPiece(state) {
 
   // Update shared hard urge every call.
   const inWindow =
-    sel.dropIndex >= (hardCfg.softWindowStart ?? 6) &&
-    sel.dropIndex <= (hardCfg.softWindowEnd ?? 25);
+    sel.dropIndex >= (hard.softWindowStart ?? 6) &&
+    sel.dropIndex <= (hard.softWindowEnd ?? 25);
 
-  const recharge = (hardCfg.rechargePerDrop ?? 0.005) * (inWindow ? 1.4 : 0.8);
-  sel.urge.hard = clamp01(Math.min(hardCfg.maxUrge ?? 0.95, (sel.urge.hard ?? 0) + recharge));
+  const recharge = (hard.rechargePerDrop ?? 0.005) * (inWindow ? 1.4 : 0.8);
+  sel.urge.hard = clamp01(Math.min(hard.maxUrge ?? 0.95, (sel.urge.hard ?? 0) + recharge));
 
   const addHardWeight = allowHard ? (sel.urge.hard ?? 0) : 0;
 
@@ -418,10 +432,10 @@ export function selectPiece(state) {
   // This keeps baseline/danger behaviour intact while allowing periodic “hard surprises”.
   if (addHardWeight > 0) {
     // Compute probability of choosing a 5 vs 4, with 5 suppressed as danger rises.
-    let p5 = hardCfg.baseProbLevel5WhenHard ?? 0.55;
+    let p5 = hard.baseProbLevel5WhenHard ?? 0.55;
 
-    const dFull = hardCfg.level5FullAllowedDanger ?? 0.12;
-    const dNever = hardCfg.level5AlmostNeverDanger ?? 0.28;
+    const dFull = hard.level5FullAllowedDanger ?? 0.12;
+    const dNever = hard.level5AlmostNeverDanger ?? 0.28;
 
     // Suppression factor: 1 below dFull, ~0 above dNever, smooth in between.
     const t = clamp01((danger01 - dFull) / Math.max(1e-6, (dNever - dFull)));
@@ -429,7 +443,7 @@ export function selectPiece(state) {
     p5 = p5 * suppression;
 
     // First hard preference: try to make the first hard a 5 if possible (and not heavily suppressed).
-    if ((hardCfg.preferLevel5ForFirstHard ?? true) && !sel.hasDroppedFirstHard) {
+    if ((hard.preferLevel5ForFirstHard ?? true) && !sel.hasDroppedFirstHard) {
       const anyLevel5Exists = state.shapes.some(s => (s.difficulty ?? 1) === 5 && (s.frequency ?? 1) >= 0);
       if (anyLevel5Exists && suppression > 0.25) p5 = Math.max(p5, 0.80);
     }
@@ -485,7 +499,7 @@ export function selectPiece(state) {
 
 function noteHardDropped(sel, lvl = 5) {
   sel.urge.hard = 0.0;
-  sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, CONFIG.assist.pieceMix.hard.cooldownDrops ?? 9);
+  sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, hardCfg(sel.mode).cooldownDrops ?? 9);
   sel.hasDroppedFirstHard = true;
   if (lvl === 5) sel.hadGiant = true;
 }
@@ -586,7 +600,7 @@ export function powerupUsefulness(board, shape) {
    variety).
 */
 function maybeSelectPowerup(state, danger01) {
-  const cfg = CONFIG.assist.powerups;
+  const cfg = powerupCfg(state.mode);
   const sel = state.pieceSel;
   const ps = sel.powerup;
 
@@ -661,7 +675,12 @@ function maybeSelectPowerup(state, danger01) {
   const st = cfg.struggle ?? {};
   // help preference: from slightly favouring gentle ones (calm) to strongly helpful (struggling)
   const lucky = !endGame && state.rng() < (st.luckyChance ?? 0);
-  const power = endGame ? 0 : lucky ? (st.helpPower ?? 2) : lerp(st.calmHelpPower ?? 0, st.helpPower ?? 2, sel.struggle);
+  let power = endGame ? 0 : lucky ? (st.helpPower ?? 2) : lerp(st.calmHelpPower ?? 0, st.helpPower ?? 2, sel.struggle);
+  // God mode: always the more helpful ones, and above all the wide gravitizers
+  const god = isGodMode(state.mode) && !endGame;
+  if (god) power = Math.max(power, CONFIG.godMode?.helpPower ?? 0);
+  const wide = CONFIG.godMode?.wideGravity ?? {};
+  const wideW = (p) => god && gravityColumns(p) >= (wide.minCols ?? 6) ? (wide.weight ?? 1) : 1;
 
   // Intros: a powerup of a class not met yet brings up its intro screen. Keep those spaced
   // out (they interrupt the game), and always introduce a class with a starter piece.
@@ -690,7 +709,7 @@ function maybeSelectPowerup(state, danger01) {
     const comboW = p.powerup.type === "combo" ? (firstComboDue ? (combos.firstBoost ?? 1) : (combos.weight ?? 1)) : 1;
     // a class's pieces share its weight, so big classes don't crowd out small ones
     const classSize = candidates.filter(c => c.powerup.cls === p.powerup.cls).length;
-    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * varietyMultiplier(sel, p) * (6 / (classSize + 5));
+    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * wideW(p) * varietyMultiplier(sel, p) * (6 / (classSize + 5));
   }, state.rng);
   if (chosen && introducing(chosen)) { ps.lastIntroDrop = sel.dropIndex; ps.pendingIntro.add(chosen.powerup.cls); }
   return chosen;
@@ -731,7 +750,7 @@ export function introduceAllPowerups(state) {
 }
 
 function notePowerupDropped(sel) {
-  const cfg = CONFIG.assist.powerups;
+  const cfg = powerupCfg(sel.mode);
   sel.powerup.chance = cfg.baseChance ?? 0.05;
   sel.powerup.cooldown = cfg.cooldownDrops ?? 5;
   sel.powerup.count++;

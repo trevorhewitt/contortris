@@ -229,6 +229,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
     $("btnEasy").classList.toggle("secondary", lastMode !== "easy");
     $("btnNormal").classList.toggle("secondary", lastMode !== "normal");
     $("btnExtreme").classList.toggle("secondary", lastMode !== "extreme");
+    $("btnGod").classList.toggle("secondary", lastMode !== "god");
     $("achCount").textContent = `${achievements.unlockedCount()}/${achievements.defs.length}`;
     syncSoundButtons();
   }
@@ -491,7 +492,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
       } else {
         const pr = achievements.progressOf(def);
         if (pr && !hidden) meta = `${pr.best ? "Best" : "Progress"}: ${Math.min(pr.value, pr.target)} / ${pr.target}`;
-        if (def.mode && def.mode !== "any") meta += `${meta ? " · " : ""}${def.mode === "powerups" ? "Easy or Normal" : modeLabel(def.mode)} mode`;
+        if (def.mode && def.mode !== "any") meta += `${meta ? " · " : ""}${def.mode === "powerups" ? "Easy, Normal or God" : modeLabel(def.mode)} mode`;
       }
       txt.innerHTML =
         `<div class="achName">${escapeHtml(name)}</div>` +
@@ -782,6 +783,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
   $("btnEasy").addEventListener("click", () => startGame("easy"));
   $("btnNormal").addEventListener("click", () => startGame("normal"));
   $("btnExtreme").addEventListener("click", () => startGame("extreme"));
+  $("btnGod").addEventListener("click", () => startGame("god"));
   $("btnHowTo").addEventListener("click", () => { panelBack = "menu"; showPanel("howto"); });
   $("btnAchievements").addEventListener("click", () => { panelBack = "menu"; showPanel("achievements"); });
   $("btnResume").addEventListener("click", () => resumeGame());

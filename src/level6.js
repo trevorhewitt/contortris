@@ -5,7 +5,7 @@
 // after another, and level 6 pieces never turn up any other way. They are locked at the start
 // of each game, and unlock when the player builds the stack up past
 // CONFIG.assist.level6.unlockAbove rows and then digs back down to unlockBackTo rows or fewer.
-// (Normal and Extreme; CONFIG.modes[mode].level6.)
+// (Normal and Extreme; CONFIG.modes[mode].level6. In God mode they're open from the start.)
 //
 // state.devLevel6: "auto" (the rule above), "on" or "off" — the dev mode override.
 // state.level6Remembered: true if it ever unlocked in this browser (used if level6.persist).
@@ -14,6 +14,7 @@
 
 import { CONFIG } from "../config.js";
 import { sampleByWeight } from "./util.js";
+import { godConfig } from "./godmode.js";
 
 export const LEVEL6 = 6;
 
@@ -68,18 +69,24 @@ export function expandGroup(group, rng) {
 
 // Per-game bookkeeping (lives in state.pieceSel.level6).
 export function initLevel6(state) {
-  const remembered = (CONFIG.assist.level6?.persist === true) && state.level6Remembered === true;
+  // God mode (level6: "open"): open from the first piece, and the first group soon after
+  const open = CONFIG.modes[state.mode]?.level6 === "open";
+  const remembered = open || ((CONFIG.assist.level6?.persist === true) && state.level6Remembered === true);
+  const [a, b] = level6Cfg(state).firstAfter ?? [2, 5];
   return {
     unlocked: remembered, // in this game
     unlockedAt: remembered ? 0 : null,
     wasHigh: false,       // the stack has been taller than unlockAbove this game
-    firstDueAt: null,     // the first group arrives at this piece number
+    firstDueAt: open ? a + Math.floor((state.rng ?? Math.random)() * (b - a + 1)) : null, // the first group arrives at this piece number
     queue: [],            // pieces still to come in the group being served
     group: null,          // id of the group being served
     lastEnd: 0,           // piece number when the last group finished
     seen: new Map(),      // group id -> times served this game
   };
 }
+
+// CONFIG.assist.level6, with God mode's numbers on top in God mode
+const level6Cfg = (state) => godConfig(state.mode, "level6", CONFIG.assist.level6 ?? {});
 
 export function stackRows(state) {
   const rows = state.board.length;
@@ -113,7 +120,7 @@ export function trackLevel6(state) {
 // The first group of a game comes soon after level 6 opens (CONFIG.assist.level6.firstAfter).
 export function scheduleFirstGroup(state) {
   const l6 = state.pieceSel.level6;
-  const [a, b] = CONFIG.assist.level6?.firstAfter ?? [2, 5];
+  const [a, b] = level6Cfg(state).firstAfter ?? [2, 5];
   l6.firstDueAt = state.pieceSel.dropIndex + a + Math.floor(state.rng() * (b - a + 1));
 }
 
@@ -136,7 +143,7 @@ export function groupUnderWay(state) {
 // Maybe start a group on this piece: returns its first piece, or null.
 export function maybeStartGroup(state) {
   if (!state.groups?.length || !level6Open(state)) return null;
-  const sel = state.pieceSel, l6 = sel.level6, cfg = CONFIG.assist.level6 ?? {};
+  const sel = state.pieceSel, l6 = sel.level6, cfg = level6Cfg(state);
   if (sel.lastWasHard) return null; // never straight after a giant
   if (stackRows(state) > (cfg.maxStackRows ?? 8)) return null;
   const firstDue = l6.firstDueAt != null && !l6.seen.size && sel.dropIndex >= l6.firstDueAt;
@@ -166,7 +173,8 @@ export function maybeStartGroup(state) {
 
 // Rows of board a run of pieces needs: their blocks spread over the width, plus some for the
 // gaps they leave (CONFIG.assist.level6.roomFactor) — or, if more, the full height of every
-// piece wider than half the board (those can't sit side by side, so they stack up).
+// piece wider than half the board (those can't sit side by side, so they stack up) — or, if
+// more still, how high they pile up even when placed as well as possible (bestPile).
 export function roomNeeded(pieces) {
   const cols = CONFIG.board.cols;
   let blocks = 0, stacked = 0;
@@ -178,7 +186,72 @@ export function roomNeeded(pieces) {
     const fill = n / (mat.length * mat[0].length);
     if (mat[0].length > cols / 2) stacked += fill >= 0.5 ? mat.length : Math.ceil(mat.length * fill * 2);
   }
-  return Math.max(stacked, Math.ceil((blocks / cols) * (CONFIG.assist.level6?.roomFactor ?? 1.25)));
+  return Math.max(stacked, Math.ceil((blocks / cols) * (CONFIG.assist.level6?.roomFactor ?? 1.25)), bestPile(pieces));
+}
+
+// How many rows a run of pieces piles up on an empty board, placed as well as possible: every
+// rotation and column, dropped straight down, keeping the lowest few piles after each piece
+// (rows that fill up are cleared). Remembered for each run of pieces.
+const pileCache = new Map();
+export function bestPile(pieces, beamWidth = 12, perLevel = 3) {
+  const key = pieces.map(s => s.id).join(">");
+  if (pileCache.has(key)) return pileCache.get(key);
+  const cols = CONFIG.board.cols, H = 64, FULL = (1 << cols) - 1;
+  // a board: rows[y] = bit mask of filled cells (y = 0 at the top), tops[x] = first filled row
+  let beam = [{ rows: new Uint32Array(H), tops: new Int16Array(cols).fill(H), score: 0 }];
+  for (const s of pieces) {
+    const next = [];
+    for (const mat of s.rotations) {
+      const w = mat[0].length, h = mat.length;
+      const low = [], high = [];
+      for (let i = 0; i < w; i++) {
+        let lo = -1, hi = -1;
+        for (let j = 0; j < h; j++) if (mat[j][i]) { if (hi < 0) hi = j; lo = j; }
+        low.push(lo); high.push(hi);
+      }
+      for (const b of beam) for (let x = 0; x + w <= cols; x++) {
+        let y = Infinity;
+        for (let i = 0; i < w; i++) if (low[i] >= 0) y = Math.min(y, b.tops[x + i] - 1 - low[i]);
+        if (y < 0 || !Number.isFinite(y)) continue; // (doesn't fit at all)
+        const rows = b.rows.slice();
+        for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (mat[j][i]) rows[y + j] |= 1 << (x + i);
+        // clear full rows
+        let out = H - 1;
+        const kept = new Uint32Array(H);
+        for (let r = H - 1; r >= 0; r--) if (rows[r] !== FULL) kept[out--] = rows[r];
+        const tops = new Int16Array(cols).fill(H);
+        let holes = 0;
+        for (let c = 0; c < cols; c++) {
+          const bit = 1 << c;
+          for (let r = 0; r < H; r++) {
+            if (kept[r] & bit) { if (tops[c] === H) tops[c] = r; }
+            else if (tops[c] < H) holes++;
+          }
+        }
+        const height = H - Math.min(...tops);
+        next.push({ rows: kept, tops, score: height * 1000 + holes });
+      }
+    }
+    if (!next.length) { pileCache.set(key, H); return H; }
+    // keep the lowest piles, but only a few of each height (so a taller pile that leaves room
+    // for what comes next, like the moon standing up, isn't crowded out), and no duplicates
+    next.sort((a, c) => a.score - c.score);
+    const seen = new Set(), perHeight = new Map();
+    beam = [];
+    for (const st of next) {
+      const sky = st.tops.join(",");
+      if (seen.has(sky)) continue;
+      seen.add(sky);
+      const h = Math.floor(st.score / 1000), n = perHeight.get(h) ?? 0;
+      if (n >= perLevel) continue;
+      perHeight.set(h, n + 1);
+      beam.push(st);
+      if (beam.length >= beamWidth) break;
+    }
+  }
+  const best = Math.floor(beam[0].score / 1000);
+  pileCache.set(key, best);
+  return best;
 }
 
 // Start `group` now: returns its first piece (the rest follow, in order).
@@ -200,6 +273,7 @@ export function level6Status(state) {
   const dev = state.devLevel6 ?? "auto";
   const parts = [level6Open(state) ? "unlocked" : "locked"];
   if (dev !== "auto") parts.push(`forced ${dev}`);
+  else if (CONFIG.modes[state.mode]?.level6 === "open") parts.push("God mode: open from the start");
   else if (!l6.unlocked) parts.push(l6.wasHigh ? `was above row ${cfg.unlockAbove ?? 10}: dig to ${cfg.unlockBackTo ?? 5}` : `needs a stack above row ${cfg.unlockAbove ?? 10}`);
   if (l6.group) parts.push(`${l6.group}: ${l6.queue.length} to come`);
   else if (l6.firstDueAt != null && !l6.seen.size) parts.push(`first group at piece ${l6.firstDueAt}`);

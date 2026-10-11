@@ -8,10 +8,14 @@ export const CONFIG = {
   // Game modes. Extreme = the original game. Normal = the same game plus powerups.
   modes: {
     // giants: whether the huge (difficulty 4 and 5) pieces turn up at all
-    // level6: whether the level 6 groups can unlock (see assist.level6)
+    // level6: whether the level 6 groups can unlock (see assist.level6), or "open": open from
+    //         the first piece
+    // everything: every powerup class and the combos are in from the first piece (no intro
+    //         screens, nothing to wait for)
     easy: { label: "Easy", tagline: "powerups, and no giant pieces", powerups: true, giants: false, level6: false },
     normal: { label: "Normal", tagline: "powerups help you out", powerups: true, giants: true, level6: true },
     extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true },
+    god: { label: "God", tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true },
   },
   defaultMode: "normal",
 
@@ -63,6 +67,41 @@ export const CONFIG = {
     speedPerPiece: 0.93,// the fall gets this much faster with every piece...
     minDropMs: 60,      // ...down to this many ms per row
     spawnJitter: 3,     // pieces come in further off-centre, so the whole board fills up
+  },
+
+  // God mode (modes.god): everything from the first piece, and plenty of it. The level 6 sets
+  // are open from the start, every powerup class and the combos are in (no intro screens), and
+  // giants and sets come early and often. To make up for them: lots of powerups, mostly the
+  // best ones, the wide gravitizers. Each section replaces the same numbers in `assist` (only
+  // the ones listed) while playing God mode.
+  godMode: {
+    hard: {                       // the giants (assist.pieceMix.hard)
+      minDropIndex: 1,
+      firstGiantBetween: [2, 4],
+      softWindowStart: 1,
+      softWindowEnd: 400,
+      rechargePerDrop: 0.03,      // (4× as fast)
+      cooldownDrops: 4,
+      hardMaxDanger: 0.45,
+    },
+    level6: {                     // the level 6 sets (assist.level6)
+      firstAfter: [3, 6],
+      cooldownDrops: 12,
+      chancePerDrop: 0.14,
+      maxStackRows: 11,
+    },
+    powerups: {                   // assist.powerups
+      minDropIndex: 1,
+      cooldownDrops: 1,
+      baseChance: 0.3,
+      chancePerDrop: 0.12,
+      maxChance: 0.9,
+      combos: { minDrop: 0 },
+      bad: { minDrop: 0 },
+    },
+    // gravitizers that collapse at least `minCols` columns are this many times likelier
+    wideGravity: { minCols: 6, weight: 6 },
+    helpPower: 1.5,               // always prefer the more helpful powerups (as when struggling)
   },
 
   scoring: {
