@@ -8,7 +8,7 @@
  *   name: "shown in game",
  *   grid: ["XX", "X."],       the shape: X = block, . = empty
  *   color: "#hex" | [[...]],  a solid colour, or pixel art: a grid of hex colours exactly
- *                             k times the size of `grid` (k = pixels per block, 1-7).
+ *                             k times the size of `grid` (k = pixels per block, 1-9).
  *                             "" pixels inside a block show the first colour in the grid.
  *   difficulty: 0-6,          regular blocks only; drives when it is served
  *                             (see CONFIG.assist.pieceMix in config.js). 6 = level 6: only

@@ -362,7 +362,7 @@ function inferPixelScale(matH, matW, gridH, gridW) {
   const kH = gridH / matH;
   const kW = gridW / matW;
   if (kH !== kW) return null;
-  const MAX_K = 7; // rendering cost scales with k^2
+  const MAX_K = 9; // (each block is drawn once into a cached sprite, so k only costs at load)
   if (kH < 1 || kH > MAX_K) return null;
   return kH;
 }

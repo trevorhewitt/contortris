@@ -444,7 +444,7 @@
       <div class="row">
         <label>Blocks W <input id="blocksW" type="number" min="1" max="64" value="2"></label>
         <label>H <input id="blocksH" type="number" min="1" max="64" value="2"></label>
-        <label>Px / block <input id="ppb" type="number" min="1" max="7" value="7"></label>
+        <label>Px / block <input id="ppb" type="number" min="1" max="9" value="7"></label>
       </div>
       <div class="row">
         <button id="applySize" class="primary">Apply size</button>
@@ -668,7 +668,7 @@
                   <button data-fmode="pixel">Pixel art</button>
                   <button data-fmode="solid" class="on">Solid</button>
                 </div>
-                <label>k <input id="fillK" type="number" min="1" max="7" value="7"></label>
+                <label>k <input id="fillK" type="number" min="1" max="9" value="7"></label>
               </div>
               <div class="row" id="fillSolidRow">
                 <label>Solid <input id="fillSolid" type="color" value="#ffffff"></label>
@@ -1633,7 +1633,7 @@
     };
   }
   function applyEditorState(d){
-    state.blocksW = clamp(d.blocksW | 0, 1, MAX_BLOCKS); state.blocksH = clamp(d.blocksH | 0, 1, MAX_BLOCKS); state.ppb = clamp(d.ppb | 0, 1, 7);
+    state.blocksW = clamp(d.blocksW | 0, 1, MAX_BLOCKS); state.blocksH = clamp(d.blocksH | 0, 1, MAX_BLOCKS); state.ppb = clamp(d.ppb | 0, 1, 9);
     state.pxW = state.blocksW * state.ppb; state.pxH = state.blocksH * state.ppb;
     const n = state.pxW * state.pxH;
     state.zoom = clamp(d.zoom | 0 || state.zoom, 2, 60); el.zoom.value = String(state.zoom);
@@ -4124,7 +4124,7 @@
   }));
   document.querySelectorAll(".fillToolBtn").forEach(b => b.addEventListener("click", () => { state.fill.tool = b.dataset.ftool; syncFillUI(); }));
   el.fillK.addEventListener("change", () => {
-    const k = clamp(parseInt(el.fillK.value, 10) || 1, 1, 7);
+    const k = clamp(parseInt(el.fillK.value, 10) || 1, 1, 9);
     commit(() => {
       const f = state.fill;
       if (k === f.k) return false;
@@ -4181,7 +4181,7 @@
   function inferK(h, w, ch, cw){
     if (!ch || !cw || ch % h || cw % w) return null;
     const k = ch / h;
-    return (k === cw / w && k >= 1 && k <= 7) ? k : null;
+    return (k === cw / w && k >= 1 && k <= 9) ? k : null;
   }
   function shapeModel(shape){
     const lines = gridLines(shape && shape.grid);
@@ -4530,7 +4530,7 @@
   // A fill value from a file as fill-editor state (k: pixels per block for a solid fill)
   function fillStateFrom(fill, fallbackHex, P){
     if (Array.isArray(fill) && Array.isArray(fill[0])){
-      const k = clamp(fill.length, 1, 7);
+      const k = clamp(fill.length, 1, 9);
       const f = { mode: "pixel", k, data: new Uint32Array(k * k), solidHex: normHex(fill[0][0]) || "#ffffff", tool: "draw" };
       for (let y = 0; y < k; y++) for (let x = 0; x < k; x++) f.data[y * k + x] = argbFromHex(fill[y] && fill[y][x]);
       return f;
@@ -4760,7 +4760,7 @@
     let P = state.ppb, pixelGrid = null;
     if (Array.isArray(col) && Array.isArray(col[0])){
       const k = inferK(h, w, col.length, col[0].length);
-      P = k || clamp(Math.round(Math.min(col.length / h, col[0].length / w)) || 1, 1, 7);
+      P = k || clamp(Math.round(Math.min(col.length / h, col[0].length / w)) || 1, 1, 9);
       pixelGrid = col;
     }
     state.blocksW = w; state.blocksH = h; state.ppb = P;
@@ -4868,7 +4868,7 @@
       // fill art
       const fill = combo ? undefined : pu.fill;
       if (Array.isArray(fill) && Array.isArray(fill[0])){
-        const k = clamp(fill.length, 1, 7);
+        const k = clamp(fill.length, 1, 9);
         state.fill = { ...state._fill, mode: "pixel", k, data: new Uint32Array(k * k), solidHex: normHex(fill[0][0]) || "#ffffff" };
         for (let y = 0; y < k; y++) for (let x = 0; x < k; x++) state.fill.data[y * k + x] = argbFromHex(fill[y] && fill[y][x]);
       } else {
@@ -5995,7 +5995,7 @@
     const m = obj.meta;
     state.blocksW = clamp(parseInt(m.blocksW, 10) || 1, 1, MAX_BLOCKS);
     state.blocksH = clamp(parseInt(m.blocksH, 10) || 1, 1, MAX_BLOCKS);
-    state.ppb = clamp(parseInt(m.ppb, 10) || 1, 1, 7);
+    state.ppb = clamp(parseInt(m.ppb, 10) || 1, 1, 9);
     state.pxW = state.blocksW * state.ppb; state.pxH = state.blocksH * state.ppb;
     const n = state.pxW * state.pxH;
     state.zoom = clamp(parseInt(m.zoom, 10) || state.zoom, 2, 60); el.zoom.value = String(state.zoom);
@@ -6040,7 +6040,7 @@
       if (s.pu){
         state.pu = { ...defaultPu(), ...s.pu, extras: s.pu.extras || {} };
         state.pu.parts = (Array.isArray(s.pu.parts) ? s.pu.parts : []).filter(isPlainObject).map(q => {
-          const f = isPlainObject(q.fill) ? q.fill : {}, k = clamp(parseInt(f.k, 10) || 7, 1, 7);
+          const f = isPlainObject(q.fill) ? q.fill : {}, k = clamp(parseInt(f.k, 10) || 7, 1, 9);
           return newPart(String(q.type || "destroyer"), { ...q, uid: partSeq++, cells: isPlainObject(q.cells) ? { ...q.cells } : {}, areaOrig: undefined, orig: undefined,
             extras: isPlainObject(q.extras) ? q.extras : {}, areaExtras: isPlainObject(q.areaExtras) ? q.areaExtras : {},
             fill: { mode: f.mode === "pixel" ? "pixel" : "solid", solidHex: normHex(f.solidHex) || "#ffffff", k, data: parseHexWords(f.data, k * k), tool: "draw" } });
@@ -6052,7 +6052,7 @@
       state.area.extras = isPlainObject(s.areaExtras) ? s.areaExtras : {};
       state.area.orig = undefined;
       if (s.fill){
-        const k = clamp(parseInt(s.fill.k, 10) || 7, 1, 7);
+        const k = clamp(parseInt(s.fill.k, 10) || 7, 1, 9);
         state.fill = { ...state._fill, mode: s.fill.mode === "pixel" ? "pixel" : "solid", solidHex: normHex(s.fill.solidHex) || "#ffffff", k, data: parseHexWords(s.fill.data, k * k) };
       }
       state.tags = Array.isArray(s.tags) ? s.tags.map(String) : [];
@@ -6125,7 +6125,7 @@
   el.applySize.addEventListener("click", () => {
     const w = clamp(parseInt(el.blocksW.value, 10) || 1, 1, MAX_BLOCKS);
     const h = clamp(parseInt(el.blocksH.value, 10) || 1, 1, MAX_BLOCKS);
-    const p = clamp(parseInt(el.ppb.value, 10) || 1, 1, 7);
+    const p = clamp(parseInt(el.ppb.value, 10) || 1, 1, 9);
     commit(() => {
       if (w === state.blocksW && h === state.blocksH && p === state.ppb) return false;
       resizeCanvas(w, h, p);
