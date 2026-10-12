@@ -22,6 +22,14 @@
  *       weights: [3, 1, ...],         optional, how likely each one is (default all 1)
  *       count: [2, 5],                how many (a random number from 2 to 5; or just 3)
  *       unique: true }                optional: each piece at most once in the run
+ *     { chain: {                      a run where each piece picks the next one:
+ *         start: { id: 3, id: 1 },      the first (weights),
+ *         after: { id: { id: 2, stop: 1 }, ... },  what can follow each piece ("stop" ends it)
+ *         max: 4 } }                    and at most this many
+ *
+ * A piece with `echo: "other_id"` in its data comes back later in the same run as that piece
+ * (déjà vu); only the first such piece in a run does. A piece with `nameAgain` goes by that
+ * name when it comes straight after itself ("another raindrop").
  * }
  *
  * A group whose fixed ("piece_id") piece is banished (frequency 0) never turns up; banished
@@ -82,7 +90,24 @@ export const GROUPS = [
     id: "noahs_ark",
     name: "Noah's ark",
     frequency: 1,
-    sequence: ["noahs_ark", { pick: ["two_giraffes","two_elephants","two_penguins","two_snails","two_crocodiles","two_zebras","two_lions","two_kangaroos","two_flamingos","two_hippos","two_pandas","two_owls","two_frogs","two_tortoises","two_sheep","two_hedgehogs","two_octopuses"], count: [4, 6], unique: true }, { pick: ["just_one_unicorn","just_one_dinosaur","just_one_dodo","just_one_mammoth","just_one_griffin","dragons_both_dudes"], count: 1 }, { pick: ["raindrop","big_raindrop","drizzle"], weights: [3, 1, 1], count: [5, 8] }],
+    sequence: [
+      "noahs_ark",
+      { pick: ["two_giraffes","two_elephants","two_penguins","two_snails","two_crocodiles","two_zebras","two_lions","two_kangaroos","two_flamingos","two_hippos","two_pandas","two_owls","two_frogs","two_tortoises","two_sheep","two_hedgehogs","two_octopuses"], count: [3, 4], unique: true },
+      { pick: ["just_one_unicorn","just_one_dinosaur","just_one_dodo","just_one_mammoth","just_one_griffin","dragons_both_dudes"], count: 1 },
+      // the rain: each drop decides what comes next, then the downpour
+      {
+        chain: {
+          start: { drizzle: 2, raindrop: 3 },
+          after: {
+            drizzle: { raindrop: 3, drizzle: 1, stop: 1 },
+            raindrop: { raindrop: 3, big_raindrop: 2, stop: 2 },
+            big_raindrop: { big_raindrop: 1, raindrop: 1, stop: 3 },
+          },
+          max: 4,
+        },
+      },
+      "forty_days_of_rain",
+    ],
   },
   {
     id: "existence",

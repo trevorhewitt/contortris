@@ -50,11 +50,26 @@ export function normaliseGroups(rawGroups, shapes) {
         // (unique: each piece at most once, so never more of them than there are pieces)
         const unique = step.unique === true;
         steps.push({ shapes: picks, weights, count: unique ? [Math.min(lo, picks.length), Math.min(hi, picks.length)] : [lo, hi], unique });
+      } else if (step && step.chain && typeof step.chain === "object") {
+        // a chain: each piece picks the next ({ start: {id: weight}, after: {id: {id: weight,
+        // stop: weight}}, max }), so the run reacts to what it has already brought
+        const toList = (w) => Object.entries(w ?? {}).map(([id, wt]) => ({ id, s: id === "stop" ? null : live(id), w: Math.max(0, Number(wt) || 0) }))
+          .filter(it => it.w > 0 && (it.id === "stop" || it.s));
+        const after = {};
+        for (const [id, w] of Object.entries(step.chain.after ?? {})) after[id] = toList(w);
+        const start = toList(step.chain.start);
+        if (!start.length) continue;
+        steps.push({ chain: { start, after, max: Math.max(1, Number(step.chain.max) || 4) } });
       }
     }
     if (!ok || !steps.length) continue;
+    // a piece with `echo` comes back later in the same run as that piece (déjà vu)
+    const echoes = new Map();
+    for (const st of steps) for (const sh of [...(st.shapes ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]) {
+      if (sh.echo && live(sh.echo)) echoes.set(sh.id, live(sh.echo));
+    }
     out.push({ id: String(g.id), name: String(g.name ?? g.id), frequency: Math.max(0, Number(g.frequency ?? 1) || 0), steps,
-      room: Math.max(0, Number(g.room) || 0) });
+      room: Math.max(0, Number(g.room) || 0), echoes });
   }
   return out;
 }
@@ -62,7 +77,18 @@ export function normaliseGroups(rawGroups, shapes) {
 // One run through a group: the list of pieces, picks rolled.
 export function expandGroup(group, rng) {
   const out = [];
+  const pick = (list) => sampleByWeight(list, it => it.w, rng);
   for (const st of group.steps) {
+    if (st.chain) {
+      // a chain: start somewhere, then each piece picks the next, until "stop" or `max`
+      let it = pick(st.chain.start);
+      for (let n = 0; it && it.s && n < st.chain.max; n++) {
+        out.push(it.s);
+        const nexts = st.chain.after[it.s.id];
+        it = nexts?.length ? pick(nexts) : null;
+      }
+      continue;
+    }
     const n = st.count[0] + Math.floor(rng() * (st.count[1] - st.count[0] + 1));
     let pool = st.shapes.map((s, k) => ({ s, w: st.weights[k] }));
     for (let i = 0; i < n && pool.length; i++) {
@@ -70,6 +96,14 @@ export function expandGroup(group, rng) {
       out.push(it.s);
       if (st.unique) pool = pool.filter(x => x !== it);
     }
+  }
+  // echoes: the first piece that has one comes back once, somewhere later in the run (only
+  // one per run)
+  // (at least one other piece in between, when there's room for that)
+  const i = out.findIndex(s => group.echoes?.has(s.id));
+  if (i >= 0) {
+    const lo = Math.min(out.length, i + 2);
+    out.splice(lo + Math.floor(rng() * (out.length - lo + 1)), 0, group.echoes.get(out[i].id));
   }
   return out;
 }

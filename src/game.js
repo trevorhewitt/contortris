@@ -165,9 +165,15 @@ export function currentPool(state) {
   return [...state.shapes, ...state.powerups].filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6);
 }
 
-// A piece as it actually arrives: remixes are rebuilt and scatters re-rolled every time.
+// A piece as it actually arrives: remixes are rebuilt and scatters re-rolled every time, and
+// one that comes straight after itself goes by its `nameAgain` ("another raindrop").
 function prepareShape(state, shape) {
-  return rollScatter(remixShape(shape, state.allById, state.rng), state.rng);
+  let out = rollScatter(remixShape(shape, state.allById, state.rng), state.rng);
+  const recent = state.pieceSel?.recentShapeIds ?? [];
+  if (out?.nameAgain && recent.length >= 2 && recent[recent.length - 2] === out.id && recent[recent.length - 1] === out.id) {
+    out = { ...out, name: out.nameAgain };
+  }
+  return out;
 }
 
 /* =========================

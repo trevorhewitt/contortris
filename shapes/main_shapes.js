@@ -14680,7 +14680,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0,
+    frequency: 1,
     claudeDraft: true,
     noShake: true,
   },
@@ -14967,12 +14967,21 @@ export const SHAPES = [
         "X"
       ],
     color: [["#708093","#7f90a7","#90a0b4","#6393c9","#90a0b4","#7f90a7","#708093"],["#7f90a7","#a8bad1","#73abea","#2c6fc8","#73abea","#a8bad1","#7f90a7"],["#7f90a7","#73abea","#2c6fc8","#2c6fc8","#2c6fc8","#73abea","#7f90a7"],["#6393c9","#2c6fc8","#3f82d6","#2c6fc8","#2c6fc8","#2c6fc8","#6393c9"],["#265fac","#f6faff","#3f82d6","#2c6fc8","#2c6fc8","#2c6fc8","#1c4a88"],["#265fac","#f6faff","#f6faff","#3f82d6","#2c6fc8","#21569e","#7f90a7"],["#708093","#265fac","#265fac","#265fac","#1c4a88","#7f90a7","#637287"]],
-    difficulty: 6,
+    difficulty: 0,
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0.4,
     claudeDraft: true,
+    nameAgain: "another raindrop",
+    nextShapeProbs: [
+        0.25,
+        0.1
+      ],
+    nextShapes: [
+        "raindrop",
+        "big_raindrop"
+      ],
     noShake: true,
   },
   {
@@ -14983,12 +14992,13 @@ export const SHAPES = [
         "X"
       ],
     color: [["#708093","#7f90a7","#7f90a7","#6393c9","#90a0b4","#7f90a7","#708093"],["#7f90a7","#94a8c2","#a8bad1","#73abea","#a8bad1","#94a8c2","#7f90a7"],["#7f90a7","#94a8c2","#73abea","#2c6fc8","#73abea","#a8bad1","#7f90a7"],["#7f90a7","#a8bad1","#73abea","#2c6fc8","#73abea","#94a8c2","#7f90a7"],["#7f90a7","#73abea","#2c6fc8","#3f82d6","#2c6fc8","#73abea","#7f90a7"],["#7f90a7","#73abea","#2c6fc8","#3f82d6","#2c6fc8","#73abea","#7f90a7"],["#6393c9","#2c6fc8","#3f82d6","#2c6fc8","#2c6fc8","#2c6fc8","#6393c9"],["#6393c9","#2c6fc8","#3f82d6","#2c6fc8","#2c6fc8","#2c6fc8","#6393c9"],["#265fac","#f6faff","#3f82d6","#2c6fc8","#2c6fc8","#2c6fc8","#1c4a88"],["#265fac","#f6faff","#3f82d6","#2c6fc8","#2c6fc8","#2c6fc8","#1c4a88"],["#265fac","#f6faff","#f6faff","#3f82d6","#2c6fc8","#2c6fc8","#1c4a88"],["#7f90a7","#2c6fc8","#f6faff","#f6faff","#3f82d6","#21569e","#7f90a7"],["#7f90a7","#2c6fc8","#2c6fc8","#2c6fc8","#2c6fc8","#21569e","#7f90a7"],["#637287","#7f90a7","#1c4a88","#1c4a88","#1c4a88","#7f90a7","#637287"]],
-    difficulty: 6,
+    difficulty: 0,
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0.25,
     claudeDraft: true,
+    nameAgain: "another big raindrop",
     noShake: true,
   },
   {
@@ -14998,12 +15008,13 @@ export const SHAPES = [
         "X.X"
       ],
     color: [["#708093","#7f90a7","#7f90a7","#7f90a7","#7f90a7","#6393c9","#808d9f","","","","","","","","#808d9f","#7f90a7","#6393c9","#7f90a7","#7f90a7","#7f90a7","#708093"],["#7f90a7","#a8bad1","#94a8c2","#94a8c2","#73abea","#2c6fc8","#7f90a7","","","","","","","","#7f90a7","#73abea","#2c6fc8","#94a8c2","#94a8c2","#a8bad1","#7f90a7"],["#7f90a7","#94a8c2","#94a8c2","#94a8c2","#2c6fc8","#f6faff","#7f90a7","","","","","","","","#7f90a7","#2c6fc8","#f6faff","#94a8c2","#94a8c2","#94a8c2","#6393c9"],["#7f90a7","#73abea","#a8bad1","#f6faff","#94a8c2","#94a8c2","#7f90a7","","","","","","","","#7f90a7","#f6faff","#94a8c2","#94a8c2","#94a8c2","#73abea","#265fac"],["#6393c9","#2c6fc8","#94a8c2","#94a8c2","#94a8c2","#94a8c2","#90a0b4","","","","","","","","#7f90a7","#94a8c2","#94a8c2","#a8bad1","#2c6fc8","#f6faff","#7f90a7"],["#265fac","#f6faff","#94a8c2","#94a8c2","#a8bad1","#94a8c2","#7f90a7","","","","","","","","#7f90a7","#94a8c2","#94a8c2","#94a8c2","#f6faff","#94a8c2","#7f90a7"],["#bbbec2","#7f90a7","#7f90a7","#7f90a7","#7f90a7","#7f90a7","#708093","","","","","","","","#708093","#90a0b4","#7f90a7","#7f90a7","#7f90a7","#7f90a7","#808d9f"]],
-    difficulty: 6,
+    difficulty: 0,
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0.25,
     claudeDraft: true,
+    nameAgain: "a bit more drizzle",
     noShake: true,
   },
   {

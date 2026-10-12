@@ -37,13 +37,17 @@ test("groups in the data are complete (every piece exists)", () => {
   const all = normaliseGroups(GROUPS, shapes);
   for (const g of GROUPS) {
     for (const step of g.sequence) {
-      const ids = typeof step === "string" ? [step] : step.pick;
+      const ids = typeof step === "string" ? [step] : step.chain
+        ? [...Object.keys(step.chain.start ?? {}), ...Object.values(step.chain.after ?? {}).flatMap(o => Object.keys(o))].filter(id => id !== "stop")
+        : step.pick;
       for (const id of ids) assert.ok(shapes.some(s => s.id === id), `${g.id}: missing piece ${id}`);
     }
   }
   assert.equal(all.length, GROUPS.filter(g => (g.frequency ?? 1) > 0).length, "every group is live (but the banished ones)");
   // every level 6 piece belongs to a group
-  const inGroups = new Set(GROUPS.flatMap(g => g.sequence.flatMap(st => (typeof st === "string" ? [st] : st.pick))));
+  const inGroups = new Set(GROUPS.flatMap(g => g.sequence.flatMap(st => (typeof st === "string" ? [st] : st.chain
+    ? [...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))] : st.pick))));
+  for (const s of shapes) if (s.echo) inGroups.add(s.echo); // (echoes come back inside their set)
   for (const s of shapes.filter(s => s.difficulty === 6 && (s.frequency ?? 1) > 0)) assert.ok(inGroups.has(s.id), `${s.id} is level 6 but in no group`);
 });
 
@@ -101,39 +105,61 @@ test("easy mode never unlocks level 6; dev override forces it either way", () =>
   assert.equal(level6Open(state), false, "forced off");
 });
 
-// a run of piece ids is one whole pass through group `g`: its fixed pieces exactly, and for
-// each pick step a number of its pieces within the count
-function matchesGroup(g, ids) {
-  let i = 0;
+// How many pieces of `ids` (from `at`) make one whole pass through group `g`: its fixed pieces
+// exactly, each pick step a number of its pieces within the count, each chain step up to `max`
+// of its pieces, and an echo (déjà vu) of an earlier piece anywhere after it. -1 if they don't.
+const echoOf = new Map(shapes.filter(s => s.echo).map(s => [s.echo, s.id]));
+function matchGroupAt(g, ids, at = 0) {
+  let i = at, echoed = false;
+  const skipEcho = () => {
+    if (!echoed && i < ids.length && echoOf.has(ids[i]) && ids.slice(at, i).includes(echoOf.get(ids[i]))) { i++; echoed = true; }
+  };
   for (const st of g.sequence) {
-    if (typeof st === "string") { if (ids[i] !== st) return false; i++; continue; }
+    skipEcho();
+    if (typeof st === "string") { if (ids[i] !== st) return -1; i++; continue; }
+    if (st.chain) {
+      const set = new Set([...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))]);
+      let n = 0;
+      while (i < ids.length && set.has(ids[i]) && n < (st.chain.max ?? 4)) { i++; n++; skipEcho(); }
+      if (n < 1) return -1;
+      continue;
+    }
     const [lo, hi] = Array.isArray(st.count) ? st.count : [st.count ?? 1, st.count ?? 1];
     let n = 0;
-    while (i < ids.length && st.pick.includes(ids[i]) && n < hi) { i++; n++; }
-    if (n < lo) return false;
+    while (i < ids.length && st.pick.includes(ids[i]) && n < hi) { i++; n++; skipEcho(); }
+    if (n < lo) return -1;
   }
-  return i === ids.length;
+  skipEcho();
+  return i - at;
 }
+const matchesGroup = (g, ids) => matchGroupAt(g, ids, 0) === ids.length;
 
 test("level 6 pieces never turn up outside a group", () => {
+  const firstIds = new Map(GROUPS.filter(g => typeof g.sequence[0] === "string").map(g => [g.sequence[0], g]));
   for (const seed of [1, 2, 3, 4]) {
     const state = createGameState(shapes, powerups, { rng: makeRng(seed * 17), groups: GROUPS });
     state.devLevel6 = "on";
     const served = [];
-    on(state, (t, d) => { if (t === "spawn") served.push(d.shape.id); });
+    on(state, (t, d) => { if (t === "spawn") served.push(d.shape); });
     startRun(state, "normal");
     for (let i = 0; i < 400 && !state.gameOver; i++) { setStack(state, 2); drop(state); }
-    // split into runs of level 6 pieces; each must be a whole group
-    const d6 = new Set(shapes.filter(s => s.difficulty === 6).map(s => s.id));
-    const runs = [];
-    let cur = null;
-    for (const id of served) {
-      if (d6.has(id)) { if (!cur) runs.push(cur = []); cur.push(id); } else cur = null;
+    // walk the served pieces: every group whole and in order, and no level 6 piece anywhere
+    // else (the last group can be cut short by the end of the loop)
+    const ids = served.map(s => s.id);
+    let i = 0, groups = 0;
+    while (i < ids.length) {
+      const g = firstIds.get(ids[i]);
+      if (g && served[i].difficulty === 6) {
+        const n = matchGroupAt(g, ids, i);
+        if (n < 0 && ids.length - i < 40) break;
+        assert.ok(n > 0, `seed ${seed}: broken ${g.id} run: ${ids.slice(i, i + 16).join(">")}`);
+        i += n; groups++;
+        continue;
+      }
+      assert.notEqual(served[i].difficulty, 6, `seed ${seed}: ${ids[i]} outside a group (${ids.slice(Math.max(0, i - 3), i + 3).join(">")})`);
+      i++;
     }
-    assert.ok(runs.length >= 3, `seed ${seed}: ${runs.length} groups`);
-    // (the last run can be cut short by the end of this loop)
-    if (d6.has(served[served.length - 1])) runs.pop();
-    for (const r of runs) assert.ok(GROUPS.some(g => matchesGroup(g, r)), `run ${r.join(">")}`);
+    assert.ok(groups >= 3, `seed ${seed}: ${groups} groups`);
   }
 });
 
@@ -337,20 +363,37 @@ test("level 6: no set comes round again until every other one has, even into the
   assert.notEqual(b[0], a[a.length - 1], "the next game doesn't open with the last set");
 });
 
-test("Noah's ark: the ark, 4-6 different pairs, one last creature, then raindrops", () => {
+test("Noah's ark: the ark, 3-4 different pairs, one last creature, a few raindrops, then forty days and forty nights of rain", () => {
   const g = normaliseGroups(GROUPS, shapes).find(g => g.id === "noahs_ark");
   const last = new Set(["just_one_unicorn", "just_one_dinosaur", "just_one_dodo", "just_one_mammoth", "just_one_griffin", "dragons_both_dudes"]);
   const drops = new Set(["raindrop", "big_raindrop", "drizzle"]);
   const rng = makeRng(9);
+  const starts = new Set();
   for (let i = 0; i < 300; i++) {
     const ids = expandGroup(g, rng).map(s => s.id);
     assert.equal(ids[0], "noahs_ark");
     const pairs = ids.filter(id => id.startsWith("two_"));
-    assert.ok(pairs.length >= 4 && pairs.length <= 6, ids.join());
+    assert.ok(pairs.length >= 3 && pairs.length <= 4, ids.join());
     assert.equal(new Set(pairs).size, pairs.length, `the same pair twice: ${ids.join()}`);
     assert.deepEqual(ids.slice(1, 1 + pairs.length), pairs, ids.join());
     assert.ok(last.has(ids[1 + pairs.length]), `one creature after the pairs: ${ids.join()}`);
-    const rain = ids.slice(2 + pairs.length);
-    assert.ok(rain.length >= 5 && rain.length <= 8 && rain.every(id => drops.has(id)), ids.join());
+    const rain = ids.slice(2 + pairs.length, -1);
+    assert.ok(rain.length >= 1 && rain.length <= 4 && rain.every(id => drops.has(id)), ids.join());
+    assert.equal(ids[ids.length - 1], "forty_days_of_rain");
+    starts.add(rain[0]);
+    // (the rain reacts to itself: a big raindrop never comes straight after drizzle)
+    rain.forEach((id, k) => { if (id === "big_raindrop") assert.ok(k > 0 && rain[k - 1] !== "drizzle", rain.join()); });
   }
+  assert.ok(starts.has("drizzle") && starts.has("raindrop"), "the rain starts in different ways");
+});
+
+test("a raindrop straight after a raindrop is another raindrop", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(4), groups: GROUPS });
+  startRun(state, "normal");
+  const rain = shapes.find(s => s.id === "raindrop");
+  const names = [];
+  on(state, (t, d) => { if (t === "spawn") names.push(d.shape.name); });
+  // (setNextPiece prepares the piece; the history says what came before it)
+  for (let i = 0; i < 3; i++) { state.pieceSel.recentShapeIds.push("raindrop", "raindrop"); setNextPiece(state, rain); drop(state); }
+  assert.ok(names.includes("another raindrop"), names.join(" | "));
 });
