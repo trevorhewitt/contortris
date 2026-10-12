@@ -121,7 +121,8 @@ export function createGameState(shapes, powerups, { rng = Math.random, groups = 
       flash: { active: false, elapsedMs: 0, durationMs: 0, cells: [] },
       // Floating text ("DOUBLE!", "+24")
       callouts: [],
-      shockwaves: [],  // expanding rings where a blast went off
+      shockwaves: [],  // expanding rings (blasts, and the powerup shows)
+      show: null,      // the powerup show playing now (planShow; render.js drawShow)
       quake: {
         trauma: 0,
         seed: Math.random() * 1000,
@@ -233,6 +234,7 @@ export function resetGame(state) {
   fx.particles.length = 0;
   fx.callouts.length = 0;
   fx.shockwaves.length = 0;
+  fx.show = null;
   fx.rowFall.active = false;
   fx.rowFall.elapsedMs = 0;
   fx.rowFall.rowDropDistances = Array(CONFIG.board.rows).fill(0);
@@ -861,14 +863,10 @@ function firePowerupEffect(state, e) {
   const cols = CONFIG.board.cols;
   const rows = CONFIG.board.rows;
   const pu = e.pu;
-  let settleMs = 0;
 
   const fillPid = state.nextPid++;
   const blasts = pu.type === "blast" || pu.parts?.some(p => p.type === "blast");
-  if (blasts) {
-    const reach = Math.max(2, ...e.area.indices.map(i => Math.hypot(i % cols - e.centre.x, ((i / cols) | 0) - e.centre.y)));
-    state.fx.shockwaves.push({ x: e.centre.x + 0.5, y: e.centre.y + 0.5, radius: reach + 1, elapsedMs: 0, durationMs: 420 });
-  }
+  const reach = blasts ? Math.max(2, ...e.area.indices.map(i => Math.hypot(i % cols - e.centre.x, ((i / cols) | 0) - e.centre.y))) : 0;
   // A powerup that vanishes when it fires keeps its blocks in any row it completed, and that
   // row is destroyed once the effect has played out, as if the piece had stayed.
   const keepRows = new Set(pu.consume ? e.placed.map(c => c.y).filter(y => state.board[y]?.every(c => c !== null)) : []);
@@ -881,7 +879,6 @@ function firePowerupEffect(state, e) {
   e.keepRows = new Set([...keepRows].filter(y => !gone.has(y)).map(y => y + [...gone].filter(r => r > y).length));
 
   if (fx.consumed.length) {
-    spawnCellParticles(state, fx.consumed, 0.6);
     const inst = state.instances.get(e.pid);
     if (keepRows.size && inst) {
       inst.cells = inst.cells.filter(c => keepRows.has(c.y));
@@ -891,18 +888,13 @@ function firePowerupEffect(state, e) {
 
   if (fx.destroyed.length) {
     instancesAfterRemoval(state, fx.destroyed);
-    spawnCellParticles(state, fx.destroyed);
-    startFlash(state, fx.destroyed, cfg.destroyFlashMs);
     state.blocksDestroyed += fx.destroyed.length;
     state.score += fx.destroyed.length * ((CONFIG.scoring.powerupDestroyPerBlock ?? 0) + (CONFIG.scoring.blockDestroyed ?? 0)) * state.level;
-    addQuakeFromBlocks(state, fx.destroyed.length * (cfg.destroyQuakePerBlock ?? 1));
-    settleMs = cfg.destroySettleMs;
   }
 
   if (fx.collapsed) {
     instancesAfterCollapse(state, fx.collapsed.rows);
     startRowFall(state, fx.collapsed.dropDistances);
-    settleMs = Math.max(settleMs, CONFIG.fx.lineClear.boardFallAnimMs);
     state.rowsDestroyed += fx.collapsed.rows.length;
     state.score += (CONFIG.scoring.lineClear[fx.collapsed.rows.length] ?? fx.collapsed.rows.length * 100) * state.level;
     emit(state, "rowsDestroyed", { count: fx.collapsed.rows.length, source: "powerup" });
@@ -910,23 +902,7 @@ function firePowerupEffect(state, e) {
 
   // blocks moved or filled by a powerup score a little too
   state.score += (fx.moves.length + fx.filled.length) * (CONFIG.scoring.powerupMovePerBlock ?? 0) * state.level;
-
-  if (fx.moves.length) {
-    instancesAfterMoves(state, fx.moves);
-    settleMs = Math.max(settleMs, startMoveAnim(state, fx.moves));
-    e.quakeOnSettle = fx.moves.length * (cfg.gravityQuakePerBlock ?? 1);
-  }
-
-  if (fx.filled.length) {
-    if (pu.type === "goo") {
-      // goo flows from where the piece melted to where it settles
-      settleMs = Math.max(settleMs, startMoveAnim(state, fx.filled.map(f => ({
-        fromX: f.fromX, fromY: f.fromY, toX: f.x, toY: f.y,
-      }))));
-    } else {
-      settleMs = Math.max(settleMs, startGrowAnim(state, fx.filled, e.centre));
-    }
-  }
+  if (fx.moves.length) instancesAfterMoves(state, fx.moves);
 
   let affected = fx.destroyed.length + fx.moves.length + fx.filled.length;
   if (pu.type === "phantom") {
@@ -935,8 +911,10 @@ function firePowerupEffect(state, e) {
       for (let yy = y - 1; yy >= 0; yy--) if (state.board[yy][x] && state.board[yy][x].pid !== e.pid) return true;
       return false;
     }).length;
-    settleMs = 120;
   }
+
+  // the show (render.js draws it): each class has its own, bigger the more it changes
+  const show = planShow(state, e, fx, affected, blasts ? reach : 0);
 
   markBoardDirty(state);
 
@@ -950,71 +928,301 @@ function firePowerupEffect(state, e) {
     if (affected > 0) { psel.usedOk.add(pu.cls); psel.relearn.delete(pu.cls); }
     else psel.relearn.add(pu.cls);
   }
-  emit(state, "powerupFire", { shape: e.shape, type: pu.type, affected });
+  emit(state, "powerupFire", { shape: e.shape, type: pu.type, affected, show });
   if (isBoardEmpty(state) && state.drops > 1) emit(state, "boardCleared");
 
-  return settleMs;
+  return show.settleMs;
 }
 
-function startMoveAnim(state, moves) {
+/* =========================
+   The powerup show
+   ========================= */
+
+// Which part of the show each kind of powerup plays.
+const SHOW_PHASE = { destroyer: "destroy", acid: "destroy", gravity: "move", blast: "move", goo: "move", expander: "fill", phantom: "phantom" };
+
+// A steady jitter from a cell's position, 0-1 (the show never touches the game's random numbers).
+function wobble(x, y, k = 0) {
+  const s = Math.sin(x * 12.9898 + y * 78.233 + k * 37.719) * 43758.5453;
+  return s - Math.floor(s);
+}
+
+// Plans the show for a powerup that has just fired, and starts its block animations. Each
+// class has its own: destroyers pull everything into a core that bursts, gravity trembles and
+// drops with a thud, expanders sprout outwards from a pulse, phantoms flicker into being, and
+// combos play their parts one after another and finish in a rainbow. The more blocks it
+// changes, the bigger the show: big ones freeze for a moment, punch the board, play a little
+// slower and leave a moment to take it in (CONFIG.fx.powerup.show).
+function planShow(state, e, fx, affected, reach) {
+  const S = CONFIG.fx.powerup.show;
+  const pu = e.pu;
+  const power = clamp01((affected - S.bigFrom) / Math.max(1, S.bigAt - S.bigFrom));
+  const hold = Math.round(S.holdMs * power);
+  const slow = 1 + S.slowdown * power;
+  const kinds = [];
+  for (const p of pu.parts ?? [pu]) {
+    const k = SHOW_PHASE[p.type];
+    if (k && !kinds.includes(k)) kinds.push(k);
+  }
+  const show = {
+    cls: pu.type === "combo" ? "combo" : pu.cls, power, n: affected, holdMs: hold, punch: S.punch * power,
+    centre: { x: e.centre.x + 0.5, y: e.centre.y + 0.5 }, area: e.area.indices,
+    blocks: [],   // blocks no longer on the board that it still draws (pulled in, fading away)
+    pull: null, ghost: null, fills: null, trails: false, tremble: 0, land: null,
+    phases: [], quakes: [], finaleAt: null,
+    elapsedMs: 0, durationMs: 0, settleMs: 0,
+  };
+  // (goo flows from where the piece melted to where it settles)
+  const gooMoves = fx.filled.filter(f => f.fromX != null).map(f => ({ fromX: f.fromX, fromY: f.fromY, toX: f.x, toY: f.y }));
+  const sprouts = fx.filled.filter(f => f.fromX == null);
+  const moves = fx.moves.length ? fx.moves : gooMoves;
+
+  let prev = null, end = hold;
+  for (const kind of kinds) {
+    // each part starts when the one before is most of the way through (a phantom just
+    // flickers alongside whatever comes next)
+    const start = !prev ? hold : prev.kind === "phantom" ? prev.start : lerp(prev.start, prev.end, S.comboOverlap);
+    let stop = null;
+    if (kind === "destroy" && (fx.destroyed.length || fx.consumed.length)) stop = planPull(state, show, fx, start, slow);
+    else if (kind === "move" && moves.length) stop = startMoveAnim(state, moves, { start, power, slow, show });
+    else if (kind === "fill" && sprouts.length) stop = startGrowAnim(state, sprouts, e.centre, { start, show });
+    else if (kind === "phantom") stop = planGhost(state, show, e, start, slow);
+    if (stop == null) continue;
+    const ph = { kind, start, end: stop };
+    show.phases.push(ph);
+    prev = ph;
+    end = Math.max(end, stop);
+  }
+  // the powerup itself, if it vanished and nothing swallowed it, fades away after the freeze
+  if (!show.pull && fx.consumed.length) {
+    for (const { x, y, cell } of fx.consumed) show.blocks.push({ x, y, paint: cell.paint, style: cell.style, delay: hold, dur: S.fadeMs, fade: true });
+    spawnCellParticles(state, fx.consumed, 0.6, hold);
+  }
+  if (reach) state.fx.shockwaves.push({ kind: "blast", x: show.centre.x, y: show.centre.y, radius: reach + 1, elapsedMs: -hold, durationMs: 420 * slow });
+  if (show.cls === "combo") {
+    // the finale: a rainbow ring and a burst of confetti
+    const at = Math.max(hold, end - S.finaleLead);
+    show.finaleAt = at;
+    state.fx.shockwaves.push({ kind: "rainbow", x: show.centre.x, y: show.centre.y, radius: 2.5 + 5 * power + Math.sqrt(affected) * 0.35, elapsedMs: -at, durationMs: 560 * slow });
+    confetti(state, show.centre, Math.round(16 + 60 * power), at);
+    end = Math.max(end, at + 240);
+  }
+  show.settleMs = Math.round(Math.max(S.minSettleMs, end) + S.extraMs * power);
+  show.durationMs = show.settleMs + S.tailMs;
+  state.fx.show = show;
+  return show;
+}
+
+// Destroyers: every block in the area is pulled into the middle, faster and faster and glowing
+// hotter as it goes, and the core bursts when the last one is in. Returns when it's over.
+function planPull(state, show, fx, start, slow) {
+  const D = CONFIG.fx.powerup.show.destroy;
+  const { x: cx, y: cy } = show.centre;
+  let last = start;
+  const add = (list, own) => {
+    for (const { x, y, cell } of list) {
+      if (!cell) continue;
+      const d = Math.hypot(x + 0.5 - cx, y + 0.5 - cy);
+      const delay = start + (own ? 0 : wobble(x, y) * D.jitterMs);
+      const dur = (own ? D.pullMs * 0.6 : D.pullMs + D.msPerSqrtCell * Math.sqrt(d)) * slow;
+      show.blocks.push({ x, y, paint: cell.paint, style: cell.style, delay, dur, spin: (wobble(x, y, 1) * 2 - 1) * Math.PI * (0.6 + show.power) });
+      last = Math.max(last, delay + dur);
+    }
+  };
+  add(fx.consumed, true); // (the powerup itself goes first)
+  add(fx.destroyed, false);
+  const popMs = D.popMs * slow, n = fx.destroyed.length;
+  show.pull = { start, popAt: last, popMs, r: 0.55 + Math.sqrt(n) * 0.2 + 1.1 * show.power };
+  state.fx.shockwaves.push({ kind: "fire", x: cx, y: cy, radius: 1.5 + 2.5 * show.power + Math.sqrt(n) * 0.35, elapsedMs: -last, durationMs: popMs * 1.6 });
+  embers(state, show.centre, fx.destroyed, last, show.power);
+  show.quakes.push({ at: last, blocks: n * (CONFIG.fx.powerup.destroyQuakePerBlock ?? 1) });
+  return last + popMs * 0.5;
+}
+
+// Phantoms: the piece flickers into being where it came to rest, wisps rising off it.
+function planGhost(state, show, e, start, slow) {
+  const ms = CONFIG.fx.powerup.show.phantom.ms * slow;
+  show.ghost = { cells: e.placed.filter(c => c.y >= 0), start, ms };
+  wisps(state, show.ghost.cells, start, show.power);
+  state.fx.shockwaves.push({ kind: "ghost", x: show.centre.x, y: show.centre.y, radius: 2 + 2.5 * show.power, elapsedMs: -start, durationMs: ms * 1.3 });
+  return start + ms;
+}
+
+// Gravity (and blasts and goo): blocks slide from old to new positions. In a show, a big drop
+// trembles first, and blocks squash a little as they land, kicking up dust. Returns when it's over.
+function startMoveAnim(state, moves, { start = 0, power = 0, slow = 1, show = null } = {}) {
   const cfg = CONFIG.fx.powerup;
+  const G = cfg.show.gravity;
   const cols = CONFIG.board.cols;
   const anim = state.fx.moveAnim;
   anim.byIndex.clear();
   anim.elapsedMs = 0;
-  let longest = 0;
+  const shake = show && moves.length >= G.trembleFrom ? Math.max(0.35, power) : 0;
+  const tremble = shake ? G.trembleMs * shake : 0;
+  const go = start + tremble;
+  let longest = go, landSum = 0, landN = 0;
+  const landings = new Map(); // the lowest block landing in each column
 
   for (const m of moves) {
     const ox = m.fromX - m.toX;
     const oy = m.fromY - m.toY;
     if (m.path) {
       // a block thrown by a blast: follow its flight path (slowed a little so you can see it)
-      const scale = cfg.blastTimeScale ?? 1;
-      const dur = m.flight * 1000 * scale;
-      anim.byIndex.set(m.toY * cols + m.toX, { ox, oy, dur, path: m.path, flight: m.flight, spin: m.spin, toX: m.toX, toY: m.toY });
-      longest = Math.max(longest, dur);
+      const dur = m.flight * 1000 * (cfg.blastTimeScale ?? 1) * slow;
+      anim.byIndex.set(m.toY * cols + m.toX, { ox, oy, dur, delay: go, path: m.path, flight: m.flight, spin: m.spin, toX: m.toX, toY: m.toY });
+      longest = Math.max(longest, go + dur);
       continue;
     }
     const hasVia = m.viaX != null && (m.viaX !== m.toX || m.viaY !== m.toY);
     const dist = Math.abs(ox) + Math.abs(oy) + (hasVia ? Math.abs(m.viaY - m.toY) : 0);
-    const dur = Math.min(cfg.gravityMaxMs * (hasVia ? 1.6 : 1), cfg.gravityBaseMs + cfg.gravityMsPerSqrtCell * Math.sqrt(dist));
-    const item = { ox, oy, dur };
+    const dur = Math.min(cfg.gravityMaxMs * (hasVia ? 1.6 : 1), cfg.gravityBaseMs + cfg.gravityMsPerSqrtCell * Math.sqrt(dist)) * slow;
+    const item = { ox, oy, dur, delay: go, tremble: shake, trembleMs: tremble, squash: show && oy < 0 ? Math.min(1, 0.4 - oy / 6) : 0 };
     if (hasVia) { item.vx = m.viaX - m.toX; item.vy = m.viaY - m.toY; }
     anim.byIndex.set(m.toY * cols + m.toX, item);
-    longest = Math.max(longest, dur);
+    longest = Math.max(longest, go + dur);
+    if (oy < 0) {
+      landSum += go + dur; landN++;
+      const l = landings.get(m.toX);
+      if (!l || m.toY > l.y) landings.set(m.toX, { x: m.toX, y: m.toY, at: go + dur });
+    }
   }
 
-  anim.durationMs = longest;
+  const squashMs = show ? G.squashMs * slow : 0;
+  anim.squashMs = squashMs;
+  anim.durationMs = longest + squashMs;
   anim.active = moves.length > 0;
-  return longest;
+  if (show) {
+    show.trails = true;
+    show.tremble = tremble;
+    show.land = landN ? landSum / landN : longest;
+    for (const l of landings.values()) dust(state, l.x, l.y, l.at, 0.6 + power);
+    show.quakes.push({ at: show.land, blocks: moves.length * (cfg.gravityQuakePerBlock ?? 1) });
+  }
+  return longest + squashMs * 0.6;
 }
 
-function startGrowAnim(state, filled, centre) {
+// Expanders: new blocks pop in, in rings outward from the powerup. In a show, a pulse goes out
+// first and each block sprouts with a glow and a few sparkles. Returns when it's over.
+function startGrowAnim(state, filled, centre, { start = 0, show = null } = {}) {
   const cfg = CONFIG.fx.powerup;
   const cols = CONFIG.board.cols;
   const anim = state.fx.growAnim;
   anim.byIndex.clear();
   anim.elapsedMs = 0;
   anim.growMs = cfg.expandGrowMs;
-  let maxDelay = 0;
+  let maxDelay = 0, reach = 1;
 
   for (const { x, y } of filled) {
-    const delay = Math.hypot(x - centre.x, y - centre.y) * cfg.expandStaggerMsPerCell;
+    const d = Math.hypot(x - centre.x, y - centre.y);
+    const delay = start + d * cfg.expandStaggerMsPerCell;
     anim.byIndex.set(y * cols + x, delay);
     maxDelay = Math.max(maxDelay, delay);
+    reach = Math.max(reach, d);
   }
 
   anim.durationMs = filled.length ? maxDelay + cfg.expandGrowMs : 0;
   anim.active = filled.length > 0;
+  if (show) {
+    show.fills = filled.map(({ x, y }) => ({ x, y, at: anim.byIndex.get(y * cols + x) + cfg.expandGrowMs * 0.6 }));
+    const rings = 1 + Math.round(2 * show.power);
+    for (let k = 0; k < rings; k++) {
+      state.fx.shockwaves.push({ kind: "sonar", x: show.centre.x, y: show.centre.y, radius: reach + 1, elapsedMs: -(start + k * 150), durationMs: 360 + reach * 30 });
+    }
+    sparkles(state, show.fills, show.power);
+  }
   return anim.durationMs;
 }
 
-function startFlash(state, cells, durationMs) {
-  const f = state.fx.flash;
-  f.cells = cells.map(({ x, y }) => ({ x, y }));
-  f.elapsedMs = 0;
-  f.durationMs = durationMs;
-  f.active = cells.length > 0;
+/* --- the show's particles (visual only: their randomness never touches the game's) --- */
+
+function addParticle(state, p) {
+  state.fx.particles.push({ size: CONFIG.fx.lineClear.particleSizePx, ...p, maxLifeMs: p.lifeMs });
+}
+const hsl = (h, s, l) => `hsl(${Math.round(h)},${Math.round(s)}%,${Math.round(l)}%)`;
+
+// One colour from a block's paint.
+function paintColour(cell) {
+  const p = cell?.paint;
+  if (typeof p === "string") return p;
+  const px = p?.pixels;
+  if (!px) return cell?.style?.baseColor ?? "#ffffff";
+  const mid = px[(px.length / 2) | 0];
+  return mid?.find(c => typeof c === "string") ?? px.flat().find(c => typeof c === "string") ?? "#ffffff";
+}
+
+// Destroyers: a burst of embers (and bits of what it swallowed) when the core goes.
+function embers(state, centre, destroyed, at, power) {
+  const cellPx = CONFIG.render.cellPx;
+  const own = destroyed.map(d => paintColour(d.cell));
+  const n = Math.min(CONFIG.fx.powerup.show.destroy.maxEmbers, Math.round(12 + destroyed.length * (1.2 + power)));
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, sp = (50 + Math.random() * 220) * (1 + power * 0.8);
+    const hot = Math.random() < 0.6 || !own.length;
+    addParticle(state, {
+      x: centre.x * cellPx, y: centre.y * cellPx, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
+      lifeMs: 280 + Math.random() * (420 + 500 * power), delayMs: at,
+      color: hot ? hsl((350 + Math.random() * 55) % 360, 100, 55 + Math.random() * 25) : own[(Math.random() * own.length) | 0],
+      glow: hot, g: hot ? -50 : 320, drag: hot ? 2.6 : 1.6, size: hot ? 2 : 3,
+    });
+  }
+}
+
+// Gravity: a puff of dust where each column lands.
+function dust(state, x, y, at, amount) {
+  const cellPx = CONFIG.render.cellPx;
+  for (let i = 0, n = Math.round(3 + 4 * amount); i < n; i++) {
+    const side = Math.random() < 0.5 ? -1 : 1;
+    addParticle(state, {
+      x: (x + 0.5 + side * 0.4) * cellPx, y: (y + 1) * cellPx - 1,
+      vx: side * (30 + Math.random() * 70), vy: -(10 + Math.random() * 40),
+      lifeMs: 240 + Math.random() * 260, delayMs: at,
+      color: hsl(240 + Math.random() * 30, 25, 62 + Math.random() * 18), g: 160, drag: 4,
+    });
+  }
+}
+
+// Expanders: a few sparkles as each new block sprouts.
+function sparkles(state, fills, power) {
+  const cellPx = CONFIG.render.cellPx;
+  const each = fills.length > 70 ? 1 : 2;
+  for (const f of fills.slice(0, 160)) {
+    for (let i = 0; i < each; i++) {
+      addParticle(state, {
+        x: (f.x + 0.2 + Math.random() * 0.6) * cellPx, y: (f.y + 0.2 + Math.random() * 0.6) * cellPx,
+        vx: (Math.random() - 0.5) * 70, vy: -20 - Math.random() * 50 * (1 + power),
+        lifeMs: 300 + Math.random() * 380, delayMs: f.at,
+        color: hsl(80 + Math.random() * 85, 90, 68 + Math.random() * 14), glow: true, shape: "plus", g: -15, drag: 2,
+      });
+    }
+  }
+}
+
+// Phantoms: pale wisps rising off it as it settles.
+function wisps(state, cells, at, power) {
+  const cellPx = CONFIG.render.cellPx;
+  for (const c of cells) {
+    for (let i = 0, n = 2 + Math.round(power * 2); i < n; i++) {
+      addParticle(state, {
+        x: (c.x + Math.random()) * cellPx, y: (c.y + Math.random()) * cellPx,
+        vx: (Math.random() - 0.5) * 20, vy: -(25 + Math.random() * 45),
+        lifeMs: 500 + Math.random() * 500, delayMs: at + Math.random() * 120,
+        color: hsl(175 + Math.random() * 115, 55, 82 + Math.random() * 10), glow: true, g: -25, drag: 1,
+      });
+    }
+  }
+}
+
+// Combos: confetti in every colour.
+function confetti(state, centre, n, at) {
+  const cellPx = CONFIG.render.cellPx;
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, sp = 80 + Math.random() * 200;
+    addParticle(state, {
+      x: centre.x * cellPx, y: centre.y * cellPx, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 60,
+      lifeMs: 700 + Math.random() * 600, delayMs: at,
+      color: hsl(Math.random() * 360, 95, 62), g: 260, drag: 1.3, size: 2 + (Math.random() < 0.4 ? 1 : 0),
+    });
+  }
 }
 
 /* =========================
@@ -1044,7 +1252,7 @@ function addCallout(state, text, x, y, { big = false, color = null, durationMs =
 }
 
 // Particles burst from cells [{x, y, cell}] (board coords). `mult` scales the count.
-function spawnCellParticles(state, cells, mult = 1) {
+function spawnCellParticles(state, cells, mult = 1, delayMs = 0) {
   if (!CONFIG.fx.lineClear.enabled) return;
 
   const cfg = CONFIG.fx.lineClear;
@@ -1088,6 +1296,7 @@ function spawnCellParticles(state, cells, mult = 1) {
         vy,
         lifeMs,
         maxLifeMs: lifeMs,
+        delayMs,
         size: cfg.particleSizePx,
         color: colours[Math.floor(state.rng() * colours.length)],
       });
@@ -1105,17 +1314,26 @@ function updateFX(state, dt) {
     let n = 0;
     for (let i = 0; i < parts.length; i++) {
       const p = parts[i];
+      if (p.delayMs > 0) { p.delayMs -= dt; parts[n++] = p; continue; } // (not yet)
       p.lifeMs -= dt;
       if (p.lifeMs <= 0) continue;
 
-      p.vx *= drag;
-      p.vy = p.vy * drag + cfg.gravityPxPerSec2 * dtSec;
+      const k = p.drag != null ? Math.max(0, 1 - p.drag * dtSec) : drag;
+      p.vx *= k;
+      p.vy = p.vy * k + (p.g ?? cfg.gravityPxPerSec2) * dtSec;
       p.x += p.vx * dtSec;
       p.y += p.vy * dtSec;
 
       parts[n++] = p;
     }
     parts.length = n; // compact in place (no per-frame allocation)
+  }
+
+  const sh = state.fx.show;
+  if (sh) {
+    sh.elapsedMs += dt;
+    for (const q of sh.quakes) if (!q.done && sh.elapsedMs >= q.at) { q.done = true; addQuakeFromBlocks(state, q.blocks); }
+    if (sh.elapsedMs >= sh.durationMs) state.fx.show = null;
   }
 
   const sw = state.fx.shockwaves;

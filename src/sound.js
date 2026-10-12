@@ -119,6 +119,38 @@ export function createSound(cfg) {
         tone({ freq: 300 + Math.random() * 500, to: 700 + Math.random() * 600, dur: 0.06, vol: 0.07, type: "sine", delay: i * 0.04 });
       }
     },
+    // A powerup's show (game.js planShow): each part its own sound, at its own moment.
+    // `speed`: how fast the game is running (turbo zen).
+    show(sh, speed = 1) {
+      const p = sh?.power ?? 0, big = 1 + p, at = (ms) => Math.max(0, ms) / 1000 / speed;
+      for (const ph of sh?.phases ?? []) {
+        if (ph.kind === "destroy" && sh.pull) {
+          // sucked in, rising, then the burst
+          noise({ dur: Math.max(0.05, at(sh.pull.popAt - ph.start)), vol: 0.08 * big, type: "bandpass", from: 300, to: 2600, q: 1.2, delay: at(ph.start) });
+          noise({ dur: 0.45 * big, vol: 0.3, from: 3200, to: 120, delay: at(sh.pull.popAt) });
+          tone({ freq: 110, to: 34, dur: 0.4 * big, vol: 0.26, type: "sine", delay: at(sh.pull.popAt) });
+        } else if (ph.kind === "move") {
+          // a rumble while it trembles, then the thud
+          if (sh.tremble) noise({ dur: at(sh.tremble), vol: 0.07 * big, type: "lowpass", from: 240, to: 160, delay: at(ph.start) });
+          const land = at(sh.land ?? ph.end);
+          noise({ dur: 0.36, vol: 0.18 * Math.min(1.5, big), type: "bandpass", from: 1600, to: 180, q: 1.4, delay: land });
+          tone({ freq: 300 / big, to: 55, dur: 0.32, vol: 0.12, type: "triangle", delay: land });
+        } else if (ph.kind === "fill") {
+          // a sparkling run of little pops
+          for (let i = 0, n = 6 + Math.round(6 * p); i < n; i++) {
+            tone({ freq: 300 + Math.random() * 500, to: 700 + Math.random() * 600 * big, dur: 0.06, vol: 0.07, type: "sine", delay: at(ph.start) + i * 0.04 });
+          }
+        } else if (ph.kind === "phantom") {
+          // a soft, rising shimmer
+          tone({ freq: 660, to: 990, dur: 0.35, vol: 0.05, type: "sine", attack: 0.08, delay: at(ph.start) });
+          tone({ freq: 1320, to: 1980, dur: 0.3, vol: 0.025, type: "triangle", attack: 0.1, delay: at(ph.start) + 0.04 });
+        }
+      }
+      if (sh?.finaleAt != null) {
+        // the rainbow: a run up the scale
+        [1046.5, 1174.66, 1318.5, 1567.98, 1760, 2093].forEach((f, i) => tone({ freq: f, dur: 0.08, vol: 0.05, type: "triangle", delay: at(sh.finaleAt) + i * 0.035 }));
+      }
+    },
     levelUp() {
       [659.25, 880, 1318.5].forEach((f, i) => tone({ freq: f, dur: 0.09, vol: 0.07, type: "square", delay: i * 0.06, filter: 3000 }));
     },

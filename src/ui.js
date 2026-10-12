@@ -367,7 +367,8 @@ export function bindUI({ state, renderer, sound, achievements }) {
         sound.play("charge", CONFIG.fx.powerup.chargeMs);
         break;
       case "powerupFire":
-        sound.play(d.type);
+        if (d.show) sound.play("show", d.show, CONFIG.modes[state.mode]?.timeScale ?? 1);
+        else sound.play(d.type);
         break;
       case "gameOver":
         saveOpening();

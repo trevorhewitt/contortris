@@ -637,7 +637,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       ctx.fillStyle = rgba(e.shadow, k);
       ctx.beginPath();
       for (const b of list) {
-        if (b.s < 1 || b.rot) continue;
+        if (b.s < 1 || b.rot || b.sq) continue;
         ctx.rect(b.px + so, b.py + so, cell, cell);
       }
       ctx.fill();
@@ -651,6 +651,10 @@ export function createRenderer(boardCanvas, nextCanvas) {
         ctx.rotate(b.rot);
         ctx.drawImage(spr, -cell / 2, -cell / 2, cell, cell);
         ctx.restore();
+      } else if (b.sq) {
+        // squashed: wider and lower, standing on the same floor
+        const w = cell * (1 + b.sq), h = cell * (1 - b.sq);
+        ctx.drawImage(spr, b.px - (w - cell) / 2, b.py + cell - h, w, h);
       } else if (b.s >= 1) {
         ctx.drawImage(spr, b.px, b.py, cell, cell);
       } else if (b.s > 0) {
@@ -699,13 +703,21 @@ export function createRenderer(boardCanvas, nextCanvas) {
         let py = y * cell - rowOffset;
         let s = 1;
         let rot = 0;
+        let sq = 0;
 
         if (animated) {
           const idx = y * cols + x;
           if (mv.active) {
             const m = mv.byIndex.get(idx);
             if (m) {
-              const t = clamp01(mv.elapsedMs / m.dur);
+              const local = mv.elapsedMs - (m.delay ?? 0);
+              const t = clamp01(local / m.dur);
+              if (local < 0 && m.tremble && -local <= m.trembleMs) {
+                // a big drop trembles before it goes
+                const amp = cell * 0.08 * m.tremble;
+                px += Math.sin(mv.elapsedMs * 0.13 + idx * 1.7) * amp;
+                py += Math.sin(mv.elapsedMs * 0.17 + idx * 2.3) * amp * 0.6;
+              }
               if (m.path) {
                 const at = pathPoint(m.path, t * m.flight);
                 px += (at.x - m.toX) * cell;
@@ -727,6 +739,11 @@ export function createRenderer(boardCanvas, nextCanvas) {
                 const k = 1 - t * t; // accelerate like falling
                 px += m.ox * cell * k;
                 py += m.oy * cell * k;
+                // ...and squash a little as it lands
+                if (m.squash && local > m.dur && mv.squashMs) {
+                  const u = (local - m.dur) / mv.squashMs;
+                  if (u < 1) sq = Math.sin(u * Math.PI) * 0.24 * m.squash;
+                }
               }
             }
           }
@@ -741,11 +758,11 @@ export function createRenderer(boardCanvas, nextCanvas) {
         }
 
         list.push({
-          px, py, s, rot,
+          px, py, s, rot, sq,
           paint: c.paint,
           style: c.style,
-          // flying blocks lose their joined-up edges until they land
-          mask: enhanced && !rot ? boardEdgeMask(board, x, y, c.pid) : 0,
+          // flying (or squashing) blocks lose their joined-up edges until they settle
+          mask: enhanced && !rot && !sq ? boardEdgeMask(board, x, y, c.pid) : 0,
         });
       }
     }
@@ -1003,16 +1020,18 @@ export function createRenderer(boardCanvas, nextCanvas) {
     for (const { x, y } of f.cells) bctx.fillRect(x * cell, y * cell, cell, cell);
   }
 
-  // Floating text: "DOUBLE!", "+24".
-  // Blast shockwaves: a bright ring racing out from the centre, plus a quick flash.
-  function drawShockwaves(state) {
+  // Rings racing out from the centre: a blast's shockwave (and a quick flash), a destroyer's
+  // fiery burst, an expander's pulse, a phantom's ripple, a combo's rainbow.
+  function drawShockwaves(state, now) {
     const list = state.fx.shockwaves;
     if (!list.length) return;
     bctx.save();
     for (const w of list) {
+      if (w.elapsedMs < 0) continue; // (not yet)
       const t = clamp01(w.elapsedMs / w.durationMs);
       const r = (0.3 + w.radius * (1 - Math.pow(1 - t, 3))) * cell;
       const cx = w.x * cell, cy = w.y * cell;
+      if (w.kind && w.kind !== "blast") { drawRing(w, t, r, cx, cy, now); continue; }
       if (t < 0.25) {
         bctx.fillStyle = `rgba(255,240,200,${(0.5 * (1 - t / 0.25)).toFixed(3)})`;
         bctx.beginPath(); bctx.arc(cx, cy, r * 0.9, 0, Math.PI * 2); bctx.fill();
@@ -1025,6 +1044,222 @@ export function createRenderer(boardCanvas, nextCanvas) {
       bctx.beginPath(); bctx.arc(cx, cy, r * 0.82, 0, Math.PI * 2); bctx.stroke();
     }
     bctx.restore();
+  }
+
+  function drawRing(w, t, r, cx, cy, now) {
+    const fade = 1 - t;
+    bctx.globalCompositeOperation = "lighter";
+    if (w.kind === "fire") {
+      bctx.lineWidth = Math.max(2, cell * 0.55 * fade);
+      bctx.strokeStyle = `rgba(255,${(150 - 100 * t) | 0},40,${(0.85 * fade).toFixed(3)})`;
+      bctx.beginPath(); bctx.arc(cx, cy, r, 0, Math.PI * 2); bctx.stroke();
+      bctx.lineWidth = Math.max(1, cell * 0.18 * fade);
+      bctx.strokeStyle = `rgba(255,240,200,${(0.9 * fade).toFixed(3)})`;
+      bctx.beginPath(); bctx.arc(cx, cy, r * 0.85, 0, Math.PI * 2); bctx.stroke();
+    } else if (w.kind === "sonar") {
+      const c = markColour("expander", now, 0, 0);
+      bctx.lineWidth = Math.max(1.5, cell * 0.22 * fade);
+      bctx.strokeStyle = hsla(c.h, c.s, 66, 0.75 * fade);
+      bctx.beginPath(); bctx.arc(cx, cy, r, 0, Math.PI * 2); bctx.stroke();
+      bctx.fillStyle = hsla(c.h, c.s, 60, 0.08 * fade);
+      bctx.beginPath(); bctx.arc(cx, cy, r, 0, Math.PI * 2); bctx.fill();
+    } else if (w.kind === "ghost") {
+      bctx.lineWidth = Math.max(1, cell * 0.12);
+      bctx.setLineDash([cell * 0.35, cell * 0.25]);
+      bctx.lineDashOffset = -now * 0.02;
+      bctx.strokeStyle = `rgba(225,215,255,${(0.6 * fade).toFixed(3)})`;
+      bctx.beginPath(); bctx.arc(cx, cy, r, 0, Math.PI * 2); bctx.stroke();
+      bctx.setLineDash([]);
+    } else if (w.kind === "rainbow") {
+      // a ring of every colour, turning as it spreads
+      const segs = 24;
+      bctx.lineWidth = Math.max(2, cell * 0.4 * fade);
+      for (let k = 0; k < segs; k++) {
+        const a0 = (k / segs) * Math.PI * 2 + now * 0.003, a1 = a0 + Math.PI * 2 / segs + 0.02;
+        bctx.strokeStyle = hsla((k / segs) * 360, 100, 62, 0.85 * fade);
+        bctx.beginPath(); bctx.arc(cx, cy, r, a0, a1); bctx.stroke();
+      }
+    }
+    bctx.globalCompositeOperation = "source-over";
+  }
+
+  /* --- the powerup show (game.js planShow): what each class does when it goes --- */
+
+  function drawShow(state, now) {
+    const sh = state.fx.show;
+    if (!sh) return;
+    const t = sh.elapsedMs;
+    const cx = sh.centre.x * cell, cy = sh.centre.y * cell;
+    bctx.save();
+
+    // the freeze: everything it touches glows white-hot for a moment
+    if (sh.holdMs > 0 && t < sh.holdMs && sh.area) {
+      bctx.fillStyle = `rgba(255,255,255,${(0.5 * (1 - t / sh.holdMs)).toFixed(3)})`;
+      for (const i of sh.area) bctx.fillRect((i % cols) * cell, ((i / cols) | 0) * cell, cell, cell);
+    }
+
+    // gravity: streaks of light behind the falling blocks
+    if (sh.trails) drawTrails(state, now);
+
+    // expanders: each new block glows as it sprouts
+    if (sh.fills) {
+      bctx.globalCompositeOperation = "lighter";
+      for (const f of sh.fills) {
+        const u = (t - f.at) / 320;
+        if (u < -0.6 || u >= 1) continue;
+        const c = markColour("expander", now, f.x, f.y);
+        if (u < 0) { // a seed of light just before it pops
+          const d = cell * 0.35 * (1 + u);
+          bctx.fillStyle = hsla(c.h, c.s, 82, 0.7);
+          bctx.fillRect(f.x * cell + (cell - d) / 2, f.y * cell + (cell - d) / 2, d, d);
+          continue;
+        }
+        const g = cell * 0.4 * u;
+        bctx.fillStyle = hsla(c.h, c.s, 70, 0.45 * (1 - u));
+        bctx.fillRect(f.x * cell - g, f.y * cell - g, cell + g * 2, cell + g * 2);
+      }
+      bctx.globalCompositeOperation = "source-over";
+    }
+
+    // phantoms: it flickers into being, a ghostly trail above where it came through
+    if (sh.ghost) {
+      const g = sh.ghost, u = (t - g.start) / g.ms;
+      if (u >= 0 && u < 1) {
+        const flick = 0.55 + 0.45 * Math.sin(u * 38);
+        bctx.globalCompositeOperation = "lighter";
+        const tops = new Map();
+        for (const c of g.cells) {
+          const col = markColour("phantom", now, c.x, c.y);
+          bctx.fillStyle = hsla(col.h, col.s, 86, 0.5 * (1 - u) * flick);
+          bctx.fillRect(c.x * cell, c.y * cell, cell, cell);
+          if (!tops.has(c.x) || c.y < tops.get(c.x)) tops.set(c.x, c.y);
+        }
+        for (const [x, y] of tops) {
+          const h = cell * (2 + 3 * sh.power) * (1 - u * 0.5);
+          const gr = bctx.createLinearGradient(0, y * cell - h, 0, y * cell);
+          gr.addColorStop(0, "rgba(220,210,255,0)");
+          gr.addColorStop(1, `rgba(220,210,255,${(0.35 * (1 - u)).toFixed(3)})`);
+          bctx.fillStyle = gr;
+          bctx.fillRect(x * cell + cell * 0.1, y * cell - h, cell * 0.8, h);
+        }
+        bctx.globalCompositeOperation = "source-over";
+      }
+    }
+
+    // blocks that have left the board: pulled into the core, or fading away
+    for (const b of sh.blocks) drawGone(b, t, cx, cy, now);
+
+    // destroyers: the core that swallows them, and bursts
+    if (sh.pull) drawCore(sh, t, cx, cy, now);
+    bctx.restore();
+  }
+
+  function drawGone(b, t, cx, cy, now) {
+    const local = t - b.delay;
+    if (local >= b.dur) return;
+    const spr = getSprite(b.paint, b.style);
+    const px = b.x * cell, py = b.y * cell;
+    if (b.fade) {
+      const u = clamp01(local / b.dur), d = cell * (1 - 0.6 * u);
+      bctx.globalAlpha = 1 - u;
+      bctx.drawImage(spr, px + (cell - d) / 2, py + (cell - d) / 2, d, d);
+      bctx.globalAlpha = 1;
+      return;
+    }
+    const heat = markColour("destroyer", now, b.x, b.y);
+    if (local < 0) {
+      // waiting its turn, glowing hot where it is
+      bctx.drawImage(spr, px, py, cell, cell);
+      bctx.fillStyle = hsla(heat.h, 100, 70, 0.22 + 0.14 * Math.sin(now * 0.03 + b.x + b.y));
+      bctx.fillRect(px, py, cell, cell);
+      return;
+    }
+    // pulled in: faster and faster, smaller and hotter, spinning
+    const u = local / b.dur, e = u * u * u;
+    const x = px + cell / 2 + (cx - px - cell / 2) * e, y = py + cell / 2 + (cy - py - cell / 2) * e;
+    const d = cell * (1 - 0.85 * u);
+    bctx.save();
+    bctx.translate(x, y);
+    bctx.rotate(b.spin * u);
+    bctx.drawImage(spr, -d / 2, -d / 2, d, d);
+    bctx.globalCompositeOperation = "lighter";
+    bctx.fillStyle = hsla(heat.h, 100, 60, 0.15 + 0.6 * u);
+    bctx.fillRect(-d / 2, -d / 2, d, d);
+    bctx.restore();
+  }
+
+  function drawCore(sh, t, cx, cy, now) {
+    const p = sh.pull;
+    if (t < p.start) return;
+    const R = p.r * cell;
+    if (t < p.popAt) {
+      // swelling as it swallows: a dark core with a fiery, turning rim
+      const u = clamp01((t - p.start) / Math.max(1, p.popAt - p.start));
+      const r = R * (0.35 + 0.65 * Math.sqrt(u));
+      bctx.fillStyle = "rgba(8,2,12,0.92)";
+      bctx.beginPath(); bctx.arc(cx, cy, r, 0, Math.PI * 2); bctx.fill();
+      bctx.globalCompositeOperation = "lighter";
+      for (let k = 0; k < 3; k++) {
+        const c = markColour("destroyer", now + k * 300, k, 0);
+        bctx.strokeStyle = hsla(c.h, 100, 60, 0.6 - k * 0.14);
+        bctx.lineWidth = Math.max(1.5, cell * (0.24 - k * 0.05));
+        const a0 = now * (0.006 + k * 0.003) + k * 2;
+        bctx.beginPath(); bctx.arc(cx, cy, r * (1 + k * 0.18), a0, a0 + Math.PI * (1.2 + 0.3 * k)); bctx.stroke();
+      }
+      bctx.globalCompositeOperation = "source-over";
+      return;
+    }
+    // the burst: a white-hot flash, going orange as it spreads
+    const v = (t - p.popAt) / p.popMs;
+    if (v >= 1) return;
+    const fr = Math.max(1, R * (0.5 + 2.4 * Math.sqrt(v)) * (1 + sh.power));
+    const g = bctx.createRadialGradient(cx, cy, 0, cx, cy, fr);
+    g.addColorStop(0, `rgba(255,255,240,${(0.95 * (1 - v)).toFixed(3)})`);
+    g.addColorStop(0.35, `rgba(255,170,60,${(0.6 * (1 - v)).toFixed(3)})`);
+    g.addColorStop(1, "rgba(255,60,20,0)");
+    bctx.globalCompositeOperation = "lighter";
+    bctx.fillStyle = g;
+    bctx.beginPath(); bctx.arc(cx, cy, fr, 0, Math.PI * 2); bctx.fill();
+    bctx.globalCompositeOperation = "source-over";
+  }
+
+  function drawTrails(state, now) {
+    const mv = state.fx.moveAnim;
+    if (!mv.active) return;
+    bctx.save();
+    bctx.globalCompositeOperation = "lighter";
+    for (const [idx, m] of mv.byIndex) {
+      if (m.path || m.vx !== undefined || m.oy >= 0) continue;
+      const local = mv.elapsedMs - (m.delay ?? 0);
+      if (local <= 0 || local >= m.dur + 140) continue;
+      const tt = clamp01(local / m.dur);
+      const x = idx % cols, y = (idx / cols) | 0;
+      const top = (y + m.oy) * cell;                  // where it started
+      const cur = (y + m.oy * (1 - tt * tt)) * cell;   // where it is now
+      const fade = local > m.dur ? 1 - (local - m.dur) / 140 : 1;
+      const tail = Math.max(top, cur - cell * 3);
+      const c = markColour("gravity", now, x, y);
+      const g = bctx.createLinearGradient(0, tail, 0, cur + cell * 0.5);
+      g.addColorStop(0, hsla(c.h, c.s, c.l, 0));
+      g.addColorStop(1, hsla(c.h, c.s, c.l, 0.45 * fade));
+      bctx.fillStyle = g;
+      bctx.fillRect(x * cell + cell * 0.15, tail, cell * 0.7, cur + cell * 0.5 - tail);
+    }
+    bctx.restore();
+  }
+
+  // The board leans in a little for a big one.
+  function punchTransform(ctx, state) {
+    const sh = state.fx.show;
+    if (!sh || !sh.punch) return;
+    const t = sh.elapsedMs, h = Math.max(1, sh.holdMs);
+    const env = t < h ? Math.sin((t / h) * Math.PI / 2) : Math.exp(-(t - h) / 240);
+    const z = 1 + sh.punch * env;
+    if (z <= 1.0005) return;
+    const px = clampN(sh.centre.x * cell, bw * 0.3, bw * 0.7), py = clampN(sh.centre.y * cell, bh * 0.3, bh * 0.7);
+    ctx.translate(px, py);
+    ctx.scale(z, z);
+    ctx.translate(-px, -py);
   }
 
   function drawCallouts(state, now) {
@@ -1105,10 +1340,18 @@ export function createRenderer(boardCanvas, nextCanvas) {
     if (!parts.length) return;
 
     bctx.save();
-    for (const p of parts) {
-      bctx.globalAlpha = clamp01(p.lifeMs / p.maxLifeMs);
-      bctx.fillStyle = p.color;
-      bctx.fillRect(p.x, p.y, p.size, p.size);
+    for (const glow of [false, true]) {
+      bctx.globalCompositeOperation = glow ? "lighter" : "source-over";
+      for (const p of parts) {
+        if (p.delayMs > 0 || !!p.glow !== glow) continue;
+        bctx.globalAlpha = clamp01(p.lifeMs / p.maxLifeMs);
+        bctx.fillStyle = p.color;
+        if (p.shape === "plus") { // a little twinkle
+          const s = p.size, k = Math.max(1, s / 2);
+          bctx.fillRect(p.x - s, p.y - k / 2, s * 2, k);
+          bctx.fillRect(p.x - k / 2, p.y - s, k, s * 2);
+        } else bctx.fillRect(p.x, p.y, p.size, p.size);
+      }
     }
     bctx.restore();
   }
@@ -1141,6 +1384,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
 
     bctx.save();
     quakeTransform(bctx, state);
+    punchTransform(bctx, state);
 
     const hide = state.paused && CONFIG.pause.hideShapes;
 
@@ -1168,11 +1412,12 @@ export function createRenderer(boardCanvas, nextCanvas) {
         drawPowerupShimmer(cells, now, clamp01(e.elapsedMs / e.durationMs), e.pu?.type);
       }
 
+      drawShow(state, now);
       drawFlash(state);
     }
 
     drawParticles(state);
-    if (!hide) drawShockwaves(state);
+    if (!hide) drawShockwaves(state, now);
     if (!hide) drawCallouts(state, now);
     bctx.drawImage(enhanced ? layers.screen : layers.classicTop, 0, 0, bw, bh);
 

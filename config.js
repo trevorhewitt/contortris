@@ -483,9 +483,7 @@ export const CONFIG = {
       // Locked powerup glows for this long before it fires.
       chargeMs: 260,
 
-      // Destroyer: pause after the blast before play continues.
-      destroySettleMs: 220,
-      destroyFlashMs: 160,
+      // Destroyer: how much the board shakes when it goes, per block
       destroyQuakePerBlock: 1.5,
 
       // Gravity: per-block slide time = base + perSqrtCell*sqrt(distance), capped.
@@ -498,6 +496,26 @@ export const CONFIG = {
       // Expander: fill cells pop in rings outward from the powerup.
       expandStaggerMsPerCell: 40,
       expandGrowMs: 180,
+
+      // The show when a powerup fires (game.js planShow, render.js drawShow): each class has
+      // its own, and the more blocks it changes, the bigger it is. From bigFrom blocks (full
+      // size at bigAt) it holds the moment: a freeze, a punch of the board, all a little
+      // slower, and a moment longer to take it in.
+      show: {
+        bigFrom: 10, bigAt: 48,
+        holdMs: 150,        // the freeze, at full size
+        punch: 0.05,        // how far the board zooms in, at full size
+        slowdown: 0.5,      // it all plays this much slower, at full size
+        extraMs: 380,       // and leaves this long to take it in, at full size
+        minSettleMs: 140,
+        tailMs: 500,        // (rings and glows fade out after play carries on)
+        fadeMs: 170,        // a vanishing powerup fades out
+        comboOverlap: 0.72, // a combo's next part starts when the one before is this far through
+        finaleLead: 120,    // and its rainbow comes this long before the end
+        destroy: { pullMs: 150, msPerSqrtCell: 52, jitterMs: 60, popMs: 260, maxEmbers: 180 },
+        gravity: { trembleMs: 230, trembleFrom: 6, squashMs: 150 },
+        phantom: { ms: 380 },
+      },
 
       // Highlighted cells overlay.
       // Each class has its own colours, a gradient that shimmers back and forth within them, so
