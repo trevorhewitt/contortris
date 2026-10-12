@@ -44,9 +44,10 @@ test("god mode: everything is open from the first piece, with no intro screens",
     const ps = state.pieceSel.powerup;
     for (const cls of ["destroyer", "gravity", "expander", "phantom", "combo"]) assert.ok(ps.classes.includes(cls), cls);
     assert.deepEqual(intros, [], "no intro screens");
-    // the first level 6 set soon after the start (CONFIG.godMode.level6.firstAfter)
+    // the first level 6 set soon after the start (CONFIG.godMode.level6.firstAfter; a few
+    // pieces later if giants are in the way: a set never comes straight after one)
     const firstSet = served.findIndex(s => s.difficulty === 6);
-    assert.ok(firstSet >= 0 && firstSet <= CONFIG.godMode.level6.firstAfter[1] + 2, `first set at piece ${firstSet}`);
+    assert.ok(firstSet >= 0 && firstSet <= CONFIG.godMode.level6.firstAfter[1] + 6, `first set at piece ${firstSet}`);
     assert.ok(served.slice(0, 40).some(s => s.powerup?.type === "combo"), "a combo in the first 40 pieces");
   }
 });
