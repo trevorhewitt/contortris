@@ -139,7 +139,7 @@ export const GROUPS = [
     name: "the stars",
     frequency: 1,
     // (the universe itself opens the existence set now)
-    sequence: ["shooting_star", "constellation", "spiral_galaxy"],
+    sequence: ["shooting_star", "constellation", "spiral_galaxy", "nebula"],
   },
   {
     id: "trees",

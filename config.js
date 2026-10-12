@@ -128,7 +128,7 @@ export const CONFIG = {
     // until it's been seen newUntilSeen times, a new set newSetBoost times; anything else never
     // seen, unseenBoost times. (God mode and zen.)
     newest: {
-      sets: ["existence", "sunshine", "sky", "emotions"],
+      sets: ["existence", "universe", "sunshine", "sky", "emotions"],
       pieces: [
         "bull", "camel", "mouse", "elephant_in_the_room", "giant_rubber_duck", "dinosaur_fossil",
         "pyramid_box", "big_hot_air_balloon", "lighthouse", "double_decker",
