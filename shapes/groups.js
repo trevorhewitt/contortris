@@ -35,8 +35,8 @@
  * name when it comes straight after itself ("another raindrop").
  * }
  *
- * A group whose fixed ("piece_id") piece is banished (frequency 0) never turns up; banished
- * pieces are simply left out of picks.
+ * A group's fixed ("piece_id") pieces can be ones that otherwise only come linked after
+ * another (frequency 0, like the large piece of the sky); picks leave frequency 0 pieces out.
  *
  * A piece can also have `remix` (see main_shapes.js): it is rebuilt at random each time it
  * arrives, e.g. scrambled spam, or er berger flerg de schnerzgerberz.
@@ -170,9 +170,10 @@ export const GROUPS = [
     sequence: ["sunshine", { pick: ["rainbow","double_rainbow"], count: 1 }, { pick: ["happy_cloud"], count: [1,2] }, "butterflies"],
   },
   {
+    // (the humongous piece always comes after the other two)
     id: "sky",
     name: "a humongous piece of the sky",
     frequency: 0.5,
-    sequence: ["humongous_piece_of_sky"],
+    sequence: ["piece_of_sky", "large_piece_of_sky", "humongous_piece_of_sky"],
   },
 ];

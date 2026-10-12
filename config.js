@@ -492,7 +492,7 @@ export const CONFIG = {
       minBlocks: 13,
       // the least shake it makes (0-1; the board moves up to quake.maxOffsetPx × trauma²):
       // `small` at minBlocks, rising to `big` at bigBlocks blocks or more
-      trauma: { small: 0.55, big: 0.95, bigBlocks: 60 },
+      trauma: { small: 0.48, big: 0.82, bigBlocks: 60 },
     },
 
     powerup: {

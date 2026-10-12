@@ -151,8 +151,10 @@ test("level 6 pieces never turn up outside a group", () => {
     let i = 0, groups = 0;
     while (i < ids.length) {
       const g = firstIds.get(ids[i]);
-      if (g && served[i].difficulty === 6) {
-        const n = matchGroupAt(g, ids, i);
+      // (a set can open with an ordinary piece, like the small piece of the sky)
+      const m = g ? matchGroupAt(g, ids, i) : -1;
+      if (g && (served[i].difficulty === 6 || m > 0)) {
+        const n = m;
         if (n < 0 && ids.length - i < 40) break;
         assert.ok(n > 0, `seed ${seed}: broken ${g.id} run: ${ids.slice(i, i + 16).join(">")}`);
         i += n; groups++;

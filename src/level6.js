@@ -30,11 +30,12 @@ export function normaliseGroups(rawGroups, shapes) {
   const out = [];
   for (const g of Array.isArray(rawGroups) ? rawGroups : []) {
     if (!g || !g.id || !Array.isArray(g.sequence)) continue;
+    if (Number(g.frequency ?? 1) <= 0) continue; // (banished, like the portraits)
     const steps = [];
     let ok = true;
     for (const step of g.sequence) {
       if (typeof step === "string") {
-        const s = live(step);
+        const s = byId.get(step); // (a fixed piece can be one that only ever comes linked: frequency 0)
         if (!s) { ok = false; break; }
         steps.push({ shapes: [s], weights: [1], count: [1, 1] });
       } else if (step && Array.isArray(step.pick)) {
