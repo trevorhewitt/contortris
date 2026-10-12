@@ -346,10 +346,9 @@ test("level 6: no set comes round again until every other one has, even into the
     state.devLevel6 = "on";
     const order = [];
     for (let i = 0; i < 1200 && !state.gameOver; i++) {
-      const before = state.pieceSel.level6.seen.size + [...state.pieceSel.level6.seen.values()].reduce((a, b) => a + b, 0);
+      const l6 = state.pieceSel.level6, n0 = l6.starts ?? 0;
       setStack(state, 1); dropDot(state);
-      const g = state.pieceSel.level6.group;
-      if (g && order[order.length - 1] !== g) order.push(g);
+      if ((state.pieceSel.level6.starts ?? 0) > n0) order.push(state.pieceSel.level6.lastGroup);
     }
     return order;
   };

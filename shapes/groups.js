@@ -156,4 +156,10 @@ export const GROUPS = [
     frequency: 1,
     sequence: ["sunshine", { pick: ["rainbow","double_rainbow"], count: 1 }, { pick: ["happy_cloud"], count: [1,2] }, "butterflies"],
   },
+  {
+    id: "sky",
+    name: "a humongous piece of the sky",
+    frequency: 0.5,
+    sequence: ["humongous_piece_of_sky"],
+  },
 ];

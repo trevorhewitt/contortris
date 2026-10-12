@@ -301,6 +301,8 @@ export function startGroup(state, group, pieces = null) {
   const l6 = state.pieceSel.level6;
   l6.queue = pieces ?? expandGroup(group, state.rng);
   l6.group = group.id;
+  l6.lastGroup = group.id; // (a one-piece set is over as soon as it starts)
+  l6.starts = (l6.starts ?? 0) + 1;
   l6.seen.set(group.id, (l6.seen.get(group.id) ?? 0) + 1);
   state.level6Recent = [group.id, ...(state.level6Recent ?? []).filter(id => id !== group.id)].slice(0, CONFIG.assist.level6?.rememberRecent ?? 2);
   return nextGroupPiece(state);
