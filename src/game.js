@@ -25,6 +25,7 @@ import { normaliseGroups, trackLevel6, LEVEL6 } from "./level6.js";
 import { trackEndGame, endGameOn, spawnJitter, noteLanding } from "./endgame.js";
 import { remixShape } from "./remix.js";
 import { createZen, zenNext, zenPeek, zenTick } from "./zen.js";
+import { buildThreads } from "./threads.js";
 
 /* =========================
    State
@@ -34,7 +35,7 @@ export function createEmptyBoard(cols, rows) {
   return Array.from({ length: rows }, () => Array(cols).fill(null));
 }
 
-export function createGameState(shapes, powerups, { rng = Math.random, groups = [] } = {}) {
+export function createGameState(shapes, powerups, { rng = Math.random, groups = [], threads = null } = {}) {
   const state = {
     allShapes: shapes,
     allPowerups: powerups,
@@ -42,6 +43,8 @@ export function createGameState(shapes, powerups, { rng = Math.random, groups = 
 
     // Level 6 groups (shapes/groups.js, src/level6.js)
     groups: normaliseGroups(groups, shapes),
+    // Threads (shapes/threads.js, src/threads.js): the loose themes pieces share
+    threads: threads ? buildThreads([...shapes, ...powerups], threads.threads, threads.sets) : null,
     devLevel6: "auto",         // dev mode override: "auto", "on" or "off"
     devEndGame: "auto",        // dev mode override for the end game (src/endgame.js)
     endGameMs: null,           // the end game's fall speed (ms per row), null when it's off

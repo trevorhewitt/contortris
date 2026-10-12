@@ -16,6 +16,7 @@ import { analyseBoard, resolvePowerupArea, computeEffect, phantomLandingY, isPha
 import { LEVEL6, initLevel6, nextGroupPiece, maybeStartGroup, groupUnderWay } from "./level6.js";
 import { initEndGame, endGameOn, endGameLevelWeights } from "./endgame.js";
 import { isGodMode, godConfig, gravityColumns } from "./godmode.js";
+import { pickThread, threadWeight } from "./threads.js";
 
 const DEBUG_LINK = false; // verbose console logging for linked shapes
 
@@ -345,6 +346,11 @@ export function selectPiece(state) {
   const endGame = endGameOn(state);
   if (endGame) sel.endGame.pieces++;
 
+  // Threads (src/threads.js): this piece may follow a loose theme from the last one or two
+  // (and so may a powerup, or a level 6 set starting now)
+  const thread = pickThread(state);
+  sel.currentThread = thread;
+
   // A level 6 group that has started carries on, piece after piece, whatever else is going on.
   const grouped = nextGroupPiece(state);
   if (grouped) {
@@ -483,6 +489,16 @@ export function selectPiece(state) {
 
   levelW = normaliseWeights(levelW);
 
+  // Following a thread: one pick across the levels, each level keeping its share but the
+  // thread's pieces far likelier within it
+  const along = thread ? pickAlongThread(state, levelW, thread) : null;
+  if (along) {
+    commitSelectedShape(sel, along);
+    const al = (along.difficulty ?? 1);
+    if (al === 4 || al === 5) noteHardDropped(sel, al);
+    return along;
+  }
+
   // Choose a level.
   const chosenLevel = sampleDiscrete(levelW, state.rng);
 
@@ -513,6 +529,25 @@ export function selectPiece(state) {
   if (lvl === 4 || lvl === 5) noteHardDropped(sel, lvl);
 
   return chosenShape;
+}
+
+// A piece from any level that has a share now (levelW), the thread's pieces far likelier.
+function pickAlongThread(state, levelW, thread) {
+  const sel = state.pieceSel;
+  const byLevel = new Map();
+  for (const s of state.shapes) {
+    const L = s.difficulty ?? 1;
+    if ((s.frequency ?? 1) <= 0 || L === LEVEL6 || !(levelW[L] > 0)) continue;
+    const w = (s.frequency ?? 1) * varietyMultiplier(sel, s);
+    if (!(w > 0)) continue;
+    if (!byLevel.has(L)) byLevel.set(L, { mass: 0, list: [] });
+    const b = byLevel.get(L);
+    b.mass += w;
+    b.list.push([s, w]);
+  }
+  const cand = [];
+  for (const [L, b] of byLevel) for (const [s, w] of b.list) cand.push({ s, w: (levelW[L] * w / b.mass) * threadWeight(thread, s) });
+  return cand.length ? sampleByWeight(cand, c => c.w, state.rng).s : null;
 }
 
 function noteHardDropped(sel, lvl = 5) {
@@ -745,7 +780,8 @@ function maybeSelectPowerup(state, danger01) {
     const comboW = p.powerup.type === "combo" ? (firstComboDue ? (combos.firstBoost ?? 1) : (combos.weight ?? 1)) : 1;
     // a class's pieces share its weight, so big classes don't crowd out small ones
     const classSize = candidates.filter(c => c.powerup.cls === p.powerup.cls).length;
-    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * runW * wideW(p) * bigW(p) * varietyMultiplier(sel, p) * (6 / (classSize + 5));
+    const threadW = CONFIG.assist.threads?.powerups ? threadWeight(sel.currentThread, p) : 1;
+    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * runW * wideW(p) * bigW(p) * varietyMultiplier(sel, p) * threadW * (6 / (classSize + 5));
   }, state.rng);
   if (chosen && introducing(chosen)) { ps.lastIntroDrop = sel.dropIndex; ps.pendingIntro.add(chosen.powerup.cls); }
   return chosen;

@@ -201,6 +201,22 @@ export const CONFIG = {
   },
 
   assist: {
+    // Threads (shapes/threads.js, src/threads.js): pieces share loose themes, and often the next
+    // piece follows one from the last piece or two, so they come in drifting, poetic runs, with
+    // plenty of plain randomness between.
+    threads: {
+      enabled: true,
+      follow: 0.7,        // how often a pick follows a thread at all
+      lookBack: 0.25,     // ...from the piece before last, rather than the last
+      stay: 0.55,         // ...staying on the same thread as last time, if it can
+      formalChance: 0.45, // how often a colour or shape thread is followed, against a theme (1)
+      weight: 10,         // a piece on the thread is this many times likelier
+      formalWeight: 4,    // ...on a colour or shape thread
+      setWeight: 3,       // a level 6 set on the thread
+      bigThread: 40,      // threads bigger than this pull less hard on each of their pieces
+      powerups: true,     // powerups follow threads too
+    },
+
     openingNoLevel0UntilDrop: 17, // no level-0 (tiny) pieces in the first 17 drops
 
     // “Danger” bands (rows-from-top). Higher = assistance kicks in earlier.

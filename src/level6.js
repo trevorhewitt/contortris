@@ -15,6 +15,7 @@
 import { CONFIG } from "../config.js";
 import { sampleByWeight } from "./util.js";
 import { godConfig, isGodMode } from "./godmode.js";
+import { setThreadWeight } from "./threads.js";
 
 export const LEVEL6 = 6;
 
@@ -223,7 +224,7 @@ export function maybeStartGroup(state) {
   // ...and only one whose whole run fits on the board (a set can't be cleared until it's down)
   const room = state.board.length - (cfg.headroom ?? 3) - stackRows(state);
   while (pool.length) {
-    const group = sampleByWeight(pool, g => g.frequency * setNovelty(state, g), state.rng);
+    const group = sampleByWeight(pool, g => g.frequency * setNovelty(state, g) * setThreadWeight(state, sel.currentThread, g), state.rng);
     const pieces = expandGroup(group, state.rng, l6.variants);
     if ((group.room || roomNeeded(pieces)) <= room) return startGroup(state, group, pieces); // (a set's own `room` has the last word)
     pool = pool.filter(g => g !== group);
