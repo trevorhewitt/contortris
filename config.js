@@ -206,15 +206,17 @@ export const CONFIG = {
     // plenty of plain randomness between.
     threads: {
       enabled: true,
-      follow: 0.7,        // how often a pick follows a thread at all
+      follow: 0.8,        // how often a pick follows a thread at all
       lookBack: 0.25,     // ...from the piece before last, rather than the last
-      stay: 0.55,         // ...staying on the same thread as last time, if it can
+      stay: 0.6,          // ...staying on the same thread as last time, if it can
       formalChance: 0.45, // how often a colour or shape thread is followed, against a theme (1)
-      weight: 10,         // a piece on the thread is this many times likelier
+      weight: 18,         // a piece on the thread is this many times likelier
       formalWeight: 4,    // ...on a colour or shape thread
       setWeight: 3,       // a level 6 set on the thread
       bigThread: 40,      // threads bigger than this pull less hard on each of their pieces
+      fatigue: 0.8,       // ...and a thread pulls less on pieces it's brought already this game
       powerups: true,     // powerups follow threads too
+      powerupWeight: 40,  // ...this many times likelier (their weight is mostly how much they'd help)
     },
 
     openingNoLevel0UntilDrop: 17, // no level-0 (tiny) pieces in the first 17 drops

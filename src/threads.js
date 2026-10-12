@@ -56,13 +56,15 @@ export function pickThread(state) {
   return { name, members: th.members.get(name), formal: name.includes(":") };
 }
 
-// How much likelier `shape` is, given the thread being followed. (A very big thread, like
-// "blue things", pulls less hard on each of its pieces: a run along it would hardly show.)
-export function threadWeight(thread, shape) {
+// How much likelier `shape` is, given the thread being followed. A very big thread, like
+// "blue things", pulls less hard on each of its pieces (a run along it would hardly show), and
+// a thread pulls less on pieces it has already brought this game (`served`), so it finds new ones.
+export function threadWeight(thread, shape, served = 0) {
   if (!thread?.members?.has(shape.id)) return 1;
   const T = CONFIG.assist.threads;
-  const w = thread.formal ? T.formalWeight : T.weight;
-  return 1 + (w - 1) * Math.min(1, (T.bigThread ?? 40) / thread.members.size);
+  // (a powerup's weight is mostly how much it would help, so the thread pulls it harder)
+  const w = thread.formal ? T.formalWeight : shape.powerup ? (T.powerupWeight ?? T.weight) : T.weight;
+  return 1 + (w - 1) * Math.min(1, (T.bigThread ?? 40) / thread.members.size) / (1 + (T.fatigue ?? 0) * served);
 }
 
 // ...and a level 6 set, if the thread being followed is one of its own.

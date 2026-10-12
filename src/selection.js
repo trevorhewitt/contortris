@@ -546,7 +546,7 @@ function pickAlongThread(state, levelW, thread) {
     b.list.push([s, w]);
   }
   const cand = [];
-  for (const [L, b] of byLevel) for (const [s, w] of b.list) cand.push({ s, w: (levelW[L] * w / b.mass) * threadWeight(thread, s) });
+  for (const [L, b] of byLevel) for (const [s, w] of b.list) cand.push({ s, w: (levelW[L] * w / b.mass) * threadWeight(thread, s, sel.servedCounts.get(s.id) ?? 0) });
   return cand.length ? sampleByWeight(cand, c => c.w, state.rng).s : null;
 }
 
@@ -780,7 +780,7 @@ function maybeSelectPowerup(state, danger01) {
     const comboW = p.powerup.type === "combo" ? (firstComboDue ? (combos.firstBoost ?? 1) : (combos.weight ?? 1)) : 1;
     // a class's pieces share its weight, so big classes don't crowd out small ones
     const classSize = candidates.filter(c => c.powerup.cls === p.powerup.cls).length;
-    const threadW = CONFIG.assist.threads?.powerups ? threadWeight(sel.currentThread, p) : 1;
+    const threadW = CONFIG.assist.threads?.powerups ? threadWeight(sel.currentThread, p, sel.servedCounts.get(p.id) ?? 0) : 1;
     return (p.frequency ?? 1) * needW * helpW * comboW * usableW * runW * wideW(p) * bigW(p) * varietyMultiplier(sel, p) * threadW * (6 / (classSize + 5));
   }, state.rng);
   if (chosen && introducing(chosen)) { ps.lastIntroDrop = sel.dropIndex; ps.pendingIntro.add(chosen.powerup.cls); }
