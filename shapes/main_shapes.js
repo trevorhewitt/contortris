@@ -17213,4 +17213,185 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
   },
+  {
+    id: "storm_in_a_teacup",
+    name: "a storm in a teacup",
+    grid: [
+        "XX",
+        "XX"
+      ],
+    color: [["#253c73","#3858a4","#3858a4","#a37f2e","#cba644","#cba644","#cba644","#cba644","#cba644","#cba644","#cba644","#cba644","#a37f2e","#3858a4","#3858a4","#253c73"],["#3858a4","#b58d33","#e2b84c","#b3bad0","#b3bad0","#b3bad0","#7d849f","#f3efe6","#b3bad0","#7d849f","#f3efe6","#f3efe6","#f3efe6","#e2b84c","#b58d33","#3858a4"],["#cba644","#7a3e1d","#7d849f","#b3bad0","#b3bad0","#b3bad0","#b3bad0","#7d849f","#b3bad0","#b3bad0","#7d849f","#7d849f","#7a3e1d","#7a3e1d","#a35b2b","#cba644"],["#cba644","#7a3e1d","#596080","#434965","#434965","#434965","#434965","#434965","#434965","#434965","#434965","#596080","#7a3e1d","#7a3e1d","#7a3e1d","#cba644"],["#cba644","#7a3e1d","#7a3e1d","#7a3e1d","#b5e3ff","#7a3e1d","#b5e3ff","#7a3e1d","#7a3e1d","#ffe338","#ffe338","#7a3e1d","#7a3e1d","#a35b2b","#7a3e1d","#cba644"],["#3858a4","#e2b84c","#e2b84c","#b5e3ff","#7a3e1d","#b5e3ff","#7a3e1d","#7a3e1d","#ffe338","#ffe338","#7a3e1d","#7a3e1d","#7a3e1d","#e2b84c","#e2b84c","#294482"],["#3858a4","#3e62b6","#3e62b6","#e2b84c","#e2b84c","#e2b84c","#7a3e1d","#c88450","#ffe338","#c88450","#e2b84c","#e2b84c","#e2b84c","#2e4b90","#2e4b90","#294482"],["#6482c4","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#2e4b90","#294482"],["#3858a4","#6f90da","#6f90da","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#294482"],["#294482","#6f90da","#6f90da","#3e62b6","#3e62b6","#3e62b6","#e8eefc","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#6f90da","#3e62b6","#f4f1ea","#f4f1ea","#3858a4"],["#dcd9d3","#2e4b90","#6f90da","#3e62b6","#3e62b6","#e8eefc","#ffe338","#e8eefc","#3e62b6","#3e62b6","#6f90da","#3e62b6","#2e4b90","#f4f1ea","#f4f1ea","#294482"],["#dcd9d3","#f4f1ea","#2e4b90","#3e62b6","#3e62b6","#3e62b6","#e8eefc","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#2e4b90","#2e4b90","#2e4b90","#2e4b90","#dcd9d3"],["#dcd9d3","#f4f1ea","#f4f1ea","#f4f1ea","#2e4b90","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#2e4b90","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#dcd9d3"],["#dcd9d3","#f4f1ea","#f4f1ea","#d2cdc3","#d2cdc3","#d2cdc3","#d2cdc3","#d2cdc3","#d2cdc3","#d2cdc3","#d2cdc3","#d2cdc3","#f4f1ea","#f4f1ea","#f4f1ea","#dcd9d3"],["#cba644","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#a37f2e"],["#97928a","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#97928a"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "umbrella_for_a_fish",
+    name: "an umbrella for a fish",
+    grid: [
+        "XX",
+        "XX"
+      ],
+    color: [["#8f9dae","#a1b0c4","#cfd8e1","#a1b0c4","#a1b0c4","#a1b0c4","#a1b0c4","#454756","#a1b0c4","#a1b0c4","#a1b0c4","#a1b0c4","#cfd8e1","#8f9dae"],["#a1b0c4","#b3c4da","#b3c4da","#b3c4da","#e5403c","#ff7f6c","#ff7f6c","#e5403c","#e5403c","#a9262d","#b3c4da","#b3c4da","#b3c4da","#a1b0c4"],["#a1b0c4","#e6f0fa","#a9262d","#e5403c","#ff7f6c","#ff7f6c","#e5403c","#e5403c","#e5403c","#e5403c","#a9262d","#a9262d","#b3c4da","#a1b0c4"],["#a1b0c4","#a9262d","#a9262d","#e5403c","#ff7f6c","#e5403c","#e5403c","#e5403c","#e5403c","#e5403c","#e5403c","#a9262d","#a9262d","#a1b0c4"],["#982228","#a9262d","#e5403c","#e5403c","#e5403c","#e5403c","#e5403c","#e5403c","#e5403c","#e5403c","#e5403c","#e5403c","#a9262d","#982228"],["#982228","#b3c4da","#b3c4da","#b3c4da","#a9262d","#b3c4da","#b3c4da","#5e3d22","#b3c4da","#a9262d","#b3c4da","#b3c4da","#b3c4da","#982228"],["#a1b0c4","#b3c4da","#e6f0fa","#b3c4da","#b3c4da","#b3c4da","#b3c4da","#5e3d22","#b3c4da","#b3c4da","#b3c4da","#b3c4da","#e6f0fa","#a1b0c4"],["#5fa2d4","#e3f4ff","#6ab4ec","#6ab4ec","#e3f4ff","#6ab4ec","#6ab4ec","#5e3d22","#6ab4ec","#e3f4ff","#6ab4ec","#6ab4ec","#e3f4ff","#5fa2d4"],["#2a73bc","#2f80d1","#2f80d1","#2f80d1","#2f80d1","#2f80d1","#cf5f17","#5e3d22","#cf5f17","#2f80d1","#2f80d1","#2f80d1","#2f80d1","#2a73bc"],["#2a73bc","#ffc06a","#ffc06a","#2f80d1","#ffb04a","#ff8a1a","#ff8a1a","#ff8a1a","#ff8a1a","#ff8a1a","#ff8a1a","#ffb04a","#2f80d1","#2a73bc"],["#2a73bc","#2f80d1","#ffc06a","#cf5f17","#ff8a1a","#ff8a1a","#ff8a1a","#ff8a1a","#ff8a1a","#ff8a1a","#ffffff","#23243a","#ff8a1a","#2a73bc"],["#2a73bc","#ffc06a","#ffc06a","#2f80d1","#cf5f17","#ff8a1a","#ff8a1a","#ff8a1a","#ff8a1a","#ff8a1a","#ff8a1a","#cf5f17","#2f80d1","#2a73bc"],["#2a73bc","#2f80d1","#2f80d1","#2f80d1","#2f80d1","#2f80d1","#cf5f17","#cf5f17","#2f80d1","#2f80d1","#2f80d1","#2f80d1","#2f80d1","#2a73bc"],["#1d5393","#205ea6","#2a73bc","#205ea6","#205ea6","#205ea6","#205ea6","#2a73bc","#205ea6","#205ea6","#205ea6","#205ea6","#2a73bc","#1d5393"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "goldfish_bowl_moon",
+    name: "a goldfish bowl on the moon",
+    grid: [
+        ".X.",
+        "XXX",
+        "XXX"
+      ],
+    color: [["","","","","","#181e43","#5698d5","#2970be","#2970be","#181e43","","","","",""],["","","","","","#5698d5","#4fb453","#2f8a3f","#2f7fd8","#e0e0e0","","","","",""],["","","","","","#2970be","#4fb453","#4fb453","#2f7fd8","#1b4688","","","","",""],["","","","","","#2970be","#2f7fd8","#ffffff","#4fb453","#1b4688","","","","",""],["","","","","","#1b214c","#2f7fd8","#2f7fd8","#1f4f9a","#1b214c","","","","",""],["#818188","#92929a","#92929a","#72727b","#72727b","#a6d6ee","#e8f9ff","#e8f9ff","#a6d6ee","#a6d6ee","#72727b","#72727b","#92929a","#92929a","#818188"],["#72727b","#81818c","#81818c","#a6d6ee","#a6d6ee","#86c9f2","#86c9f2","#86c9f2","#86c9f2","#86c9f2","#a6d6ee","#a6d6ee","#81818c","#81818c","#72727b"],["#81818a","#93939d","#a6d6ee","#e8f9ff","#4c9fe0","#4c9fe0","#4c9fe0","#4c9fe0","#4c9fe0","#4c9fe0","#4c9fe0","#4c9fe0","#a6d6ee","#93939d","#81818a"],["#81818a","#a6d6ee","#4c9fe0","#e8f9ff","#4c9fe0","#4c9fe0","#4c9fe0","#ffb04a","#ff8a1a","#4c9fe0","#4c9fe0","#4c9fe0","#4c9fe0","#a6d6ee","#81818a"],["#81818a","#a6d6ee","#e8f9ff","#4c9fe0","#ffb04a","#ffb04a","#4c9fe0","#ff8a1a","#ff8a1a","#ff8a1a","#ff8a1a","#4c9fe0","#4c9fe0","#a6d6ee","#62626c"],["#62626c","#a6d6ee","#e8f9ff","#4c9fe0","#4c9fe0","#ffb04a","#ff8a1a","#ff8a1a","#ff8a1a","#23243a","#ffb04a","#4c9fe0","#4c9fe0","#a6d6ee","#92929a"],["#92929a","#a6d6ee","#4c9fe0","#4c9fe0","#ffb04a","#ffb04a","#4c9fe0","#d0601a","#ff8a1a","#ff8a1a","#4c9fe0","#4c9fe0","#4c9fe0","#a6d6ee","#92929a"],["#acacb2","#a6a6af","#a6d6ee","#3479bf","#3479bf","#3479bf","#3479bf","#3479bf","#3479bf","#3479bf","#3479bf","#3479bf","#a6d6ee","#a6a6af","#92929a"],["#62626c","#6f6f7b","#c3c3ca","#a6d6ee","#a6d6ee","#3479bf","#3479bf","#3479bf","#3479bf","#3479bf","#a6d6ee","#a6d6ee","#c3c3ca","#a6a6af","#92929a"],["#818188","#92929a","#92929a","#acacb2","#acacb2","#92bcd1","#92bcd1","#92bcd1","#92bcd1","#92bcd1","#acacb2","#acacb2","#acacb2","#62626c","#575760"]],
+    difficulty: 2,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "anvil_of_feathers",
+    name: "an anvil made of feathers",
+    grid: [
+        "XXX",
+        ".X."
+      ],
+    color: [["#7c7570","#8f8881","#8f8881","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#e0dfdc","#c2c0be"],["#8f8780","#d9d2cb","#fffdfa","#fffdfa","#d9d2cb","#fffdfa","#fffdfa","#d9d2cb","#fffdfa","#fffdfa","#bdb4ab","#fffdfa","#bdb4ab","#fffdfa","#fffdfa","#fffdfa","#bdb4ab","#fffdfa","#bdb4ab","#fffdfa","#e0dfdc"],["#a69e96","#9c938b","#9c938b","#9c938b","#9c938b","#9c938b","#9c938b","#9c938b","#f1ede8","#bdb4ab","#f1ede8","#f1ede8","#f1ede8","#bdb4ab","#f1ede8","#bdb4ab","#f1ede8","#f1ede8","#f1ede8","#bdb4ab","#d4d1cc"],["#9e968f","#b3aaa2","#f1ede8","#bdb4ab","#f1ede8","#f1ede8","#bdb4ab","#f1ede8","#bdb4ab","#f1ede8","#f1ede8","#f1ede8","#f1ede8","#cec6be","#9c938b","#cec6be","#cec6be","#cec6be","#f1ede8","#f1ede8","#a69e96"],["#8c847e","#9f968f","#cfc7bf","#e8e3dd","#b3aaa2","#d9d2cb","#d9d2cb","#f1ede8","#f1ede8","#f1ede8","#f1ede8","#f1ede8","#f1ede8","#cec6be","#cec6be","#cec6be","#cec6be","#cec6be","#f1ede8","#f1ede8","#d4d1cc"],["#d2cfca","#cfc7bf","#9e958e","#9e958e","#9e958e","#e8e3dd","#cfc7bf","#9c938b","#d9d2cb","#9c938b","#d9d2cb","#d9d2cb","#d9d2cb","#9c938b","#d9d2cb","#cfc7bf","#e8e3dd","#9e958e","#b3aaa2","#e8e3dd","#8b837d"],["#77706b","#8a827c","#8a827c","#8a827c","#8a827c","#8a827c","#8a827c","#e8e3dd","#d9d2cb","#d9d2cb","#9c938b","#d9d2cb","#9c938b","#e8e3dd","#8a827c","#8a827c","#8a827c","#d2cfca","#b6afa8","#8a827c","#77706b"],["","","","","","","","#88807a","#e8e3dd","#d9d2cb","#d9d2cb","#bdb4ab","#9b928b","#9e968f","","","","","","",""],["","","","","","","","#888079","#9a918a","#d9d2cb","#d9d2cb","#d9d2cb","#e8e3dd","#b6afa8","","","","","","",""],["","","","","","","","#877f79","#cfc7bf","#d9d2cb","#bdb4ab","#d9d2cb","#999089","#9e968f","","","","","","",""],["","","","","","","","#ccc8c2","#d9d2cb","#bdb4ab","#f1ede8","#f1ede8","#d9d2cb","#ccc8c2","","","","","","",""],["","","","","","","","#bfb9b3","#bdb4ab","#f1ede8","#f1ede8","#f1ede8","#f1ede8","#bfb9b3","","","","","","",""],["","","","","","","","#bfb9b3","#d9d2cb","#f1ede8","#f1ede8","#f1ede8","#f1ede8","#bfb9b3","","","","","","",""],["","","","","","","","#908982","#bfb9b3","#a69e96","#d4d1cc","#d4d1cc","#d4d1cc","#908982","","","","","","",""]],
+    difficulty: 2,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "jar_of_fog",
+    name: "a jar of fog",
+    grid: [
+        "X",
+        "X"
+      ],
+    color: [["#b18c62","#cca171","#cca171","#cca171","#cca171","#cca171","#cca171","#996c40"],["#b07c4a","#c48a52","#a26b3b","#c48a52","#c48a52","#c48a52","#a26b3b","#7e4f28"],["#b07c4a","#a26b3b","#c48a52","#c48a52","#a26b3b","#c48a52","#c48a52","#7e4f28"],["#7e4f28","#8c582c","#8c582c","#8c582c","#8c582c","#8c582c","#8c582c","#7e4f28"],["#d3dbdd","#eaf3f6","#eaf3f6","#eaf3f6","#eaf3f6","#eaf3f6","#eaf3f6","#8297a6"],["#8297a6","#d7dce2","#d7dce2","#e9ecef","#e9ecef","#d7dce2","#a2aab6","#8297a6"],["#dde1e3","#e9ecef","#e9ecef","#e9ecef","#d7dce2","#c6ccd4","#a2aab6","#8297a6"],["#dde1e3","#d7dce2","#c6ccd4","#c6ccd4","#c6ccd4","#d7dce2","#a2aab6","#8297a6"],["#dde1e3","#c6ccd4","#b5bcc6","#c6ccd4","#d7dce2","#e9ecef","#e9ecef","#8297a6"],["#dde1e3","#c6ccd4","#d7dce2","#e9ecef","#e9ecef","#e9ecef","#d7dce2","#8297a6"],["#dde1e3","#d7dce2","#e9ecef","#d7dce2","#c6ccd4","#c6ccd4","#b5bcc6","#8297a6"],["#dde1e3","#e9ecef","#e9ecef","#c6ccd4","#b5bcc6","#b5bcc6","#a2aab6","#8297a6"],["#dde1e3","#d7dce2","#e9ecef","#e9ecef","#c6ccd4","#b5bcc6","#a2aab6","#8297a6"],["#8297a6","#c6ccd4","#d7dce2","#e9ecef","#e9ecef","#d7dce2","#a2aab6","#8297a6"],["#8da1af","#b5bcc6","#c6ccd4","#c6ccd4","#d7dce2","#c6ccd4","#a2aab6","#8da1af"],["#8798a1","#9cb0ba","#9cb0ba","#9cb0ba","#9cb0ba","#9cb0ba","#9cb0ba","#657785"]],
+    difficulty: 0,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "fossilised_sandwich",
+    name: "a fossilised sandwich",
+    grid: [
+        "XXX",
+        "XXX"
+      ],
+    color: [["#614a35","#816446","#816446","#816446","#70553e","#816446","#816446","#816446","#816446","#816446","#615041","#816446","#816446","#816446","#614a35"],["#bcaa88","#d6c19b","#c2aa82","#d6c19b","#d6c19b","#d6c19b","#b29a74","#d6c19b","#efe6d2","#d6c19b","#6e5b4a","#c2aa82","#d6c19b","#d6c19b","#9d8866"],["#bcaa88","#86927a","#d6c19b","#d6c19b","#c2aa82","#86927a","#d6c19b","#d6c19b","#b29a74","#d6c19b","#86927a","#6e5b4a","#d6c19b","#c2aa82","#76806b"],["#76806b","#b7c19f","#86927a","#5f6a54","#86927a","#86927a","#b7c19f","#86927a","#86927a","#5f6a54","#86927a","#6e5b4a","#86927a","#86927a","#a1aa8c"],["#545d4a","#86927a","#86927a","#b7c19f","#86927a","#5f6a54","#86927a","#86927a","#b7c19f","#86927a","#86927a","#6e5b4a","#86927a","#b7c19f","#545d4a"],["#8f5142","#bd7663","#a35c4b","#a35c4b","#a35c4b","#a35c4b","#bd7663","#a35c4b","#a35c4b","#a35c4b","#a35c4b","#6e5b4a","#bd7663","#a35c4b","#8f5142"],["#b19b5f","#c9b06c","#b39a5a","#c9b06c","#c9b06c","#c9b06c","#c9b06c","#c9b06c","#c9b06c","#b39a5a","#c9b06c","#c9b06c","#6e5b4a","#c9b06c","#b19b5f"],["#bcaa88","#d6c19b","#d6c19b","#b29a74","#d6c19b","#efe6d2","#d6c19b","#c2aa82","#d6c19b","#d6c19b","#d6c19b","#d6c19b","#6e5b4a","#d6c19b","#bcaa88"],["#bcaa88","#c2aa82","#d6c19b","#d6c19b","#d6c19b","#d6c19b","#b29a74","#d6c19b","#d6c19b","#d6c19b","#c2aa82","#d6c19b","#d6c19b","#6e5b4a","#bcaa88"],["#614a35","#816446","#816446","#816446","#816446","#70553e","#816446","#816446","#816446","#816446","#816446","#816446","#816446","#615041","#614a35"]],
+    difficulty: 2,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+    tags: [
+        "food"
+      ],
+  },
+  {
+    id: "sock_full_of_night",
+    name: "a sock with the night sky inside",
+    grid: [
+        "X.",
+        "X.",
+        "XX"
+      ],
+    color: [["#bca364","#ce9f48","#ce9f48","#ce9f48","#ce9f48","#bca364","","","","","",""],["#ce9f48","#2c3d95","#1c2869","#1c2869","#2c3d95","#ce9f48","","","","","",""],["#ce9f48","#1c2869","#1c2869","#1c2869","#ffe17a","#ce9f48","","","","","",""],["#ce9f48","#1c2869","#fff5c6","#1c2869","#1c2869","#ce9f48","","","","","",""],["#ce9f48","#2c3d95","#1c2869","#1c2869","#2c3d95","#ce9f48","","","","","",""],["#d9bc73","#eab552","#eab552","#eab552","#eab552","#d9bc73","","","","","",""],["#c48e33","#c4882a","#dfa13a","#c4882a","#dfa13a","#ac7825","","","","","",""],["#c48e33","#c4882a","#dfa13a","#c4882a","#dfa13a","#ac7825","","","","","",""],["#c48e33","#c4882a","#dfa13a","#c4882a","#dfa13a","#ac7825","","","","","",""],["#ce9f48","#dfa13a","#eab552","#dfa13a","#eab552","#c48e33","","","","","",""],["#c48e33","#eab552","#dfa13a","#eab552","#dfa13a","#ce9f48","","","","","",""],["#ce9f48","#dfa13a","#eab552","#dfa13a","#eab552","#c48e33","","","","","",""],["#c48e33","#eab552","#dfa13a","#eab552","#dfa13a","#eab552","#c48e33","#ce9f48","#c48e33","#ce9f48","#9f3d29","#8a3424"],["#9f3d29","#b5452f","#dfa13a","#eab552","#dfa13a","#eab552","#dfa13a","#eab552","#dfa13a","#eab552","#b5452f","#9f3d29"],["#9f3d29","#b5452f","#b5452f","#dfa13a","#eab552","#dfa13a","#f2c66a","#2c3d95","#f2c66a","#eab552","#cc5b3e","#9f3d29"],["#9f3d29","#b5452f","#b5452f","#eab552","#dfa13a","#eab552","#f2c66a","#fff5c6","#f2c66a","#dfa13a","#b5452f","#9f3d29"],["#7e2e21","#b5452f","#b5452f","#c4882a","#c4882a","#c4882a","#c4882a","#c4882a","#c4882a","#c4882a","#b5452f","#7e2e21"],["#6d281d","#7e2e21","#7e2e21","#7e2e21","#ac7825","#ac7825","#ac7825","#ac7825","#ac7825","#7e2e21","#7e2e21","#6d281d"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "piano_full_of_bees",
+    name: "a piano full of bees",
+    grid: [
+        "X..X",
+        ".XX.",
+        "XXXX"
+      ],
+    color: [["#adb9c2","#c8d6e0","#332517","#c8d6e0","#adb9c2","","","","","","","","","","","#adb9c2","#c8d6e0","#332517","#c8d6e0","#adb9c2"],["#a5bfd3","#ffd23a","#ffd23a","#ffd23a","#a5bfd3","","","","","","","","","","","#a5bfd3","#ffd23a","#ffd23a","#ffd23a","#a5bfd3"],["#362619","#3d2b1c","#3d2b1c","#3d2b1c","#362619","","","","","","","","","","","#362619","#3d2b1c","#3d2b1c","#3d2b1c","#362619"],["#e0b933","#ffd23a","#ffd23a","#ffd23a","#e0b933","","","","","","","","","","","#e0b933","#ffd23a","#ffd23a","#ffd23a","#e0b933"],["#aa8020","#362619","#362619","#362619","#aa8020","","","","","","","","","","","#aa8020","#362619","#362619","#362619","#aa8020"],["","","","","","#8a5630","#9f6337","#9f6337","#9f6337","#9f6337","#9f6337","#9f6337","#9f6337","#9f6337","#8a5630","","","","",""],["","","","","","#4f2c19","#ffd23a","#5a321c","#5a321c","#5a321c","#5a321c","#3a2a1a","#ffd23a","#5a321c","#4f2c19","","","","",""],["","","","","","#7e482a","#b06f12","#f7bd3c","#f7bd3c","#b06f12","#ffe08a","#f7bd3c","#b06f12","#f7bd3c","#7e482a","","","","",""],["","","","","","#7e482a","#f7bd3c","#b06f12","#ffe08a","#f7bd3c","#b06f12","#f7bd3c","#f7bd3c","#b06f12","#7e482a","","","","",""],["","","","","","#7e482a","#b06f12","#f7bd3c","#f7bd3c","#b06f12","#f7bd3c","#ffe08a","#b06f12","#f7bd3c","#7e482a","","","","",""],["#6d3e24","#d8d5cc","#26212a","#d8d5cc","#26212a","#f6f2e8","#f6f2e8","#f6f2e8","#2b2530","#f6f2e8","#2b2530","#f6f2e8","#2b2530","#f6f2e8","#f6f2e8","#d8d5cc","#26212a","#d8d5cc","#d8d5cc","#6d3e24"],["#7e482a","#f6f2e8","#f6f2e8","#f6f2e8","#f6f2e8","#f6f2e8","#cfc8bb","#f6f2e8","#f6f2e8","#f6f2e8","#f6f2e8","#f6f2e8","#f6f2e8","#f6f2e8","#cfc8bb","#f6f2e8","#f6f2e8","#f6f2e8","#f6f2e8","#7e482a"],["#61361e","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#6e3d22","#61361e"],["#4f2c19","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#8f5230","#4f2c19"],["#442615","#4f2c19","#4f2c19","#4f2c19","#4f2c19","#4f2c19","#4f2c19","#4f2c19","#c8a543","#4f2c19","#c8a543","#4f2c19","#c8a543","#4f2c19","#4f2c19","#4f2c19","#4f2c19","#4f2c19","#4f2c19","#442615"]],
+    difficulty: 3,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+    noShake: true,
+    tags: [
+        "music"
+      ],
+  },
+  {
+    id: "snowman_on_holiday",
+    name: "a snowman on holiday",
+    grid: [
+        "XX",
+        "XX",
+        "XX"
+      ],
+    color: [["#ad8a37","#c29c3e","#a67c2a","#daba60","#daba60","#daba60","#daba60","#daba60","#daba60","#a67c2a","#c29c3e","#ad8a37"],["#daba60","#d8ad45","#b98a2f","#f2cf6b","#f2cf6b","#d8ad45","#f2cf6b","#f2cf6b","#f2cf6b","#b98a2f","#d8ad45","#daba60"],["#daba60","#f2cf6b","#e8507a","#e8507a","#e8507a","#e8507a","#e8507a","#ffb3c8","#e8507a","#e8507a","#f2cf6b","#daba60"],["#daba60","#d8ad45","#f2cf6b","#f2cf6b","#d8ad45","#f2cf6b","#f2cf6b","#f2cf6b","#d8ad45","#f2cf6b","#f2cf6b","#c29c3e"],["#a67c2a","#b98a2f","#b98a2f","#b98a2f","#b98a2f","#b98a2f","#b98a2f","#b98a2f","#b98a2f","#b98a2f","#b98a2f","#a67c2a"],["#a6b8cc","#dbe7f3","#dbe7f3","#dbe7f3","#dbe7f3","#dbe7f3","#dbe7f3","#dbe7f3","#dbe7f3","#dbe7f3","#dbe7f3","#a6b8cc"],["#a6b8cc","#f7fbff","#2a2d4a","#2a2d4a","#2a2d4a","#e8507a","#e8507a","#2a2d4a","#2a2d4a","#2a2d4a","#f7fbff","#a6b8cc"],["#a6b8cc","#f7fbff","#7f9fe8","#2a2d4a","#2a2d4a","#f7fbff","#f7fbff","#7f9fe8","#2a2d4a","#2a2d4a","#f7fbff","#a6b8cc"],["#a6b8cc","#f7fbff","#f7fbff","#f7fbff","#f7fbff","#f08a24","#f08a24","#c96a14","#c96a14","#f7fbff","#f7fbff","#a6b8cc"],["#a6b8cc","#dbe7f3","#f7fbff","#f7fbff","#3e3e4e","#3e3e4e","#3e3e4e","#3e3e4e","#f7fbff","#f7fbff","#dbe7f3","#a6b8cc"],["#e66497","#ffd34a","#ff5a3c","#ff6fa8","#4fb453","#ff6fa8","#ffd34a","#ff5a3c","#ff6fa8","#4fb453","#ff6fa8","#e6be43"],["#a6b8cc","#dbe7f3","#f7fbff","#f7fbff","#f7fbff","#f7fbff","#f7fbff","#f7fbff","#f7fbff","#f7fbff","#e9f6ff","#36b397"],["#6e4a2d","#5e3d22","#dbe7f3","#f7fbff","#f7fbff","#3e3e4e","#f7fbff","#f7fbff","#f7fbff","#dbe7f3","#ff8fb8","#d2dde6"],["#55371f","#b9cde3","#dbe7f3","#f7fbff","#f7fbff","#f7fbff","#f7fbff","#f7fbff","#f7fbff","#dbe7f3","#5e3d22","#6e4a2d"],["#a6b8cc","#dbe7f3","#dbe7f3","#f7fbff","#f7fbff","#3e3e4e","#f7fbff","#f7fbff","#f7fbff","#dbe7f3","#dbe7f3","#a6b8cc"],["#a6b8cc","#c9e8fb","#dbe7f3","#f7fbff","#f7fbff","#f7fbff","#f7fbff","#f7fbff","#f7fbff","#dbe7f3","#c9e8fb","#a6b8cc"],["#7eb7d9","#c9e8fb","#b9cde3","#dbe7f3","#f7fbff","#f7fbff","#f7fbff","#f7fbff","#dbe7f3","#b9cde3","#c9e8fb","#7eb7d9"],["#70a2c1","#b5d1e2","#b5d1e2","#7eb7d9","#7eb7d9","#b5d1e2","#b5d1e2","#7eb7d9","#b5d1e2","#b5d1e2","#7eb7d9","#70a2c1"]],
+    difficulty: 2,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "bucket_of_yesterday",
+    name: "a bucket of yesterday",
+    grid: [
+        "XX",
+        "XX"
+      ],
+    color: [["#c2b599","#dacbac","#dacbac","#dacbac","#616770","#616770","#616770","#616770","#616770","#616770","#dacbac","#dacbac","#dacbac","#c2b599"],["#dacbac","#e6c992","#6c727c","#6c727c","#e6c992","#e6c992","#e6c992","#e6c992","#e6c992","#e6c992","#6c727c","#6c727c","#e6c992","#dacbac"],["#cfb583","#6c727c","#e6c992","#e8edf1","#e8edf1","#e8edf1","#e8edf1","#e8edf1","#e8edf1","#e8edf1","#e8edf1","#e6c992","#6c727c","#cfb583"],["#616770","#e8edf1","#e8edf1","#d9b274","#d9b274","#d9b274","#d9b274","#f0d49a","#f0d49a","#f0d49a","#d9b274","#d9b274","#e8edf1","#616770"],["#d1d5d9","#d9b274","#d9b274","#d9b274","#d9b274","#d9b274","#f0d49a","#f0d49a","#fff7e0","#fff7e0","#f0d49a","#d9b274","#d9b274","#d1d5d9"],["#d1d5d9","#d9b274","#d9b274","#d9b274","#d9b274","#d9b274","#d9b274","#f0d49a","#fff7e0","#fff7e0","#f0d49a","#d9b274","#d9b274","#98a3ae"],["#d1d5d9","#d9b274","#8e6c45","#8e6c45","#8e6c45","#d9b274","#d9b274","#d9b274","#d9b274","#f0d49a","#d9b274","#d9b274","#d9b274","#98a3ae"],["#d1d5d9","#8e6c45","#8e6c45","#8e6c45","#8e6c45","#8e6c45","#a07d52","#a07d52","#a07d52","#a07d52","#a07d52","#a07d52","#a07d52","#98a3ae"],["#afb8c1","#e8edf1","#b8955f","#b8955f","#b8955f","#b8955f","#b8955f","#b8955f","#b8955f","#b8955f","#b8955f","#b8955f","#e8edf1","#98a3ae"],["#afb8c1","#c2ccd6","#e8edf1","#e8edf1","#e8edf1","#e8edf1","#e8edf1","#e8edf1","#e8edf1","#e8edf1","#e8edf1","#e8edf1","#a9b5c1","#98a3ae"],["#969268","#c2ccd6","#c2ccd6","#8e9cab","#8e9cab","#8e9cab","#8e9cab","#8e9cab","#8e9cab","#8e9cab","#8e9cab","#8e9cab","#5f6d7b","#969268"],["#969268","#c2ccd6","#76848f","#76848f","#76848f","#76848f","#76848f","#76848f","#76848f","#76848f","#76848f","#76848f","#5f6d7b","#969268"],["#817d55","#a7a273","#c2ccd6","#8e9cab","#8e9cab","#8e9cab","#8e9cab","#8e9cab","#8e9cab","#8e9cab","#8e9cab","#5f6d7b","#a7a273","#817d55"],["#726f4b","#817d55","#969268","#56626f","#56626f","#56626f","#56626f","#56626f","#56626f","#56626f","#56626f","#56626f","#969268","#726f4b"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "red_balloon",
+    name: "a red balloon on a very long string",
+    grid: [
+        "X",
+        "X",
+        "X",
+        "X",
+        "X",
+        "X",
+        "X"
+      ],
+    color: [["#9bb9ce","#e15357","#d1202a","#d1202a","#a9111d","#9bb9ce"],["#e15357","#ffffff","#ff8f8f","#e3232e","#e3232e","#a9111d"],["#e15357","#ffffff","#ff8f8f","#e3232e","#e3232e","#a9111d"],["#e15357","#ff8f8f","#e3232e","#e3232e","#e3232e","#a9111d"],["#d1202a","#e3232e","#e3232e","#e3232e","#b8131f","#810b16"],["#d1202a","#e3232e","#e3232e","#e3232e","#b8131f","#810b16"],["#d1202a","#e3232e","#e3232e","#b8131f","#b8131f","#810b16"],["#b4d0e2","#e3232e","#e3232e","#b8131f","#8c0c18","#b4d0e2"],["#b6d1e2","#b8131f","#e3232e","#b8131f","#8c0c18","#b6d1e2"],["#b8d1e2","#c8e3f6","#b8131f","#8c0c18","#c8e3f6","#b8d1e2"],["#b9d2e2","#c9e4f6","#9e0f1b","#9e0f1b","#c9e4f6","#b9d2e2"],["#bbd3e2","#cbe5f6","#7c7e8d","#a4b2c2","#cbe5f6","#bbd3e2"],["#bdd4e2","#cde6f6","#9097a6","#929aa9","#cde6f6","#bdd4e2"],["#bed5e2","#cee7f6","#a3afbe","#808290","#cee7f6","#bed5e2"],["#bfd5e3","#d0e7f7","#b6c6d6","#6e6b79","#d0e7f7","#bfd5e3"],["#c0d5e3","#d1e8f7","#d1e8f7","#6d6a78","#d1e8f7","#c0d5e3"],["#c2d6e3","#d3e9f7","#d3e9f7","#6d6a78","#d3e9f7","#c2d6e3"],["#c4d7e3","#d5eaf7","#d5eaf7","#6d6a78","#c4d5e2","#c4d7e3"],["#c5d8e3","#d6ebf7","#d6ebf7","#6d6a78","#bccbd7","#c5d8e3"],["#c7d8e2","#d8ebf6","#d8ebf6","#72707e","#b8c4d0","#c7d8e2"],["#c9d8e0","#daebf4","#daebf4","#73717f","#b9c4ce","#c9d8e0"],["#cad8e0","#dcebf3","#dcebf3","#6f6d7a","#bec8d2","#cad8e0"],["#cbd8de","#ddebf1","#ddebf1","#6d6a78","#c8d2da","#cbd8de"],["#cdd8dc","#dfebef","#dfebef","#6d6a78","#dfebef","#cdd8dc"],["#cfd8db","#e1ebee","#e1ebee","#6d6a78","#e1ebee","#cfd8db"],["#d1d8d9","#e3ebec","#c1c6cb","#716f7c","#e3ebec","#d1d8d9"],["#d3d9d7","#e5ecea","#a7a9af","#8d8d96","#e5ecea","#d3d9d7"],["#e3e6e7","#f7fafb","#888792","#acaeb3","#e6ece9","#d4d9d6"],["#e3e6e6","#f7fafa","#6d6a78","#d0d2d1","#e8ece7","#d5d9d5"],["#d7d9d3","#eaece5","#6d6a78","#eaece5","#eaece5","#d7d9d3"],["#d9d9d2","#bbbaba","#7e7c87","#ecece4","#ecece4","#d9d9d2"],["#dbd9d0","#97949a","#a4a1a5","#eeece2","#eeece2","#dbd9d0"],["#ddd9ce","#73707d","#c9c5c1","#f0ece0","#f0ece0","#ddd9ce"],["#ded9cd","#6d6a78","#f1ecdf","#f1ecdf","#f9faf9","#e5e6e5"],["#c8c2ba","#6d6a78","#f2ebdd","#f9f9f8","#f9f9f8","#e5e5e4"],["#b1aba7","#7d7a84","#f2eadb","#f2eadb","#f2eadb","#dfd7c9"],["#a09b9a","#918c92","#f3ead9","#f3ead9","#f3ead9","#e0d7c8"],["#948f90","#9e989a","#f4e9d7","#f4e9d7","#f4e9d7","#e0d6c6"],["#908a8c","#a39c9d","#f4e8d5","#f4e8d5","#f4e8d5","#e0d5c4"],["#928c8d","#a19a9b","#f5e7d3","#f5e7d3","#f5e7d3","#e1d5c2"],["#64626e","#f5e7d1","#6d6a78","#f5e7d1","#f5e7d1","#e1d5c0"],["#cfc1ae","#64626e","#e2d4be","#e2d4be","#e2d4be","#cfc1ae"]],
+    difficulty: 2,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
 ];

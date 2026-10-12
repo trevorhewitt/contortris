@@ -5,7 +5,7 @@
 // Board format (same as main.js): board[y][x] is null (empty) or a cell object.
 // Area format: see the doc comment at the top of shapes/powerup_shapes.js.
 
-import { valueNoise } from "./util.js";
+import { valueNoise, makeRng } from "./util.js";
 
 export const POWERUP_TYPES = ["destroyer", "gravity", "expander", "acid", "blast", "goo", "phantom", "combo"];
 
@@ -169,8 +169,9 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
   } else if (type === "goo" || type === "phantom") {
     areaRotations = rotations.map(() => ({ cells: [], rows: [], cols: [] }));
   } else if (raw.scatter && type === "destroyer") {
-    // a random spray of cells, re-rolled each time the piece spawns (rollScatter)
-    areaRotations = scatterAreas(rotations, raw.scatter, Math.random);
+    // a random spray of cells, re-rolled each time the piece spawns (rollScatter); the first
+    // one is seeded from its id, so a game is the same every time with the same seed
+    areaRotations = scatterAreas(rotations, raw.scatter, makeRng([...String(id)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7)));
   } else {
     areaRotations = areaRotationsFor(raw.area, rotations, trim);
     if (isEmptyArea(areaRotations[0])) {

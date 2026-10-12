@@ -93,7 +93,7 @@ export const CONFIG = {
     headroom: 7,         // rows it keeps clear at the top
     powerupChoices: 8,   // powerups it weighs up when it wants one
     rescueKeepRows: 5,   // if anything ever tops out, all but the bottom few rows dissolve
-    level6: { headroom: 7, maxStackRows: 5 }, // level 6 sets only start with plenty of room
+    level6: { headroom: 9, maxStackRows: 3 }, // level 6 sets only start with plenty of room
     captionRow: 3, captionMs: 2600, captionColour: "#d8ccff", // what it's doing, over the board
   },
 
@@ -141,6 +141,8 @@ export const CONFIG = {
         "caveman_in_ice", "piece_of_sky",
         "old_wheelbarrow", "stone_path", "watering_can", "cracked_pot", "hosepipe", "rusty_trowel",
         "bird_bath", "compost_heap", "kilometerworm", "lightyearworm", "nebula",
+        "storm_in_a_teacup", "umbrella_for_a_fish", "goldfish_bowl_moon", "anvil_of_feathers", "jar_of_fog", "fossilised_sandwich",
+        "sock_full_of_night", "piano_full_of_bees", "snowman_on_holiday", "bucket_of_yesterday", "red_balloon",
         "ladder_to_nowhere", "kite_in_a_storm", "flock_of_starlings", "trail_of_footprints", "portrait_of_a_potato", "moons_spare_tooth",
         "weather_vane", "weather_clock", "hot_water_bottle_of_sea", "very_small_stonehenge", "long_red_ribbon",
       ],
