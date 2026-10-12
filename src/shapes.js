@@ -241,6 +241,8 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
       nameAgain: typeof s.nameAgain === "string" && s.nameAgain.trim() ? s.nameAgain.trim() : null,
       // in a level 6 set: this piece comes back later in the same run, as that piece
       echo: typeof s.echo === "string" && s.echo ? s.echo : null,
+      // pieces drawn to join up (the same `seam`) show no edge where they touch
+      seam: typeof s.seam === "string" && s.seam ? s.seam : null,
 
       // Keep original colour spec for future extension
       color: s.color,

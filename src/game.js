@@ -506,7 +506,7 @@ function lockPiece(state) {
         continue;
       }
 
-      state.board[by][bx] = { paint: getShapePaint(shape, rotIdx, x, y), style: shape.style, pid };
+      state.board[by][bx] = { paint: getShapePaint(shape, rotIdx, x, y), style: shape.style, pid, ...(shape.seam ? { seam: shape.seam } : {}) };
       placed.push({ x: bx, y: by });
     }
   }

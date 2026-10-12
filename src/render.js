@@ -366,13 +366,17 @@ function drawGravityMark(ctx, px, py, cell, direction, p) {
 // Edge mask bits: which sides of a block border a different piece / empty space.
 const EDGE_T = 1, EDGE_R = 2, EDGE_B = 4, EDGE_L = 8;
 
+// (two pieces with the same `seam`, drawn to join up, like the tip and the rest of the
+// iceberg, show no edge between them)
 function boardEdgeMask(board, x, y, pid) {
   const rows = board.length, cols = board[0].length;
+  const seam = board[y][x]?.seam;
+  const other = (c) => !c || (c.pid !== pid && !(seam && c.seam === seam));
   let m = 0;
-  if (y === 0 || board[y - 1][x]?.pid !== pid) m |= EDGE_T;
-  if (x === cols - 1 || board[y][x + 1]?.pid !== pid) m |= EDGE_R;
-  if (y === rows - 1 || board[y + 1][x]?.pid !== pid) m |= EDGE_B;
-  if (x === 0 || board[y][x - 1]?.pid !== pid) m |= EDGE_L;
+  if (y === 0 || other(board[y - 1][x])) m |= EDGE_T;
+  if (x === cols - 1 || other(board[y][x + 1])) m |= EDGE_R;
+  if (y === rows - 1 || other(board[y + 1][x])) m |= EDGE_B;
+  if (x === 0 || other(board[y][x - 1])) m |= EDGE_L;
   return m;
 }
 
