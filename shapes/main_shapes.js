@@ -757,6 +757,12 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    nextShapeProbs: [
+        0.35
+      ],
+    nextShapes: [
+        "seeyou2"
+      ],
   },
   {
     id: "seeyou2",
@@ -770,6 +776,12 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    nextShapeProbs: [
+        0.35
+      ],
+    nextShapes: [
+        "seeyou3"
+      ],
   },
   {
     id: "seeyou3",
@@ -869,6 +881,12 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    nextShapeProbs: [
+        0.25
+      ],
+    nextShapes: [
+        "fried_egg"
+      ],
     tags: [
         "food"
       ],
@@ -1473,6 +1491,12 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.3
+      ],
+    nextShapes: [
+        "pea"
+      ],
     tags: [
         "food"
       ],
@@ -2729,6 +2753,12 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    nextShapeProbs: [
+        0.3
+      ],
+    nextShapes: [
+        "mirror"
+      ],
   },
   {
     id: "millipede",
