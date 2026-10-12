@@ -141,6 +141,8 @@ export const CONFIG = {
         "caveman_in_ice", "piece_of_sky",
         "old_wheelbarrow", "stone_path", "watering_can", "cracked_pot", "hosepipe", "rusty_trowel",
         "bird_bath", "compost_heap", "kilometerworm", "lightyearworm", "nebula",
+        "ladder_to_nowhere", "kite_in_a_storm", "flock_of_starlings", "trail_of_footprints", "portrait_of_a_potato", "moons_spare_tooth",
+        "weather_vane", "weather_clock", "hot_water_bottle_of_sea", "very_small_stonehenge", "long_red_ribbon",
       ],
     },
     novelty: { newBoost: 12, newSetBoost: 20, newUntilSeen: 3, unseenBoost: 2.5 },

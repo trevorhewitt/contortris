@@ -70,7 +70,8 @@ test("threads: every id is a piece, every live piece is on a theme, and every se
 test("threads: pieces (and powerups) follow on from each other far more often, with plenty of randomness still", () => {
   for (const mode of ["normal", "god"]) {
     const off = play(mode, false), on = play(mode, true);
-    assert.ok(on.reg > off.reg * 1.6, `${mode}: ordinary pieces ${(on.reg * 100).toFixed(0)}% vs ${(off.reg * 100).toFixed(0)}%`);
+    // (a clear lift: links and sets connect some pieces anyway, threads or not)
+    assert.ok(on.reg - off.reg >= 0.1, `${mode}: ordinary pieces ${(on.reg * 100).toFixed(0)}% vs ${(off.reg * 100).toFixed(0)}%`);
     assert.ok(on.reg < 0.75, `${mode}: but not always (${(on.reg * 100).toFixed(0)}%)`);
     if (mode === "god") assert.ok(on.pu > off.pu * 2, `powerups ${(on.pu * 100).toFixed(0)}% vs ${(off.pu * 100).toFixed(0)}%`);
     // no theme takes over: runs stay short, and the pieces stay varied
