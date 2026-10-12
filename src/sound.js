@@ -151,6 +151,11 @@ export function createSound(cfg) {
         [1046.5, 1174.66, 1318.5, 1567.98, 1760, 2093].forEach((f, i) => tone({ freq: f, dur: 0.08, vol: 0.05, type: "triangle", delay: at(sh.finaleAt) + i * 0.035 }));
       }
     },
+    // a piece on its last chance: a quiet, low double warning
+    danger() {
+      tone({ freq: 220, to: 196, dur: 0.12, vol: 0.07, type: "triangle" });
+      tone({ freq: 220, to: 185, dur: 0.16, vol: 0.06, type: "triangle", delay: 0.18 });
+    },
     levelUp() {
       [659.25, 880, 1318.5].forEach((f, i) => tone({ freq: f, dur: 0.09, vol: 0.07, type: "square", delay: i * 0.06, filter: 3000 }));
     },

@@ -38,6 +38,9 @@ export const CONFIG = {
     // side (left / right three times) to slide all the way over; taps this close together count
     multiTapMs: 300,
     multiTaps: 3,
+    // a piece about to lock sticking out above the top (game over) gets this long more, once:
+    // it flashes red and the board warns, and it can still be moved
+    lastChanceMs: 1000,
   },
 
   // Pieces come in at the centre ± a few random columns (most often near the middle), so

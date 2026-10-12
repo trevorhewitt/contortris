@@ -309,7 +309,28 @@ function currentLockDelayMs(state) {
   // treat as touch if touch input occurred recently
   const now = performance.now();
   const recentTouch = (state.lastInputType === "touch") && (now - state.lastInputAt < 1200);
-  return recentTouch ? CONFIG.timing.lockDelayMsTouch : CONFIG.timing.lockDelayMsKeyboard;
+  const delay = recentTouch ? CONFIG.timing.lockDelayMsTouch : CONFIG.timing.lockDelayMsKeyboard;
+  // (on its last chance, while it would still top out: whatever's left of it)
+  const lc = state.active?.lastChance;
+  return lc && topsOut(state) ? Math.max(delay, lc.durationMs - lc.elapsedMs) : delay;
+}
+
+// Would the falling piece, locked where it is now, stick out above the top (game over)?
+function topsOut(state) {
+  const a = state.active, mat = getActiveMatrix(state);
+  for (let y = 0; y < mat.length; y++) if (a.y + y < 0 && mat[y].some(Boolean)) return true;
+  return false;
+}
+
+// About to lock sticking out above the top? Once per piece, it gets another moment
+// (CONFIG.timing.lastChanceMs): it flashes red, the board warns, and it can still be moved.
+function lastChance(state) {
+  const a = state.active, ms = CONFIG.timing.lastChanceMs ?? 0;
+  if (!ms || state.zen || a.lastChance || a.shape.powerup?.consume || !topsOut(state)) return false;
+  a.lastChance = { elapsedMs: 0, durationMs: ms };
+  state.lockElapsed = 0;
+  emit(state, "lastChance", { shape: a.shape });
+  return true;
 }
 
 export function beginLockIfNeeded(state) {
@@ -1454,6 +1475,7 @@ export function updateGame(state, dt) {
   if (state.paused) return;
 
   if (state.zen) zenTick(state, dt); // zen: the autopilot steers (unless the player is)
+  if (state.active?.lastChance) state.active.lastChance.elapsedMs += dt;
 
   if (state.effect) {
     updatePowerupEffect(state, dt);
@@ -1498,7 +1520,7 @@ export function updateGame(state, dt) {
       cancelLock(state);
     } else {
       const delay = currentLockDelayMs(state);
-      if (state.lockElapsed >= delay) {
+      if (state.lockElapsed >= delay && !lastChance(state)) {
         stepLockAndSpawn(state);
         cancelLock(state);
       }
@@ -1506,10 +1528,12 @@ export function updateGame(state, dt) {
   }
 }
 
-// Test/debug helper: drop the active piece straight down and lock it now.
-export function hardDropAndLock(state) {
+// Drop the active piece straight down and lock it now (the triple tap; and for tests). With
+// `lastChance` (the player's own drop), a piece that would top out gets its last chance first.
+export function hardDropAndLock(state, { lastChance: allowLastChance = false } = {}) {
   if (!state.active || state.effect || state.gameOver) return false;
   while (tryMove(state, 0, 1)) state.score += CONFIG.scoring.hardDropPerCell ?? 0;
+  if (allowLastChance && lastChance(state)) { beginLockIfNeeded(state); return false; }
   stepLockAndSpawn(state);
   cancelLock(state);
   return true;

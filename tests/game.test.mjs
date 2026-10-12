@@ -297,3 +297,33 @@ test("a powerup that vanishes when it fires still clears the rows it completed",
     assert.ok(state.board.every(row => row.every(c => !c)), `${id}: nothing left behind`);
   }
 });
+
+test("a piece about to top out gets a last chance: it can still be moved out of trouble", () => {
+  const setup = () => {
+    const { state, events } = newGame("extreme", 3);
+    // every column full to the top, but for a deep, empty well at the right
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS - 2; x++) state.board[y][x] = filler();
+    placeActive(state, "pea", 3, -1); // (one block, sitting on top of the stack)
+    return { state, events };
+  };
+  // left alone: a moment's grace (it flashes red), then game over
+  {
+    const { state, events } = setup();
+    const landed = CONFIG.timing.baseDropMs + CONFIG.timing.lockDelayMsKeyboard + 300; // (it lands, then the lock delay)
+    settle(state, landed);
+    assert.equal(state.gameOver, false, "not yet");
+    assert.ok(state.active?.lastChance, "on its last chance");
+    assert.ok(events.some(e => e.type === "lastChance"));
+    settle(state, CONFIG.timing.lastChanceMs + 400);
+    assert.equal(state.gameOver, true, "then it's over");
+  }
+  // moved across to the well in time: saved
+  {
+    const { state } = setup();
+    settle(state, CONFIG.timing.baseDropMs + CONFIG.timing.lockDelayMsKeyboard + 300);
+    assert.ok(state.active?.lastChance);
+    while (tryMove(state, 1, 0)) { /* over to the well */ }
+    settle(state, 3000);
+    assert.equal(state.gameOver, false, "saved");
+  }
+});

@@ -389,6 +389,9 @@ export function bindUI({ state, renderer, sound, achievements }) {
         store.set(LEVEL6_KEY, "1");
         state.level6Remembered = true;
         break;
+      case "lastChance":
+        sound.play("danger");
+        break;
       case "powerupCharge":
         sound.play("charge", CONFIG.fx.powerup.chargeMs);
         break;
@@ -950,7 +953,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
     if (!canAct()) return;
     state.softDropping = false;
     stopRepeat();
-    if (hardDropAndLock(state)) sound.play("lock");
+    if (hardDropAndLock(state, { lastChance: true })) sound.play("lock");
   }
 
   window.addEventListener("keyup", (e) => {
