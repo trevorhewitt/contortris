@@ -52,20 +52,23 @@ test("god mode: everything is open from the first piece, with no intro screens",
   }
 });
 
-test("god mode: more giants and more powerups, and the wide gravitizers above all", () => {
+test("god mode: more big pieces (above all level 6 sets) and more powerups, and the wide gravitizers above all", () => {
   const count = (mode) => {
-    let giants = 0, pus = 0, wide = 0, n = 0;
+    let giants = 0, sets = 0, pus = 0, wide = 0, n = 0;
     for (const seed of [1, 2, 3]) {
       for (const s of play(mode, seed * 101, 150).served) {
         n++;
         if (s.powerup) { pus++; if (gravityColumns(s) >= CONFIG.godMode.wideGravity.minCols) wide++; }
         else if (s.difficulty === 4 || s.difficulty === 5) giants++;
+        else if (s.difficulty === 6) sets++;
       }
     }
-    return { giants: giants / n, pus: pus / n, wide: wide / Math.max(1, pus) };
+    return { giants: giants / n, sets: sets / n, pus: pus / n, wide: wide / Math.max(1, pus) };
   };
   const god = count("god"), normal = count("normal");
-  assert.ok(god.giants > normal.giants * 1.5, `giants ${god.giants.toFixed(3)} vs ${normal.giants.toFixed(3)}`);
+  const big = (m) => m.giants + m.sets;
+  assert.ok(big(god) > big(normal) * 1.5, `big pieces ${big(god).toFixed(3)} vs ${big(normal).toFixed(3)}`);
+  assert.ok(god.sets > god.giants, `level 6 ${god.sets.toFixed(3)}, giants ${god.giants.toFixed(3)}`);
   assert.ok(god.pus > normal.pus, `powerups ${god.pus.toFixed(3)} vs ${normal.pus.toFixed(3)}`);
   assert.ok(god.wide > normal.wide * 2, `wide gravitizers ${god.wide.toFixed(3)} vs ${normal.wide.toFixed(3)}`);
 });

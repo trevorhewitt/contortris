@@ -83,16 +83,17 @@ export const CONFIG = {
       firstGiantBetween: [2, 4],
       softWindowStart: 1,
       softWindowEnd: 400,
-      rechargePerDrop: 0.12,      // (16× as fast)
-      cooldownDrops: 1,
+      rechargePerDrop: 0.05,      // (7× as fast)
+      cooldownDrops: 4,
       hardMaxDanger: 0.5,
       level5FullAllowedDanger: 0.25,
       level5AlmostNeverDanger: 0.5,
     },
     level6: {                     // the level 6 sets (assist.level6)
-      firstAfter: [6, 9],
-      cooldownDrops: 12,
-      chancePerDrop: 0.14,
+      firstAfter: [3, 5],
+      cooldownDrops: 5,
+      chancePerDrop: 0.35,
+      maxStackRows: 10,
     },
     powerups: {                   // assist.powerups
       minDropIndex: 1,
