@@ -448,11 +448,16 @@ export const CONFIG = {
       powerupBlocksMin: 8, // show "+N" when a powerup destroys/moves/fills at least this many
     },
 
+    // Big pieces shake the board when they land: giants (difficulty 4–6) with at least
+    // `minBlocks` blocks (small ones in a level 6 set, like two kangaroos, don't), and the
+    // bigger the piece, the bigger the thud. Pieces with noShake never shake.
     largePieceLock: {
       quakePerCell: 0.03,
       minDifficulty: 4,
-      // the least shake a big piece makes when it lands (0-1, maxTrauma is 0.5)
-      minTraumaByDifficulty: { 4: 0.3, 5: 0.42, 6: 0.5 },
+      minBlocks: 13,
+      // the least shake it makes (0-1, maxTrauma is 0.5): `small` at minBlocks, rising to
+      // `big` at bigBlocks blocks or more
+      trauma: { small: 0.25, big: 0.5, bigBlocks: 60 },
     },
 
     powerup: {

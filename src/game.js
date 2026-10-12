@@ -470,6 +470,15 @@ export function setNextPiece(state, shape) {
   emit(state, "next", { next: shape });
 }
 
+// Does this piece shake the board when it lands? Big giants do (CONFIG.fx.largePieceLock);
+// small pieces never, nor ones marked noShake (like a swarm of bees).
+export function shakesOnLanding(shape) {
+  const big = CONFIG.fx.largePieceLock;
+  if (!shape || shape.powerup || shape.noShake) return false;
+  return (shape.difficulty ?? 0) >= (big.minDifficulty ?? 4) && blockCount(shape) >= (big.minBlocks ?? 0);
+}
+const blockCount = (shape) => shape.rotations[0].reduce((n, row) => n + row.filter(Boolean).length, 0);
+
 // Locks the active piece into the board. Returns info about the placement.
 function lockPiece(state) {
   const { shape, rotIdx } = state.active;
@@ -509,12 +518,13 @@ function lockPiece(state) {
   state.drops++;
   noteLanding(state, state.active.steered); // (the end game watches for a player who stopped trying)
 
-  const big = CONFIG.fx.largePieceLock;
-  // (pieces marked noShake, like a swarm of bees, land without a thud)
-  if ((shape.difficulty ?? 0) >= (big.minDifficulty ?? 5) && !shape.powerup && !shape.noShake && CONFIG.fx.quake.enabled) {
+  if (shakesOnLanding(shape) && CONFIG.fx.quake.enabled) {
     addQuakeFromBlocks(state, placed.length);
-    // every big piece lands with a proper thud, whatever its size
-    const floor = big.minTraumaByDifficulty?.[shape.difficulty] ?? 0;
+    // a proper thud, bigger for bigger pieces
+    const big = CONFIG.fx.largePieceLock, t = big.trauma ?? {};
+    const min = big.minBlocks ?? 0, n = blockCount(shape);
+    const f = Math.max(0, Math.min(1, (n - min) / Math.max(1, (t.bigBlocks ?? 60) - min)));
+    const floor = (t.small ?? 0.25) + ((t.big ?? 0.5) - (t.small ?? 0.25)) * f;
     state.fx.quake.trauma = Math.max(state.fx.quake.trauma ?? 0, floor);
   }
 

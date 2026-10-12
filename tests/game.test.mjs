@@ -266,3 +266,14 @@ test("achievements: together (groups and count)", () => {
   ach.handle("lock", { drops: 4, onBoard: () => [byId("eyeball"), byId("seeyou1"), byId("seeyou3")] });
   assert.ok(got.includes("being_watched"));
 });
+
+test("only big pieces shake the board: not two kangaroos, nor anything marked noShake", async () => {
+  const { shakesOnLanding } = await import("../src/game.js");
+  const { shapes } = loadShapes(SHAPES);
+  const get = (id) => shapes.find(s => s.id === id);
+  for (const id of ["two_kangaroos", "two_penguins", "iceberg_tip", "nagging_doubt", "emotion_happiness"]) assert.equal(shakesOnLanding(get(id)), false, id);
+  for (const id of ["everest", "pyramid", "iceberg_rest", "earth"]) assert.equal(shakesOnLanding(get(id)), true, id);
+  assert.equal(shakesOnLanding(get("bees")), false, "bees are noShake");
+  // nothing small ever shakes
+  for (const s of shapes) if (s.rotations[0].flat().filter(Boolean).length < CONFIG.fx.largePieceLock.minBlocks) assert.equal(shakesOnLanding(s), false, s.id);
+});
