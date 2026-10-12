@@ -54,7 +54,7 @@ test("spam always starts with two spams, then 2-5 remixes", () => {
     const ids = expandGroup(g, rng).map(s => s.id);
     assert.deepEqual(ids.slice(0, 2), ["spam", "spam"]);
     assert.ok(ids.length >= 4 && ids.length <= 7, ids.join());
-    assert.ok(ids.every(id => /spam|spm/.test(id)), ids.join());
+    assert.ok(ids.every(id => /spa*m|maps/.test(id)), ids.join());
   }
 });
 

@@ -46,8 +46,8 @@ export const GROUPS = [
       "spam",
       "spam",
       {
-        pick: ["spam", "spam_spam_and_spam", "spm", "scrambled_spam", "mini_spam", "mini_spams", "giant_spam"],
-        weights: [3, 1.2, 1, 1, 1, 1, 0.8],
+        pick: ["spam", "spam_spam_and_spam", "spm", "scrambled_spam", "mini_spam", "mini_spams", "giant_spam", "maps", "spaaaaaaaam"],
+        weights: [3, 1.2, 1, 1, 1, 1, 0.8, 1, 1],
         count: [2, 5],
       },
     ],
