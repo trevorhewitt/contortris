@@ -113,6 +113,6 @@ export const GROUPS = [
     id: "emotions",
     name: "an emotions chart",
     frequency: 1,
-    sequence: ["emotion_happiness", "emotion_sadness", "emotion_anger", { pick: ["emotion_deja_vu","emotion_someone_behind_you","emotion_ear_itch","emotion_oven","emotion_nostalgia","emotion_cold_pillow","emotion_vending_machine","emotion_missing_step","emotion_screen_film","emotion_preemptive_embarrassment","emotion_umbrella"], count: [2,4] }, { pick: ["emotion_forglavedness","emotion_plorch","emotion_glumpf","emotion_wibberance","emotion_snerk","emotion_sprongle","emotion_halvering"], count: [2,3] }],
+    sequence: ["emotion_happiness", "emotion_sadness", "emotion_anger", { pick: ["emotion_deja_vu","emotion_someone_behind_you","emotion_ear_itch","emotion_oven","emotion_nostalgia","emotion_cold_pillow","emotion_vending_machine","emotion_missing_step","emotion_screen_film","emotion_preemptive_embarrassment","emotion_umbrella"], count: [2, 4], unique: true }, { pick: ["emotion_forglavedness","emotion_plorch","emotion_glumpf","emotion_wibberance","emotion_snerk","emotion_sprongle","emotion_halvering"], count: [2, 3], unique: true }],
   },
 ];
