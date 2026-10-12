@@ -16,6 +16,9 @@ export const CONFIG = {
     normal: { label: "Normal", tagline: "powerups help you out", powerups: true, giants: true, level6: true },
     extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true },
     god: { label: "God", tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true },
+    // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); timeScale: how fast it all runs
+    zen: { label: "Zen", tagline: "it plays itself, and never ends", powerups: true, giants: true, level6: "open", everything: true, zen: true },
+    turbo: { label: "Turbo zen", tagline: "the same, much faster", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.6 },
   },
   defaultMode: "normal",
 
@@ -77,6 +80,20 @@ export const CONFIG = {
   // giants and sets come early and often. To make up for them: lots of powerups, mostly the
   // best ones, the wide gravitizers. Each section replaces the same numbers in `assist` (only
   // the ones listed) while playing God mode.
+  // Zen mode: the autopilot (src/zen.js) steers each piece unless the player is, and the
+  // director decides what comes next. It never ends.
+  zen: {
+    idleMs: 1500,        // the autopilot takes back over once the player has let go this long
+    stepMs: 75,          // it moves or turns the piece this often
+    firstStepMs: 260,    // (a moment's thought first)
+    dropMs: 650,         // how fast pieces fall (it never speeds up)
+    headroom: 7,         // rows it keeps clear at the top
+    powerupChoices: 8,   // powerups it weighs up when it wants one
+    rescueKeepRows: 5,   // if anything ever tops out, all but the bottom few rows dissolve
+    level6: { headroom: 7, maxStackRows: 5 }, // level 6 sets only start with plenty of room
+    captionRow: 3, captionMs: 2600, captionColour: "#d8ccff", // what it's doing, over the board
+  },
+
   godMode: {
     hard: {                       // the giants (assist.pieceMix.hard)
       minDropIndex: 1,

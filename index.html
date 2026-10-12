@@ -300,6 +300,8 @@
       width: min(100%, 260px);
     }
     .menuBtns button{ font-size: 11px; }
+    .zenRow{ display: flex; gap: 8px; }
+    .zenRow button{ flex: 1 1 0; min-width: 0; }
 
     .menuRow{
       display: flex;
@@ -981,12 +983,13 @@
 
           <div class="msg panel" id="panelMenu" hidden>
             <div class="big title">Extris</div>
-            <div class="small" id="gameVersion">version 202610122006</div>
+            <div class="small" id="gameVersion">version 202610122019</div>
             <div class="menuBtns">
               <button id="btnEasy" class="secondary">Easy mode</button>
               <button id="btnNormal">Normal mode</button>
               <button id="btnExtreme" class="secondary">Extreme mode</button>
               <button id="btnGod" class="secondary">God mode</button>
+              <div class="zenRow"><button id="btnZen" class="secondary">Zen mode</button><button id="btnTurbo" class="secondary">Turbo zen</button></div>
               <button id="btnHowTo" class="secondary">How to play</button>
             </div>
             <div class="menuRow">
@@ -1012,12 +1015,12 @@
               <p>Powerups come in four classes (Dissolverz, Gravitizerz, Expanderz and Phantomz), introduced one class at a time as you play, each with a quick intro; once a class is in, any of its pieces can turn up. Once two classes are in, Comboz (two powerups in one) start turning up too. When you're in trouble, powerups turn up more often and the more helpful ones get picked. The pause menu explains every class you've met so far.</p>
 
               <h3>Modes</h3>
-              <p><b>Easy:</b> powerups, and none of the giant pieces.<br><b>Normal:</b> the full game, with powerups. Watch out for the giants.<br><b>Extreme:</b> the original. No powerups, no mercy.<br><b>God:</b> everything, right away. Every powerup from the first piece, the biggest pieces in the game, and a great many gravitizers to cope with them.</p>
+              <p><b>Easy:</b> powerups, and none of the giant pieces.<br><b>Normal:</b> the full game, with powerups. Watch out for the giants.<br><b>Extreme:</b> the original. No powerups, no mercy.<br><b>God:</b> everything, right away. Every powerup from the first piece, the biggest pieces in the game, and a great many gravitizers to cope with them.<br><b>Zen:</b> it plays itself, and it never ends. Sit back and watch, or take over whenever you like: it carries on once you let go, and nothing you do can end it.<br><b>Turbo zen:</b> the same, much faster.</p>
 
               <h3>Achievements</h3>
               <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
 
-              <p class="small menuFoot">[Extris version 202610122006 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610122019 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>

@@ -127,7 +127,11 @@ export function initLevel6(state) {
 }
 
 // CONFIG.assist.level6, with God mode's numbers on top in God mode
-const level6Cfg = (state) => godConfig(state.mode, "level6", CONFIG.assist.level6 ?? {});
+// (zen mode keeps well clear of the top: CONFIG.zen.level6)
+const level6Cfg = (state) => {
+  const base = godConfig(state.mode, "level6", CONFIG.assist.level6 ?? {});
+  return CONFIG.modes[state.mode]?.zen ? { ...base, ...CONFIG.zen.level6 } : base;
+};
 
 export function stackRows(state) {
   const rows = state.board.length;

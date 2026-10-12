@@ -24,6 +24,7 @@ import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLa
 import { normaliseGroups, trackLevel6, LEVEL6 } from "./level6.js";
 import { trackEndGame, endGameOn, spawnJitter, noteLanding } from "./endgame.js";
 import { remixShape } from "./remix.js";
+import { createZen, zenNext, zenPeek, zenTick } from "./zen.js";
 
 /* =========================
    State
@@ -223,6 +224,7 @@ export function resetGame(state) {
   state.softDropping = false;
   cancelLock(state);
 
+  state.zen = null;
   state.lastLockedShape = null;
   state.gameOverInfo.pieceName = "";
   state.gameOverInfo.shape = null;
@@ -251,6 +253,9 @@ export function startRun(state, mode) {
   if (state.running || state.gameOver || state.active || state.drops) resetGame(state);
   configureMode(state, mode);
   initPieceSelectionState(state);
+  // Zen mode: it plays itself (src/zen.js), at one steady speed, and never ends
+  state.zen = CONFIG.modes[state.mode]?.zen ? createZen(state) : null;
+  if (state.zen) state.dropMs = CONFIG.zen.dropMs;
   state.running = true;
   state.paused = false;
   emit(state, "start", { mode: state.mode });
@@ -433,10 +438,17 @@ function spawnPiece(state) {
   // the board has settled: did the player just dig back down far enough to open level 6?
   if (state.pieceSel && trackLevel6(state)) emit(state, "level6Unlocked", {});
   // ...or reach two thirds of the board (the end game), or dig their way out of it?
-  if (state.pieceSel) updateEndGame(state, trackEndGame(state));
-  if (!state.next) state.next = prepareShape(state, selectPiece(state));
-  const shape = state.next;
-  state.next = prepareShape(state, selectPiece(state));
+  if (state.pieceSel && !state.zen) updateEndGame(state, trackEndGame(state));
+  let shape;
+  if (state.zen) {
+    // zen: the director picks each piece as it's needed, on the board as it is now
+    shape = prepareShape(state, zenNext(state));
+    state.next = zenPeek(state);
+  } else {
+    if (!state.next) state.next = prepareShape(state, selectPiece(state));
+    shape = state.next;
+    state.next = prepareShape(state, selectPiece(state));
+  }
 
   const rotIdx = 0;
   const mat = shape.rotations[rotIdx];
@@ -548,7 +560,8 @@ function lockPiece(state) {
   // A powerup that vanishes when it fires can't top you out.
   const consumed = !!shape.powerup?.consume;
   if (lockedAboveTop && !consumed) {
-    setGameOver(state, shape);
+    if (state.zen) zenRescue(state); // zen never ends
+    else setGameOver(state, shape);
   }
 
   return info;
@@ -738,6 +751,7 @@ function startRowFall(state, dropDistances) {
 }
 
 function recomputeSpeed(state) {
+  if (state.zen) { state.dropMs = CONFIG.zen.dropMs; return; } // (zen: one steady speed)
   const mult = Math.pow(CONFIG.timing.speedMultiplierPerLevel, state.level - 1);
   state.dropMs = Math.max(CONFIG.timing.minDropMs, Math.floor(CONFIG.timing.baseDropMs * mult));
   if (state.endGameMs != null) state.dropMs = Math.min(state.dropMs, state.endGameMs);
@@ -1183,8 +1197,36 @@ function stepLockAndSpawn(state) {
 function finishTurn(state, alsoRows = null) {
   clearFullLines(state, alsoRows);
 
-  const ok = spawnPiece(state);
+  let ok = spawnPiece(state);
+  if (!ok && state.zen) { zenRescue(state); ok = spawnPiece(state); }
   if (!ok) setGameOver(state, state.lastLockedShape);
+}
+
+// Zen mode never ends: if anything tops out, all but the bottom few rows dissolve.
+export function zenRescue(state) {
+  const rows = CONFIG.board.rows, cols = CONFIG.board.cols;
+  const keep = CONFIG.zen.rescueKeepRows ?? 5;
+  const gone = [];
+  for (let y = 0; y < rows - keep; y++) for (let x = 0; x < cols; x++) {
+    const c = state.board[y][x];
+    if (c) { gone.push({ x, y, cell: c }); state.board[y][x] = null; }
+  }
+  if (!gone.length) return;
+  instancesAfterRemoval(state, gone);
+  spawnCellParticles(state, gone, 0.5);
+  addQuakeFromBlocks(state, gone.length);
+  markBoardDirty(state);
+  state.blocksDestroyed += gone.length;
+  addCallout(state, "phew", cols / 2, rows / 2, { big: true });
+  if (state.zen) { state.zen.queue = []; state.zen.movement = null; state.zen.expect = null; }
+  emit(state, "zenRescue", { blocks: gone.length });
+}
+
+// Zen mode: the name of what it's doing now, drifting up over the board.
+export function zenCaption(state, text, name = text) {
+  const z = CONFIG.zen;
+  addCallout(state, text, CONFIG.board.cols / 2, z.captionRow ?? 3, { color: z.captionColour, durationMs: z.captionMs });
+  emit(state, "zenMovement", { name, caption: text });
 }
 
 export function updateGame(state, dt) {
@@ -1192,6 +1234,8 @@ export function updateGame(state, dt) {
 
   if (!state.running || state.gameOver) return;
   if (state.paused) return;
+
+  if (state.zen) zenTick(state, dt); // zen: the autopilot steers (unless the player is)
 
   if (state.effect) {
     updatePowerupEffect(state, dt);

@@ -27,7 +27,8 @@ const sound = createSound(CONFIG.sound);
 // Achievements listen first, so the game-over screen can show what was unlocked.
 let ui = null;
 const achievements = createAchievements(ACHIEVEMENTS, { onUnlock: (def) => ui?.toast(def) });
-if (CONFIG.achievements.enabled) on(state, (type, data, st) => achievements.handle(type, data, st));
+// (not in zen mode: it plays itself)
+if (CONFIG.achievements.enabled) on(state, (type, data, st) => { if (!CONFIG.modes[st.mode]?.zen) achievements.handle(type, data, st); });
 
 ui = bindUI({ state, renderer, sound, achievements });
 
@@ -47,7 +48,7 @@ function tick(now) {
   const dt = Math.min(50, now - last);
   last = now;
 
-  updateGame(state, dt);
+  updateGame(state, dt * (CONFIG.modes[state.mode]?.timeScale ?? 1)); // (turbo zen runs faster)
   renderer.draw(state, now);
   ui.frame();
 

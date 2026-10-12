@@ -230,6 +230,8 @@ export function bindUI({ state, renderer, sound, achievements }) {
     $("btnNormal").classList.toggle("secondary", lastMode !== "normal");
     $("btnExtreme").classList.toggle("secondary", lastMode !== "extreme");
     $("btnGod").classList.toggle("secondary", lastMode !== "god");
+    $("btnZen").classList.toggle("secondary", lastMode !== "zen");
+    $("btnTurbo").classList.toggle("secondary", lastMode !== "turbo");
     $("achCount").textContent = `${achievements.unlockedCount()}/${achievements.defs.length}`;
     syncSoundButtons();
   }
@@ -784,6 +786,8 @@ export function bindUI({ state, renderer, sound, achievements }) {
   $("btnNormal").addEventListener("click", () => startGame("normal"));
   $("btnExtreme").addEventListener("click", () => startGame("extreme"));
   $("btnGod").addEventListener("click", () => startGame("god"));
+  $("btnZen").addEventListener("click", () => startGame("zen"));
+  $("btnTurbo").addEventListener("click", () => startGame("turbo"));
   $("btnHowTo").addEventListener("click", () => { panelBack = "menu"; showPanel("howto"); });
   $("btnAchievements").addEventListener("click", () => { panelBack = "menu"; showPanel("achievements"); });
   $("btnResume").addEventListener("click", () => resumeGame());
