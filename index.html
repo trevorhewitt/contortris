@@ -24,6 +24,39 @@
       font-style: normal;
       font-display: block;
     }
+    /* body text: Pixelify Sans (SIL Open Font License, fonts/PixelifySans-OFL.txt) */
+    @font-face{
+      font-family: "PixelifySans";
+      src: url("./fonts/pixelify-sans-latin-400-normal.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+    }
+    @font-face{
+      font-family: "PixelifySans";
+      src: url("./fonts/pixelify-sans-latin-ext-400-normal.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+    }
+    @font-face{
+      font-family: "PixelifySans";
+      src: url("./fonts/pixelify-sans-latin-600-normal.woff2") format("woff2");
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+    }
+    @font-face{
+      font-family: "PixelifySans";
+      src: url("./fonts/pixelify-sans-latin-ext-600-normal.woff2") format("woff2");
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+    }
   
     :root{
       --bg: #0f1020;
@@ -48,7 +81,7 @@
       --boardEdgeInner: rgba(245,245,255,0.10);
   
       /* Typography */
-      --font-body: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      --font-body: "PixelifySans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       --font-display: "PressStart2P", ui-monospace, monospace;
       --font-numbers: "PressStart2P", ui-monospace, monospace;
   
@@ -267,15 +300,6 @@
       width: min(100%, 260px);
     }
     .menuBtns button{ font-size: 11px; }
-    @keyframes godShimmer{
-      0%, 100% { color: rgba(255,214,102,0.95); border-color: rgba(255,214,102,0.45); }
-      50%      { color: rgba(255,246,200,1.00); border-color: rgba(255,236,160,0.75); }
-    }
-    .menuBtns button.god{
-      animation: godShimmer 2.4s steps(12, end) infinite;
-      text-shadow: 0 0 8px rgba(255,200,80,0.55), 0 0 18px rgba(255,170,40,0.25);
-    }
-    .menuBtns button.god:not(.secondary){ background: rgba(64, 50, 18, 0.96); }
 
     .menuRow{
       display: flex;
@@ -957,12 +981,12 @@
 
           <div class="msg panel" id="panelMenu" hidden>
             <div class="big title">Extris</div>
-            <div class="small" id="gameVersion">version 202610121512</div>
+            <div class="small" id="gameVersion">version 202610121618</div>
             <div class="menuBtns">
               <button id="btnEasy" class="secondary">Easy mode</button>
               <button id="btnNormal">Normal mode</button>
               <button id="btnExtreme" class="secondary">Extreme mode</button>
-              <button id="btnGod" class="secondary god">God mode</button>
+              <button id="btnGod" class="secondary">God mode</button>
               <button id="btnHowTo" class="secondary">How to play</button>
             </div>
             <div class="menuRow">
@@ -993,7 +1017,7 @@
               <h3>Achievements</h3>
               <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
 
-              <p class="small menuFoot">[Extris version 202610121512 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610121618 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>
