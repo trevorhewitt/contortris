@@ -94,15 +94,15 @@ export const CONFIG = {
     powerups: {                   // assist.powerups
       minDropIndex: 1,
       cooldownDrops: 1,
-      baseChance: 0.2,
-      chancePerDrop: 0.08,
-      maxChance: 0.7,
+      baseChance: 0.18,
+      chancePerDrop: 0.075,
+      maxChance: 0.65,
       combos: { minDrop: 0, weight: 1 },
       bad: { minDrop: 0 },
     },
     // gravitizers that collapse at least `minCols` columns are this many times likelier
-    wideGravity: { minCols: 6, weight: 6 },
-    helpPower: 1.5,               // always prefer the more helpful powerups (as when struggling)
+    wideGravity: { minCols: 6, weight: 3 },
+    helpPower: 1.25,                 // always prefer the more helpful powerups (as when struggling)
   },
 
   scoring: {
@@ -314,7 +314,12 @@ export const CONFIG = {
       usability: {
         enabled: true,
         minUseful: 1,            // "useful" = destroys, moves down/sideways or plugs at least this many blocks
-        unusableWeight: 0.1,     // 0 = never serve an unusable powerup, 1 = no bias
+        unusableWeight: 0.02,    // 0 = never serve an unusable powerup, 1 = no bias
+        // ...and the more it could do right now, the likelier: one that would only help a block
+        // or two is picked this much as often (`littleWeight`), rising to full weight for one
+        // that helps `goodUseful` blocks or more
+        goodUseful: 6,
+        littleWeight: 0.35,
         // Hard rules (always on while usability is enabled): a new class only opens when one
         // of its pieces is usable, and a class only serves usable pieces until one of its
         // powerups has done something, and again after one is wasted.
@@ -336,6 +341,10 @@ export const CONFIG = {
       bad: {
         minDrop: 40,
       },
+
+      // Variety: no long runs of one class. Each of the last `last` powerups that was of the
+      // same class makes another one of it this much less likely.
+      classVariety: { last: 2, weight: 0.4 },
 
       // After a level 6 set: the next few pieces are very likely a powerup, and the big
       // destroyers (two rows or more, a wide area, several columns; never the bad ones) are the

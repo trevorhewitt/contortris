@@ -35,7 +35,7 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
   let game = newGame("normal", []);
 
   function newGame(mode, pool) {
-    return { mode, pool, rows: 0, blocks: 0, drops: 0, history: [], seen: new Set(), progress: {}, unlocked: [] };
+    return { mode, pool, rows: 0, blocks: 0, drops: 0, history: [], seen: new Set(), served: new Map(), progress: {}, unlocked: [] };
   }
 
   const save = () => storage.save(data);
@@ -121,7 +121,12 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
         if (game.history.length > 64) game.history.shift();
         game.seen.add(shape.id);
 
-        each("pieceServed", (def, t) => { if (matchShape(shape, t.match)) unlock(def); });
+        each("pieceServed", (def, t) => {
+          if (!matchShape(shape, t.match)) return;
+          const n = (game.served.get(def.id) ?? 0) + 1; // (matching pieces this game)
+          game.served.set(def.id, n);
+          if (n >= (t.count ?? 1)) unlock(def);
+        });
 
         each("pieceSequence", (def, t) => {
           const ids = t.ids ?? [];

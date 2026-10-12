@@ -104,15 +104,17 @@ test("easy mode has no giants; normal gets one early", () => {
   for (const seed of [1, 2, 3, 4, 5, 6]) {
     for (const mode of ["easy", "normal", "extreme"]) {
       const state = createGameState(shapes, powerups, { rng: makeRng(seed * 31) });
-      const lv = [];
-      on(state, (t, d) => { if (t === "spawn") lv.push(d.shape.powerup ? -1 : d.shape.difficulty); });
+      const lv = [], ids = [];
+      on(state, (t, d) => { if (t === "spawn") { lv.push(d.shape.powerup ? -1 : d.shape.difficulty); ids.push(d.shape.id); } });
       startRun(state, mode);
       for (let i = 0; i < 60 && !state.gameOver; i++) {
         hardDropAndLock(state);
         for (let k = 0; k < 120 && state.effect; k++) updateGame(state, 16);
         state.board = state.board.map(r => r.fill(null));
       }
-      for (let i = 1; i < lv.length; i++) assert.ok(!(lv[i] >= 4 && lv[i - 1] >= 4), "no two giants in a row");
+      // (except a chain: a giant that always follows the one before, like nothing -> everything)
+      const chained = (a, b) => { const s = SHAPES.find(x => x.id === a); const i = s?.nextShapes?.indexOf(b) ?? -1; return i >= 0 && s.nextShapeProbs[i] >= 1; };
+      for (let i = 1; i < lv.length; i++) assert.ok(!(lv[i] >= 4 && lv[i - 1] >= 4) || chained(ids[i - 1], ids[i]), `no two giants in a row: ${ids[i - 1]}, ${ids[i]}`);
       if (mode === "easy") assert.ok(!lv.some(l => l >= 4), "easy has no giants");
       else {
         const first = lv.indexOf(5) + 1;

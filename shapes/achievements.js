@@ -26,7 +26,8 @@
  *                                     powerup collapses both count.
  *   multiRow       { rows }           destroy at least `rows` rows in one go
  *   rowWith        { match }          a line clear destroys part of a matching piece
- *   pieceServed    { match }          a matching piece arrives
+ *   pieceServed    { match, count }   a matching piece arrives (with `count`: that many of
+ *                                     them in one game)
  *   pieceSequence  { ids }            these pieces arrive one straight after another, in order
  *                                     (e.g. ["spam", "spam", "spam"])
  *   pieceInside    { piece, container, zone }
@@ -3417,7 +3418,7 @@ export const ACHIEVEMENTS = [
   },
   {
     id: "spam",
-    name: "Unsolicited",
+    name: "Spam!",
     description: "Get spam.",
     icon: [
         [
@@ -3597,16 +3598,198 @@ export const ACHIEVEMENTS = [
           ]
         }
       },
-    variants: [
-        {
-          "name": "You've Got Mail",
-          "description": "Get spam."
-        },
-        {
-          "name": "Ham, but Worse",
-          "description": "Get spam."
-        }
+  },
+  {
+    id: "spam_spam",
+    name: "Spam Spam!",
+    description: "Get a lot of spam in one game.",
+    icon: [
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "#181425",
+          "#181425",
+          "#181425",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "#181425",
+          "#e43b44",
+          "#e43b44",
+          "#e43b44",
+          "#181425"
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "#181425",
+          "#e43b44",
+          "#ffffff",
+          "#e43b44",
+          "#181425"
+        ],
+        [
+          "",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#e43b44",
+          "#e43b44",
+          "#e43b44",
+          "#181425"
+        ],
+        [
+          "#181425",
+          "#c0cbdc",
+          "#ffffff",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#181425",
+          "#181425",
+          "#181425",
+          ""
+        ],
+        [
+          "#181425",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#181425",
+          ""
+        ],
+        [
+          "#181425",
+          "#fee761",
+          "#fee761",
+          "#fee761",
+          "#fee761",
+          "#fee761",
+          "#fee761",
+          "#fee761",
+          "#fee761",
+          "#fee761",
+          "#181425",
+          ""
+        ],
+        [
+          "#181425",
+          "#fee761",
+          "#0099db",
+          "#fee761",
+          "#0099db",
+          "#fee761",
+          "#fee761",
+          "#0099db",
+          "#fee761",
+          "#fee761",
+          "#181425",
+          ""
+        ],
+        [
+          "#181425",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#181425",
+          ""
+        ],
+        [
+          "#181425",
+          "#0099db",
+          "#0099db",
+          "#ffb3cb",
+          "#ffb3cb",
+          "#ffb3cb",
+          "#ffb3cb",
+          "#ffb3cb",
+          "#0099db",
+          "#0099db",
+          "#181425",
+          ""
+        ],
+        [
+          "#181425",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#0099db",
+          "#181425",
+          ""
+        ],
+        [
+          "",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "",
+          ""
+        ]
       ],
+    trigger: {
+        "type": "pieceServed",
+        "match": {
+          "ids": [
+            "spam",
+            "spam_spam_and_spam",
+            "spm",
+            "scrambled_spam",
+            "mini_spam",
+            "mini_spams",
+            "giant_spam",
+            "maps",
+            "spaaaaaaaam"
+          ]
+        },
+        "count": 12
+      },
   },
   {
     id: "spam_3",

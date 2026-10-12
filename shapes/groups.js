@@ -39,12 +39,6 @@ export const GROUPS = [
     sequence: ["babel_lower", "babel_middle", "babel_top"],
   },
   {
-    id: "nothing_and_everything",
-    name: "nothing and everything",
-    frequency: 1,
-    sequence: ["nothing", "everything"],
-  },
-  {
     id: "spam",
     name: "spam",
     frequency: 1,
@@ -52,8 +46,8 @@ export const GROUPS = [
       "spam",
       "spam",
       {
-        pick: ["spam", "spam_spam_and_spam", "spm", "scrambled_spam", "mini_spam", "mini_spams"],
-        weights: [3, 1.2, 1, 1, 1, 1],
+        pick: ["spam", "spam_spam_and_spam", "spm", "scrambled_spam", "mini_spam", "mini_spams", "giant_spam"],
+        weights: [3, 1.2, 1, 1, 1, 1, 0.8],
         count: [2, 5],
       },
     ],
@@ -79,12 +73,6 @@ export const GROUPS = [
     sequence: ["moon", "earth", "asteroid_belt"],
   },
   {
-    id: "iceberg",
-    name: "the iceberg",
-    frequency: 1,
-    sequence: ["iceberg_tip", "iceberg_rest"],
-  },
-  {
     id: "loch_ness",
     name: "the Loch Ness monster",
     frequency: 1,
@@ -103,9 +91,10 @@ export const GROUPS = [
     sequence: ["the_multiverse", "concept_of_existence", "nagging_doubt"],
   },
   {
+    // banished (frequency 0), kept as an easter egg
     id: "portraits",
     name: "two portraits",
-    frequency: 1,
+    frequency: 0,
     sequence: ["portrait_claude", "portrait_trevor"],
   },
   {

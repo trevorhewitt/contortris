@@ -274,9 +274,11 @@ function tryLinkedNextShape(state, prevShape, idToShape, debug = false) {
   // another one, and not on a dangerous stack. Level 6 pieces only come in their groups.
   // (in the end game, anything goes)
   // A linked giant also never comes back while it's still fresh (the pound of feathers and
-  // the pound of steel follow each other, but not round and round).
-  const hardOk = endGameOn(state) || (!state.pieceSel?.lastWasHard &&
-    computeStackDanger01(state) <= (hardCfg(state.mode).hardMaxDanger ?? 0.32));
+  // the pound of steel follow each other, but not round and round). A sure link (probability
+  // 1) is a chain: its giant may come straight after another giant (nothing, then everything).
+  const dangerOk = computeStackDanger01(state) <= (hardCfg(state.mode).hardMaxDanger ?? 0.32);
+  const hardOk = endGameOn(state) || (!state.pieceSel?.lastWasHard && dangerOk);
+  const chainOk = endGameOn(state) || dangerOk;
   const fresh = (state.pieceSel?.recentShapeIds ?? []).slice(-(CONFIG.assist.variety?.noRepeatWithin ?? 5));
   const cand = [];
   for (let i = 0; i < ids.length; i++) {
@@ -284,7 +286,7 @@ function tryLinkedNextShape(state, prevShape, idToShape, debug = false) {
     const x = Number(ps[i]);
     const p = Number.isFinite(x) ? Math.max(0, Math.min(1, x)) : 0;
     const lvl = shape?.powerup ? 0 : (shape?.difficulty ?? 1);
-    if (shape && p > 0 && lvl !== LEVEL6 && (lvl < 4 || (hardOk && !fresh.includes(shape.id)))) cand.push({ shape, p });
+    if (shape && p > 0 && lvl !== LEVEL6 && (lvl < 4 || ((p >= 1 ? chainOk : hardOk) && !fresh.includes(shape.id)))) cand.push({ shape, p });
     else if (!shape && debug) console.log("[LINK] id not in this mode's pool", ids[i]);
   }
   if (!cand.length) return null;
@@ -660,8 +662,12 @@ function maybeSelectPowerup(state, danger01) {
 
   // usable-now check (CONFIG...usability)
   const use = cfg.usability ?? {};
-  const useful = new Map();
-  if (use.enabled !== false) for (const p of candidates) useful.set(p.id, powerupUsefulnessCached(state, p) >= (use.minUseful ?? 1));
+  const useful = new Map(), helped = new Map();
+  if (use.enabled !== false) for (const p of candidates) {
+    const n = powerupUsefulnessCached(state, p);
+    helped.set(p.id, n);
+    useful.set(p.id, n >= (use.minUseful ?? 1));
+  }
   ps.lastUsable = useful.size ? [...useful.values()].filter(Boolean).length + "/" + useful.size : "–";
   // hard rule: a class still being learned only ever serves usable pieces
   if (useful.size) {
@@ -709,7 +715,13 @@ function maybeSelectPowerup(state, danger01) {
 
   ps.sinceClass++;
   const chosen = sampleByWeight(candidates, (p) => {
-    const usableW = useful.size && !useful.get(p.id) ? (use.unusableWeight ?? 0.1) : 1;
+    // (useless: rare; a little use: less likely; a lot of use: full weight)
+    const little = use.littleWeight ?? 1, good = Math.max(1, use.goodUseful ?? 1);
+    const usableW = !useful.size ? 1 : !useful.get(p.id) ? (use.unusableWeight ?? 0.1)
+      : little + (1 - little) * Math.min(1, (helped.get(p.id) - 1) / Math.max(1, good - 1));
+    // (variety: not a third of one class in a row)
+    const cv = cfg.classVariety ?? {};
+    const runW = Math.pow(cv.weight ?? 1, (ps.recentClasses ?? []).slice(-(cv.last ?? 0)).filter(c => c === p.powerup.cls).length);
     const sideways = p.powerup.type === "gravity" && (p.powerup.direction === "left" || p.powerup.direction === "right");
     const n = (sideways ? need.gravitySideways : null) ?? need[p.powerup.type] ?? { base: 1 };
     const needW = (n.base ?? 1) + (n.holes ?? 0) * holes01 + (n.danger ?? 0) * danger01;
@@ -717,7 +729,7 @@ function maybeSelectPowerup(state, danger01) {
     const comboW = p.powerup.type === "combo" ? (firstComboDue ? (combos.firstBoost ?? 1) : (combos.weight ?? 1)) : 1;
     // a class's pieces share its weight, so big classes don't crowd out small ones
     const classSize = candidates.filter(c => c.powerup.cls === p.powerup.cls).length;
-    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * wideW(p) * bigW(p) * varietyMultiplier(sel, p) * (6 / (classSize + 5));
+    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * runW * wideW(p) * bigW(p) * varietyMultiplier(sel, p) * (6 / (classSize + 5));
   }, state.rng);
   if (chosen && introducing(chosen)) { ps.lastIntroDrop = sel.dropIndex; ps.pendingIntro.add(chosen.powerup.cls); }
   return chosen;
@@ -783,6 +795,7 @@ function commitSelectedShape(sel, shape) {
   if (shape.powerup) {
     // Powerups sit outside the 0–5 difficulty levels.
     sel.lastWasHard = false;
+    sel.powerup.recentClasses = [...(sel.powerup.recentClasses ?? []), shape.powerup.cls].slice(-4);
   } else {
     const lvl = (shape.difficulty ?? 1);
     sel.lastLevel = lvl;

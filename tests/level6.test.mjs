@@ -41,7 +41,7 @@ test("groups in the data are complete (every piece exists)", () => {
       for (const id of ids) assert.ok(shapes.some(s => s.id === id), `${g.id}: missing piece ${id}`);
     }
   }
-  assert.equal(all.length, GROUPS.length, "every group is live");
+  assert.equal(all.length, GROUPS.filter(g => (g.frequency ?? 1) > 0).length, "every group is live (but the banished ones)");
   // every level 6 piece belongs to a group
   const inGroups = new Set(GROUPS.flatMap(g => g.sequence.flatMap(st => (typeof st === "string" ? [st] : st.pick))));
   for (const s of shapes.filter(s => s.difficulty === 6)) assert.ok(inGroups.has(s.id), `${s.id} is level 6 but in no group`);
