@@ -138,6 +138,22 @@ export const GROUPS = [
     id: "emotions",
     name: "an emotions chart",
     frequency: 1,
-    sequence: ["emotion_happiness", "emotion_sadness", "emotion_anger", { pick: ["emotion_deja_vu","emotion_someone_behind_you","emotion_ear_itch","emotion_oven","emotion_nostalgia","emotion_cold_pillow","emotion_vending_machine","emotion_missing_step","emotion_screen_film","emotion_preemptive_embarrassment","emotion_umbrella"], count: [2, 4], unique: true }, { pick: ["emotion_forglavedness","emotion_plorch","emotion_glumpf","emotion_wibberance","emotion_snerk","emotion_sprongle","emotion_halvering"], count: [2, 3], unique: true }],
+    // the plain three, then 1-2 intense ones, 1-2 strange ones, maybe one that repeats
+    // (déjà vu comes back: see `echo`), and 1-2 that don't exist
+    sequence: [
+      "emotion_happiness",
+      "emotion_sadness",
+      "emotion_anger",
+      { pick: ["emotion_utter_euphoria","emotion_existential_dread","emotion_nails_chalkboard","emotion_gut_terror"], count: [1,2], unique: true },
+      { pick: ["emotion_someone_behind_you","emotion_ear_itch","emotion_oven","emotion_nostalgia","emotion_cold_pillow","emotion_vending_machine","emotion_missing_step","emotion_screen_film","emotion_preemptive_embarrassment","emotion_umbrella"], count: [1,2], unique: true },
+      { pick: ["emotion_deja_vu","emotion_memory_loss","emotion_spooky_coincidence"], count: [0,1] },
+      { pick: ["emotion_forglavedness","emotion_plorch","emotion_glumpf","emotion_wibberance","emotion_snerk","emotion_sprongle","emotion_halvering"], count: [1,2], unique: true },
+    ],
+  },
+  {
+    id: "sunshine",
+    name: "sunshine, rainbows and butterflies",
+    frequency: 1,
+    sequence: ["sunshine", { pick: ["rainbow","double_rainbow"], count: 1 }, { pick: ["happy_cloud"], count: [1,2] }, "butterflies"],
   },
 ];
