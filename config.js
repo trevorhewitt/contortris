@@ -123,6 +123,22 @@ export const CONFIG = {
     },
     // gravitizers that collapse at least `minCols` columns are this many times likelier
     wideGravity: { minCols: 6, weight: 3 },
+    // The newest things in the game come first (update this with every new batch), and
+    // anything never seen in this browser comes up more: a new piece is newBoost times likelier
+    // until it's been seen newUntilSeen times, a new set newSetBoost times; anything else never
+    // seen, unseenBoost times. (God mode and zen.)
+    newest: {
+      sets: ["existence", "sunshine", "sky", "emotions"],
+      pieces: [
+        "bull", "camel", "mouse", "elephant_in_the_room", "giant_rubber_duck", "dinosaur_fossil",
+        "pyramid_box", "big_hot_air_balloon", "lighthouse", "double_decker",
+        "daisy", "tulip", "bluebell", "dandelion_clock", "poppy", "forget_me_not", "lavender", "snowdrop",
+        "rubiks_cube", "mondrian", "qr_code", "space_invader", "mouse_pointer", "stuck_pixel",
+        "watermelon_slice", "stop_sign", "lego_brick_2x4", "swiss_cheese_lump",
+        "caveman_in_ice", "piece_of_sky",
+      ],
+    },
+    novelty: { newBoost: 12, newSetBoost: 20, newUntilSeen: 3, unseenBoost: 2.5 },
     helpPower: 1.25,                 // always prefer the more helpful powerups (as when struggling)
   },
 

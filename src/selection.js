@@ -33,6 +33,8 @@ export function initPieceSelectionState(state) {
     servedCounts: new Map(),
     // ids that opened the last few games (set by the UI from browser storage)
     openingMemory: state.openingMemory ?? null,
+    // how many times each piece had been seen in this browser before this game (the UI keeps it)
+    seenEver: state.seenEver ? new Map(state.seenEver) : null,
 
     // counts by level (0–5, and 6 for the group pieces)
     levelCounts: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 },
@@ -215,6 +217,17 @@ export function computeBoardPresence(state) {
   return presence;
 }
 
+// God mode (and zen): a piece in CONFIG.godMode.newest is newBoost times likelier until it's
+// been seen newUntilSeen times (in this browser, counting this game); anything else never seen
+// here, unseenBoost times. (state.seenEver is kept by the UI.)
+function noveltyMultiplier(sel, shape) {
+  if (!isGodMode(sel.mode) || !sel.seenEver) return 1;
+  const n = CONFIG.godMode.novelty ?? {};
+  const seen = (sel.seenEver.get(shape.id) ?? 0) + (sel.servedCounts.get(shape.id) ?? 0);
+  if ((CONFIG.godMode.newest?.pieces ?? []).includes(shape.id) && seen < (n.newUntilSeen ?? 3)) return n.newBoost ?? 6;
+  return seen ? 1 : (n.unseenBoost ?? 2.5);
+}
+
 export function varietyMultiplier(sel, shape) {
   const v = CONFIG.assist.variety ?? {};
   if (typeof shape.id !== "string") return 1.0;
@@ -233,6 +246,9 @@ export function varietyMultiplier(sel, shape) {
   // pool with nothing else left still picks something.
   const within = v.noRepeatWithin ?? 0;
   if (within > 0 && sel.recentShapeIds.slice(-within).includes(shape.id)) mult *= 1e-9;
+
+  // God mode: the newest things first, and anything never seen in this browser more often
+  mult *= noveltyMultiplier(sel, shape);
 
   // pieces that opened recent games (state.openingMemory, filled in by the UI)
   const ag = v.acrossGames;

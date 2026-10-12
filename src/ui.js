@@ -317,6 +317,30 @@ export function bindUI({ state, renderer, sound, achievements }) {
   state.level6Recent = store.getJSON(LEVEL6_RECENT_KEY, []);
   let savedRecent = state.level6Recent;
 
+  // God mode puts the newest things first, and anything never seen in this browser comes up
+  // more (CONFIG.godMode.novelty): what has been seen here, and how often
+  const SEEN_KEY = "extris.seen.v1", SEEN_SETS_KEY = "extris.seenSets.v1";
+  state.seenEver = new Map(Object.entries(store.getJSON(SEEN_KEY, {})));
+  state.seenSetsEver = new Map(Object.entries(store.getJSON(SEEN_SETS_KEY, {})));
+  let seenUnsaved = 0, setStarts = 0;
+  function saveSeen() {
+    if (!seenUnsaved) return;
+    store.setJSON(SEEN_KEY, Object.fromEntries(state.seenEver));
+    store.setJSON(SEEN_SETS_KEY, Object.fromEntries(state.seenSetsEver));
+    seenUnsaved = 0;
+  }
+  function noteSeen(shape) {
+    state.seenEver.set(shape.id, (state.seenEver.get(shape.id) ?? 0) + 1);
+    const l6 = state.pieceSel?.level6;
+    if (l6 && (l6.starts ?? 0) !== setStarts) {
+      setStarts = l6.starts ?? 0;
+      if (l6.lastGroup) state.seenSetsEver.set(l6.lastGroup, (state.seenSetsEver.get(l6.lastGroup) ?? 0) + 1);
+    }
+    if (++seenUnsaved >= 10) saveSeen();
+  }
+  window.addEventListener("pagehide", saveSeen);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") saveSeen(); });
+
   const OPENINGS_KEY = "extris.openings.v1";
   let opening = [];
   const agCfg = CONFIG.assist.variety.acrossGames;
@@ -331,6 +355,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
   on(state, (type, d) => {
     switch (type) {
       case "start":
+        setStarts = 0;
         if (agCfg) {
           state.pieceSel.openingMemory = new Set(store.getJSON(OPENINGS_KEY, []).flat());
           opening = [];
@@ -342,6 +367,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
           if (opening.length >= (agCfg.drops ?? 20)) saveOpening();
         }
         if (state.level6Recent !== savedRecent) { savedRecent = state.level6Recent; store.setJSON(LEVEL6_RECENT_KEY, savedRecent); }
+        noteSeen(d.shape);
         nameLayer.setShape(d.shape);
         renderer.drawNextSilhouette(d.next);
         if (d.shape.powerup) sound.play("powerupSpawn");
@@ -372,6 +398,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
         break;
       case "gameOver":
         saveOpening();
+        saveSeen();
         nameLayer.clear();
         renderer.drawNextSilhouette(null);
         sound.play("gameOver");

@@ -14,7 +14,7 @@
 
 import { CONFIG } from "../config.js";
 import { sampleByWeight } from "./util.js";
-import { godConfig } from "./godmode.js";
+import { godConfig, isGodMode } from "./godmode.js";
 
 export const LEVEL6 = 6;
 
@@ -136,6 +136,7 @@ export function initLevel6(state) {
     lastEnd: 0,           // piece number when the last group finished
     seen: new Map(),      // group id -> times served this game
     variants: new Map(),  // which version of each variant step this game has (expandGroup)
+    seenBefore: state.seenSetsEver ? new Map(state.seenSetsEver) : null, // sets seen in this browser before this game
   };
 }
 
@@ -221,12 +222,23 @@ export function maybeStartGroup(state) {
   // ...and only one whose whole run fits on the board (a set can't be cleared until it's down)
   const room = state.board.length - (cfg.headroom ?? 3) - stackRows(state);
   while (pool.length) {
-    const group = sampleByWeight(pool, g => g.frequency, state.rng);
+    const group = sampleByWeight(pool, g => g.frequency * setNovelty(state, g), state.rng);
     const pieces = expandGroup(group, state.rng, l6.variants);
     if ((group.room || roomNeeded(pieces)) <= room) return startGroup(state, group, pieces); // (a set's own `room` has the last word)
     pool = pool.filter(g => g !== group);
   }
   return null;
+}
+
+// God mode (and zen): the newest sets first (CONFIG.godMode.newest), and any never seen in this
+// browser more often.
+function setNovelty(state, g) {
+  const l6 = state.pieceSel.level6;
+  if (!isGodMode(state.mode) || !l6.seenBefore) return 1;
+  const n = CONFIG.godMode.novelty ?? {};
+  const seen = (l6.seenBefore.get(g.id) ?? 0) + (l6.seen.get(g.id) ?? 0);
+  if ((CONFIG.godMode.newest?.sets ?? []).includes(g.id) && seen < (n.newUntilSeen ?? 3)) return n.newSetBoost ?? 10;
+  return seen ? 1 : (n.unseenBoost ?? 2.5);
 }
 
 // Rows of board a run of pieces needs: their blocks spread over the width, plus some for the

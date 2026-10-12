@@ -163,3 +163,30 @@ test("after a level 6 set: a big destroyer comes soon", () => {
   assert.ok(sets >= 6, `${sets} sets`);
   assert.ok(soon / sets >= 0.6, `a big destroyer within 4 pieces after ${soon} of ${sets} sets`);
 });
+
+test("god mode: the newest things come first, and things never seen before come up more", () => {
+  const newest = new Set(CONFIG.godMode.newest.pieces), newSets = new Set(CONFIG.godMode.newest.sets);
+  const share = (seenEver, seenSetsEver) => {
+    let fresh = 0, n = 0, firstNew = 0, games = 0;
+    for (const seed of [1, 2, 3, 4, 5, 6]) {
+      const state = createGameState(shapes, powerups, { rng: makeRng(seed * 7), groups: GROUPS });
+      state.seenEver = seenEver; state.seenSetsEver = seenSetsEver;
+      const served = [];
+      on(state, (t, d) => { if (t === "spawn") served.push(d.shape); });
+      startRun(state, "god");
+      for (let i = 0; i < 40 && !state.gameOver; i++) { setStack(state, 3); drop(state); }
+      const regular = served.filter(s => !s.powerup && s.difficulty !== 6);
+      fresh += regular.filter(s => newest.has(s.id)).length; n += regular.length;
+      games++; if (newSets.has(state.pieceSel.level6.lastGroup ? [...state.pieceSel.level6.seen.keys()][0] : "")) firstNew++;
+    }
+    return { fresh: fresh / n, firstNew: firstNew / games };
+  };
+  // never seen anything: the newest pieces turn up far more often than once they've all been
+  // seen plenty, and the first set is usually a new one
+  const blank = share(new Map(), new Map());
+  const all = new Map(shapes.map(s => [s.id, 9])), allSets = new Map(GROUPS.map(g => [g.id, 9]));
+  const seen = share(all, allSets);
+  console.log(`newest: ${(blank.fresh * 100).toFixed(0)}% of pieces when new, ${(seen.fresh * 100).toFixed(0)}% once seen; first set new in ${(blank.firstNew * 100).toFixed(0)}% / ${(seen.firstNew * 100).toFixed(0)}%`);
+  assert.ok(blank.fresh > seen.fresh * 2, `newest ${(blank.fresh * 100).toFixed(0)}% vs ${(seen.fresh * 100).toFixed(0)}%`);
+  assert.ok(blank.firstNew >= 0.5, `the first set was a new one in ${(blank.firstNew * 100).toFixed(0)}% of games`);
+});
