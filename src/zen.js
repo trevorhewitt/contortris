@@ -199,8 +199,8 @@ const MOVEMENTS = {
       const sets = (state.groups ?? []).filter(g => g.frequency > 0);
       for (let i = 0; i < 4 && sets.length; i++) {
         const g = sampleByWeight(sets, g => g.frequency, state.rng);
-        const pieces = expandGroup(g, state.rng);
-        if (Math.max(roomNeeded(pieces), g.room ?? 0) <= room) {
+        const pieces = expandGroup(g, state.rng, state.pieceSel?.level6?.variants);
+        if ((g.room || roomNeeded(pieces)) <= room) {
           for (const s of pieces) state.zen.queue.push({ shape: s, weights: WEIGHTS.clear });
           return;
         }

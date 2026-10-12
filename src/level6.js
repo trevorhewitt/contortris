@@ -50,6 +50,11 @@ export function normaliseGroups(rawGroups, shapes) {
         // (unique: each piece at most once, so never more of them than there are pieces)
         const unique = step.unique === true;
         steps.push({ shapes: picks, weights, count: unique ? [Math.min(lo, picks.length), Math.min(hi, picks.length)] : [lo, hi], unique });
+      } else if (step && Array.isArray(step.variant)) {
+        // one of these, chosen once a game: the same piece drawn several ways
+        const picks = step.variant.map(live).filter(Boolean);
+        if (!picks.length) { ok = false; break; }
+        steps.push({ variant: picks, key: `${g.id}:${steps.length}` });
       } else if (step && step.chain && typeof step.chain === "object") {
         // a chain: each piece picks the next ({ start: {id: weight}, after: {id: {id: weight,
         // stop: weight}}, max }), so the run reacts to what it has already brought
@@ -65,7 +70,7 @@ export function normaliseGroups(rawGroups, shapes) {
     if (!ok || !steps.length) continue;
     // a piece with `echo` comes back later in the same run as that piece (déjà vu)
     const echoes = new Map();
-    for (const st of steps) for (const sh of [...(st.shapes ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]) {
+    for (const st of steps) for (const sh of [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]) {
       if (sh.echo && live(sh.echo)) echoes.set(sh.id, live(sh.echo));
     }
     out.push({ id: String(g.id), name: String(g.name ?? g.id), frequency: Math.max(0, Number(g.frequency ?? 1) || 0), steps,
@@ -74,11 +79,18 @@ export function normaliseGroups(rawGroups, shapes) {
   return out;
 }
 
-// One run through a group: the list of pieces, picks rolled.
-export function expandGroup(group, rng) {
+// One run through a group: the list of pieces, picks rolled. `variants` (a Map, kept for the
+// game) remembers which version of each variant step this game has.
+export function expandGroup(group, rng, variants = null) {
   const out = [];
   const pick = (list) => sampleByWeight(list, it => it.w, rng);
   for (const st of group.steps) {
+    if (st.variant) {
+      let s = variants?.get(st.key);
+      if (!s) { s = st.variant[Math.floor(rng() * st.variant.length)]; variants?.set(st.key, s); }
+      out.push(s);
+      continue;
+    }
     if (st.chain) {
       // a chain: start somewhere, then each piece picks the next, until "stop" or `max`
       let it = pick(st.chain.start);
@@ -123,6 +135,7 @@ export function initLevel6(state) {
     group: null,          // id of the group being served
     lastEnd: 0,           // piece number when the last group finished
     seen: new Map(),      // group id -> times served this game
+    variants: new Map(),  // which version of each variant step this game has (expandGroup)
   };
 }
 
@@ -209,8 +222,8 @@ export function maybeStartGroup(state) {
   const room = state.board.length - (cfg.headroom ?? 3) - stackRows(state);
   while (pool.length) {
     const group = sampleByWeight(pool, g => g.frequency, state.rng);
-    const pieces = expandGroup(group, state.rng);
-    if (Math.max(roomNeeded(pieces), group.room) <= room) return startGroup(state, group, pieces);
+    const pieces = expandGroup(group, state.rng, l6.variants);
+    if ((group.room || roomNeeded(pieces)) <= room) return startGroup(state, group, pieces); // (a set's own `room` has the last word)
     pool = pool.filter(g => g !== group);
   }
   return null;
@@ -303,7 +316,7 @@ export function bestPile(pieces, beamWidth = 12, perLevel = 3) {
 export function startGroup(state, group, pieces = null) {
   if (!group) return null;
   const l6 = state.pieceSel.level6;
-  l6.queue = pieces ?? expandGroup(group, state.rng);
+  l6.queue = pieces ?? expandGroup(group, state.rng, l6.variants);
   l6.group = group.id;
   l6.lastGroup = group.id; // (a one-piece set is over as soon as it starts)
   l6.starts = (l6.starts ?? 0) + 1;

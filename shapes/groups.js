@@ -15,13 +15,16 @@
  *   frequency: 1,                   how often this group is picked compared with the others
  *   room: 16,                       optional: rows of free board it needs before it can start
  *                                   (default: worked out from its pieces, as if placed well;
- *                                   set it higher for a set that's awkward to place)
+ *                                   set it to say otherwise: higher for a set that's awkward to
+ *                                   place, lower for one that fits together better than that)
  *   sequence: [ step, step, ... ],  the pieces, in order. A step is either:
  *     "piece_id"                      that piece, or
  *     { pick: ["id", "id", ...],      a run of pieces picked at random from the list:
  *       weights: [3, 1, ...],         optional, how likely each one is (default all 1)
  *       count: [2, 5],                how many (a random number from 2 to 5; or just 3)
  *       unique: true }                optional: each piece at most once in the run
+ *     { variant: ["id", "id", "id"] } one of these, chosen once a game: the same piece drawn
+ *                                     several ways (a player sees another next game)
  *     { chain: {                      a run where each piece picks the next one:
  *         start: { id: 3, id: 1 },      the first (weights),
  *         after: { id: { id: 2, stop: 1 }, ... },  what can follow each piece ("stop" ends it)
@@ -110,10 +113,19 @@ export const GROUPS = [
     ],
   },
   {
+    // each piece is one of three paintings, chosen once a game (see `variant` above)
     id: "existence",
-    name: "the multiverse, and the concept of existence",
+    name: "existence, from the universe to existential terror",
     frequency: 1,
-    sequence: ["the_multiverse", "concept_of_existence", "nagging_doubt"],
+    room: 16, // (it piles to 13 at best: the estimate, 19, doesn't see how its pieces fit together)
+    sequence: [
+      { variant: ["existence_universe_1", "existence_universe_2", "existence_universe_3"] },
+      { variant: ["existence_multiverse_1", "existence_multiverse_2", "existence_multiverse_3"] },
+      { variant: ["existence_concept_1", "existence_concept_2", "existence_concept_3"] },
+      { variant: ["existence_consciousness_1", "existence_consciousness_2", "existence_consciousness_3"] },
+      { variant: ["existence_doubt_1", "existence_doubt_2", "existence_doubt_3"] },
+      { variant: ["existence_terror_1", "existence_terror_2", "existence_terror_3"] },
+    ],
   },
   {
     // banished (frequency 0), kept as an easter egg
@@ -124,9 +136,10 @@ export const GROUPS = [
   },
   {
     id: "universe",
-    name: "the universe and the stars",
+    name: "the stars",
     frequency: 1,
-    sequence: ["shooting_star", "constellation", "spiral_galaxy", "the_universe"],
+    // (the universe itself opens the existence set now)
+    sequence: ["shooting_star", "constellation", "spiral_galaxy"],
   },
   {
     id: "trees",

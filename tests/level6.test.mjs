@@ -37,16 +37,16 @@ test("groups in the data are complete (every piece exists)", () => {
   const all = normaliseGroups(GROUPS, shapes);
   for (const g of GROUPS) {
     for (const step of g.sequence) {
-      const ids = typeof step === "string" ? [step] : step.chain
+      const ids = typeof step === "string" ? [step] : step.variant ?? (step.chain
         ? [...Object.keys(step.chain.start ?? {}), ...Object.values(step.chain.after ?? {}).flatMap(o => Object.keys(o))].filter(id => id !== "stop")
-        : step.pick;
+        : step.pick);
       for (const id of ids) assert.ok(shapes.some(s => s.id === id), `${g.id}: missing piece ${id}`);
     }
   }
   assert.equal(all.length, GROUPS.filter(g => (g.frequency ?? 1) > 0).length, "every group is live (but the banished ones)");
   // every level 6 piece belongs to a group
-  const inGroups = new Set(GROUPS.flatMap(g => g.sequence.flatMap(st => (typeof st === "string" ? [st] : st.chain
-    ? [...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))] : st.pick))));
+  const inGroups = new Set(GROUPS.flatMap(g => g.sequence.flatMap(st => (typeof st === "string" ? [st] : st.variant ?? (st.chain
+    ? [...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))] : st.pick)))));
   for (const s of shapes) if (s.echo) inGroups.add(s.echo); // (echoes come back inside their set)
   for (const s of shapes.filter(s => s.difficulty === 6 && (s.frequency ?? 1) > 0)) assert.ok(inGroups.has(s.id), `${s.id} is level 6 but in no group`);
 });
@@ -117,6 +117,7 @@ function matchGroupAt(g, ids, at = 0) {
   for (const st of g.sequence) {
     skipEcho();
     if (typeof st === "string") { if (ids[i] !== st) return -1; i++; continue; }
+    if (st.variant) { if (!st.variant.includes(ids[i])) return -1; i++; continue; }
     if (st.chain) {
       const set = new Set([...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))]);
       let n = 0;
@@ -136,6 +137,7 @@ const matchesGroup = (g, ids) => matchGroupAt(g, ids, 0) === ids.length;
 
 test("level 6 pieces never turn up outside a group", () => {
   const firstIds = new Map(GROUPS.filter(g => typeof g.sequence[0] === "string").map(g => [g.sequence[0], g]));
+  for (const g of GROUPS) if (g.sequence[0]?.variant) for (const id of g.sequence[0].variant) firstIds.set(id, g);
   for (const seed of [1, 2, 3, 4]) {
     const state = createGameState(shapes, powerups, { rng: makeRng(seed * 17), groups: GROUPS });
     state.devLevel6 = "on";
