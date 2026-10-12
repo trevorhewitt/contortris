@@ -883,10 +883,12 @@ export function bindUI({ state, renderer, sound, achievements }) {
     switch (e.code) {
       case "ArrowLeft":
         e.preventDefault();
+        if (!e.repeat && isTripleTap("left")) { slideAll(-1); break; }
         if (tryMove(state, -1, 0)) sound.play("move");
         break;
       case "ArrowRight":
         e.preventDefault();
+        if (!e.repeat && isTripleTap("right")) { slideAll(+1); break; }
         if (tryMove(state, +1, 0)) sound.play("move");
         break;
       case "ArrowUp":
@@ -895,19 +897,31 @@ export function bindUI({ state, renderer, sound, achievements }) {
         break;
       case "ArrowDown":
         e.preventDefault();
-        if (!e.repeat && isDoubleDown()) { teleportDown(); break; }
+        if (!e.repeat && isTripleTap("bottom")) { teleportDown(); break; }
         state.softDropping = true;
         break;
     }
   });
 
-  // Double tap / double press down: the piece drops straight to where it will land.
-  let lastDownAt = 0;
-  function isDoubleDown() {
-    const now = performance.now();
-    const double = now - lastDownAt < (CONFIG.timing.doubleTapMs ?? 300);
-    lastDownAt = double ? 0 : now;
-    return double;
+  // Triple tap / triple press: down drops the piece straight to where it will land; left or
+  // right slides it all the way to that side. (The first two taps move it as usual.)
+  const taps = { left: { n: 0, at: 0 }, right: { n: 0, at: 0 }, bottom: { n: 0, at: 0 } };
+  function isTripleTap(dir) {
+    const now = performance.now(), t = taps[dir];
+    if (!t) return false;
+    t.n = now - t.at < (CONFIG.timing.multiTapMs ?? 300) ? t.n + 1 : 1;
+    t.at = now;
+    for (const k of Object.keys(taps)) if (k !== dir) taps[k].n = 0;
+    if (t.n < (CONFIG.timing.multiTaps ?? 3)) return false;
+    t.n = 0;
+    return true;
+  }
+  function slideAll(dx) {
+    if (!canAct()) return;
+    stopRepeat();
+    let moved = false;
+    while (tryMove(state, dx, 0)) moved = true;
+    if (moved) sound.play("move");
   }
   function teleportDown() {
     if (!canAct()) return;
@@ -1000,7 +1014,11 @@ export function bindUI({ state, renderer, sound, achievements }) {
     const zone = getZone(e.clientX, e.clientY);
     state.touch.zone = zone;
 
-    if (zone === "bottom" && isDoubleDown()) { applyGlow(zone); teleportDown(); return; }
+    if ((zone === "left" || zone === "right" || zone === "bottom") && isTripleTap(zone)) {
+      applyGlow(zone);
+      if (zone === "bottom") teleportDown(); else slideAll(zone === "left" ? -1 : +1);
+      return;
+    }
     if (zone) {
       applyGlow(zone);
       stopRepeat();

@@ -31,7 +31,10 @@ export const CONFIG = {
     lockDelayMsTouch: 520,
     tapRepeatStartMs: 140,
     tapRepeatEveryMs: 55,
-    doubleTapMs: 300,      // double tap the bottom of the board (or press down twice) to drop instantly
+    // triple tap the bottom of the board (or press down three times) to drop instantly, or a
+    // side (left / right three times) to slide all the way over; taps this close together count
+    multiTapMs: 300,
+    multiTaps: 3,
   },
 
   // Pieces come in at the centre ± a few random columns (most often near the middle), so
