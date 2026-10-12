@@ -92,7 +92,7 @@ export const GROUPS = [
     frequency: 1,
     sequence: [
       "noahs_ark",
-      { pick: ["two_giraffes","two_elephants","two_penguins","two_snails","two_crocodiles","two_zebras","two_lions","two_kangaroos","two_flamingos","two_hippos","two_pandas","two_owls","two_frogs","two_tortoises","two_sheep","two_hedgehogs","two_octopuses"], count: [3, 4], unique: true },
+      { pick: ["two_giraffes","two_elephants","two_penguins","two_snails","two_crocodiles","two_zebras","two_lions","two_kangaroos","two_flamingos","two_hippos","two_pandas","two_owls","two_frogs","two_tortoises","two_sheep","two_hedgehogs","two_octopuses","two_fish"], count: [3, 4], unique: true },
       { pick: ["just_one_unicorn","just_one_dinosaur","just_one_dodo","just_one_mammoth","just_one_griffin","dragons_both_dudes"], count: 1 },
       // the rain: each drop decides what comes next, then the downpour
       {
