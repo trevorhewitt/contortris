@@ -145,6 +145,6 @@ function toRaw(base, cells, k) {
   return {
     id: base.id, name: base.name, grid: grid.map(r => r.join("")), color,
     difficulty: base.difficulty, frequency: base.frequency, tags: base.tags,
-    noShake: base.noShake, rotation: base.rotationSpec ?? undefined,
+    noShake: base.noShake, shake: base.shake, rotation: base.rotationSpec ?? undefined,
   };
 }

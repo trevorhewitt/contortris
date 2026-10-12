@@ -237,6 +237,7 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
       style,
       tags,
       noShake: s.noShake === true, // lands without shaking the board (e.g. a swarm of bees)
+      shake: s.shake === true, // shakes the board when it lands, however small (a small boulder)
       // the name it goes by when it comes straight after itself ("another raindrop")
       nameAgain: typeof s.nameAgain === "string" && s.nameAgain.trim() ? s.nameAgain.trim() : null,
       // in a level 6 set: this piece comes back later in the same run, as that piece

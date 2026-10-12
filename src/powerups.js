@@ -638,13 +638,16 @@ export function phantomLandingY(board, x, mat) {
 }
 
 // Apply a powerup's effect to `board` (mutates it). Shared by the game and the demos.
-//   ctx: { area, placed: [{x,y}] (the powerup's own cells), pid, centre, cols, rows, rng, makeFill }
+//   ctx: { area, placed: [{x,y}] (the powerup's own cells), pid, centre, cols, rows, rng, makeFill,
+//          keepRows (optional Set of rows: a vanishing powerup keeps its blocks in these) }
 // Returns { consumed, destroyed, moves, filled, collapsed }.
 export function computeEffect(board, pu, ctx) {
-  const { area, placed, pid, centre, cols, rows, rng = Math.random, makeFill } = ctx;
+  const { area, pid, centre, cols, rows, rng = Math.random, makeFill, keepRows } = ctx;
+  let { placed } = ctx;
   const out = { consumed: [], destroyed: [], moves: [], filled: [], collapsed: null };
 
   if (pu.consume) {
+    if (keepRows?.size) placed = placed.filter(({ y }) => !keepRows.has(y));
     for (const { x, y } of placed) {
       const c = board[y]?.[x];
       if (c && (pid == null || c.pid === pid)) {
@@ -681,7 +684,7 @@ export function computeEffect(board, pu, ctx) {
       const parts = pu.parts ?? [];
       parts.forEach((part, i) => {
         const makeFill = ctx.makeFill ? (x, y) => ({ ...ctx.makeFill(x, y), paint: part.fillPaint ?? pu.fillPaint, style: part.fillStyle ?? pu.fillStyle }) : undefined;
-        const sub = computeEffect(board, { ...part, consume: false }, { ...ctx, makeFill, area: area.parts?.[i] ?? area });
+        const sub = computeEffect(board, { ...part, consume: false }, { ...ctx, placed, makeFill, area: area.parts?.[i] ?? area });
         mergeEffect(out, sub);
       });
       break;

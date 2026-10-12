@@ -450,14 +450,15 @@ export const CONFIG = {
 
     // Big pieces shake the board when they land: giants (difficulty 4–6) with at least
     // `minBlocks` blocks (small ones in a level 6 set, like two kangaroos, don't), and the
-    // bigger the piece, the bigger the thud. Pieces with noShake never shake.
+    // bigger the piece, the bigger the thud. Pieces with noShake never shake; pieces with
+    // `shake` always do (a small boulder), with the smallest thud.
     largePieceLock: {
       quakePerCell: 0.03,
       minDifficulty: 4,
       minBlocks: 13,
-      // the least shake it makes (0-1, maxTrauma is 0.5): `small` at minBlocks, rising to
-      // `big` at bigBlocks blocks or more
-      trauma: { small: 0.25, big: 0.5, bigBlocks: 60 },
+      // the least shake it makes (0-1; the board moves up to quake.maxOffsetPx × trauma²):
+      // `small` at minBlocks, rising to `big` at bigBlocks blocks or more
+      trauma: { small: 0.55, big: 0.95, bigBlocks: 60 },
     },
 
     powerup: {

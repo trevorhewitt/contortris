@@ -271,9 +271,29 @@ test("only big pieces shake the board: not two kangaroos, nor anything marked no
   const { shakesOnLanding } = await import("../src/game.js");
   const { shapes } = loadShapes(SHAPES);
   const get = (id) => shapes.find(s => s.id === id);
-  for (const id of ["two_kangaroos", "two_penguins", "iceberg_tip", "nagging_doubt", "emotion_happiness"]) assert.equal(shakesOnLanding(get(id)), false, id);
-  for (const id of ["everest", "pyramid", "iceberg_rest", "earth"]) assert.equal(shakesOnLanding(get(id)), true, id);
+  for (const id of ["two_kangaroos", "two_penguins", "iceberg_tip", "nagging_doubt", "emotion_happiness", "crisps_mostly_air", "very_long_cat"]) assert.equal(shakesOnLanding(get(id)), false, id);
+  for (const id of ["everest", "pyramid", "iceberg_rest", "earth", "moai", "boulder"]) assert.equal(shakesOnLanding(get(id)), true, id);
   assert.equal(shakesOnLanding(get("bees")), false, "bees are noShake");
-  // nothing small ever shakes
-  for (const s of shapes) if (s.rotations[0].flat().filter(Boolean).length < CONFIG.fx.largePieceLock.minBlocks) assert.equal(shakesOnLanding(s), false, s.id);
+  // nothing small shakes, unless it's marked `shake` (a small boulder)
+  for (const s of shapes) if (!s.shake && s.rotations[0].flat().filter(Boolean).length < CONFIG.fx.largePieceLock.minBlocks) assert.equal(shakesOnLanding(s), false, s.id);
+  // and the thud of a big one is plain to see (the board moves maxOffsetPx × trauma²)
+  const { state } = newGame("normal");
+  placeActive(state, "moai", 4, 0);
+  hardDropAndLock(state);
+  assert.ok(CONFIG.fx.quake.maxOffsetPx * state.fx.quake.trauma ** 2 >= 3, `trauma ${state.fx.quake.trauma}`);
+});
+
+test("a powerup that vanishes when it fires still clears the rows it completed", () => {
+  for (const id of ["infectious_sand", "small_black_hole"]) {
+    const { state } = newGame("normal");
+    const p = byId(id), mat = p.rotations[0], H = mat.length, x0 = 4;
+    assert.ok(p.powerup.consume, `${id} vanishes`);
+    // the bottom row is full except under the piece's bottom row; it lands and fills the gaps
+    for (let x = 0; x < COLS; x++) if (!mat[H - 1][x - x0]) state.board[ROWS - 1][x] = filler();
+    placeActive(state, id, x0, 0);
+    hardDropAndLock(state);
+    settle(state, 2500);
+    assert.equal(state.lines, 1, `${id}: the row cleared`);
+    assert.ok(state.board.every(row => row.every(c => !c)), `${id}: nothing left behind`);
+  }
 });

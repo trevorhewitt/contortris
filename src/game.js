@@ -477,10 +477,12 @@ export function setNextPiece(state, shape) {
 }
 
 // Does this piece shake the board when it lands? Big giants do (CONFIG.fx.largePieceLock);
-// small pieces never, nor ones marked noShake (like a swarm of bees).
+// small pieces don't, unless marked `shake` (a small boulder), and nor do ones marked noShake
+// (like a swarm of bees).
 export function shakesOnLanding(shape) {
   const big = CONFIG.fx.largePieceLock;
   if (!shape || shape.powerup || shape.noShake) return false;
+  if (shape.shake) return true;
   return (shape.difficulty ?? 0) >= (big.minDifficulty ?? 4) && blockCount(shape) >= (big.minBlocks ?? 0);
 }
 const blockCount = (shape) => shape.rotations[0].reduce((n, row) => n + row.filter(Boolean).length, 0);
@@ -655,13 +657,15 @@ function instancesAfterMoves(state, moves) {
    Line clears
    ========================= */
 
-function clearFullLines(state) {
+// `alsoRows`: rows to destroy too even if no longer full (the rows a vanishing powerup completed)
+function clearFullLines(state, alsoRows = null) {
   const rows = CONFIG.board.rows;
   const cols = CONFIG.board.cols;
 
   const fullRows = [];
   for (let y = 0; y < rows; y++) {
-    if (state.board[y].every((c) => c !== null)) fullRows.push(y);
+    const row = state.board[y];
+    if (row.every((c) => c !== null) || (alsoRows?.has(y) && row.some(c => c))) fullRows.push(y);
   }
 
   const cleared = fullRows.length;
@@ -685,7 +689,7 @@ function clearFullLines(state) {
 
   state.lines += cleared;
   state.rowsDestroyed += cleared;
-  state.blocksDestroyed += cleared * cols;
+  state.blocksDestroyed += removed.reduce((n, r) => n + r.cells.filter(Boolean).length, 0);
 
   const base = CONFIG.scoring.lineClear[cleared] ?? (cleared * 100);
   state.score += (base + cleared * cols * (CONFIG.scoring.blockDestroyed ?? 0)) * state.level;
@@ -818,8 +822,23 @@ function updatePowerupEffect(state, dt) {
 
   // settle finished
   if (e.quakeOnSettle > 0) addQuakeFromBlocks(state, e.quakeOnSettle);
+  if (e.keepRows?.size) consumeLeftovers(state, e.pid, e.keepRows);
   state.effect = null;
-  finishTurn(state);
+  finishTurn(state, e.keepRows);
+}
+
+// The blocks a vanishing powerup kept (in the rows it completed) go with those rows; any the
+// effect threw or dropped somewhere else vanish now.
+function consumeLeftovers(state, pid, keepRows) {
+  const gone = [];
+  state.board.forEach((row, y) => {
+    if (keepRows.has(y)) return;
+    row.forEach((c, x) => { if (c?.pid === pid) { gone.push({ x, y, cell: c }); row[x] = null; } });
+  });
+  if (!gone.length) return;
+  instancesAfterRemoval(state, gone);
+  spawnCellParticles(state, gone, 0.6);
+  markBoardDirty(state);
 }
 
 // Applies the effect to the board. Returns how long to wait before continuing.
@@ -836,14 +855,24 @@ function firePowerupEffect(state, e) {
     const reach = Math.max(2, ...e.area.indices.map(i => Math.hypot(i % cols - e.centre.x, ((i / cols) | 0) - e.centre.y)));
     state.fx.shockwaves.push({ x: e.centre.x + 0.5, y: e.centre.y + 0.5, radius: reach + 1, elapsedMs: 0, durationMs: 420 });
   }
+  // A powerup that vanishes when it fires keeps its blocks in any row it completed, and that
+  // row is destroyed once the effect has played out, as if the piece had stayed.
+  const keepRows = new Set(pu.consume ? e.placed.map(c => c.y).filter(y => state.board[y]?.every(c => c !== null)) : []);
   const fx = computeEffect(state.board, pu, {
-    area: e.area, placed: e.placed, pid: e.pid, centre: e.centre, cols, rows, rng: state.rng,
+    area: e.area, placed: e.placed, pid: e.pid, centre: e.centre, cols, rows, rng: state.rng, keepRows,
     makeFill: () => ({ paint: pu.fillPaint, style: pu.fillStyle, pid: fillPid }),
   });
+  // (rows the effect itself collapsed are gone already; the ones above them moved down)
+  const gone = new Set(fx.collapsed?.rows ?? []);
+  e.keepRows = new Set([...keepRows].filter(y => !gone.has(y)).map(y => y + [...gone].filter(r => r > y).length));
 
   if (fx.consumed.length) {
     spawnCellParticles(state, fx.consumed, 0.6);
-    state.instances.delete(e.pid);
+    const inst = state.instances.get(e.pid);
+    if (keepRows.size && inst) {
+      inst.cells = inst.cells.filter(c => keepRows.has(c.y));
+      inst.intact = false;
+    } else state.instances.delete(e.pid);
   }
 
   if (fx.destroyed.length) {
@@ -1151,8 +1180,8 @@ function stepLockAndSpawn(state) {
   finishTurn(state);
 }
 
-function finishTurn(state) {
-  clearFullLines(state);
+function finishTurn(state, alsoRows = null) {
+  clearFullLines(state, alsoRows);
 
   const ok = spawnPiece(state);
   if (!ok) setGameOver(state, state.lastLockedShape);

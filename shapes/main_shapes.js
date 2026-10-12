@@ -26,6 +26,7 @@
  *   echo: "other_id",         in a level 6 set: that piece comes back later in the same run
  *   noShake: true,            big pieces (difficulty 4-6) shake the board when they land; this
  *                             one doesn't (e.g. a swarm of bees)
+ *   shake: true,              this one does, however small (e.g. a small boulder)
  *   remix: { mix: ["townhouses", "schnauzers"] } | { scramble: "spam" },
  *                             rebuilt at random every time it arrives: `mix` blends two pieces
  *                             drawn on the same grid (and the same k), block by block; `scramble`
@@ -109,6 +110,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    shake: true,
     tags: [
         "art"
       ],
@@ -213,6 +215,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    noShake: true,
     tags: [
         "food"
       ],
@@ -300,6 +303,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    noShake: true,
   },
   {
     id: "pill",
@@ -429,6 +433,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    shake: true,
   },
   {
     id: "luxembourg",
@@ -446,6 +451,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    shake: true,
   },
   {
     id: "rice",
@@ -1053,6 +1059,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    shake: true,
     tags: [
         "food"
       ],
@@ -1380,6 +1387,7 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    shake: true,
     tags: [
         "sport"
       ],
@@ -2258,6 +2266,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    noShake: true,
   },
   {
     id: "moose_head_on",
@@ -2294,6 +2303,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    noShake: true,
   },
   {
     id: "crisps_mostly_air",
@@ -2312,6 +2322,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    noShake: true,
     tags: [
         "food"
       ],
@@ -2332,6 +2343,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    noShake: true,
   },
   {
     id: "grand_chandelier",
@@ -2712,6 +2724,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    shake: true,
   },
   {
     id: "congealed",
@@ -13495,6 +13508,7 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    shake: true,
     tags: [
         "surreal"
       ],
@@ -13950,6 +13964,7 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    noShake: true,
   },
   {
     id: "everest_even_more_trash",
@@ -13967,6 +13982,7 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    noShake: true,
   },
   {
     id: "moon",
