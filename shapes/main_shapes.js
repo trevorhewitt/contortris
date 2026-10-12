@@ -16207,4 +16207,188 @@ export const SHAPES = [
         "bluebell"
       ],
   },
+  {
+    id: "rubiks_cube",
+    name: "a Rubik's cube",
+    grid: [
+        "XXX",
+        "XXX",
+        "XXX"
+      ],
+    color: [["#ff7300","#1e5fe0","#ffd60a"],["#15a84c","#f7f7f2","#d4202c"],["#ffd60a","#d4202c","#1e5fe0"]],
+    difficulty: 2,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "mondrian",
+    name: "a Mondrian",
+    grid: [
+        "XXXX",
+        "XXXX",
+        "XXXX",
+        "XXXX"
+      ],
+    color: [["#f2eee2","#d9251d","#d9251d","#d9251d"],["#f2eee2","#d9251d","#d9251d","#d9251d"],["#d6d1c2","#d9251d","#d9251d","#d9251d"],["#2149b0","#f2eee2","#f2eee2","#f7cf26"]],
+    difficulty: 3,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+    tags: [
+        "art"
+      ],
+  },
+  {
+    id: "qr_code",
+    name: "a QR code that goes nowhere",
+    grid: [
+        "XXX.XXX",
+        "XXXXXXX",
+        "XXX.XXX",
+        ".X...X.",
+        "XXXXXX.",
+        "XXX.XXX",
+        "XXXX..X"
+      ],
+    color: [["#f2f4f8","#f2f4f8","#f2f4f8","","#f2f4f8","#f2f4f8","#f2f4f8"],["#f2f4f8","#3f9dff","#f2f4f8","#3f9dff","#f2f4f8","#3f9dff","#f2f4f8"],["#f2f4f8","#f2f4f8","#f2f4f8","","#f2f4f8","#f2f4f8","#f2f4f8"],["","#3f9dff","","","","#3f9dff",""],["#f2f4f8","#f2f4f8","#f2f4f8","#3f9dff","#f2f4f8","#f2f4f8",""],["#f2f4f8","#3f9dff","#f2f4f8","","#3f9dff","#f2f4f8","#3f9dff"],["#f2f4f8","#f2f4f8","#f2f4f8","#3f9dff","","","#f2f4f8"]],
+    difficulty: 4,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "space_invader",
+    name: "an invader from space",
+    grid: [
+        ".X...X.",
+        "..X.X..",
+        ".XXXXX.",
+        "XX.X.XX",
+        "XXXXXXX",
+        "X.....X"
+      ],
+    color: [["","#5cf25c","","","","#5cf25c",""],["","","#5cf25c","","#5cf25c","",""],["","#5cf25c","#5cf25c","#5cf25c","#5cf25c","#5cf25c",""],["#5cf25c","#5cf25c","","#5cf25c","","#5cf25c","#5cf25c"],["#5cf25c","#5cf25c","#5cf25c","#5cf25c","#5cf25c","#5cf25c","#5cf25c"],["#5cf25c","","","","","","#5cf25c"]],
+    difficulty: 3,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+    tags: [
+        "space"
+      ],
+  },
+  {
+    id: "mouse_pointer",
+    name: "a mouse pointer with nothing to click",
+    grid: [
+        "X....",
+        "XX...",
+        "XXX..",
+        "XXXX.",
+        "XXXXX",
+        "XXX..",
+        "..XX."
+      ],
+    color: [["#ffffff","","","",""],["#ffffff","#ffffff","","",""],["#ffffff","#ffffff","#ffffff","",""],["#ffffff","#ffffff","#ffffff","#ffffff",""],["#ffffff","#ffffff","#ffffff","#ffffff","#ffffff"],["#ffffff","#ffffff","#ffffff","",""],["","","#ffffff","#ffffff",""]],
+    difficulty: 3,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "stuck_pixel",
+    name: "a stuck pixel",
+    grid: [
+        "X"
+      ],
+    color: [["#00ff00"]],
+    difficulty: 0,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "watermelon_slice",
+    name: "a slice of watermelon",
+    grid: [
+        "XXXXXX",
+        "XXXXXX",
+        ".XXXX."
+      ],
+    color: [["#1f7a2e","#cdeeac","#f0384a","#f0384a","#f0384a","#f0384a","#f0384a","#f0384a","#f0384a","#f0384a","#cdeeac","#1f7a2e"],["#1f7a2e","#cdeeac","#f0384a","#2b1418","#f0384a","#f0384a","#f0384a","#f0384a","#2b1418","#f0384a","#cdeeac","#1f7a2e"],["#1f7a2e","#cdeeac","#f0384a","#f0384a","#f0384a","#2b1418","#f0384a","#f0384a","#f0384a","#f0384a","#cdeeac","#1f7a2e"],["#1f7a2e","#1f7a2e","#cdeeac","#f0384a","#f0384a","#f0384a","#f0384a","#f0384a","#f0384a","#cdeeac","#1f7a2e","#1f7a2e"],["","","#1f7a2e","#cdeeac","#cdeeac","#cdeeac","#cdeeac","#cdeeac","#cdeeac","#1f7a2e","",""],["","","#1f7a2e","#1f7a2e","#1f7a2e","#1f7a2e","#1f7a2e","#1f7a2e","#1f7a2e","#1f7a2e","",""]],
+    difficulty: 3,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+    tags: [
+        "food"
+      ],
+  },
+  {
+    id: "stop_sign",
+    name: "a stop sign",
+    grid: [
+        "XXX",
+        "XXX",
+        "XXX",
+        ".X.",
+        ".X."
+      ],
+    color: [["#8e1420","#8e1420","#ffffff","#ffffff","#8e1420","#8e1420"],["#8e1420","#ffffff","#dd2430","#dd2430","#ffffff","#8e1420"],["#ffffff","#dd2430","#dd2430","#dd2430","#dd2430","#ffffff"],["#ffffff","#dd2430","#dd2430","#dd2430","#dd2430","#ffffff"],["#8e1420","#ffffff","#dd2430","#dd2430","#ffffff","#8e1420"],["#8e1420","#8e1420","#ffffff","#ffffff","#8e1420","#8e1420"],["","","#b6bcc6","#7a808b","",""],["","","#b6bcc6","#7a808b","",""],["","","#b6bcc6","#7a808b","",""],["","","#7a808b","#5d636d","",""]],
+    difficulty: 2,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "lego_brick_2x4",
+    name: "a lego brick",
+    grid: [
+        "X.X.X.X",
+        "XXXXXXX",
+        "XXXXXXX"
+      ],
+    color: [["#ff6158","#de2a2a","","","#ff6158","#de2a2a","","","#ff6158","#de2a2a","","","#ff6158","#de2a2a"],["#de2a2a","#ad1b1f","","","#de2a2a","#ad1b1f","","","#de2a2a","#ad1b1f","","","#de2a2a","#ad1b1f"],["#ff6158","#ff6158","#ff6158","#ff6158","#ff6158","#ff6158","#ff6158","#ff6158","#ff6158","#ff6158","#ff6158","#ff6158","#ff6158","#de2a2a"],["#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#ad1b1f"],["#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#de2a2a","#ad1b1f"],["#ad1b1f","#ad1b1f","#ad1b1f","#ad1b1f","#ad1b1f","#ad1b1f","#ad1b1f","#ad1b1f","#ad1b1f","#ad1b1f","#ad1b1f","#ad1b1f","#ad1b1f","#7f1016"]],
+    difficulty: 3,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "swiss_cheese_lump",
+    name: "a lump of swiss cheese",
+    grid: [
+        ".XXX.",
+        "XX.XX",
+        "XXXXX"
+      ],
+    color: [["","","#fff3a8","#fff3a8","#fff3a8","#fff3a8","#fff3a8","#fff3a8","",""],["","","#ffd23f","#c98a1e","#ffd23f","#ffd23f","#ffd23f","#ffd23f","",""],["#fff3a8","#fff3a8","#ffd23f","#ffd23f","","","#ffd23f","#ffd23f","#fff3a8","#fff3a8"],["#ffd23f","#ffd23f","#ffd23f","#ffd23f","","","#ffd23f","#c98a1e","#ffd23f","#ffd23f"],["#ffd23f","#c98a1e","#ffd23f","#ffd23f","#ffd23f","#ffd23f","#ffd23f","#ffd23f","#ffd23f","#ffd23f"],["#e8a92a","#e8a92a","#e8a92a","#e8a92a","#e8a92a","#e8a92a","#e8a92a","#e8a92a","#e8a92a","#e8a92a"]],
+    difficulty: 3,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+    tags: [
+        "food"
+      ],
+  },
 ];
