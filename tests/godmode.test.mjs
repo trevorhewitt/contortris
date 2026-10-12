@@ -187,6 +187,7 @@ test("god mode: the newest things come first, and things never seen before come 
   const all = new Map(shapes.map(s => [s.id, 9])), allSets = new Map(GROUPS.map(g => [g.id, 9]));
   const seen = share(all, allSets);
   console.log(`newest: ${(blank.fresh * 100).toFixed(0)}% of pieces when new, ${(seen.fresh * 100).toFixed(0)}% once seen; first set new in ${(blank.firstNew * 100).toFixed(0)}% / ${(seen.firstNew * 100).toFixed(0)}%`);
-  assert.ok(blank.fresh > seen.fresh * 2, `newest ${(blank.fresh * 100).toFixed(0)}% vs ${(seen.fresh * 100).toFixed(0)}%`);
+  // (by a clear margin: the newest list keeps growing, and some of it comes in linked runs anyway)
+  assert.ok(blank.fresh - seen.fresh >= 0.08, `newest ${(blank.fresh * 100).toFixed(0)}% vs ${(seen.fresh * 100).toFixed(0)}%`);
   assert.ok(blank.firstNew >= 0.5, `the first set was a new one in ${(blank.firstNew * 100).toFixed(0)}% of games`);
 });

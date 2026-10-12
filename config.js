@@ -139,6 +139,8 @@ export const CONFIG = {
         "rubiks_cube", "mondrian", "qr_code", "space_invader", "mouse_pointer", "stuck_pixel",
         "watermelon_slice", "stop_sign", "lego_brick_2x4", "swiss_cheese_lump",
         "caveman_in_ice", "piece_of_sky",
+        "old_wheelbarrow", "stone_path", "watering_can", "cracked_pot", "hosepipe", "rusty_trowel",
+        "bird_bath", "compost_heap", "kilometerworm", "lightyearworm", "nebula",
       ],
     },
     novelty: { newBoost: 12, newSetBoost: 20, newUntilSeen: 3, unseenBoost: 2.5 },
