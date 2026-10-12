@@ -103,4 +103,10 @@ export const GROUPS = [
     frequency: 1,
     sequence: ["shooting_star", "constellation", "spiral_galaxy", "the_universe"],
   },
+  {
+    id: "trees",
+    name: "the tree of life and the tree of death",
+    frequency: 1,
+    sequence: ["tree_of_life", "tree_of_death"],
+  },
 ];
