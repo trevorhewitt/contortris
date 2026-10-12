@@ -44,7 +44,7 @@ test("groups in the data are complete (every piece exists)", () => {
   assert.equal(all.length, GROUPS.filter(g => (g.frequency ?? 1) > 0).length, "every group is live (but the banished ones)");
   // every level 6 piece belongs to a group
   const inGroups = new Set(GROUPS.flatMap(g => g.sequence.flatMap(st => (typeof st === "string" ? [st] : st.pick))));
-  for (const s of shapes.filter(s => s.difficulty === 6)) assert.ok(inGroups.has(s.id), `${s.id} is level 6 but in no group`);
+  for (const s of shapes.filter(s => s.difficulty === 6 && (s.frequency ?? 1) > 0)) assert.ok(inGroups.has(s.id), `${s.id} is level 6 but in no group`);
 });
 
 test("spam always starts with two spams, then 2-5 remixes", () => {
@@ -337,16 +337,20 @@ test("level 6: no set comes round again until every other one has, even into the
   assert.notEqual(b[0], a[a.length - 1], "the next game doesn't open with the last set");
 });
 
-test("Noah's ark: the ark, three or four different pairs of animals, then the rain", () => {
+test("Noah's ark: the ark, 4-6 different pairs, one last creature, then raindrops", () => {
   const g = normaliseGroups(GROUPS, shapes).find(g => g.id === "noahs_ark");
+  const last = new Set(["just_one_unicorn", "just_one_dinosaur", "just_one_dodo", "just_one_mammoth", "just_one_griffin", "dragons_both_dudes"]);
+  const drops = new Set(["raindrop", "big_raindrop", "drizzle"]);
   const rng = makeRng(9);
   for (let i = 0; i < 300; i++) {
     const ids = expandGroup(g, rng).map(s => s.id);
     assert.equal(ids[0], "noahs_ark");
-    assert.equal(ids[ids.length - 1], "forty_days_of_rain");
-    const pairs = ids.slice(1, -1);
-    assert.ok(pairs.length >= 3 && pairs.length <= 4, ids.join());
-    assert.ok(pairs.every(id => id.startsWith("two_")), ids.join());
+    const pairs = ids.filter(id => id.startsWith("two_"));
+    assert.ok(pairs.length >= 4 && pairs.length <= 6, ids.join());
     assert.equal(new Set(pairs).size, pairs.length, `the same pair twice: ${ids.join()}`);
+    assert.deepEqual(ids.slice(1, 1 + pairs.length), pairs, ids.join());
+    assert.ok(last.has(ids[1 + pairs.length]), `one creature after the pairs: ${ids.join()}`);
+    const rain = ids.slice(2 + pairs.length);
+    assert.ok(rain.length >= 5 && rain.length <= 8 && rain.every(id => drops.has(id)), ids.join());
   }
 });

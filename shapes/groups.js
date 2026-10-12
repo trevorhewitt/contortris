@@ -82,7 +82,7 @@ export const GROUPS = [
     id: "noahs_ark",
     name: "Noah's ark",
     frequency: 1,
-    sequence: ["noahs_ark", { pick: ["two_giraffes","two_elephants","two_penguins","two_snails","two_crocodiles"], count: [3, 4], unique: true }, "forty_days_of_rain"],
+    sequence: ["noahs_ark", { pick: ["two_giraffes","two_elephants","two_penguins","two_snails","two_crocodiles","two_zebras","two_lions","two_kangaroos","two_flamingos","two_hippos","two_pandas","two_owls","two_frogs","two_tortoises","two_sheep","two_hedgehogs","two_octopuses"], count: [4, 6], unique: true }, { pick: ["just_one_unicorn","just_one_dinosaur","just_one_dodo","just_one_mammoth","just_one_griffin","dragons_both_dudes"], count: 1 }, { pick: ["raindrop","big_raindrop","drizzle"], weights: [3, 1, 1], count: [5, 8] }],
   },
   {
     id: "existence",
