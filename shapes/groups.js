@@ -115,6 +115,39 @@ export const GROUPS = [
     sequence: ["nessie_hump", "nessie_hump_2", "nessie_hump_3", "nessie_head", "nessie_photo"],
   },
   {
+    // the same, low resolution, cute and silly
+    id: "loch_ness_wee",
+    name: "a wee Loch Ness monster",
+    frequency: 0.6,
+    sequence: ["nessie_wee_hump", "nessie_wee_hump_2", "nessie_wee_head", "nessie_wee_photo"],
+  },
+  {
+    // one dinosaur's bones, then its head (which dinosaur? you'll see)
+    id: "dinosaur_bones",
+    name: "dinosaur bones",
+    frequency: 1,
+    sequence: [
+      { chain: {
+        start: { bones_trex_1: 1, bones_tri_1: 1, bones_stego_1: 1, bones_brachio_1: 1 },
+        after: {
+          bones_trex_1: { bones_trex_2: 1 },
+          bones_trex_2: { bones_trex_3: 1 },
+          bones_trex_3: { bones_trex_head: 1 },
+          bones_tri_1: { bones_tri_2: 1 },
+          bones_tri_2: { bones_tri_3: 1 },
+          bones_tri_3: { bones_tri_head: 1 },
+          bones_stego_1: { bones_stego_2: 1 },
+          bones_stego_2: { bones_stego_3: 1 },
+          bones_stego_3: { bones_stego_head: 1 },
+          bones_brachio_1: { bones_brachio_2: 1 },
+          bones_brachio_2: { bones_brachio_3: 1 },
+          bones_brachio_3: { bones_brachio_head: 1 },
+        },
+        min: 4, max: 4,
+      } },
+    ],
+  },
+  {
     id: "noahs_ark",
     name: "Noah's ark",
     frequency: 1,

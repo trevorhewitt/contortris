@@ -192,6 +192,8 @@ export const SET_THREADS = {
   everest: ["rocks", "cold", "travel"],
   space: ["space", "rocks"],
   loch_ness: ["sea", "britain", "magic"],
+  loch_ness_wee: ["sea", "britain", "magic", "toys"],
+  dinosaur_bones: ["animals", "rocks", "death"],
   noahs_ark: ["sea", "animals", "weather"],
   existence: ["mind", "space", "surreal"],
   universe: ["space", "light", "magic"],

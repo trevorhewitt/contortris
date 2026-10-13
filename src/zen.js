@@ -422,6 +422,9 @@ export function zenSpawned(state) {
   const z = state.zen, a = state.active;
   z.piece = a;
   z.userHas = false;
+  // (anything pressed since the last piece came was the player playing that one, not this one)
+  if (state.lastInputAt !== z.inputAt) z.userAt = state.drops;
+  z.inputAt = state.lastInputAt;
   z.target = targetFor(state);
   const t = z.target;
   if (t) {

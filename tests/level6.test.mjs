@@ -433,3 +433,15 @@ test("emotions: a loose run from the ordinary to the strange, never ending on a 
   assert.ok(count(absurd) > 400 * 0.6, `ends on the absurd ${count(absurd)} of 400`);
   assert.ok(count(plainEnds) > 0, "and now and then on a plain one");
 });
+
+test("dinosaur bones: one dinosaur's bones in order, then its head; all four dinosaurs turn up", () => {
+  const g = normaliseGroups(GROUPS, shapes).find(g => g.id === "dinosaur_bones");
+  const rng = makeRng(3), seen = new Set();
+  for (let i = 0; i < 200; i++) {
+    const ids = expandGroup(g, rng).map(s => s.id);
+    const d = ids[0].split("_")[1];
+    assert.deepEqual(ids, [1, 2, 3, "head"].map(k => `bones_${d}_${k}`), ids.join());
+    seen.add(d);
+  }
+  assert.equal(seen.size, 4);
+});
