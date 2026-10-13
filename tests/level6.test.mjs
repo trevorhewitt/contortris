@@ -411,13 +411,20 @@ test("a raindrop straight after a raindrop is another raindrop", () => {
   assert.ok(names.includes("another raindrop"), names.join(" | "));
 });
 
-test("emotions: a loose run from the ordinary to the strange, never ending on a repeat, mostly on the absurd", () => {
+test("emotions: two to four ordinary ones, then on to the strange, never ending on a repeat, mostly on the absurd", () => {
   const g = normaliseGroups(GROUPS, shapes).find(g => g.id === "emotions");
   const rng = makeRng(12);
   const firsts = new Set(), lasts = new Map();
+  const ordinary = new Set(["happiness", "sadness", "anger", "fear", "surprise", "boredom", "calm", "jealousy"].map(n => "emotion_" + n));
+  const opens = new Set();
   for (let i = 0; i < 400; i++) {
     const ids = expandGroup(g, rng).map(s => s.id);
     assert.ok(ids.length >= 4 && ids.length <= 11, ids.join());
+    // (two to four ordinary ones first)
+    let n = 0;
+    while (n < ids.length && ordinary.has(ids[n])) n++;
+    assert.ok(n >= 2, `opens on ${n} ordinary: ${ids.join()}`);
+    opens.add(Math.min(n, 4));
     // no card twice, but for the one that comes back (déjà vu), and that never last
     const plain = ids.filter(id => !/_2$/.test(id));
     assert.equal(new Set(plain).size, plain.length, `twice: ${ids.join()}`);
@@ -427,6 +434,7 @@ test("emotions: a loose run from the ordinary to the strange, never ending on a 
     lasts.set(last, (lasts.get(last) ?? 0) + 1);
   }
   assert.ok(firsts.size >= 8, `opens ${firsts.size} ways`);
+  assert.deepEqual([...opens].sort(), [2, 3, 4], "with two, three or four of them");
   const absurd = ["existential_dread", "winning_extris", "inner_emptiness", "being_a_piece", "playing_extris", "urge_to_rotate", "long_piece", "row_grief", "fear_of_ceiling", "utter_euphoria"].map(n => "emotion_" + n);
   const plainEnds = ["happiness", "sadness", "anger", "fear", "surprise", "boredom", "calm", "jealousy"].map(n => "emotion_" + n);
   const count = (list) => list.reduce((n, id) => n + (lasts.get(id) ?? 0), 0);

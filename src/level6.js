@@ -233,6 +233,8 @@ export function maybeStartGroup(state) {
   while (pool.length) {
     const group = sampleByWeight(pool, g => g.frequency * setNovelty(state, g) * setThreadWeight(state, sel.currentThread, g), state.rng);
     const pieces = expandGroup(group, state.rng, l6.variants);
+    // (not if its first piece mustn't come straight after the last one: a small piece of the sky)
+    if (pieces[0]?.notAfter?.includes(sel.lastShapeId)) { pool = pool.filter(g => g !== group); continue; }
     if ((group.room || roomNeeded(pieces)) <= room) return startGroup(state, group, pieces); // (a set's own `room` has the last word)
     pool = pool.filter(g => g !== group);
   }

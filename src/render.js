@@ -584,7 +584,8 @@ export function createRenderer(boardCanvas, nextCanvas) {
     const dist = rf.rowDropDistances?.[y] ?? 0;
     if (!dist) return 0;
 
-    const t = clamp01(rf.elapsedMs / rf.durationMs);
+    // (a combo: each row waits until what was under it has gone, rowDelays)
+    const t = clamp01((rf.elapsedMs - (rf.rowDelays?.[y] ?? 0)) / (rf.fallMs ?? rf.durationMs));
     const eased = 1 - Math.pow(1 - t, 3);
     const startOffset = dist * (CONFIG.fx.lineClear.boardFallPxPerRow ?? 18);
     return startOffset * (1 - eased);
@@ -768,6 +769,15 @@ export function createRenderer(boardCanvas, nextCanvas) {
         });
       }
     }
+    // a combo's blocks, still there where they were until each one's moment, shrinking a little
+    // just before it crumbles
+    const gh = animated ? state.fx.ghosts : null;
+    if (gh) for (const g of gh.cells) {
+      const left = g.at - gh.elapsedMs;
+      if (left <= 0) continue;
+      const s = left < 50 ? 0.82 + 0.18 * (left / 50) : 1;
+      list.push({ px: g.x * cell, py: g.y * cell, s, rot: 0, sq: 0, paint: g.cell.paint, style: g.cell.style, mask: 0 });
+    }
     return list;
   }
 
@@ -783,7 +793,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   // Background + locked blocks. Cached as one opaque layer while nothing moves.
   function drawBoard(ctx, state) {
     const fx = state.fx;
-    const animating = fx.rowFall.active || fx.moveAnim.active || fx.growAnim.active;
+    const animating = fx.rowFall.active || fx.moveAnim.active || fx.growAnim.active || !!fx.ghosts;
     if (animating) {
       drawBackground(ctx);
       drawBlockList(ctx, collectBoardBlocks(state, true));

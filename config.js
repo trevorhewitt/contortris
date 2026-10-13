@@ -16,12 +16,13 @@ export const CONFIG = {
     normal: { label: "Normal", tagline: "powerups help you out", powerups: true, giants: true, level6: true },
     extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true },
     god: { label: "God", tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true },
+    // speeds: a speed setting on the pause menu, these times timeScale (1 to start with).
     // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); calm: zen for playing, slow
     // and easy (CONFIG.zen.calm, which also has its own numbers for the pieces); timeScale: how fast it all runs;
     // zenMovements: "turbo" for turbo zen's own mix of movements; flashNames: the falling piece's
     // name just appears, no sliding in and out
     zen: { label: "Zen", tagline: "slow, easy, and impossible to lose", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
-    turbo: { label: "Turbo zen", tagline: "it plays itself, and doesn't stop", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.6, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false },
+    turbo: { label: "Turbo zen", tagline: "it plays itself, and doesn't stop", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2] },
   },
   defaultMode: "normal",
 
@@ -122,7 +123,8 @@ export const CONFIG = {
     // The pace (times fallMs, lockMs and pieceMs): small things, repeats and the pieces that build
     // up the board come down faster; the pieces that bring it all down take their time. And from
     // low (an empty board) to high (a full one), it slows down as it nears the top.
-    pace: { small: 0.55, repeat: 0.7, filler: 0.7, key: 2.2, phantom: 0.45, fastest: 0.2, low: 0.6, high: 1.45 },
+    // (high: near the top, in a careful movement, a movement in carefulChance; top: in the rest)
+    pace: { small: 0.55, repeat: 0.7, filler: 0.7, key: 2.2, phantom: 0.45, fastest: 0.2, low: 0.6, high: 1.45, top: 1, carefulChance: 0.33 },
     // The piece that brings the whole board down (the director marks it) lands, and then there's a
     // dramatic pause before it all goes, for pauseMs (real time, turbo or not): the board glows
     // and sparkles (CONFIG.fx.admire) and the name says "(dramatic pause)". Only for the big ones:
@@ -168,6 +170,9 @@ export const CONFIG = {
     },
     // gravitizers that collapse at least `minCols` columns are this many times likelier
     wideGravity: { minCols: 6, weight: 3 },
+    // ...and these are this much as likely as they would be (the large black hole takes
+    // everything: it's better for being rarer). Zen's director goes by the same numbers.
+    rarer: { large_black_hole: 0.3 },
     // The newest things in the game come first (update this with every new batch), so they can be
     // looked at straight away, and then it's God mode as usual: a new piece is newBoost times
     // likelier until it has turned up newUntilShown times since the page was loaded, a new set

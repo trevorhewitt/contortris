@@ -25,7 +25,7 @@
 // matches the plan, the director says "never mind" and tidies up.
 
 import { CONFIG } from "../config.js";
-import { tryMove, tryRotate, zenCaption } from "./game.js";
+import { tryMove, tryRotate, zenCaption, timeScaleOf } from "./game.js";
 import { selectPiece, destroyerCells } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup } from "./powerups.js";
@@ -184,6 +184,7 @@ function begin(state, name) {
   if (z.after === name) { z.after = null; z.waited = 0; }
   z.movement = MOVEMENTS[name](state);
   z.movement.name = name;
+  z.movement.careful = z.simRng() < (CONFIG.zen.pace.carefulChance ?? 1); // (slows down near the top)
   z.last = name;
   // (a planned one says what it is once it knows it can be done; one with nothing to say still
   // lets the game know)
@@ -679,6 +680,9 @@ function bestPowerup(state, pool = powerupPool(state), tries = CONFIG.zen.poweru
   let best = null;
   for (let i = 0; i < tries; i++) {
     const p = pool[Math.floor(state.rng() * pool.length)];
+    // (the biggest of all not every time it comes up: CONFIG.godMode.rarer)
+    const rare = CONFIG.godMode?.rarer?.[p.id];
+    if (rare != null && pool.length > 1 && z01(state) >= rare) continue;
     const place = bestPlacement(state, p, weights, 2);
     if (place && (!best || place.s > best.s)) best = { p, s: place.s };
   }
@@ -727,6 +731,9 @@ export function zenSpawned(state) {
   const { cols, rows } = CONFIG.board;
   const land = isPhantomPowerup(a.shape.powerup) ? phantomLandingY(state.board, a.x, mat) : dropY(occupancy(state.board), mat, a.x, cols, rows);
   z.fall = Math.max(1, (land ?? 0) - a.y);
+  // (a powerup about to bring most of the board down: the dramatic pause comes before it falls;
+  // game.js holds everything for it)
+  z.pauseFirst = a.shape.powerup && land != null && bigMoment(state, a.shape, a.rotIdx, a.x, land) ? CONFIG.zen.dramatic.pauseMs * timeScaleOf(state) : 0;
   zenSpeed(state);
   // (and after a big clearance it starts a little further up, out of sight)
   if (z.rest > 0) a.y -= Math.round(z.rest / state.dropMs);
@@ -761,7 +768,7 @@ function paceFor(state, item, shape) {
   let p = (item?.pace ?? 1) * (z.movement?.pace ?? 1);
   if (blocks(shape) <= 3) p *= P.small;
   if (z.lastId === shape.id) p *= P.repeat;
-  p *= P.low + (P.high - P.low) * (stackHeight(state) / CONFIG.board.rows) ** 1.5;
+  p *= P.low + ((z.movement?.careful ? P.high : P.top ?? P.high) - P.low) * (stackHeight(state) / CONFIG.board.rows) ** 1.5;
   return Math.max(P.fastest, p);
 }
 
@@ -803,21 +810,21 @@ export function zenTick(state, dt) {
 
 // The piece the director marked to bring the whole board down has landed (game.js
 // stepLockAndSpawn). If most of the board really is going (CONFIG.zen.dramatic: minRows full
-// rows, or for a powerup minBlocks blocks), a dramatic pause first: how long (game time), or 0.
+// rows), a dramatic pause first: how long (game time), or 0. (A powerup's pause comes before it
+// falls instead: zenSpawned.)
 export function zenDramatic(state, info) {
   const z = state.zen, D = CONFIG.zen.dramatic;
-  if (!D || !z?.current?.dramatic || z.userHas || isCalm(state)) return 0;
-  let big;
-  // (the numbers are for the usual board: as much of a bigger one)
-  const { cols, rows } = CONFIG.board;
-  if (info.shape.powerup) {
-    const before = occupancy(state.board).reduce((a, b) => a + b, 0);
-    const after = tryPowerup(state, info.shape, info.rotIdx, info.x, info.y).occ.reduce((a, b) => a + b, 0);
-    big = before - after >= D.minBlocks * Math.max(1, cols * rows / 336);
-  } else {
-    big = state.board.filter(row => row.every(Boolean)).length >= D.minRows * Math.max(1, rows / 24);
-  }
-  return big ? D.pauseMs * (CONFIG.modes[state.mode]?.timeScale ?? 1) : 0;
+  if (!D || !z?.current?.dramatic || z.userHas || isCalm(state) || info.shape.powerup) return 0;
+  const rows = CONFIG.board.rows; // (the numbers are for the usual board: as much of a bigger one)
+  return state.board.filter(row => row.every(Boolean)).length >= D.minRows * Math.max(1, rows / 24) ? D.pauseMs * timeScaleOf(state) : 0;
+}
+// ...and the director's powerup, at (rot, x, y): would it take most of the board (minBlocks)?
+function bigMoment(state, shape, rot, x, y) {
+  const z = state.zen, D = CONFIG.zen.dramatic, { cols, rows } = CONFIG.board;
+  if (!D || !z.current?.dramatic || isCalm(state)) return false;
+  const before = occupancy(state.board).reduce((a, b) => a + b, 0);
+  const after = tryPowerup(state, shape, rot, x, y).occ.reduce((a, b) => a + b, 0);
+  return before - after >= D.minBlocks * Math.max(1, cols * rows / 336);
 }
 
 // The player let go of the game (paused and came back, say): that's not taking the piece over

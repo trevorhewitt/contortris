@@ -8,7 +8,7 @@ import { ACHIEVEMENTS } from "../shapes/achievements.js";
 import { GROUPS } from "../shapes/groups.js";
 import { THREADS, SET_THREADS } from "../shapes/threads.js";
 import { loadShapes } from "./shapes.js";
-import { createGameState, on, updateGame, hardDropAndLock, setNextPiece } from "./game.js";
+import { createGameState, on, updateGame, hardDropAndLock, setNextPiece, timeScaleOf } from "./game.js";
 import { createRenderer } from "./render.js";
 import { createAchievements } from "./achievements.js";
 import { createSound } from "./sound.js";
@@ -45,11 +45,32 @@ if (new URLSearchParams(location.search).has("debug")) {
 
 let last = performance.now();
 
+// A mode that carries on when the page is hidden (turbo zen: pauseWhenHidden false). Browsers
+// stop drawing a hidden page, and run its timers only now and then (once a second, or once a
+// minute after a while), so a timer moves the game on by however long it's really been.
+let hiddenTimer = null;
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && CONFIG.modes[state.mode]?.pauseWhenHidden === false) {
+    let then = performance.now();
+    hiddenTimer = setInterval(() => {
+      const now = performance.now();
+      let left = Math.min(70000, now - then);
+      then = now;
+      if (!state.running || state.paused) return;
+      for (; left > 0; left -= 50) updateGame(state, Math.min(50, left) * timeScaleOf(state));
+    }, 250);
+  } else if (!document.hidden && hiddenTimer) {
+    clearInterval(hiddenTimer);
+    hiddenTimer = null;
+    last = performance.now(); // (and the frames carry on from now)
+  }
+});
+
 function tick(now) {
   const dt = Math.min(50, now - last);
   last = now;
 
-  updateGame(state, dt * (CONFIG.modes[state.mode]?.timeScale ?? 1)); // (turbo zen runs faster)
+  updateGame(state, dt * timeScaleOf(state)); // (turbo zen runs faster)
   renderer.draw(state, now);
   ui.frame();
 

@@ -242,6 +242,8 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
       nameAgain: typeof s.nameAgain === "string" && s.nameAgain.trim() ? s.nameAgain.trim() : null,
       // in a level 6 set: this piece comes back later in the same run, as that piece
       echo: typeof s.echo === "string" && s.echo ? s.echo : null,
+      // never straight after any of these (a small piece of the sky after another)
+      notAfter: Array.isArray(s.notAfter) && s.notAfter.length ? s.notAfter.filter(x => typeof x === "string") : null,
       // pieces drawn to join up (the same `seam`) show no edge where they touch
       seam: typeof s.seam === "string" && s.seam ? s.seam : null,
 

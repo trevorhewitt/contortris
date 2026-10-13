@@ -13551,6 +13551,11 @@ export const SHAPES = [
     nextShapes: [
         "large_piece_of_sky"
       ],
+    notAfter: [
+        "piece_of_sky",
+        "piece_of_sky_sunset",
+        "piece_of_sky_night"
+      ],
     seam: "sky",
     tags: [
         "surreal"
@@ -14952,6 +14957,7 @@ export const SHAPES = [
     frequency: 0.3,
     claudeDraft: true,
     nameAgain: "another rumbling storm cloud",
+    noShake: true,
     shake: true,
     tags: [
         "weather"
@@ -17077,7 +17083,7 @@ export const SHAPES = [
   },
   {
     id: "piece_of_sky_sunset",
-    name: "a small piece of the sunset",
+    name: "a small piece of the sky",
     grid: [
         "XX.",
         "XXX"
@@ -17089,6 +17095,17 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.3
+      ],
+    nextShapes: [
+        "large_piece_of_sky_sunset"
+      ],
+    notAfter: [
+        "piece_of_sky",
+        "piece_of_sky_sunset",
+        "piece_of_sky_night"
+      ],
     seam: "sky_sunset",
     tags: [
         "surreal"
@@ -17096,7 +17113,7 @@ export const SHAPES = [
   },
   {
     id: "large_piece_of_sky_sunset",
-    name: "a large piece of the sunset",
+    name: "a large piece of the sky",
     grid: [
         ".XXX.XX",
         "XXXXXXX",
@@ -17119,7 +17136,7 @@ export const SHAPES = [
   },
   {
     id: "humongous_piece_of_sky_sunset",
-    name: "a humongous piece of the sunset",
+    name: "a humongous piece of the sky",
     grid: [
         "XXXXX..XXXX.",
         "XXXXXXXXXXXX",
@@ -17143,7 +17160,7 @@ export const SHAPES = [
   },
   {
     id: "piece_of_sky_night",
-    name: "a small piece of the night sky",
+    name: "a small piece of the sky",
     grid: [
         "XX.",
         "XXX"
@@ -17155,6 +17172,17 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.3
+      ],
+    nextShapes: [
+        "large_piece_of_sky_night"
+      ],
+    notAfter: [
+        "piece_of_sky",
+        "piece_of_sky_sunset",
+        "piece_of_sky_night"
+      ],
     seam: "sky_night",
     tags: [
         "surreal"
@@ -17162,7 +17190,7 @@ export const SHAPES = [
   },
   {
     id: "large_piece_of_sky_night",
-    name: "a large piece of the night sky",
+    name: "a large piece of the sky",
     grid: [
         ".XXX.XX",
         "XXXXXXX",
@@ -17185,7 +17213,7 @@ export const SHAPES = [
   },
   {
     id: "humongous_piece_of_sky_night",
-    name: "a humongous piece of the night sky",
+    name: "a humongous piece of the sky",
     grid: [
         "XXXXX..XXXX.",
         "XXXXXXXXXXXX",

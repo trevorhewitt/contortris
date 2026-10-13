@@ -250,6 +250,8 @@ export function varietyMultiplier(sel, shape) {
   // pool with nothing else left still picks something.
   const within = v.noRepeatWithin ?? 0;
   if (within > 0 && sel.recentShapeIds.slice(-within).includes(shape.id)) mult *= 1e-9;
+  // ...and never straight after one it mustn't follow (shape.notAfter)
+  if (shape.notAfter?.includes(sel.lastShapeId)) mult *= 1e-9;
 
   // God mode: the newest things first, and anything never seen in this browser more often
   mult *= noveltyMultiplier(sel, shape);
@@ -767,6 +769,8 @@ function maybeSelectPowerup(state, danger01) {
   if (god) power = Math.max(power, CONFIG.godMode?.helpPower ?? 0);
   const wide = CONFIG.godMode?.wideGravity ?? {};
   const wideW = (p) => god && gravityColumns(p) >= (wide.minCols ?? 6) ? (wide.weight ?? 1) : 1;
+  // (...but not always the very biggest: CONFIG.godMode.rarer)
+  const rarerW = (p) => (god ? CONFIG.godMode?.rarer?.[p.id] ?? 1 : 1);
   // ...and just after a level 6 set, the big destroyers
   const big = after.bigDestroyer ?? {};
   const bigW = (p) => afterSet && !p.powerup.bad && destroyerCells(p) >= (big.minCells ?? Infinity) ? (big.weight ?? 1) : 1;
@@ -805,7 +809,7 @@ function maybeSelectPowerup(state, danger01) {
     // a class's pieces share its weight, so big classes don't crowd out small ones
     const classSize = candidates.filter(c => c.powerup.cls === p.powerup.cls).length;
     const threadW = CONFIG.assist.threads?.powerups ? threadWeight(sel.currentThread, p, sel.servedCounts.get(p.id) ?? 0) : 1;
-    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * runW * wideW(p) * bigW(p) * varietyMultiplier(sel, p) * threadW * (6 / (classSize + 5));
+    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * runW * wideW(p) * bigW(p) * rarerW(p) * varietyMultiplier(sel, p) * threadW * (6 / (classSize + 5));
   }, state.rng);
   if (chosen && introducing(chosen)) { ps.lastIntroDrop = sel.dropIndex; ps.pendingIntro.add(chosen.powerup.cls); }
   return chosen;

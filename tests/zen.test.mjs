@@ -314,8 +314,10 @@ test("turbo zen: the piece that brings the board down lands, then a dramatic pau
   assert.ok(gone.n >= D.minRows, `then ${gone.n} rows went`);
   // and only ever before the big ones: most of the board gone by the next piece
   const t = zen(8, "turbo");
-  let pauses = 0, big = 0, at = null;
+  let pauses = 0, big = 0, at = null, before = 0;
   on(t.state, (e, d) => {
+    // (a powerup's pause is before it falls: it waits up above the board)
+    if (e === "dramaticPause" && d.on && t.state.active) { before++; assert.ok(t.state.active.shape.powerup && t.state.active.y < 0, `${t.state.active.shape.id} at ${t.state.active.y}`); }
     if (e === "dramaticPause" && d.on) at = blocksOn(t.state);
     // (judged when the next piece comes: one still going at the end doesn't count)
     if (e === "spawn" && at != null) { pauses++; if (at - blocksOn(t.state) >= Math.min(D.minBlocks, D.minRows * cols) * 0.9) big++; at = null; }
@@ -323,6 +325,7 @@ test("turbo zen: the piece that brings the board down lands, then a dramatic pau
   run(t.state, t.log, 12 * 60000);
   assert.ok(pauses >= 3, `${pauses} pauses`);
   assert.equal(big, pauses, `${big} of ${pauses} pauses before a big one`);
+  console.log(`${pauses} pauses, ${before} of them before a powerup fell`);
 });
 
 test("turbo zen: faster, with movements of its own", () => {

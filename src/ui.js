@@ -7,6 +7,7 @@ import { escapeHtml, store } from "./util.js";
 import { getDifficultyZone } from "./selection.js";
 import {
   on, startRun, resetGame, tryMove, tryRotate, beginLockIfNeeded, markInput, setNextPiece, markBoardDirty, isPowerupEnabled, hardDropAndLock,
+  timeScaleOf,
 } from "./game.js";
 import { makeShapePreviewCanvas, drawIcon } from "./render.js";
 import { createDemo, runDemos } from "./demo.js";
@@ -285,6 +286,14 @@ export function bindUI({ state, renderer, sound, achievements }) {
     }
   }
 
+  // A mode's speed setting (CONFIG.modes[mode].speeds: turbo zen), remembered in this browser.
+  const speedKey = (mode) => `extris.speed.${mode}`;
+  function savedSpeed(mode) {
+    const v = Number(store.get(speedKey(mode), 1));
+    return CONFIG.modes[mode]?.speeds?.includes(v) ? v : 1;
+  }
+  const speedText = () => `Speed: ${String(state.speed ?? 1)}×`;
+
   /* ---------- game flow ---------- */
 
   function startGame(mode = lastMode) {
@@ -295,6 +304,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
     newBest = false;
     if (lastMode !== "turbo") setWholeWindow(false);
     startRun(state, lastMode);
+    state.speed = savedSpeed(lastMode);
     showPanel(null);
   }
 
@@ -314,6 +324,8 @@ export function bindUI({ state, renderer, sound, achievements }) {
     $("pauseMode").textContent = `${modeLabel(state.mode)} mode`;
     $("btnWholeWindow").hidden = state.mode !== "turbo";
     $("btnWholeWindow").textContent = wholeWindow ? "Back to the usual board" : "Fill the window";
+    $("btnSpeed").hidden = !CONFIG.modes[state.mode]?.speeds;
+    $("btnSpeed").textContent = speedText();
     showPanel("pause");
   }
 
@@ -433,6 +445,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
         break;
       case "dramaticPause": // (turbo zen: in place of the piece's name while the board glows)
         if (d.on) nameLayer.setName("(dramatic pause)", "", "", !!CONFIG.modes[state.mode]?.flashNames);
+        else if (d.shape) nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames); // (and then the one that waited)
         break;
       case "lock":
         sound.play("lock");
@@ -454,7 +467,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
         sound.play("charge", CONFIG.fx.powerup.chargeMs);
         break;
       case "powerupFire":
-        if (d.show) sound.play("show", d.show, CONFIG.modes[state.mode]?.timeScale ?? 1);
+        if (d.show) sound.play("show", d.show, timeScaleOf(state));
         else sound.play(d.type);
         break;
       case "gameOver":
@@ -1062,6 +1075,14 @@ export function bindUI({ state, renderer, sound, achievements }) {
   $("floatPause").addEventListener("click", (e) => {
     e.preventDefault();
     togglePause();
+  });
+  // (the next speed along, round again after the fastest)
+  $("btnSpeed").addEventListener("click", () => {
+    const list = CONFIG.modes[state.mode]?.speeds;
+    if (!list) return;
+    state.speed = list[(list.indexOf(state.speed ?? 1) + 1) % list.length];
+    store.set(speedKey(state.mode), String(state.speed));
+    $("btnSpeed").textContent = speedText();
   });
   // (a fresh run on the new board: the old one's pieces don't fit it)
   $("btnWholeWindow").addEventListener("click", () => {

@@ -184,10 +184,10 @@
       pointer-events: none;
       overflow: hidden;
       opacity: 1;
-      mix-blend-mode: screen;
+      /* (no screen blend: it washed the names out over bright pieces; a dark outline instead) */
       filter:
-        drop-shadow(0 0 10px rgba(123,247,255,0.35))
-        drop-shadow(0 0 34px rgba(255,80,220,0.22));
+        drop-shadow(0 0 8px rgba(123,247,255,0.22))
+        drop-shadow(0 0 28px rgba(255,80,220,0.14));
     }
   
     .nameText{
@@ -203,7 +203,7 @@
       line-height: 1.5;
       font-weight: 400;
       letter-spacing: 0.04em;
-      color: rgba(245,245,255,0.68);
+      color: rgba(248,248,255,0.93);
       text-align: center;
       text-transform: uppercase;
       white-space: normal;
@@ -213,10 +213,12 @@
       text-overflow: clip;
       user-select: none;
       text-shadow:
+        0 0 1px rgba(0,0,0,0.95), 1px 1px 0 rgba(0,0,0,0.85), -1px -1px 0 rgba(0,0,0,0.6),
+        0 0 4px rgba(0,0,0,0.85), 0 2px 8px rgba(0,0,0,0.7),
         var(--name-rgb-shift) 0 0 rgba(255,0,140,var(--name-rgb-a1)),
         calc(var(--name-rgb-shift) * -1) 0 0 rgba(0,255,255,var(--name-rgb-a2)),
-        0 0 10px rgba(180,180,255,var(--name-glow-a)),
-        0 0 22px rgba(255,80,220,var(--name-glow-b));
+        0 0 12px rgba(180,180,255,var(--name-glow-a)),
+        0 0 24px rgba(255,80,220,var(--name-glow-b));
       image-rendering: pixelated;
       transform: translateX(0);
       opacity: 1;
@@ -1034,7 +1036,7 @@
 
           <div class="msg panel" id="panelMenu" hidden>
             <div class="big title">Extris</div>
-            <div class="small" id="gameVersion">version 202610131747</div>
+            <div class="small" id="gameVersion">version 202610131811</div>
             <div class="menuBtns">
               <button id="btnEasy" class="secondary">Easy mode</button>
               <button id="btnNormal">Normal mode</button>
@@ -1071,7 +1073,7 @@
               <h3>Achievements</h3>
               <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
 
-              <p class="small menuFoot">[Extris version 202610131747 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610131811 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>
@@ -1095,6 +1097,7 @@
             <div class="menuBtns">
               <button id="btnResume">Resume</button>
               <button id="btnWholeWindow" class="secondary" hidden>Fill the window</button>
+              <button id="btnSpeed" class="secondary" hidden>Speed: 1×</button>
               <button id="btnPowerupHelp" class="secondary" hidden>Powerups</button>
               <button id="btnPauseHowTo" class="secondary">How to play</button>
               <button id="btnQuit" class="secondary">Quit to menu</button>

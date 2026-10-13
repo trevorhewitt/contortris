@@ -129,6 +129,7 @@ export function createGameState(shapes, powerups, { rng = Math.random, groups = 
       rowClears: [],   // the light sweeping along rows as they go (CONFIG.fx.rowClear)
       show: null,      // the powerup show playing now (planShow; render.js drawShow)
       admire: null,    // the dramatic pause: the board glowing and sparkling (CONFIG.fx.admire)
+      ghosts: null,    // a combo's blocks, still there until they crumble, bottom up (rowClearShow)
       quake: {
         trauma: 0,
         seed: Math.random() * 1000,
@@ -244,6 +245,7 @@ export function resetGame(state) {
   fx.rowClears.length = 0;
   fx.show = null;
   fx.admire = null;
+  fx.ghosts = null;
   fx.rowFall.active = false;
   fx.rowFall.elapsedMs = 0;
   fx.rowFall.rowDropDistances = Array(CONFIG.board.rows).fill(0);
@@ -307,6 +309,11 @@ export function collides(state, px, py, mat) {
     }
   }
   return false;
+}
+
+// How fast the game runs in this mode, times the speed setting (turbo zen's pause menu).
+export function timeScaleOf(state) {
+  return (CONFIG.modes[state.mode]?.timeScale ?? 1) * (state.speed ?? 1);
 }
 
 export function markInput(state, type) {
@@ -516,6 +523,7 @@ function spawnPiece(state) {
   };
   // (zen: it starts out already turned, over the place it's going)
   if (state.zen) zenSpawned(state);
+  const pauseFirst = state.zen?.pauseFirst ?? 0;
 
   const ok = isPhantomPowerup(shape.powerup) || !collides(state, state.active.x, state.active.y, getActiveMatrix(state));
   if (ok) {
@@ -530,6 +538,8 @@ function spawnPiece(state) {
     }
     // (zen can say something else in place of the name: "Oops, all bagpipes!")
     emit(state, "spawn", { shape, next: state.next, isNew, label: state.zen?.current?.label ?? null });
+    // (turbo zen: a powerup that's about to take most of the board waits up there a moment first)
+    if (pauseFirst > 0) dramaticPause(state, pauseFirst, null);
   }
   return ok;
 }
@@ -786,8 +796,7 @@ function clearFullLines(state, alsoRows = null) {
   markBoardDirty(state);
   instancesAfterCollapse(state, fullRows);
 
-  rowClearShow(state, fullRows, removed);
-  startRowFall(state, dropDistances);
+  startRowFall(state, dropDistances, rowClearShow(state, fullRows, removed, dropDistances));
 
   state.lines += cleared;
   state.rowsDestroyed += cleared;
@@ -832,11 +841,15 @@ function rowsToCells(removedRows) {
   return out;
 }
 
-function startRowFall(state, dropDistances) {
+// The rows left come down into the space (`delays`: when each one starts, by its row now; all at
+// once without).
+function startRowFall(state, dropDistances, delays = null) {
   const rf = state.fx.rowFall;
-  rf.active = dropDistances.some(d => d > 0);
+  rf.active = dropDistances.some(d => d > 0) || !!delays;
   rf.elapsedMs = 0;
-  rf.durationMs = CONFIG.fx.lineClear.boardFallAnimMs;
+  rf.fallMs = CONFIG.fx.lineClear.boardFallAnimMs;
+  rf.rowDelays = delays;
+  rf.durationMs = rf.fallMs + (delays ? Math.max(0, ...delays) : 0);
   rf.rowDropDistances = dropDistances;
 }
 
@@ -1229,7 +1242,7 @@ function admire(state, dt) {
   const ad = state.fx.admire, A = CONFIG.fx.admire;
   ad.elapsedMs += dt;
   if (ad.elapsedMs >= ad.durationMs) { state.fx.admire = null; return; }
-  const ts = CONFIG.modes[state.mode]?.timeScale ?? 1, cellPx = CONFIG.render.cellPx;
+  const ts = timeScaleOf(state), cellPx = CONFIG.render.cellPx;
   const { cols, rows } = CONFIG.board;
   for (ad.due += A.perSec * dt / ts / 1000; ad.due >= 1; ad.due--) {
     let x = 0, y = 0, cell = null;
@@ -1370,10 +1383,11 @@ function addCallout(state, text, x, y, { big = false, color = null, durationMs =
 // tiers): one row's quick sweep, two or three from the middle out, then glow, ripples and sparks,
 // rainbow bands weaving back and forth, and for most of the board a cascade from the bottom up
 // under a rainbow wash. (Only the look: the board has already collapsed underneath.)
-function rowClearShow(state, fullRows, removed) {
+// Returns, for a combo, when each row left starts to come down (by its row now), or null.
+function rowClearShow(state, fullRows, removed, dropDistances) {
   const R = CONFIG.fx.rowClear;
   const n = fullRows.length;
-  if (!R?.tiers?.length) { spawnCellParticles(state, rowsToCells(removed)); return; }
+  if (!R?.tiers?.length) { spawnCellParticles(state, rowsToCells(removed)); return null; }
   let tier = 0;
   R.tiers.forEach((t, i) => { if (n >= t.rows) tier = i; });
   const T = R.tiers[tier], cols = CONFIG.board.cols;
@@ -1410,6 +1424,21 @@ function rowClearShow(state, fullRows, removed) {
     }
   }
   if (T.trauma) state.fx.quake.trauma = Math.max(state.fx.quake.trauma ?? 0, T.trauma);
+  if (n < 2) return null;
+  // A combo goes from the bottom up: each block stays where it was until its moment comes, and
+  // then it crumbles (its particles go then too, delayOf); and each row left comes down once the
+  // cleared row nearest under where it was has gone.
+  const ghosts = [];
+  for (const r of removed) r.cells.forEach((c, x) => { if (c) ghosts.push({ x, y: r.y, cell: c, at: delayOf(x, r.y) }); });
+  state.fx.ghosts = { cells: ghosts, elapsedMs: 0, durationMs: Math.max(0, ...ghosts.map(g => g.at)) + 1 };
+  const gone = (y) => rowDelay(rowAt.get(y)) + T.sweepMs; // (when cleared row y has all gone)
+  return dropDistances.map((d, y) => {
+    if (!d) return 0;
+    const was = y - d;
+    let under = Infinity;
+    for (const r of fullRows) if (r > was && r < under) under = r;
+    return Number.isFinite(under) ? gone(under) : 0;
+  });
 }
 
 // `opts`: { delayOf(x, y): when each cell goes (ms), speed: how hard it scatters }
@@ -1492,6 +1521,8 @@ function updateFX(state, dt) {
   }
 
   if (state.fx.admire) admire(state, dt);
+  const gh = state.fx.ghosts;
+  if (gh && (gh.elapsedMs += dt) >= gh.durationMs) state.fx.ghosts = null;
 
   const sh = state.fx.show;
   if (sh) {
@@ -1578,12 +1609,18 @@ function stepLockAndSpawn(state) {
   const pause = state.zen ? zenDramatic(state, lockInfo) : 0;
   if (pause > 0) {
     state.active = null;
-    state.hold = { lockInfo, elapsedMs: 0, durationMs: pause };
-    state.fx.admire = { elapsedMs: 0, durationMs: pause, due: 0 };
-    emit(state, "dramaticPause", { on: true });
+    dramaticPause(state, pause, lockInfo);
     return;
   }
   afterLock(state, lockInfo);
+}
+
+// Everything waits a moment (`ms` of game time), the board all aglow: after a piece has landed
+// (`lockInfo`: then it carries on from there) or before one falls (null).
+function dramaticPause(state, ms, lockInfo) {
+  state.hold = { lockInfo, elapsedMs: 0, durationMs: ms };
+  state.fx.admire = { elapsedMs: 0, durationMs: ms, due: 0 };
+  emit(state, "dramaticPause", { on: true });
 }
 
 function afterLock(state, lockInfo) {
@@ -1647,8 +1684,8 @@ export function updateGame(state, dt) {
     const h = state.hold;
     if ((h.elapsedMs += dt) < h.durationMs) return;
     state.hold = null;
-    emit(state, "dramaticPause", { on: false });
-    afterLock(state, h.lockInfo);
+    emit(state, "dramaticPause", { on: false, shape: h.lockInfo ? null : state.active?.shape });
+    if (h.lockInfo) afterLock(state, h.lockInfo);
     return;
   }
 
