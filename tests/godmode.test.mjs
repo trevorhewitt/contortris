@@ -191,3 +191,34 @@ test("god mode: the newest things come first, and things never seen before come 
   assert.ok(blank.fresh - seen.fresh >= 0.08, `newest ${(blank.fresh * 100).toFixed(0)}% vs ${(seen.fresh * 100).toFixed(0)}%`);
   assert.ok(blank.firstNew >= 0.5, `the first set was a new one in ${(blank.firstNew * 100).toFixed(0)}% of games`);
 });
+
+test("god mode: after a set, and after a few giants close together, a calm spell of ordinary pieces", () => {
+  const [lo] = CONFIG.godMode.calm.afterSet;
+  // which sets each piece can be part of
+  const sets = new Map();
+  for (const g of normaliseGroups(GROUPS, [...shapes, ...powerups])) {
+    const all = g.steps.flatMap(st => [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]);
+    for (const sh of [...all, ...(g.echoes?.values() ?? [])]) {
+      if (!sets.has(sh.id)) sets.set(sh.id, new Set());
+      sets.get(sh.id).add(g.id);
+    }
+  }
+  let ends = 0;
+  for (const seed of [1, 2, 3, 4]) {
+    const { served } = play("god", seed * 7, 220);
+    for (let i = 0; i < served.length; i++) {
+      if (served[i].difficulty !== 6) continue;
+      // the whole run of this set's pieces (a set can have small pieces in it: Noah's raindrops)
+      const gs = sets.get(served[i].id);
+      let j = i;
+      while (j + 1 < served.length && [...(sets.get(served[j + 1].id) ?? [])].some(g => gs.has(g))) j++;
+      const after = served.slice(j + 1, j + lo); // (one short, in case an ordinary raindrop ran on)
+      i = j;
+      if (after.length < lo - 1) continue;
+      ends++;
+      const big = after.filter(s => !s.powerup && (s.difficulty ?? 1) >= 4);
+      assert.equal(big.length, 0, `seed ${seed}: ${big.map(s => s.id)} straight after ${served[j].id}`);
+    }
+  }
+  assert.ok(ends >= 4, `${ends} sets`);
+});

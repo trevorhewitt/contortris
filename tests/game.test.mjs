@@ -327,3 +327,50 @@ test("a piece about to top out gets a last chance: it can still be moved out of 
     assert.equal(state.gameOver, false, "saved");
   }
 });
+
+test("a piece slid along the ground waits a little longer, so it can be slid again (up to a point)", () => {
+  const fresh = () => {
+    const { state } = newGame("extreme", 5);
+    placeActive(state, "square", 2, ROWS - 2); // (resting on the floor)
+    for (let t = 0; t < 2000 && !state.locking; t += 16) updateGame(state, 16); // (until it starts to lock)
+    assert.ok(state.locking);
+    return state;
+  };
+  // left alone, it locks at the usual pace
+  {
+    const state = fresh(), piece = state.active;
+    settle(state, CONFIG.timing.lockDelayMsKeyboard + 50);
+    assert.notEqual(state.active, piece, "locked");
+  }
+  // slid every 400ms, it's still sliding; let go, and it locks
+  {
+    const state = fresh(), piece = state.active;
+    for (let i = 0; i < 4; i++) { assert.ok(tryMove(state, 1, 0)); settle(state, 400); assert.equal(state.active, piece, `still there after slide ${i + 1}`); }
+    settle(state, CONFIG.timing.slideLockMs + 50);
+    assert.notEqual(state.active, piece, "then it locks");
+  }
+  // but not for ever
+  {
+    const state = fresh(), piece = state.active;
+    let dir = 1;
+    for (let t = 0; t < CONFIG.timing.slideMaxMs + 1500 && state.active === piece; t += 300) { if (!tryMove(state, dir, 0)) { dir = -dir; tryMove(state, dir, 0); } settle(state, 300); }
+    assert.notEqual(state.active, piece, "it locks in the end");
+  }
+});
+
+test("a giant or a set's piece that couldn't go anywhere without ending the game waits", () => {
+  const { state, events } = newGame("normal", 6);
+  // the board full nearly to the top, but for a narrow gap
+  for (let y = 3; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (x !== y % COLS) state.board[y][x] = filler();
+  placeActive(state, "pea", 0, -1); // (it lands on top, in the board)
+  state.pieceSel.level6.queue = [byId("everest_trash")];
+  setNextPiece(state, byId("everest")); // (a level 6 piece, far too big for what's left)
+  hardDropAndLock(state);
+  assert.equal(state.gameOver, false);
+  assert.ok(state.active, "something came");
+  assert.notEqual(state.active.shape.id, "everest", "not the mountain");
+  assert.ok(state.active.shape.powerup, "something to make room");
+  assert.ok(events.some(e => e.type === "deferred"));
+  assert.equal(state.next.id, "everest", "it comes after that");
+  assert.equal(state.pieceSel.level6.queue[0].id, "everest_trash", "and then the rest of its set");
+});

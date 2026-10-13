@@ -33,6 +33,10 @@ export const CONFIG = {
     maxAccumulatedSteps: 2,
     lockDelayMsKeyboard: 220,
     lockDelayMsTouch: 520,
+    // slid or turned along the ground, a piece waits at least this long before it locks, so it
+    // can be slid again (until it has spent slideMaxMs on the ground in all)
+    slideLockMs: 500,
+    slideMaxMs: 3000,
     tapRepeatStartMs: 140,
     tapRepeatEveryMs: 55,
     // triple tap the bottom of the board (or press down three times) to drop instantly, or a
@@ -145,12 +149,10 @@ export const CONFIG = {
       pieces: [
         "bull", "camel", "mouse", "elephant_in_the_room", "giant_rubber_duck", "dinosaur_fossil",
         "pyramid_box", "big_hot_air_balloon", "lighthouse", "double_decker",
-        "daisy", "tulip", "bluebell", "dandelion_clock", "poppy", "forget_me_not", "lavender", "snowdrop",
         "rubiks_cube", "mondrian", "qr_code", "space_invader", "mouse_pointer", "stuck_pixel",
         "watermelon_slice", "stop_sign", "lego_brick_2x4", "swiss_cheese_lump",
         "caveman_in_ice", "piece_of_sky",
-        "old_wheelbarrow", "stone_path", "watering_can", "cracked_pot", "hosepipe", "rusty_trowel",
-        "bird_bath", "compost_heap", "kilometerworm", "lightyearworm", "nebula",
+        "kilometerworm", "lightyearworm", "nebula",
         "storm_in_a_teacup", "umbrella_for_a_fish", "goldfish_bowl_moon", "anvil_of_feathers", "jar_of_fog", "fossilised_sandwich",
         "sock_full_of_night", "piano_full_of_bees", "snowman_on_holiday", "bucket_of_yesterday", "red_balloon",
         "ladder_to_nowhere", "kite_in_a_storm", "flock_of_starlings", "trail_of_footprints", "portrait_of_a_potato", "moons_spare_tooth",
@@ -158,6 +160,9 @@ export const CONFIG = {
       ],
     },
     novelty: { newBoost: 12, newSetBoost: 20, newUntilSeen: 3, unseenBoost: 2.5 },
+    // calm spells: after a level 6 set (afterSet), or `giants` giants within `within` pieces
+    // (afterGiants), this many ordinary pieces: no giants, no sets
+    calm: { afterSet: [8, 14], giants: 2, within: 8, afterGiants: [6, 10] },
     helpPower: 1.25,                 // always prefer the more helpful powerups (as when struggling)
   },
 

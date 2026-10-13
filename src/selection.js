@@ -355,9 +355,10 @@ export function selectPiece(state) {
   const grouped = nextGroupPiece(state);
   if (grouped) {
     commitSelectedShape(sel, grouped);
-    if (!groupUnderWay(state)) noteHardDropped(sel, LEVEL6); // the group is over: rest a while
+    if (!groupUnderWay(state)) { noteHardDropped(sel, LEVEL6); beginCalm(state, "afterSet"); } // the group is over: rest a while
     return grouped;
   }
+  const calm = inCalm(state);
 
   // The first giant: always somewhere in CONFIG...hard.firstGiantBetween (unless it would
   // land on an already dangerous stack, then as soon as things calm down a bit).
@@ -371,7 +372,8 @@ export function selectPiece(state) {
     }
   }
 
-  const linked = tryLinkedNextShape(state, prevShape, idToShape, DEBUG_LINK);
+  let linked = tryLinkedNextShape(state, prevShape, idToShape, DEBUG_LINK);
+  if (calm && linked && !linked.powerup && (linked.difficulty ?? 1) >= 4) linked = null; // (not in a calm spell)
 
   if (linked) {
     commitSelectedShape(sel, linked);
@@ -440,7 +442,7 @@ export function selectPiece(state) {
   const cooldownAllowsHard = (sel.cooldown.hard ?? 0) <= 0 && !sel.lastWasHard;
 
   const modeHasGiants = CONFIG.modes[state.mode]?.giants !== false;
-  const allowHard = modeHasGiants && pastMinHard && dangerAllowsHard && cooldownAllowsHard;
+  const allowHard = modeHasGiants && pastMinHard && dangerAllowsHard && cooldownAllowsHard && !calm;
 
   // Update shared hard urge every call.
   const inWindow =
@@ -555,6 +557,25 @@ function noteHardDropped(sel, lvl = 5) {
   sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, hardCfg(sel.mode).cooldownDrops ?? 9);
   sel.hasDroppedFirstHard = true;
   if (lvl === 5) sel.hadGiant = true;
+  if (lvl === 4 || lvl === 5) (sel.giantsAt ??= []).push(sel.dropIndex);
+}
+
+// God mode's calm spells (CONFIG.godMode.calm): after a level 6 set, or a few giants close
+// together, a stretch of ordinary pieces (no giants, no sets) to catch your breath.
+export function inCalm(state) {
+  const sel = state.pieceSel;
+  if (!isGodMode(state.mode) || !CONFIG.godMode.calm) return false;
+  const c = CONFIG.godMode.calm, g = sel.giantsAt ?? [];
+  // (a few giants close together start one)
+  if (g.length >= (c.giants ?? 2) && sel.dropIndex - g[g.length - (c.giants ?? 2)] <= (c.within ?? 8) && (sel.calmFrom ?? -1) < g[g.length - 1]) beginCalm(state, "afterGiants");
+  return sel.calmUntil != null && sel.dropIndex < sel.calmUntil;
+}
+function beginCalm(state, why) {
+  const sel = state.pieceSel, c = CONFIG.godMode.calm;
+  if (!isGodMode(state.mode) || !c?.[why]) return;
+  const [a, b] = c[why];
+  sel.calmFrom = sel.dropIndex;
+  sel.calmUntil = Math.max(sel.calmUntil ?? 0, sel.dropIndex + 1 + a + Math.floor(state.rng() * (b - a + 1)));
 }
 
 /* =========================================

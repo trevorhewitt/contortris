@@ -1103,13 +1103,12 @@ export const SHAPES = [
         ".X.",
         ".X."
       ],
-    color: [["","","#ff6fa8","#ffd34a","",""],["","","#8ee07a","#4caf50","",""],["#d4f2b4","#14240f","#8ee07a","#4caf50","#14240f","#d4f2b4"],["#4caf50","#4caf50","#b0304a","#b0304a","#4caf50","#2e7d32"],["","","#8ee07a","#4caf50","",""],["","","#8ee07a","#d4f2b4","",""],["","","#e07a4a","#e07a4a","",""],["","","#b85a30","#8a3e20","",""]],
+    color: [["","","","","","","#2e7d32","#8ee07a","#ff6fa8","#ff6fa8","#2e7d32","#2e7d32","","","","","",""],["","","","","","","#4caf50","#8ee07a","#ff6fa8","#ffd34a","#4caf50","#2e7d32","","","","","",""],["","","","","","","#4caf50","#8ee07a","#4caf50","#4caf50","#f4f0d0","#2e7d32","","","","","",""],["","","","","","","#4caf50","#f4f0d0","#4caf50","#4caf50","#4caf50","#2e7d32","","","","","",""],["","","","","","","#4caf50","#8ee07a","#4caf50","#4caf50","#4caf50","#2e7d32","","","","","",""],["","","","","","","#4caf50","#8ee07a","#4caf50","#f4f0d0","#4caf50","#2e7d32","","","","","",""],["#2e7d32","#8ee07a","#8ee07a","#f4f0d0","#8ee07a","#8ee07a","#4caf50","#8ee07a","#4caf50","#4caf50","#4caf50","#2e7d32","#8ee07a","#8ee07a","#f4f0d0","#8ee07a","#8ee07a","#2e7d32"],["#8ee07a","#4caf50","#4caf50","#4caf50","#4caf50","#4caf50","#4caf50","#14240f","#4caf50","#4caf50","#14240f","#2e7d32","#4caf50","#4caf50","#4caf50","#4caf50","#4caf50","#2e7d32"],["#4caf50","#4caf50","#f4f0d0","#4caf50","#4caf50","#4caf50","#4caf50","#8ee07a","#4caf50","#4caf50","#4caf50","#2e7d32","#4caf50","#4caf50","#4caf50","#f4f0d0","#4caf50","#2e7d32"],["#4caf50","#4caf50","#4caf50","#4caf50","#4caf50","#4caf50","#ff8a9a","#14240f","#14240f","#14240f","#14240f","#ff8a9a","#4caf50","#4caf50","#4caf50","#4caf50","#4caf50","#2e7d32"],["#2e7d32","#4caf50","#4caf50","#4caf50","#f4f0d0","#4caf50","#4caf50","#8ee07a","#4caf50","#4caf50","#4caf50","#2e7d32","#4caf50","#f4f0d0","#4caf50","#4caf50","#4caf50","#2e7d32"],["#2e7d32","#2e7d32","#2e7d32","#2e7d32","#2e7d32","#2e7d32","#4caf50","#8ee07a","#4caf50","#4caf50","#4caf50","#2e7d32","#2e7d32","#2e7d32","#2e7d32","#2e7d32","#2e7d32","#2e7d32"],["","","","","","","#4caf50","#8ee07a","#4caf50","#4caf50","#f4f0d0","#2e7d32","","","","","",""],["","","","","","","#4caf50","#8ee07a","#4caf50","#4caf50","#4caf50","#2e7d32","","","","","",""],["","","","","","","#4caf50","#f4f0d0","#4caf50","#4caf50","#4caf50","#2e7d32","","","","","",""],["","","","","","","#4caf50","#8ee07a","#4caf50","#4caf50","#4caf50","#2e7d32","","","","","",""],["","","","","","","#4caf50","#8ee07a","#4caf50","#f4f0d0","#4caf50","#2e7d32","","","","","",""],["","","","","","","#2e7d32","#8ee07a","#4caf50","#4caf50","#4caf50","#2e7d32","","","","","",""],["","","","","","","#e07a4a","#e07a4a","#e07a4a","#e07a4a","#e07a4a","#b85a30","","","","","",""],["","","","","","","#8a3e20","#8a3e20","#8a3e20","#8a3e20","#8a3e20","#8a3e20","","","","","",""],["","","","","","","#b85a30","#e07a4a","#e07a4a","#e07a4a","#b85a30","#8a3e20","","","","","",""],["","","","","","","#b85a30","#e07a4a","#e07a4a","#b85a30","#b85a30","#8a3e20","","","","","",""],["","","","","","","#b85a30","#e07a4a","#b85a30","#b85a30","#8a3e20","#8a3e20","","","","","",""],["","","","","","","#8a3e20","#8a3e20","#8a3e20","#8a3e20","#8a3e20","#8a3e20","","","","","",""]],
     difficulty: 2,
     rotation: {
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "disguise",
@@ -16333,7 +16332,7 @@ export const SHAPES = [
   },
   {
     id: "lighthouse",
-    name: "a lighthouse (nowhere near the sea)",
+    name: "an old lighthouse",
     grid: [
         "..XX....",
         "..XXXXXX",
@@ -16405,15 +16404,15 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
+    frequency: 0.3,
     claudeDraft: true,
     nextShapeProbs: [
-        0.25,
-        0.2,
-        0.08,
-        0.08,
-        0.08,
-        0.08
+        0.12,
+        0.12,
+        0.04,
+        0.04,
+        0.04,
+        0.04
       ],
     nextShapes: [
         "tulip",
@@ -16436,15 +16435,15 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
+    frequency: 0.3,
     claudeDraft: true,
     nextShapeProbs: [
-        0.25,
-        0.2,
-        0.08,
-        0.08,
-        0.08,
-        0.08
+        0.12,
+        0.12,
+        0.04,
+        0.04,
+        0.04,
+        0.04
       ],
     nextShapes: [
         "bluebell",
@@ -16466,15 +16465,15 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
+    frequency: 0.3,
     claudeDraft: true,
     nextShapeProbs: [
-        0.25,
-        0.2,
-        0.08,
-        0.08,
-        0.08,
-        0.08
+        0.12,
+        0.12,
+        0.04,
+        0.04,
+        0.04,
+        0.04
       ],
     nextShapes: [
         "dandelion_clock",
@@ -16497,15 +16496,15 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
+    frequency: 0.3,
     claudeDraft: true,
     nextShapeProbs: [
-        0.25,
-        0.2,
-        0.08,
-        0.08,
-        0.08,
-        0.08
+        0.12,
+        0.12,
+        0.04,
+        0.04,
+        0.04,
+        0.04
       ],
     nextShapes: [
         "poppy",
@@ -16528,15 +16527,15 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
+    frequency: 0.3,
     claudeDraft: true,
     nextShapeProbs: [
-        0.25,
-        0.2,
-        0.08,
-        0.08,
-        0.08,
-        0.08
+        0.12,
+        0.12,
+        0.04,
+        0.04,
+        0.04,
+        0.04
       ],
     nextShapes: [
         "forget_me_not",
@@ -16558,15 +16557,15 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
+    frequency: 0.3,
     claudeDraft: true,
     nextShapeProbs: [
-        0.25,
-        0.2,
-        0.08,
-        0.08,
-        0.08,
-        0.08
+        0.12,
+        0.12,
+        0.04,
+        0.04,
+        0.04,
+        0.04
       ],
     nextShapes: [
         "lavender",
@@ -16590,15 +16589,15 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
+    frequency: 0.3,
     claudeDraft: true,
     nextShapeProbs: [
-        0.25,
-        0.2,
-        0.08,
-        0.08,
-        0.08,
-        0.08
+        0.12,
+        0.12,
+        0.04,
+        0.04,
+        0.04,
+        0.04
       ],
     nextShapes: [
         "snowdrop",
@@ -16621,15 +16620,15 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
+    frequency: 0.3,
     claudeDraft: true,
     nextShapeProbs: [
-        0.25,
-        0.2,
-        0.08,
-        0.08,
-        0.08,
-        0.08
+        0.12,
+        0.12,
+        0.04,
+        0.04,
+        0.04,
+        0.04
       ],
     nextShapes: [
         "daisy",
@@ -16653,10 +16652,10 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.3,
+    frequency: 0.15,
     claudeDraft: true,
     nextShapeProbs: [
-        0.15
+        0.08
       ],
     nextShapes: [
         "compost_heap"
@@ -16680,10 +16679,10 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.3,
+    frequency: 0.15,
     claudeDraft: true,
     nextShapeProbs: [
-        0.12
+        0.08
       ],
     nextShapes: [
         "bird_bath"
@@ -16701,10 +16700,10 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.3,
+    frequency: 0.15,
     claudeDraft: true,
     nextShapeProbs: [
-        0.12
+        0.08
       ],
     nextShapes: [
         "cracked_pot"
@@ -16722,7 +16721,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.3,
+    frequency: 0.15,
     claudeDraft: true,
   },
   {
@@ -16738,10 +16737,10 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.3,
+    frequency: 0.15,
     claudeDraft: true,
     nextShapeProbs: [
-        0.1
+        0.08
       ],
     nextShapes: [
         "watering_can"
@@ -16759,7 +16758,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.3,
+    frequency: 0.15,
     claudeDraft: true,
   },
   {
@@ -16775,7 +16774,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.3,
+    frequency: 0.15,
     claudeDraft: true,
   },
   {
@@ -16790,10 +16789,10 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.3,
+    frequency: 0.15,
     claudeDraft: true,
     nextShapeProbs: [
-        0.12
+        0.08
       ],
     nextShapes: [
         "rusty_trowel"
@@ -16905,7 +16904,7 @@ export const SHAPES = [
   },
   {
     id: "space_invader",
-    name: "an invader from space",
+    name: "a space invader",
     grid: [
         ".X...X.",
         "..X.X..",
@@ -16915,7 +16914,7 @@ export const SHAPES = [
         "X.....X"
       ],
     color: [["","#5cf25c","","","","#5cf25c",""],["","","#5cf25c","","#5cf25c","",""],["","#5cf25c","#5cf25c","#5cf25c","#5cf25c","#5cf25c",""],["#5cf25c","#5cf25c","","#5cf25c","","#5cf25c","#5cf25c"],["#5cf25c","#5cf25c","#5cf25c","#5cf25c","#5cf25c","#5cf25c","#5cf25c"],["#5cf25c","","","","","","#5cf25c"]],
-    difficulty: 3,
+    difficulty: 4,
     rotation: {
         "mode": "any"
       },
@@ -16998,7 +16997,7 @@ export const SHAPES = [
   },
   {
     id: "lego_brick_2x4",
-    name: "a lego brick",
+    name: "a duplo brick",
     grid: [
         "X.X.X.X",
         "XXXXXXX",
@@ -17011,6 +17010,12 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.35
+      ],
+    nextShapes: [
+        "barefoot_lego"
+      ],
   },
   {
     id: "swiss_cheese_lump",

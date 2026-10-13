@@ -12,6 +12,7 @@
 // state.devEndGame: "auto" (the rule above), "on" (always) or "off" (never) — dev mode.
 
 import { CONFIG } from "../config.js";
+import { isGodMode } from "./godmode.js";
 
 // How tall the pile is: the height that at least CONFIG.endGame.columns columns reach (so one
 // tall thin giant standing on its end doesn't count as a full board).
@@ -85,7 +86,8 @@ export function trackEndGame(state) {
   // ...for long enough: a good while if they're still trying, less if they've stopped steering
   const [needIdle] = cfg.idleOf ?? [3, 5];
   const idle = eg.recent.filter(steered => !steered).length;
-  if (eg.stuck >= (cfg.stuckPieces ?? 12)) return enter(eg);
+  // (God mode is meant to be hard going: there, only if they've stopped steering)
+  if (eg.stuck >= (cfg.stuckPieces ?? 12) && !isGodMode(state.mode)) return enter(eg);
   if (eg.stuck >= (cfg.idleStuckPieces ?? 5) && idle >= needIdle) return enter(eg);
   return null;
 }

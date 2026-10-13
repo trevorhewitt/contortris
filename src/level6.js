@@ -75,8 +75,9 @@ export function normaliseGroups(rawGroups, shapes) {
     for (const st of steps) for (const sh of [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]) {
       if (sh.echo && live(sh.echo)) echoes.set(sh.id, live(sh.echo));
     }
+    // (unique: no piece twice in one run, whichever steps it's in; echoes aside)
     out.push({ id: String(g.id), name: String(g.name ?? g.id), frequency: Math.max(0, Number(g.frequency ?? 1) || 0), steps,
-      room: Math.max(0, Number(g.room) || 0), echoes });
+      room: Math.max(0, Number(g.room) || 0), echoes, unique: g.unique === true });
   }
   return out;
 }
@@ -105,19 +106,21 @@ export function expandGroup(group, rng, variants = null) {
     }
     const n = st.count[0] + Math.floor(rng() * (st.count[1] - st.count[0] + 1));
     let pool = st.shapes.map((s, k) => ({ s, w: st.weights[k] }));
+    if (group.unique) pool = pool.filter(it => !out.includes(it.s));
     for (let i = 0; i < n && pool.length; i++) {
       const it = pool.length === 1 ? pool[0] : sampleByWeight(pool, it => it.w, rng);
       out.push(it.s);
-      if (st.unique) pool = pool.filter(x => x !== it);
+      if (st.unique || group.unique) pool = pool.filter(x => x !== it);
     }
   }
   // echoes: the first piece that has one comes back once, somewhere later in the run (only
-  // one per run)
-  // (at least one other piece in between, when there's room for that)
+  // one per run), with at least one other piece in between when there's room for that, and
+  // never last if it can help it (a run ends on one of its own)
   const i = out.findIndex(s => group.echoes?.has(s.id));
   if (i >= 0) {
     const lo = Math.min(out.length, i + 2);
-    out.splice(lo + Math.floor(rng() * (out.length - lo + 1)), 0, group.echoes.get(out[i].id));
+    const span = out.length > lo ? out.length - lo : 1;
+    out.splice(lo + Math.floor(rng() * span), 0, group.echoes.get(out[i].id));
   }
   return out;
 }
@@ -206,6 +209,7 @@ export function maybeStartGroup(state) {
   if (!state.groups?.length || !level6Open(state)) return null;
   const sel = state.pieceSel, l6 = sel.level6, cfg = level6Cfg(state);
   if (sel.lastWasHard) return null; // never straight after a giant
+  if (sel.calmUntil != null && sel.dropIndex < sel.calmUntil) return null; // (God mode: a calm spell)
   if (stackRows(state) > (cfg.maxStackRows ?? 8)) return null;
   const firstDue = l6.firstDueAt != null && !l6.seen.size && sel.dropIndex >= l6.firstDueAt;
   if (!firstDue) {

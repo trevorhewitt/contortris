@@ -17,6 +17,7 @@
  *                                   (default: worked out from its pieces, as if placed well;
  *                                   set it to say otherwise: higher for a set that's awkward to
  *                                   place, lower for one that fits together better than that)
+ *   unique: true,                   optional: no piece twice in one run, whichever steps it's in
  *   sequence: [ step, step, ... ],  the pieces, in order. A step is either:
  *     "piece_id"                      that piece, or
  *     { pick: ["id", "id", ...],      a run of pieces picked at random from the list:
@@ -31,7 +32,8 @@
  *         max: 4 } }                    and at most this many
  *
  * A piece with `echo: "other_id"` in its data comes back later in the same run as that piece
- * (déjà vu); only the first such piece in a run does. A piece with `nameAgain` goes by that
+ * (déjà vu), never as the run's last piece if there's room before it; only the first such
+ * piece in a run does. A piece with `nameAgain` goes by that
  * name when it comes straight after itself ("another raindrop").
  * }
  *

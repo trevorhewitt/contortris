@@ -19,12 +19,13 @@
 import { CONFIG } from "../config.js";
 import { clamp01, lerp } from "./util.js";
 import { getShapePaint } from "./shapes.js";
-import { initPieceSelectionState, selectPiece } from "./selection.js";
+import { initPieceSelectionState, selectPiece, destroyerCells } from "./selection.js";
+import { gravityColumns } from "./godmode.js";
 import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
 import { normaliseGroups, trackLevel6, LEVEL6 } from "./level6.js";
 import { trackEndGame, endGameOn, spawnJitter, noteLanding } from "./endgame.js";
 import { remixShape } from "./remix.js";
-import { createZen, zenNext, zenPeek, zenTick, zenSpawned, zenSpeed, zenSteps, zenLockMs } from "./zen.js";
+import { createZen, zenNext, zenPeek, zenTick, zenSpawned, zenSpeed, zenSteps, zenLockMs, reachableTurns } from "./zen.js";
 import { buildThreads } from "./threads.js";
 
 /* =========================
@@ -315,9 +316,12 @@ function currentLockDelayMs(state) {
   // treat as touch if touch input occurred recently
   const now = performance.now();
   const recentTouch = (state.lastInputType === "touch") && (now - state.lastInputAt < 1200);
-  const delay = recentTouch ? CONFIG.timing.lockDelayMsTouch : CONFIG.timing.lockDelayMsKeyboard;
+  let delay = recentTouch ? CONFIG.timing.lockDelayMsTouch : CONFIG.timing.lockDelayMsKeyboard;
+  // (slid or turned along the ground: a little longer, so it can be slid again, up to a point)
+  const a = state.active, T = CONFIG.timing;
+  if (a?.groundMoved && !groundSpent(state)) delay = Math.max(delay, T.slideLockMs ?? 0);
   // (on its last chance, while it would still top out: whatever's left of it)
-  const lc = state.active?.lastChance;
+  const lc = a?.lastChance;
   return lc && topsOut(state) ? Math.max(delay, lc.durationMs - lc.elapsedMs) : delay;
 }
 
@@ -377,11 +381,18 @@ function tryMovePhantom(state, dx, dy) {
   if (target === null || target < state.active.y) return false;
   const ny = state.active.y + dy;
   if (dy > 0 && ny > target) return false;
-  if (dx !== 0 || dy !== 0) cancelLock(state);
+  if (dx !== 0 && state.locking) state.active.groundMoved = true;
+  if ((dx !== 0 || dy !== 0) && !groundSpent(state)) cancelLock(state);
   if (dx !== 0) { state.active.unkickedX = null; state.active.steered = true; }
   state.active.x = nx;
   state.active.y = ny;
   return true;
+}
+
+// Has the piece had its time on the ground (CONFIG.timing.slideMaxMs)? Then moving it no
+// longer puts off the lock.
+function groundSpent(state) {
+  return (state.active?.groundMs ?? 0) >= (CONFIG.timing.slideMaxMs ?? Infinity);
 }
 
 export function tryMove(state, dx, dy) {
@@ -391,8 +402,11 @@ export function tryMove(state, dx, dy) {
   const nx = state.active.x + dx;
   const ny = state.active.y + dy;
   if (!collides(state, nx, ny, mat)) {
-    // If player nudges a piece while it's in lock grace, reset the timer.
-    if (dx !== 0 || dy !== 0) cancelLock(state);
+    // If player nudges a piece while it's in lock grace, reset the timer (and slid along the
+    // ground, it waits a little longer: CONFIG.timing.slideLockMs), until its time on the
+    // ground is up.
+    if (dx !== 0 && state.locking) state.active.groundMoved = true;
+    if ((dx !== 0 || dy !== 0) && !groundSpent(state)) cancelLock(state);
     if (dx !== 0) { state.active.unkickedX = null; state.active.steered = true; } // (no snapping back any more)
     state.active.x = nx;
     state.active.y = ny;
@@ -453,7 +467,8 @@ export function tryRotate(state) {
     a.x = nx;
     a.unkickedX = pushed ? baseX : null;
     a.steered = true;
-    cancelLock(state);
+    if (state.locking) a.groundMoved = true;
+    if (!groundSpent(state)) cancelLock(state);
     return true;
   }
   return false;
@@ -475,7 +490,7 @@ function spawnPiece(state) {
     state.next = zenPeek(state);
   } else {
     if (!state.next) state.next = prepareShape(state, selectPiece(state));
-    shape = state.next;
+    shape = notDeadly(state, state.next);
     state.next = prepareShape(state, selectPiece(state));
   }
 
@@ -511,6 +526,43 @@ function spawnPiece(state) {
     emit(state, "spawn", { shape, next: state.next, isNew });
   }
   return ok;
+}
+
+// A giant, or a level 6 set's piece, that couldn't go anywhere without sticking out over the top
+// (an instant game over) waits: a set's piece goes back to the front of its set, and something to
+// make room comes first (a big destroyer, or a small piece without powerups). After a few goes,
+// the set gives up.
+function notDeadly(state, shape) {
+  if (shape.powerup || (shape.difficulty ?? 1) < 4) return shape;
+  const l6 = state.pieceSel?.level6, set = (shape.difficulty ?? 1) === LEVEL6 && l6;
+  if (fitsSomewhere(state, shape)) { if (set) l6.waited = 0; return shape; }
+  if (set) {
+    if ((l6.waited = (l6.waited ?? 0) + 1) <= 3) l6.queue.unshift(shape);
+    else { l6.queue = []; l6.group = null; l6.lastEnd = state.pieceSel.dropIndex; l6.waited = 0; }
+  }
+  emit(state, "deferred", { shape });
+  return prepareShape(state, roomMaker(state));
+}
+
+function roomMaker(state) {
+  const big = state.powerups.filter(p => isPowerupEnabled(p) && !p.powerup.bad && (destroyerCells(p) >= 40 || gravityColumns(p) >= 8));
+  if (big.length && CONFIG.modes[state.mode]?.powerups !== false) return big[Math.floor(state.rng() * big.length)];
+  const small = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) <= 1);
+  return small[Math.floor(state.rng() * small.length)] ?? state.shapes[0];
+}
+
+// Could the piece go anywhere (any turn it can reach, any column) without sticking out over the top?
+function fitsSomewhere(state, shape) {
+  const cols = CONFIG.board.cols;
+  for (let r = 0; r < reachableTurns(shape); r++) {
+    const mat = shape.rotations[r], w = mat[0].length;
+    for (let x = 0; x + w <= cols; x++) {
+      let y = -mat.length;
+      while (!collides(state, x, y + 1, mat)) y++;
+      if (!mat.some((row, j) => y + j < 0 && row.some(Boolean))) return true;
+    }
+  }
+  return false;
 }
 
 // Debug helper: make `shape` the next piece.
@@ -1523,6 +1575,9 @@ export function updateGame(state, dt) {
 
     steps++;
   }
+
+  // (all the time it spends resting on something counts towards its time on the ground)
+  if (state.active && !canFall(state)) state.active.groundMs = (state.active.groundMs ?? 0) + dt;
 
   if (state.locking && state.active && !state.gameOver) {
     state.lockElapsed += dt;
