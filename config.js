@@ -151,6 +151,10 @@ export const CONFIG = {
     flock: { minCols: 22, colsEach: 12, most: 4, chance: 0.6, margin: 1, headroom: 3, stagger: 5,
       tiny: { most: 12, colsEach: 3, chance: 0.85 } }, // (pieces of one or two blocks: a shower of them)
     mosaicChance: 0.45,    // (on a big board) the squares now and then 1 x 1, a mosaic
+    // Bringing the board down (turbo zen) goes on only while it's spectacular: after the first
+    // `free` blasts, another only if the last took at least minBlocks, and minShare of what was
+    // there; otherwise the rest stays and the next movement builds on it.
+    demolish: { free: 2, minBlocks: 16, minShare: 0.2 },
     // On the way up (a fill), beds for one big or strange piece each and patches of tiles: how
     // likely none, one, two or three of them (beds; patches), above `belowTop` rows from the top
     // and with `headroom` rows over them.
@@ -197,7 +201,7 @@ export const CONFIG = {
     // newSetBoost times (load the page again to see them all again). Anything never seen in this
     // browser at all comes up unseenBoost times as often. (God mode.)
     newest: {
-      sets: ["beans", "spaghetti_os", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
+      sets: ["beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
         "spaghetti_os", "spam_can", "bull", "china_shop", "bees_knees", "queen_bee",
         "meteor_shower", "tidal_wave", "dragon_with_hay_fever", "giant_eraser", "hole_in_one",

@@ -99,7 +99,11 @@ export const GROUPS = [
     id: "townhouses",
     name: "the townhouses",
     frequency: 1,
-    sequence: ["townhouses", "schnauzers", "schnerzgerberz", "hergrr"],
+    versions: [
+      ["townhouses", "schnauzers", "schnerzgerberz", "hergrr"],
+      ["canal_houses", "candle_mouses", "kerndl_merzerz", "cherm_mrrz"],
+      ["royal_crescent", "royal_croissant", "rerl_crerssernt", "crrs_brf"],
+    ],
   },
   {
     // the trash fits on the mountain: drop both upright in the same place
@@ -119,7 +123,11 @@ export const GROUPS = [
     id: "space",
     name: "space",
     frequency: 1,
-    sequence: ["moon", "earth", "asteroid_belt"],
+    sequence: [
+      {pick: ["moon", "harvest_moon", "blue_moon"], weights: [1, 1, 0.35], count: 1},
+      {pick: ["earth", "mars", "saturn"], count: 1},
+      {pick: ["asteroid_belt", "voyager_1"], count: 1},
+    ],
   },
   {
     id: "loch_ness",

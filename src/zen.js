@@ -96,6 +96,7 @@ export function zenStart(state, name, opts = null) {
   z.queue = [];
   z.movement = null;
   z.after = name;
+  z.asked = name; // (asked for by name: worth tidying up for, if it needs a clean board)
   z.expect = null;
   z.opts = opts;
 }
@@ -194,7 +195,7 @@ function refill(state) {
 
 function begin(state, name) {
   const z = state.zen;
-  if (z.after === name) { z.after = null; z.waited = 0; }
+  if (z.after === name) { z.after = null; z.waited = 0; z.asked = null; }
   z.movement = MOVEMENTS[name](state);
   z.movement.name = name;
   z.movement.careful = z.simRng() < (CONFIG.zen.pace.carefulChance ?? 1); // (slows down near the top)
@@ -215,19 +216,26 @@ function pickMovement(state) {
   if (isCalm(state)) return sampleByWeight(Object.entries(MOVEMENT_WEIGHTS.zen).filter(([k]) => k !== z.last), ([, w]) => w, state.rng)[0];
   if (!z.after) {
     let options = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => k !== z.last);
-    // left high: tidy up first, or now and then just carry on building on what's there
+    // left high: carry on building on what's there (only near the top, a quick tidy first)
     if (h > up(9)) {
-      if (h > CONFIG.board.rows - 8 || state.rng() < 0.5) return "tidy";
+      if (h > CONFIG.board.rows - 8) return "tidy";
       options = options.filter(([k]) => BLENDS.has(k));
     }
     z.after = sampleByWeight(options, ([, w]) => w, state.rng)[0];
     z.waited = 0;
   }
-  // the planned ones need a low, tidy board to build on (and if it won't tidy, never mind)
+  // the planned ones need a low, tidy board to build on: if it isn't one, it waits, and something
+  // that builds on what's there goes first (nobody wants to watch every last piece being cleared
+  // away; the planned one has its turn after the next big clearance)
   if (PLANNED.has(z.after) && (!solid(occ, cols, rows) || h > 2)) {
-    if ((z.waited = (z.waited ?? 0) + 1) <= 2) return "tidy";
-    z.after = null;
-    return pickMovement(state);
+    if (z.asked === z.after) {
+      if ((z.waited = (z.waited ?? 0) + 1) <= 2) return "tidy";
+      z.after = z.asked = null;
+      return pickMovement(state);
+    }
+    if ((z.waited = (z.waited ?? 0) + 1) > 3) z.after = null;
+    const blends = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => BLENDS.has(k) && k !== z.last);
+    return sampleByWeight(blends, ([, w]) => w, state.rng)[0];
   }
   return z.after;
 }
@@ -273,6 +281,18 @@ function buildPiece(state) {
 function giantPiece(state) {
   const g = giantPool(state).filter(s => fitsUnder(state, s, 4));
   return g.length ? pick(state, g) : buildPiece(state);
+}
+
+// Bringing the board down only goes on while it's spectacular (turbo zen): after the first big
+// blasts (CONFIG.zen.demolish.free), another only if the last one took a good bite (minBlocks,
+// or minShare of what was there); otherwise what's left stays, and the next movement builds on
+// it. `mv` keeps the count from one piece to the next; `n` is how many have gone off so far.
+function stillWorthIt(mv, state, n) {
+  const D = CONFIG.zen.demolish ?? {};
+  const now = occupancy(state.board).reduce((a, b) => a + b, 0);
+  if (mv.countAt !== state.drops) { mv.before = mv.count; mv.count = now; mv.countAt = state.drops; }
+  if (isCalm(state) || n < (D.free ?? 2) || mv.before == null) return true;
+  return mv.before - mv.count >= Math.max(D.minBlocks ?? 16, (D.minShare ?? 0.2) * mv.before);
 }
 
 // Build up to `target` rows with next() pieces (placed with `weights`), keeping one column clear
@@ -335,7 +355,7 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         this.blasts++;
       }
     },
-    done(state) { return this.phase === "blast" && (this.blasts >= blasts || stackHeight(state) <= this.leave); },
+    done(state) { return this.phase === "blast" && (this.blasts >= blasts || stackHeight(state) <= this.leave || !stillWorthIt(this, state, this.blasts)); },
   };
 }
 
@@ -374,7 +394,7 @@ function waves(state) {
       z.queue.push({ shape: this.blasts < 2 ? bigPowerup(state) : bestPowerup(state), weights: WEIGHTS.clear });
       this.blasts++;
     },
-    done(state) { return this.phase === "blast" && (this.blasts >= 6 || stackHeight(state) <= 3); },
+    done(state) { return this.phase === "blast" && (this.blasts >= 6 || stackHeight(state) <= 3 || !stillWorthIt(this, state, this.blasts)); },
   };
 }
 
@@ -533,7 +553,7 @@ const MOVEMENTS = {
       state.zen.queue.push({ shape: this.used < 2 ? bigPowerup(state) : bestPowerup(state), weights: WEIGHTS.clear, dramatic: full });
       this.used++;
     },
-    done(state) { return this.used >= 7 || stackHeight(state) <= 3; },
+    done(state) { return this.used >= 7 || stackHeight(state) <= 3 || !stillWorthIt(this, state, this.used); },
   }),
 
   // the board full of board-height pieces side by side (or of long sticks standing on end), the
@@ -572,7 +592,7 @@ const MOVEMENTS = {
       state.zen.queue.push({ shape: this.blasts < 2 ? bigPowerup(state) : bestPowerup(state), weights: WEIGHTS.clear });
       this.blasts++;
     },
-    done(state) { return this.phase === "blast" && (this.blasts >= 7 || stackHeight(state) <= 3); },
+    done(state) { return this.phase === "blast" && (this.blasts >= 7 || stackHeight(state) <= 3 || !stillWorthIt(this, state, this.blasts)); },
   }),
 
   // zen: a few of one family of pieces (a few bees, some florgnorfepuses)
@@ -607,13 +627,17 @@ const MOVEMENTS = {
   },
 
   // powerups until the board is low with no gaps
+  // (turbo zen: only to bring a board that's near the top down a way, not to clean up every last
+  // piece: what's left, the next movement builds on)
   tidy: () => ({
     caption: "tidying up", used: 0,
     fill(state) { state.zen.queue.push({ shape: bestPowerup(state), weights: WEIGHTS.clear }); this.used++; },
     done(state) {
       const { cols, rows } = CONFIG.board;
       const occ = occupancy(state.board);
-      return this.used >= 6 || (solid(occ, cols, rows) && heightOf(occ, cols, rows) <= 2);
+      // (zen, and for a planned movement asked for by name: right down to a clean board)
+      if (isCalm(state) || (state.zen.asked && PLANNED.has(state.zen.asked))) return this.used >= 6 || (solid(occ, cols, rows) && heightOf(occ, cols, rows) <= 2);
+      return this.used >= 3 || heightOf(occ, cols, rows) <= rows - 10 || !stillWorthIt(this, state, this.used);
     },
   }),
 };
