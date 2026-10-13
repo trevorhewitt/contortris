@@ -293,8 +293,9 @@ test("turbo zen: the piece that brings the board down lands, then a dramatic pau
   const t = zen(8, "turbo");
   let pauses = 0, big = 0, at = null;
   on(t.state, (e, d) => {
-    if (e === "dramaticPause" && d.on) { pauses++; at = blocksOn(t.state); }
-    if (e === "spawn" && at != null) { if (at - blocksOn(t.state) >= Math.min(D.minBlocks, D.minRows * cols) * 0.9) big++; at = null; }
+    if (e === "dramaticPause" && d.on) at = blocksOn(t.state);
+    // (judged when the next piece comes: one still going at the end doesn't count)
+    if (e === "spawn" && at != null) { pauses++; if (at - blocksOn(t.state) >= Math.min(D.minBlocks, D.minRows * cols) * 0.9) big++; at = null; }
   });
   run(t.state, t.log, 12 * 60000);
   assert.ok(pauses >= 3, `${pauses} pauses`);

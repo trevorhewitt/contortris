@@ -255,6 +255,36 @@ export function bindUI({ state, renderer, sound, achievements }) {
     }
   }
 
+  /* ---------- turbo zen: the whole window ---------- */
+
+  // The board as big as the window, the bottom bar gone: the cells a little smaller than usual
+  // (still square) and as many of them as fit. The size is taken from the window as it is when
+  // it's asked for and kept (a window resized afterwards just scales it). The usual board again
+  // for anything else.
+  const usualBoard = { cols: CONFIG.board.cols, rows: CONFIG.board.rows };
+  let wholeWindow = false;
+  function setBoardSize(cols, rows) {
+    CONFIG.board.cols = cols;
+    CONFIG.board.rows = rows;
+    document.documentElement.style.setProperty("--cols", String(cols));
+    document.documentElement.style.setProperty("--rows", String(rows));
+    window.__fitBoard?.();
+    renderer.resize();
+  }
+  function setWholeWindow(on) {
+    if (on === wholeWindow) return;
+    wholeWindow = on;
+    if (on) {
+      const cell = Math.max(8, Math.floor($("boardShell").getBoundingClientRect().width / CONFIG.board.cols * (CONFIG.zen.wholeWindowCell ?? 0.8)));
+      const vw = window.visualViewport?.width ?? window.innerWidth, vh = window.visualViewport?.height ?? window.innerHeight;
+      document.body.classList.add("wholeWindow");
+      setBoardSize(Math.max(usualBoard.cols, Math.floor((vw - 16) / cell)), Math.max(usualBoard.rows, Math.floor((vh - 16) / cell)));
+    } else {
+      document.body.classList.remove("wholeWindow");
+      setBoardSize(usualBoard.cols, usualBoard.rows);
+    }
+  }
+
   /* ---------- game flow ---------- */
 
   function startGame(mode = lastMode) {
@@ -263,6 +293,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
     lastMode = CONFIG.modes[mode] ? mode : CONFIG.defaultMode;
     store.set("extris.mode", lastMode);
     newBest = false;
+    if (lastMode !== "turbo") setWholeWindow(false);
     startRun(state, lastMode);
     showPanel(null);
   }
@@ -281,6 +312,8 @@ export function bindUI({ state, renderer, sound, achievements }) {
     state.paused = true;
     state.softDropping = false;
     $("pauseMode").textContent = `${modeLabel(state.mode)} mode`;
+    $("btnWholeWindow").hidden = state.mode !== "turbo";
+    $("btnWholeWindow").textContent = wholeWindow ? "Back to the usual board" : "Fill the window";
     showPanel("pause");
   }
 
@@ -291,6 +324,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
   }
 
   function goToMenu() {
+    setWholeWindow(false);
     resetGame(state);
     showPanel("menu");
   }
@@ -1024,6 +1058,15 @@ export function bindUI({ state, renderer, sound, achievements }) {
   pauseBtn.addEventListener("click", (e) => {
     e.preventDefault();
     togglePause();
+  });
+  $("floatPause").addEventListener("click", (e) => {
+    e.preventDefault();
+    togglePause();
+  });
+  // (a fresh run on the new board: the old one's pieces don't fit it)
+  $("btnWholeWindow").addEventListener("click", () => {
+    setWholeWindow(!wholeWindow);
+    startGame("turbo");
   });
 
   // (a mode can say otherwise: turbo zen carries on until someone stops it)

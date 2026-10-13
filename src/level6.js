@@ -274,9 +274,12 @@ export function roomNeeded(pieces) {
 // (rows that fill up are cleared). Remembered for each run of pieces.
 const pileCache = new Map();
 export function bestPile(pieces, beamWidth = 12, perLevel = 3) {
-  const key = pieces.map(s => s.id).join(">");
+  const cols = CONFIG.board.cols;
+  // (a board too wide for a row in one number, turbo zen's whole window: the rough estimate)
+  if (cols > 31) return Math.ceil(pieces.reduce((n, s) => n + s.rotations[0].flat().filter(Boolean).length, 0) / cols * 1.5);
+  const key = cols + ":" + pieces.map(s => s.id).join(">");
   if (pileCache.has(key)) return pileCache.get(key);
-  const cols = CONFIG.board.cols, H = 64, FULL = (1 << cols) - 1;
+  const H = 64, FULL = (1 << cols) - 1;
   // a board: rows[y] = bit mask of filled cells (y = 0 at the top), tops[x] = first filled row
   let beam = [{ rows: new Uint32Array(H), tops: new Int16Array(cols).fill(H), score: 0 }];
   for (const s of pieces) {

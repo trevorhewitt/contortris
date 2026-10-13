@@ -202,7 +202,7 @@ function pickMovement(state) {
   if (!z.after) {
     let options = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => k !== z.last);
     // left high: tidy up first, or now and then just carry on building on what's there
-    if (h > 9) {
+    if (h > up(9)) {
       if (h > CONFIG.board.rows - 8 || state.rng() < 0.5) return "tidy";
       options = options.filter(([k]) => BLENDS.has(k));
     }
@@ -219,6 +219,9 @@ function pickMovement(state) {
 }
 
 const int = (state, a, b) => a + Math.floor(state.rng() * (b - a + 1));
+// A height in rows as it would be on the usual board (24 rows), on this one: as far from the top
+// (turbo zen can fill the whole window).
+const up = (n) => n + CONFIG.board.rows - 24;
 const pick = (state, list) => sampleByWeight(list, s => s.frequency ?? 1, state.rng);
 const stackHeight = (state) => heightOf(occupancy(state.board), CONFIG.board.cols, CONFIG.board.rows);
 
@@ -263,7 +266,7 @@ function giantPiece(state) {
 // the tallest pieces drops into that column (`keyChance`), or else the powerups, the biggest first.
 // (`only`: nothing but next()'s pieces, so when the next won't fit, that's as high as it goes;
 // `label`: what the name says for each of them, the same all the way up.)
-function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 1, maxPieces = 70, keyChance = 0.5, blastWith = null, blasts = 7, only = false, label = null } = {}) {
+function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 1, maxPieces = 70 * CONFIG.board.cols * CONFIG.board.rows / 336, keyChance = 0.5, blastWith = null, blasts = 7, only = false, label = null } = {}) {
   return {
     caption, pace, phase: "fill", target, blasts: 0, pieces: 0, weights: null, leave: 3,
     fill(state) {
@@ -284,7 +287,7 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         // (only if the column is still clear, and most of the rows would go)
         if (keys.length && state.rng() < keyChance && colTop(occ, wx, cols, rows) === rows && rowsReady(occ, wx, cols, rows) >= 0.7 * heightOf(occ, cols, rows)) {
           const ready = rowsReady(occ, wx, cols, rows);
-          state.zen.queue.push({ shape: keys[Math.floor(state.rng() * keys.length)], target: { rot: 0, x: wx }, weights: WEIGHTS.clear, key: true, dramatic: ready >= (CONFIG.zen.dramatic?.minRows ?? 12) });
+          state.zen.queue.push({ shape: keys[Math.floor(state.rng() * keys.length)], target: { rot: 0, x: wx }, weights: WEIGHTS.clear, key: true, dramatic: ready >= (CONFIG.zen.dramatic?.minRows ?? 12) * Math.max(1, rows / 24) });
           return;
         }
         zenCaption(state, "demolition", "demolition");
@@ -307,11 +310,11 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
 function waves(state) {
   const { rows } = CONFIG.board;
   return {
-    caption: "comings and goings", phase: "fill", round: 0, rounds: int(state, 2, 3), target: int(state, 11, 14), pieces: 0, fixes: 0, blasts: 0, weights: null,
+    caption: "comings and goings", phase: "fill", round: 0, rounds: int(state, 2, 3), target: up(int(state, 11, 14)), pieces: 0, fixes: 0, blasts: 0, weights: null,
     fill(state) {
       const z = state.zen, h = stackHeight(state);
       if (!this.weights) { this.weights = { ...WEIGHTS.holey }; this.target = Math.max(this.target, h + 4); }
-      if (this.phase === "fill" && (h >= this.target || this.pieces >= 40)) {
+      if (this.phase === "fill" && (h >= this.target || this.pieces >= 40 * CONFIG.board.cols * CONFIG.board.rows / 336)) {
         this.round++;
         if (this.round > this.rounds) { this.phase = "blast"; zenCaption(state, "and down it all comes", "demolition"); }
         else { this.phase = "fix"; this.fixes = 0; }
@@ -405,7 +408,7 @@ const MOVEMENTS = {
   }),
 
   // build up near the top without clearing anything, then knock it all down
-  build: (state) => fillThenBlast("a slow build", buildPiece, { target: int(state, 18, 21), pace: 0.9 }),
+  build: (state) => fillThenBlast("a slow build", buildPiece, { target: up(int(state, 18, 21)), pace: 0.9 }),
 
   // up near the top again, full of awkward gaps, and then the powerups have at it
   mess: () => planned("a mess", (state) => planMess(state), "demolition"),
@@ -417,7 +420,7 @@ const MOVEMENTS = {
       if (left <= 0 || !fitsUnder(st, cur, 4)) { cur = pick(st, regularPool(st).filter(s => (s.difficulty ?? 1) <= 3)); left = int(st, 2, 4); }
       left--;
       return cur;
-    }, { target: int(state, 17, 20), pace: 0.8 });
+    }, { target: up(int(state, 17, 20)), pace: 0.8 });
   },
 
   // the board full of one thing: spam, the animals, Big Bens...
@@ -426,21 +429,21 @@ const MOVEMENTS = {
     return fillThenBlast(fam.caption, (st) => {
       const fits = fam.pieces.filter(s => fitsUnder(st, s, 4));
       return fits.length ? pick(st, fits) : pick(st, smallPool(st));
-    }, { target: int(state, 17, 20), pace: 0.75 });
+    }, { target: up(int(state, 17, 20)), pace: 0.75 });
   },
 
   // the board full of one awkward thing, and the name says so all the way up: "Oops, all bagpipes!"
   oops: (state) => {
     const s = awkwardOne(state);
     if (!s) return MOVEMENTS.mono(state);
-    return fillThenBlast(null, () => s, { target: int(state, 17, 20), pace: 0.75, only: true, keyChance: 0.3, label: `Oops, all ${pluralName(s.name)}!` });
+    return fillThenBlast(null, () => s, { target: up(int(state, 17, 20)), pace: 0.75, only: true, keyChance: 0.3, label: `Oops, all ${pluralName(s.name)}!` });
   },
 
   // small things, lots of them, quickly
-  small: (state) => fillThenBlast("small things", (st) => pick(st, smallPool(st)), { target: int(state, 18, 21), pace: 0.6, maxPieces: 110 }),
+  small: (state) => fillThenBlast("small things", (st) => pick(st, smallPool(st)), { target: up(int(state, 18, 21)), pace: 0.6, maxPieces: 110 * CONFIG.board.cols / 14 }),
 
   // big things
-  big: (state) => fillThenBlast("big things", giantPiece, { target: int(state, 16, 19), pace: 1.1 }),
+  big: (state) => fillThenBlast("big things", giantPiece, { target: up(int(state, 16, 19)), pace: 1.1 }),
 
   // the giants: a level 6 set if one fits, or a few giant pieces
   giants: (state) => ({
@@ -513,16 +516,16 @@ const MOVEMENTS = {
 
   // built up, then one black hole after another
   blackholes: (state) => fillThenBlast("a series of black holes", buildPiece, {
-    target: int(state, 15, 19), pace: 0.8, blasts: 8,
+    target: up(int(state, 15, 19)), pace: 0.8, blasts: 8,
     blastWith: (st, n) => { const holes = powerupPool(st).filter(p => /black hole/i.test(p.name)); return holes.length && n % 3 !== 2 ? bestPowerup(st, holes) : bigPowerup(st); },
   }),
 
   // the board filled by expanding pieces, then the powerups
   expanders: (state) => ({
-    caption: "expanding", used: 0, target: int(state, 16, 20), phase: "grow", blasts: 0,
+    caption: "expanding", used: 0, target: up(int(state, 16, 20)), phase: "grow", blasts: 0,
     fill(state) {
       const pool = powerupPool(state).filter(p => p.powerup.type === "expander" && !p.powerup.bad);
-      if (this.phase === "grow" && (stackHeight(state) >= this.target || this.used >= 16 || !pool.length)) { this.phase = "blast"; zenCaption(state, "demolition", "demolition"); }
+      if (this.phase === "grow" && (stackHeight(state) >= this.target || this.used >= 16 * CONFIG.board.cols / 14 || !pool.length)) { this.phase = "blast"; zenCaption(state, "demolition", "demolition"); }
       if (this.phase === "grow") {
         state.zen.queue.push({ shape: bestPowerup(state, pool, CONFIG.zen.powerupChoices, WEIGHTS.grow), weights: WEIGHTS.grow });
         this.used++;
@@ -802,12 +805,14 @@ export function zenDramatic(state, info) {
   const z = state.zen, D = CONFIG.zen.dramatic;
   if (!D || !z?.current?.dramatic || z.userHas || isCalm(state)) return 0;
   let big;
+  // (the numbers are for the usual board: as much of a bigger one)
+  const { cols, rows } = CONFIG.board;
   if (info.shape.powerup) {
     const before = occupancy(state.board).reduce((a, b) => a + b, 0);
     const after = tryPowerup(state, info.shape, info.rotIdx, info.x, info.y).occ.reduce((a, b) => a + b, 0);
-    big = before - after >= D.minBlocks;
+    big = before - after >= D.minBlocks * Math.max(1, cols * rows / 336);
   } else {
-    big = state.board.filter(row => row.every(Boolean)).length >= D.minRows;
+    big = state.board.filter(row => row.every(Boolean)).length >= D.minRows * Math.max(1, rows / 24);
   }
   return big ? D.pauseMs * (CONFIG.modes[state.mode]?.timeScale ?? 1) : 0;
 }
@@ -829,13 +834,15 @@ function targetFor(state) {
 
 // The best place for `shape`: every turn and column, dropped straight down, and for ordinary
 // pieces slid in sideways at the bottom too. Powerups are tried out on a copy of the board.
-// `maxTurns` limits the turns tried. With `next` (an ordinary piece), each place is judged by
-// the best the next piece could do after it.
+// `maxTurns` limits the turns tried. With `next` (an ordinary piece), the best few places
+// (LOOK_AHEAD of them) are judged again by the best the next piece could do after each.
+const LOOK_AHEAD = 10;
 export function bestPlacement(state, shape, weights = WEIGHTS.clear, maxTurns = 4, next = null) {
   const { cols, rows } = CONFIG.board;
   const occ0 = occupancy(state.board);
   const pu = shape.powerup;
   const phantom = pu && isPhantomPowerup(pu);
+  const ahead = next && !next.powerup && !pu ? [] : null;
   let best = null;
   const consider = (r, x, y, slide = null) => {
     const mat = shape.rotations[r];
@@ -850,10 +857,11 @@ export function bestPlacement(state, shape, weights = WEIGHTS.clear, maxTurns = 
     const over = mat.some((row, j) => y + j < 0 && row.some(Boolean)) ? 1000 : 0; // it would top out
     // (and the column kept clear stays clear, even for a row or two cleared)
     const inWell = !pu && intoWell(mat, x, weights) ? 12 : 0;
-    let s = score(occ, lines, weights, cols, rows);
-    if (next && !next.powerup && !pu && !over) s = Math.max(s - 50, lookAhead(occ, next, weights, cols, rows, lines));
-    s += bonus - over - inWell + z01(state) * 0.01 - (slide ? 0.05 : 0);
-    if (!best || s > best.s) best = { rot: r, x: slide ? slide.from : x, y, s, slide: slide ? { at: slide.at, to: x } : null };
+    const base = score(occ, lines, weights, cols, rows);
+    const extra = bonus - over - inWell + z01(state) * 0.01 - (slide ? 0.05 : 0);
+    const c = { rot: r, x: slide ? slide.from : x, y, s: base + extra, slide: slide ? { at: slide.at, to: x } : null };
+    if (!best || c.s > best.s) best = c;
+    if (ahead && !over) ahead.push({ c, at: x, base, extra });
   };
   const turns = Math.min(maxTurns, reachableTurns(shape));
   for (let r = 0; r < turns; r++) {
@@ -871,6 +879,17 @@ export function bestPlacement(state, shape, weights = WEIGHTS.clear, maxTurns = 
         }
       }
     }
+  }
+  // (with the next piece in mind: the best few again, after the best it could do)
+  if (ahead?.length) {
+    ahead.sort((a, b) => b.c.s - a.c.s);
+    let top = null;
+    for (const a of ahead.slice(0, LOOK_AHEAD)) {
+      const occ = occ0.slice(), lines = placeAndClear(occ, shape.rotations[a.c.rot], a.at, a.c.y, cols, rows);
+      const s = Math.max(a.base - 50, lookAhead(occ, next, weights, cols, rows, lines)) + a.extra;
+      if (!top || s > top.s) top = { ...a.c, s };
+    }
+    best = top;
   }
   return best;
 }
@@ -941,7 +960,7 @@ export function planWell(state, { deep = false } = {}) {
   const occ = occupancy(state.board);
   if (!solid(occ, cols, rows)) return null;
   const h0 = heightOf(occ, cols, rows);
-  const H = Math.min(rows - 2, Math.max(h0 + 6, deep ? int(state, 20, 22) : int(state, 12, 19)));
+  const H = Math.min(rows - 2, Math.max(h0 + 6, up(deep ? int(state, 20, 22) : int(state, 12, 19))));
   const w = rng() < 0.6 ? 1 : 2;
   const wx = freeSlot(occ, w, rng, cols, rows);
   if (wx == null) return null;
@@ -1115,7 +1134,7 @@ export function planCrack(state, end = null) {
   if (!ghost) return null;
   const singles = regularPool(state).filter(s => blocks(s) === 1 && (s.difficulty ?? 1) <= 1);
   end ??= sampleByWeight(Object.entries(CRACK_ENDS).filter(([k]) => singles.length || (k !== "down" && k !== "shaker")), ([, w]) => w, rng)[0];
-  const H = int(state, 18, rows - 1), top = rows - H;
+  const H = int(state, up(18), rows - 1), top = rows - H;
   // One gap a row (or two), wandering up from the floor but never into the end columns: a gap
   // against the wall would leave the cells over it with nothing to stand on, all the way up.
   // `moves(d)` lists the steps to try next, best first; the walk turns back at its edges (and
@@ -1423,7 +1442,7 @@ export function planMess(state) {
   const rng = state.rng;
   const occ = occupancy(state.board);
   if (!solid(occ, cols, rows) || heightOf(occ, cols, rows) > 3) return null;
-  const H = int(state, 19, 22), top = rows - H;
+  const H = up(int(state, 19, 22)), top = rows - H;
   for (let tries = 0; tries < 12; tries++) {
     const holes = new Uint8Array(cols * rows);
     const gap = (x, y) => { if (x >= 0 && x < cols && y > top && y < rows && !occ[y * cols + x]) holes[y * cols + x] = 1; };
@@ -1583,7 +1602,7 @@ function candidates(shapes, maxW, maxH, maxCells) {
 // else). The bigger pieces first; if it gets stuck it backs up and tries the next. Changes
 // `occ`. Returns the placements in order, or null. (A tiling that works is found quickly, so
 // it gives up after `budget` steps and the plan tries again another way.)
-function tile(occ, need, cands, rng, cols, rows, maxUses = 3, holes = null, budget = 1200) {
+function tile(occ, need, cands, rng, cols, rows, maxUses = 3, holes = null, budget = 1200 * Math.max(1, cols * rows / 336)) {
   const order = cands.map(c => ({ c, k: c.cells.length + rng() * 4 })).sort((a, b) => b.k - a.k).map(o => o.c);
   const ids = new Map(), plan = [];
   const sid = order.map(c => { if (!ids.has(c.shape.id)) ids.set(c.shape.id, ids.size); return ids.get(c.shape.id); });
@@ -1711,7 +1730,7 @@ function toItems(occ0, steps, cols, rows, { mustClear = true } = {}) {
     const n = placeAndClear(occ, st.mat, st.x, y, cols, rows);
     cleared += n;
     // (the one that brings most of it down waits a moment first)
-    const dramatic = n >= (CONFIG.zen.dramatic?.minRows ?? 12);
+    const dramatic = n >= (CONFIG.zen.dramatic?.minRows ?? 12) * Math.max(1, rows / 24);
     items.push({ shape: st.shape, target: { rot: st.rot, x: st.x }, expect: occ.slice(), weights: WEIGHTS.clear, pace: st.pace, key: st.key, dramatic });
   }
   items.cleared = cleared;

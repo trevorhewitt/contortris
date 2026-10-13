@@ -396,10 +396,11 @@ function matrixEdgeMask(mat, x, y) {
 
 export function createRenderer(boardCanvas, nextCanvas) {
   const cell = CONFIG.render.cellPx;
-  const cols = CONFIG.board.cols;
-  const rows = CONFIG.board.rows;
-  const bw = cols * cell;
-  const bh = rows * cell;
+  // (the board's size can change: turbo zen can fill the whole window, resize())
+  let cols = CONFIG.board.cols;
+  let rows = CONFIG.board.rows;
+  let bw = cols * cell;
+  let bh = rows * cell;
 
   const bctx = boardCanvas.getContext("2d");
   let scale = 1;
@@ -1608,5 +1609,15 @@ export function createRenderer(boardCanvas, nextCanvas) {
     nctx.restore();
   }
 
-  return { draw, drawNextSilhouette };
+  // The board is a different size now (CONFIG.board): everything drawn for the old one goes.
+  function resize() {
+    cols = CONFIG.board.cols;
+    rows = CONFIG.board.rows;
+    bw = cols * cell;
+    bh = rows * cell;
+    backdrop.cut = -1;
+    applyScale(computeScale());
+  }
+
+  return { draw, drawNextSilhouette, resize };
 }

@@ -142,6 +142,18 @@
       min-height: 0;
     }
   
+    /* Turbo zen can fill the whole window (ui.js setWholeWindow): the bottom bar goes, and a
+       small pause button sits in the corner of the board, out of the way */
+    body.wholeWindow .bottomBar{ display: none; }
+    .floatPause{ display: none; }
+    body.wholeWindow .floatPause{
+      display: block; position: absolute; top: 8px; right: 8px; width: 40px; height: 40px; min-height: 0;
+      padding: 0; border-radius: 10px; font-size: 13px; line-height: 40px; color: #fff; opacity: 0.3;
+      background: rgba(10,10,24,0.55); border: 1px solid rgba(255,255,255,0.3); box-shadow: none;
+      transition: opacity 150ms linear; cursor: pointer;
+    }
+    body.wholeWindow .floatPause:hover, body.wholeWindow .floatPause:focus-visible{ opacity: 0.9; }
+
     .boardShell{
       position: relative;
       background: #000;
@@ -1011,6 +1023,8 @@
         <canvas id="boardCanvas"></canvas>
 
         <div id="toasts" class="toasts" aria-live="polite"></div>
+        <!-- (turbo zen filling the whole window: no bottom bar, so the pause button sits on the board) -->
+        <button id="floatPause" class="floatPause" aria-label="Pause">&#10074;&#10074;</button>
 
         <div id="overlay" class="overlay show">
           <div id="pieceCard" class="pieceCard" hidden></div>
@@ -1020,7 +1034,7 @@
 
           <div class="msg panel" id="panelMenu" hidden>
             <div class="big title">Extris</div>
-            <div class="small" id="gameVersion">version 202610131718</div>
+            <div class="small" id="gameVersion">version 202610131733</div>
             <div class="menuBtns">
               <button id="btnEasy" class="secondary">Easy mode</button>
               <button id="btnNormal">Normal mode</button>
@@ -1057,7 +1071,7 @@
               <h3>Achievements</h3>
               <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
 
-              <p class="small menuFoot">[Extris version 202610131718 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610131733 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>
@@ -1080,6 +1094,7 @@
             <div class="small pauseHint">tap a piece to look at it · pinch or double tap to zoom</div>
             <div class="menuBtns">
               <button id="btnResume">Resume</button>
+              <button id="btnWholeWindow" class="secondary" hidden>Fill the window</button>
               <button id="btnPowerupHelp" class="secondary" hidden>Powerups</button>
               <button id="btnPauseHowTo" class="secondary">How to play</button>
               <button id="btnQuit" class="secondary">Quit to menu</button>
