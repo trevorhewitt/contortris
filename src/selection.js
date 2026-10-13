@@ -34,8 +34,10 @@ export function initPieceSelectionState(state) {
     servedCounts: new Map(),
     // ids that opened the last few games (set by the UI from browser storage)
     openingMemory: state.openingMemory ?? null,
-    // how many times each piece had been seen in this browser before this game (the UI keeps it)
+    // how many times each piece had been seen in this browser before this game, and since the
+    // page was loaded (the UI keeps them)
     seenEver: state.seenEver ? new Map(state.seenEver) : null,
+    shownThisLoad: state.shownThisLoad ? new Map(state.shownThisLoad) : null,
 
     // counts by level (0–5, and 6 for the group pieces)
     levelCounts: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 },
@@ -218,15 +220,16 @@ export function computeBoardPresence(state) {
   return presence;
 }
 
-// God mode (and zen): a piece in CONFIG.godMode.newest is newBoost times likelier until it's
-// been seen newUntilSeen times (in this browser, counting this game); anything else never seen
-// here, unseenBoost times. (state.seenEver is kept by the UI.)
+// God mode: a piece in CONFIG.godMode.newest is newBoost times likelier until it has turned up
+// newUntilShown times since the page was loaded (counting this game); anything never seen in
+// this browser, unseenBoost times. (state.seenEver and state.shownThisLoad are kept by the UI.)
 function noveltyMultiplier(sel, shape) {
   if (!isGodMode(sel.mode) || !sel.seenEver) return 1;
   const n = CONFIG.godMode.novelty ?? {};
-  const seen = (sel.seenEver.get(shape.id) ?? 0) + (sel.servedCounts.get(shape.id) ?? 0);
-  if ((CONFIG.godMode.newest?.pieces ?? []).includes(shape.id) && seen < (n.newUntilSeen ?? 3)) return n.newBoost ?? 6;
-  return seen ? 1 : (n.unseenBoost ?? 2.5);
+  const served = sel.servedCounts.get(shape.id) ?? 0;
+  const shown = (sel.shownThisLoad?.get(shape.id) ?? 0) + served;
+  if ((CONFIG.godMode.newest?.pieces ?? []).includes(shape.id) && shown < (n.newUntilShown ?? 1)) return n.newBoost ?? 6;
+  return (sel.seenEver.get(shape.id) ?? 0) + served ? 1 : (n.unseenBoost ?? 2.5);
 }
 
 export function varietyMultiplier(sel, shape) {

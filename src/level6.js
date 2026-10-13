@@ -144,6 +144,7 @@ export function initLevel6(state) {
     seen: new Map(),      // group id -> times served this game
     variants: new Map(),  // which version of each variant step this game has (expandGroup)
     seenBefore: state.seenSetsEver ? new Map(state.seenSetsEver) : null, // sets seen in this browser before this game
+    shownThisLoad: state.setsShownThisLoad ? new Map(state.setsShownThisLoad) : null, // ...and since the page was loaded
   };
 }
 
@@ -238,15 +239,16 @@ export function maybeStartGroup(state) {
   return null;
 }
 
-// God mode (and zen): the newest sets first (CONFIG.godMode.newest), and any never seen in this
-// browser more often.
+// God mode: the newest sets first (CONFIG.godMode.newest) until each has come once since the
+// page was loaded, and any never seen in this browser more often.
 function setNovelty(state, g) {
   const l6 = state.pieceSel.level6;
   if (!isGodMode(state.mode) || !l6.seenBefore) return 1;
   const n = CONFIG.godMode.novelty ?? {};
-  const seen = (l6.seenBefore.get(g.id) ?? 0) + (l6.seen.get(g.id) ?? 0);
-  if ((CONFIG.godMode.newest?.sets ?? []).includes(g.id) && seen < (n.newUntilSeen ?? 3)) return n.newSetBoost ?? 10;
-  return seen ? 1 : (n.unseenBoost ?? 2.5);
+  const here = l6.seen.get(g.id) ?? 0;
+  const shown = (l6.shownThisLoad?.get(g.id) ?? 0) + here;
+  if ((CONFIG.godMode.newest?.sets ?? []).includes(g.id) && shown < (n.newUntilShown ?? 1)) return n.newSetBoost ?? 10;
+  return (l6.seenBefore.get(g.id) ?? 0) + here ? 1 : (n.unseenBoost ?? 2.5);
 }
 
 // Rows of board a run of pieces needs: their blocks spread over the width, plus some for the

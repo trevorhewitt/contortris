@@ -332,6 +332,9 @@ export function bindUI({ state, renderer, sound, achievements }) {
   const SEEN_KEY = "extris.seen.v1", SEEN_SETS_KEY = "extris.seenSets.v1";
   state.seenEver = new Map(Object.entries(store.getJSON(SEEN_KEY, {})));
   state.seenSetsEver = new Map(Object.entries(store.getJSON(SEEN_SETS_KEY, {})));
+  // (and since the page was loaded: God mode shows the newest things once each, then carries on as usual)
+  state.shownThisLoad = new Map();
+  state.setsShownThisLoad = new Map();
   let seenUnsaved = 0, setStarts = 0;
   function saveSeen() {
     if (!seenUnsaved) return;
@@ -341,10 +344,14 @@ export function bindUI({ state, renderer, sound, achievements }) {
   }
   function noteSeen(shape) {
     state.seenEver.set(shape.id, (state.seenEver.get(shape.id) ?? 0) + 1);
+    state.shownThisLoad.set(shape.id, (state.shownThisLoad.get(shape.id) ?? 0) + 1);
     const l6 = state.pieceSel?.level6;
     if (l6 && (l6.starts ?? 0) !== setStarts) {
       setStarts = l6.starts ?? 0;
-      if (l6.lastGroup) state.seenSetsEver.set(l6.lastGroup, (state.seenSetsEver.get(l6.lastGroup) ?? 0) + 1);
+      if (l6.lastGroup) {
+        state.seenSetsEver.set(l6.lastGroup, (state.seenSetsEver.get(l6.lastGroup) ?? 0) + 1);
+        state.setsShownThisLoad.set(l6.lastGroup, (state.setsShownThisLoad.get(l6.lastGroup) ?? 0) + 1);
+      }
     }
     if (++seenUnsaved >= 10) saveSeen();
   }
@@ -1012,11 +1019,11 @@ export function bindUI({ state, renderer, sound, achievements }) {
     togglePause();
   });
 
-  if (CONFIG.pause.pauseWhenHidden) {
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden && state.running && !state.paused) pauseGame();
-    });
-  }
+  // (a mode can say otherwise: turbo zen carries on until someone stops it)
+  document.addEventListener("visibilitychange", () => {
+    if (!(CONFIG.modes[state.mode]?.pauseWhenHidden ?? CONFIG.pause.pauseWhenHidden)) return;
+    if (document.hidden && state.running && !state.paused) pauseGame();
+  });
 
   /* ---------- keyboard ---------- */
 

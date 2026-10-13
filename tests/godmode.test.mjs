@@ -164,13 +164,14 @@ test("after a level 6 set: a big destroyer comes soon", () => {
   assert.ok(soon / sets >= 0.6, `a big destroyer within 4 pieces after ${soon} of ${sets} sets`);
 });
 
-test("god mode: the newest things come first, and things never seen before come up more", () => {
+test("god mode: the newest things come first, once each since the page was loaded, then as usual", () => {
   const newest = new Set(CONFIG.godMode.newest.pieces), newSets = new Set(CONFIG.godMode.newest.sets);
-  const share = (seenEver, seenSetsEver) => {
+  const share = ({ seenEver = new Map(), seenSetsEver = new Map(), shown = new Map(), setsShown = new Map() }) => {
     let fresh = 0, n = 0, firstNew = 0, games = 0;
     for (const seed of [1, 2, 3, 4, 5, 6]) {
       const state = createGameState(shapes, powerups, { rng: makeRng(seed * 7), groups: GROUPS });
       state.seenEver = seenEver; state.seenSetsEver = seenSetsEver;
+      state.shownThisLoad = shown; state.setsShownThisLoad = setsShown;
       const served = [];
       on(state, (t, d) => { if (t === "spawn") served.push(d.shape); });
       startRun(state, "god");
@@ -181,15 +182,19 @@ test("god mode: the newest things come first, and things never seen before come 
     }
     return { fresh: fresh / n, firstNew: firstNew / games };
   };
-  // never seen anything: the newest pieces turn up far more often than once they've all been
-  // seen plenty, and the first set is usually a new one
-  const blank = share(new Map(), new Map());
   const all = new Map(shapes.map(s => [s.id, 9])), allSets = new Map(GROUPS.map(g => [g.id, 9]));
-  const seen = share(all, allSets);
-  console.log(`newest: ${(blank.fresh * 100).toFixed(0)}% of pieces when new, ${(seen.fresh * 100).toFixed(0)}% once seen; first set new in ${(blank.firstNew * 100).toFixed(0)}% / ${(seen.firstNew * 100).toFixed(0)}%`);
+  const once = new Map(shapes.map(s => [s.id, 1])), setsOnce = new Map(GROUPS.map(g => [g.id, 1]));
+  // a fresh page: the newest first, even if this browser has seen them all plenty before...
+  const blank = share({});
+  const reload = share({ seenEver: all, seenSetsEver: allSets });
+  // ...and once each has turned up since the page was loaded, as usual
+  const after = share({ seenEver: all, seenSetsEver: allSets, shown: once, setsShown: setsOnce });
+  console.log(`newest: ${(blank.fresh * 100).toFixed(0)}% of pieces on a new browser, ${(reload.fresh * 100).toFixed(0)}% after a reload, ${(after.fresh * 100).toFixed(0)}% once shown; first set new in ${(blank.firstNew * 100).toFixed(0)}% / ${(reload.firstNew * 100).toFixed(0)}% / ${(after.firstNew * 100).toFixed(0)}%`);
   // (by a clear margin: the newest list keeps growing, and some of it comes in linked runs anyway)
-  assert.ok(blank.fresh - seen.fresh >= 0.08, `newest ${(blank.fresh * 100).toFixed(0)}% vs ${(seen.fresh * 100).toFixed(0)}%`);
-  assert.ok(blank.firstNew >= 0.5, `the first set was a new one in ${(blank.firstNew * 100).toFixed(0)}% of games`);
+  for (const [k, r] of Object.entries({ blank, reload })) {
+    assert.ok(r.fresh - after.fresh >= 0.08, `${k}: newest ${(r.fresh * 100).toFixed(0)}% vs ${(after.fresh * 100).toFixed(0)}%`);
+    assert.ok(r.firstNew >= 0.5, `${k}: the first set was a new one in ${(r.firstNew * 100).toFixed(0)}% of games`);
+  }
 });
 
 test("god mode: after a set, and after a few giants close together, a calm spell of ordinary pieces", () => {

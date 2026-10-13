@@ -20,7 +20,7 @@ export const CONFIG = {
     // zenMovements: "turbo" for turbo zen's own mix of movements; flashNames: the falling piece's
     // name just appears, no sliding in and out
     zen: { label: "Zen", tagline: "it plays itself, and never ends", powerups: true, giants: true, level6: "open", everything: true, zen: true },
-    turbo: { label: "Turbo zen", tagline: "the same, much faster", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.6, zenMovements: "turbo", flashNames: true },
+    turbo: { label: "Turbo zen", tagline: "the same, much faster", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.6, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false },
   },
   defaultMode: "normal",
 
@@ -145,10 +145,11 @@ export const CONFIG = {
     },
     // gravitizers that collapse at least `minCols` columns are this many times likelier
     wideGravity: { minCols: 6, weight: 3 },
-    // The newest things in the game come first (update this with every new batch), and
-    // anything never seen in this browser comes up more: a new piece is newBoost times likelier
-    // until it's been seen newUntilSeen times, a new set newSetBoost times; anything else never
-    // seen, unseenBoost times. (God mode and zen.)
+    // The newest things in the game come first (update this with every new batch), so they can be
+    // looked at straight away, and then it's God mode as usual: a new piece is newBoost times
+    // likelier until it has turned up newUntilShown times since the page was loaded, a new set
+    // newSetBoost times (load the page again to see them all again). Anything never seen in this
+    // browser at all comes up unseenBoost times as often. (God mode.)
     newest: {
       sets: ["dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
@@ -166,7 +167,7 @@ export const CONFIG = {
         "weather_vane", "weather_clock", "hot_water_bottle_of_sea", "very_small_stonehenge", "long_red_ribbon",
       ],
     },
-    novelty: { newBoost: 12, newSetBoost: 20, newUntilSeen: 3, unseenBoost: 2.5 },
+    novelty: { newBoost: 25, newSetBoost: 40, newUntilShown: 1, unseenBoost: 2.5 },
     // calm spells: after a level 6 set (afterSet), or `giants` giants within `within` pieces
     // (afterGiants), this many ordinary pieces: no giants, no sets
     calm: { afterSet: [8, 14], giants: 2, within: 8, afterGiants: [6, 10] },
