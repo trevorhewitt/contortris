@@ -208,6 +208,7 @@ export const SET_THREADS = {
   universe: ["space", "light", "magic"],
   trees: ["garden", "holy", "death"],
   emotions: ["feelings", "mind"],
+  emotions_ascent: ["feelings", "mind"],
   sunshine: ["weather", "light", "feelings"],
   sky: ["surreal", "weather"],
   sky_evening: ["surreal", "weather", "space"],

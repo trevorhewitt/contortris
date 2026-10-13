@@ -227,3 +227,23 @@ test("god mode: after a set, and after a few giants close together, a calm spell
   }
   assert.ok(ends >= 4, `${ends} sets`);
 });
+
+test("God mode opens with the emotions chart's ascent into the pseudo-spiritual", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(3), groups: GROUPS });
+  const sets = [];
+  on(state, (t, d) => { if (t === "spawn" && state.pieceSel.level6.group && sets.at(-1) !== state.pieceSel.level6.group) sets.push(state.pieceSel.level6.group); });
+  startRun(state, "god");
+  for (let i = 0; i < 80 && sets.length < 2 && !state.gameOver; i++) {
+    hardDropAndLock(state);
+    for (let k = 0; k < 120 && (state.effect || state.hold); k++) updateGame(state, 16);
+    state.board = state.board.map(r => r.fill(null));
+  }
+  assert.equal(sets[0], CONFIG.godMode.firstSet, `the first set: ${sets.join(", ")}`);
+  const ascent = normaliseGroups(GROUPS, [...shapes, ...powerups]).find(g => g.id === "emotions_ascent");
+  const rng = makeRng(7);
+  for (let i = 0; i < 50; i++) {
+    const ids = expandGroup(ascent, rng).map(s => s.id);
+    assert.ok(["emotion_heat_death", "emotion_void_looking_back", "emotion_solving_some_things"].includes(ids.at(-1)), ids.join());
+    assert.ok(ids.some(id => id === "emotion_mother_earth" || id === "emotion_enlightenment"), ids.join());
+  }
+});
