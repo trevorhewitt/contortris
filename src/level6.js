@@ -66,7 +66,8 @@ export function normaliseGroups(rawGroups, shapes) {
         for (const [id, w] of Object.entries(step.chain.after ?? {})) after[id] = toList(w);
         const start = toList(step.chain.start);
         if (!start.length) continue;
-        steps.push({ chain: { start, after, max: Math.max(1, Number(step.chain.max) || 4) } });
+        const max = Math.max(1, Number(step.chain.max) || 4);
+        steps.push({ chain: { start, after, max, min: Math.min(max, Math.max(1, Number(step.chain.min) || 1)) } });
       }
     }
     if (!ok || !steps.length) continue;
@@ -99,8 +100,9 @@ export function expandGroup(group, rng, variants = null) {
       let it = pick(st.chain.start);
       for (let n = 0; it && it.s && n < st.chain.max; n++) {
         out.push(it.s);
-        const nexts = st.chain.after[it.s.id];
-        it = nexts?.length ? pick(nexts) : null;
+        // (no stopping before `min`)
+        const nexts = (st.chain.after[it.s.id] ?? []).filter(x => x.s || n + 1 >= st.chain.min);
+        it = nexts.length ? pick(nexts) : null;
       }
       continue;
     }

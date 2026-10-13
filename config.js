@@ -527,6 +527,24 @@ export const CONFIG = {
       quakePerClearedLine: 0.3,
     },
 
+    // Rows going: a band of light sweeps along each row, and the row scatters as it passes
+    // (game.js rowClearShow, render.js drawRowClears). One family of looks, more of it the more
+    // rows go at once: each tier from `rows` rows. patterns: which way the light goes, one at
+    // random ("ltr", "rtl", "centre": from the middle out, "edges": from both ends in, "weave":
+    // every other row the other way); rowStaggerMs: each row up starts this much later; band: its height (cells); glow,
+    // chroma (cyan and magenta fringes), rainbow, ripples (lines running up and down the board),
+    // sparks (per cell), wash (a rainbow over the whole board), speed (how hard it scatters),
+    // trauma (a shake).
+    rowClear: {
+      tiers: [
+        { rows: 1, patterns: ["ltr", "rtl"], sweepMs: 190, fadeMs: 180, band: 0.6, glow: 2, speed: 1 },
+        { rows: 2, patterns: ["centre", "edges"], sweepMs: 190, fadeMs: 200, rowStaggerMs: 22, band: 0.9, glow: 4, chroma: true, speed: 1.15 },
+        { rows: 4, patterns: ["centre", "ltr", "rtl"], sweepMs: 200, fadeMs: 250, rowStaggerMs: 26, band: 1, glow: 9, chroma: true, ripples: 1, rippleMs: 340, sparks: 1, speed: 1.3, trauma: 0.22 },
+        { rows: 7, patterns: ["weave", "centre"], sweepMs: 230, fadeMs: 320, rowStaggerMs: 30, band: 1, glow: 13, chroma: true, rainbow: true, ripples: 2, rippleMs: 440, sparks: 1, speed: 1.45, trauma: 0.38 },
+        { rows: 13, patterns: ["centre", "weave"], sweepMs: 260, fadeMs: 420, rowStaggerMs: 32, band: 1, glow: 17, chroma: true, rainbow: true, ripples: 3, rippleMs: 560, sparks: 2, wash: true, speed: 1.6, trauma: 0.55 },
+      ],
+    },
+
     // Big text that pops up over the board ("DOUBLE!", "+24 BLOCKS").
     callouts: {
       enabled: true,

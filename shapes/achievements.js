@@ -3785,7 +3785,12 @@ export const ACHIEVEMENTS = [
             "mini_spams",
             "giant_spam",
             "maps",
-            "spaaaaaaaam"
+            "spaaaaaaaam",
+            "spergegam",
+            "sp_m",
+            "sp",
+            "am",
+            "spam_spam_spam_spam_and_spa"
           ]
         },
         "count": 12

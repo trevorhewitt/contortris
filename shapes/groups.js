@@ -29,7 +29,7 @@
  *     { chain: {                      a run where each piece picks the next one:
  *         start: { id: 3, id: 1 },      the first (weights),
  *         after: { id: { id: 2, stop: 1 }, ... },  what can follow each piece ("stop" ends it)
- *         max: 4 } }                    and at most this many
+ *         min: 2, max: 4 } }            at least (default 1) and at most this many
  *
  * A piece with `echo: "other_id"` in its data comes back later in the same run as that piece
  * (déjà vu), never as the run's last piece if there's room before it; only the first such
@@ -58,11 +58,28 @@ export const GROUPS = [
     sequence: [
       "spam",
       "spam",
-      {
-        pick: ["spam", "spam_spam_and_spam", "spm", "scrambled_spam", "mini_spam", "mini_spams", "giant_spam", "maps", "spaaaaaaaam"],
-        weights: [3, 1.2, 1, 1, 1, 1, 0.8, 1, 1],
-        count: [2, 5],
-      },
+      // then two to five more, at random: each one picks the next ("Sp" is usually followed by
+      // "am!", the other half of the same can)
+      { chain: {
+        start: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6 },
+        after: {
+          spam: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6, stop: 4.5 },
+          spam_spam_and_spam: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6, stop: 4.5 },
+          spm: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6, stop: 4.5 },
+          scrambled_spam: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6, stop: 4.5 },
+          mini_spam: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6, stop: 4.5 },
+          mini_spams: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6, stop: 4.5 },
+          giant_spam: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6, stop: 4.5 },
+          maps: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6, stop: 4.5 },
+          spaaaaaaaam: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6, stop: 4.5 },
+          spergegam: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6, stop: 4.5 },
+          sp_m: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6, stop: 4.5 },
+          sp: { am: 12, spam: 1, spm: 0.5, stop: 1.5 },
+          am: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6, stop: 4.5 },
+          spam_spam_spam_spam_and_spa: { spam: 3, spam_spam_and_spam: 1.2, spm: 1, scrambled_spam: 1, mini_spam: 1, mini_spams: 1, giant_spam: 0.8, maps: 1, spaaaaaaaam: 1, spergegam: 0.8, sp_m: 1, sp: 0.9, am: 0.5, spam_spam_spam_spam_and_spa: 0.6, stop: 4.5 },
+        },
+        min: 2, max: 5,
+      } },
     ],
   },
   {

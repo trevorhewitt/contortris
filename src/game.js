@@ -126,6 +126,7 @@ export function createGameState(shapes, powerups, { rng = Math.random, groups = 
       // Floating text ("DOUBLE!", "+24")
       callouts: [],
       shockwaves: [],  // expanding rings (blasts, and the powerup shows)
+      rowClears: [],   // the light sweeping along rows as they go (CONFIG.fx.rowClear)
       show: null,      // the powerup show playing now (planShow; render.js drawShow)
       quake: {
         trauma: 0,
@@ -238,6 +239,7 @@ export function resetGame(state) {
   fx.particles.length = 0;
   fx.callouts.length = 0;
   fx.shockwaves.length = 0;
+  fx.rowClears.length = 0;
   fx.show = null;
   fx.rowFall.active = false;
   fx.rowFall.elapsedMs = 0;
@@ -780,7 +782,7 @@ function clearFullLines(state, alsoRows = null) {
   markBoardDirty(state);
   instancesAfterCollapse(state, fullRows);
 
-  spawnCellParticles(state, rowsToCells(removed));
+  rowClearShow(state, fullRows, removed);
   startRowFall(state, dropDistances);
 
   state.lines += cleared;
@@ -1334,7 +1336,55 @@ function addCallout(state, text, x, y, { big = false, color = null, durationMs =
 }
 
 // Particles burst from cells [{x, y, cell}] (board coords). `mult` scales the count.
-function spawnCellParticles(state, cells, mult = 1, delayMs = 0) {
+// The row-clear show: a band of light sweeps along each row that goes, and the row scatters as
+// it passes, the same every time but more of it the more rows go at once (CONFIG.fx.rowClear's
+// tiers): one row's quick sweep, two or three from the middle out, then glow, ripples and sparks,
+// rainbow bands weaving back and forth, and for most of the board a cascade from the bottom up
+// under a rainbow wash. (Only the look: the board has already collapsed underneath.)
+function rowClearShow(state, fullRows, removed) {
+  const R = CONFIG.fx.rowClear;
+  const n = fullRows.length;
+  if (!R?.tiers?.length) { spawnCellParticles(state, rowsToCells(removed)); return; }
+  let tier = 0;
+  R.tiers.forEach((t, i) => { if (n >= t.rows) tier = i; });
+  const T = R.tiers[tier], cols = CONFIG.board.cols;
+  const vr = Math.random; // (the look only: the game's own random numbers are left alone)
+  const pattern = T.patterns[Math.floor(vr() * T.patterns.length)];
+  const order = [...fullRows].sort((a, b) => b - a); // (bottom up)
+  const rowAt = new Map(order.map((y, i) => [y, i]));
+  const mid = (cols - 1) / 2;
+  const colDelay = (x, i) => {
+    const f = pattern === "ltr" ? x / (cols - 1) : pattern === "rtl" ? 1 - x / (cols - 1)
+      : pattern === "weave" ? (i % 2 ? 1 - x / (cols - 1) : x / (cols - 1))
+      : pattern === "edges" ? 1 - Math.abs(x - mid) / mid
+      : Math.abs(x - mid) / mid; // ("centre": from the middle out)
+    return f * T.sweepMs;
+  };
+  const rowDelay = (i) => i * (T.rowStaggerMs ?? 0);
+  const delayOf = (x, y) => rowDelay(rowAt.get(y) ?? 0) + colDelay(x, rowAt.get(y) ?? 0);
+  state.fx.rowClears.push({
+    rows: order, tier, n, pattern, elapsedMs: 0, hue: vr() * 360,
+    sweepMs: T.sweepMs, rowStaggerMs: T.rowStaggerMs ?? 0, fadeMs: T.fadeMs,
+    durationMs: rowDelay(order.length - 1) + T.sweepMs + T.fadeMs + (T.rippleMs ?? 0),
+  });
+  spawnCellParticles(state, rowsToCells(removed), 1, 0, { delayOf, speed: T.speed ?? 1 });
+  // sparks at the head of each sweep
+  if (T.sparks) {
+    const cellPx = CONFIG.render.cellPx;
+    for (const y of order) for (let x = 0; x < cols; x++) for (let k = 0; k < T.sparks; k++) {
+      const a = vr() * Math.PI * 2, sp = 60 + vr() * 160 * (T.speed ?? 1), life = 260 + vr() * 380;
+      state.fx.particles.push({
+        x: (x + vr()) * cellPx, y: (y + vr()) * cellPx, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 50,
+        lifeMs: life, maxLifeMs: life, delayMs: delayOf(x, y), size: 2,
+        color: T.rainbow ? `hsl(${(vr() * 360) | 0}, 100%, 72%)` : vr() < 0.5 ? "#ffffff" : "#fff4b0",
+      });
+    }
+  }
+  if (T.trauma) state.fx.quake.trauma = Math.max(state.fx.quake.trauma ?? 0, T.trauma);
+}
+
+// `opts`: { delayOf(x, y): when each cell goes (ms), speed: how hard it scatters }
+function spawnCellParticles(state, cells, mult = 1, delayMs = 0, opts = {}) {
   if (!CONFIG.fx.lineClear.enabled) return;
 
   const cfg = CONFIG.fx.lineClear;
@@ -1364,9 +1414,10 @@ function spawnCellParticles(state, cells, mult = 1, delayMs = 0) {
       Math.max(6, Math.round(colours.length * (cfg.particlesPerPixel ?? 0.35)))
     ));
 
+    const at = delayMs + (opts.delayOf?.(x, y) ?? 0);
     for (let i = 0; i < targetCount; i++) {
       const angle = state.rng() * Math.PI * 2;
-      const speed = lerp(cfg.speedMin, cfg.speedMax, state.rng());
+      const speed = lerp(cfg.speedMin, cfg.speedMax, state.rng()) * (opts.speed ?? 1);
       const vx = Math.cos(angle) * speed;
       const vy = Math.sin(angle) * speed - speed * (cfg.upwardBias ?? 0.18);
       const lifeMs = lerp(cfg.lifeMinMs, cfg.lifeMaxMs, state.rng());
@@ -1378,7 +1429,7 @@ function spawnCellParticles(state, cells, mult = 1, delayMs = 0) {
         vy,
         lifeMs,
         maxLifeMs: lifeMs,
-        delayMs,
+        delayMs: at,
         size: cfg.particleSizePx,
         color: colours[Math.floor(state.rng() * colours.length)],
       });
@@ -1416,6 +1467,13 @@ function updateFX(state, dt) {
     sh.elapsedMs += dt;
     for (const q of sh.quakes) if (!q.done && sh.elapsedMs >= q.at) { q.done = true; addQuakeFromBlocks(state, q.blocks); }
     if (sh.elapsedMs >= sh.durationMs) state.fx.show = null;
+  }
+
+  const rc = state.fx.rowClears;
+  if (rc.length) {
+    let n = 0;
+    for (const c of rc) { c.elapsedMs += dt; if (c.elapsedMs < c.durationMs) rc[n++] = c; }
+    rc.length = n;
   }
 
   const sw = state.fx.shockwaves;

@@ -51,15 +51,18 @@ test("groups in the data are complete (every piece exists)", () => {
   for (const s of shapes.filter(s => s.difficulty === 6 && (s.frequency ?? 1) > 0)) assert.ok(inGroups.has(s.id), `${s.id} is level 6 but in no group`);
 });
 
-test("spam always starts with two spams, then 2-5 remixes", () => {
+test("spam always starts with two spams, then 2-5 more; Sp is usually followed by am!", () => {
   const g = normaliseGroups(GROUPS, shapes).find(g => g.id === "spam");
   const rng = makeRng(5);
-  for (let i = 0; i < 200; i++) {
+  let sp = 0, spAm = 0;
+  for (let i = 0; i < 400; i++) {
     const ids = expandGroup(g, rng).map(s => s.id);
     assert.deepEqual(ids.slice(0, 2), ["spam", "spam"]);
     assert.ok(ids.length >= 4 && ids.length <= 7, ids.join());
-    assert.ok(ids.every(id => /spa*m|maps/.test(id)), ids.join());
+    assert.ok(ids.every(id => /spa*m|maps|^sp|^am$|spergegam/.test(id)), ids.join());
+    ids.forEach((id, k) => { if (id === "sp" && k + 1 < ids.length) { sp++; if (ids[k + 1] === "am") spAm++; } });
   }
+  assert.ok(sp > 10 && spAm / sp > 0.6, `am! after ${spAm} of ${sp} Sp`);
 });
 
 test("level 6 is locked until the comeback: above row 10, then back down to row 5", () => {

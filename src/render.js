@@ -1363,6 +1363,77 @@ export function createRenderer(boardCanvas, nextCanvas) {
     bctx.restore();
   }
 
+  // The light sweeping along rows as they go (game.js rowClearShow, CONFIG.fx.rowClear): a band
+  // brightest at its head, fading behind it, with more to it the more rows go at once.
+  function drawRowClears(state, now) {
+    const list = state.fx.rowClears;
+    if (!list?.length) return;
+    const tiers = CONFIG.fx.rowClear.tiers;
+    bctx.save();
+    bctx.globalCompositeOperation = "lighter";
+    for (const c of list) {
+      const T = tiers[c.tier] ?? tiers[0], t = c.elapsedMs, mid = bw / 2;
+      const colour = (x, a, l = 70) => T.rainbow ? `hsla(${(c.hue + (x / bw) * 300 + t * 0.25) % 360}, 100%, ${l}%, ${a})` : `rgba(255,255,255,${a})`;
+      // a soft rainbow over the whole board, rising from the bottom
+      if (T.wash) {
+        const p = Math.min(1, t / (c.durationMs * 0.75)), yc = bh * (1.15 - 1.3 * p), half = bh * 0.22;
+        const a = 0.22 * Math.sin(Math.PI * p);
+        const g = bctx.createLinearGradient(0, yc - half, 0, yc + half);
+        for (let k = 0; k <= 6; k++) g.addColorStop(k / 6, `hsla(${(c.hue + k * 50) % 360}, 100%, 60%, ${(a * Math.sin(Math.PI * k / 6)).toFixed(3)})`);
+        bctx.fillStyle = g;
+        bctx.fillRect(0, yc - half, bw, half * 2);
+      }
+      c.rows.forEach((y, i) => {
+        const t0 = t - i * c.rowStaggerMs;
+        if (t0 < 0) return;
+        const s = Math.min(1, t0 / c.sweepMs);
+        const fade = t0 > c.sweepMs ? 1 - Math.min(1, (t0 - c.sweepMs) / c.fadeMs) : 1;
+        if (fade <= 0) return;
+        const h = cell * (T.band ?? 0.6), top = y * cell + (cell - h) / 2;
+        const dir = c.pattern === "weave" ? (i % 2 ? "rtl" : "ltr") : c.pattern;
+        // [from, head] stretches: the lit part of the row, its head where the light is now
+        const spans = dir === "ltr" ? [[0, s * bw]] : dir === "rtl" ? [[bw, bw - s * bw]]
+          : dir === "edges" ? [[0, s * mid], [bw, bw - s * mid]] : [[mid, mid - s * mid], [mid, mid + s * mid]];
+        for (const [from, head] of spans) {
+          const lo = Math.min(from, head), w = Math.abs(head - from);
+          if (w < 0.5) continue;
+          const g = bctx.createLinearGradient(from, 0, head, 0);
+          g.addColorStop(0, colour(from, (0.12 * fade).toFixed(3)));
+          g.addColorStop(0.75, colour((from + head) / 2, (0.35 * fade).toFixed(3)));
+          g.addColorStop(1, colour(head, (0.75 * fade).toFixed(3), 80));
+          bctx.fillStyle = g;
+          bctx.fillRect(lo, top, w, h);
+          // the head itself, while it's still moving: white hot, with a glow and fringes
+          if (s < 1) {
+            if (T.glow) { bctx.shadowColor = T.rainbow ? colour(head, 1) : "rgba(180,240,255,1)"; bctx.shadowBlur = T.glow * scale; }
+            if (T.chroma) {
+              bctx.fillStyle = "rgba(0,255,255,0.45)"; bctx.fillRect(head - 3, top - 1, 3, h + 2);
+              bctx.fillStyle = "rgba(255,0,170,0.45)"; bctx.fillRect(head, top - 1, 3, h + 2);
+            }
+            bctx.fillStyle = `rgba(255,255,255,${(0.95 * fade).toFixed(3)})`;
+            bctx.fillRect(head - 1.5, top, 3, h);
+            bctx.shadowBlur = 0;
+          }
+        }
+      });
+      // lines running up and down the board from the rows that went
+      if (T.ripples) {
+        const yc = (c.rows.reduce((a, b) => a + b, 0) / c.rows.length + 0.5) * cell;
+        for (let k = 0; k < T.ripples; k++) {
+          const tr = t - k * 90;
+          if (tr < 0 || tr > T.rippleMs) continue;
+          const p = tr / T.rippleMs, d = p * bh * 0.55, a = 0.5 * (1 - p);
+          for (const yy of [yc - d, yc + d]) {
+            if (yy < 0 || yy > bh) continue;
+            bctx.fillStyle = T.rainbow ? `hsla(${(c.hue + k * 70 + p * 120) % 360}, 100%, 70%, ${a.toFixed(3)})` : `rgba(200,245,255,${a.toFixed(3)})`;
+            bctx.fillRect(0, yy - 1, bw, 2);
+          }
+        }
+      }
+    }
+    bctx.restore();
+  }
+
   function drawParticles(state) {
     const parts = state.fx.particles;
     if (!parts.length) return;
@@ -1445,6 +1516,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       drawDanger(state);
     }
 
+    if (!hide) drawRowClears(state, now);
     drawParticles(state);
     if (!hide) drawShockwaves(state, now);
     if (!hide) drawCallouts(state, now);
