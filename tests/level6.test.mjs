@@ -445,3 +445,26 @@ test("dinosaur bones: one dinosaur's bones in order, then its head; all four din
   }
   assert.equal(seen.size, 4);
 });
+
+test("existence: a thing at each stage, from the physical to the end of everything, in any of its shapes", () => {
+  const g = normaliseGroups(GROUPS, shapes).find(g => g.id === "existence");
+  const stages = [["universe", "reality", "observable"], ["multiverse", "time", "concept"], ["abstract", "consciousness", "soul"],
+    ["knowledge", "ignorance"], ["questions", "doubt"], ["life", "choices", "wisdom"], ["death", "void", "nothingness", "terror"]];
+  const concept = (id) => id.replace(/^existence_/, "").replace(/_(a|b|\d)$/, "");
+  const stageOf = (id) => stages.findIndex(st => st.includes(concept(id)));
+  const rng = makeRng(4), seen = new Set(), versions = new Map();
+  let sometimes = 0;
+  for (let i = 0; i < 400; i++) {
+    const ids = expandGroup(g, rng).map(s => s.id);
+    const at = ids.map(stageOf);
+    assert.ok(!at.includes(-1), ids.join());
+    // one of each stage, in order, but the questions only sometimes
+    assert.deepEqual(at.filter(k => k !== 4), [0, 1, 2, 3, 5, 6], ids.join());
+    assert.ok(at.join() === [...at].sort((a, b) => a - b).join(), `in order: ${ids.join()}`);
+    if (at.includes(4)) sometimes++;
+    for (const id of ids) { seen.add(concept(id)); if (!versions.has(concept(id))) versions.set(concept(id), new Set()); versions.get(concept(id)).add(id); }
+  }
+  assert.equal(seen.size, stages.flat().length, `every one turns up: ${[...seen]}`);
+  for (const [c, v] of versions) assert.ok(v.size >= 2, `${c} in more than one version`);
+  assert.ok(sometimes > 120 && sometimes < 280, `questions or doubt in ${sometimes} of 400`);
+});

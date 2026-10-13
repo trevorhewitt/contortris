@@ -250,9 +250,9 @@ test("names for lots of something", () => {
 
 test("turbo zen: a mess is built nearly to the top, full of gaps, and then demolished", () => {
   const { state, log } = zen(6, "turbo");
-  let top = 0, gaps = 0;
+  let top = null, gaps = 0;
   on(state, (t, d) => {
-    if (t === "zenMovement" && d.name === "demolition") {
+    if (t === "zenMovement" && d.name === "demolition" && top == null) { // (the mess's own)
       top = height(state);
       for (let x = 0; x < cols; x++) for (let y = rows - top, seen = false; y < rows; y++) { if (state.board[y][x]) seen = true; else if (seen) gaps++; }
     }
@@ -308,7 +308,7 @@ test("turbo zen: faster, with movements of its own", () => {
   assert.equal(log.over, false);
   assert.ok(state.drops > 600, `${state.drops} pieces`);
   const kinds = new Set(log.movements.map(m => m.name));
-  assert.ok(["mono", "small", "big", "chorus"].filter(k => kinds.has(k)).length >= 2, `${[...kinds]}`);
+  assert.ok(["mono", "small", "big", "chorus", "oops", "standing", "colour", "squares", "waves", "blackholes", "expanders"].filter(k => kinds.has(k)).length >= 4, `${[...kinds]}`);
 });
 
 test("row clears have names all the way up to the whole board", () => {

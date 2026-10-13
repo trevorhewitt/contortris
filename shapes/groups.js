@@ -175,18 +175,31 @@ export const GROUPS = [
     ],
   },
   {
-    // each piece is one of three paintings, chosen once a game (see `variant` above)
+    // Existence: a rough progression from the physical, to the abstract, to consciousness, to
+    // what we know and don't, to life, and on to the end of everything. At each stage, one thing
+    // at random (each as likely as the others), in one of its versions: some are the same
+    // outline painted a few ways, some another shape altogether. And now and then, questions
+    // (or doubt) along the way.
     id: "existence",
-    name: "existence, from the universe to existential terror",
+    name: "existence, from the universe to nothingness",
     frequency: 1,
-    room: 16, // (it piles to 13 at best: the estimate, 19, doesn't see how its pieces fit together)
+    room: 18, // (it piles to 13–19 rows: the estimate, 19 for most runs, doesn't see how its pieces fit together)
+    unique: true,
     sequence: [
-      { variant: ["existence_universe_1", "existence_universe_2", "existence_universe_3"] },
-      { variant: ["existence_multiverse_1", "existence_multiverse_2", "existence_multiverse_3"] },
-      { variant: ["existence_concept_1", "existence_concept_2", "existence_concept_3"] },
-      { variant: ["existence_consciousness_1", "existence_consciousness_2", "existence_consciousness_3"] },
-      { variant: ["existence_doubt_1", "existence_doubt_2", "existence_doubt_3"] },
-      { variant: ["existence_terror_1", "existence_terror_2", "existence_terror_3"] },
+      { pick: ["existence_universe_1", "existence_universe_2", "existence_universe_3", "existence_universe_4", "existence_reality_a", "existence_reality_b", "existence_observable_a", "existence_observable_b"],
+        weights: [1/6, 1/6, 1/6, 1/2, 1/2, 1/2, 1/2, 1/2], count: 1 }, // the physical
+      { pick: ["existence_multiverse_1", "existence_multiverse_2", "existence_multiverse_3", "existence_multiverse_4", "existence_time_a", "existence_time_b", "existence_concept_1", "existence_concept_2", "existence_concept_3", "existence_concept_4"],
+        weights: [1/6, 1/6, 1/6, 1/2, 1/2, 1/2, 1/6, 1/6, 1/6, 1/2], count: 1 },
+      { pick: ["existence_abstract_a", "existence_abstract_b", "existence_consciousness_1", "existence_consciousness_2", "existence_consciousness_3", "existence_consciousness_4", "existence_soul_a", "existence_soul_b"],
+        weights: [1/2, 1/2, 1/6, 1/6, 1/6, 1/2, 1/2, 1/2], count: 1 }, // the abstract, and the mind (the soul is tiny)
+      { pick: ["existence_knowledge_a", "existence_knowledge_b", "existence_ignorance_a", "existence_ignorance_b"],
+        weights: [1/2, 1/2, 1/2, 1/2], count: 1 },
+      { pick: ["existence_questions_a", "existence_questions_b", "existence_doubt_1", "existence_doubt_2", "existence_doubt_3"],
+        weights: [1/2, 1/2, 1/3, 1/3, 1/3], count: [0, 1] }, // (sometimes)
+      { pick: ["existence_life_a", "existence_life_b", "existence_choices_a", "existence_choices_b", "existence_wisdom_a", "existence_wisdom_b"],
+        weights: [1/2, 1/2, 1/2, 1/2, 1/2, 1/2], count: 1 },
+      { pick: ["existence_death_a", "existence_death_b", "existence_void_a", "existence_void_b", "existence_nothingness_a", "existence_nothingness_b", "existence_terror_1", "existence_terror_2", "existence_terror_3"],
+        weights: [1/2, 1/2, 1/2, 1/2, 1/2, 1/2, 1/3, 1/3, 1/3], count: 1 }, // and the end of it all
     ],
   },
   {

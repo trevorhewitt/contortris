@@ -59,8 +59,9 @@ test("threads: every id is a piece, every live piece is on a theme, and every se
     for (const id of list) assert.ok(ids.has(id), `${name}: no piece ${id}`);
   }
   const on = new Set(Object.values(THREADS).flat());
-  const missing = all.filter(s => (s.frequency ?? 1) > 0 && !on.has(s.id)).map(s => s.id);
-  assert.ok(missing.length <= 25, `not on any theme: ${missing.join(", ")}`);
+  // (the sets' pieces have their set's threads: SET_THREADS)
+  const missing = all.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== 6 && !on.has(s.id)).map(s => s.id);
+  assert.ok(missing.length <= 5, `not on any theme: ${missing.join(", ")}`);
   for (const g of GROUPS) if ((g.frequency ?? 1) > 0) assert.ok(SET_THREADS[g.id]?.length, `set ${g.id}`);
   // and the colour and shape threads come from the art
   assert.equal(colourFamily(shapes.find(s => s.id === "poppy")) === "red", false, "the poppy is white now");
