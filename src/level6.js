@@ -52,6 +52,12 @@ export function normaliseGroups(rawGroups, shapes) {
         // (unique: each piece at most once, so never more of them than there are pieces)
         const unique = step.unique === true;
         steps.push({ shapes: picks, weights, count: unique ? [Math.min(lo, picks.length), Math.min(hi, picks.length)] : [lo, hi], unique });
+      } else if (step && Array.isArray(step.repeat)) {
+        // now and then (chance), one of these again and again (`times`), now and then as its echo
+        const picks = step.repeat.map(live).filter(Boolean);
+        if (!picks.length) continue;
+        const t = Array.isArray(step.times) ? step.times : [step.times ?? 3, step.times ?? 3];
+        steps.push({ repeat: picks, times: [Math.max(1, t[0] | 0), Math.max(1, t[0] | 0, t[1] | 0)], chance: Math.max(0, Math.min(1, Number(step.chance ?? 1))) });
       } else if (step && Array.isArray(step.variant)) {
         // one of these, chosen once a game: the same piece drawn several ways
         const picks = step.variant.map(live).filter(Boolean);
@@ -73,7 +79,7 @@ export function normaliseGroups(rawGroups, shapes) {
     if (!ok || !steps.length) continue;
     // a piece with `echo` comes back later in the same run as that piece (déjà vu)
     const echoes = new Map();
-    for (const st of steps) for (const sh of [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]) {
+    for (const st of steps) for (const sh of [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.repeat ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]) {
       if (sh.echo && live(sh.echo)) echoes.set(sh.id, live(sh.echo));
     }
     // (unique: no piece twice in one run, whichever steps it's in; echoes aside)
@@ -87,12 +93,22 @@ export function normaliseGroups(rawGroups, shapes) {
 // game) remembers which version of each variant step this game has.
 export function expandGroup(group, rng, variants = null) {
   const out = [];
+  let tail = null; // (where a run that ends on one thing over and over starts doing that)
   const pick = (list) => sampleByWeight(list, it => it.w, rng);
   for (const st of group.steps) {
     if (st.variant) {
       let s = variants?.get(st.key);
       if (!s) { s = st.variant[Math.floor(rng() * st.variant.length)]; variants?.set(st.key, s); }
       out.push(s);
+      continue;
+    }
+    if (st.repeat) {
+      // (unique or not: the same one again, and again)
+      if (rng() >= st.chance) continue;
+      const s = st.repeat[Math.floor(rng() * st.repeat.length)], again = group.echoes?.get(s.id);
+      const n = st.times[0] + Math.floor(rng() * (st.times[1] - st.times[0] + 1));
+      tail ??= out.length;
+      for (let k = 0; k < n; k++) out.push(again && k > 0 && rng() < 0.4 ? again : s);
       continue;
     }
     if (st.chain) {
@@ -118,10 +134,13 @@ export function expandGroup(group, rng, variants = null) {
   // echoes: the first piece that has one comes back once, somewhere later in the run (only
   // one per run), with at least one other piece in between when there's room for that, and
   // never last (a run ends on one of its own)
-  const i = out.findIndex(s => group.echoes?.has(s.id));
-  if (i >= 0 && i < out.length - 1) { // (if it was the last of the run, it doesn't come back)
-    let lo = Math.min(out.length, i + 2), hi = out.length - 1; // (where it can go: lo..hi)
-    if (lo > hi) lo = hi = out.length - 1;
+  // (and an ending of one thing over and over stays just that: the echo comes before it, and
+  // one that's in it already comes back plenty)
+  const end = tail ?? out.length;
+  const i = out.slice(0, end).findIndex(s => group.echoes?.has(s.id));
+  if (i >= 0 && i < end - 1) { // (if it was the last of the run, it doesn't come back)
+    let lo = Math.min(end, i + 2), hi = end - 1; // (where it can go: lo..hi)
+    if (lo > hi) lo = hi = end - 1;
     out.splice(lo + Math.floor(rng() * (hi - lo + 1)), 0, group.echoes.get(out[i].id));
   }
   return out;

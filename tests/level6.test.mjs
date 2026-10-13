@@ -37,7 +37,7 @@ test("groups in the data are complete (every piece exists)", () => {
   const all = normaliseGroups(GROUPS, shapes);
   for (const g of GROUPS) {
     for (const step of g.sequence) {
-      const ids = typeof step === "string" ? [step] : step.variant ?? (step.chain
+      const ids = typeof step === "string" ? [step] : step.variant ?? step.repeat ?? (step.chain
         ? [...Object.keys(step.chain.start ?? {}), ...Object.values(step.chain.after ?? {}).flatMap(o => Object.keys(o))].filter(id => id !== "stop")
         : step.pick);
       for (const id of ids) assert.ok(shapes.some(s => s.id === id), `${g.id}: missing piece ${id}`);
@@ -45,7 +45,7 @@ test("groups in the data are complete (every piece exists)", () => {
   }
   assert.equal(all.length, GROUPS.filter(g => (g.frequency ?? 1) > 0).length, "every group is live (but the banished ones)");
   // every level 6 piece belongs to a group
-  const inGroups = new Set(GROUPS.flatMap(g => g.sequence.flatMap(st => (typeof st === "string" ? [st] : st.variant ?? (st.chain
+  const inGroups = new Set(GROUPS.flatMap(g => g.sequence.flatMap(st => (typeof st === "string" ? [st] : st.variant ?? st.repeat ?? (st.chain
     ? [...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))] : st.pick)))));
   for (const s of shapes) if (s.echo) inGroups.add(s.echo); // (echoes come back inside their set)
   for (const s of shapes.filter(s => s.difficulty === 6 && (s.frequency ?? 1) > 0)) assert.ok(inGroups.has(s.id), `${s.id} is level 6 but in no group`);
@@ -119,6 +119,8 @@ function matchGroupAt(g, ids, at = 0) {
     if (typeof st === "string") return { members: new Set([st]), lo: 1, hi: 1 };
     if (st.variant) return { members: new Set(st.variant), lo: 1, hi: 1 };
     if (st.chain) return { members: new Set([...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))]), lo: st.chain.min ?? 1, hi: st.chain.max ?? 4 };
+    // (now and then one of them over and over, as itself or its echo)
+    if (st.repeat) return { members: new Set([...st.repeat, ...st.repeat.map(id => shapes.find(s => s.id === id)?.echo).filter(Boolean)]), lo: 0, hi: [].concat(st.times).at(-1) };
     const [lo, hi] = Array.isArray(st.count) ? st.count : [st.count ?? 1, st.count ?? 1];
     return { members: new Set(st.pick), lo, hi };
   });
@@ -411,21 +413,27 @@ test("a raindrop straight after a raindrop is another raindrop", () => {
   assert.ok(names.includes("another raindrop"), names.join(" | "));
 });
 
-test("emotions: two to four ordinary ones, then on to the strange, never ending on a repeat, mostly on the absurd", () => {
+test("emotions: two to four ordinary ones, then on to the strange, mostly ending on the absurd, now and then on déjà vu over and over", () => {
   const g = normaliseGroups(GROUPS, shapes).find(g => g.id === "emotions");
   const rng = makeRng(12);
   const firsts = new Set(), lasts = new Map();
   const ordinary = new Set(["happiness", "sadness", "anger", "fear", "surprise", "boredom", "calm", "jealousy"].map(n => "emotion_" + n));
+  const again = (id) => /^emotion_(deja_vu|memory_loss)(_2)?$/.test(id);
   const opens = new Set();
+  let overAndOver = 0;
   for (let i = 0; i < 400; i++) {
-    const ids = expandGroup(g, rng).map(s => s.id);
-    assert.ok(ids.length >= 4 && ids.length <= 11, ids.join());
+    let ids = expandGroup(g, rng).map(s => s.id);
     // (two to four ordinary ones first)
     let n = 0;
     while (n < ids.length && ordinary.has(ids[n])) n++;
     assert.ok(n >= 2, `opens on ${n} ordinary: ${ids.join()}`);
     opens.add(Math.min(n, 4));
-    // no card twice, but for the one that comes back (déjà vu), and that never last
+    // now and then it ends on déjà vu (or memory loss) again, and again, and again
+    let tail = 0;
+    while (tail < ids.length && again(ids[ids.length - 1 - tail]) && ids[ids.length - 1 - tail].replace(/_2$/, "") === ids[ids.length - 1].replace(/_2$/, "")) tail++;
+    if (tail >= 3) { overAndOver++; ids = ids.slice(0, ids.length - tail); }
+    assert.ok(ids.length >= 4 && ids.length <= 11, ids.join());
+    // otherwise no card twice, but for the one that comes back (déjà vu), and that never last
     const plain = ids.filter(id => !/_2$/.test(id));
     assert.equal(new Set(plain).size, plain.length, `twice: ${ids.join()}`);
     assert.ok(!/_2$/.test(ids[ids.length - 1]), `ends on a repeat: ${ids.join()}`);
@@ -435,10 +443,11 @@ test("emotions: two to four ordinary ones, then on to the strange, never ending 
   }
   assert.ok(firsts.size >= 8, `opens ${firsts.size} ways`);
   assert.deepEqual([...opens].sort(), [2, 3, 4], "with two, three or four of them");
+  assert.ok(overAndOver > 400 * 0.2 && overAndOver < 400 * 0.4, `over and over ${overAndOver} of 400`);
   const absurd = ["existential_dread", "winning_extris", "inner_emptiness", "being_a_piece", "playing_extris", "urge_to_rotate", "long_piece", "row_grief", "fear_of_ceiling", "utter_euphoria"].map(n => "emotion_" + n);
   const plainEnds = ["happiness", "sadness", "anger", "fear", "surprise", "boredom", "calm", "jealousy"].map(n => "emotion_" + n);
   const count = (list) => list.reduce((n, id) => n + (lasts.get(id) ?? 0), 0);
-  assert.ok(count(absurd) > 400 * 0.6, `ends on the absurd ${count(absurd)} of 400`);
+  assert.ok(count(absurd) > 400 * 0.6, `ends on the absurd ${count(absurd)} of 400 (before any déjà vu)`);
   assert.ok(count(plainEnds) > 0, "and now and then on a plain one");
 });
 

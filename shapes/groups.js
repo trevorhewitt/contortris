@@ -26,6 +26,8 @@
  *       unique: true }                optional: each piece at most once in the run
  *     { variant: ["id", "id", "id"] } one of these, chosen once a game: the same piece drawn
  *                                     several ways (a player sees another next game)
+ *     { repeat: ["id", "id"],         now and then (chance, default always) one of these, again
+ *       times: [3, 5], chance: 0.3 }    and again (that many times), now and then as its echo
  *     { chain: {                      a run where each piece picks the next one:
  *         start: { id: 3, id: 1 },      the first (weights),
  *         after: { id: { id: 2, stop: 1 }, ... },  what can follow each piece ("stop" ends it)
@@ -229,7 +231,8 @@ export const GROUPS = [
     // a loose run from the ordinary to the strange: it opens on two to four ordinary ones, drifts
     // through the oddly specific and the intense to the ones that don't exist and the ones about
     // the game, and ends on the most absurd (or, now and then, on a plain one). No card twice
-    // (déjà vu and the like come back once, by `echo`, never last).
+    // (déjà vu and the like come back once, by `echo`, never last; or else, now and then, déjà vu
+    // or memory loss ends it, over and over).
     unique: true,
     sequence: [
       // the opening: two to four of the ordinary ones, before it starts getting strange
@@ -247,6 +250,8 @@ export const GROUPS = [
       // and the last
       { pick: ["emotion_existential_dread", "emotion_winning_extris", "emotion_inner_emptiness", "emotion_being_a_piece", "emotion_playing_extris", "emotion_urge_to_rotate", "emotion_long_piece", "emotion_row_grief", "emotion_fear_of_ceiling", "emotion_utter_euphoria", "emotion_forglavedness", "emotion_plorch", "emotion_glumpf", "emotion_wibberance", "emotion_snerk", "emotion_sprongle", "emotion_halvering", "emotion_happiness", "emotion_sadness", "emotion_anger", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy"],
         weights: [3, 3, 3, 3, 2.5, 2.5, 2.5, 2.5, 2.5, 2, 1, 1, 1, 1, 1, 1, 1, 0.35, 0.35, 0.35, 0.35, 0.35, 0.35, 0.35, 0.35], count: 1 },
+      // ...and now and then, after that, déjà vu or memory loss, again, and again, and again
+      { repeat: ["emotion_deja_vu", "emotion_memory_loss"], times: [3, 5], chance: 0.3 },
     ],
   },
   {
