@@ -139,6 +139,11 @@ export const CONFIG = {
     level6: { headroom: 9, maxStackRows: 3 }, // level 6 sets only start with plenty of room
     captionRow: 3, captionMs: 2600, captionColour: "#d8ccff", // what it's doing, over the board
     wholeWindowCell: 0.8, // turbo zen filling the whole window: its cells this much of the usual size
+    // Turbo zen on a big board (at least minCols wide): now and then (chance) the next few pieces
+    // come down together, each in columns of its own (margin columns apart), up to one for every
+    // colsEach columns (at most `most` at once), up to `stagger` rows apart as they start. They
+    // all land before any rows clear.
+    flock: { minCols: 22, colsEach: 12, most: 4, chance: 0.6, margin: 1, headroom: 3, stagger: 5 },
   },
 
   godMode: {

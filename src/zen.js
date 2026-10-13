@@ -25,7 +25,7 @@
 // matches the plan, the director says "never mind" and tidies up.
 
 import { CONFIG } from "../config.js";
-import { tryMove, tryRotate, zenCaption, timeScaleOf } from "./game.js";
+import { tryMove, tryRotate, zenCaption, timeScaleOf, settleFlock } from "./game.js";
 import { selectPiece, destroyerCells } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup } from "./powerups.js";
@@ -737,6 +737,117 @@ export function zenSpawned(state) {
   zenSpeed(state);
   // (and after a big clearance it starts a little further up, out of sight)
   if (z.rest > 0) a.y -= Math.round(z.rest / state.dropMs);
+  // (on a big board, a few more of them might come down with it)
+  formFlock(state, land);
+}
+
+/* =========================
+   A flock: on a big board, a few at once
+   =========================
+   Turbo zen on a big board (the whole window): now and then a few of the pieces still to come
+   fall together with this one, each over columns of its own (CONFIG.zen.flock). They land on
+   the board as it is, and the rows they fill clear when this one locks (game.js waits for
+   them), which comes to the same as one after the other, so a plan still works out as planned
+   (and it's checked: if it wouldn't, they come one at a time). In a run of pieces, the next few
+   of the run; in a plan, any further on that are clear of everything they'd jump ahead of.
+   Never a powerup or a level 6 piece, and nothing jumps ahead of a powerup.
+*/
+function formFlock(state, land) {
+  const z = state.zen, F = CONFIG.zen.flock, a = state.active, t = z.target;
+  const { cols, rows } = CONFIG.board;
+  state.flock = [];
+  if (!F || isCalm(state) || z.userHas || a.shape.powerup || t?.slide || land == null || cols < F.minCols) return;
+  const room = Math.min(F.most, Math.floor(cols / F.colsEach)) - 1;
+  if (room < 1 || z.simRng() >= F.chance) return;
+  const want = 1 + Math.floor(z.simRng() * room);
+  const planned = !!z.expect;
+  const mat = a.shape.rotations[a.rotIdx];
+  // the columns taken (a margin either side), and those of the plan's pieces jumped ahead of
+  const taken = [[a.x - F.margin, a.x + mat[0].length + F.margin]], passed = [];
+  const apart = (x0, x1, spans) => spans.every(([l, r]) => x1 <= l || x0 >= r);
+  const occ = occupancy(state.board);
+  lay(occ, mat, a.x, land, cols);
+  const before = z.queue.slice(), expects = before.map(it => it.expect);
+  const members = [], pulled = new Set();
+  for (let i = 0; members.length < want && i < (planned ? 60 : want + 2); i++) {
+    if (!planned && i >= z.queue.length && z.movement && !z.movement.planned && !z.movement.done(state)) z.movement.fill(state);
+    const item = z.queue[i];
+    if (!item || item.shape.powerup || !!item.expect !== planned || (planned && !item.target)) break;
+    let spot = null;
+    if (!item.key && !item.dramatic && !item.emergency && !item.target?.slide && item.shape.difficulty !== LEVEL6) {
+      spot = item.target ? { rot: item.target.rot, x: item.target.x }
+        : flockSpot(occ, item.shape, item.weights ?? WEIGHTS.clear, (x0, x1) => apart(x0, x1, taken), cols, rows, F.headroom, z.simRng);
+    }
+    const m = spot && item.shape.rotations[spot.rot];
+    const fits = m && apart(spot.x, spot.x + m[0].length, taken) && apart(spot.x, spot.x + m[0].length, passed);
+    const y = fits ? dropY(occ, m, spot.x, cols, rows) : null;
+    if (y == null || y < (planned ? 0 : F.headroom)) {
+      if (!planned) break; // (a run keeps its order)
+      // (one of the plan's that stays where it is: nothing in its columns can jump ahead of it)
+      const it = item.target, w = item.shape.rotations[it.rot]?.[0].length ?? cols;
+      passed.push([Math.min(it.x, it.slide?.to ?? it.x), Math.max(it.x, it.slide?.to ?? it.x) + w]);
+      continue;
+    }
+    lay(occ, m, spot.x, y, cols);
+    taken.push([spot.x - F.margin, spot.x + m[0].length + F.margin]);
+    pulled.add(item);
+    members.push({ shape: item.shape, rotIdx: spot.rot, x: spot.x, land: y, at: i });
+  }
+  if (!members.length) return;
+  z.queue = z.queue.filter(it => !pulled.has(it));
+  if (planned) {
+    // what the board will be after each of the plan's pieces that were jumped ahead of; the last
+    // of them must leave it as the plan said it would be after the last of the flock
+    const after = occ.slice();
+    clearFull(after, cols, rows);
+    const last = members[members.length - 1].at;
+    let ok = true, board = after;
+    const skipped = before.slice(0, last).filter(it => !pulled.has(it));
+    for (const it of skipped) {
+      const m = it.shape.rotations[it.target.rot], y = dropY(board, m, it.target.x, cols, rows);
+      if (y == null) { ok = false; break; }
+      board = board.slice();
+      placeAndClear(board, m, it.target.x, y, cols, rows);
+      it.expect = board;
+    }
+    if (!ok || !sameBoard(board, expects[last])) {
+      // (it doesn't come out the same: one at a time after all)
+      z.queue = before;
+      before.forEach((it, k) => { it.expect = expects[k]; });
+      return;
+    }
+    z.expect = after;
+  }
+  // each falls at its own pace, so they all land at about the same time (give or take: they
+  // start a little apart, not in a line); after a big clearance, they wait up there as long as
+  // this one does
+  const Z = CONFIG.zen;
+  for (const f of members) {
+    const m = f.shape.rotations[f.rotIdx];
+    f.dropMs = Math.max(8, Z.fallMs * z.pace, Z.pieceMs * z.pace / Math.max(1, f.land + m.length));
+    f.y = -m.length - Math.floor(z.simRng() * (F.stagger ?? 0)) - (z.rest > 0 ? Math.round(z.rest / f.dropMs) : 0);
+    f.accum = 0;
+    z.blocks = (z.blocks ?? 0) + blocks(f.shape);
+  }
+  state.flock = members;
+}
+
+// Where a flock's piece goes: the best place in the columns still free (`free(x0, x1)`), dropped
+// straight down onto `occ`, at least `headroom` rows below the top.
+function flockSpot(occ, shape, weights, free, cols, rows, headroom, rng) {
+  let best = null;
+  for (let r = 0; r < reachableTurns(shape); r++) {
+    const mat = shape.rotations[r], w = mat[0].length;
+    for (let x = 0; x + w <= cols; x++) {
+      if (!free(x, x + w)) continue;
+      const y = dropY(occ, mat, x, cols, rows);
+      if (y == null || y < headroom) continue;
+      const o = occ.slice(), lines = placeAndClear(o, mat, x, y, cols, rows);
+      const s = score(o, lines, weights, cols, rows) - (intoWell(mat, x, weights) ? 12 : 0) + rng() * 0.01;
+      if (!best || s > best.s) best = { rot: r, x, s };
+    }
+  }
+  return best;
 }
 
 // How fast the piece falls: the autopilot's quickly (but each takes a moment at least), the
@@ -756,7 +867,8 @@ export function zenSteps(state) {
 export function zenLockMs(state) {
   if (!autopilot(state)) return null;
   const t = state.zen.target;
-  if ((t?.slide && !t.slid) || (t?.glide && !t.glided)) return Infinity;
+  // (nor before the rest of a flock has landed: it clears their rows with its own)
+  if ((t?.slide && !t.slid) || (t?.glide && !t.glided) || state.flock.length) return Infinity;
   return isCalm(state) && !dozing(state) ? null : CONFIG.zen.lockMs * state.zen.pace;
 }
 
@@ -785,6 +897,7 @@ export function zenTick(state, dt) {
       z.userHas = true;
       z.userAt = state.drops;
       zenSpeed(state);
+      if (state.flock.length) settleFlock(state); // (the rest of the flock lands, out of their way)
     }
   }
   if (!a || state.effect || z.userHas || a !== z.piece) return;
@@ -2040,6 +2153,13 @@ function dropY(occ, mat, x, cols, rows) {
 function dropFrom(occ, mat, x, y, cols, rows) {
   while (fitsAt(occ, mat, x, y + 1, cols, rows)) y++;
   return y;
+}
+
+// (placed, nothing cleared)
+function lay(occ, mat, x, y, cols) {
+  for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) {
+    if (mat[j][i] && y + j >= 0) occ[(y + j) * cols + x + i] = 1;
+  }
 }
 
 function placeAndClear(occ, mat, x, y, cols, rows) {

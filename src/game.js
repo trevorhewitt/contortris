@@ -69,6 +69,7 @@ export function createGameState(shapes, powerups, { rng = Math.random, groups = 
     instances: new Map(),
 
     active: null,
+    flock: [], // turbo zen: pieces falling with the active one (zen.js formFlock)
     next: null,
     running: false,
     paused: false,
@@ -215,6 +216,7 @@ export function resetGame(state) {
   markBoardDirty(state);
   state.instances.clear();
   state.active = null;
+  state.flock = [];
   state.next = null;
   state.nextChosen = false;
   state.effect = null;
@@ -604,10 +606,10 @@ export function shakesOnLanding(shape) {
 }
 const blockCount = (shape) => shape.rotations[0].reduce((n, row) => n + row.filter(Boolean).length, 0);
 
-// Locks the active piece into the board. Returns info about the placement.
-function lockPiece(state) {
-  const { shape, rotIdx } = state.active;
-  const mat = getActiveMatrix(state);
+// Writes a piece ({ shape, rotIdx, x, y }) into the board, as a new piece instance.
+function placePiece(state, piece) {
+  const { shape, rotIdx } = piece;
+  const mat = shape.rotations[rotIdx];
   const pid = state.nextPid++;
 
   let lockedAboveTop = false;
@@ -617,8 +619,8 @@ function lockPiece(state) {
     for (let x = 0; x < mat[0].length; x++) {
       if (!mat[y][x]) continue;
 
-      const bx = state.active.x + x;
-      const by = state.active.y + y;
+      const bx = piece.x + x;
+      const by = piece.y + y;
 
       if (by < 0) {
         lockedAboveTop = true;
@@ -633,11 +635,20 @@ function lockPiece(state) {
 
   state.instances.set(pid, {
     shape, rotIdx,
-    x: state.active.x, y: state.active.y,
+    x: piece.x, y: piece.y,
     cells: placed.map(c => ({ ...c })),
     total: Math.max(1, placed.length),
     intact: !lockedAboveTop,
   });
+  return { pid, placed, lockedAboveTop };
+}
+
+// Locks the active piece into the board. Returns info about the placement.
+function lockPiece(state) {
+  const { shape, rotIdx } = state.active;
+  // (turbo zen: anything still falling with it lands first; its rows clear with this one's)
+  if (state.flock.length) settleFlock(state);
+  const { pid, placed, lockedAboveTop } = placePiece(state, state.active);
 
   state.lastLockedShape = shape;
   state.drops++;
@@ -672,12 +683,56 @@ function lockPiece(state) {
   return info;
 }
 
+// Turbo zen's flock (zen.js formFlock): pieces falling with the active one, each in columns of
+// its own. Each falls at its own pace and locks the moment it lands, clearing nothing: the
+// active piece waits for them all (zenLockMs), and its lock clears every full row.
+function updateFlock(state, dt) {
+  const steps = CONFIG.zen.maxStepsPerFrame ?? 3;
+  for (const f of state.flock) {
+    if (f.landed) continue;
+    const mat = f.shape.rotations[f.rotIdx];
+    f.accum = Math.min(f.accum + dt, f.dropMs * steps);
+    while (f.accum >= f.dropMs && !f.landed) {
+      f.accum -= f.dropMs;
+      if (!collides(state, f.x, f.y + 1, mat)) f.y++;
+      else landFlock(state, f);
+    }
+  }
+  state.flock = state.flock.filter(f => !f.landed);
+}
+
+// ...all of them, straight down, now (the player took over, or the active piece locked).
+export function settleFlock(state) {
+  for (const f of state.flock) {
+    if (f.landed) continue;
+    const mat = f.shape.rotations[f.rotIdx];
+    while (!collides(state, f.x, f.y + 1, mat)) f.y++;
+    landFlock(state, f);
+  }
+  state.flock = [];
+}
+
+function landFlock(state, f) {
+  f.landed = true;
+  const { pid, placed, lockedAboveTop } = placePiece(state, f);
+  state.drops++;
+  if (shakesOnLanding(f.shape) && CONFIG.fx.quake.enabled) addQuakeFromBlocks(state, placed.length);
+  state.score += placed.length * (CONFIG.scoring.placePerBlock ?? 0) * state.level;
+  emit(state, "lock", {
+    shape: f.shape, pid, cells: placed, drops: state.drops, flock: true,
+    inside: (zone = "inside") => insidePairs(state, pid, zone),
+    onBoard: () => [...state.instances.values()].filter(i => i.cells.length && i.shape).map(i => i.shape),
+  });
+  if (lockedAboveTop) zenRescue(state); // (zen never ends)
+}
+
 function setGameOver(state, shape) {
   if (state.gameOver) return;
   state.gameOver = true;
   state.running = false;
   state.effect = null;
   state.active = null;
+  state.flock = [];
   state.gameOverInfo.pieceName = shape?.name ?? "";
   state.gameOverInfo.shape = shape ?? null;
   state.fx.gameOverBackdrop.cut++;
@@ -1665,6 +1720,8 @@ export function zenRescue(state) {
   state.blocksDestroyed += gone.length;
   addCallout(state, "phew", cols / 2, rows / 2, { big: true });
   if (state.zen) { state.zen.queue = []; state.zen.movement = null; state.zen.expect = null; }
+  for (const f of state.flock) f.landed = true;
+  state.flock = [];
   emit(state, "zenRescue", { blocks: gone.length });
 }
 
@@ -1699,6 +1756,7 @@ export function updateGame(state, dt) {
     updatePowerupEffect(state, dt);
     return;
   }
+  if (state.flock.length) updateFlock(state, dt);
   if (!state.active) return;
 
   const baseDropMs = state.dropMs;

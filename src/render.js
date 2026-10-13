@@ -875,19 +875,20 @@ export function createRenderer(boardCanvas, nextCanvas) {
     bctx.restore();
   }
 
-  function drawActivePiece(state) {
-    const { shape, rotIdx } = state.active;
-    const mat = getActiveMatrix(state);
+  // The falling piece (or one of turbo zen's flock falling with it: { shape, rotIdx, x, y }).
+  function drawActivePiece(state, piece = state.active) {
+    const { shape, rotIdx } = piece;
+    const mat = shape.rotations[rotIdx];
     const enhanced = isEnhanced();
     const list = [];
 
     for (let y = 0; y < mat.length; y++) {
       for (let x = 0; x < mat[0].length; x++) {
         if (!mat[y][x]) continue;
-        const by = state.active.y + y;
+        const by = piece.y + y;
         if (by < 0) continue;
         list.push({
-          px: (state.active.x + x) * cell,
+          px: (piece.x + x) * cell,
           py: by * cell,
           s: 1,
           paint: getShapePaint(shape, rotIdx, x, y),
@@ -901,7 +902,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     drawBlockList(bctx, list);
     bctx.globalAlpha = 1;
     // on its last chance (about to top out): it flashes red
-    const lc = state.active.lastChance;
+    const lc = piece.lastChance;
     if (lc && lc.elapsedMs < lc.durationMs) {
       const a = 0.25 + 0.3 * (0.5 + 0.5 * Math.sin(lc.elapsedMs * 0.022));
       bctx.fillStyle = `rgba(255,40,40,${a.toFixed(3)})`;
@@ -1544,6 +1545,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       const ghostBehind = CONFIG.render.ghost?.drawBehindActive ?? true;
 
       if (state.active && ghostBehind) drawGhostPiece(state, ghostY);
+      for (const f of state.flock ?? []) drawActivePiece(state, f);
       if (state.active) drawActivePiece(state);
       if (state.active && !ghostBehind) drawGhostPiece(state, ghostY);
 

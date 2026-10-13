@@ -338,6 +338,42 @@ test("turbo zen: faster, with movements of its own", () => {
   assert.ok(["mono", "small", "big", "chorus", "oops", "standing", "colour", "squares", "waves", "blackholes", "expanders"].filter(k => kinds.has(k)).length >= 4, `${[...kinds]}`);
 });
 
+test("turbo zen on a big board: often a few pieces fall at once, each in columns of its own, and plans still work out", () => {
+  const usual = { cols: CONFIG.board.cols, rows: CONFIG.board.rows };
+  CONFIG.board.cols = 44; CONFIG.board.rows = 30;
+  try {
+    for (const start of ["column", "tiles", "mono", "standing"]) {
+      const { state, log } = zen(3, "turbo");
+      zenStart(state, start);
+      let spawns = 0, flocks = 0, extra = 0, landed = 0, apart = true;
+      on(state, (t, d) => {
+        if (t === "lock" && d.flock) landed++;
+        if (t !== "spawn") return;
+        spawns++;
+        if (!state.flock.length) return;
+        flocks++; extra += state.flock.length;
+        assert.ok(state.flock.every(f => !f.shape.powerup), "never a powerup");
+        const spans = [state.active, ...state.flock].map(p => [p.x, p.x + p.shape.rotations[p.rotIdx][0].length]).sort((a, b) => a[0] - b[0]);
+        for (let i = 1; i < spans.length; i++) if (spans[i][0] < spans[i - 1][1]) apart = false;
+      });
+      run(state, log, 3 * 60000);
+      assert.ok(flocks >= spawns * 0.25, `${start}: ${flocks} flocks in ${spawns} spawns`);
+      assert.ok(apart, `${start}: each in columns of its own`);
+      assert.ok(landed >= extra - 4, `${start}: ${landed} of ${extra} landed`);
+      assert.equal(log.rescues, 0, `${start}: never needed rescuing`);
+      assert.ok(!log.movements.some(m => m.name === "abandoned"), `${start}: the plans came out as planned`);
+    }
+  } finally {
+    CONFIG.board.cols = usual.cols; CONFIG.board.rows = usual.rows;
+  }
+  // (and on the usual board, one at a time)
+  const { state, log } = zen(3, "turbo");
+  let flocks = 0;
+  on(state, (t) => { if (t === "spawn" && state.flock.length) flocks++; });
+  run(state, log, 60000);
+  assert.equal(flocks, 0);
+});
+
 test("row clears have names all the way up to the whole board", () => {
   const names = CONFIG.fx.callouts.multiRow;
   for (let n = 2; n <= rows; n++) assert.ok(names[n], `no name for ${n}`);
