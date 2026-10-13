@@ -10,7 +10,7 @@ import { THREADS, SET_THREADS } from "../shapes/threads.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, updateGame, hardDropAndLock, markInput, tryMove, on } from "../src/game.js";
-import { zenStart, zenIgnoreInput, pluralName } from "../src/zen.js";
+import { zenStart, zenIgnoreInput, pluralName, planTiles } from "../src/zen.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const { rows, cols } = CONFIG.board;
@@ -246,6 +246,29 @@ test("names for lots of something", () => {
     "a gingerbread man": "gingerbread men", "the tip of the iceberg": "tips of the iceberg", "a tornado with a cow in it": "tornadoes with a cow in it",
   };
   for (const [one, many] of Object.entries(cases)) assert.equal(pluralName(one), many);
+});
+
+test("turbo zen: tiles in patterns, built up and then all brought down at once", () => {
+  for (const kind of ["floor", "bricks", "pinwheels", "waves", "lizards"]) {
+    const { state, log } = zen(3, "turbo");
+    state.active = null;
+    const res = planTiles(state, kind);
+    assert.ok(res, `${kind}: no plan`);
+    const tiles = res.items.filter(it => it.shape.tags?.includes("tiles"));
+    assert.ok(tiles.length >= 20, `${kind}: ${tiles.length} tiles`);
+    // (the last of them, one of the tallest pieces, takes nearly all of it at once)
+    const last = res.items[res.items.length - 1];
+    assert.ok(last.key && last.dramatic, `${kind}: ends with ${last.shape.id}`);
+    assert.ok(res.items.slice(0, -1).every(it => !it.expect.some((v, k) => k < cols * 3 && v)), `${kind}: keeps clear of the top`);
+  }
+  // and in the game
+  const { state, log } = zen(3, "turbo");
+  zenStart(state, "tiles");
+  log.movements.length = 0;
+  run(state, log, 3 * 60000);
+  const i = log.movements.findIndex(m => m.name === "tiles");
+  assert.ok(i >= 0 && log.movements[i + 1], `never finished: ${log.movements.map(m => m.name)}`);
+  assert.ok(log.clears.some(n => n >= 18), `${log.clears}`);
 });
 
 test("turbo zen: a mess is built nearly to the top, full of gaps, and then demolished", () => {

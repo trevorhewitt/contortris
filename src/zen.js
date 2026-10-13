@@ -55,10 +55,10 @@ const WEIGHTS = {
 const MOVEMENT_WEIGHTS = {
   zen: { natural: 5, rain: 1, family: 1.6, colours: 1, twos: 0.7 },
   turbo: { natural: 0.25, rain: 0.15, build: 0.5, giants: 0.3, column: 2.5, beds: 2, crack: 2, mess: 0.9, fall: 0.3, well: 0.3, chorus: 1.2,
-    mono: 5, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1, oops: 2.5 },
+    mono: 5, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1, oops: 2.5, tiles: 2 },
 };
 // (the ones that need a low, tidy board to build on)
-const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "standing", "colour", "squares"]);
+const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "standing", "colour", "squares", "tiles"]);
 // (the ones happy to carry on from whatever the last one left behind)
 const BLENDS = new Set(["build", "chorus", "mono", "small", "big", "waves", "expanders", "blackholes", "oops"]);
 
@@ -510,6 +510,9 @@ const MOVEMENTS = {
 
   // squares of colour in a pattern, a checkerboard or diagonal stripes, then down it comes
   squares: () => planned(null, (state) => planSquares(state), "demolition"),
+
+  // tiles in a pattern: a tiled floor, brickwork, pinwheels, waves (only if there are tiles)
+  tiles: () => planned(null, (state) => { const kind = state.zen.opts?.kind; state.zen.opts = null; return planTiles(state, kind); }, "demolition"),
 
   // up and down and up again
   waves: (state) => waves(state),
@@ -1392,7 +1395,10 @@ export function planSquares(state) {
   const occ = occupancy(state.board);
   if (!solid(occ, cols, rows) || heightOf(occ, cols, rows) > 2) return null;
   const sq = 2;
-  const pieces = plannable(state, 3).filter(s => { const m = s.rotations[0]; return m.length === sq && m[0].length === sq && m.flat().every(Boolean); });
+  let pieces = plannable(state, 3).filter(s => { const m = s.rotations[0]; return m.length === sq && m[0].length === sq && m.flat().every(Boolean); });
+  // (the big tiles, if there are enough colours of them)
+  const tiles = pieces.filter(s => s.tags?.includes("tiles"));
+  if (new Set(tiles.map(colourOf)).size >= 3) pieces = tiles;
   const byCol = new Map();
   for (const p of pieces) { const c = colourOf(p); if (c && c !== "black") { if (!byCol.has(c)) byCol.set(c, []); byCol.get(c).push(p); } }
   const palette = [...byCol.keys()];
@@ -1433,6 +1439,210 @@ export function planSquares(state) {
   if (key) steps.push({ shape: key, rot: 0, mat: key.rotations[0], x: slot * sq, key: true });
   const items = toItems(occ, steps, cols, rows, { mustClear: !!key });
   return items && { items, caption: kind.caption };
+}
+
+// Tiles laid in a pattern across the board, from the bottom up: a tiled floor of little tiles,
+// L-shaped tiles in pairs (each pair a 3 x 2 brick), T-shaped tiles in fours (each four a 4 x 4
+// pinwheel), wavy tiles in strips. Each in its glazes (the tiles: tagged "tiles", one shape in
+// several colours), in a pattern of them, with the odd half tile to finish an edge. One column
+// is left empty all the way up so no row completes; then one of the tallest pieces drops into it
+// and it all goes at once (or, without one, down it comes). (`any`: any pieces of the right
+// shapes will do, for when there are no tiles.) Returns { items, caption } or null.
+export function planTiles(state, kind = null, { any = false } = {}) {
+  const { cols, rows } = CONFIG.board;
+  const rng = state.rng;
+  const occ = occupancy(state.board);
+  const base = heightOf(occ, cols, rows);
+  if (!solid(occ, cols, rows) || base > 2 || colTop(occ, cols - 1, cols, rows) < rows) return null;
+  // (anything low that's there already is levelled off first, but for the last column, and the
+  // pattern goes on top)
+  const work = occ.slice();
+  let level = [];
+  if (base) {
+    const need = new Uint8Array(cols * rows);
+    for (let y = rows - base; y < rows; y++) for (let x = 0; x < cols - 1; x++) if (!occ[y * cols + x]) need[y * cols + x] = 1;
+    level = tile(work, need, fillerCandidates(state), rng, cols, rows);
+    if (!level) return null;
+  }
+  const bottom = rows - 1 - base; // (the pattern's lowest row)
+  const glazes = (pattern) => tileSet(state, pattern, any);
+  const ones = glazes(["X"]);
+  // (the half tiles are for the edges; the little tiles for a floor of them)
+  const half = ones.filter(o => /half/.test(o.shape.id)).length ? ones.filter(o => /half/.test(o.shape.id)) : ones;
+  const little = ones.filter(o => !/half/.test(o.shape.id));
+  const strips = tileSet(state, ["X", "X", "X"], false).filter(o => /strip/.test(o.shape.id));
+  if (!half.length) return null;
+  const kinds = {
+    // little tiles, in a pattern of glazes: a checkerboard, diagonals, a check of checks, rings
+    floor: () => {
+      const g = shuffle(groupByColour(little), rng);
+      if (g.length < 2) return null;
+      const pat = [(i, j) => (i + j) % 2, (i, j) => (i + j) % Math.min(4, g.length), (i, j) => ((i >> 1) + (j >> 1)) % 2 * 2 + ((i + j) % 2), (i, j) => Math.max(Math.abs(i - cols / 2), Math.abs(j - rows / 2)) | 0][Math.floor(rng() * 4)];
+      const out = [];
+      for (let y = bottom; y >= 3; y--) for (let i = 0; i < cols - 1; i++) out.push({ g: g[pat(i, y) % g.length], mat: ["X"], x: i, y });
+      return { caption: "a tiled floor", out };
+    },
+    // L-shaped tiles, two to a panel (2 wide, 3 tall: one turned over the other), the panels in
+    // rows, every other row a step along like brickwork; grout at the ends
+    bricks: () => {
+      const L = shuffle(groupByColour(glazes(["XX", ".X"]), glazes(["X.", "XX"])), rng);
+      if (!L.length) return null;
+      const out = [];
+      for (let j = 0, y = bottom - 2; y >= 3; j++, y -= 3) for (let u = 0, x = j % 2; x + 2 <= cols - 1; u++, x += 2) {
+        const c = L[(u + j) % L.length];
+        out.push({ g: c, mat: ["XX", ".X"], x, y }, { g: c, mat: ["X.", "XX"], x, y: y + 1 });
+      }
+      return fillGaps(out, "brickwork", half, bottom, strips);
+    },
+    // T-shaped tiles, four to a 4 x 4 panel, each turned its own way: pinwheels (the four in their
+    // glazes, the same in every panel, or each panel its own)
+    pinwheels: () => {
+      const glaze = shuffle(groupByColour(glazes(["XXX", ".X."])), rng);
+      if (!glaze.length) return null;
+      const four = [{ mat: [".X.", "XXX"], dx: 0, dy: 2 }, { mat: [".X", "XX", ".X"], dx: 2, dy: 1 }, { mat: ["X.", "XX", "X."], dx: 0, dy: 0 }, { mat: ["XXX", ".X."], dx: 1, dy: 0 }];
+      const each = rng() < 0.5, out = [];
+      for (let j = 0, y = bottom - 3; y >= 3; j++, y -= 4) for (let u = 0, x = 0; x + 4 <= cols - 1; u++, x += 4) {
+        four.forEach((t, k) => out.push({ g: glaze[(each ? u + j : k) % glaze.length], mat: t.mat, x: x + t.dx, y: y + t.dy }));
+      }
+      return fillGaps(out, "pinwheels", half, bottom, strips);
+    },
+    // wavy tiles side by side in strips, a glaze to a strip: waves
+    waves: () => {
+      const S = shuffle(groupByColour(glazes([".XX", "XX."])), rng);
+      if (!S.length) return null;
+      const out = [];
+      for (let j = 0, y = bottom - 1; y >= 3; j++, y -= 2) for (let x = 0; x + 3 <= cols - 1; x += 2) out.push({ g: S[j % S.length], mat: [".XX", "XX."], x, y });
+      return fillGaps(out, "waves", half, bottom, strips);
+    },
+    // tessellating lizards, never turned, each in the next one's lap (offsets 2 along and 1 up,
+    // and 4 up), in glazes so no two side by side are the same; grout round the edges
+    lizards: () => {
+      const Z = shuffle(groupByColour(glazes([".X..", "XXX.", ".XXX", "..X."])), rng);
+      if (!Z.length) return null;
+      const out = [];
+      // (lizard a along, b up: x = 2a, its top row bottom - 3 - a - 4b; the whole of it on the board)
+      for (let a = 0; 2 * a + 4 <= cols - 1; a++) for (let b = -Math.ceil(a / 4); ; b++) {
+        const y = bottom - 3 - a - 4 * b;
+        if (y < 3) break;
+        if (y + 3 > bottom) continue;
+        out.push({ g: Z[(((a + 2 * b) % Z.length) + Z.length) % Z.length], mat: [".X..", "XXX.", ".XXX", "..X."], x: 2 * a, y });
+      }
+      return fillGaps(out, "lizards", half, bottom, strips);
+    },
+  };
+  const names = Object.keys(kinds);
+  // (the column left empty is the last one; one of the tallest pieces, a column wide, fills it)
+  const key = zenKeys(state).find(k => k.rotations[0][0].length === 1);
+  for (let tries = 0; tries < 4; tries++) {
+    const res = kinds[kind ?? names[Math.floor(rng() * names.length)]]();
+    if (!res) continue;
+    // each into its piece: the glaze's piece, turned to the shape wanted
+    const steps = [];
+    for (const p of res.out) {
+      const opts = p.g.filter(o => o.key === p.mat.join("/"));
+      const o = opts.length ? opts[Math.floor(rng() * opts.length)] : null;
+      if (!o) { steps.length = 0; break; }
+      steps.push({ shape: o.shape, rot: o.rot, mat: o.shape.rotations[o.rot], x: p.x, y: p.y, pace: 0.6 });
+    }
+    const order = steps.length && dropOrder(steps, cols);
+    if (!order) continue;
+    if (key) order.push({ shape: key, rot: 0, mat: key.rotations[0], x: cols - 1, key: true });
+    const items = toItems(occ, [...asFillers(level), ...order], cols, rows, { mustClear: !!key });
+    if (items) return { items, caption: res.caption };
+  }
+  return null;
+}
+
+// The order to drop pieces in so each lands where it's meant to: in every column, the lower
+// piece first (one above would be in its way, or it holds that one up); otherwise the lowest
+// first, then from the left. Null if there's no such order (pieces that hook under each other).
+function dropOrder(ps, cols) {
+  const at = new Map();
+  ps.forEach((p, k) => p.mat.forEach((row, j) => row.forEach((c, i) => { if (c) at.set((p.y + j) * cols + p.x + i, k); })));
+  const ups = ps.map(() => new Set()), downs = ps.map(() => 0);
+  const xs = new Set([...at.keys()].map(c => c % cols));
+  for (const x of xs) {
+    const cells = [...at.entries()].filter(([c]) => c % cols === x).sort((a, b) => b[0] - a[0]);
+    for (let n = 1; n < cells.length; n++) {
+      const lo = cells[n - 1][1], hi = cells[n][1];
+      if (lo !== hi && !ups[lo].has(hi)) { ups[lo].add(hi); downs[hi]++; }
+    }
+  }
+  const bottom = (p) => p.y + p.mat.length;
+  const ready = ps.map((_, k) => k).filter(k => !downs[k]), out = [];
+  while (ready.length) {
+    ready.sort((a, b) => bottom(ps[b]) - bottom(ps[a]) || ps[a].x - ps[b].x);
+    const k = ready.shift();
+    out.push(ps[k]);
+    for (const u of ups[k]) if (!--downs[u]) ready.push(u);
+  }
+  return out.length === ps.length ? out : null;
+}
+
+// A pattern's left-over cells (anything in its rows, from `bottom` up, not covered) in grout:
+// strips of it (`strips`, 1 x 3, standing up) where three free cells are one over another, and
+// half tiles for the rest; but for the last column (so nothing clears on the way up). Returns
+// { caption, out }, or null if the pattern fills a row.
+function fillGaps(out, caption, half, bottom, strips = []) {
+  const { cols, rows } = CONFIG.board;
+  const have = new Set();
+  let top = rows;
+  for (const p of out) p.mat.forEach((r, j) => [...r].forEach((c, i) => { if (c === "X") { have.add((p.y + j) * cols + p.x + i); top = Math.min(top, p.y + j); } }));
+  const grout = groupByColour(half)[0], strip = strips.length ? groupByColour(strips)[0] : null;
+  const extra = [];
+  for (let y = bottom; y >= top; y--) if (![...Array(cols - 1).keys()].some(x => !have.has(y * cols + x)) && have.has(y * cols + cols - 1)) return null; // (a full row)
+  for (let x = 0; x < cols - 1; x++) {
+    for (let y = bottom; y >= top; y--) {
+      if (have.has(y * cols + x)) continue;
+      // (three free one over another: a strip, from its top cell)
+      if (strip && y - 2 >= top && !have.has((y - 1) * cols + x) && !have.has((y - 2) * cols + x)) {
+        extra.push({ g: strip, mat: ["X", "X", "X"], x, y: y - 2 });
+        have.add(y * cols + x); have.add((y - 1) * cols + x); have.add((y - 2) * cols + x);
+        y -= 2;
+        continue;
+      }
+      extra.push({ g: grout, mat: ["X"], x, y });
+      have.add(y * cols + x);
+    }
+  }
+  return { caption, out: [...out, ...extra] };
+}
+
+// The pieces in the shape `pattern` (a matrix as strings, in any turn they can reach): tagged
+// "tiles" (or, with `any`, any regular piece of that shape), each { shape, rot, key, colour }.
+function tileSet(state, pattern, any) {
+  const want = new Set();
+  // (the pattern turned every way, as the keys to look for)
+  let m = pattern.map(r => [...r].map(c => c === "X"));
+  for (let k = 0; k < 4; k++) { want.add(m.map(r => r.map(c => (c ? "X" : ".")).join("")).join("/")); m = m[0].map((_, i) => m.map(r => r[i]).reverse()); }
+  const out = [];
+  for (const s of (state.allShapes ?? state.shapes)) {
+    if (s.powerup || s.remix || (s.difficulty ?? 1) === LEVEL6) continue;
+    if (!(s.tags?.includes("tiles") || (any && (s.frequency ?? 1) > 0))) continue;
+    const turns = reachableTurns(s), seen = new Set();
+    for (let r = 0; r < turns; r++) {
+      const key = s.rotations[r].map(row => row.map(c => (c ? "X" : ".")).join("")).join("/");
+      // (the first turn of each outline: one turned all the way round looks the same in outline,
+      // but its picture is upside down)
+      if (want.has(key) && !seen.has(key)) out.push({ shape: s, rot: r, key, colour: colourOf(s) });
+      seen.add(key);
+    }
+  }
+  return out;
+}
+// ...grouped by glaze (and by piece, when they're all the same colour): [[{...}, ...], ...]
+function groupByColour(...lists) {
+  const by = new Map();
+  for (const o of lists.flat()) {
+    const k = o.shape.tags?.includes("tiles") ? (o.colour ?? o.shape.id) : o.shape.id;
+    if (!by.has(k)) by.set(k, []);
+    by.get(k).push(o);
+  }
+  return [...by.values()];
+}
+function shuffle(list, rng) {
+  for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; }
+  return list;
 }
 
 // The board built up nearly to the top, full of awkward gaps (little clusters of cells nothing

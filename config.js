@@ -176,6 +176,7 @@ export const CONFIG = {
     newest: {
       sets: ["dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
+        "tile_square_blue", "tile_big_green", "tile_l_terracotta", "tile_t_gold", "tile_s_blue", "tile_lizard_green",
         "a_bee", "two_bees", "bee_line", "queen_bee", "honeycomb", "bees_knees", "bee_bigger_bee", "bee_in_a_bonnet", "cloud_of_bees",
         "storm_cloud", "big_storm_cloud", "rumbling_storm_cloud", "space_invader_2", "space_invader_3", "space_invader_4",
         "space_invasion", "happy_pills_2", "piece_of_sky_sunset", "piece_of_sky_night",
