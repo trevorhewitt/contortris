@@ -138,7 +138,8 @@ export const CONFIG = {
     rescueKeepRows: 5,   // if anything ever tops out, all but the bottom few rows dissolve
     level6: { headroom: 9, maxStackRows: 3 }, // level 6 sets only start with plenty of room
     captionRow: 3, captionMs: 2600, captionColour: "#d8ccff", // what it's doing, over the board
-    wholeWindowCell: 0.8, // turbo zen filling the whole window: its cells this much of the usual size
+    wholeWindowCell: 0.8, // turbo zen filling the whole window: its cells this much of the usual size...
+    wholeWindowCells: 1000, // ...or bigger on a big screen, to keep to about this many
     // Turbo zen on a big board (at least minCols wide): now and then (chance) the next few pieces
     // come down together, each in columns of its own (margin columns apart), up to one for every
     // colsEach columns (at most `most` at once), up to `stagger` rows apart as they start. They

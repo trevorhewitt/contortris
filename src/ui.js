@@ -258,10 +258,12 @@ export function bindUI({ state, renderer, sound, achievements }) {
 
   /* ---------- turbo zen: the whole window ---------- */
 
-  // The board as big as the window, the bottom bar gone: the cells a little smaller than usual
-  // (still square) and as many of them as fit. The size is taken from the window as it is when
-  // it's asked for and kept (a window resized afterwards just scales it). The usual board again
-  // for anything else.
+  // The board as big as the window, the bottom bar gone: square cells, a little smaller than
+  // usual on a small screen, and on a big one as big as it takes to keep to about
+  // CONFIG.zen.wholeWindowCells of them (a big screen full of tiny cells is slow, and the same
+  // thing over and over), but never fewer than the usual rows. The size is taken from the window
+  // as it is when it's asked for and kept (a window resized afterwards just scales it). The usual
+  // board again for anything else.
   const usualBoard = { cols: CONFIG.board.cols, rows: CONFIG.board.rows };
   let wholeWindow = false;
   function setBoardSize(cols, rows) {
@@ -276,10 +278,12 @@ export function bindUI({ state, renderer, sound, achievements }) {
     if (on === wholeWindow) return;
     wholeWindow = on;
     if (on) {
-      const cell = Math.max(8, Math.floor($("boardShell").getBoundingClientRect().width / CONFIG.board.cols * (CONFIG.zen.wholeWindowCell ?? 0.8)));
-      const vw = window.visualViewport?.width ?? window.innerWidth, vh = window.visualViewport?.height ?? window.innerHeight;
+      const vw = (window.visualViewport?.width ?? window.innerWidth) - 16, vh = (window.visualViewport?.height ?? window.innerHeight) - 16;
+      const small = $("boardShell").getBoundingClientRect().width / CONFIG.board.cols * (CONFIG.zen.wholeWindowCell ?? 0.8);
+      let cell = Math.max(8, small, Math.sqrt(vw * vh / (CONFIG.zen.wholeWindowCells ?? Infinity)));
+      if (vh / cell < usualBoard.rows) cell = vh / usualBoard.rows; // (the usual rows at least: the tallest pieces fill them)
       document.body.classList.add("wholeWindow");
-      setBoardSize(Math.max(usualBoard.cols, Math.floor((vw - 16) / cell)), Math.max(usualBoard.rows, Math.floor((vh - 16) / cell)));
+      setBoardSize(Math.max(usualBoard.cols, Math.floor(vw / cell)), Math.max(usualBoard.rows, Math.floor(vh / cell)));
     } else {
       document.body.classList.remove("wholeWindow");
       setBoardSize(usualBoard.cols, usualBoard.rows);
