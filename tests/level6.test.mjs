@@ -113,34 +113,37 @@ test("easy mode never unlocks level 6; dev override forces it either way", () =>
 // of its pieces, and an echo (déjà vu) of an earlier piece anywhere after it. -1 if they don't.
 const echoOf = new Map(shapes.filter(s => s.echo).map(s => [s.echo, s.id]));
 function matchGroupAt(g, ids, at = 0) {
-  let i = at, echoed = false;
-  const skipEcho = () => {
-    if (!echoed && i < ids.length && echoOf.has(ids[i]) && ids.slice(at, i).includes(echoOf.get(ids[i]))) { i++; echoed = true; }
-  };
-  for (const st of g.sequence) {
-    skipEcho();
-    if (typeof st === "string") { if (ids[i] !== st) return -1; i++; continue; }
-    if (st.variant) { if (!st.variant.includes(ids[i])) return -1; i++; continue; }
-    if (st.chain) {
-      const set = new Set([...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))]);
-      let n = 0;
-      while (i < ids.length && set.has(ids[i]) && n < (st.chain.max ?? 4)) { i++; n++; skipEcho(); }
-      if (n < 1) return -1;
-      continue;
-    }
+  // every way of sharing the pieces out between the steps (a step's count can vary), the most
+  // pieces first; an echo can turn up anywhere after its original
+  const steps = g.sequence.map(st => {
+    if (typeof st === "string") return { members: new Set([st]), lo: 1, hi: 1 };
+    if (st.variant) return { members: new Set(st.variant), lo: 1, hi: 1 };
+    if (st.chain) return { members: new Set([...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))]), lo: st.chain.min ?? 1, hi: st.chain.max ?? 4 };
     const [lo, hi] = Array.isArray(st.count) ? st.count : [st.count ?? 1, st.count ?? 1];
-    let n = 0;
-    while (i < ids.length && st.pick.includes(ids[i]) && n < hi) { i++; n++; skipEcho(); }
-    if (n < lo) return -1;
-  }
-  skipEcho();
-  return i - at;
+    return { members: new Set(st.pick), lo, hi };
+  });
+  let best = -1;
+  const go = (si, i, n, echoed) => {
+    if (!echoed && i < ids.length && echoOf.has(ids[i]) && ids.slice(at, i).includes(echoOf.get(ids[i])) && go(si, i + 1, n, true)) return true;
+    if (si === steps.length) { best = i - at; return true; }
+    const st = steps[si];
+    if (n < st.hi && i < ids.length && st.members.has(ids[i]) && go(si, i + 1, n + 1, echoed)) return true;
+    return n >= st.lo && go(si + 1, i, 0, echoed);
+  };
+  go(0, at, 0, false);
+  return best;
 }
 const matchesGroup = (g, ids) => matchGroupAt(g, ids, 0) === ids.length;
 
 test("level 6 pieces never turn up outside a group", () => {
-  const firstIds = new Map(GROUPS.filter(g => typeof g.sequence[0] === "string").map(g => [g.sequence[0], g]));
-  for (const g of GROUPS) if (g.sequence[0]?.variant) for (const id of g.sequence[0].variant) firstIds.set(id, g);
+  // (several sets can open with the same piece: the small piece of the sky)
+  const firstIds = new Map();
+  const add = (id, g) => { if (!firstIds.has(id)) firstIds.set(id, []); firstIds.get(id).push(g); };
+  for (const g of GROUPS) {
+    const st = g.sequence[0];
+    if (typeof st === "string") add(st, g);
+    for (const id of [...(st?.variant ?? []), ...(st?.pick ?? []), ...Object.keys(st?.chain?.start ?? {})]) add(id, g);
+  }
   for (const seed of [1, 2, 3, 4]) {
     const state = createGameState(shapes, powerups, { rng: makeRng(seed * 17), groups: GROUPS });
     state.devLevel6 = "on";
@@ -153,8 +156,9 @@ test("level 6 pieces never turn up outside a group", () => {
     const ids = served.map(s => s.id);
     let i = 0, groups = 0;
     while (i < ids.length) {
-      const g = firstIds.get(ids[i]);
+      const gs = firstIds.get(ids[i]) ?? [];
       // (a set can open with an ordinary piece, like the small piece of the sky)
+      const g = gs.find(g => matchGroupAt(g, ids, i) > 0) ?? gs[0];
       const m = g ? matchGroupAt(g, ids, i) : -1;
       if (g && (served[i].difficulty === 6 || m > 0)) {
         const n = m;
@@ -369,12 +373,12 @@ test("level 6: no set comes round again until every other one has, even into the
   assert.notEqual(b[0], a[a.length - 1], "the next game doesn't open with the last set");
 });
 
-test("Noah's ark: the ark, 3-4 different pairs, one last creature, a few raindrops, then forty days and forty nights of rain", () => {
+test("Noah's ark: the ark, 3-4 different pairs, one last creature, a few raindrops (or storm clouds), then forty days and forty nights of rain", () => {
   const g = normaliseGroups(GROUPS, shapes).find(g => g.id === "noahs_ark");
   const last = new Set(["just_one_unicorn", "just_one_dinosaur", "just_one_dodo", "just_one_mammoth", "just_one_griffin", "dragons_both_dudes"]);
-  const drops = new Set(["raindrop", "big_raindrop", "drizzle"]);
+  const drops = new Set(["raindrop", "big_raindrop", "drizzle"]), storms = new Set(["storm_cloud", "big_storm_cloud", "rumbling_storm_cloud"]);
   const rng = makeRng(9);
-  const starts = new Set();
+  const starts = new Set(), ends = new Set();
   for (let i = 0; i < 300; i++) {
     const ids = expandGroup(g, rng).map(s => s.id);
     assert.equal(ids[0], "noahs_ark");
@@ -384,13 +388,16 @@ test("Noah's ark: the ark, 3-4 different pairs, one last creature, a few raindro
     assert.deepEqual(ids.slice(1, 1 + pairs.length), pairs, ids.join());
     assert.ok(last.has(ids[1 + pairs.length]), `one creature after the pairs: ${ids.join()}`);
     const rain = ids.slice(2 + pairs.length, -1);
-    assert.ok(rain.length >= 1 && rain.length <= 4 && rain.every(id => drops.has(id)), ids.join());
-    assert.equal(ids[ids.length - 1], "forty_days_of_rain");
+    // (all rain, or all storm clouds)
+    assert.ok(rain.length >= 1 && rain.length <= 4 && (rain.every(id => drops.has(id)) || rain.every(id => storms.has(id))), ids.join());
+    assert.match(ids[ids.length - 1], /^forty_days_of_rain/);
     starts.add(rain[0]);
+    ends.add(ids[ids.length - 1]);
     // (the rain reacts to itself: a big raindrop never comes straight after drizzle)
     rain.forEach((id, k) => { if (id === "big_raindrop") assert.ok(k > 0 && rain[k - 1] !== "drizzle", rain.join()); });
   }
-  assert.ok(starts.has("drizzle") && starts.has("raindrop"), "the rain starts in different ways");
+  assert.ok(starts.has("drizzle") && starts.has("raindrop") && starts.has("storm_cloud"), "the rain starts in different ways");
+  assert.equal(ends.size, 3, "and the downpour comes three ways");
 });
 
 test("a raindrop straight after a raindrop is another raindrop", () => {
@@ -402,4 +409,27 @@ test("a raindrop straight after a raindrop is another raindrop", () => {
   // (setNextPiece prepares the piece; the history says what came before it)
   for (let i = 0; i < 3; i++) { state.pieceSel.recentShapeIds.push("raindrop", "raindrop"); setNextPiece(state, rain); drop(state); }
   assert.ok(names.includes("another raindrop"), names.join(" | "));
+});
+
+test("emotions: a loose run from the ordinary to the strange, never ending on a repeat, mostly on the absurd", () => {
+  const g = normaliseGroups(GROUPS, shapes).find(g => g.id === "emotions");
+  const rng = makeRng(12);
+  const firsts = new Set(), lasts = new Map();
+  for (let i = 0; i < 400; i++) {
+    const ids = expandGroup(g, rng).map(s => s.id);
+    assert.ok(ids.length >= 4 && ids.length <= 11, ids.join());
+    // no card twice, but for the one that comes back (déjà vu), and that never last
+    const plain = ids.filter(id => !/_2$/.test(id));
+    assert.equal(new Set(plain).size, plain.length, `twice: ${ids.join()}`);
+    assert.ok(!/_2$/.test(ids[ids.length - 1]), `ends on a repeat: ${ids.join()}`);
+    firsts.add(ids[0]);
+    const last = ids[ids.length - 1];
+    lasts.set(last, (lasts.get(last) ?? 0) + 1);
+  }
+  assert.ok(firsts.size >= 8, `opens ${firsts.size} ways`);
+  const absurd = ["existential_dread", "winning_extris", "inner_emptiness", "being_a_piece", "playing_extris", "urge_to_rotate", "long_piece", "row_grief", "fear_of_ceiling", "utter_euphoria"].map(n => "emotion_" + n);
+  const plainEnds = ["happiness", "sadness", "anger", "fear", "surprise", "boredom", "calm", "jealousy"].map(n => "emotion_" + n);
+  const count = (list) => list.reduce((n, id) => n + (lasts.get(id) ?? 0), 0);
+  assert.ok(count(absurd) > 400 * 0.6, `ends on the absurd ${count(absurd)} of 400`);
+  assert.ok(count(plainEnds) > 0, "and now and then on a plain one");
 });

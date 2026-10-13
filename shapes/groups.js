@@ -94,7 +94,13 @@ export const GROUPS = [
     name: "Mt Everest",
     frequency: 1,
     room: 16, // (the trash is awkward to build on)
-    sequence: ["everest", "everest_trash", "everest_more_trash", "everest_even_more_trash"],
+    sequence: [
+      "everest",
+      // (each heap of trash is one of two, at random)
+      { pick: ["everest_trash", "everest_trash_2"], count: 1 },
+      { pick: ["everest_more_trash", "everest_more_trash_2"], count: 1 },
+      { pick: ["everest_even_more_trash", "everest_even_more_trash_2"], count: 1 },
+    ],
   },
   {
     id: "space",
@@ -116,19 +122,23 @@ export const GROUPS = [
       "noahs_ark",
       { pick: ["two_giraffes","two_elephants","two_penguins","two_snails","two_crocodiles","two_zebras","two_lions","two_kangaroos","two_flamingos","two_hippos","two_pandas","two_owls","two_frogs","two_tortoises","two_sheep","two_hedgehogs","two_octopuses","two_fish"], count: [3, 4], unique: true },
       { pick: ["just_one_unicorn","just_one_dinosaur","just_one_dodo","just_one_mammoth","just_one_griffin","dragons_both_dudes"], count: 1 },
-      // the rain: each drop decides what comes next, then the downpour
+      // the rain: each drop decides what comes next (or, now and then, the storm clouds gather
+      // instead), then the downpour, one of three
       {
         chain: {
-          start: { drizzle: 2, raindrop: 3 },
+          start: { drizzle: 2, raindrop: 3, storm_cloud: 2 },
           after: {
             drizzle: { raindrop: 3, drizzle: 1, stop: 1 },
             raindrop: { raindrop: 3, big_raindrop: 2, stop: 2 },
             big_raindrop: { big_raindrop: 1, raindrop: 1, stop: 3 },
+            storm_cloud: { storm_cloud: 2, big_storm_cloud: 1.5, rumbling_storm_cloud: 1.2, stop: 1.5 },
+            big_storm_cloud: { storm_cloud: 1, rumbling_storm_cloud: 1, stop: 2 },
+            rumbling_storm_cloud: { storm_cloud: 1, big_storm_cloud: 0.5, stop: 2 },
           },
           max: 4,
         },
       },
-      "forty_days_of_rain",
+      { pick: ["forty_days_of_rain", "forty_days_of_rain_2", "forty_days_of_rain_3"], weights: [2, 1, 1], count: 1 },
     ],
   },
   {
@@ -170,16 +180,27 @@ export const GROUPS = [
     id: "emotions",
     name: "an emotions chart",
     frequency: 1,
-    // the plain three, then 1-2 intense ones, 1-2 strange ones, maybe one that repeats
-    // (déjà vu comes back: see `echo`), and 1-2 that don't exist
+    // a loose run from the ordinary to the strange: it opens on something ordinary (mostly), drifts
+    // through the oddly specific and the intense to the ones that don't exist and the ones about
+    // the game, and ends on the most absurd (or, now and then, on a plain one). No card twice
+    // (déjà vu and the like come back once, by `echo`, never last).
+    unique: true,
     sequence: [
-      "emotion_happiness",
-      "emotion_sadness",
-      "emotion_anger",
-      { pick: ["emotion_utter_euphoria","emotion_existential_dread","emotion_nails_chalkboard","emotion_gut_terror"], count: [1,2], unique: true },
-      { pick: ["emotion_someone_behind_you","emotion_ear_itch","emotion_oven","emotion_nostalgia","emotion_cold_pillow","emotion_vending_machine","emotion_missing_step","emotion_screen_film","emotion_preemptive_embarrassment","emotion_umbrella"], count: [1,2], unique: true },
-      { pick: ["emotion_deja_vu","emotion_memory_loss","emotion_spooky_coincidence"], count: [0,1] },
-      { pick: ["emotion_forglavedness","emotion_plorch","emotion_glumpf","emotion_wibberance","emotion_snerk","emotion_sprongle","emotion_halvering"], count: [1,2], unique: true },
+      // the opening
+      { pick: ["emotion_happiness", "emotion_sadness", "emotion_anger", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy", "emotion_someone_behind_you", "emotion_ear_itch", "emotion_oven", "emotion_nostalgia", "emotion_cold_pillow", "emotion_vending_machine", "emotion_missing_step", "emotion_screen_film", "emotion_preemptive_embarrassment", "emotion_umbrella", "emotion_utter_euphoria", "emotion_existential_dread", "emotion_nails_chalkboard", "emotion_gut_terror"],
+        weights: [3, 3, 3, 3, 3, 3, 3, 3, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.4, 0.4, 0.4, 0.4], count: [1, 3] },
+      // then
+      { pick: ["emotion_someone_behind_you", "emotion_ear_itch", "emotion_oven", "emotion_nostalgia", "emotion_cold_pillow", "emotion_vending_machine", "emotion_missing_step", "emotion_screen_film", "emotion_preemptive_embarrassment", "emotion_umbrella", "emotion_happiness", "emotion_sadness", "emotion_anger", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy", "emotion_deja_vu", "emotion_memory_loss", "emotion_spooky_coincidence", "emotion_utter_euphoria", "emotion_existential_dread", "emotion_nails_chalkboard", "emotion_gut_terror"],
+        weights: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 1, 1, 1, 0.8, 0.8, 0.8, 0.8], count: [1, 2] },
+      // stranger
+      { pick: ["emotion_utter_euphoria", "emotion_existential_dread", "emotion_nails_chalkboard", "emotion_gut_terror", "emotion_forglavedness", "emotion_plorch", "emotion_glumpf", "emotion_wibberance", "emotion_snerk", "emotion_sprongle", "emotion_halvering", "emotion_deja_vu", "emotion_memory_loss", "emotion_spooky_coincidence", "emotion_inner_emptiness", "emotion_playing_extris", "emotion_winning_extris", "emotion_urge_to_rotate", "emotion_long_piece", "emotion_being_a_piece", "emotion_row_grief", "emotion_fear_of_ceiling", "emotion_someone_behind_you", "emotion_ear_itch", "emotion_oven", "emotion_nostalgia", "emotion_cold_pillow", "emotion_vending_machine", "emotion_missing_step", "emotion_screen_film", "emotion_preemptive_embarrassment", "emotion_umbrella"],
+        weights: [2, 2, 2, 2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1, 1, 1, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], count: [1, 2] },
+      // stranger still
+      { pick: ["emotion_forglavedness", "emotion_plorch", "emotion_glumpf", "emotion_wibberance", "emotion_snerk", "emotion_sprongle", "emotion_halvering", "emotion_inner_emptiness", "emotion_playing_extris", "emotion_winning_extris", "emotion_urge_to_rotate", "emotion_long_piece", "emotion_being_a_piece", "emotion_row_grief", "emotion_fear_of_ceiling"],
+        weights: [2, 2, 2, 2, 2, 2, 2, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5], count: [0, 2] },
+      // and the last
+      { pick: ["emotion_existential_dread", "emotion_winning_extris", "emotion_inner_emptiness", "emotion_being_a_piece", "emotion_playing_extris", "emotion_urge_to_rotate", "emotion_long_piece", "emotion_row_grief", "emotion_fear_of_ceiling", "emotion_utter_euphoria", "emotion_forglavedness", "emotion_plorch", "emotion_glumpf", "emotion_wibberance", "emotion_snerk", "emotion_sprongle", "emotion_halvering", "emotion_happiness", "emotion_sadness", "emotion_anger", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy"],
+        weights: [3, 3, 3, 3, 2.5, 2.5, 2.5, 2.5, 2.5, 2, 1, 1, 1, 1, 1, 1, 1, 0.35, 0.35, 0.35, 0.35, 0.35, 0.35, 0.35, 0.35], count: 1 },
     ],
   },
   {
@@ -189,10 +210,29 @@ export const GROUPS = [
     sequence: ["sunshine", { pick: ["rainbow","double_rainbow"], count: 1 }, { pick: ["happy_cloud"], count: [1,2] }, "butterflies"],
   },
   {
-    // (the humongous piece always comes after the other two)
+    // (the humongous piece always comes after the other two; mostly by day, sometimes as the
+    // evening passes, now and then all sunset, rarest of all all night)
     id: "sky",
     name: "a humongous piece of the sky",
-    frequency: 0.5,
+    frequency: 0.32,
     sequence: ["piece_of_sky", "large_piece_of_sky", "humongous_piece_of_sky"],
+  },
+  {
+    id: "sky_evening",
+    name: "a humongous piece of the sky, as the evening passes",
+    frequency: 0.12,
+    sequence: ["piece_of_sky", "large_piece_of_sky_sunset", "humongous_piece_of_sky_night"],
+  },
+  {
+    id: "sky_sunset",
+    name: "a humongous piece of the sunset",
+    frequency: 0.09,
+    sequence: ["piece_of_sky_sunset", "large_piece_of_sky_sunset", "humongous_piece_of_sky_sunset"],
+  },
+  {
+    id: "sky_night",
+    name: "a humongous piece of the night sky",
+    frequency: 0.05,
+    sequence: ["piece_of_sky_night", "large_piece_of_sky_night", "humongous_piece_of_sky_night"],
   },
 ];

@@ -117,12 +117,12 @@ export function expandGroup(group, rng, variants = null) {
   }
   // echoes: the first piece that has one comes back once, somewhere later in the run (only
   // one per run), with at least one other piece in between when there's room for that, and
-  // never last if it can help it (a run ends on one of its own)
+  // never last (a run ends on one of its own)
   const i = out.findIndex(s => group.echoes?.has(s.id));
-  if (i >= 0) {
-    const lo = Math.min(out.length, i + 2);
-    const span = out.length > lo ? out.length - lo : 1;
-    out.splice(lo + Math.floor(rng() * span), 0, group.echoes.get(out[i].id));
+  if (i >= 0 && i < out.length - 1) { // (if it was the last of the run, it doesn't come back)
+    let lo = Math.min(out.length, i + 2), hi = out.length - 1; // (where it can go: lo..hi)
+    if (lo > hi) lo = hi = out.length - 1;
+    out.splice(lo + Math.floor(rng() * (hi - lo + 1)), 0, group.echoes.get(out[i].id));
   }
   return out;
 }

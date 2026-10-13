@@ -4,8 +4,9 @@
 // A rough estimate of the chance that a piece in an ordinary game is this one: its level's
 // share of the pieces (CONFIG.assist.pieceMix.baseLevelWeight, with the giants and the powerups
 // taking their own shares, CONFIG.rarity.share), times its share of that level by frequency.
-// CONFIG.rarity.words turns that into words. Level 6 pieces only come in their sets, and some
-// pieces only ever come after another one.
+// Then where it comes among all the pieces that can turn up gives its words (CONFIG.rarity.words:
+// the commonest so many, then the next so many...). Level 6 pieces only come in their sets, and
+// some pieces only ever come after another one.
 
 import { CONFIG } from "../config.js";
 
@@ -21,9 +22,25 @@ export function rarity(state, shape) {
     const after = allOf(state).filter(s => s.nextShapes?.includes(shape.id) && (s.nextShapeProbs?.[s.nextShapes.indexOf(shape.id)] ?? 1) > 0);
     return after.length ? { words: "only ever after something else", after: after.slice(0, 2).map(s => s.name) } : { words: "almost never" };
   }
-  const p = chance(state, shape);
+  // (what share of the pieces are commoner than this one)
+  const all = ranked(state), p = chance(state, shape);
+  let lo = 0, hi = all.length;
+  while (lo < hi) { const m = (lo + hi) >> 1; if (all[m] > p) lo = m + 1; else hi = m; }
+  const share = lo / Math.max(1, all.length);
   const words = CONFIG.rarity.words;
-  return { words: (words.find(([min]) => p >= min) ?? words[words.length - 1])[1] };
+  return { words: (words.find(([upTo]) => share < upTo) ?? words[words.length - 1])[1] };
+}
+
+// Every piece that can turn up on its own, its chance, commonest first (worked out once).
+const rankCache = new WeakMap();
+function ranked(state) {
+  const key = state.allShapes ?? state.shapes;
+  let r = rankCache.get(key);
+  if (!r) {
+    r = allOf(state).filter(s => (s.frequency ?? 1) > 0 && (s.powerup || (s.difficulty ?? 1) !== 6)).map(s => chance(state, s)).sort((a, b) => b - a);
+    rankCache.set(key, r);
+  }
+  return r;
 }
 
 // The rough chance that any one piece is this one.

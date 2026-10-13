@@ -145,8 +145,10 @@ export const CONFIG = {
     // until it's been seen newUntilSeen times, a new set newSetBoost times; anything else never
     // seen, unseenBoost times. (God mode and zen.)
     newest: {
-      sets: ["existence", "universe", "sunshine", "sky", "emotions"],
+      sets: ["sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe", "sunshine", "sky"],
       pieces: [
+        "storm_cloud", "big_storm_cloud", "rumbling_storm_cloud", "space_invader_2", "space_invader_3", "space_invader_4",
+        "space_invasion", "happy_pills_2", "piece_of_sky_sunset", "piece_of_sky_night",
         "bull", "camel", "mouse", "elephant_in_the_room", "giant_rubber_duck", "dinosaur_fossil",
         "pyramid_box", "big_hot_air_balloon", "lighthouse", "double_decker",
         "rubiks_cube", "mondrian", "qr_code", "space_invader", "mouse_pointer", "stuck_pixel",
@@ -182,13 +184,13 @@ export const CONFIG = {
   // drag to look around. maxZoom: how far in it goes.
   pause: { hideShapes: false, pauseWhenHidden: true, maxZoom: 5 },
 
-  // How rare a piece is, in words, on its card (src/rarity.js): the rough chance that any one
-  // piece is this one (at least the first number) gets those words. share: the giants' and the
-  // powerups' rough shares of all the pieces.
+  // How rare a piece is, in words, on its card (src/rarity.js): by its rough chance of turning
+  // up, the commonest 13% of the pieces are "common", the next ones up to 39% "fairly common", and
+  // so on (spread as they come out in play). share: the giants' and the powerups' rough shares of
+  // all the pieces.
   rarity: {
     share: { giants: 0.05, powerups: 0.14 },
-    // (set so the words come out spread across the pieces as they do in play)
-    words: [[1 / 140, "common"], [1 / 390, "fairly common"], [1 / 580, "uncommon"], [1 / 900, "rare"], [1 / 1300, "very rare"], [0, "extremely rare"]],
+    words: [[0.13, "common"], [0.39, "fairly common"], [0.63, "uncommon"], [0.81, "rare"], [0.935, "very rare"], [1.01, "extremely rare"]],
   },
 
   render: {
