@@ -178,7 +178,18 @@ export const CONFIG = {
     // rows a powerup wipes out wall to wall also score lineClear
   },
 
-  pause: { hideShapes: true, pauseWhenHidden: true },
+  // Paused, the board stays in view: tap a piece for its card, pinch (or the wheel) to zoom in,
+  // drag to look around. maxZoom: how far in it goes.
+  pause: { hideShapes: false, pauseWhenHidden: true, maxZoom: 5 },
+
+  // How rare a piece is, in words, on its card (src/rarity.js): the rough chance that any one
+  // piece is this one (at least the first number) gets those words. share: the giants' and the
+  // powerups' rough shares of all the pieces.
+  rarity: {
+    share: { giants: 0.05, powerups: 0.14 },
+    // (set so the words come out spread across the pieces as they do in play)
+    words: [[1 / 140, "common"], [1 / 390, "fairly common"], [1 / 580, "uncommon"], [1 / 900, "rare"], [1 / 1300, "very rare"], [0, "extremely rare"]],
+  },
 
   render: {
     // "enhanced" = new look (art not cut by grid lines, soft piece edges, tiled background).

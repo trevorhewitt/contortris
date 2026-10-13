@@ -15,6 +15,7 @@ import { introduceAllPowerups, computeStackDanger01 } from "./selection.js";
 import { level6Status, startGroup, scheduleFirstGroup } from "./level6.js";
 import { endGameStatus } from "./endgame.js";
 import { zenIgnoreInput } from "./zen.js";
+import { rarity } from "./rarity.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -192,9 +193,10 @@ export function bindUI({ state, renderer, sound, achievements }) {
     currentPanel = name;
     overlay.classList.toggle("show", !!name);
     overlay.classList.toggle("intro", name === "intro"); // slides over the board, no fade
-    // zen: pausing still shows the whole board (a small panel at the top; tap the board to hide it)
-    overlay.classList.toggle("zenPause", name === "pause" && !!state.zen);
+    // paused, the board stays in view (a small panel at the top: see "looking at the board")
+    overlay.classList.toggle("boardPause", name === "pause");
     overlay.classList.remove("peek");
+    if (name !== "pause") resetLook();
     for (const [key, el] of Object.entries(panels)) el.hidden = key !== name;
     if (name === "menu") renderMenu();
     if (name === "achievements") renderAchievements();
@@ -831,10 +833,149 @@ export function bindUI({ state, renderer, sound, achievements }) {
   $("btnPauseHowTo").addEventListener("click", () => { panelBack = "pause"; showPanel("howto"); });
   $("btnPowerupHelp").addEventListener("click", () => { panelBack = "pause"; showPanel("powerups"); });
   $("btnIntroContinue").addEventListener("click", () => resumeGame());
-  // zen pause: tap the board to hide the panel and look at it all (tap again to bring it back)
+  /* ---------- paused: looking at the board ---------- */
+  // Tap a piece (or the falling one) for its card; tap an empty spot to hide the panel, and
+  // again to bring it back. Pinch, double tap or the wheel to zoom in, drag to look around.
+
+  const boardCanvas = $("boardCanvas"), boardShell = $("boardShell"), pieceCard = $("pieceCard");
+  const look = { zoom: 1, tx: 0, ty: 0, pointers: new Map(), pinch: null, start: null, moved: false, lastTap: 0, lastX: 0, lastY: 0 };
+  const looking = () => currentPanel === "pause";
+
+  function applyLook() {
+    const W = boardShell.clientWidth, H = boardShell.clientHeight, z = look.zoom;
+    // (never so far that the board leaves its frame)
+    look.tx = Math.min(0, Math.max(W - W * z, look.tx));
+    look.ty = Math.min(0, Math.max(H - H * z, look.ty));
+    boardCanvas.style.transformOrigin = "0 0";
+    boardCanvas.style.transform = z === 1 ? "" : `translate(${look.tx}px, ${look.ty}px) scale(${z})`;
+    $("nameLayer").style.visibility = z === 1 ? "" : "hidden";
+    overlay.classList.toggle("zoomed", z > 1);
+  }
+  // zoom to z, keeping the point (cx, cy) on the screen where it is
+  function zoomAt(z, cx, cy) {
+    const r = boardShell.getBoundingClientRect();
+    const px = cx - r.left, py = cy - r.top, z0 = look.zoom;
+    const z1 = Math.max(1, Math.min(CONFIG.pause.maxZoom ?? 5, z));
+    look.tx = px - (px - look.tx) * (z1 / z0);
+    look.ty = py - (py - look.ty) * (z1 / z0);
+    look.zoom = z1;
+    applyLook();
+  }
+  function resetLook() {
+    look.zoom = 1; look.tx = 0; look.ty = 0;
+    look.pointers.clear(); look.pinch = null; look.start = null;
+    applyLook();
+    hideCard();
+  }
+
+  function cellAt(cx, cy) {
+    const r = boardCanvas.getBoundingClientRect(); // (zoom and all)
+    const { cols, rows } = CONFIG.board;
+    const x = Math.floor((cx - r.left) / r.width * cols), y = Math.floor((cy - r.top) / r.height * rows);
+    return x >= 0 && x < cols && y >= 0 && y < rows ? { x, y } : null;
+  }
+  function pieceAt({ x, y }) {
+    const a = state.active;
+    if (a) {
+      const mat = a.shape.rotations[a.rotIdx], i = x - a.x, j = y - a.y;
+      if (j >= 0 && j < mat.length && i >= 0 && i < mat[0].length && mat[j][i]) return { shape: a.shape, rot: a.rotIdx };
+    }
+    const c = state.board[y]?.[x];
+    const inst = c && state.instances.get(c.pid);
+    return inst?.shape ? { shape: inst.shape, rot: inst.rotIdx ?? 0 } : null;
+  }
+
+  // The card: the piece as it landed, its name, how rare it is, and what a powerup does.
+  function showCard(shape, rot, at) {
+    const line = (cls, text) => { const d = document.createElement("div"); d.className = cls; d.textContent = text; return d; };
+    pieceCard.innerHTML = "";
+    const mat = shape.rotations[rot] ?? shape.rotations[0];
+    const maxW = boardShell.clientWidth - 64, maxH = boardShell.clientHeight * 0.3;
+    const cell = Math.max(3, Math.min(28, Math.floor(Math.min(maxW / mat[0].length, maxH / mat.length))));
+    const pic = line("pcPic", "");
+    pic.appendChild(makeShapePreviewCanvas(shape, cell, 4, rot));
+    const r = rarity(state, shape);
+    pieceCard.append(pic, line("pcName", shape.name), line("pcRarity", `rarity level: ${r.words}`));
+    if (r.set) pieceCard.append(line("pcNote", `part of a set: ${r.set}`));
+    if (r.after?.length) pieceCard.append(line("pcNote", `it comes after ${r.after.join(", or ")}`));
+    const pu = shape.powerup;
+    if (pu) {
+      const parts = (pu.parts ?? []).map(p => CLASS_INFO[p.type]?.name).filter(Boolean);
+      const info = CLASS_INFO[pu.cls] ?? CLASS_INFO[pu.type];
+      pieceCard.append(line(`pcPower cls-${pu.cls ?? pu.type}`, info?.name + (parts.length ? `: ${parts.join(" + ")}` : "")));
+      pieceCard.append(line("pcNote", pu.intro || info?.text || ""));
+    }
+    pieceCard.hidden = false;
+    pieceCard.classList.toggle("top", at.y >= CONFIG.board.rows * 0.55); // (the other end of the board from it)
+    overlay.classList.add("peek");
+  }
+  function hideCard() {
+    if (pieceCard.hidden) return;
+    pieceCard.hidden = true;
+    overlay.classList.remove("peek");
+  }
+  pieceCard.addEventListener("click", hideCard);
+
+  function tapAt(cx, cy) {
+    const now = performance.now();
+    // a double tap zooms in there, or back out
+    if (now - look.lastTap < 320 && Math.hypot(cx - look.lastX, cy - look.lastY) < 30) {
+      look.lastTap = 0;
+      zoomAt(look.zoom > 1.3 ? 1 : 2.5, cx, cy);
+      return;
+    }
+    look.lastTap = now; look.lastX = cx; look.lastY = cy;
+    const at = cellAt(cx, cy), hit = at && pieceAt(at);
+    if (hit) showCard(hit.shape, hit.rot, at);
+    else if (!pieceCard.hidden) hideCard();
+    else overlay.classList.toggle("peek"); // (an empty spot: the panel goes, or comes back)
+  }
+
   overlay.addEventListener("pointerdown", (e) => {
-    if (currentPanel === "pause" && state.zen && !e.target.closest?.(".msg")) overlay.classList.toggle("peek");
+    if (!looking() || e.target.closest?.(".msg, .pieceCard")) return;
+    e.preventDefault();
+    look.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    try { overlay.setPointerCapture(e.pointerId); } catch { /* (not everywhere) */ }
+    if (look.pointers.size === 2) {
+      const [a, b] = [...look.pointers.values()];
+      look.pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), z: look.zoom };
+      look.moved = true;
+    } else if (look.pointers.size === 1) {
+      look.start = { x: e.clientX, y: e.clientY, tx: look.tx, ty: look.ty };
+      look.moved = false;
+    }
   });
+  overlay.addEventListener("pointermove", (e) => {
+    if (!looking() || !look.pointers.has(e.pointerId)) return;
+    look.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (look.pinch && look.pointers.size >= 2) {
+      const [a, b] = [...look.pointers.values()];
+      zoomAt(look.pinch.z * Math.hypot(a.x - b.x, a.y - b.y) / Math.max(1, look.pinch.d), (a.x + b.x) / 2, (a.y + b.y) / 2);
+      return;
+    }
+    const s = look.start;
+    if (!s) return;
+    const dx = e.clientX - s.x, dy = e.clientY - s.y;
+    if (!look.moved && Math.hypot(dx, dy) > 8) look.moved = true;
+    if (look.moved && look.zoom > 1) { look.tx = s.tx + dx; look.ty = s.ty + dy; applyLook(); }
+  });
+  const lift = (e) => {
+    if (!look.pointers.has(e.pointerId)) return;
+    look.pointers.delete(e.pointerId);
+    if (look.pointers.size < 2) look.pinch = null;
+    if (look.pointers.size === 1) { const [p] = look.pointers.values(); look.start = { x: p.x, y: p.y, tx: look.tx, ty: look.ty }; }
+    if (!look.pointers.size) {
+      if (!look.moved && e.type === "pointerup" && looking()) tapAt(e.clientX, e.clientY);
+      look.start = null;
+    }
+  };
+  overlay.addEventListener("pointerup", lift);
+  overlay.addEventListener("pointercancel", lift);
+  overlay.addEventListener("wheel", (e) => {
+    if (!looking()) return;
+    e.preventDefault();
+    zoomAt(look.zoom * Math.exp(-e.deltaY * 0.0015), e.clientX, e.clientY);
+  }, { passive: false });
   for (const b of document.querySelectorAll(".skipIntros")) {
     b.checked = skipIntros();
     b.addEventListener("change", () => setSkipIntros(b.checked));

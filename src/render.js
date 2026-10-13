@@ -172,9 +172,10 @@ function drawPixelArtDevice(ctx, sizePx, paint, baseColor) {
 }
 
 // A whole shape (rotation 0) on its own canvas, e.g. for menus.
-export function makeShapePreviewCanvas(shape, cellPx = 18, pad = 6) {
+export function makeShapePreviewCanvas(shape, cellPx = 18, pad = 6, rot = 0) {
   if (!shape) return null;
-  const mat = shape.rotations[0];
+  if (!shape.rotations[rot]) rot = 0;
+  const mat = shape.rotations[rot];
   const w = mat[0].length * cellPx + pad * 2;
   const h = mat.length * cellPx + pad * 2;
 
@@ -189,7 +190,7 @@ export function makeShapePreviewCanvas(shape, cellPx = 18, pad = 6) {
   for (let y = 0; y < mat.length; y++) {
     for (let x = 0; x < mat[0].length; x++) {
       if (!mat[y][x]) continue;
-      drawBlockWithPaintStatic(ctx, pad + x * cellPx, pad + y * cellPx, cellPx, getShapePaint(shape, 0, x, y), shape.style ?? {});
+      drawBlockWithPaintStatic(ctx, pad + x * cellPx, pad + y * cellPx, cellPx, getShapePaint(shape, rot, x, y), shape.style ?? {});
     }
   }
   return cvs;

@@ -426,16 +426,41 @@
     #panelIntro, #panelPowerups{ background: rgba(8,8,20,0.97); }
     /* the intro slides straight over the board: no backdrop, no fade */
     .overlay.intro{ background: none; transition: none; }
-    /* zen: pausing still shows the whole board, with a small panel at the top (tap the board to
-       hide it, and again to bring it back) */
-    .overlay.zenPause{ background: none; align-items: flex-start; padding-top: 8px; }
-    .overlay.zenPause #panelPause{ padding: 8px 10px 2px; background: rgba(8,8,20,0.8); transition: opacity 120ms linear; }
-    .overlay.zenPause #panelPause .big{ font-size: 12px; line-height: 1.4; margin: 0; }
-    .overlay.zenPause #pauseMode{ display: none; }
-    .overlay.zenPause #panelPause .menuBtns{ flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 6px; width: 100%; margin: 6px 0; }
-    .overlay.zenPause #panelPause .menuBtns button{ min-height: 32px; padding: 6px 9px; font-size: 8px; }
-    .overlay.zenPause #panelPause .menuRow{ margin: 0 0 6px; }
-    .overlay.zenPause.peek #panelPause{ opacity: 0; pointer-events: none; }
+    /* paused: the board stays in view, with a small panel at the top. Tap a piece for its card,
+       an empty spot to hide the panel (and again to bring it back); pinch, double tap or the
+       wheel to zoom in, drag to look around (src/ui.js) */
+    .overlay.boardPause{ background: none; align-items: flex-start; padding-top: 8px; touch-action: none; }
+    .overlay.boardPause #panelPause{ padding: 8px 10px 2px; background: rgba(8,8,20,0.8); transition: opacity 120ms linear; }
+    .overlay.boardPause #panelPause .big{ font-size: 12px; line-height: 1.4; margin: 0; }
+    .overlay.boardPause #pauseMode{ font-size: 10px; margin-top: 2px; }
+    /* (all the buttons flow together, in as few rows as fit) */
+    .overlay.boardPause #panelPause:not([hidden]){ display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 5px; padding-bottom: 8px; }
+    .overlay.boardPause #panelPause > .big, .overlay.boardPause #panelPause > .small{ flex: 0 0 100%; }
+    .overlay.boardPause #panelPause .menuBtns, .overlay.boardPause #panelPause .menuRow{ display: contents; }
+    .overlay.boardPause #panelPause button{ min-height: 30px; padding: 5px 8px; font-size: 7px; }
+    .overlay.boardPause #panelPause .devTools{ flex: 0 0 100%; }
+    .overlay.boardPause.peek #panelPause, .overlay.boardPause.zoomed #panelPause{ opacity: 0; pointer-events: none; }
+    .overlay .pauseHint{ display: none; }
+    .overlay.boardPause .pauseHint{ display: block; font-size: 10px !important; opacity: 0.75; margin: 0 0 2px; }
+    .pieceCard{
+      position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+      width: min(calc(100% - 20px), 340px); box-sizing: border-box; padding: 10px 12px 12px;
+      background: rgba(8,8,20,0.92); border: 2px solid var(--ui-border); border-radius: var(--ui-radius);
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.85) inset, 0 12px 40px rgba(0,0,0,0.55);
+      text-align: center; pointer-events: auto; z-index: 3;
+    }
+    .pieceCard.top{ bottom: auto; top: 10px; }
+    .pieceCard[hidden]{ display: none; }
+    .pieceCard .pcPic{ display: grid; place-items: center; margin: 2px 0 8px; }
+    .pieceCard .pcPic canvas{ width: auto; height: auto; }
+    .pieceCard .pcName{ font-family: var(--font-display); font-size: 11px; line-height: 1.55; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(245,245,255,0.94); }
+    .pieceCard .pcRarity{ font-family: var(--font-body); font-size: 12px; color: rgba(245,245,255,0.8); margin-top: 6px; }
+    .pieceCard .pcNote{ font-family: var(--font-body); font-size: 11px; line-height: 1.4; color: var(--muted); margin-top: 4px; }
+    .pieceCard .pcPower{ font-family: var(--font-display); font-size: 10px; margin-top: 8px; animation: rainbowText 1.6s steps(12, end) infinite; }
+    .pieceCard .pcPower.cls-destroyer{ animation-name: fireText; }
+    .pieceCard .pcPower.cls-gravity{ animation-name: deepText; }
+    .pieceCard .pcPower.cls-expander{ animation-name: growText; }
+    .pieceCard .pcPower.cls-phantom{ animation-name: ghostText; }
     #panelIntro.slideIn{ animation: introSlide 200ms cubic-bezier(0.2, 0.9, 0.3, 1.05); }
     @keyframes introSlide{
       from{ transform: translateX(115%); }
@@ -987,13 +1012,14 @@
         <div id="toasts" class="toasts" aria-live="polite"></div>
 
         <div id="overlay" class="overlay show">
+          <div id="pieceCard" class="pieceCard" hidden></div>
           <div class="msg panel" id="panelLoading">
             <div class="big">Loading…</div>
           </div>
 
           <div class="msg panel" id="panelMenu" hidden>
             <div class="big title">Extris</div>
-            <div class="small" id="gameVersion">version 202610131221</div>
+            <div class="small" id="gameVersion">version 202610131233</div>
             <div class="menuBtns">
               <button id="btnEasy" class="secondary">Easy mode</button>
               <button id="btnNormal">Normal mode</button>
@@ -1030,7 +1056,7 @@
               <h3>Achievements</h3>
               <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
 
-              <p class="small menuFoot">[Extris version 202610131221 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610131233 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>
@@ -1050,6 +1076,7 @@
           <div class="msg panel" id="panelPause" hidden>
             <div class="big">Paused</div>
             <div class="small" id="pauseMode"></div>
+            <div class="small pauseHint">tap a piece to look at it · pinch or double tap to zoom</div>
             <div class="menuBtns">
               <button id="btnResume">Resume</button>
               <button id="btnPowerupHelp" class="secondary" hidden>Powerups</button>

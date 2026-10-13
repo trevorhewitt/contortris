@@ -374,3 +374,21 @@ test("a giant or a set's piece that couldn't go anywhere without ending the game
   assert.equal(state.next.id, "everest", "it comes after that");
   assert.equal(state.pieceSel.level6.queue[0].id, "everest_trash", "and then the rest of its set");
 });
+
+test("a piece's card says how rare it is, in words", async () => {
+  const { rarity } = await import("../src/rarity.js");
+  const { GROUPS } = await import("../shapes/groups.js");
+  const state = createGameState(shapes, powerups, { rng: makeRng(2), groups: GROUPS });
+  const words = new Set(CONFIG.rarity.words.map(w => w[1]));
+  const seen = new Set();
+  for (const s of [...shapes, ...powerups]) {
+    if ((s.frequency ?? 1) <= 0 || s.difficulty === 6) continue;
+    const r = rarity(state, s);
+    assert.ok(words.has(r.words), `${s.id}: ${r.words}`);
+    seen.add(r.words);
+  }
+  assert.equal(seen.size, words.size, `all the words get used: ${[...seen]}`);
+  assert.deepEqual(rarity(state, byId("everest")), { words: "only ever in a set", set: "Mt Everest" });
+  assert.equal(rarity(state, byId("last_straw")).words, "only ever after something else");
+  assert.equal(rarity(state, byId("piece_of_string")).words, "only in zen mode");
+});
