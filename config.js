@@ -176,15 +176,16 @@ export const CONFIG = {
     // everything is built up around it quickly (buildPace), and brought down around it by up to
     // `blasts` destroyers that miss it (each taking minBite blocks at least); and then how it
     // ends (how likely): one very small regret at a time (bitByBit: `regret`, or else one of
-    // regretElse; a pause of pauseMs before the first, hitPauseMs before the rest, each falling
-    // at hitPace), all at once (bigOne), or not at all (spared). After maxHits it gives up.
+    // regretElse; a dramatic pause of pauseMs before the first, a quiet wait of hitWaitMs before
+    // each of the rest, each falling at hitPace), all at once (bigOne), or not at all (spared).
+    // After maxHits it gives up.
     // Then a moment's silence (silenceMs). What it says as it goes, one of each at random (safe:
     // as the first one waits; hits: before the second, the third, ...; bigOne: before another
     // big one, if it's still there).
     loved: {
-      arrivePace: 1.8, buildPace: 0.7, blasts: 7, minBite: 4,
+      arrivePace: 1.8, buildPace: 1.3, blasts: 7, minBite: 4,
       endings: { bitByBit: 3, bigOne: 1, spared: 1 },
-      regret: "a_very_small_regret", regretElse: ["mole"], pauseMs: 1800, hitPauseMs: 0, hitPace: 2.6, maxHits: 12, silenceMs: 2600,
+      regret: "a_very_small_regret", regretElse: ["mole"], pauseMs: 1800, hitWaitMs: 1300, hitPace: 3.6, maxHits: 12, silenceMs: 2600,
       captions: {
         spare: ["please keep it alive", "careful now", "mind the little one"],
         safe: ["it's safe now", "it's still here", "it made it", "it trusts you completely"],
@@ -241,6 +242,7 @@ export const CONFIG = {
     newest: {
       sets: ["emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
+        "piece_that_loves_you", "piece_that_loves_you_l", "piece_that_loves_you_s",
         "spaghetti_os", "spam_can", "bull", "china_shop", "bees_knees", "queen_bee",
         "meteor_shower", "tidal_wave", "dragon_with_hay_fever", "giant_eraser", "hole_in_one",
         "horseshoe_magnet", "sarcastic_thumbs_up", "ice_skate", "hole_punch", "lightning_bolt_with_a_grudge", "lit_fuse", "magic_wand", "toadstool",

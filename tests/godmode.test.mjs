@@ -247,3 +247,21 @@ test("God mode opens with the emotions chart's ascent into the pseudo-spiritual"
     assert.ok(ids.some(id => id === "emotion_mother_earth" || id === "emotion_enlightenment"), ids.join());
   }
 });
+
+test("God mode brings a piece that loves you soon after its opening set, the first time since the page was loaded", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(4), groups: GROUPS });
+  state.seenEver = new Map(); state.shownThisLoad = new Map(); // (as the UI keeps them)
+  const served = [];
+  on(state, (t, d) => { if (t === "spawn") served.push({ id: d.shape.id, set: !!state.pieceSel.level6.group }); });
+  startRun(state, "god");
+  for (let i = 0; i < 120 && !served.some(s => s.id === CONFIG.godMode.firstPieces[0]) && !state.gameOver; i++) {
+    hardDropAndLock(state);
+    for (let k = 0; k < 120 && (state.effect || state.hold); k++) updateGame(state, 16);
+    state.board = state.board.map(r => r.fill(null));
+  }
+  const at = served.findIndex(s => s.id === CONFIG.godMode.firstPieces[0]);
+  const setEnds = served.findIndex((s, i) => i > 0 && served[i - 1].set && !s.set);
+  assert.ok(at >= 0, `never came: ${served.map(s => s.id).slice(0, 40).join(" ")}`);
+  assert.ok(at <= Math.max(setEnds, 0) + 6, `at piece ${at}, the opening set over at ${setEnds}`);
+});
+

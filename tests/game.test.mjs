@@ -227,7 +227,8 @@ test("achievements: game over triggers", () => {
 
 test("every achievement trigger in the data file is a known type", () => {
   const KNOWN = ["together", "blocksDestroyed", "rowWith", "rowsDestroyed", "multiRow", "pieceServed", "pieceSequence", "pieceInside", "seenAll",
-    "powerupUsed", "powerupBlocks", "score", "level", "drops", "boardCleared", "gameOver", "level6", "endGameEscaped"];
+    "powerupUsed", "powerupBlocks", "score", "level", "drops", "boardCleared", "gameOver", "level6", "endGameEscaped",
+    "keptAlive", "killed", "killedQuickly", "aliveAtEnd"];
   const ids = new Set();
   for (const a of ACHIEVEMENTS) {
     assert.ok(KNOWN.includes(a.trigger.type), `${a.id}: ${a.trigger.type}`);
@@ -448,13 +449,13 @@ test("a run on a board of another size starts on a board that size (turbo zen fi
 });
 
 test("achievements: a piece that loves you, killed straight away, kept alive, alive at the end; and its last words", () => {
-  const [cute] = loadShapes([{ id: "cutie", name: "a piece that loves you", grid: ["XXX", ".X."], difficulty: 1, tags: ["cute"], onDeath: "it loved you" }]).shapes;
-  const defs = [
-    { id: "quick", name: "q", description: "", trigger: { type: "killedQuickly", match: { tags: ["cute"] }, drops: 2 } },
-    { id: "dead", name: "d", description: "", trigger: { type: "killed", match: { tags: ["cute"] } } },
-    { id: "alive5", name: "a", description: "", trigger: { type: "keptAlive", match: { tags: ["cute"] }, drops: 5 } },
-    { id: "end", name: "e", description: "", trigger: { type: "aliveAtEnd", match: { tags: ["cute"] } } },
-  ];
+  const cute = shapes.find(s => s.id === "piece_that_loves_you");
+  assert.ok(cute?.tags.includes("loves_you") && cute.onDeath, "the piece");
+  // (its achievements, as they are, but kept alive for five pieces rather than thirty)
+  const ids = { killing_it: "quick", heartbreaker: "dead", a_good_home: "alive5", till_death_do_us_part: "end" };
+  const defs = ACHIEVEMENTS.filter(a => ids[a.id]).map(a => ({ ...a, id: ids[a.id], trigger: a.id === "a_good_home" ? { ...a.trigger, drops: 5 } : a.trigger }));
+  assert.equal(defs.length, 4);
+  assert.ok(ACHIEVEMENTS.some(a => a.id === "growing_old_together" && a.trigger.type === "keptAlive" && a.trigger.drops === 100));
   const play = () => {
     const state = createGameState(shapes, powerups, { rng: makeRng(3) });
     const got = [];
