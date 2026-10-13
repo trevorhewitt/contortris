@@ -25,25 +25,36 @@ import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup } from "./powerups.js";
 import { expandGroup, roomNeeded, groupUnderWay } from "./level6.js";
 import { makeRng, sampleByWeight } from "./util.js";
+import { colourFamily } from "./threads.js";
 
 const LEVEL6 = 6;
 
 // How the autopilot weighs up a placement (higher is better).
 //   clear: the usual: keep it low and tidy, clear rows
 //   build: build up neatly without clearing anything (for the demolition)
+//   holey: build up evenly, leaving gaps (for the gravitizers and phantoms to sort out)
+//   grow:  (for expanders) the more blocks the better, nothing cleared
 // headroom: rows it keeps clear at the top (CONFIG.zen.headroom if not given)
 const WEIGHTS = {
   clear: { height: -0.51, lines: 0.76, holes: -0.36, bump: -0.18 },
   build: { height: -0.1, lines: -0.6, holes: -0.9, bump: -0.22, headroom: 3 },
+  holey: { height: -0.2, lines: -1.6, holes: 0.35, bump: -0.32, headroom: 4 },
+  grow: { height: 0.08, lines: -2, holes: -0.4, bump: -0.15, headroom: 3 },
 };
 
 // How often each movement comes up (never the same twice running), in zen and in turbo zen.
+// (Turbo zen leans hard on the ones that fill the screen, and above all the ones made of one
+// family of pieces; the ones that just fill it at random come up less, so it stays lively.)
 const MOVEMENT_WEIGHTS = {
-  zen: { natural: 1.5, rain: 1, build: 2.5, giants: 1.5, column: 3, beds: 2.5, crack: 2, mess: 2, fall: 1.2, well: 1, chorus: 1 },
-  turbo: { natural: 0.8, rain: 0.5, build: 1.5, giants: 1, column: 2.5, beds: 2, crack: 2, mess: 1.5, fall: 1, well: 0.8, chorus: 2, mono: 3, small: 2, big: 2 },
+  zen: { natural: 1.5, rain: 1, build: 2.5, giants: 1.5, column: 3, beds: 2.5, crack: 2, mess: 2, fall: 1.2, well: 1, chorus: 1,
+    standing: 0.8, colour: 1, squares: 0.6, waves: 1, blackholes: 0.4, expanders: 0.4 },
+  turbo: { natural: 0.25, rain: 0.15, build: 0.5, giants: 0.3, column: 2.5, beds: 2, crack: 2, mess: 0.9, fall: 0.3, well: 0.3, chorus: 1.2,
+    mono: 5, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1 },
 };
 // (the ones that need a low, tidy board to build on)
-const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess"]);
+const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "standing", "colour", "squares"]);
+// (the ones happy to carry on from whatever the last one left behind)
+const BLENDS = new Set(["build", "chorus", "mono", "small", "big", "waves", "expanders", "blackholes"]);
 
 const zenSet = (state) => (CONFIG.modes[state.mode]?.zenMovements === "turbo" ? "turbo" : "zen");
 
@@ -54,7 +65,7 @@ export function createZen(state) {
     expect: null,     // a planned piece's board once it has landed (to notice the player stepping in)
     movement: null,
     last: null,       // the movement before
-    after: null,      // a movement waiting for the board to be tidied first
+    after: zenSet(state) === "zen" ? "natural" : null, // a movement waiting for the board to be tidied first (zen starts as the game would)
     inputAt: state.lastInputAt,
     piece: null,      // the falling piece the computer is placing
     target: null,     // where it's going
@@ -156,9 +167,13 @@ function pickMovement(state) {
   const occ = occupancy(state.board);
   const h = heightOf(occ, cols, rows);
   if (z.after && !PLANNED.has(z.after)) return z.after;
-  if (!z.after && h > 9) return "tidy"; // left high: tidy up first
   if (!z.after) {
-    const options = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => k !== z.last);
+    let options = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => k !== z.last);
+    // left high: tidy up first, or now and then just carry on building on what's there
+    if (h > 9) {
+      if (h > CONFIG.board.rows - 8 || state.rng() < 0.5) return "tidy";
+      options = options.filter(([k]) => BLENDS.has(k));
+    }
     z.after = sampleByWeight(options, ([, w]) => w, state.rng)[0];
     z.waited = 0;
   }
@@ -214,12 +229,17 @@ function giantPiece(state) {
 // Build up to `target` rows with next() pieces (placed with `weights`), keeping one column clear
 // all the way down so nothing clears on the way up, then bring it all down: sometimes one of
 // the tallest pieces drops into that column (`keyChance`), or else the powerups, the biggest first.
-function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 1, maxPieces = 70, keyChance = 0.5 } = {}) {
+function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 1, maxPieces = 70, keyChance = 0.5, blastWith = null, blasts = 7 } = {}) {
   return {
-    caption, pace, phase: "fill", target, blasts: 0, pieces: 0, weights: null,
+    caption, pace, phase: "fill", target, blasts: 0, pieces: 0, weights: null, leave: 3,
     fill(state) {
       const { cols, rows } = CONFIG.board;
-      if (!this.weights) this.weights = { ...weights, well: Math.floor(state.rng() * cols) };
+      if (!this.weights) {
+        this.weights = { ...weights, well: Math.floor(state.rng() * cols) };
+        // (on top of whatever's there; and now and then it leaves some behind for the next)
+        this.target = Math.min(rows - 3, Math.max(this.target, stackHeight(state) + 5));
+        if (state.rng() < 0.3) this.leave = int(state, 5, 8);
+      }
       if (this.phase === "fill" && (stackHeight(state) >= this.target || this.pieces >= maxPieces)) {
         this.phase = "blast";
         this.pace = 1;
@@ -240,12 +260,66 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         this.pieces++;
       } else {
         const full = this.blasts === 0 && stackHeight(state) >= rows - 6 && state.rng() < (CONFIG.zen.dramatic?.demolitionChance ?? 0);
-        state.zen.queue.push({ shape: this.blasts < 2 ? bigPowerup(state) : bestPowerup(state), weights: WEIGHTS.clear, dramatic: full });
+        state.zen.queue.push({ shape: blastWith ? blastWith(state, this.blasts) : this.blasts < 2 ? bigPowerup(state) : bestPowerup(state), weights: WEIGHTS.clear, dramatic: full });
         this.blasts++;
       }
     },
-    done(state) { return this.phase === "blast" && (this.blasts >= 7 || stackHeight(state) <= 3); },
+    done(state) { return this.phase === "blast" && (this.blasts >= blasts || stackHeight(state) <= this.leave); },
   };
+}
+
+// Comings and goings: built up full of gaps, then the gravitizers and phantoms sort the gaps out,
+// then up again, higher, and again, until at last it all comes down.
+function waves(state) {
+  const { rows } = CONFIG.board;
+  return {
+    caption: "comings and goings", phase: "fill", round: 0, rounds: int(state, 2, 3), target: int(state, 11, 14), pieces: 0, fixes: 0, blasts: 0, weights: null,
+    fill(state) {
+      const z = state.zen, h = stackHeight(state);
+      if (!this.weights) { this.weights = { ...WEIGHTS.holey }; this.target = Math.max(this.target, h + 4); }
+      if (this.phase === "fill" && (h >= this.target || this.pieces >= 40)) {
+        this.round++;
+        if (this.round > this.rounds) { this.phase = "blast"; zenCaption(state, "and down it all comes", "demolition"); }
+        else { this.phase = "fix"; this.fixes = 0; }
+      }
+      if (this.phase === "fix") {
+        if (this.fixes < 4 && gaps(state) > 4) {
+          z.queue.push({ shape: consolidator(state), weights: WEIGHTS.clear });
+          this.fixes++;
+          return;
+        }
+        // (and up again, higher)
+        this.phase = "fill";
+        this.pieces = 0;
+        this.target = Math.min(rows - 3, Math.max(stackHeight(state) + 5, this.target + int(state, 2, 4)));
+      }
+      if (this.phase === "fill") {
+        let shape = buildPiece(state);
+        if (!fitsUnder(state, shape, 3)) shape = pick(state, smallPool(state));
+        z.queue.push({ shape, weights: this.weights });
+        this.pieces++;
+        return;
+      }
+      z.queue.push({ shape: this.blasts < 2 ? bigPowerup(state) : bestPowerup(state), weights: WEIGHTS.clear });
+      this.blasts++;
+    },
+    done(state) { return this.phase === "blast" && (this.blasts >= 6 || stackHeight(state) <= 3); },
+  };
+}
+
+// The gaps under blocks on the board.
+function gaps(state) {
+  const { cols, rows } = CONFIG.board;
+  const occ = occupancy(state.board);
+  let n = 0;
+  for (let x = 0; x < cols; x++) for (let y = 0, seen = false; y < rows; y++) { if (occ[y * cols + x]) seen = true; else if (seen) n++; }
+  return n;
+}
+
+// The gravitizer or phantom (of a handful) that would close the most gaps.
+function consolidator(state) {
+  const pool = powerupPool(state).filter(p => ["gravity", "phantom"].includes(p.powerup.type) && !p.powerup.bad);
+  return bestPowerup(state, pool.length ? pool : powerupPool(state));
 }
 
 // A planned movement: the whole run of pieces is worked out at the start (plan(state) returns
@@ -262,7 +336,8 @@ function planned(caption, plan, then = null) {
       state.zen.queue.push(...items);
       const text = res.caption ?? caption;
       if (text) zenCaption(state, text, this.name);
-      if (then) state.zen.after = then;
+      // (what comes after, unless one of the tallest pieces brings it all down anyway)
+      if (then && !items.some(it => it.key)) state.zen.after = then;
     },
     done() { return this.pushed; },
   };
@@ -365,6 +440,42 @@ const MOVEMENTS = {
     done(state) { return this.used >= 7 || stackHeight(state) <= 3; },
   }),
 
+  // the board full of board-height pieces side by side (or of long sticks standing on end), the
+  // last one completing every row at once
+  standing: () => planned("standing up", (state) => planStanding(state)),
+
+  // the board built up in bands of colour, a rainbow, then down it all comes
+  colour: () => planned(null, (state) => planColour(state), "demolition"),
+
+  // squares of colour in a pattern, a checkerboard or diagonal stripes, then down it comes
+  squares: () => planned(null, (state) => planSquares(state), "demolition"),
+
+  // up and down and up again
+  waves: (state) => waves(state),
+
+  // built up, then one black hole after another
+  blackholes: (state) => fillThenBlast("a series of black holes", buildPiece, {
+    target: int(state, 15, 19), pace: 0.8, blasts: 8,
+    blastWith: (st, n) => { const holes = powerupPool(st).filter(p => /black hole/i.test(p.name)); return holes.length && n % 3 !== 2 ? bestPowerup(st, holes) : bigPowerup(st); },
+  }),
+
+  // the board filled by expanding pieces, then the powerups
+  expanders: (state) => ({
+    caption: "expanding", used: 0, target: int(state, 16, 20), phase: "grow", blasts: 0,
+    fill(state) {
+      const pool = powerupPool(state).filter(p => p.powerup.type === "expander" && !p.powerup.bad);
+      if (this.phase === "grow" && (stackHeight(state) >= this.target || this.used >= 16 || !pool.length)) { this.phase = "blast"; zenCaption(state, "demolition", "demolition"); }
+      if (this.phase === "grow") {
+        state.zen.queue.push({ shape: bestPowerup(state, pool, CONFIG.zen.powerupChoices, WEIGHTS.grow), weights: WEIGHTS.grow });
+        this.used++;
+        return;
+      }
+      state.zen.queue.push({ shape: this.blasts < 2 ? bigPowerup(state) : bestPowerup(state), weights: WEIGHTS.clear });
+      this.blasts++;
+    },
+    done(state) { return this.phase === "blast" && (this.blasts >= 7 || stackHeight(state) <= 3); },
+  }),
+
   // powerups until the board is low with no gaps
   tidy: () => ({
     caption: "tidying up", used: 0,
@@ -392,6 +503,13 @@ function pickFamily(state) {
   if (bens.length) fams.push({ caption: "Big Bens", pieces: bens, w: 5 });
   const rain = ["raindrop", "big_raindrop", "drizzle"].map(byId).filter(Boolean);
   if (rain.length) fams.push({ caption: "a lot of rain", pieces: rain, w: 3 });
+  const live = (ids) => ids.map(byId).filter(s => s && !s.powerup && (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6);
+  const bees = live(["bees", "forgotten_bee", "piano_full_of_bees", "a_bee", "two_bees", "bee_line", "queen_bee", "honeycomb", "bees_knees", "bee_bigger_bee", "bee_in_a_bonnet", "cloud_of_bees"]);
+  if (bees.length >= 2) fams.push({ caption: "bees", pieces: bees, w: 5 });
+  const florg = live(["florgenorflepus", "florgnorfepus_egg", "snorfwiggle", "plorbs", "grumblesac", "schlopwort", "squonch", "blibbets", "mumblethorpe"]);
+  if (florg.length >= 3) fams.push({ caption: "florgnorfepuses, mostly", pieces: florg, w: 5 });
+  const surreal = live([...(state.threads?.members?.get("surreal") ?? [])]);
+  if (surreal.length >= 8) fams.push({ caption: "nothing but the surreal", pieces: surreal, w: 5 });
   for (const [name, ids] of state.threads?.members ?? []) {
     if (name.includes(":")) continue;
     const pieces = [...ids].map(byId).filter(s => s && !s.powerup && (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6);
@@ -401,12 +519,12 @@ function pickFamily(state) {
 }
 
 // The powerup (of a handful, at random) that would do the most good on this board.
-function bestPowerup(state, pool = powerupPool(state), tries = CONFIG.zen.powerupChoices) {
+function bestPowerup(state, pool = powerupPool(state), tries = CONFIG.zen.powerupChoices, weights = WEIGHTS.clear) {
   if (!pool.length) return pick(state, smallPool(state));
   let best = null;
   for (let i = 0; i < tries; i++) {
     const p = pool[Math.floor(state.rng() * pool.length)];
-    const place = bestPlacement(state, p, WEIGHTS.clear, 2);
+    const place = bestPlacement(state, p, weights, 2);
     if (place && (!best || place.s > best.s)) best = { p, s: place.s };
   }
   return best?.p ?? pool[0];
@@ -806,29 +924,55 @@ export function planCrack(state) {
   const ghost = ghosts.find(p => p.id === "friendly_ghost") ?? ghosts[0];
   if (!ghost) return null;
   const H = int(state, 18, rows - 1), top = rows - H;
+  // One gap a row (or two), wandering up from the floor but never into the end columns: a gap
+  // against the wall would leave the cells over it with nothing to stand on, all the way up.
+  // `moves(d)` lists the steps to try next, best first; the walk turns back at its edges (and
+  // goes round anything already there).
+  const walk = (lo, hi, moves) => (r, prev, free) => {
+    if (r === 0) {
+      const xs = [];
+      for (let x = lo; x <= hi; x++) if (free(x)) xs.push(x);
+      return xs.length ? [xs[Math.floor(rng() * xs.length)], rng() < 0.5 ? 1 : -1] : null;
+    }
+    const { x } = prev;
+    const d = x + prev.d < lo || x + prev.d > hi ? -prev.d : prev.d;
+    for (const m of moves(d)) if (x + m >= lo && x + m <= hi && free(x + m)) return [x + m, Math.sign(m) || d];
+    return free(x) ? [x, -d] : null;
+  };
+  const wander = (d) => { const u = rng(); return u < 0.6 ? [d, 0, -d] : u < 0.85 ? [0, d, -d] : [-d, 0, d]; };
+  const bolt = (d) => (rng() < 0.75 ? [2 * d, d, -2 * d, -d] : [0, 2 * d, -2 * d]);
+  const half = (cols >> 1) - 1;
   const kinds = [
-    { caption: "a crack running through it", at: (r, c) => [mod(c + r, cols)] },
-    { caption: "a crack running the other way", at: (r, c) => [mod(c - r, cols)] },
-    { caption: "a zigzag", at: (r, c) => { const p = mod(c + r, 2 * (cols - 1)); return [p < cols ? p : 2 * (cols - 1) - p]; } },
-    { caption: "a cross", at: (r, c) => [...new Set([mod(c + r, cols), mod(c - r, cols)])] },
+    { caption: "a crack running through it", lines: [walk(1, cols - 2, wander)] },
+    { caption: "a zigzag", lines: [walk(1, cols - 2, (d) => [d, -d])] },
+    { caption: "lightning, more or less", lines: [walk(1, cols - 2, bolt)] },
+    { caption: "two cracks, not touching", lines: [walk(1, half - 1, wander), walk(half + 2, cols - 2, wander)] },
   ];
   for (let tries = 0; tries < 12; tries++) {
-    const kind = kinds[Math.floor(rng() * kinds.length)], c0 = Math.floor(rng() * cols);
+    const kind = kinds[Math.floor(rng() * kinds.length)];
     const holes = new Uint8Array(cols * rows), list = [];
     let ok = true;
-    for (let r = 0; r < H && ok; r++) {
-      const y = rows - 1 - r;
-      for (const x of kind.at(r, c0)) {
-        if (occ[y * cols + x]) { ok = false; break; } // (already filled down there)
+    for (const line of kind.lines) {
+      let prev = null;
+      for (let r = 0; r < H && ok; r++) {
+        const y = rows - 1 - r;
+        const step = line(r, prev, (x) => !occ[y * cols + x] && !holes[y * cols + x]);
+        if (!step) { ok = false; break; } // (no way up through what's already there)
+        const [x, d] = step;
         holes[y * cols + x] = 1;
         list.push({ x, y });
+        prev = { x, d };
       }
     }
     if (!ok) continue;
+    const before = list.length;
+    closeOff(holes, occ, top, cols, rows, list);
+    if (list.length > before + 4) continue; // (a crack, not a cave)
     const need = new Uint8Array(cols * rows);
     for (let y = top; y < rows; y++) for (let x = 0; x < cols; x++) if (!occ[y * cols + x] && !holes[y * cols + x]) need[y * cols + x] = 1;
-    const work = occ.slice();
-    const fillers = tile(work, need, fillerCandidates(state), rng, cols, rows, 3, holes);
+    let work = occ.slice();
+    let fillers = tile(work, need, fillerCandidates(state), rng, cols, rows, 3, holes);
+    if (!fillers && tries >= 2) { work = occ.slice(); fillers = tileFlat(work, need, flatCandidates(state), rng, cols, rows); }
     if (!fillers) continue;
     // then the ghosts, from the bottom up, each into the deepest gap in its column
     list.sort((a, b) => b.y - a.y);
@@ -837,6 +981,169 @@ export function planCrack(state) {
     if (items) return { items, caption: kind.caption };
   }
   return null;
+}
+
+// The board full of board-height pieces side by side, in a random order (the last one completes
+// every row at once); or, without them (or with something already there), every column filled
+// with long sticks standing on end but for a slot, then the slot's key.
+export function planStanding(state) {
+  const { cols, rows } = CONFIG.board;
+  const rng = state.rng;
+  const occ = occupancy(state.board);
+  if (!solid(occ, cols, rows) || heightOf(occ, cols, rows) > 2) return null;
+  const keys = zenKeys(state);
+  if (keys.length && heightOf(occ, cols, rows) === 0) {
+    const order = [];
+    for (let x = 0; x < cols;) {
+      const fit = keys.filter(k => k.rotations[0][0].length <= cols - x);
+      if (!fit.length) break;
+      const k = fit[Math.floor(rng() * fit.length)];
+      order.push({ shape: k, rot: 0, mat: k.rotations[0], x, pace: 1.2 });
+      x += k.rotations[0][0].length;
+    }
+    for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+    order[order.length - 1].key = true;
+    const items = toItems(occ, order, cols, rows);
+    if (items) return { items, caption: "standing up" };
+  }
+  // sticks: each column on its own, sticks whose lengths add up exactly to its height
+  const sticks = candidates(plannable(state, 4), 1, rows, 99).filter(c => c.w === 1 && c.h >= 2);
+  const byLen = new Map();
+  for (const c of sticks) { if (!byLen.has(c.h)) byLen.set(c.h, []); byLen.get(c.h).push(c); }
+  if (!byLen.has(2) || byLen.size < 3) return null;
+  const kx = freeSlot(occ, 1, rng, cols, rows);
+  if (kx == null) return null;
+  const placed = [];
+  for (let x = 0; x < cols; x++) {
+    if (x === kx) continue;
+    let y = colTop(occ, x, cols, rows); // (the first row filled already, or the floor)
+    let left = y - 1;                     // (up to row 1: the top row stays clear)
+    while (left > 0) {
+      const lens = [...byLen.keys()].filter(h => h <= left && left - h !== 1);
+      if (!lens.length) return null;
+      const h = lens[Math.floor(rng() * lens.length)];
+      const list = byLen.get(h), c = list[Math.floor(rng() * list.length)];
+      y -= h;
+      placed.push({ shape: c.shape, rot: c.rot, mat: c.mat, x, y });
+      left -= h;
+    }
+  }
+  // (dropped bottom up, across the board)
+  placed.sort((a, b) => (b.y + b.mat.length) - (a.y + a.mat.length) || a.x - b.x);
+  const work = occ.slice();
+  for (const p of placed) for (let j = 0; j < p.mat.length; j++) work[(p.y + j) * cols + p.x] = 1;
+  const key = zenKeys(state).find(k => k.rotations[0][0].length === 1);
+  const steps = [...placed.map(p => ({ ...p, pace: 0.6 }))];
+  if (key) steps.push({ shape: key, rot: 0, mat: key.rotations[0], x: kx, key: true });
+  else {
+    const slot = new Uint8Array(cols * rows);
+    for (let y = 0; y < rows; y++) slot[y * cols + kx] = 1;
+    const keys2 = tile(work, slot, keyCandidates(state, 1, rows), rng, cols, rows, 2);
+    if (!keys2) return null;
+    steps.push(...keys2.map(k => ({ ...k, pace: 1.3 })));
+  }
+  const items = toItems(occ, steps, cols, rows);
+  return items && { items, caption: "sticks, standing up" };
+}
+
+// The colour a piece mostly is (pink counts as purple: there are few purple things).
+const colours = new WeakMap();
+function colourOf(shape) {
+  if (!colours.has(shape)) colours.set(shape, colourFamily(shape));
+  const c = colours.get(shape);
+  return c === "pink" ? "purple" : c;
+}
+
+// The board built up in bands of colour, a rainbow from the bottom up (or upside down, or from
+// left to right), with a slot left for one of the tallest pieces if there is one; then down it
+// comes. Returns { items, caption } or null.
+export function planColour(state) {
+  const { cols, rows } = CONFIG.board;
+  const rng = state.rng;
+  const occ = occupancy(state.board);
+  if (!solid(occ, cols, rows) || heightOf(occ, cols, rows) > 2) return null;
+  const keys = zenKeys(state).filter(k => k.rotations[0][0].length === 1);
+  const key = keys.length ? keys[Math.floor(rng() * keys.length)] : null;
+  const H = key ? rows : rows - 3;
+  const kx = freeSlot(occ, 1, rng, cols, rows);
+  if (kx == null) return null;
+  const flip = rng() < 0.25, across = rng() < 0.35;
+  const order = flip ? ["purple", "blue", "green", "yellow", "orange", "red"] : ["red", "orange", "yellow", "green", "blue", "purple"];
+  const all = fillerCandidates(state);
+  const of = (c) => all.filter(k => colourOf(k.shape) === c);
+  const work = occ.slice(), steps = [];
+  const n = order.length, top = rows - H;
+  const xs = [...Array(cols).keys()].filter(x => x !== kx);
+  for (let i = 0; i < n; i++) {
+    const need = new Uint8Array(cols * rows);
+    if (across) {
+      // stripes of columns, left to right
+      const a = Math.round(xs.length * i / n), b = Math.round(xs.length * (i + 1) / n);
+      for (const x of xs.slice(a, b)) for (let y = top; y < rows; y++) if (!work[y * cols + x]) need[y * cols + x] = 1;
+    } else {
+      // bands of rows, from the bottom up
+      const y0 = rows - Math.round(H * (i + 1) / n), y1 = rows - Math.round(H * i / n);
+      for (let y = y0; y < y1; y++) for (const x of xs) if (!work[y * cols + x]) need[y * cols + x] = 1;
+    }
+    const placed = tile(work, need, of(order[i]), rng, cols, rows, 4, null, 3000) ?? tile(work, need, all, rng, cols, rows);
+    if (!placed) return null;
+    steps.push(...asFillers(placed));
+  }
+  if (key) steps.push({ shape: key, rot: 0, mat: key.rotations[0], x: kx, key: true });
+  const items = toItems(occ, steps, cols, rows, { mustClear: !!key });
+  return items && { items, caption: across ? "a rainbow, sideways" : flip ? "a rainbow, upside down" : "a rainbow" };
+}
+
+// Squares in a pattern across the board: a checkerboard, diagonal stripes or rings of colour,
+// with a slot left for one of the tallest pieces if one fits it; then down it comes. Returns
+// { items, caption } or null.
+export function planSquares(state) {
+  const { cols, rows } = CONFIG.board;
+  const rng = state.rng;
+  const occ = occupancy(state.board);
+  if (!solid(occ, cols, rows) || heightOf(occ, cols, rows) > 2) return null;
+  const sq = 2;
+  const pieces = plannable(state, 3).filter(s => { const m = s.rotations[0]; return m.length === sq && m[0].length === sq && m.flat().every(Boolean); });
+  const byCol = new Map();
+  for (const p of pieces) { const c = colourOf(p); if (c && c !== "black") { if (!byCol.has(c)) byCol.set(c, []); byCol.get(c).push(p); } }
+  const palette = [...byCol.keys()];
+  if (palette.length < 3) return null;
+  for (let i = palette.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [palette[i], palette[j]] = [palette[j], palette[i]]; }
+  let key = zenKeys(state).find(k => k.rotations[0][0].length === sq);
+  const nx = Math.floor(cols / sq), ny = Math.floor(rows / sq);
+  // a slot for one of the tallest pieces, if there's a clear one; or else a square left out of
+  // each row, on a diagonal, so no row completes
+  const slots = [...Array(nx).keys()].filter(i => { for (let x = i * sq; x < (i + 1) * sq; x++) if (colTop(occ, x, cols, rows) < rows) return false; return true; });
+  const slot = slots.length ? slots[Math.floor(rng() * slots.length)] : null;
+  const gapAt = (j) => (slot != null ? slot : (j * 2 + 1) % nx);
+  const kinds = [
+    { caption: "a checkerboard", colour: (i, j) => palette[(i + j) % 2] },
+    { caption: "diagonal stripes", colour: (i, j) => palette[(i + j) % Math.min(4, palette.length)] },
+    { caption: "the other diagonal", colour: (i, j) => palette[((i - j) % 3 + 3) % 3] },
+    { caption: "rings", colour: (i, j) => palette[(Math.max(Math.abs(i - (nx - 1) / 2), Math.abs(j - (ny - 1) / 2)) | 0) % palette.length] },
+  ];
+  const kind = kinds[Math.floor(rng() * kinds.length)];
+  const steps = [];
+  // (anything low that's there already is levelled off first, and the grid goes on top)
+  const base = heightOf(occ, cols, rows), work = occ.slice();
+  if (base) {
+    const need = new Uint8Array(cols * rows);
+    for (let y = rows - base; y < rows; y++) for (let x = 0; x < cols; x++) if (!occ[y * cols + x] && (slot == null || x < slot * sq || x >= (slot + 1) * sq)) need[y * cols + x] = 1;
+    const level = tile(work, need, fillerCandidates(state), rng, cols, rows);
+    if (!level) return null;
+    steps.push(...asFillers(level));
+  }
+  const gy = Math.floor((rows - base) / sq);
+  if (slot == null) key = null;
+  for (let j = gy - 1; j >= 0; j--) for (let i = 0; i < nx; i++) {
+    if (i === gapAt(j)) continue;
+    const list = byCol.get(kind.colour(i, j)) ?? pieces;
+    const p = list[Math.floor(rng() * list.length)];
+    steps.push({ shape: p, rot: 0, mat: p.rotations[0], x: i * sq, y: rows - base - (gy - j) * sq, pace: 0.7 });
+  }
+  if (key) steps.push({ shape: key, rot: 0, mat: key.rotations[0], x: slot * sq, key: true });
+  const items = toItems(occ, steps, cols, rows, { mustClear: !!key });
+  return items && { items, caption: kind.caption };
 }
 
 // The board built up nearly to the top, full of awkward gaps (little clusters of cells nothing
@@ -861,12 +1168,14 @@ export function planMess(state) {
       for (let x = 0; x < cols; x++) if (!occ[y * cols + x]) free.push(x);
       if (!free.some(x => holes[y * cols + x])) gap(free[Math.floor(rng() * free.length)], y);
     }
+    closeOff(holes, occ, top, cols, rows);
     const need = new Uint8Array(cols * rows);
     for (let y = top; y < rows; y++) for (let x = 0; x < cols; x++) if (!occ[y * cols + x] && !holes[y * cols + x]) need[y * cols + x] = 1;
     // (the top row needs a gap too, so it doesn't clear when it's finished)
     need[top * cols + Math.floor(rng() * cols)] = 0;
-    const work = occ.slice();
-    const fillers = tile(work, need, fillerCandidates(state), rng, cols, rows, 3, holes);
+    let work = occ.slice();
+    let fillers = tile(work, need, fillerCandidates(state), rng, cols, rows, 3, holes);
+    if (!fillers && tries >= 2) { work = occ.slice(); fillers = tileFlat(work, need, flatCandidates(state), rng, cols, rows); }
     if (!fillers) continue;
     const items = toItems(occ, asFillers(fillers), cols, rows, { mustClear: false });
     if (items && items.length) return items;
@@ -875,6 +1184,22 @@ export function planMess(state) {
 }
 
 const mod = (a, n) => ((a % n) + n) % n;
+
+// A stretch of a row that nothing could rest on (gaps under all of it, and a gap or a wall at each
+// end) becomes part of the gaps too, from the bottom up. (`list`: where to note each new gap.)
+function closeOff(holes, occ, top, cols, rows, list = null) {
+  for (let y = rows - 1; y >= top; y--) {
+    for (let x = 0; x < cols;) {
+      if (holes[y * cols + x] || occ[y * cols + x]) { x++; continue; }
+      let end = x;
+      while (end < cols && !holes[y * cols + end] && !occ[y * cols + end]) end++;
+      let held = false;
+      for (let i = x; i < end && !held; i++) if (y + 1 >= rows || !holes[(y + 1) * cols + i]) held = true;
+      if (!held) for (let i = x; i < end; i++) { holes[y * cols + i] = 1; list?.push({ x: i, y }); }
+      x = end;
+    }
+  }
+}
 const asFillers = (list) => list.map(f => ({ ...f, pace: CONFIG.zen.pace.filler }));
 
 // The tallest pieces: the whole height of the board, only for zen (tagged "zen").
@@ -918,6 +1243,11 @@ function plannable(state, maxDifficulty) {
 
 function fillerCandidates(state) {
   return candidates(plannable(state, 3), 5, 5, 9);
+}
+
+// Flat pieces, one block tall (lying down), for laying rows like bricks.
+function flatCandidates(state) {
+  return candidates(plannable(state, 3), 8, 1, 99);
 }
 
 function keyCandidates(state, w, H) {
@@ -1055,6 +1385,45 @@ function tile(occ, need, cands, rng, cols, rows, maxUses = 3, holes = null, budg
     stack.push({ a: next, ci: 0, pass: 0, placed: null });
   }
   return null;
+}
+
+// The same, the simple way, when that fails around awkward gaps: row by row from the bottom, each
+// stretch of a row between the gaps laid with flat pieces (like bricks), each one resting on
+// something. Changes `occ`. Returns the placements, or null.
+function tileFlat(occ, need, cands, rng, cols, rows) {
+  const flat = new Map();
+  for (const c of cands) if (c.h === 1) { if (!flat.has(c.w)) flat.set(c.w, []); flat.get(c.w).push(c); }
+  if (!flat.has(1)) return null;
+  const lens = [...flat.keys()];
+  const plan = [];
+  for (let y = rows - 1; y >= 0; y--) {
+    for (let x = 0; x < cols;) {
+      if (!need[y * cols + x] || occ[y * cols + x]) { x++; continue; }
+      let end = x;
+      while (end < cols && need[y * cols + end] && !occ[y * cols + end]) end++;
+      // [x, end): split into flat pieces, each with something under at least one of its blocks
+      const held = (i) => y + 1 >= rows || occ[(y + 1) * cols + i];
+      const parts = [];
+      let at = x, ok = true;
+      while (at < end && ok) {
+        const fits = lens.filter(L => at + L <= end && [...Array(L).keys()].some(i => held(at + i)));
+        if (!fits.length) { ok = false; break; }
+        // (rather not leave a lone block over a gap at the end)
+        const good = fits.filter(L => at + L === end || end - (at + L) > 1 || held(at + L));
+        const L = (good.length ? good : fits)[Math.floor(rng() * (good.length || fits.length))];
+        parts.push([at, L]);
+        at += L;
+      }
+      if (!ok) return null;
+      for (const [px, L] of parts) {
+        const list = flat.get(L), c = list[Math.floor(rng() * list.length)];
+        for (let i = 0; i < L; i++) occ[y * cols + px + i] = 1;
+        plan.push({ shape: c.shape, rot: c.rot, mat: c.mat, x: px, y });
+      }
+      x = end;
+    }
+  }
+  return plan;
 }
 
 // The plan as queue items, played out on a copy of the board to check that every piece lands
