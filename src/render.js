@@ -1294,10 +1294,16 @@ export function createRenderer(boardCanvas, nextCanvas) {
       const t = clamp01(c.elapsedMs / c.durationMs);
       const pop = t < 0.14 ? easeOutBack(t / 0.14) : 1;
       const alpha = t > 0.7 ? 1 - (t - 0.7) / 0.3 : 1;
-      const size = Math.max(1, (c.big ? 15 : 11) * pop);
+      let size = Math.max(1, (c.big ? 15 : 11) * pop);
       const text = c.text.toUpperCase();
       bctx.font = `${size.toFixed(1)}px PressStart2P, ui-monospace, monospace`;
-      const half = bctx.measureText(text).width / 2 + 4;
+      // (a long one, say QUATTUORVIGINTUPLE, shrinks to fit across the board)
+      const wide = bctx.measureText(text).width;
+      if (wide > bw - 8) {
+        size *= (bw - 8) / wide;
+        bctx.font = `${size.toFixed(1)}px PressStart2P, ui-monospace, monospace`;
+      }
+      const half = Math.min(bw / 2, bctx.measureText(text).width / 2 + 4);
       const x = clampN(c.x * cell, half, bw - half);
       const y = clampN(c.y * cell - t * cell * 1.6, size, bh - size);
       bctx.globalAlpha = alpha;
@@ -1407,7 +1413,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     quakeTransform(bctx, state);
     punchTransform(bctx, state);
 
-    const hide = state.paused && CONFIG.pause.hideShapes;
+    const hide = state.paused && CONFIG.pause.hideShapes && !state.zen; // (zen: pausing still shows it all)
 
     if (hide) {
       drawBackground(bctx);
@@ -1461,7 +1467,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     const pad = 18;
     const availW = Math.max(1, w - pad * 2);
     const availH = Math.max(1, h - pad * 2);
-    const pcell = Math.max(6, Math.floor(Math.min(availW / pw, availH / ph)));
+    const pcell = Math.max(ph > 16 ? 2 : 6, Math.floor(Math.min(availW / pw, availH / ph))); // (the tallest, zen's, shrink further)
 
     const drawW = pw * pcell;
     const drawH = ph * pcell;

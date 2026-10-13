@@ -16,9 +16,10 @@ export const CONFIG = {
     normal: { label: "Normal", tagline: "powerups help you out", powerups: true, giants: true, level6: true },
     extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true },
     god: { label: "God", tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true },
-    // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); timeScale: how fast it all runs
+    // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); timeScale: how fast it all runs;
+    // zenMovements: "turbo" for turbo zen's own mix of movements
     zen: { label: "Zen", tagline: "it plays itself, and never ends", powerups: true, giants: true, level6: "open", everything: true, zen: true },
-    turbo: { label: "Turbo zen", tagline: "the same, much faster", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.6 },
+    turbo: { label: "Turbo zen", tagline: "the same, much faster", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.6, zenMovements: "turbo" },
   },
   defaultMode: "normal",
 
@@ -83,14 +84,23 @@ export const CONFIG = {
   // giants and sets come early and often. To make up for them: lots of powerups, mostly the
   // best ones, the wide gravitizers. Each section replaces the same numbers in `assist` (only
   // the ones listed) while playing God mode.
-  // Zen mode: the autopilot (src/zen.js) steers each piece unless the player is, and the
-  // director decides what comes next. It never ends.
+  // Zen mode: the autopilot (src/zen.js) puts each piece straight over where it's going, already
+  // turned, and drops it in, unless the player takes it over; the director decides what comes
+  // next. It never ends.
   zen: {
-    idleMs: 1500,        // the autopilot takes back over once the player has let go this long
-    stepMs: 75,          // it moves or turns the piece this often
-    firstStepMs: 260,    // (a moment's thought first)
-    dropMs: 650,         // how fast pieces fall (it never speeds up)
-    headroom: 7,         // rows it keeps clear at the top
+    fallMs: 40,          // the autopilot's pieces fall a row this often (times the pace)...
+    lockMs: 100,         // ...and lock this soon after landing (times the pace)
+    pieceMs: 650,        // (but each takes this long at least, however short the way down)
+    restMs: 900,         // after a big clearance, a breath before the next piece
+    maxStepsPerFrame: 3, // (so a fast fall stays fast in turbo zen)
+    dropMs: 650,         // how fast a piece falls once the player has taken it over
+    // The pace (times fallMs, lockMs and pieceMs): small things, repeats and the pieces that build
+    // up the board come down faster; the pieces that bring it all down take their time. And from
+    // low (an empty board) to high (a full one), it slows down as it nears the top.
+    pace: { small: 0.55, repeat: 0.7, filler: 0.7, key: 1.8, phantom: 0.45, fastest: 0.2, low: 0.6, high: 1.45 },
+    headroom: 7,         // rows it keeps clear at the top (as it comes)
+    dangerRows: 3,       // the player built it up this close to the top: a big powerup comes
+    brinkRows: 2,        // ...or the director overdid it (its fills go right up to the brink on purpose)
     powerupChoices: 8,   // powerups it weighs up when it wants one
     rescueKeepRows: 5,   // if anything ever tops out, all but the bottom few rows dissolve
     level6: { headroom: 9, maxStackRows: 3 }, // level 6 sets only start with plenty of room
@@ -505,7 +515,15 @@ export const CONFIG = {
     callouts: {
       enabled: true,
       durationMs: 1100,
-      multiRow: { 2: "double!", 3: "triple!", 4: "quadruple!", 5: "pentuple!!", 6: "sextuple!!!" },
+      // rows cleared at once, all the way up to the whole board
+      multiRow: {
+        2: "double!", 3: "triple!", 4: "quadruple!", 5: "quintuple!!", 6: "sextuple!!!",
+        7: "septuple!!!", 8: "octuple!!!", 9: "nonuple!!!", 10: "decuple!!!!",
+        11: "undecuple!!!!", 12: "duodecuple!!!!", 13: "tredecuple!!!!", 14: "quattuordecuple!!!!",
+        15: "quindecuple!!!!", 16: "sexdecuple!!!!", 17: "septendecuple!!!!", 18: "octodecuple!!!!",
+        19: "novemdecuple!!!!", 20: "vigintuple!!!!!", 21: "unvigintuple!!!!!", 22: "duovigintuple!!!!!",
+        23: "trevigintuple!!!!!", 24: "quattuorvigintuple!!!!!",
+      },
       powerupBlocksMin: 8, // show "+N" when a powerup destroys/moves/fills at least this many
     },
 

@@ -14,6 +14,7 @@ import { CLASS_INFO, analyseBoard } from "./powerups.js";
 import { introduceAllPowerups, computeStackDanger01 } from "./selection.js";
 import { level6Status, startGroup, scheduleFirstGroup } from "./level6.js";
 import { endGameStatus } from "./endgame.js";
+import { zenIgnoreInput } from "./zen.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -191,6 +192,9 @@ export function bindUI({ state, renderer, sound, achievements }) {
     currentPanel = name;
     overlay.classList.toggle("show", !!name);
     overlay.classList.toggle("intro", name === "intro"); // slides over the board, no fade
+    // zen: pausing still shows the whole board (a small panel at the top; tap the board to hide it)
+    overlay.classList.toggle("zenPause", name === "pause" && !!state.zen);
+    overlay.classList.remove("peek");
     for (const [key, el] of Object.entries(panels)) el.hidden = key !== name;
     if (name === "menu") renderMenu();
     if (name === "achievements") renderAchievements();
@@ -257,6 +261,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
   function resumeGame() {
     sound.unlock();
     markInput(state, "touch");
+    zenIgnoreInput(state); // (zen: coming back isn't taking the piece over)
     if (state.gameOver) return;
     state.paused = false;
     showPanel(null);
@@ -826,6 +831,10 @@ export function bindUI({ state, renderer, sound, achievements }) {
   $("btnPauseHowTo").addEventListener("click", () => { panelBack = "pause"; showPanel("howto"); });
   $("btnPowerupHelp").addEventListener("click", () => { panelBack = "pause"; showPanel("powerups"); });
   $("btnIntroContinue").addEventListener("click", () => resumeGame());
+  // zen pause: tap the board to hide the panel and look at it all (tap again to bring it back)
+  overlay.addEventListener("pointerdown", (e) => {
+    if (currentPanel === "pause" && state.zen && !e.target.closest?.(".msg")) overlay.classList.toggle("peek");
+  });
   for (const b of document.querySelectorAll(".skipIntros")) {
     b.checked = skipIntros();
     b.addEventListener("change", () => setSkipIntros(b.checked));

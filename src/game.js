@@ -24,7 +24,7 @@ import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLa
 import { normaliseGroups, trackLevel6, LEVEL6 } from "./level6.js";
 import { trackEndGame, endGameOn, spawnJitter, noteLanding } from "./endgame.js";
 import { remixShape } from "./remix.js";
-import { createZen, zenNext, zenPeek, zenTick } from "./zen.js";
+import { createZen, zenNext, zenPeek, zenTick, zenSpawned, zenSpeed, zenSteps, zenLockMs } from "./zen.js";
 import { buildThreads } from "./threads.js";
 
 /* =========================
@@ -258,7 +258,7 @@ export function startRun(state, mode) {
   if (state.running || state.gameOver || state.active || state.drops) resetGame(state);
   configureMode(state, mode);
   initPieceSelectionState(state);
-  // Zen mode: it plays itself (src/zen.js), at one steady speed, and never ends
+  // Zen mode: it plays itself (src/zen.js), and never ends
   state.zen = CONFIG.modes[state.mode]?.zen ? createZen(state) : null;
   if (state.zen) state.dropMs = CONFIG.zen.dropMs;
   state.running = true;
@@ -309,6 +309,9 @@ export function markInput(state, type) {
 }
 
 function currentLockDelayMs(state) {
+  // (zen: the autopilot's pieces lock at their own pace)
+  const zen = state.zen ? zenLockMs(state) : null;
+  if (zen != null) return zen;
   // treat as touch if touch input occurred recently
   const now = performance.now();
   const recentTouch = (state.lastInputType === "touch") && (now - state.lastInputAt < 1200);
@@ -491,8 +494,10 @@ function spawnPiece(state) {
     // Start fully above the board so entry is row-by-row, even for tall pieces
     y: -mat.length,
   };
+  // (zen: it starts out already turned, over the place it's going)
+  if (state.zen) zenSpawned(state);
 
-  const ok = isPhantomPowerup(shape.powerup) || !collides(state, state.active.x, state.active.y, mat);
+  const ok = isPhantomPowerup(shape.powerup) || !collides(state, state.active.x, state.active.y, getActiveMatrix(state));
   if (ok) {
     // First powerup of a class in this game: the UI shows that class's intro screen.
     const ps = state.pieceSel.powerup;
@@ -742,7 +747,8 @@ function clearFullLines(state, alsoRows = null) {
 
   addQuakeFromBlocks(state, fallingBlocks);
 
-  const word = CONFIG.fx.callouts.multiRow[Math.min(cleared, 6)];
+  const names = CONFIG.fx.callouts.multiRow;
+  const word = names[Math.min(cleared, Math.max(...Object.keys(names).map(Number)))];
   if (cleared >= 2 && word) {
     const midY = fullRows.reduce((a, b) => a + b, 0) / cleared;
     addCallout(state, word, cols / 2, midY, { big: true });
@@ -777,7 +783,7 @@ function startRowFall(state, dropDistances) {
 }
 
 function recomputeSpeed(state) {
-  if (state.zen) { state.dropMs = CONFIG.zen.dropMs; return; } // (zen: one steady speed)
+  if (state.zen) { zenSpeed(state); return; } // (zen: it never speeds up)
   const mult = Math.pow(CONFIG.timing.speedMultiplierPerLevel, state.level - 1);
   state.dropMs = Math.max(CONFIG.timing.minDropMs, Math.floor(CONFIG.timing.baseDropMs * mult));
   if (state.endGameMs != null) state.dropMs = Math.min(state.dropMs, state.endGameMs);
@@ -1491,11 +1497,13 @@ export function updateGame(state, dt) {
     ? Math.max(16, Math.floor(baseDropMs * CONFIG.timing.softDropFactor))
     : baseDropMs;
 
+  // (zen: the autopilot's pieces can fall a few rows a frame)
+  const zenMax = state.zen ? zenSteps(state) : null;
   state.dropAccum += dt;
-  const maxBacklog = effectiveDropMs * (CONFIG.timing.maxAccumulatedSteps ?? 2);
+  const maxBacklog = effectiveDropMs * (zenMax ?? CONFIG.timing.maxAccumulatedSteps ?? 2);
   if (state.dropAccum > maxBacklog) state.dropAccum = maxBacklog;
 
-  const maxSteps = CONFIG.timing.maxFallStepsPerFrame ?? 1;
+  const maxSteps = zenMax ?? CONFIG.timing.maxFallStepsPerFrame ?? 1;
   let steps = 0;
 
   while (state.dropAccum >= effectiveDropMs && steps < maxSteps) {

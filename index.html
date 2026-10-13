@@ -426,6 +426,16 @@
     #panelIntro, #panelPowerups{ background: rgba(8,8,20,0.97); }
     /* the intro slides straight over the board: no backdrop, no fade */
     .overlay.intro{ background: none; transition: none; }
+    /* zen: pausing still shows the whole board, with a small panel at the top (tap the board to
+       hide it, and again to bring it back) */
+    .overlay.zenPause{ background: none; align-items: flex-start; padding-top: 8px; }
+    .overlay.zenPause #panelPause{ padding: 8px 10px 2px; background: rgba(8,8,20,0.8); transition: opacity 120ms linear; }
+    .overlay.zenPause #panelPause .big{ font-size: 12px; line-height: 1.4; margin: 0; }
+    .overlay.zenPause #pauseMode{ display: none; }
+    .overlay.zenPause #panelPause .menuBtns{ flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 6px; width: 100%; margin: 6px 0; }
+    .overlay.zenPause #panelPause .menuBtns button{ min-height: 32px; padding: 6px 9px; font-size: 8px; }
+    .overlay.zenPause #panelPause .menuRow{ margin: 0 0 6px; }
+    .overlay.zenPause.peek #panelPause{ opacity: 0; pointer-events: none; }
     #panelIntro.slideIn{ animation: introSlide 200ms cubic-bezier(0.2, 0.9, 0.3, 1.05); }
     @keyframes introSlide{
       from{ transform: translateX(115%); }
@@ -983,7 +993,7 @@
 
           <div class="msg panel" id="panelMenu" hidden>
             <div class="big title">Extris</div>
-            <div class="small" id="gameVersion">version 202610122222</div>
+            <div class="small" id="gameVersion">version 202610131158</div>
             <div class="menuBtns">
               <button id="btnEasy" class="secondary">Easy mode</button>
               <button id="btnNormal">Normal mode</button>
@@ -1015,12 +1025,12 @@
               <p>Powerups come in four classes (Dissolverz, Gravitizerz, Expanderz and Phantomz), introduced one class at a time as you play, each with a quick intro; once a class is in, any of its pieces can turn up. Once two classes are in, Comboz (two powerups in one) start turning up too. When you're in trouble, powerups turn up more often and the more helpful ones get picked. The pause menu explains every class you've met so far.</p>
 
               <h3>Modes</h3>
-              <p><b>Easy:</b> powerups, and none of the giant pieces.<br><b>Normal:</b> the full game, with powerups. Watch out for the giants.<br><b>Extreme:</b> the original. No powerups, no mercy.<br><b>God:</b> everything, right away. Every powerup from the first piece, the biggest pieces in the game, and a great many gravitizers to cope with them.<br><b>Zen:</b> it plays itself, and it never ends. Sit back and watch, or take over whenever you like: it carries on once you let go, and nothing you do can end it.<br><b>Turbo zen:</b> the same, much faster.</p>
+              <p><b>Easy:</b> powerups, and none of the giant pieces.<br><b>Normal:</b> the full game, with powerups. Watch out for the giants.<br><b>Extreme:</b> the original. No powerups, no mercy.<br><b>God:</b> everything, right away. Every powerup from the first piece, the biggest pieces in the game, and a great many gravitizers to cope with them.<br><b>Zen:</b> it plays itself, and it never ends. It fills the board right up to the brink, and then brings it all down. Sit back and watch, or take any piece over whenever you like: it's yours until it lands, and nothing you do can end it.<br><b>Turbo zen:</b> the same, much faster, with a few habits of its own.</p>
 
               <h3>Achievements</h3>
               <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
 
-              <p class="small menuFoot">[Extris version 202610122222 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610131158 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>
