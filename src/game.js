@@ -266,7 +266,9 @@ export function resetGame(state) {
 
 // Starts a new run in `mode` (resetting first if needed).
 export function startRun(state, mode) {
-  if (state.running || state.gameOver || state.active || state.drops) resetGame(state);
+  // (a fresh board, too, if the board size has changed since: turbo zen filling the window)
+  const resized = state.board.length !== CONFIG.board.rows || state.board[0]?.length !== CONFIG.board.cols;
+  if (state.running || state.gameOver || state.active || state.drops || resized) resetGame(state);
   configureMode(state, mode);
   initPieceSelectionState(state);
   // Zen mode: it plays itself (src/zen.js), and never ends

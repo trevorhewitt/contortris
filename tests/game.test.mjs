@@ -430,3 +430,19 @@ test("a powerup the piece before it left with nothing to do is swapped for one o
     assert.equal(state.active.shape.id, "friendly_ghost");
   }
 });
+
+test("a run on a board of another size starts on a board that size (turbo zen filling the window, first thing)", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(2) });
+  const usual = { cols: CONFIG.board.cols, rows: CONFIG.board.rows };
+  CONFIG.board.cols = 39; CONFIG.board.rows = 27;
+  try {
+    startRun(state, "turbo");
+    assert.equal(state.board.length, 27);
+    assert.ok(state.board.every(r => r.length === 39));
+    for (let t = 0; t < 20000; t += 37) updateGame(state, 37);
+    assert.ok(state.drops > 5, `${state.drops} pieces`);
+    assert.ok(state.board.length === 27 && state.board.every(r => r.length === 39), "and stays that size");
+  } finally {
+    CONFIG.board.cols = usual.cols; CONFIG.board.rows = usual.rows;
+  }
+});
