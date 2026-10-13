@@ -278,6 +278,76 @@ function buildPiece(state) {
   return pick(state, regularPool(state).filter(s => (s.difficulty ?? 1) <= 3));
 }
 
+/* =========================
+   Palettes: a few kinds of piece that go together
+   =========================
+   The best-looking fills (turbo zen) are a few kinds of piece intermingling: two to five of
+   them, now and then more (up to fifteen), that share a colour, an idea (a theme), both, or a
+   shape (CONFIG.zen.palette). A fill picks its palette from the pieces it would otherwise use
+   (`pool`), gives each kind its own share, and draws from those (and now and then, something
+   else altogether). Or now and then no palette at all: anything goes, as before.
+*/
+const outlineKey = (mat) => mat.map(r => r.map(c => (c ? 1 : 0)).join("")).join("/");
+const shapeKey = (s) => s.rotations.slice(0, reachableTurns(s)).map(outlineKey).sort()[0];
+function shapeCaption(s) {
+  const n = blocks(s), m = s.rotations[0], w = m[0].length, h = m.length;
+  if (n === 1) return "specks";
+  if (n === 2) return "pairs of things";
+  if (Math.min(w, h) === 1) return "sticks";
+  if (n === w * h && w === h) return "squares";
+  if (n === w * h) return "blocks";
+  return "things of a certain shape";
+}
+export function palettePick(state, pool) {
+  const P = CONFIG.zen.palette;
+  if (!P || isCalm(state) || pool.length < 3 || state.rng() < (P.none ?? 0)) return null;
+  const rng = state.rng, groups = [];
+  const add = (caption, list, w, kind = "theme") => { if (list.length >= 2 && w > 0) groups.push({ caption, list, w, kind }); };
+  const byColour = new Map(), byShape = new Map();
+  for (const s of pool) {
+    const c = colourOf(s);
+    if (c && c !== "black" && c !== "many") (byColour.get(c) ?? byColour.set(c, []).get(c)).push(s);
+    const k = shapeKey(s);
+    (byShape.get(k) ?? byShape.set(k, []).get(k)).push(s);
+  }
+  const colours = [...byColour].filter(([, l]) => l.length >= 2);
+  for (const [c, list] of colours) add(`${c} things`, list, (P.colour ?? 1) / colours.length);
+  const themes = [...(state.threads?.members ?? [])].filter(([name]) => !name.includes(":"))
+    .map(([name, ids]) => [name, pool.filter(s => ids.has(s.id))]).filter(([, l]) => l.length >= 2);
+  const both = [];
+  for (const [name, list] of themes) {
+    add(name, list, (P.theme ?? 1) / themes.length);
+    for (const [c] of colours) { const l = list.filter(s => colourOf(s) === c); if (l.length >= 2) both.push([`${c} ${name}`, l]); }
+  }
+  for (const [caption, list] of both) add(caption, list, (P.colourTheme ?? 0.5) / both.length);
+  const shapes = [...byShape].filter(([, l]) => l.length >= 2);
+  for (const [, list] of shapes) add(shapeCaption(list[0]), list, (P.shape ?? 0.6) / shapes.length, "shape");
+  if (!groups.length) return null;
+  const g = sampleByWeight(groups, x => x.w, rng);
+  // how many kinds: mostly two to five, now and then up to fifteen
+  const want = sampleByWeight((P.kinds ?? [1]).map((w, i) => ({ n: i + 2, w })), x => x.w, rng).n;
+  const left = g.list.slice(), pieces = [];
+  while (pieces.length < want && left.length) { const one = pick(state, left); pieces.push(one); left.splice(left.indexOf(one), 1); }
+  return { pieces, share: new Map(pieces.map(p => [p, 0.4 + 1.2 * rng()])), caption: g.caption, kind: g.kind, pool };
+}
+// A piece from a fill's palette that still fits (or something small); now and then something
+// else altogether, from the fill's whole pool.
+function fromPalette(state, pal, pool, headroom = 4) {
+  const P = CONFIG.zen.palette ?? {};
+  const odd = !pal || state.rng() < (P.odd ?? 0);
+  const list = (odd ? pool : pal.pieces).filter(s => fitsUnder(state, s, headroom));
+  if (!list.length) return pick(state, smallPool(state));
+  return odd ? pick(state, list) : sampleByWeight(list, s => pal.share.get(s) ?? 1, state.rng);
+}
+// The mood for doing things in batches (the same piece a few times running, to read its name):
+// it wanders up and down as it goes, and now and then jumps (CONFIG.zen.batches).
+function sameness(state) {
+  const z = state.zen, B = CONFIG.zen.batches ?? {};
+  z.same = Math.max(0, Math.min(1, (z.same ?? 0.3) + (state.rng() - 0.5) * (B.wander ?? 0.2)));
+  if (state.rng() < (B.jump ?? 0)) z.same = state.rng();
+  return z.same;
+}
+
 function giantPiece(state) {
   const g = giantPool(state).filter(s => fitsUnder(state, s, 4));
   return g.length ? pick(state, g) : buildPiece(state);
@@ -307,7 +377,10 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
   const nextOne = (state) => {
     if (again.left > 0 && fitsUnder(state, again.shape, 2)) { again.left--; return again.shape; }
     const s = next(state);
-    if (s && streaks && state.rng() < streaks) { again.shape = s; again.left = int(state, 1, 3); } else again.left = 0;
+    // (batches: as the mood takes it, likelier and longer when it's going quickly)
+    const B = CONFIG.zen.batches ?? {}, same = isCalm(state) ? 0 : sameness(state), fast = pace <= (B.fastPace ?? 0.85);
+    const chance = Math.min(0.95, streaks + (B.base ?? 0) + same * (fast ? B.fast ?? 0 : B.slow ?? 0));
+    if (s && state.rng() < chance) { again.shape = s; again.left = int(state, 1, 1 + Math.round(same * (fast ? B.longFast ?? 3 : B.longSlow ?? 2))); } else again.left = 0;
     return s;
   };
   return {
@@ -363,6 +436,7 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
 // then up again, higher, and again, until at last it all comes down.
 function waves(state) {
   const { rows } = CONFIG.board;
+  const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= 3), pal = palettePick(state, pool);
   return {
     caption: "comings and goings", phase: "fill", round: 0, rounds: int(state, 2, 3), target: up(int(state, 11, 14)), pieces: 0, fixes: 0, blasts: 0, weights: null,
     fill(state) {
@@ -385,7 +459,7 @@ function waves(state) {
         this.target = Math.min(rows - 3, Math.max(stackHeight(state) + 5, this.target + int(state, 2, 4)));
       }
       if (this.phase === "fill") {
-        let shape = buildPiece(state);
+        let shape = state.rng() < 0.12 ? buildPiece(state) : fromPalette(state, pal, pool, 3);
         if (!fitsUnder(state, shape, 3)) shape = pick(state, smallPool(state));
         z.queue.push({ shape, weights: this.weights });
         this.pieces++;
@@ -455,14 +529,21 @@ const MOVEMENTS = {
   }),
 
   // small things, one after another, rows clearing as they go
-  rain: (state) => ({
-    caption: "light rain", left: int(state, 14, 24), pace: 0.8,
-    fill(state) { state.zen.queue.push({ shape: pick(state, smallPool(state)), weights: WEIGHTS.clear }); this.left--; },
-    done() { return this.left <= 0; },
-  }),
+  rain: (state) => {
+    const pool = smallPool(state), pal = palettePick(state, pool);
+    return {
+      caption: "light rain", left: int(state, 14, 24), pace: 0.8,
+      fill(state) { state.zen.queue.push({ shape: isCalm(state) ? pick(state, pool) : fromPalette(state, pal, pool), weights: WEIGHTS.clear }); this.left--; },
+      done() { return this.left <= 0; },
+    };
+  },
 
-  // build up near the top without clearing anything, then knock it all down
-  build: (state) => fillThenBlast("a slow build", buildPiece, { target: up(int(state, 18, 21)), pace: 0.9, streaks: 0.2 }),
+  // build up near the top without clearing anything, then knock it all down (with a palette:
+  // a few kinds of thing that go together)
+  build: (state) => {
+    const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= 3), pal = palettePick(state, pool);
+    return fillThenBlast(pal?.caption ?? "a slow build", (st) => (st.rng() < 0.12 ? buildPiece(st) : fromPalette(st, pal, pool)), { target: up(int(state, 18, 21)), pace: 0.9, streaks: 0.2 });
+  },
 
   // up near the top again, full of awkward gaps, and then the powerups have at it
   mess: () => planned("a mess", (state) => planMess(state), "demolition"),
@@ -470,8 +551,9 @@ const MOVEMENTS = {
   // the same piece two, three or four times in a row
   chorus: (state) => {
     let left = 0, cur = null;
+    const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= 3), pal = palettePick(state, pool);
     return fillThenBlast("in twos and threes", (st) => {
-      if (left <= 0 || !fitsUnder(st, cur, 4)) { cur = pick(st, regularPool(st).filter(s => (s.difficulty ?? 1) <= 3)); left = int(st, 2, 4); }
+      if (left <= 0 || !fitsUnder(st, cur, 4)) { cur = fromPalette(st, pal, pool); left = int(st, 2, 4); }
       left--;
       return cur;
     }, { target: up(int(state, 17, 20)), pace: 0.8 });
@@ -494,10 +576,16 @@ const MOVEMENTS = {
   },
 
   // small things, lots of them, quickly
-  small: (state) => fillThenBlast("small things", (st) => pick(st, smallPool(st)), { target: up(int(state, 18, 21)), pace: 0.6, maxPieces: 110 * CONFIG.board.cols / 14, streaks: 0.4 }),
+  small: (state) => {
+    const pool = smallPool(state), pal = palettePick(state, pool);
+    return fillThenBlast(pal ? (pal.kind === "shape" ? pal.caption : `small ${pal.caption}`) : "small things", (st) => fromPalette(st, pal, pool), { target: up(int(state, 18, 21)), pace: 0.6, maxPieces: 110 * CONFIG.board.cols / 14, streaks: 0.4 });
+  },
 
   // big things
-  big: (state) => fillThenBlast("big things", giantPiece, { target: up(int(state, 16, 19)), pace: 1.1 }),
+  big: (state) => {
+    const pool = giantPool(state), pal = palettePick(state, pool);
+    return fillThenBlast(pal ? `big ${pal.caption}` : "big things", (st) => (pal ? fromPalette(st, pal, pool) : giantPiece(st)), { target: up(int(state, 16, 19)), pace: 1.1 });
+  },
 
   // the giants: a level 6 set if one fits, or a few giant pieces
   giants: (state) => ({
@@ -573,7 +661,7 @@ const MOVEMENTS = {
   waves: (state) => waves(state),
 
   // built up, then one black hole after another
-  blackholes: (state) => fillThenBlast("a series of black holes", buildPiece, {
+  blackholes: (state) => fillThenBlast("a series of black holes", ((pool, pal) => (st) => (st.rng() < 0.12 ? buildPiece(st) : fromPalette(st, pal, pool)))(regularPool(state).filter(s => (s.difficulty ?? 1) <= 3), palettePick(state, regularPool(state).filter(s => (s.difficulty ?? 1) <= 3))), {
     target: up(int(state, 15, 19)), pace: 0.8, blasts: 8, streaks: 0.25,
     blastWith: (st, n) => { const holes = powerupPool(st).filter(p => /black hole/i.test(p.name)); return holes.length && n % 3 !== 2 ? bestPowerup(st, holes) : bigPowerup(st); },
   }),

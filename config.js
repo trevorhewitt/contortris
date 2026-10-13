@@ -151,6 +151,16 @@ export const CONFIG = {
     flock: { minCols: 22, colsEach: 12, most: 4, chance: 0.6, margin: 1, headroom: 3, stagger: 5,
       tiny: { most: 12, colsEach: 3, chance: 0.85 } }, // (pieces of one or two blocks: a shower of them)
     mosaicChance: 0.45,    // (on a big board) the squares now and then 1 x 1, a mosaic
+    // Turbo zen's fills are a few kinds of piece that go together (src/zen.js palettePick): how
+    // often no palette (anything goes), how often something else turns up among them (odd), how
+    // likely each way of going together is (a colour, a theme, both, a shape), and how many
+    // kinds: the weights for 2, 3, 4, ... up to 15 of them.
+    palette: { none: 0.12, odd: 0.04, colour: 1, theme: 1.1, colourTheme: 0.6, shape: 0.7,
+      kinds: [0.18, 0.24, 0.2, 0.14, 0.05, 0.04, 0.03, 0.03, 0.02, 0.02, 0.02, 0.01, 0.01, 0.01] },
+    // ...and the same piece a few times running, to read its name: a mood that wanders up and
+    // down (wander, now and then a jump), more of it and longer runs when it's going quickly
+    // (pace at most fastPace).
+    batches: { base: 0.06, fast: 0.6, slow: 0.3, longFast: 7, longSlow: 4, wander: 0.2, jump: 0.03, fastPace: 0.85 },
     // Bringing the board down (turbo zen) goes on only while it's spectacular: after the first
     // `free` blasts, another only if the last took at least minBlocks, and minShare of what was
     // there; otherwise the rest stays and the next movement builds on it.
