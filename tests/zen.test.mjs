@@ -10,7 +10,7 @@ import { THREADS, SET_THREADS } from "../shapes/threads.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, updateGame, hardDropAndLock, markInput, tryMove, on } from "../src/game.js";
-import { zenStart, zenIgnoreInput } from "../src/zen.js";
+import { zenStart, zenIgnoreInput, pluralName } from "../src/zen.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const { rows, cols } = CONFIG.board;
@@ -178,7 +178,7 @@ test("turbo zen: every piece starts out over the place it's going, already turne
 
 test("turbo zen: each planned movement builds right up and then clears what it built", () => {
   // (rows cleared at least, and the board left nearly empty)
-  const want = { column: rows, beds: rows, crack: 14, well: 10, fall: 5 };
+  const want = { column: rows, beds: rows, well: 10, fall: 5 };
   for (const [name, least] of Object.entries(want)) {
     for (const seed of [2, 5]) {
       const { state, log } = zen(seed, "turbo");
@@ -194,6 +194,58 @@ test("turbo zen: each planned movement builds right up and then clears what it b
       assert.ok(!log.movements.some(m => m.name === "abandoned"), "nobody stepped in");
     }
   }
+});
+
+test("turbo zen: a crack through every row, built nearly to the top, then sealed every which way", () => {
+  const seals = new Set(["pacmen", "taps", "pacmenAndTaps"]);
+  for (const end of ["up", "down", "shaker", "middle", "random", "powered", "columns"]) {
+    const { state, log } = zen(2, "turbo");
+    let peak = 0;
+    on(state, (t) => { if (t === "lock") peak = Math.max(peak, height(state)); });
+    zenStart(state, "crack", { end });
+    log.movements.length = 0;
+    run(state, log, 3 * 60000);
+    const i = log.movements.findIndex(m => m.name === "crack");
+    const j = log.movements.findIndex((m, k) => k > i && !seals.has(m.name));
+    assert.ok(i >= 0 && j > i, `${end}: never finished: ${log.movements.map(m => m.name)}`);
+    const a = log.movements[i], b = log.movements[j];
+    assert.ok(peak >= 18, `${end}: built ${peak} rows`);
+    assert.ok(b.height <= 3, `${end}: left ${b.height} rows`);
+    // (the rows go as rows, but for the columns, eaten away, and the pacmen, which eat them)
+    if (end !== "columns" && end !== "powered") assert.ok(b.lines - a.lines >= 18, `${end}: cleared ${b.lines - a.lines} rows`);
+    assert.ok(!log.movements.some(m => m.name === "abandoned"), `${end}: nobody stepped in`);
+  }
+});
+
+test("turbo zen: oops, all one awkward thing, said all the way up, and then down it comes", () => {
+  const { state, log } = zen(6, "turbo");
+  const labels = [], shapes = new Set();
+  let phase = "before", peak = 0;
+  on(state, (t, d) => {
+    if (t === "zenMovement") phase = phase === "before" && d.name === "oops" ? "fill" : phase === "fill" ? "after" : phase; // (the first one)
+    if (t === "spawn" && phase === "fill" && !d.shape.powerup && !d.shape.tags?.includes("zen")) { labels.push(d.label); shapes.add(d.shape.id); }
+    if (t === "lock" && phase === "fill") peak = Math.max(peak, height(state));
+  });
+  zenStart(state, "oops");
+  run(state, log, 4 * 60000);
+  assert.ok(labels.length >= 8, `${labels.length} of them`);
+  assert.equal(shapes.size, 1, `only one thing: ${[...shapes]}`);
+  assert.equal(new Set(labels).size, 1, "said the same all the way up");
+  assert.match(labels[0], /^Oops, all .+!$/);
+  assert.ok(peak >= 14, `up to ${peak} rows`);
+  const i = log.movements.findIndex(m => m.name === "oops");
+  const end = log.movements.slice(i + 1).find(m => m.name !== "demolition");
+  assert.ok(end && end.height <= 8, "and then down it came");
+});
+
+test("names for lots of something", () => {
+  const cases = {
+    "a bagpipe": "bagpipes", "a cactus that wants a hug": "cacti that want a hug", "Santa stuck in a chimney": "Santas stuck in a chimney",
+    "a garden gnome who doesn't even know how to garden": "garden gnomes who don't even know how to garden", "a smooth, smooth saxophone": "smooth, smooth saxophones",
+    "a trail of footprints, going nowhere": "trails of footprints, going nowhere", "Big Ben": "Big Bens", "a swarm of bees": "swarms of bees",
+    "a gingerbread man": "gingerbread men", "the tip of the iceberg": "tips of the iceberg", "a tornado with a cow in it": "tornadoes with a cow in it",
+  };
+  for (const [one, many] of Object.entries(cases)) assert.equal(pluralName(one), many);
 });
 
 test("turbo zen: a mess is built nearly to the top, full of gaps, and then demolished", () => {

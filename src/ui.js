@@ -67,13 +67,14 @@ const ICON_SECRET = [
 // ============================================================
 
 function createNameLayer(nameLayerEl) {
-  let currentEl = null;
+  let currentEl = null, shown = null;
 
   function clear() {
     if (currentEl) {
       currentEl.remove();
       currentEl = null;
     }
+    shown = null;
     nameLayerEl.innerHTML = "";
   }
 
@@ -85,6 +86,7 @@ function createNameLayer(nameLayerEl) {
       return;
     }
     if (instant) clear();
+    shown = name;
 
     const nextEl = document.createElement("div");
     nextEl.className = "nameText " + (instant ? "enterToCenter instant" : "enterFromRight") + (effect ? ` powerup cls-${cls || "combo"}` : "");
@@ -116,8 +118,10 @@ function createNameLayer(nameLayerEl) {
     currentEl = nextEl;
   }
 
-  function setShape(shape, instant = false) {
+  // (`label`: said in place of the name, and left as it is while it stays the same)
+  function setShape(shape, instant = false, label = null) {
     if (!shape) { clear(); return; }
+    if (label) { if (label !== shown) setName(label, "", "", instant); return; }
     setName(shape.name, shape.powerup?.description ?? "", shape.powerup?.cls ?? "", instant);
   }
 
@@ -385,7 +389,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
         }
         if (state.level6Recent !== savedRecent) { savedRecent = state.level6Recent; store.setJSON(LEVEL6_RECENT_KEY, savedRecent); }
         noteSeen(d.shape);
-        nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames); // (turbo zen: no time to slide)
+        nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames, d.label); // (turbo zen: no time to slide)
         renderer.drawNextSilhouette(d.next);
         if (d.shape.powerup) sound.play("powerupSpawn");
         if (d.isNew && !skipIntros()) showIntro(d.shape);

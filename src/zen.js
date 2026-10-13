@@ -55,12 +55,12 @@ const WEIGHTS = {
 const MOVEMENT_WEIGHTS = {
   zen: { natural: 5, rain: 1, family: 1.6, colours: 1, twos: 0.7 },
   turbo: { natural: 0.25, rain: 0.15, build: 0.5, giants: 0.3, column: 2.5, beds: 2, crack: 2, mess: 0.9, fall: 0.3, well: 0.3, chorus: 1.2,
-    mono: 5, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1 },
+    mono: 5, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1, oops: 2.5 },
 };
 // (the ones that need a low, tidy board to build on)
 const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "standing", "colour", "squares"]);
 // (the ones happy to carry on from whatever the last one left behind)
-const BLENDS = new Set(["build", "chorus", "mono", "small", "big", "waves", "expanders", "blackholes"]);
+const BLENDS = new Set(["build", "chorus", "mono", "small", "big", "waves", "expanders", "blackholes", "oops"]);
 
 const zenSet = (state) => (CONFIG.modes[state.mode]?.zenMovements === "turbo" ? "turbo" : "zen");
 // (zen itself, slow and easy, as opposed to turbo zen)
@@ -88,14 +88,16 @@ export function createZen(state) {
   };
 }
 
-// Start `name` at the next piece (for tests and the dev panel).
-export function zenStart(state, name) {
+// Start `name` at the next piece (for tests and the dev panel). `opts`: how it goes, if it has a
+// choice (a crack's `end`).
+export function zenStart(state, name, opts = null) {
   const z = state.zen;
   if (!z) return;
   z.queue = [];
   z.movement = null;
   z.after = name;
   z.expect = null;
+  z.opts = opts;
 }
 
 /* =========================
@@ -130,6 +132,7 @@ export function zenNext(state) {
     zenCaption(state, "a little help", "help");
   }
   const item = z.queue.shift();
+  if (item.caption) zenCaption(state, item.caption, "finale", { quiet: true }); // (what happens next, as it starts)
   // (after a big clearance, a breath before the next piece)
   const n = occ.reduce((a, b) => a + b, 0);
   const gone = z.blocks != null ? z.blocks - n : 0;
@@ -182,8 +185,9 @@ function begin(state, name) {
   z.movement = MOVEMENTS[name](state);
   z.movement.name = name;
   z.last = name;
-  // (a planned one says what it is once it knows it can be done)
-  if (z.movement.caption && !z.movement.planned) zenCaption(state, z.movement.caption, name);
+  // (a planned one says what it is once it knows it can be done; one with nothing to say still
+  // lets the game know)
+  if (!z.movement.planned) zenCaption(state, z.movement.caption ?? null, name);
 }
 
 // The next movement: the one waiting (`z.after`), or one at random (never the same twice running).
@@ -257,7 +261,9 @@ function giantPiece(state) {
 // Build up to `target` rows with next() pieces (placed with `weights`), keeping one column clear
 // all the way down so nothing clears on the way up, then bring it all down: sometimes one of
 // the tallest pieces drops into that column (`keyChance`), or else the powerups, the biggest first.
-function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 1, maxPieces = 70, keyChance = 0.5, blastWith = null, blasts = 7 } = {}) {
+// (`only`: nothing but next()'s pieces, so when the next won't fit, that's as high as it goes;
+// `label`: what the name says for each of them, the same all the way up.)
+function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 1, maxPieces = 70, keyChance = 0.5, blastWith = null, blasts = 7, only = false, label = null } = {}) {
   return {
     caption, pace, phase: "fill", target, blasts: 0, pieces: 0, weights: null, leave: 3,
     fill(state) {
@@ -268,7 +274,9 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         this.target = Math.min(rows - 3, Math.max(this.target, stackHeight(state) + 5));
         if (state.rng() < 0.3) this.leave = int(state, 5, 8);
       }
-      if (this.phase === "fill" && (stackHeight(state) >= this.target || this.pieces >= maxPieces)) {
+      let shape = this.phase === "fill" ? next(state) : null;
+      if (shape && !fitsUnder(state, shape, 2)) shape = only ? null : pick(state, smallPool(state)); // (nearly there: nothing too big)
+      if (this.phase === "fill" && (!shape || stackHeight(state) >= this.target || this.pieces >= maxPieces)) {
         this.phase = "blast";
         this.pace = 1;
         const wx = this.weights.well, keys = zenKeys(state).filter(k => k.rotations[0][0].length === 1);
@@ -282,9 +290,7 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         zenCaption(state, "demolition", "demolition");
       }
       if (this.phase === "fill") {
-        let shape = next(state);
-        if (!fitsUnder(state, shape, 2)) shape = pick(state, smallPool(state)); // (nearly there: nothing too big)
-        state.zen.queue.push({ shape, weights: this.weights });
+        state.zen.queue.push({ shape, weights: this.weights, label });
         this.pieces++;
       } else {
         const full = this.blasts === 0 && stackHeight(state) >= rows - 6 && state.rng() < (CONFIG.zen.dramatic?.demolitionChance ?? 0);
@@ -364,8 +370,10 @@ function planned(caption, plan, then = null) {
       state.zen.queue.push(...items);
       const text = res.caption ?? caption;
       if (text) zenCaption(state, text, this.name);
-      // (what comes after, unless one of the tallest pieces brings it all down anyway)
-      if (then && !items.some(it => it.key)) state.zen.after = then;
+      // (what comes after, unless one of the tallest pieces brings it all down anyway; the plan
+      // can say)
+      const after = res.then ?? then;
+      if (after && !items.some(it => it.key)) state.zen.after = after;
     },
     done() { return this.pushed; },
   };
@@ -421,6 +429,13 @@ const MOVEMENTS = {
     }, { target: int(state, 17, 20), pace: 0.75 });
   },
 
+  // the board full of one awkward thing, and the name says so all the way up: "Oops, all bagpipes!"
+  oops: (state) => {
+    const s = awkwardOne(state);
+    if (!s) return MOVEMENTS.mono(state);
+    return fillThenBlast(null, () => s, { target: int(state, 17, 20), pace: 0.75, only: true, keyChance: 0.3, label: `Oops, all ${pluralName(s.name)}!` });
+  },
+
   // small things, lots of them, quickly
   small: (state) => fillThenBlast("small things", (st) => pick(st, smallPool(st)), { target: int(state, 18, 21), pace: 0.6, maxPieces: 110 }),
 
@@ -464,8 +479,13 @@ const MOVEMENTS = {
     return res && { items: res.items, caption: `a bed for ${res.first.name}` };
   }),
 
-  // a gap in every row, in a pattern, then a run of phantoms seals them all
-  crack: () => planned(null, (state) => planCrack(state)),
+  // a gap in every row, in a pattern, then it's sealed one of several ways (CRACK_ENDS)
+  crack: () => planned(null, (state) => { const end = state.zen.opts?.end; state.zen.opts = null; return planCrack(state, end); }),
+
+  // (after a crack: powerups that take the rows away a row or two at a time)
+  pacmen: (state) => sealWith(state, ["pacman"], "pacmen"),
+  taps: (state) => sealWith(state, ["leaky_tap"], "leaky taps"),
+  pacmenAndTaps: (state) => sealWith(state, ["pacman", "leaky_tap"], "pacmen and leaky taps"),
 
   // the biggest powerups, then the most useful, until it's nearly all gone
   demolition: () => ({
@@ -590,6 +610,61 @@ function pickFamily(state, { calm = false } = {}) {
     if (pieces.length >= 8) add(`a lot of ${name}`, `a little ${name}`, pieces, 1);
   }
   return fams.length ? sampleByWeight(fams, f => f.w, state.rng) : { caption: "small things", pieces: smallPool(state) };
+}
+
+// One after another of `ids` (in turn), each put wherever it does the most good, until the board
+// is nearly empty.
+function sealWith(state, ids, caption) {
+  const pool = ids.map(id => state.powerups.find(p => p.id === id)).filter(Boolean);
+  return {
+    caption, used: 0,
+    fill(state) { state.zen.queue.push({ shape: pool.length ? pool[this.used % pool.length] : bestPowerup(state), weights: WEIGHTS.clear }); this.used++; },
+    done(state) { return this.used >= 40 || stackHeight(state) <= 1; },
+  };
+}
+
+// One awkwardly shaped piece, small enough to fill the board with (the more awkward the likelier).
+function awkwardOne(state) {
+  const list = regularPool(state).filter(s => {
+    const m = s.rotations[0], n = blocks(s), h = m.length, w = m[0].length;
+    return [2, 3, 4].includes(s.difficulty ?? 1) && !s.remix && n >= 5 && n <= 22 && w <= 7 && h <= 7 && n / (w * h) <= 0.78;
+  });
+  return list.length ? sampleByWeight(list, s => { const m = s.rotations[0]; return 1.2 - blocks(s) / (m.length * m[0].length); }, state.rng) : null;
+}
+
+// A piece's name for lots of them: "a bagpipe" is "bagpipes", "a sock full of night" "socks full
+// of night", "a cactus that wants a hug" "cacti that want a hug", "Big Ben" "Big Bens".
+export function pluralName(name) {
+  const s = name.trim().replace(/^(?:just |only )?(?:a|an|the|some|one|another)\s+/i, "");
+  const m = s.match(/^(.*?)(\s+(?:full of|made of|of|with|on|in|for|from|that|who|which|under|over|without|at|by|to|and|holding|wearing|inside|called)\s.*|,\s+\w+ing\b.*|\s+\(.*)$/i);
+  let head = m ? m[1] : s, tail = m ? m[2] : "";
+  const words = head.split(/\s+/);
+  // (the thing itself, not what's been done to it: Santas stuck in a chimney)
+  const k = words.length > 1 && /^(stuck|lost|left|gone|trapped|frozen|\w+ed)$/i.test(words[words.length - 1]) ? words.length - 2 : words.length - 1;
+  words[k] = pluralWord(words[k]);
+  // (and what they do, for more than one: "that want", "who don't")
+  tail = tail.replace(/^(\s+(?:that|who|which)\s+)(\w+)('t)?/i, (all, lead, verb, nt) => {
+    const v = verb.toLowerCase();
+    if (nt && v === "doesn") return lead + "don't";
+    if (nt && v === "isn") return lead + "aren't";
+    if (nt && v === "wasn") return lead + "weren't";
+    if (nt) return all;
+    const to = { is: "are", was: "were", has: "have", does: "do" }[v] ?? (/(ches|shes|sses|xes)$/.test(v) ? verb.slice(0, -2) : /[^s]s$/.test(v) ? verb.slice(0, -1) : verb);
+    return lead + to;
+  });
+  return words.join(" ") + tail;
+}
+const PLURAL = { man: "men", woman: "women", mouse: "mice", goose: "geese", foot: "feet", tooth: "teeth", person: "people", child: "children", ox: "oxen", die: "dice", cactus: "cacti", fungus: "fungi", louse: "lice", leaf: "leaves", loaf: "loaves", knife: "knives", life: "lives", wife: "wives", wolf: "wolves", half: "halves", shelf: "shelves", calf: "calves", elf: "elves", thief: "thieves", scarf: "scarves", potato: "potatoes", tomato: "tomatoes", tomatoe: "tomatoes", hero: "heroes", echo: "echoes", volcano: "volcanoes", tornado: "tornadoes", torpedo: "torpedoes", raviolo: "ravioli", octopus: "octopuses", platypus: "platypuses", bus: "buses", walrus: "walruses" };
+const UNCOUNTED = new Set(["sheep", "fish", "deer", "moose", "series", "species", "bison", "salmon", "aircraft", "spam", "sushi", "fog", "darkness", "nothing", "everything", "music", "furniture", "rice", "bread", "cheese", "jelly", "lego", "pasta", "toast", "trash", "rubbish", "steel", "gold", "silver", "ice", "snow", "rain", "smoke", "ennui", "existence", "time", "reality", "consciousness", "knowledge", "ignorance", "wisdom", "death", "soup", "poetry", "news", "pyjamas", "trousers", "scissors", "glasses", "sunglasses"]);
+function pluralWord(w) {
+  const lower = w.toLowerCase();
+  const asIs = (p) => (w[0] !== w[0].toLowerCase() ? p[0].toUpperCase() + p.slice(1) : p);
+  if (UNCOUNTED.has(lower)) return w;
+  if (PLURAL[lower]) return asIs(PLURAL[lower]);
+  if (/[^s]s$/.test(lower) && !/(us|is)$/.test(lower)) return w; // (more than one already: bagpipes, bees)
+  if (/(s|x|z|ch|sh)$/.test(lower)) return w + "es";
+  if (/[^aeiou]y$/.test(lower)) return w.slice(0, -1) + "ies";
+  return w + "s";
 }
 
 // The powerup (of a handful, at random) that would do the most good on this board.
@@ -1014,10 +1089,22 @@ export function planBeds(state) {
   return items ? { items, first } : null;
 }
 
-// A gap in every row, in a pattern (a diagonal, a zigzag, a cross), the board built up around
-// them nearly to the top, then a run of phantoms (the friendly ghost) seals them one by one and
-// every row goes. Returns { items, caption } or null.
-export function planCrack(state) {
+// The ways a crack can be sealed, and how often:
+//   up: phantoms (the friendly ghost), each into the deepest gap in its column, from the bottom up
+//   down: from the top down, with whatever single block comes to hand (a pea, a lentil...)
+//   shaker: the bottom and the top in turn, phantoms below and blocks above
+//   middle: phantoms, from the middle out; random: phantoms, a row at a time in no order
+//   (but a phantom can only ever go to the deepest gap in its column, so each column's gaps go
+//   from the bottom up whatever the order says, and the order bends round them)
+//   powered: pacmen, or leaky taps, or both, taking the rows away a row or two at a time
+//   columns: not the rows at all but the columns, eaten away left to right, right to left, from
+//   both sides or from the middle out (termite queens, Zeus's lightning, existential horror)
+const CRACK_ENDS = { up: 2, down: 1.4, shaker: 1.2, middle: 1.2, random: 1, powered: 1.3, columns: 1.6 };
+
+// A gap in every row (or two), wandering up the board, the board built up around them nearly to
+// the top, and then sealed (`end`, one of CRACK_ENDS, or one at random). Returns { items, caption,
+// then? } or null.
+export function planCrack(state, end = null) {
   const { cols, rows } = CONFIG.board;
   const rng = state.rng;
   const occ = occupancy(state.board);
@@ -1026,6 +1113,8 @@ export function planCrack(state) {
   const ghosts = state.powerups.filter(p => p.powerup.type === "phantom" && blocks(p) === 1);
   const ghost = ghosts.find(p => p.id === "friendly_ghost") ?? ghosts[0];
   if (!ghost) return null;
+  const singles = regularPool(state).filter(s => blocks(s) === 1 && (s.difficulty ?? 1) <= 1);
+  end ??= sampleByWeight(Object.entries(CRACK_ENDS).filter(([k]) => singles.length || (k !== "down" && k !== "shaker")), ([, w]) => w, rng)[0];
   const H = int(state, 18, rows - 1), top = rows - H;
   // One gap a row (or two), wandering up from the floor but never into the end columns: a gap
   // against the wall would leave the cells over it with nothing to stand on, all the way up.
@@ -1077,13 +1166,91 @@ export function planCrack(state) {
     let fillers = tile(work, need, fillerCandidates(state), rng, cols, rows, 3, holes);
     if (!fillers && tries >= 2) { work = occ.slice(); fillers = tileFlat(work, need, flatCandidates(state), rng, cols, rows); }
     if (!fillers) continue;
-    // then the ghosts, from the bottom up, each into the deepest gap in its column
-    list.sort((a, b) => b.y - a.y);
-    const seal = list.map(h => ({ shape: ghost, rot: 0, mat: ghost.rotations[0], x: h.x, phantom: true, pace: CONFIG.zen.pace.phantom }));
-    const items = toItems(occ, [...asFillers(fillers), ...seal], cols, rows);
-    if (items) return { items, caption: kind.caption };
+    const res = crackEnd(state, end, list, { ghost, singles, top });
+    if (res.steps) {
+      const items = toItems(occ, [...asFillers(fillers), ...res.steps], cols, rows);
+      if (!items || items.cleared < new Set(list.map(g => g.y)).size) continue; // (every row of it goes)
+      items[fillers.length].caption = res.caption;
+      return { items, caption: kind.caption };
+    }
+    const items = toItems(occ, asFillers(fillers), cols, rows, { mustClear: false });
+    if (!items) continue;
+    if (res.extra) { res.extra[0].caption = res.caption; items.push(...res.extra); }
+    return { items, caption: kind.caption, then: res.then };
   }
   return null;
+}
+
+// How the crack (gaps `list`) is sealed: { steps, caption } (planned pieces), or { extra, caption }
+// (powerups, put where they're meant to go), or { then } (the movement that does it).
+function crackEnd(state, end, list, { ghost, singles, top }) {
+  const { cols, rows } = CONFIG.board;
+  const rng = state.rng, pace = CONFIG.zen.pace.phantom;
+  const ghostAt = (g) => ({ shape: ghost, rot: 0, mat: ghost.rotations[0], x: g.x, phantom: true, pace });
+  const blockAt = (g) => { const s = singles[Math.floor(rng() * singles.length)]; return { shape: s, rot: 0, mat: s.rotations[0], x: g.x, pace }; };
+  const byRow = [...new Set(list.map(g => g.y))].sort((a, b) => b - a); // (bottom up)
+  // (a block dropped in lands in the highest gap of its column: from the top, it's the top row's)
+  if (end === "down") return { steps: [...list].sort((a, b) => a.y - b.y).map(blockAt), caption: "filled in from the top, with whatever was to hand" };
+  if (end === "shaker") {
+    // the bottom row, the top row, the next row up, the next row down...
+    const steps = [];
+    for (let lo = 0, hi = byRow.length - 1, bottom = true; lo <= hi; bottom = !bottom) {
+      const y = bottom ? byRow[lo++] : byRow[hi--];
+      for (const g of list) if (g.y === y) steps.push(bottom ? ghostAt(g) : blockAt(g));
+    }
+    return { steps, caption: "from both ends, back and forth" };
+  }
+  if (end === "middle") { const mid = (top + rows - 1) / 2; return { steps: sealOrder(list, g => Math.abs(g.y - mid)).map(ghostAt), caption: "from the middle out" }; }
+  if (end === "random") { const rank = new Map(byRow.map(y => [y, rng()])); return { steps: sealOrder(list, g => rank.get(g.y)).map(ghostAt), caption: "a row at a time, in no particular order" }; }
+  if (end === "powered") return { then: ["pacmen", "taps", "pacmenAndTaps"][Math.floor(rng() * 3)] };
+  if (end === "columns") {
+    const sweep = columnSweep(state);
+    if (sweep) return sweep;
+  }
+  return { steps: sealOrder(list, g => -g.y).map(ghostAt), caption: "sealed from the bottom up" };
+}
+
+// The order the gaps are filled in: by `rank` (lowest first; the lower gap of two the same), but
+// each column's gaps from the bottom up, as a phantom only ever goes to the deepest one.
+function sealOrder(gaps, rank) {
+  const left = gaps.slice(), out = [];
+  while (left.length) {
+    let best = -1;
+    for (let i = 0; i < left.length; i++) {
+      const g = left[i];
+      if (left.some(o => o.x === g.x && o.y > g.y)) continue; // (one under it goes first)
+      const d = best < 0 ? -1 : rank(g) - rank(left[best]);
+      if (d < 0 || (d === 0 && g.y > left[best].y)) best = i;
+    }
+    out.push(left.splice(best, 1)[0]);
+  }
+  return out;
+}
+
+// The board eaten away column by column, by powerups that destroy whole columns: { extra,
+// caption }, or null if there are none.
+function columnSweep(state) {
+  const { cols } = CONFIG.board;
+  const rng = state.rng;
+  const kinds = [
+    { id: "termite_queen", say: "termite queens", w: 3, reach: 3 },      // (the column it lands on, and one either side)
+    { id: "zeus_bolt", say: "lightning from Zeus", w: 2, reach: 2 },     // (its two columns)
+    { id: "existential_horror", say: "existential horror", w: 1, reach: 1 },
+  ].map(k => ({ ...k, shape: state.powerups.find(p => p.id === k.id) })).filter(k => k.shape);
+  if (!kinds.length) return null;
+  const k = sampleByWeight(kinds, k => k.w, rng);
+  const w = k.shape.rotations[0][0].length;
+  // one for each strip of `reach` columns, landing in the middle of it
+  const xs = [];
+  for (let x = 0; x < cols; x += k.reach) xs.push(Math.min(cols - w, x + (k.reach === 3 ? 1 : 0)));
+  const orders = [
+    ["left to right", xs],
+    ["right to left", [...xs].reverse()],
+    ["from both sides", xs.map((_, i) => xs[i % 2 ? xs.length - 1 - (i >> 1) : i >> 1])],
+    ["from the middle out", [...xs].sort((a, b) => Math.abs(a - (cols - w) / 2) - Math.abs(b - (cols - w) / 2))],
+  ];
+  const [how, order] = orders[Math.floor(rng() * orders.length)];
+  return { extra: order.map(x => ({ shape: k.shape, target: { rot: 0, x }, weights: WEIGHTS.clear, pace: 0.9 })), caption: `${k.say}, ${how}` };
 }
 
 // The board full of board-height pieces side by side, in a random order (the last one completes
@@ -1547,6 +1714,7 @@ function toItems(occ0, steps, cols, rows, { mustClear = true } = {}) {
     const dramatic = n >= (CONFIG.zen.dramatic?.minRows ?? 12);
     items.push({ shape: st.shape, target: { rot: st.rot, x: st.x }, expect: occ.slice(), weights: WEIGHTS.clear, pace: st.pace, key: st.key, dramatic });
   }
+  items.cleared = cleared;
   return cleared || !mustClear ? items : null;
 }
 

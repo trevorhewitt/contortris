@@ -528,7 +528,8 @@ function spawnPiece(state) {
       ps.shownClasses.add(type);
       if (!ps.classes.includes(type)) ps.classes.push(type); // e.g. picked in dev mode
     }
-    emit(state, "spawn", { shape, next: state.next, isNew });
+    // (zen can say something else in place of the name: "Oops, all bagpipes!")
+    emit(state, "spawn", { shape, next: state.next, isNew, label: state.zen?.current?.label ?? null });
   }
   return ok;
 }
@@ -1628,7 +1629,7 @@ export function zenRescue(state) {
 // words, not a new movement.)
 export function zenCaption(state, text, name = text, { quiet = false, row = null } = {}) {
   const z = CONFIG.zen;
-  addCallout(state, text, CONFIG.board.cols / 2, row ?? z.captionRow ?? 3, { color: z.captionColour, durationMs: z.captionMs });
+  if (text) addCallout(state, text, CONFIG.board.cols / 2, row ?? z.captionRow ?? 3, { color: z.captionColour, durationMs: z.captionMs });
   if (!quiet) emit(state, "zenMovement", { name, caption: text });
 }
 
