@@ -207,11 +207,14 @@ test("turbo zen: a crack through every row, built nearly to the top, then sealed
     log.movements.length = 0;
     run(state, log, 3 * 60000);
     const i = log.movements.findIndex(m => m.name === "crack");
-    const j = log.movements.findIndex((m, k) => k > i && !seals.has(m.name));
+    const j = log.movements.findIndex((m, k) => k > i && !seals.has(m.name) && m.name !== "demolition");
     assert.ok(i >= 0 && j > i, `${end}: never finished: ${log.movements.map(m => m.name)}`);
     const a = log.movements[i], b = log.movements[j];
     assert.ok(peak >= 18, `${end}: built ${peak} rows`);
-    assert.ok(b.height <= 3, `${end}: left ${b.height} rows`);
+    // (the pacmen and taps: a few of them eating rows, and then the rest in big bites, while that's
+    // worth it)
+    if (end === "powered") assert.ok(log.movements.slice(i + 1, j + 1).some(m => m.name === "demolition") && b.height <= peak - 10, `${end}: left ${b.height} rows of ${peak}: ${log.movements.map(m => m.name)}`);
+    else assert.ok(b.height <= 3, `${end}: left ${b.height} rows`);
     // (the rows go as rows, but for the columns, eaten away, and the pacmen, which eat them)
     if (end !== "columns" && end !== "powered") assert.ok(b.lines - a.lines >= 18, `${end}: cleared ${b.lines - a.lines} rows`);
     assert.ok(!log.movements.some(m => m.name === "abandoned"), `${end}: nobody stepped in`);
@@ -229,7 +232,7 @@ test("turbo zen: oops, all one awkward thing, said all the way up, and then down
   });
   zenStart(state, "oops");
   run(state, log, 4 * 60000);
-  assert.ok(labels.length >= 8, `${labels.length} of them`);
+  assert.ok(labels.length >= 4, `${labels.length} of them`); // (the bigger the thing, the fewer it takes)
   assert.equal(shapes.size, 1, `only one thing: ${[...shapes]}`);
   assert.equal(new Set(labels).size, 1, "said the same all the way up");
   assert.ok(labels[0] === null || /^(Oops, all .+!|(.+) \2 \2!!|(.+) \3 and more \3|the strategic reserve of .+)$/.test(labels[0]), labels[0]);

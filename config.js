@@ -116,15 +116,15 @@ export const CONFIG = {
     // and falls quickly into it:
     fallMs: 40,          // the autopilot's pieces fall a row this often (times the pace)...
     lockMs: 100,         // ...and lock this soon after landing (times the pace)
-    pieceMs: 650,        // (but each takes this long at least, however short the way down)
+    pieceMs: 650,        // (but each takes this long at least, however short the way down: it starts further up, out of sight)
     restMs: 900,         // after a big clearance, a breath before the next piece
     maxStepsPerFrame: 3, // (so a fast fall stays fast in turbo zen)
     dropMs: 650,         // how fast a piece falls once the player has taken it over (turbo zen)
     // The pace (times fallMs, lockMs and pieceMs): small things, repeats and the pieces that build
     // up the board come down faster; the pieces that bring it all down take their time. And from
-    // low (an empty board) to high (a full one), it slows down as it nears the top.
+    // low (an empty board) to high (a full one), it eases off a little as it nears the top.
     // (high: near the top, in a careful movement, a movement in carefulChance; top: in the rest)
-    pace: { small: 0.55, repeat: 0.7, filler: 0.7, key: 2.2, phantom: 0.45, fastest: 0.2, low: 0.6, high: 1.45, top: 1, carefulChance: 0.33 },
+    pace: { small: 0.55, repeat: 0.7, filler: 0.7, key: 2.2, phantom: 0.45, fastest: 0.2, low: 0.6, high: 0.95, top: 0.72, carefulChance: 0.25 },
     // The piece that brings the whole board down (the director marks it) lands, and then there's a
     // dramatic pause before it all goes, for pauseMs (real time, turbo or not): the board glows
     // and sparkles (CONFIG.fx.admire) and the name says "(dramatic pause)". Only for the big ones:
@@ -162,13 +162,33 @@ export const CONFIG = {
     // (pace at most fastPace).
     batches: { base: 0.06, fast: 0.6, slow: 0.3, longFast: 7, longSlow: 4, wander: 0.2, jump: 0.03, fastPace: 0.85 },
     // Bringing the board down (turbo zen) goes on only while it's spectacular: after the first
-    // `free` blasts, another only if the last took at least minBlocks, and minShare of what was
-    // there; otherwise the rest stays and the next movement builds on it.
-    demolish: { free: 2, minBlocks: 16, minShare: 0.2 },
-    // On the way up (a fill), beds for one big or strange piece each and patches of tiles: how
-    // likely none, one, two or three of them (beds; patches), above `belowTop` rows from the top
-    // and with `headroom` rows over them.
-    extras: { beds: [0.35, 0.4, 0.2, 0.05], patches: [0.5, 0.35, 0.15], belowTop: 6, headroom: 4, minCols: 0 },
+    // `free` blasts, another only if it takes a big bite at once, minBlocks (on the usual board;
+    // on a bigger one, that times its size to the power `grow`) and minShare of what's there
+    // (and only if the last one did); otherwise the rest stays and the next movement builds on it.
+    demolish: { free: 1, minBlocks: 30, grow: 0.8, minShare: 0.22 },
+    // ...and the most spectacular of all, one of the tallest pieces dropping into the column a
+    // fill kept clear and taking every row at once, is this likely when one of the movements that
+    // needs a clean board is waiting
+    keyWhenWaiting: 0.9,
+    // (after a crack, the pacmen or the leaky taps eating rows: this many, and then the rest
+    // comes down in big bites)
+    sealWith: 6,
+    // ...or else one of the biggest destroyers (`size` cells at least) that would take `most` of
+    // what's there at once
+    sweep: { size: 90, most: 0.6 },
+    // On the way up (a fill), beds for one big or strange piece each (of minBlocks blocks at
+    // least) and patches of tiles: how likely none, one, two or three of them (beds; patches),
+    // above `belowTop` rows from the top and with `headroom` rows over them.
+    extras: { beds: [0.3, 0.4, 0.22, 0.08], patches: [0.5, 0.35, 0.15], belowTop: 6, headroom: 4, minCols: 0, minBlocks: 6 },
+    // Now and then (chance, each piece of a fill; half that in a board of one family; never in
+    // "Oops, all..."), something else altogether: one of the pieces turbo zen hardly uses, up to
+    // maxDifficulty, the less it has been used since the page was loaded the likelier (to the
+    // power `power`), for the rest to work round. And in a planned fill (planChance of them),
+    // perPlan of them, each going in once, wherever it fits, at perAnchor of the places it might.
+    // (Turbo zen.)
+    // freshness: whatever it picks from (palettes, families, the planners' pieces), the ones that
+    // have come up less since the page was loaded are likelier, to this power.
+    strays: { chance: 0.1, maxDifficulty: 5, power: 1.5, headroom: 4, planChance: 0.5, perPlan: 3, perAnchor: 0.25, freshness: 0.5 },
     // Guests in a tiling (turbo zen): how likely none, one, two, or a few (up to `most`) strange
     // pieces (up to maxSize wide and tall) built into the pattern where they fall.
     tileGuests: { counts: [0.45, 0.3, 0.15, 0.1], most: 5, maxSize: 8 },
