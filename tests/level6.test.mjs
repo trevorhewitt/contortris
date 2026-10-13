@@ -54,13 +54,13 @@ test("groups in the data are complete (every piece exists)", () => {
   for (const s of shapes.filter(s => s.difficulty === 6 && (s.frequency ?? 1) > 0)) assert.ok(inGroups.has(s.id), `${s.id} is level 6 but in no group`);
 });
 
-test("spam always starts with two spams, then 2-5 more; Sp is usually followed by am!", () => {
+test("spam always starts with two spams (the first the can that also turns up on its own), then 2-5 more; Sp is usually followed by am!", () => {
   const g = normaliseGroups(GROUPS, shapes).find(g => g.id === "spam");
   const rng = makeRng(5);
   let sp = 0, spAm = 0;
   for (let i = 0; i < 400; i++) {
     const ids = expandGroup(g, rng).map(s => s.id);
-    assert.deepEqual(ids.slice(0, 2), ["spam", "spam"]);
+    assert.deepEqual(ids.slice(0, 2), ["spam_can", "spam"]);
     assert.ok(ids.length >= 4 && ids.length <= 7, ids.join());
     assert.ok(ids.every(id => /spa*m|maps|^sp|^am$|spergegam/.test(id)), ids.join());
     ids.forEach((id, k) => { if (id === "sp" && k + 1 < ids.length) { sp++; if (ids[k + 1] === "am") spAm++; } });
@@ -458,6 +458,24 @@ test("emotions: two to four ordinary ones, then on to the strange, mostly ending
   const count = (list) => list.reduce((n, id) => n + (lasts.get(id) ?? 0), 0);
   assert.ok(count(absurd) > 400 * 0.6, `ends on the absurd ${count(absurd)} of 400 (before any déjà vu)`);
   assert.ok(count(plainEnds) > 0, "and now and then on a plain one");
+});
+
+test("beans and Spaghetti-Os: a can (that also turns up on its own), then more and more of it, never the same run twice", () => {
+  const all = normaliseGroups(GROUPS, shapes);
+  for (const [id, can] of [["beans", "beans"], ["spaghetti_os", "spaghetti_os"]]) {
+    const g = all.find(g => g.id === id);
+    assert.ok(g, id);
+    const tin = shapes.find(s => s.id === can);
+    assert.ok((tin.difficulty ?? 1) < 6 && (tin.frequency ?? 1) > 0, `${can} is an ordinary piece too`);
+    const rng = makeRng(9), runs = new Set();
+    for (let i = 0; i < 200; i++) {
+      const ids = expandGroup(g, rng).map(s => s.id);
+      assert.equal(ids[0], can, ids.join());
+      assert.ok(ids.length >= 4 && ids.length <= 8, ids.join());
+      runs.add(ids.join());
+    }
+    assert.ok(runs.size > 150, `${id}: ${runs.size} different runs of 200`);
+  }
 });
 
 test("a set with versions comes as a different one each time", () => {

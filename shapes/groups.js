@@ -68,7 +68,8 @@ export const GROUPS = [
     name: "spam",
     frequency: 1,
     sequence: [
-      "spam",
+      // (the first can is the one that turns up on its own now and then: spam_can)
+      "spam_can",
       "spam",
       // then two to five more, at random: each one picks the next ("Sp" is usually followed by
       // "am!", the other half of the same can)
@@ -295,5 +296,65 @@ export const GROUPS = [
     name: "a humongous piece of the night sky",
     frequency: 0.05,
     sequence: ["piece_of_sky_night", "large_piece_of_sky_night", "humongous_piece_of_sky_night"],
+  },
+  {
+    id: "beans",
+    name: "beans",
+    frequency: 1,
+    sequence: [
+      "beans",
+      {pick: ["beans"], count: [0, 1]},
+      { chain: {
+          start: {beans: 2.2, beans_beans_and_beans: 1.3, giant_beans: 0.8, beeeeeans: 0.8, mini_beans: 0.8, mini_beanses: 0.7, bea: 1, ns: 0.15, a_can_of_bean: 0.8, snaeb: 0.7, slab_of_beans: 0.6, heap_of_beans: 0.25, beans_in_their_sauce: 0.15, bean: 0.2, giant_bean: 0.12},
+          after: {
+            beans: {beans: 2.4, beeeeeans: 0.9, mini_beans: 1, mini_beanses: 0.9, bea: 1.1, ns: 0.2, a_can_of_bean: 0.9, snaeb: 0.8, slab_of_beans: 1.1, heap_of_beans: 0.7, beans_in_their_sauce: 0.5, bean: 0.5, stop: 2.4},
+            beeeeeans: {beans: 2.4, beeeeeans: 0.2, mini_beans: 1, mini_beanses: 0.9, bea: 1.1, ns: 0.2, a_can_of_bean: 0.9, snaeb: 0.8, slab_of_beans: 1.1, heap_of_beans: 0.7, beans_in_their_sauce: 0.2, bean: 0.5, stop: 3.2},
+            mini_beans: {beans: 2.4, beeeeeans: 0.9, mini_beans: 1.2, mini_beanses: 1.2, bea: 1.1, ns: 0.2, a_can_of_bean: 0.9, snaeb: 0.8, slab_of_beans: 1.1, heap_of_beans: 0.7, beans_in_their_sauce: 0.5, bean: 0.5, stop: 2.4},
+            mini_beanses: {beans: 2.4, beeeeeans: 0.9, mini_beans: 1.2, mini_beanses: 0.3, bea: 1.1, ns: 0.2, a_can_of_bean: 0.9, snaeb: 0.8, slab_of_beans: 1.1, heap_of_beans: 0.7, beans_in_their_sauce: 0.5, bean: 0.5, stop: 2.4},
+            bea: {ns: 12, beans: 1, stop: 1.2},
+            ns: {beans: 2.4, beeeeeans: 0.9, mini_beans: 1, mini_beanses: 0.9, bea: 1.1, ns: 0.2, a_can_of_bean: 0.9, snaeb: 0.8, slab_of_beans: 1.1, heap_of_beans: 0.7, beans_in_their_sauce: 0.5, bean: 0.5, stop: 2.4},
+            a_can_of_bean: {beans: 2.4, beeeeeans: 0.9, mini_beans: 1, mini_beanses: 0.9, bea: 1.1, ns: 0.2, a_can_of_bean: 0.5, snaeb: 0.8, slab_of_beans: 1.1, heap_of_beans: 0.7, beans_in_their_sauce: 0.5, bean: 1.4, stop: 2.6},
+            snaeb: {beans: 2.4, beeeeeans: 0.9, mini_beans: 1, mini_beanses: 0.9, bea: 1.1, ns: 0.2, a_can_of_bean: 0.9, snaeb: 0.3, slab_of_beans: 1.1, heap_of_beans: 0.7, beans_in_their_sauce: 0.5, bean: 0.5, stop: 2.4},
+            giant_beans: {beans: 1.2, mini_beans: 1.2, mini_beanses: 0.8, a_can_of_bean: 0.5, bea: 0.6, slab_of_beans: 0.8, heap_of_beans: 0.4, bean: 1, stop: 5},
+            beans_beans_and_beans: {beans: 1.6, mini_beans: 1.2, mini_beanses: 0.6, a_can_of_bean: 0.8, bea: 0.8, snaeb: 0.5, slab_of_beans: 1, heap_of_beans: 0.5, bean: 0.8, stop: 3.5},
+            slab_of_beans: {heap_of_beans: 1.4, beans_in_their_sauce: 1.1, bean: 1.2, slab_of_beans: 0.4, beans: 1, mini_beans: 0.4, snaeb: 0.3, stop: 2.6},
+            heap_of_beans: {beans_in_their_sauce: 1.2, bean: 1.6, giant_bean: 0.3, slab_of_beans: 0.3, beans: 0.8, mini_beans: 0.4, stop: 3},
+            beans_in_their_sauce: {bean: 2, beans: 1, heap_of_beans: 0.4, a_can_of_bean: 0.5, giant_bean: 0.3, stop: 3.6},
+            bean: {bean: 1.6, giant_bean: 0.7, beans: 0.6, mini_beans: 0.5, a_can_of_bean: 0.4, stop: 4},
+            giant_bean: {bean: 1.2, beans: 0.8, mini_beans: 0.4, stop: 3.6},
+          },
+          min: 3, max: 6,
+      } },
+    ],
+  },
+  {
+    id: "spaghetti_os",
+    name: "Spaghetti-Os",
+    frequency: 1,
+    sequence: [
+      "spaghetti_os",
+      {pick: ["spaghetti_os"], count: [0, 1]},
+      { chain: {
+          start: {spaghetti_os: 0.8, spaghetti_os_spaghetti_os_and_spaghetti_os: 1, spaghetti_oooooooos: 0.9, giant_spaghetti_os: 0.8, spill_of_spaghetti_os: 0.8, spaghetti_qs: 1.1, spaghetti_0s: 1.1, mini_spaghetti_os: 0.9, spaghetti_os_left_half: 0.5, spaghetti_os_right_half: 0.12, spgtti_os: 0.9, slab_of_spaghetti_os: 0.7, blob_of_spaghetti_os: 0.3, spaghetti_o: 0.3, ring_of_spaghetti_os: 0.4},
+          after: {
+            spaghetti_os: {spaghetti_os: 0.5, spaghetti_qs: 1, spaghetti_0s: 1, mini_spaghetti_os: 0.9, spaghetti_os_left_half: 0.55, spaghetti_os_right_half: 0.1, spgtti_os: 0.9, slab_of_spaghetti_os: 1, blob_of_spaghetti_os: 0.6, spaghetti_o: 0.7, ring_of_spaghetti_os: 0.6, stop: 2.3},
+            spaghetti_qs: {spaghetti_os: 0.8, spaghetti_0s: 1, mini_spaghetti_os: 0.9, spaghetti_os_left_half: 0.55, spaghetti_os_right_half: 0.1, spgtti_os: 0.9, slab_of_spaghetti_os: 1, blob_of_spaghetti_os: 0.6, spaghetti_o: 0.7, ring_of_spaghetti_os: 0.6, stop: 2.3},
+            spaghetti_0s: {spaghetti_os: 0.8, spaghetti_qs: 1, mini_spaghetti_os: 0.9, spaghetti_os_left_half: 0.55, spaghetti_os_right_half: 0.1, spgtti_os: 0.9, slab_of_spaghetti_os: 1, blob_of_spaghetti_os: 0.6, spaghetti_o: 0.7, ring_of_spaghetti_os: 0.6, stop: 2.3},
+            mini_spaghetti_os: {spaghetti_os: 0.8, spaghetti_qs: 1, spaghetti_0s: 1, spaghetti_os_left_half: 0.55, spaghetti_os_right_half: 0.1, spgtti_os: 0.9, slab_of_spaghetti_os: 1, blob_of_spaghetti_os: 0.6, spaghetti_o: 0.7, ring_of_spaghetti_os: 0.6, stop: 2.3},
+            spgtti_os: {spaghetti_os: 0.8, spaghetti_qs: 1, spaghetti_0s: 1, mini_spaghetti_os: 0.9, spaghetti_os_left_half: 0.55, spaghetti_os_right_half: 0.1, slab_of_spaghetti_os: 1, blob_of_spaghetti_os: 0.6, spaghetti_o: 0.7, ring_of_spaghetti_os: 0.6, stop: 2.3},
+            spaghetti_os_right_half: {spaghetti_os: 0.8, spaghetti_qs: 1, spaghetti_0s: 1, mini_spaghetti_os: 0.9, spaghetti_os_left_half: 0.55, spgtti_os: 0.9, slab_of_spaghetti_os: 1, blob_of_spaghetti_os: 0.6, spaghetti_o: 0.7, ring_of_spaghetti_os: 0.6, stop: 2.3},
+            giant_spaghetti_os: {spaghetti_os: 0.5, spaghetti_o: 1, mini_spaghetti_os: 0.8, slab_of_spaghetti_os: 0.5, ring_of_spaghetti_os: 0.5, spaghetti_os_left_half: 0.3, spgtti_os: 0.3, stop: 4},
+            spaghetti_os_spaghetti_os_and_spaghetti_os: {spaghetti_os: 0.6, spaghetti_qs: 0.8, spaghetti_0s: 0.8, mini_spaghetti_os: 0.6, spaghetti_os_left_half: 0.3, spgtti_os: 0.6, slab_of_spaghetti_os: 0.8, blob_of_spaghetti_os: 0.4, spaghetti_o: 0.6, ring_of_spaghetti_os: 0.5, stop: 3},
+            spaghetti_oooooooos: {spaghetti_os: 0.6, spaghetti_qs: 0.8, spaghetti_0s: 0.8, mini_spaghetti_os: 0.6, spaghetti_os_left_half: 0.3, spgtti_os: 0.6, slab_of_spaghetti_os: 0.8, blob_of_spaghetti_os: 0.4, spaghetti_o: 0.6, ring_of_spaghetti_os: 0.5, stop: 2.6},
+            spill_of_spaghetti_os: {spaghetti_o: 2, ring_of_spaghetti_os: 0.5, blob_of_spaghetti_os: 0.4, mini_spaghetti_os: 0.3, stop: 2.8},
+            spaghetti_os_left_half: {spaghetti_os_right_half: 12, spaghetti_o: 0.6, spaghetti_qs: 0.4, stop: 1},
+            slab_of_spaghetti_os: {blob_of_spaghetti_os: 1.2, spaghetti_o: 1, ring_of_spaghetti_os: 0.9, spaghetti_qs: 0.4, spaghetti_0s: 0.4, mini_spaghetti_os: 0.4, spgtti_os: 0.3, spaghetti_os_left_half: 0.3, stop: 2.4},
+            blob_of_spaghetti_os: {spaghetti_o: 1.2, ring_of_spaghetti_os: 0.8, spaghetti_qs: 0.4, spaghetti_0s: 0.4, mini_spaghetti_os: 0.4, spgtti_os: 0.3, spaghetti_os_left_half: 0.3, stop: 2.6},
+            ring_of_spaghetti_os: {spaghetti_o: 1.1, blob_of_spaghetti_os: 0.8, slab_of_spaghetti_os: 0.6, spaghetti_qs: 0.4, spaghetti_0s: 0.4, mini_spaghetti_os: 0.4, spaghetti_os_left_half: 0.3, stop: 2.4},
+            spaghetti_o: {spaghetti_os: 0.3, spaghetti_o: 0.6, ring_of_spaghetti_os: 0.5, blob_of_spaghetti_os: 0.4, slab_of_spaghetti_os: 0.4, spaghetti_qs: 0.4, spaghetti_0s: 0.4, mini_spaghetti_os: 0.4, spaghetti_os_left_half: 0.3, spgtti_os: 0.3, stop: 3.2},
+          },
+          min: 3, max: 6,
+      } },
+    ],
   },
 ];

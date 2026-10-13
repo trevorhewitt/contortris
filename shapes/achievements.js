@@ -3594,7 +3594,8 @@ export const ACHIEVEMENTS = [
         "type": "pieceServed",
         "match": {
           "ids": [
-            "spam"
+            "spam",
+            "spam_can"
           ]
         }
       },
@@ -3778,6 +3779,7 @@ export const ACHIEVEMENTS = [
         "match": {
           "ids": [
             "spam",
+            "spam_can",
             "spam_spam_and_spam",
             "spm",
             "scrambled_spam",
