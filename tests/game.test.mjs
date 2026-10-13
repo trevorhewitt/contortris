@@ -446,3 +446,40 @@ test("a run on a board of another size starts on a board that size (turbo zen fi
     CONFIG.board.cols = usual.cols; CONFIG.board.rows = usual.rows;
   }
 });
+
+test("achievements: a piece that loves you, killed straight away, kept alive, alive at the end; and its last words", () => {
+  const [cute] = loadShapes([{ id: "cutie", name: "a piece that loves you", grid: ["XXX", ".X."], difficulty: 1, tags: ["cute"], onDeath: "it loved you" }]).shapes;
+  const defs = [
+    { id: "quick", name: "q", description: "", trigger: { type: "killedQuickly", match: { tags: ["cute"] }, drops: 2 } },
+    { id: "dead", name: "d", description: "", trigger: { type: "killed", match: { tags: ["cute"] } } },
+    { id: "alive5", name: "a", description: "", trigger: { type: "keptAlive", match: { tags: ["cute"] }, drops: 5 } },
+    { id: "end", name: "e", description: "", trigger: { type: "aliveAtEnd", match: { tags: ["cute"] } } },
+  ];
+  const play = () => {
+    const state = createGameState(shapes, powerups, { rng: makeRng(3) });
+    const got = [];
+    const ach = createAchievements(defs, { storage: memoryStorage(), onUnlock: (d) => got.push(d.id) });
+    on(state, (t, d, st) => ach.handle(t, d, st));
+    startRun(state, "extreme");
+    return { state, got, ach };
+  };
+  {
+    // it lands where it completes two rows: gone at once, with a word
+    const { state, got } = play();
+    for (let x = 0; x < COLS; x++) { if (x !== 1) state.board[ROWS - 1][x] = filler(); if (x > 2) state.board[ROWS - 2][x] = filler(); }
+    state.active = { shape: cute, rotIdx: 0, x: 0, y: ROWS - 4 };
+    hardDropAndLock(state);
+    assert.ok(state.fx.callouts.some(c => c.text === "it loved you"), "its last words");
+    assert.deepEqual(got.sort(), ["dead", "quick"]);
+  }
+  {
+    // kept alive five pieces on, and still there at the end
+    const { state, got, ach } = play();
+    state.active = { shape: cute, rotIdx: 0, x: 0, y: ROWS - 4 };
+    hardDropAndLock(state);
+    for (let i = 0; i < 5; i++) { placeActive(state, "pea", COLS - 1, 0); hardDropAndLock(state); }
+    assert.ok(got.includes("alive5"), got.join());
+    ach.handle("gameOver", {}, state);
+    assert.ok(got.includes("end") && !got.includes("dead"), got.join());
+  }
+});

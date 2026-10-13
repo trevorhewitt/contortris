@@ -240,6 +240,8 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
       shake: s.shake === true, // shakes the board when it lands, however small (a small boulder)
       // the name it goes by when it comes straight after itself ("another raindrop")
       nameAgain: typeof s.nameAgain === "string" && s.nameAgain.trim() ? s.nameAgain.trim() : null,
+      // its last words, when the last of it is destroyed ("it loved you")
+      onDeath: typeof s.onDeath === "string" && s.onDeath.trim() ? s.onDeath.trim() : null,
       // in a level 6 set: this piece comes back later in the same run, as that piece
       echo: typeof s.echo === "string" && s.echo ? s.echo : null,
       // never straight after any of these (a small piece of the sky after another)

@@ -770,6 +770,14 @@ export function insidePairs(state, pid, zoneName = "inside") {
   return pairs;
 }
 
+// A piece's last block has gone: the game says so, and the piece can have last words
+// (`onDeath`: "it loved you").
+function pieceGone(state, pid, inst, at = null) {
+  const words = inst.shape?.onDeath;
+  if (words && at) addCallout(state, words, at.x + 0.5, at.y, { color: CONFIG.fx.callouts?.mournColour ?? "#ffc4d6" });
+  emit(state, "pieceGone", { pid, shape: inst.shape, drops: state.drops });
+}
+
 function instancesAfterCollapse(state, removedRows) {
   const removed = new Set(removedRows);
   const sorted = [...removed].sort((p, q) => p - q);
@@ -785,8 +793,9 @@ function instancesAfterCollapse(state, removedRows) {
       shifts.add(d);
       cells.push({ x: c.x, y: c.y + d });
     }
+    const last = inst.cells[inst.cells.length - 1];
     inst.cells = cells;
-    if (!cells.length) { state.instances.delete(pid); continue; }
+    if (!cells.length) { state.instances.delete(pid); pieceGone(state, pid, inst, last); continue; }
     if (lost || shifts.size > 1) inst.intact = false;
     else inst.y += [...shifts][0] ?? 0;
   }
@@ -798,7 +807,7 @@ function instancesAfterRemoval(state, removedCells) {
     if (!inst) continue;
     inst.cells = inst.cells.filter(c => c.x !== x || c.y !== y);
     inst.intact = false;
-    if (!inst.cells.length) state.instances.delete(cell.pid);
+    if (!inst.cells.length) { state.instances.delete(cell.pid); pieceGone(state, cell.pid, inst, { x, y }); }
   }
 }
 
