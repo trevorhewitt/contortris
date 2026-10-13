@@ -19732,6 +19732,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.23,
+        0.14,
+        0.14,
+        0.14
+      ],
+    nextShapes: [
+        "tile_square_blue",
+        "tile_square_green",
+        "tile_square_terracotta",
+        "tile_square_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19749,6 +19761,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.23,
+        0.14,
+        0.14
+      ],
+    nextShapes: [
+        "tile_square_blue",
+        "tile_square_green",
+        "tile_square_terracotta",
+        "tile_square_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19766,6 +19790,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.14,
+        0.23,
+        0.14
+      ],
+    nextShapes: [
+        "tile_square_blue",
+        "tile_square_green",
+        "tile_square_terracotta",
+        "tile_square_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19783,6 +19819,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.14,
+        0.14,
+        0.23
+      ],
+    nextShapes: [
+        "tile_square_blue",
+        "tile_square_green",
+        "tile_square_terracotta",
+        "tile_square_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19801,6 +19849,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.23,
+        0.14,
+        0.14,
+        0.14
+      ],
+    nextShapes: [
+        "tile_big_blue",
+        "tile_big_green",
+        "tile_big_terracotta",
+        "tile_big_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19819,6 +19879,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.23,
+        0.14,
+        0.14
+      ],
+    nextShapes: [
+        "tile_big_blue",
+        "tile_big_green",
+        "tile_big_terracotta",
+        "tile_big_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19837,6 +19909,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.14,
+        0.23,
+        0.14
+      ],
+    nextShapes: [
+        "tile_big_blue",
+        "tile_big_green",
+        "tile_big_terracotta",
+        "tile_big_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19855,6 +19939,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.14,
+        0.14,
+        0.23
+      ],
+    nextShapes: [
+        "tile_big_blue",
+        "tile_big_green",
+        "tile_big_terracotta",
+        "tile_big_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19873,6 +19969,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.23,
+        0.14,
+        0.14,
+        0.14
+      ],
+    nextShapes: [
+        "tile_l_blue",
+        "tile_l_green",
+        "tile_l_terracotta",
+        "tile_l_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19891,6 +19999,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.23,
+        0.14,
+        0.14
+      ],
+    nextShapes: [
+        "tile_l_blue",
+        "tile_l_green",
+        "tile_l_terracotta",
+        "tile_l_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19909,6 +20029,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.14,
+        0.23,
+        0.14
+      ],
+    nextShapes: [
+        "tile_l_blue",
+        "tile_l_green",
+        "tile_l_terracotta",
+        "tile_l_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19927,6 +20059,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.14,
+        0.14,
+        0.23
+      ],
+    nextShapes: [
+        "tile_l_blue",
+        "tile_l_green",
+        "tile_l_terracotta",
+        "tile_l_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19945,6 +20089,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.23,
+        0.14,
+        0.14,
+        0.14
+      ],
+    nextShapes: [
+        "tile_t_blue",
+        "tile_t_green",
+        "tile_t_terracotta",
+        "tile_t_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19963,6 +20119,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.23,
+        0.14,
+        0.14
+      ],
+    nextShapes: [
+        "tile_t_blue",
+        "tile_t_green",
+        "tile_t_terracotta",
+        "tile_t_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19981,6 +20149,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.14,
+        0.23,
+        0.14
+      ],
+    nextShapes: [
+        "tile_t_blue",
+        "tile_t_green",
+        "tile_t_terracotta",
+        "tile_t_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -19999,6 +20179,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.14,
+        0.14,
+        0.23
+      ],
+    nextShapes: [
+        "tile_t_blue",
+        "tile_t_green",
+        "tile_t_terracotta",
+        "tile_t_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -20017,6 +20209,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.23,
+        0.14,
+        0.14,
+        0.14
+      ],
+    nextShapes: [
+        "tile_s_blue",
+        "tile_s_green",
+        "tile_s_terracotta",
+        "tile_s_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -20035,6 +20239,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.23,
+        0.14,
+        0.14
+      ],
+    nextShapes: [
+        "tile_s_blue",
+        "tile_s_green",
+        "tile_s_terracotta",
+        "tile_s_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -20053,6 +20269,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.14,
+        0.23,
+        0.14
+      ],
+    nextShapes: [
+        "tile_s_blue",
+        "tile_s_green",
+        "tile_s_terracotta",
+        "tile_s_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -20071,6 +20299,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.14,
+        0.14,
+        0.23
+      ],
+    nextShapes: [
+        "tile_s_blue",
+        "tile_s_green",
+        "tile_s_terracotta",
+        "tile_s_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -20091,6 +20331,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.23,
+        0.14,
+        0.14,
+        0.14
+      ],
+    nextShapes: [
+        "tile_lizard_blue",
+        "tile_lizard_green",
+        "tile_lizard_terracotta",
+        "tile_lizard_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -20111,6 +20363,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.23,
+        0.14,
+        0.14
+      ],
+    nextShapes: [
+        "tile_lizard_blue",
+        "tile_lizard_green",
+        "tile_lizard_terracotta",
+        "tile_lizard_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -20131,6 +20395,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.14,
+        0.23,
+        0.14
+      ],
+    nextShapes: [
+        "tile_lizard_blue",
+        "tile_lizard_green",
+        "tile_lizard_terracotta",
+        "tile_lizard_gold"
+      ],
     tags: [
         "tiles"
       ],
@@ -20151,6 +20427,18 @@ export const SHAPES = [
       },
     frequency: 0.12,
     claudeDraft: true,
+    nextShapeProbs: [
+        0.14,
+        0.14,
+        0.14,
+        0.23
+      ],
+    nextShapes: [
+        "tile_lizard_blue",
+        "tile_lizard_green",
+        "tile_lizard_terracotta",
+        "tile_lizard_gold"
+      ],
     tags: [
         "tiles"
       ],

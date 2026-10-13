@@ -437,7 +437,7 @@ const MOVEMENTS = {
   oops: (state) => {
     const s = awkwardOne(state);
     if (!s) return MOVEMENTS.mono(state);
-    return fillThenBlast(null, () => s, { target: up(int(state, 17, 20)), pace: 0.75, only: true, keyChance: 0.3, label: `Oops, all ${pluralName(s.name)}!` });
+    return fillThenBlast(null, () => s, { target: up(int(state, 17, 20)), pace: 0.75, only: true, keyChance: 0.3, label: oopsName(state, s.name) });
   },
 
   // small things, lots of them, quickly
@@ -645,6 +645,22 @@ function awkwardOne(state) {
 
 // A piece's name for lots of them: "a bagpipe" is "bagpipes", "a sock full of night" "socks full
 // of night", "a cactus that wants a hug" "cacti that want a hug", "Big Ben" "Big Bens".
+// What the name says, all the way up, for a board full of one awkward thing: now its own name,
+// now one of these (CONFIG.zen.oopsNames: weights).
+const OOPS = {
+  plain: () => null,
+  oops: (one, many) => `Oops, all ${many}!`,
+  thrice: (one) => `${one} ${one} ${one}!!`,
+  more: (one, many) => `${many} ${many} and more ${many}`,
+  reserve: (one, many) => `the strategic reserve of ${many}`,
+};
+export function oopsName(state, name, kind = null) {
+  const w = CONFIG.zen.oopsNames ?? { oops: 1 };
+  kind ??= sampleByWeight(Object.keys(OOPS).filter(k => w[k] > 0), k => w[k], state.rng);
+  const one = name.trim().replace(/^(?:just |only )?(?:a|an|the|some|one|another)\s+/i, "");
+  return OOPS[kind](one, pluralName(name));
+}
+
 export function pluralName(name) {
   const s = name.trim().replace(/^(?:just |only )?(?:a|an|the|some|one|another)\s+/i, "");
   const m = s.match(/^(.*?)(\s+(?:full of|made of|of|with|on|in|for|from|that|who|which|under|over|without|at|by|to|and|holding|wearing|inside|called)\s.*|,\s+\w+ing\b.*|\s+\(.*)$/i);

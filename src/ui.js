@@ -300,13 +300,16 @@ export function bindUI({ state, renderer, sound, achievements }) {
 
   /* ---------- game flow ---------- */
 
+  // (turbo zen fills the window unless the player has switched back to the usual board, in the
+  // pause menu, since the page was loaded)
+  let turboWhole = true;
   function startGame(mode = lastMode) {
     sound.unlock();
     markInput(state, "touch");
     lastMode = CONFIG.modes[mode] ? mode : CONFIG.defaultMode;
     store.set("extris.mode", lastMode);
     newBest = false;
-    if (lastMode !== "turbo") setWholeWindow(false);
+    setWholeWindow(lastMode === "turbo" && turboWhole);
     startRun(state, lastMode);
     state.speed = savedSpeed(lastMode);
     showPanel(null);
@@ -1094,7 +1097,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
   });
   // (a fresh run on the new board: the old one's pieces don't fit it)
   $("btnWholeWindow").addEventListener("click", () => {
-    setWholeWindow(!wholeWindow);
+    turboWhole = !wholeWindow;
     startGame("turbo");
   });
 

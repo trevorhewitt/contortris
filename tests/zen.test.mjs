@@ -10,7 +10,7 @@ import { THREADS, SET_THREADS } from "../shapes/threads.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, updateGame, hardDropAndLock, markInput, tryMove, on } from "../src/game.js";
-import { zenStart, zenIgnoreInput, pluralName, planTiles } from "../src/zen.js";
+import { zenStart, zenIgnoreInput, pluralName, planTiles, oopsName } from "../src/zen.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const { rows, cols } = CONFIG.board;
@@ -232,11 +232,23 @@ test("turbo zen: oops, all one awkward thing, said all the way up, and then down
   assert.ok(labels.length >= 8, `${labels.length} of them`);
   assert.equal(shapes.size, 1, `only one thing: ${[...shapes]}`);
   assert.equal(new Set(labels).size, 1, "said the same all the way up");
-  assert.match(labels[0], /^Oops, all .+!$/);
+  assert.ok(labels[0] === null || /^(Oops, all .+!|(.+) \2 \2!!|(.+) \3 and more \3|the strategic reserve of .+)$/.test(labels[0]), labels[0]);
   assert.ok(peak >= 14, `up to ${peak} rows`);
   const i = log.movements.findIndex(m => m.name === "oops");
   const end = log.movements.slice(i + 1).find(m => m.name !== "demolition");
   assert.ok(end && end.height <= 8, "and then down it came");
+});
+
+test("a board full of one thing has a name for it, now and then just its own", () => {
+  const state = { rng: makeRng(3) };
+  const said = (kind) => oopsName(state, "a bagpipe", kind);
+  assert.equal(said("plain"), null);
+  assert.equal(said("oops"), "Oops, all bagpipes!");
+  assert.equal(said("thrice"), "bagpipe bagpipe bagpipe!!");
+  assert.equal(said("more"), "bagpipes bagpipes and more bagpipes");
+  assert.equal(said("reserve"), "the strategic reserve of bagpipes");
+  const kinds = new Set(Array.from({ length: 200 }, () => String(oopsName(state, "a bagpipe"))));
+  assert.equal(kinds.size, 5, [...kinds].join(" / "));
 });
 
 test("names for lots of something", () => {
