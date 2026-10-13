@@ -250,9 +250,10 @@ export const CONFIG = {
     // ...and these are this much as likely as they would be (the large black hole takes
     // everything: it's better for being rarer). Zen's director goes by the same numbers.
     rarer: { large_black_hole: 0.3, tidal_wave: 0.45 },
-    // the set God mode opens with, the first time since the page was loaded, and the pieces that
-    // come straight after it (firstBoost times likelier until each has come once)
-    firstSet: "emotions_ascent",
+    // the set God mode opens with, the first time since the page was loaded (of these, the first
+    // never seen in this browser, or else any of them), and the pieces that come straight after
+    // it (firstBoost times likelier until each has come once)
+    firstSet: ["emotions_ascent", "emotions_business", "emotions_british", "emotions_online"],
     firstPieces: ["piece_that_loves_you"],
     // The newest things in the game come first (update this with every new batch), so they can be
     // looked at straight away, and then it's God mode as usual: a new piece is newBoost times
@@ -260,7 +261,7 @@ export const CONFIG = {
     // newSetBoost times (load the page again to see them all again). Anything never seen in this
     // browser at all comes up unseenBoost times as often. (God mode.)
     newest: {
-      sets: ["emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
+      sets: ["emotions_business", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
         "piece_that_loves_you", "piece_that_loves_you_l", "piece_that_loves_you_s",
         "spaghetti_os", "spam_can", "bull", "china_shop", "bees_knees", "queen_bee",

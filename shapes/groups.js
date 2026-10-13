@@ -443,4 +443,88 @@ export const GROUPS = [
       } },
     ],
   },
+  // An emotions chart (for business): the usual opening, then the corporate feelings (synergy,
+  // a quick sync, circling back, per my last email...), and usually it ends on stonks; now and
+  // then on not stonks.
+  {
+    id: "emotions_business",
+    name: "an emotions chart (for business)",
+    frequency: 0.25,
+    unique: true,
+    sequence: [
+      {pick: ["emotion_happiness", "emotion_sadness", "emotion_anger", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy"], count: [2, 4], unique: true},
+      {pick: ["emotion_someone_behind_you", "emotion_ear_itch", "emotion_oven", "emotion_nostalgia", "emotion_cold_pillow", "emotion_vending_machine", "emotion_missing_step", "emotion_screen_film", "emotion_preemptive_embarrassment", "emotion_umbrella", "emotion_happiness", "emotion_sadness", "emotion_anger", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy", "emotion_deja_vu", "emotion_memory_loss", "emotion_spooky_coincidence", "emotion_utter_euphoria", "emotion_existential_dread", "emotion_nails_chalkboard", "emotion_gut_terror"], weights: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 1, 1, 1, 0.8, 0.8, 0.8, 0.8], count: [0, 1]},
+      {pick: ["emotion_utter_euphoria", "emotion_existential_dread", "emotion_nails_chalkboard", "emotion_gut_terror", "emotion_forglavedness", "emotion_plorch", "emotion_glumpf", "emotion_wibberance", "emotion_snerk", "emotion_sprongle", "emotion_halvering", "emotion_deja_vu", "emotion_memory_loss", "emotion_spooky_coincidence", "emotion_inner_emptiness", "emotion_playing_extris", "emotion_winning_extris", "emotion_urge_to_rotate", "emotion_long_piece", "emotion_being_a_piece", "emotion_row_grief", "emotion_fear_of_ceiling", "emotion_someone_behind_you", "emotion_ear_itch", "emotion_oven", "emotion_nostalgia", "emotion_cold_pillow", "emotion_vending_machine", "emotion_missing_step", "emotion_screen_film", "emotion_preemptive_embarrassment", "emotion_umbrella"], weights: [2, 2, 2, 2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1, 1, 1, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], count: [1, 2]},
+      {pick: ["emotion_forglavedness", "emotion_plorch", "emotion_glumpf", "emotion_wibberance", "emotion_snerk", "emotion_sprongle", "emotion_halvering", "emotion_inner_emptiness", "emotion_playing_extris", "emotion_winning_extris", "emotion_urge_to_rotate", "emotion_long_piece", "emotion_being_a_piece", "emotion_row_grief", "emotion_fear_of_ceiling"], weights: [2, 2, 2, 2, 2, 2, 2, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5], count: [0, 2]},
+      { chain: {
+          start: {emotion_synergy: 1.2, emotion_quick_sync: 1},
+          after: {
+            emotion_synergy: {emotion_quick_sync: 1.1, emotion_circling_back: 1.5, emotion_per_my_last_email: 1},
+            emotion_quick_sync: {emotion_circling_back: 1.6, emotion_per_my_last_email: 1.2},
+            emotion_circling_back: {emotion_per_my_last_email: 1.3, emotion_quarterly_growth: 1, emotion_pivot: 0.9, emotion_disruption: 0.7},
+            emotion_per_my_last_email: {emotion_quarterly_growth: 1, emotion_pivot: 1, emotion_disruption: 0.8},
+            emotion_quarterly_growth: {emotion_thought_leadership: 1, emotion_stonks: 1.7, emotion_not_stonks: 0.15},
+            emotion_pivot: {emotion_disruption: 0.7, emotion_thought_leadership: 1, emotion_stonks: 1.6, emotion_not_stonks: 0.15},
+            emotion_disruption: {emotion_thought_leadership: 1.1, emotion_stonks: 1.8, emotion_not_stonks: 0.2},
+            emotion_thought_leadership: {emotion_stonks: 3.6, emotion_not_stonks: 0.4},
+            emotion_stonks: {emotion_not_stonks: 0.1, stop: 1},
+          },
+          min: 4, max: 7,
+      } },
+    ],
+  },
+  // An emotions chart (very British): the usual opening, then mustn't grumble, queueing, an
+  // unexpected item in the bagging area, quietly seething..., nearly always ending on a nice cup
+  // of tea (now and then, on sorry).
+  {
+    id: "emotions_british",
+    name: "an emotions chart (very British)",
+    frequency: 0.25,
+    unique: true,
+    sequence: [
+      {pick: ["emotion_happiness", "emotion_sadness", "emotion_anger", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy"], count: [2, 4], unique: true},
+      {pick: ["emotion_someone_behind_you", "emotion_ear_itch", "emotion_oven", "emotion_nostalgia", "emotion_cold_pillow", "emotion_vending_machine", "emotion_missing_step", "emotion_screen_film", "emotion_preemptive_embarrassment", "emotion_umbrella", "emotion_happiness", "emotion_sadness", "emotion_anger", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy", "emotion_deja_vu", "emotion_memory_loss", "emotion_spooky_coincidence", "emotion_utter_euphoria", "emotion_existential_dread", "emotion_nails_chalkboard", "emotion_gut_terror"], weights: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 1, 1, 1, 0.8, 0.8, 0.8, 0.8], count: [0, 1]},
+      {pick: ["emotion_utter_euphoria", "emotion_existential_dread", "emotion_nails_chalkboard", "emotion_gut_terror", "emotion_forglavedness", "emotion_plorch", "emotion_glumpf", "emotion_wibberance", "emotion_snerk", "emotion_sprongle", "emotion_halvering", "emotion_deja_vu", "emotion_memory_loss", "emotion_spooky_coincidence", "emotion_inner_emptiness", "emotion_playing_extris", "emotion_winning_extris", "emotion_urge_to_rotate", "emotion_long_piece", "emotion_being_a_piece", "emotion_row_grief", "emotion_fear_of_ceiling", "emotion_someone_behind_you", "emotion_ear_itch", "emotion_oven", "emotion_nostalgia", "emotion_cold_pillow", "emotion_vending_machine", "emotion_missing_step", "emotion_screen_film", "emotion_preemptive_embarrassment", "emotion_umbrella"], weights: [2, 2, 2, 2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1, 1, 1, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], count: [1, 2]},
+      {pick: ["emotion_forglavedness", "emotion_plorch", "emotion_glumpf", "emotion_wibberance", "emotion_snerk", "emotion_sprongle", "emotion_halvering", "emotion_inner_emptiness", "emotion_playing_extris", "emotion_winning_extris", "emotion_urge_to_rotate", "emotion_long_piece", "emotion_being_a_piece", "emotion_row_grief", "emotion_fear_of_ceiling"], weights: [2, 2, 2, 2, 2, 2, 2, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5], count: [0, 2]},
+      { chain: {
+          start: {emotion_mustnt_grumble: 1.3, emotion_queueing: 1},
+          after: {
+            emotion_mustnt_grumble: {emotion_queueing: 1.7, emotion_bagging_area: 1, emotion_quietly_seething: 1},
+            emotion_queueing: {emotion_bagging_area: 1.4, emotion_quietly_seething: 1.2},
+            emotion_bagging_area: {emotion_quietly_seething: 1.7, emotion_last_biscuit: 0.9, emotion_sorry: 0.7},
+            emotion_quietly_seething: {emotion_last_biscuit: 1.4, emotion_sorry: 1},
+            emotion_last_biscuit: {emotion_sorry: 1.3, emotion_cup_of_tea: 1.5},
+            emotion_sorry: {emotion_cup_of_tea: 3, stop: 0.45},
+          },
+          min: 4, max: 7,
+      } },
+    ],
+  },
+  // An emotions chart (online): the usual opening, then buffering, low battery, unread
+  // notifications, someone is typing..., nearly always ending on touching grass (now and then,
+  // on turning it off and on again).
+  {
+    id: "emotions_online",
+    name: "an emotions chart (online)",
+    frequency: 0.25,
+    unique: true,
+    sequence: [
+      {pick: ["emotion_happiness", "emotion_sadness", "emotion_anger", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy"], count: [2, 4], unique: true},
+      {pick: ["emotion_someone_behind_you", "emotion_ear_itch", "emotion_oven", "emotion_nostalgia", "emotion_cold_pillow", "emotion_vending_machine", "emotion_missing_step", "emotion_screen_film", "emotion_preemptive_embarrassment", "emotion_umbrella", "emotion_happiness", "emotion_sadness", "emotion_anger", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy", "emotion_deja_vu", "emotion_memory_loss", "emotion_spooky_coincidence", "emotion_utter_euphoria", "emotion_existential_dread", "emotion_nails_chalkboard", "emotion_gut_terror"], weights: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 1, 1, 1, 0.8, 0.8, 0.8, 0.8], count: [0, 1]},
+      {pick: ["emotion_utter_euphoria", "emotion_existential_dread", "emotion_nails_chalkboard", "emotion_gut_terror", "emotion_forglavedness", "emotion_plorch", "emotion_glumpf", "emotion_wibberance", "emotion_snerk", "emotion_sprongle", "emotion_halvering", "emotion_deja_vu", "emotion_memory_loss", "emotion_spooky_coincidence", "emotion_inner_emptiness", "emotion_playing_extris", "emotion_winning_extris", "emotion_urge_to_rotate", "emotion_long_piece", "emotion_being_a_piece", "emotion_row_grief", "emotion_fear_of_ceiling", "emotion_someone_behind_you", "emotion_ear_itch", "emotion_oven", "emotion_nostalgia", "emotion_cold_pillow", "emotion_vending_machine", "emotion_missing_step", "emotion_screen_film", "emotion_preemptive_embarrassment", "emotion_umbrella"], weights: [2, 2, 2, 2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1, 1, 1, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], count: [1, 2]},
+      {pick: ["emotion_forglavedness", "emotion_plorch", "emotion_glumpf", "emotion_wibberance", "emotion_snerk", "emotion_sprongle", "emotion_halvering", "emotion_inner_emptiness", "emotion_playing_extris", "emotion_winning_extris", "emotion_urge_to_rotate", "emotion_long_piece", "emotion_being_a_piece", "emotion_row_grief", "emotion_fear_of_ceiling"], weights: [2, 2, 2, 2, 2, 2, 2, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5], count: [0, 2]},
+      { chain: {
+          start: {emotion_buffering: 1.2, emotion_unread_notifications: 1},
+          after: {
+            emotion_buffering: {emotion_unread_notifications: 1.7, emotion_low_battery: 1, emotion_someone_typing: 0.9},
+            emotion_unread_notifications: {emotion_low_battery: 1.3, emotion_someone_typing: 1.2},
+            emotion_low_battery: {emotion_someone_typing: 1.6, emotion_not_a_robot: 0.9, emotion_off_and_on_again: 0.7},
+            emotion_someone_typing: {emotion_not_a_robot: 1.4, emotion_off_and_on_again: 0.9},
+            emotion_not_a_robot: {emotion_off_and_on_again: 1.4, emotion_touching_grass: 1.5},
+            emotion_off_and_on_again: {emotion_touching_grass: 3, stop: 0.45},
+          },
+          min: 4, max: 7,
+      } },
+    ],
+  },
 ];

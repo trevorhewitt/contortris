@@ -21,7 +21,7 @@ function setStack(state, rows) {
 }
 
 // pieces served in `mode` over a few games, and how often each follows on from the one before
-function play(mode, enabled, seeds = [1, 2, 3, 4]) {
+function play(mode, enabled, seeds = [1, 2, 3, 4, 5, 6, 7, 8]) {
   const was = CONFIG.assist.threads.enabled;
   CONFIG.assist.threads.enabled = enabled;
   const out = { pu: [0, 0], reg: [0, 0], runs: [], games: [] };

@@ -238,7 +238,8 @@ test("God mode opens with the emotions chart's ascent into the pseudo-spiritual"
     for (let k = 0; k < 120 && (state.effect || state.hold); k++) updateGame(state, 16);
     state.board = state.board.map(r => r.fill(null));
   }
-  assert.equal(sets[0], CONFIG.godMode.firstSet, `the first set: ${sets.join(", ")}`);
+  // (the first of them never seen in this browser: here, nothing has been)
+  assert.equal(sets[0], [].concat(CONFIG.godMode.firstSet)[0], `the first set: ${sets.join(", ")}`);
   const ascent = normaliseGroups(GROUPS, [...shapes, ...powerups]).find(g => g.id === "emotions_ascent");
   const rng = makeRng(7);
   for (let i = 0; i < 50; i++) {

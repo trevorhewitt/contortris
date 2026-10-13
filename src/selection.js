@@ -229,7 +229,8 @@ function noveltyMultiplier(sel, shape) {
   const n = CONFIG.godMode.novelty ?? {};
   const served = sel.servedCounts.get(shape.id) ?? 0;
   const shown = (sel.shownThisLoad?.get(shape.id) ?? 0) + served;
-  if (!CONFIG.modes[sel.mode]?.zen && (CONFIG.godMode.firstPieces ?? []).includes(shape.id) && !shown) return n.firstBoost ?? 1000; // (turbo zen has its own opening)
+  // (once the opening set has come; turbo zen has its own opening)
+  if (!CONFIG.modes[sel.mode]?.zen && (CONFIG.godMode.firstPieces ?? []).includes(shape.id) && !shown && sel.level6?.seen?.size) return n.firstBoost ?? 1000;
   if ((CONFIG.godMode.newest?.pieces ?? []).includes(shape.id) && shown < (n.newUntilShown ?? 1)) return n.newBoost ?? 6;
   return (sel.seenEver.get(shape.id) ?? 0) + served ? 1 : (n.unseenBoost ?? 2.5);
 }

@@ -168,9 +168,11 @@ test("level 6 pieces never turn up outside a group", () => {
     let i = 0, groups = 0;
     while (i < ids.length) {
       const gs = firstIds.get(ids[i]) ?? [];
-      // (a set can open with an ordinary piece, like the small piece of the sky)
-      const g = gs.find(g => matchGroupAt(g, ids, i) > 0) ?? gs[0];
-      const m = g ? matchGroupAt(g, ids, i) : -1;
+      // (a set can open with an ordinary piece, like the small piece of the sky; and sets can
+      // share an opening, like the emotions charts: the one that matches the most of it)
+      const best = gs.map(g => [g, matchGroupAt(g, ids, i)]).sort((a, b) => b[1] - a[1])[0];
+      const g = best && best[1] > 0 ? best[0] : gs[0];
+      const m = best && best[1] > 0 ? best[1] : g ? matchGroupAt(g, ids, i) : -1;
       if (g && (served[i].difficulty === 6 || m > 0)) {
         const n = m;
         if (n < 0 && ids.length - i < 40) break;
@@ -475,6 +477,24 @@ test("beans and Spaghetti-Os: a can (that also turns up on its own), then more a
       runs.add(ids.join());
     }
     assert.ok(runs.size > 150, `${id}: ${runs.size} different runs of 200`);
+  }
+});
+
+test("the emotions chart's other endings: for business (stonks), very British (a nice cup of tea), online (touching grass)", () => {
+  const all = normaliseGroups(GROUPS, shapes);
+  const raw = (id) => GROUPS.find(g => g.id === id);
+  for (const [id, usual, now] of [["emotions_business", "emotion_stonks", "emotion_not_stonks"], ["emotions_british", "emotion_cup_of_tea", "emotion_sorry"], ["emotions_online", "emotion_touching_grass", "emotion_off_and_on_again"]]) {
+    const g = all.find(g => g.id === id);
+    assert.ok(g, id);
+    assert.deepEqual(raw(id).sequence.slice(0, 4), raw("emotions").sequence.slice(0, 4), `${id}: the usual opening`);
+    const rng = makeRng(5), ends = new Map();
+    for (let i = 0; i < 200; i++) {
+      const ids = expandGroup(g, rng).map(s => s.id).filter(x => !/deja_vu|memory_loss|spooky/.test(x));
+      assert.equal(new Set(ids).size, ids.length, `${id}: no card twice: ${ids.join()}`);
+      ends.set(ids.at(-1), (ends.get(ids.at(-1)) ?? 0) + 1);
+    }
+    assert.ok((ends.get(usual) ?? 0) > 200 * 0.7, `${id}: ends on ${usual} ${ends.get(usual)} of 200`);
+    assert.ok((ends.get(now) ?? 0) > 0, `${id}: and now and then on ${now}`);
   }
 });
 
