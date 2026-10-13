@@ -1,5 +1,6 @@
 // Run with:  node --test tests/*.test.mjs
-// Zen mode: it plays itself, fills the board to the brink and brings it all down, and never ends.
+// Zen mode: slow and easy, and it can't be lost. Turbo zen: it plays itself, fills the board to the
+// brink and brings it all down, and never ends.
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CONFIG } from "../config.js";
@@ -37,8 +38,113 @@ const run = (state, log, ms, each = null) => {
   }
 };
 
-test("zen: plays itself for half an hour, filling the board to the brink and bringing it all down", () => {
+test("zen: slow and easy — it plays itself, keeps the board low, and never ends", () => {
   const { state, log } = zen(1);
+  let low = 0;
+  run(state, log, 30 * 60000, () => { if (height(state) <= 12) low++; });
+  assert.equal(log.over, false);
+  assert.equal(log.rescues, 0, "never needed rescuing");
+  // (at an easy pace: a piece every few seconds, even left to itself)
+  assert.ok(state.drops > 300 && state.drops < 1000, `${state.drops} pieces`);
+  assert.ok(low / log.frames > 0.9, `low ${(low / log.frames * 100).toFixed(0)}% of the time`);
+  assert.ok(log.maxHeight <= rows - 6, `up to ${log.maxHeight} rows`);
+  assert.ok(Math.max(...log.clears) <= 6, `never anything built up to bring down: ${Math.max(...log.clears)} rows at once`);
+  const kinds = new Set(log.movements.map(m => m.name));
+  for (const k of ["column", "beds", "crack", "mess", "build", "demolition", "mono", "waves"]) assert.ok(!kinds.has(k), `${k} in zen`);
+  assert.ok(["family", "colours", "twos", "rain"].filter(k => kinds.has(k)).length >= 3, `${[...kinds]}`);
+});
+
+test("zen: each piece comes in as usual, and is turned and moved over to its place a step at a time", () => {
+  const { state } = zen(2);
+  let checked = 0, moved = 0, piece = null, want = null, path = [];
+  on(state, (t) => {
+    if (t === "spawn") {
+      const a = state.active;
+      piece = a; want = state.zen.target; path = [];
+      if (!want?.glide) return;
+      assert.equal(a.rotIdx, 0, `${a.shape.id} comes in unturned`);
+      checked++;
+    }
+    if (t === "lock" && want?.glide) {
+      assert.equal(piece.rotIdx, want.rot, `${piece.shape.id} turned`);
+      assert.ok(piece.x === want.x || piece.x === want.slide?.to, `${piece.shape.id} over its place`);
+      // (one column at a time, never jumping)
+      for (let i = 1; i < path.length; i++) assert.ok(Math.abs(path[i] - path[i - 1]) <= 2, `${piece.shape.id}: ${path}`);
+      if (new Set(path).size > 1) moved++;
+    }
+  });
+  run(state, null, 3 * 60000, () => { if (piece && state.active === piece && path[path.length - 1] !== piece.x) path.push(piece.x); });
+  assert.ok(checked > 30 && moved > 15, `${checked} pieces, ${moved} moved over`);
+});
+
+test("zen: left alone it dozes off and carries on a little quicker, and a touch wakes it", () => {
+  const C = CONFIG.zen.calm;
+  const { state } = zen(3);
+  run(state, null, 3000);
+  assert.equal(state.dropMs, C.dropMs, "an easy pace to start with");
+  run(state, null, C.idleMs + 8000);
+  assert.equal(state.dropMs, C.idleDropMs, "dozing");
+  while (!state.active || state.effect || state.active.y < 0) updateGame(state, 16);
+  markInput(state, "keyboard");
+  tryMove(state, 1, 0);
+  updateGame(state, 16);
+  assert.equal(state.zen.userHas, true);
+  assert.equal(state.dropMs, C.dropMs, "awake, and it's the player's");
+  const piece = state.active;
+  while (state.active === piece) updateGame(state, 16);
+  while (!state.active) updateGame(state, 16);
+  assert.equal(state.zen.userHas, false, "the next piece is the computer's");
+  assert.equal(state.dropMs, C.dropMs, "still awake");
+});
+
+test("zen: once the player touches a piece it's theirs, and the next one is the computer's again", () => {
+  const { state } = zen(3);
+  run(state, null, 4000);
+  while (!state.active || state.effect || state.active.y < 0) updateGame(state, 16);
+  const piece = state.active;
+  // the player nudges it, as far left as it goes
+  markInput(state, "keyboard");
+  while (tryMove(state, -1, 0)) { /* all the way */ }
+  const x = piece.x, rot = piece.rotIdx;
+  updateGame(state, 16);
+  assert.equal(state.zen.userHas, true);
+  assert.equal(state.dropMs, CONFIG.zen.calm.dropMs, "it falls at the player's pace");
+  for (let t = 0; t < 60000 && state.active === piece; t += 16) {
+    updateGame(state, 16);
+    if (state.active !== piece) break;
+    assert.equal(piece.x, x, "the game never moves it back");
+    assert.equal(piece.rotIdx, rot);
+  }
+  assert.notEqual(state.active, piece, "it landed");
+  assert.equal(state.zen.userHas, false, "the next piece is the computer's");
+  // (and coming back from a pause isn't taking it over)
+  markInput(state, "touch");
+  zenIgnoreInput(state);
+  updateGame(state, 16);
+  assert.equal(state.zen.userHas, false);
+});
+
+test("zen: nothing the player does can end it, and a little help comes when it's left in a mess", () => {
+  for (const mode of ["zen", "turbo"]) {
+    const { state, log } = zen(4, mode);
+    // the worst player: every piece shoved against a wall and dropped
+    let side = -1;
+    run(state, log, 10 * 60000, () => {
+      if (!state.active || state.effect || state.active.shape.powerup) return;
+      markInput(state, "keyboard");
+      while (tryMove(state, side, 0)) { /* to the wall */ }
+      side = -side;
+      hardDropAndLock(state);
+    });
+    assert.equal(log.over, false, mode);
+    assert.equal(state.gameOver, false, mode);
+    assert.ok(log.movements.some(m => m.name === "steady" || (mode === "zen" && m.name === "help")), `${mode}: help came`);
+    assert.ok(state.drops > (mode === "zen" ? 100 : 300), `${mode}: ${state.drops}`); // (zen's own pieces take their time)
+  }
+});
+
+test("turbo zen: plays itself for half an hour, filling the board to the brink and bringing it all down", () => {
+  const { state, log } = zen(1, "turbo");
   run(state, log, 30 * 60000);
   assert.equal(log.over, false);
   assert.equal(log.rescues, 0, "never needed rescuing");
@@ -49,11 +155,12 @@ test("zen: plays itself for half an hour, filling the board to the brink and bri
   assert.ok(log.clears.filter(n => n === rows).length >= 3, `whole-board clears: ${log.clears.filter(n => n === rows).length}`);
   assert.ok(log.callouts.some(c => /quattuorvigintuple/.test(c)), "and it has a name");
   const kinds = new Set(log.movements.map(m => m.name));
-  for (const k of ["natural", "build", "demolition", "column", "beds", "crack", "mess"]) assert.ok(kinds.has(k), `no ${k} in ${[...kinds]}`);
+  for (const k of ["demolition", "column", "crack", "mono"]) assert.ok(kinds.has(k), `no ${k} in ${[...kinds]}`);
+  assert.ok(kinds.size >= 10, `${[...kinds]}`);
 });
 
-test("zen: every piece starts out over the place it's going, already turned", () => {
-  const { state, log } = zen(2);
+test("turbo zen: every piece starts out over the place it's going, already turned", () => {
+  const { state, log } = zen(2, "turbo");
   let checked = 0, planned = 0;
   on(state, (t) => {
     if (t !== "spawn") return;
@@ -69,57 +176,12 @@ test("zen: every piece starts out over the place it's going, already turned", ()
   assert.ok(checked > 100 && planned > 30, `${checked} pieces, ${planned} of them planned`);
 });
 
-test("zen: once the player touches a piece it's theirs, and the next one is the computer's again", () => {
-  const { state } = zen(3);
-  run(state, null, 4000);
-  while (!state.active || state.effect || state.active.y < 0) updateGame(state, 16);
-  const piece = state.active;
-  // the player nudges it, as far left as it goes
-  markInput(state, "keyboard");
-  while (tryMove(state, -1, 0)) { /* all the way */ }
-  const x = piece.x, rot = piece.rotIdx;
-  updateGame(state, 16);
-  assert.equal(state.zen.userHas, true);
-  assert.equal(state.dropMs, CONFIG.zen.dropMs, "it falls at the player's pace now");
-  for (let t = 0; t < 60000 && state.active === piece; t += 16) {
-    updateGame(state, 16);
-    if (state.active !== piece) break;
-    assert.equal(piece.x, x, "the game never moves it back");
-    assert.equal(piece.rotIdx, rot);
-  }
-  assert.notEqual(state.active, piece, "it landed");
-  assert.equal(state.zen.userHas, false, "the next piece is the computer's");
-  assert.ok(state.dropMs < CONFIG.zen.dropMs);
-  // (and coming back from a pause isn't taking it over)
-  markInput(state, "touch");
-  zenIgnoreInput(state);
-  updateGame(state, 16);
-  assert.equal(state.zen.userHas, false);
-});
-
-test("zen: nothing the player does can end it", () => {
-  const { state, log } = zen(4);
-  // the worst player: every piece shoved against a wall and dropped
-  let side = -1;
-  run(state, log, 10 * 60000, () => {
-    if (!state.active || state.effect || state.active.shape.powerup) return;
-    markInput(state, "keyboard");
-    while (tryMove(state, side, 0)) { /* to the wall */ }
-    side = -side;
-    hardDropAndLock(state);
-  });
-  assert.equal(log.over, false);
-  assert.equal(state.gameOver, false);
-  assert.ok(log.movements.some(m => m.name === "steady"), "a big powerup came to steady it");
-  assert.ok(state.drops > 300);
-});
-
-test("zen: each planned movement builds right up and then clears what it built", () => {
+test("turbo zen: each planned movement builds right up and then clears what it built", () => {
   // (rows cleared at least, and the board left nearly empty)
   const want = { column: rows, beds: rows, crack: 14, well: 10, fall: 5 };
   for (const [name, least] of Object.entries(want)) {
     for (const seed of [2, 5]) {
-      const { state, log } = zen(seed);
+      const { state, log } = zen(seed, "turbo");
       zenStart(state, name);
       log.movements.length = 0; // (only from here on)
       run(state, log, 5 * 60000);
@@ -134,8 +196,8 @@ test("zen: each planned movement builds right up and then clears what it built",
   }
 });
 
-test("zen: a mess is built nearly to the top, full of gaps, and then demolished", () => {
-  const { state, log } = zen(6);
+test("turbo zen: a mess is built nearly to the top, full of gaps, and then demolished", () => {
+  const { state, log } = zen(6, "turbo");
   let top = 0, gaps = 0;
   on(state, (t, d) => {
     if (t === "zenMovement" && d.name === "demolition") {

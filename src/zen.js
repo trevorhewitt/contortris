@@ -1,25 +1,31 @@
 // ============================================================
 // ZEN MODE — the game plays itself, and never ends (no DOM)
 // ============================================================
-// Each piece arrives already turned and over the place it's going, and falls quickly into it,
-// sliding in under an overhang at the bottom if it has to. It's in the computer's hands until
-// the player touches it; then it's theirs (the game never moves it back), until the next piece.
+// Zen is for playing, slowly. Each piece comes down at an easy pace, and the computer turns it
+// and moves it over to where it would put it, a step at a time; it's in the computer's hands
+// until the player touches it, and then it's theirs (the game never moves it back) until the
+// next piece. Left alone a while, it carries on by itself, a little quicker. It keeps the board
+// low and tidy and never builds anything up; now and then a little run of something (a few
+// bees, a red patch, the same piece twice), and when the player leaves it high or full of gaps,
+// a little help (CONFIG.zen.calm).
 //
-// The director decides what comes next, in movements, and mostly it builds the board right up
-// to the brink and then brings it all down: rows built around a slot and then the one piece that
+// Turbo zen is for watching. Each piece arrives already turned and over the place it's going,
+// and falls quickly into it, sliding in under an overhang at the bottom if it has to. The
+// director decides what comes next, in movements, and mostly it builds the board right up to
+// the brink and then brings it all down: rows built around a slot and then the one piece that
 // fills it (the tallest pieces fill a slot the whole height of the board), perfect beds for
 // awkward giants one on top of another, a crack running through every row that a run of
 // phantoms seals, a mess that powerups demolish, a board full of nothing but spam... with
-// quieter interludes between (light rain, as it comes). Small and repetitive things come down
-// faster; the big moments take their time (CONFIG.zen.pace).
+// quieter interludes between. Small and repetitive things come down faster; the big moments
+// take their time (CONFIG.zen.pace).
 //
-// Nothing can top it out. If the player builds it up into danger, a big powerup comes
+// Nothing can top either out. If the player builds it up into danger, a big powerup comes
 // ("steady"), and if a piece ever does lock above the top, the board is rescued instead
 // (game.js zenRescue). If the player steps in during a planned movement and the board no longer
 // matches the plan, the director says "never mind" and tidies up.
 
 import { CONFIG } from "../config.js";
-import { tryMove, zenCaption } from "./game.js";
+import { tryMove, tryRotate, zenCaption } from "./game.js";
 import { selectPiece, destroyerCells } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup } from "./powerups.js";
@@ -43,11 +49,11 @@ const WEIGHTS = {
 };
 
 // How often each movement comes up (never the same twice running), in zen and in turbo zen.
-// (Turbo zen leans hard on the ones that fill the screen, and above all the ones made of one
-// family of pieces; the ones that just fill it at random come up less, so it stays lively.)
+// (Zen keeps it low and easy: mostly the game as it comes, with a little run of something now
+// and then. Turbo zen leans hard on the ones that fill the screen, and above all the ones made
+// of one family of pieces; the ones that just fill it at random come up less, so it stays lively.)
 const MOVEMENT_WEIGHTS = {
-  zen: { natural: 1.5, rain: 1, build: 2.5, giants: 1.5, column: 3, beds: 2.5, crack: 2, mess: 2, fall: 1.2, well: 1, chorus: 1,
-    standing: 0.8, colour: 1, squares: 0.6, waves: 1, blackholes: 0.4, expanders: 0.4 },
+  zen: { natural: 5, rain: 1, family: 1.6, colours: 1, twos: 0.7 },
   turbo: { natural: 0.25, rain: 0.15, build: 0.5, giants: 0.3, column: 2.5, beds: 2, crack: 2, mess: 0.9, fall: 0.3, well: 0.3, chorus: 1.2,
     mono: 5, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1 },
 };
@@ -57,6 +63,10 @@ const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "sta
 const BLENDS = new Set(["build", "chorus", "mono", "small", "big", "waves", "expanders", "blackholes"]);
 
 const zenSet = (state) => (CONFIG.modes[state.mode]?.zenMovements === "turbo" ? "turbo" : "zen");
+// (zen itself, slow and easy, as opposed to turbo zen)
+const isCalm = (state) => !!CONFIG.modes[state.mode]?.calm;
+// Left alone long enough, zen carries on by itself, a little quicker.
+const dozing = (state) => { const z = state.zen; return isCalm(state) && z.clock - z.inputClock >= CONFIG.zen.calm.idleMs; };
 
 export function createZen(state) {
   return {
@@ -71,6 +81,8 @@ export function createZen(state) {
     target: null,     // where it's going
     userHas: false,   // the player has taken this piece over
     userAt: null,     // (the last time they did: state.drops)
+    clock: 0, inputClock: 0, // (game time, and when the player last pressed anything: zen dozes off without them)
+    helpedAt: -99,    // (zen: the last little help, state.drops)
     pace: 1, lastId: null, fall: 24, rest: 0, blocks: null,
     simRng: makeRng(7), // (the autopilot's look-ahead never touches the game's random numbers)
   };
@@ -110,6 +122,12 @@ export function zenNext(state) {
   if (!z.queue[0].expect && inDanger(state, occ, z.queue[0])) {
     z.queue.unshift({ shape: bigPowerup(state), weights: WEIGHTS.clear, emergency: true });
     zenCaption(state, "steady", "steady");
+  } else if (isCalm(state) && !z.queue[0].shape.powerup && needsHelp(state, occ)) {
+    // zen: left high or full of gaps, a little help (now and then)
+    const g = gaps(state);
+    z.queue.unshift({ shape: g > 6 ? consolidator(state) : bestPowerup(state), weights: WEIGHTS.clear });
+    z.helpedAt = state.drops;
+    zenCaption(state, "a little help", "help");
   }
   const item = z.queue.shift();
   // (after a big clearance, a breath before the next piece)
@@ -129,10 +147,18 @@ export function zenNext(state) {
 function inDanger(state, occ, item) {
   const z = state.zen, { cols, rows } = CONFIG.board;
   const h = heightOf(occ, cols, rows);
-  if (z.userAt != null && state.drops - z.userAt <= 8 && h >= rows - CONFIG.zen.dangerRows) return true;
+  const danger = isCalm(state) ? CONFIG.zen.calm.dangerRows : CONFIG.zen.dangerRows;
+  if (z.userAt != null && state.drops - z.userAt <= 8 && h >= rows - danger) return true;
   if (h < rows - CONFIG.zen.brinkRows || item.shape.powerup) return false;
   const best = bestPlacement(state, item.shape, item.weights ?? WEIGHTS.clear, 4);
   return !best || best.s < -500;
+}
+
+// Zen: high (CONFIG.zen.calm.helpHeight of the board) or full of gaps, and no help for a while.
+function needsHelp(state, occ) {
+  const C = CONFIG.zen.calm, { cols, rows } = CONFIG.board;
+  if (state.drops - state.zen.helpedAt < C.helpEvery) return false;
+  return heightOf(occ, cols, rows) > rows * C.helpHeight || gaps(state) > C.helpGaps;
 }
 
 // The next piece, for the preview (or null).
@@ -167,6 +193,8 @@ function pickMovement(state) {
   const occ = occupancy(state.board);
   const h = heightOf(occ, cols, rows);
   if (z.after && !PLANNED.has(z.after)) return z.after;
+  // (zen: never building anything up, so no waiting for a tidy board)
+  if (isCalm(state)) return sampleByWeight(Object.entries(MOVEMENT_WEIGHTS.zen).filter(([k]) => k !== z.last), ([, w]) => w, state.rng)[0];
   if (!z.after) {
     let options = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => k !== z.last);
     // left high: tidy up first, or now and then just carry on building on what's there
@@ -343,10 +371,20 @@ function planned(caption, plan, then = null) {
   };
 }
 
+// A short run of next() pieces, played to keep it low (zen).
+const run = (caption, next, left) => ({
+  caption, left,
+  fill(state) { state.zen.queue.push({ shape: next(state), weights: WEIGHTS.clear }); this.left--; },
+  done() { return this.left <= 0; },
+});
+// (any of `list` that sits well under the top, or else something small)
+const easyOf = (state, list) => { const fits = list.filter(s => fitsUnder(state, s, 6)); return fits.length ? pick(state, fits) : pick(state, smallPool(state)); };
+const easyPool = (state) => regularPool(state).filter(s => (s.difficulty ?? 1) <= 3 && blocks(s) <= 16);
+
 const MOVEMENTS = {
-  // the game as it comes, played well
+  // the game as it comes, played well (in zen, without saying so, and not for so long)
   natural: (state) => ({
-    caption: "as it comes", left: int(state, 20, 35),
+    caption: isCalm(state) ? null : "as it comes", left: isCalm(state) ? int(state, 12, 22) : int(state, 20, 35),
     fill(state) { state.zen.queue.push({ shape: naturalPiece(state), weights: WEIGHTS.clear }); this.left--; },
     done(state) { return this.left <= 0 && !groupUnderWay(state); }, // (a set always finishes)
   }),
@@ -476,6 +514,37 @@ const MOVEMENTS = {
     done(state) { return this.phase === "blast" && (this.blasts >= 7 || stackHeight(state) <= 3); },
   }),
 
+  // zen: a few of one family of pieces (a few bees, some florgnorfepuses)
+  family: (state) => {
+    const fam = pickFamily(state, { calm: true });
+    return run(fam.caption, (st) => easyOf(st, fam.pieces), int(state, 6, 10));
+  },
+
+  // zen: a patch of one colour
+  colours: (state) => {
+    const by = new Map();
+    for (const s of easyPool(state)) {
+      const c = colourOf(s);
+      if (!c || c === "black") continue;
+      if (!by.has(c)) by.set(c, []);
+      by.get(c).push(s);
+    }
+    const options = [...by].filter(([, list]) => list.length >= 4);
+    if (!options.length) return MOVEMENTS.rain(state);
+    const [c, list] = options[Math.floor(state.rng() * options.length)];
+    return run(c === "many" ? "a riot of colour" : `a ${c} patch`, (st) => easyOf(st, list), int(state, 7, 11));
+  },
+
+  // zen: the same piece two or three times in a row
+  twos: (state) => {
+    let left = 0, cur = null;
+    return run("in twos and threes", (st) => {
+      if (left <= 0 || !fitsUnder(st, cur, 6)) { cur = pick(st, regularPool(st).filter(s => (s.difficulty ?? 1) <= 2)); left = int(st, 2, 3); }
+      left--;
+      return cur;
+    }, int(state, 8, 12));
+  },
+
   // powerups until the board is low with no gaps
   tidy: () => ({
     caption: "tidying up", used: 0,
@@ -489,31 +558,36 @@ const MOVEMENTS = {
 };
 
 // One kind of thing to fill the board with: a set's pieces, Big Bens, or everything on a thread
-// (the sets and the Bens more often than any one thread).
-function pickFamily(state) {
+// (the sets and the Bens more often than any one thread). With `calm` (zen), only the easier
+// pieces of each, and said more quietly.
+function pickFamily(state, { calm = false } = {}) {
   const byId = (id) => state.allById?.get(id);
   const fams = [];
-  const named = { spam: "nothing but spam", noahs_ark: "two by two", emotions: "a wall of feelings" };
+  const add = (caption, quiet, pieces, w) => {
+    if (calm) pieces = pieces.filter(s => (s.difficulty ?? 1) <= 3 && blocks(s) <= 16);
+    if (pieces.length >= (calm ? 3 : 1)) fams.push({ caption: calm ? quiet : caption, pieces, w });
+  };
+  const named = { spam: ["nothing but spam", "a little spam"], noahs_ark: ["two by two", "two by two"], emotions: ["a wall of feelings", "some feelings"] };
   for (const g of state.groups ?? []) {
     if (!named[g.id]) continue;
     const pieces = [...new Set(g.steps.flatMap(st => st.shapes ?? st.variant ?? []))].filter(s => blocks(s) <= 30);
-    if (pieces.length >= 3) fams.push({ caption: named[g.id], pieces, w: 5 });
+    if (pieces.length >= 3) add(...named[g.id], pieces, 5);
   }
   const bens = ["big_ben", "little_ben"].map(byId).filter(Boolean);
-  if (bens.length) fams.push({ caption: "Big Bens", pieces: bens, w: 5 });
+  if (bens.length) add("Big Bens", "a Ben or two", bens, 5);
   const rain = ["raindrop", "big_raindrop", "drizzle"].map(byId).filter(Boolean);
-  if (rain.length) fams.push({ caption: "a lot of rain", pieces: rain, w: 3 });
+  if (rain.length) add("a lot of rain", "a shower", rain, 3);
   const live = (ids) => ids.map(byId).filter(s => s && !s.powerup && (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6);
   const bees = live(["bees", "forgotten_bee", "piano_full_of_bees", "a_bee", "two_bees", "bee_line", "queen_bee", "honeycomb", "bees_knees", "bee_bigger_bee", "bee_in_a_bonnet", "cloud_of_bees"]);
-  if (bees.length >= 2) fams.push({ caption: "bees", pieces: bees, w: 5 });
+  if (bees.length >= 2) add("bees", "a few bees", bees, 5);
   const florg = live(["florgenorflepus", "florgnorfepus_egg", "snorfwiggle", "plorbs", "grumblesac", "schlopwort", "squonch", "blibbets", "mumblethorpe"]);
-  if (florg.length >= 3) fams.push({ caption: "florgnorfepuses, mostly", pieces: florg, w: 5 });
+  if (florg.length >= 3) add("florgnorfepuses, mostly", "some florgnorfepuses", florg, 5);
   const surreal = live([...(state.threads?.members?.get("surreal") ?? [])]);
-  if (surreal.length >= 8) fams.push({ caption: "nothing but the surreal", pieces: surreal, w: 5 });
+  if (surreal.length >= 8) add("nothing but the surreal", "something surreal", surreal, 5);
   for (const [name, ids] of state.threads?.members ?? []) {
     if (name.includes(":")) continue;
     const pieces = [...ids].map(byId).filter(s => s && !s.powerup && (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6);
-    if (pieces.length >= 8) fams.push({ caption: `a lot of ${name}`, pieces, w: 1 });
+    if (pieces.length >= 8) add(`a lot of ${name}`, `a little ${name}`, pieces, 1);
   }
   return fams.length ? sampleByWeight(fams, f => f.w, state.rng) : { caption: "small things", pieces: smallPool(state) };
 }
@@ -541,23 +615,28 @@ function bigPowerup(state) {
    ========================= */
 
 // A new piece has spawned (game.js spawnPiece): put it straight over where it's going, already
-// turned, and let it fall at its pace.
+// turned, and let it fall at its pace. (Zen: it comes in as usual, and is turned and moved over
+// a step at a time, in zenTick.)
 export function zenSpawned(state) {
   const z = state.zen, a = state.active;
   z.piece = a;
   z.userHas = false;
   // (anything pressed since the last piece came was the player playing that one, not this one)
-  if (state.lastInputAt !== z.inputAt) z.userAt = state.drops;
+  if (state.lastInputAt !== z.inputAt) { z.userAt = state.drops; z.inputClock = z.clock; }
   z.inputAt = state.lastInputAt;
   z.target = targetFor(state);
+  z.glideMs = 0;
   const t = z.target;
   if (t) {
     const mat = a.shape.rotations[t.rot];
     if (mat && t.x >= 0 && t.x + mat[0].length <= CONFIG.board.cols) {
-      a.rotIdx = t.rot;
-      a.x = t.x;
-      a.y = -mat.length;
-      a.unkickedX = null;
+      if (isCalm(state)) t.glide = true;
+      else {
+        a.rotIdx = t.rot;
+        a.x = t.x;
+        a.y = -mat.length;
+        a.unkickedX = null;
+      }
     }
   }
   z.pace = paceFor(state, z.current, a.shape);
@@ -576,21 +655,24 @@ export function zenSpawned(state) {
 }
 
 // How fast the piece falls: the autopilot's quickly (but each takes a moment at least), the
-// player's at the usual pace (game.js asks)...
+// player's at the usual pace; in zen, easily either way, unless it's dozing (game.js asks)...
 export function zenSpeed(state) {
   const z = state.zen, Z = CONFIG.zen;
-  state.dropMs = z.userHas ? Z.dropMs : Math.max(8, Z.fallMs * z.pace, Z.pieceMs * z.pace / (z.fall ?? 24));
+  if (isCalm(state)) state.dropMs = !z.userHas && dozing(state) ? Z.calm.idleDropMs : Z.calm.dropMs;
+  else state.dropMs = z.userHas ? Z.dropMs : Math.max(8, Z.fallMs * z.pace, Z.pieceMs * z.pace / (z.fall ?? 24));
 }
 const autopilot = (state) => { const z = state.zen; return !!z && !z.userHas && !!state.active && z.piece === state.active; };
 // ...how many rows it can fall in one frame (null: as usual)...
 export function zenSteps(state) {
-  return autopilot(state) ? CONFIG.zen.maxStepsPerFrame : null;
+  return autopilot(state) && !isCalm(state) ? CONFIG.zen.maxStepsPerFrame : null;
 }
-// ...and how long it waits before it locks (null: as usual). Never before its slide.
+// ...and how long it waits before it locks (null: as usual). Never before its slide, or before
+// it has got where it's going.
 export function zenLockMs(state) {
   if (!autopilot(state)) return null;
   const t = state.zen.target;
-  return t?.slide && !t.slid ? Infinity : CONFIG.zen.lockMs * state.zen.pace;
+  if ((t?.slide && !t.slid) || (t?.glide && !t.glided)) return Infinity;
+  return isCalm(state) && !dozing(state) ? null : CONFIG.zen.lockMs * state.zen.pace;
 }
 
 // Small and repetitive things come down faster, and so does the long build up from the bottom;
@@ -609,9 +691,11 @@ function paceFor(state, item, shape) {
 export function zenTick(state, dt) {
   const z = state.zen;
   const a = state.active;
+  z.clock += dt;
   // the player pressed something: this piece is theirs (until the next one comes)
   if (state.lastInputAt !== z.inputAt) {
     z.inputAt = state.lastInputAt;
+    z.inputClock = z.clock;
     if (a && !z.userHas) {
       z.userHas = true;
       z.userAt = state.drops;
@@ -619,6 +703,17 @@ export function zenTick(state, dt) {
     }
   }
   if (!a || state.effect || z.userHas || a !== z.piece) return;
+  // zen: turned and moved over to its place, a step at a time (and if it can't get there, it
+  // lands where it is)
+  const g = z.target;
+  if (g?.glide && !g.glided) {
+    const every = CONFIG.zen.calm.glideMs * (dozing(state) ? 0.5 : 1);
+    for (z.glideMs += dt; z.glideMs >= every && !g.glided; z.glideMs -= every) {
+      if (a.rotIdx !== g.rot) { if (!tryRotate(state)) g.glided = true; }
+      else if (a.x !== g.x) { if (!tryMove(state, Math.sign(g.x - a.x), 0)) g.glided = true; }
+      if (a.rotIdx === g.rot && a.x === g.x) g.glided = true;
+    }
+  }
   // (a dramatic pause: it hangs there a moment, and says so)
   if (z.dramatic && !z.dramatic.done && a.y >= z.dramatic.at) {
     z.dramatic.done = true;
@@ -635,9 +730,10 @@ export function zenTick(state, dt) {
   }
 }
 
-// The player let go of the game (paused and came back, say): that's not taking the piece over.
+// The player let go of the game (paused and came back, say): that's not taking the piece over
+// (but they're back, so zen wakes up).
 export function zenIgnoreInput(state) {
-  if (state.zen) state.zen.inputAt = state.lastInputAt;
+  if (state.zen) { state.zen.inputAt = state.lastInputAt; state.zen.inputClock = state.zen.clock; }
 }
 
 function targetFor(state) {

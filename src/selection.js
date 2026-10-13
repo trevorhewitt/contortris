@@ -224,7 +224,7 @@ export function computeBoardPresence(state) {
 // newUntilShown times since the page was loaded (counting this game); anything never seen in
 // this browser, unseenBoost times. (state.seenEver and state.shownThisLoad are kept by the UI.)
 function noveltyMultiplier(sel, shape) {
-  if (!isGodMode(sel.mode) || !sel.seenEver) return 1;
+  if (!isGodMode(sel.mode) || CONFIG.modes[sel.mode]?.calm || !sel.seenEver) return 1; // (zen is as it comes)
   const n = CONFIG.godMode.novelty ?? {};
   const served = sel.servedCounts.get(shape.id) ?? 0;
   const shown = (sel.shownThisLoad?.get(shape.id) ?? 0) + served;
@@ -334,7 +334,7 @@ export function selectPiece(state) {
   sel.dropIndex += 1;
   sel.presence = computeBoardPresence(state);
 
-  const mixCfg = CONFIG.assist.pieceMix;
+  const mixCfg = godConfig(state.mode, "pieceMix", CONFIG.assist.pieceMix); // (zen leans to the easy ones)
   const danger01 = computeStackDanger01(state);
   const danger = clamp01(danger01 * (mixCfg.dangerBiasStrength ?? 1.0));
 

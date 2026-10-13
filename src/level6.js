@@ -243,7 +243,7 @@ export function maybeStartGroup(state) {
 // page was loaded, and any never seen in this browser more often.
 function setNovelty(state, g) {
   const l6 = state.pieceSel.level6;
-  if (!isGodMode(state.mode) || !l6.seenBefore) return 1;
+  if (!isGodMode(state.mode) || CONFIG.modes[state.mode]?.calm || !l6.seenBefore) return 1; // (zen is as it comes)
   const n = CONFIG.godMode.novelty ?? {};
   const here = l6.seen.get(g.id) ?? 0;
   const shown = (l6.shownThisLoad?.get(g.id) ?? 0) + here;

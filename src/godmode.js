@@ -10,10 +10,13 @@ export function isGodMode(mode) {
 }
 
 // `base` (a section of CONFIG.assist) with God mode's numbers for `key` on top, in God mode;
-// just `base` in every other mode.
+// just `base` in every other mode. (Zen, a calm mode, has its own on top of those:
+// CONFIG.zen.calm.)
 export function godConfig(mode, key, base) {
   const over = isGodMode(mode) ? CONFIG.godMode?.[key] : null;
-  return over ? merge(base ?? {}, over) : base;
+  const out = over ? merge(base ?? {}, over) : base;
+  const calm = CONFIG.modes[mode]?.calm ? CONFIG.zen?.calm?.[key] : null;
+  return calm ? merge(out ?? {}, calm) : out;
 }
 
 function merge(base, over) {

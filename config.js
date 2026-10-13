@@ -16,11 +16,12 @@ export const CONFIG = {
     normal: { label: "Normal", tagline: "powerups help you out", powerups: true, giants: true, level6: true },
     extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true },
     god: { label: "God", tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true },
-    // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); timeScale: how fast it all runs;
+    // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); calm: zen for playing, slow
+    // and easy (CONFIG.zen.calm, which also has its own numbers for the pieces); timeScale: how fast it all runs;
     // zenMovements: "turbo" for turbo zen's own mix of movements; flashNames: the falling piece's
     // name just appears, no sliding in and out
-    zen: { label: "Zen", tagline: "it plays itself, and never ends", powerups: true, giants: true, level6: "open", everything: true, zen: true },
-    turbo: { label: "Turbo zen", tagline: "the same, much faster", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.6, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false },
+    zen: { label: "Zen", tagline: "slow, easy, and impossible to lose", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
+    turbo: { label: "Turbo zen", tagline: "it plays itself, and doesn't stop", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.6, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false },
   },
   defaultMode: "normal",
 
@@ -89,16 +90,35 @@ export const CONFIG = {
   // giants and sets come early and often. To make up for them: lots of powerups, mostly the
   // best ones, the wide gravitizers. Each section replaces the same numbers in `assist` (only
   // the ones listed) while playing God mode.
-  // Zen mode: the autopilot (src/zen.js) puts each piece straight over where it's going, already
-  // turned, and drops it in, unless the player takes it over; the director decides what comes
-  // next. It never ends.
+  // Zen mode (src/zen.js): the director decides what comes next, the autopilot plays each piece
+  // unless the player takes it over, and it never ends.
   zen: {
+    // Zen itself is for playing: slow and easy, and it can't be lost. Each piece comes down at an
+    // easy pace (dropMs a row), and the computer turns it and moves it over to where it would put
+    // it, a step every glideMs; touch it and it's yours. Leave it alone for idleMs and it carries
+    // on by itself a little quicker (idleDropMs a row) until it's touched again. It keeps the
+    // board low and never builds anything up, with now and then a little run of something; and
+    // when the player leaves it high (helpHeight of the board) or full of gaps (helpGaps), a
+    // helpful powerup, at most one every helpEvery pieces. dangerRows: built this close to the
+    // top, a big powerup. The rest (hard, level6, powerups, pieceMix) replace the same numbers in
+    // CONFIG.assist, as God mode's do: fewer giants and sets than God mode, later on, and mostly
+    // the easier pieces.
+    calm: {
+      dropMs: 700, glideMs: 110, idleMs: 20000, idleDropMs: 170,
+      helpHeight: 0.45, helpGaps: 12, helpEvery: 8, dangerRows: 7,
+      hard: { minDropIndex: 12, firstGiantBetween: [18, 36], softWindowStart: 18, rechargePerDrop: 0.004, cooldownDrops: 30, hardMaxDanger: 0.25 },
+      level6: { firstAfter: [25, 45], cooldownDrops: 50, chancePerDrop: 0.04 },
+      powerups: { minDropIndex: 6, cooldownDrops: 4, baseChance: 0.08, chancePerDrop: 0.04, maxChance: 0.4 },
+      pieceMix: { baseLevelWeight: { 0: 0.14, 1: 0.6, 2: 0.23, 3: 0.03 }, openingLevelWeight: { 0: 0, 1: 0.65, 2: 0.3, 3: 0.05 } },
+    },
+    // Turbo zen is for watching. Each piece arrives already turned and over the place it's going,
+    // and falls quickly into it:
     fallMs: 40,          // the autopilot's pieces fall a row this often (times the pace)...
     lockMs: 100,         // ...and lock this soon after landing (times the pace)
     pieceMs: 650,        // (but each takes this long at least, however short the way down)
     restMs: 900,         // after a big clearance, a breath before the next piece
     maxStepsPerFrame: 3, // (so a fast fall stays fast in turbo zen)
-    dropMs: 650,         // how fast a piece falls once the player has taken it over
+    dropMs: 650,         // how fast a piece falls once the player has taken it over (turbo zen)
     // The pace (times fallMs, lockMs and pieceMs): small things, repeats and the pieces that build
     // up the board come down faster; the pieces that bring it all down take their time. And from
     // low (an empty board) to high (a full one), it slows down as it nears the top.
