@@ -262,8 +262,8 @@ export function maybeStartGroup(state) {
   const recent = state.level6Recent ?? [];
   const fresh = pool.filter(g => !recent.includes(g.id));
   if (fresh.length) pool = fresh;
-  // (God mode opens with a particular set, the first time since the page was loaded:
-  // CONFIG.godMode.firstSet)
+  // (God mode opens with a particular set, or one of a few, the first time since the page was
+  // loaded: CONFIG.godMode.firstSet)
   const opening = firstDue && openingSet(state);
   if (opening) pool = [opening];
   // ...and only one whose whole run fits on the board (a set can't be cleared until it's down)
@@ -279,12 +279,16 @@ export function maybeStartGroup(state) {
   return null;
 }
 
+// (one of them, if it's a list: the first never seen in this browser, or else any of them; and
+// once one of them has opened a game since the page was loaded, that's that)
 function openingSet(state) {
-  const id = CONFIG.godMode?.firstSet;
-  if (!id || state.mode !== "god") return null;
+  const ids = [].concat(CONFIG.godMode?.firstSet ?? []);
+  if (!ids.length || state.mode !== "god") return null;
   const l6 = state.pieceSel.level6;
-  if ((l6.shownThisLoad?.get(id) ?? 0) + (l6.seen.get(id) ?? 0) > 0) return null;
-  return state.groups.find(g => g.id === id && g.frequency > 0) ?? null;
+  if (ids.some(id => (l6.shownThisLoad?.get(id) ?? 0) + (l6.seen.get(id) ?? 0) > 0)) return null;
+  const live = ids.map(id => state.groups.find(g => g.id === id && g.frequency > 0)).filter(Boolean);
+  if (!live.length) return null;
+  return live.find(g => !(l6.seenBefore?.get(g.id) ?? 0)) ?? live[Math.floor(state.rng() * live.length)];
 }
 
 // God mode: the newest sets first (CONFIG.godMode.newest) until each has come once since the
