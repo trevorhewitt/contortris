@@ -197,7 +197,7 @@ export const CONFIG = {
     // newSetBoost times (load the page again to see them all again). Anything never seen in this
     // browser at all comes up unseenBoost times as often. (God mode.)
     newest: {
-      sets: ["beans", "spaghetti_os", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
+      sets: ["beans", "spaghetti_os", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
         "spaghetti_os", "spam_can", "bull", "china_shop", "bees_knees", "queen_bee",
         "meteor_shower", "tidal_wave", "dragon_with_hay_fever", "giant_eraser", "hole_in_one",

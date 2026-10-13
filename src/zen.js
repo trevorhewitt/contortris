@@ -139,7 +139,12 @@ export function zenNext(state) {
     z.helpedAt = state.drops;
     zenCaption(state, "a little help", "help");
   }
-  const item = z.queue.shift();
+  let item = z.queue.shift();
+  // (a big piece picked a turn or two ago, for the board as it was then, that won't go in now:
+  // something small instead)
+  if (!item.expect && !item.key && !item.shape.powerup && blocks(item.shape) >= 10 && !fitsUnder(state, item.shape, 2)) {
+    item = { ...item, shape: pick(state, smallPool(state)), label: null };
+  }
   if (item.caption) zenCaption(state, item.caption, "finale", { quiet: true }); // (what happens next, as it starts)
   // (after a big clearance, a breath before the next piece)
   const n = occ.reduce((a, b) => a + b, 0);

@@ -125,14 +125,45 @@ export const GROUPS = [
     id: "loch_ness",
     name: "the Loch Ness monster",
     frequency: 1,
-    sequence: ["nessie_hump", "nessie_hump_2", "nessie_hump_3", "nessie_head", "nessie_photo"],
+    sequence: [
+      { chain: {
+          start: {nessie_hump: 4, nessie_hump_far: 1.2, nessie_log: 1},
+          after: {
+            nessie_hump: {nessie_hump_2: 4, nessie_log: 1, nessie_hump_far: 1, nessie_hump_close: 1, nessie_head: 1.5, nessie_absence: 0.5},
+            nessie_hump_far: {nessie_hump_2: 2, nessie_hump_close: 1.5, nessie_head: 1, nessie_absence: 0.4},
+            nessie_log: {nessie_hump_2: 2, nessie_hump_close: 1, nessie_head: 1.2, nessie_absence: 0.5},
+            nessie_hump_2: {nessie_hump_3: 3, nessie_head: 2, nessie_absence: 0.7},
+            nessie_hump_3: {nessie_head: 3, nessie_absence: 1.2, nessie_photo: 0.5, nessie_boat: 0.3, nessie_sonar: 0.3},
+            nessie_hump_close: {nessie_head: 3, nessie_absence: 1.2, nessie_photo: 0.5, nessie_boat: 0.3, nessie_sonar: 0.3},
+            nessie_head: {nessie_photo: 4, nessie_boat: 1, nessie_sonar: 1, stop: 2.2},
+            nessie_absence: {nessie_photo: 3, nessie_boat: 1, nessie_sonar: 1.5, stop: 1},
+            nessie_boat: {nessie_photo: 1, stop: 3},
+            nessie_photo: {stop: 1},
+            nessie_sonar: {stop: 1},
+          },
+          min: 2, max: 6,
+      } },
+    ],
   },
   {
-    // the same, low resolution, cute and silly
     id: "loch_ness_wee",
     name: "a wee Loch Ness monster",
     frequency: 0.6,
-    sequence: ["nessie_wee_hump", "nessie_wee_hump_2", "nessie_wee_head", "nessie_wee_photo"],
+    sequence: [
+      { chain: {
+          start: {nessie_wee_hump: 3, nessie_wee_log: 1},
+          after: {
+            nessie_wee_hump: {nessie_wee_hump_2: 3, nessie_wee_log: 1, nessie_wee_head: 1.5, nessie_wee_absence: 0.6},
+            nessie_wee_log: {nessie_wee_hump_2: 2, nessie_wee_head: 1.5, nessie_wee_absence: 0.6},
+            nessie_wee_hump_2: {nessie_wee_head: 3, nessie_wee_absence: 1.2, nessie_wee_photo: 0.4, nessie_wee_boat: 0.4},
+            nessie_wee_head: {nessie_wee_photo: 3, nessie_wee_boat: 1, stop: 2},
+            nessie_wee_absence: {nessie_wee_photo: 2, nessie_wee_boat: 1, stop: 1},
+            nessie_wee_boat: {nessie_wee_photo: 1, stop: 3},
+            nessie_wee_photo: {stop: 1},
+          },
+          min: 2, max: 5,
+      } },
+    ],
   },
   {
     // one dinosaur's bones, then its head (which dinosaur? you'll see)
@@ -226,14 +257,35 @@ export const GROUPS = [
     id: "universe",
     name: "the stars",
     frequency: 1,
-    // (the universe itself opens the existence set now)
-    sequence: ["shooting_star", "constellation", "spiral_galaxy", "nebula"],
+    sequence: [
+      { chain: {
+          start: {shooting_star: 3.5, comet: 2.2, pulsar: 1.8},
+          after: {
+            shooting_star: {comet: 1.6, pulsar: 1.4, constellation: 3.5, supernova: 1.2, wormhole: 1.2, spiral_galaxy: 1.2},
+            comet: {constellation: 2.2, supernova: 2, wormhole: 1.8, spiral_galaxy: 1.4},
+            pulsar: {supernova: 2, wormhole: 2},
+            constellation: {wormhole: 1.2, spiral_galaxy: 4, nebula: 1.8, quasar: 1.8},
+            supernova: {nebula: 1, quasar: 1},
+            wormhole: {nebula: 1, quasar: 1.1},
+            spiral_galaxy: {nebula: 2, quasar: 1, stop: 1.8},
+            nebula: {stop: 1},
+            quasar: {stop: 1},
+          },
+          min: 3, max: 4,
+      } },
+    ],
   },
   {
     id: "trees",
     name: "the tree of life and the tree of death",
     frequency: 1,
-    sequence: ["tree_of_life", "tree_of_death"],
+    versions: [
+      ["tree_of_life", "tree_of_death"],
+      ["tree_of_death", "tree_of_life"],
+      ["tree_of_life", {pick: ["tree_of_mild_inconvenience", "tree_of_knowing_keys"], count: 1}, "tree_of_death"],
+      [{pick: ["tree_of_life", "tree_of_death"], count: 1}, {pick: ["tree_of_mild_inconvenience", "tree_of_knowing_keys"], count: 1}],
+      [{pick: ["tree_of_life_winter", "tree_of_death_winter"], count: 2, unique: true}],
+    ],
   },
   {
     id: "emotions",
