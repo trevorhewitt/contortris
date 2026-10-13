@@ -17,9 +17,10 @@ export const CONFIG = {
     extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true },
     god: { label: "God", tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true },
     // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); timeScale: how fast it all runs;
-    // zenMovements: "turbo" for turbo zen's own mix of movements
+    // zenMovements: "turbo" for turbo zen's own mix of movements; flashNames: the falling piece's
+    // name just appears, no sliding in and out
     zen: { label: "Zen", tagline: "it plays itself, and never ends", powerups: true, giants: true, level6: "open", everything: true, zen: true },
-    turbo: { label: "Turbo zen", tagline: "the same, much faster", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.6, zenMovements: "turbo" },
+    turbo: { label: "Turbo zen", tagline: "the same, much faster", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.6, zenMovements: "turbo", flashNames: true },
   },
   defaultMode: "normal",
 
@@ -101,7 +102,11 @@ export const CONFIG = {
     // The pace (times fallMs, lockMs and pieceMs): small things, repeats and the pieces that build
     // up the board come down faster; the pieces that bring it all down take their time. And from
     // low (an empty board) to high (a full one), it slows down as it nears the top.
-    pace: { small: 0.55, repeat: 0.7, filler: 0.7, key: 1.8, phantom: 0.45, fastest: 0.2, low: 0.6, high: 1.45 },
+    pace: { small: 0.55, repeat: 0.7, filler: 0.7, key: 2.2, phantom: 0.45, fastest: 0.2, low: 0.6, high: 1.45 },
+    // Before the piece that brings most of the board down (minRows or more), a dramatic pause: it
+    // hangs a couple of rows above where it lands for pauseMs (real time, turbo or not), and says
+    // so. demolitionChance: now and then before a demolition of a full board too.
+    dramatic: { minRows: 12, pauseMs: 1200, demolitionChance: 0.3 },
     headroom: 7,         // rows it keeps clear at the top (as it comes)
     dangerRows: 3,       // the player built it up this close to the top: a big powerup comes
     brinkRows: 2,        // ...or the director overdid it (its fills go right up to the brink on purpose)

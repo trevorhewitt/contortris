@@ -78,14 +78,16 @@ function createNameLayer(nameLayerEl) {
   }
 
   // `effect`: optional line shown under the name (powerups); `cls`: its class (for its colours).
-  function setName(name, effect = "", cls = "") {
+  // `instant`: no sliding in and out, the name just appears in place of the last (turbo zen).
+  function setName(name, effect = "", cls = "", instant = false) {
     if (!name) {
       clear();
       return;
     }
+    if (instant) clear();
 
     const nextEl = document.createElement("div");
-    nextEl.className = "nameText enterFromRight" + (effect ? ` powerup cls-${cls || "combo"}` : "");
+    nextEl.className = "nameText " + (instant ? "enterToCenter instant" : "enterFromRight") + (effect ? ` powerup cls-${cls || "combo"}` : "");
 
     const main = document.createElement("span");
     main.className = "nameMain";
@@ -100,6 +102,7 @@ function createNameLayer(nameLayerEl) {
     }
 
     nameLayerEl.appendChild(nextEl);
+    if (instant) { currentEl = nextEl; return; }
     nextEl.getBoundingClientRect();
 
     if (currentEl) {
@@ -113,9 +116,9 @@ function createNameLayer(nameLayerEl) {
     currentEl = nextEl;
   }
 
-  function setShape(shape) {
+  function setShape(shape, instant = false) {
     if (!shape) { clear(); return; }
-    setName(shape.name, shape.powerup?.description ?? "", shape.powerup?.cls ?? "");
+    setName(shape.name, shape.powerup?.description ?? "", shape.powerup?.cls ?? "", instant);
   }
 
   return { setName, setShape, clear };
@@ -375,7 +378,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
         }
         if (state.level6Recent !== savedRecent) { savedRecent = state.level6Recent; store.setJSON(LEVEL6_RECENT_KEY, savedRecent); }
         noteSeen(d.shape);
-        nameLayer.setShape(d.shape);
+        nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames); // (turbo zen: no time to slide)
         renderer.drawNextSilhouette(d.next);
         if (d.shape.powerup) sound.play("powerupSpawn");
         if (d.isNew && !skipIntros()) showIntro(d.shape);

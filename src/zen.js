@@ -227,7 +227,8 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         const occ = occupancy(state.board);
         // (only if the column is still clear, and most of the rows would go)
         if (keys.length && state.rng() < keyChance && colTop(occ, wx, cols, rows) === rows && rowsReady(occ, wx, cols, rows) >= 0.7 * heightOf(occ, cols, rows)) {
-          state.zen.queue.push({ shape: keys[Math.floor(state.rng() * keys.length)], target: { rot: 0, x: wx }, weights: WEIGHTS.clear, key: true });
+          const ready = rowsReady(occ, wx, cols, rows);
+          state.zen.queue.push({ shape: keys[Math.floor(state.rng() * keys.length)], target: { rot: 0, x: wx }, weights: WEIGHTS.clear, key: true, dramatic: ready >= (CONFIG.zen.dramatic?.minRows ?? 12) });
           return;
         }
         zenCaption(state, "demolition", "demolition");
@@ -238,7 +239,8 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         state.zen.queue.push({ shape, weights: this.weights });
         this.pieces++;
       } else {
-        state.zen.queue.push({ shape: this.blasts < 2 ? bigPowerup(state) : bestPowerup(state), weights: WEIGHTS.clear });
+        const full = this.blasts === 0 && stackHeight(state) >= rows - 6 && state.rng() < (CONFIG.zen.dramatic?.demolitionChance ?? 0);
+        state.zen.queue.push({ shape: this.blasts < 2 ? bigPowerup(state) : bestPowerup(state), weights: WEIGHTS.clear, dramatic: full });
         this.blasts++;
       }
     },
@@ -355,7 +357,11 @@ const MOVEMENTS = {
   // the biggest powerups, then the most useful, until it's nearly all gone
   demolition: () => ({
     caption: "demolition", used: 0,
-    fill(state) { state.zen.queue.push({ shape: this.used < 2 ? bigPowerup(state) : bestPowerup(state), weights: WEIGHTS.clear }); this.used++; },
+    fill(state) {
+      const full = this.used === 0 && stackHeight(state) >= CONFIG.board.rows - 6 && state.rng() < (CONFIG.zen.dramatic?.demolitionChance ?? 0);
+      state.zen.queue.push({ shape: this.used < 2 ? bigPowerup(state) : bestPowerup(state), weights: WEIGHTS.clear, dramatic: full });
+      this.used++;
+    },
     done(state) { return this.used >= 7 || stackHeight(state) <= 3; },
   }),
 
@@ -443,6 +449,9 @@ export function zenSpawned(state) {
   const { cols, rows } = CONFIG.board;
   const land = isPhantomPowerup(a.shape.powerup) ? phantomLandingY(state.board, a.x, mat) : dropY(occupancy(state.board), mat, a.x, cols, rows);
   z.fall = Math.max(1, (land ?? 0) - a.y);
+  // a dramatic pause, a couple of rows above where it lands
+  z.dramatic = z.current?.dramatic && land != null ? { at: land - 2, done: false } : null;
+  z.holdMs = 0;
   zenSpeed(state);
   // (and after a big clearance it starts a little further up, out of sight)
   if (z.rest > 0) a.y -= Math.round(z.rest / state.dropMs);
@@ -492,6 +501,13 @@ export function zenTick(state, dt) {
     }
   }
   if (!a || state.effect || z.userHas || a !== z.piece) return;
+  // (a dramatic pause: it hangs there a moment, and says so)
+  if (z.dramatic && !z.dramatic.done && a.y >= z.dramatic.at) {
+    z.dramatic.done = true;
+    z.holdMs = (CONFIG.zen.dramatic.pauseMs ?? 1200) * (CONFIG.modes[state.mode]?.timeScale ?? 1);
+    zenCaption(state, "(dramatic pause)", "dramaticPause", { quiet: true, row: Math.max(1, a.y - 2) });
+  }
+  if (z.holdMs > 0) { z.holdMs -= dt; state.dropAccum = 0; return; }
   // down at the right depth: slide in under the overhang (or, if it came to rest anywhere
   // else, never mind the slide)
   const t = z.target;
@@ -1053,8 +1069,11 @@ function toItems(occ0, steps, cols, rows, { mustClear = true } = {}) {
     if (y == null) return null;
     if (!cleared && st.y != null && y !== st.y) return null; // (before anything clears it lands exactly as planned)
     if (st.mat.some((row, j) => y + j < 0 && row.some(Boolean))) return null; // (it would top out)
-    cleared += placeAndClear(occ, st.mat, st.x, y, cols, rows);
-    items.push({ shape: st.shape, target: { rot: st.rot, x: st.x }, expect: occ.slice(), weights: WEIGHTS.clear, pace: st.pace, key: st.key });
+    const n = placeAndClear(occ, st.mat, st.x, y, cols, rows);
+    cleared += n;
+    // (the one that brings most of it down waits a moment first)
+    const dramatic = n >= (CONFIG.zen.dramatic?.minRows ?? 12);
+    items.push({ shape: st.shape, target: { rot: st.rot, x: st.x }, expect: occ.slice(), weights: WEIGHTS.clear, pace: st.pace, key: st.key, dramatic });
   }
   return cleared || !mustClear ? items : null;
 }

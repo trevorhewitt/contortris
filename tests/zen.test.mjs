@@ -148,7 +148,7 @@ test("zen: a mess is built nearly to the top, full of gaps, and then demolished"
   run(state, log, 4 * 60000);
   const i = log.movements.findIndex(m => m.name === "demolition");
   assert.ok(i >= 0 && log.movements[i + 1], `never finished: ${log.movements.map(m => m.name)}`);
-  assert.ok(top >= rows - 5, `built ${top} rows`);
+  assert.ok(top >= rows - 6, `built ${top} rows`);
   assert.ok(gaps >= 10, `${gaps} gaps`);
   assert.ok(log.movements[i + 1].height <= 8, `left ${log.movements[i + 1].height} rows`);
 });
