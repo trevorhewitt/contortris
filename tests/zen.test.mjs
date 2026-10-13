@@ -215,6 +215,40 @@ test("turbo zen: a mess is built nearly to the top, full of gaps, and then demol
   assert.ok(log.movements[i + 1].height <= 8, `left ${log.movements[i + 1].height} rows`);
 });
 
+test("turbo zen: the piece that brings the board down lands, then a dramatic pause with it all aglow, then down it comes", () => {
+  const D = CONFIG.zen.dramatic;
+  const blocksOn = (state) => state.board.reduce((n, r) => n + r.filter(Boolean).length, 0);
+  // (a whole board's worth: the tallest piece drops into the last column)
+  const { state, log } = zen(2, "turbo");
+  const events = [];
+  on(state, (t, d) => {
+    if (t === "dramaticPause") events.push({ t: d.on ? "on" : "off", at: state.zen.clock, full: state.board.filter(r => r.every(Boolean)).length, active: !!state.active, glow: !!state.fx.admire });
+    if (t === "rowsDestroyed") events.push({ t: "gone", n: d.count });
+  });
+  zenStart(state, "column");
+  run(state, log, 3 * 60000);
+  const i = events.findIndex(e => e.t === "on");
+  assert.ok(i >= 0, "a dramatic pause");
+  const [pause, over, gone] = events.slice(i, i + 3);
+  assert.equal(pause.active, false, "it had landed");
+  assert.ok(pause.full >= D.minRows, `${pause.full} full rows waiting`);
+  assert.ok(pause.glow, "all aglow");
+  assert.equal(over.t, "off");
+  assert.ok(over.at - pause.at >= D.pauseMs * CONFIG.modes.turbo.timeScale - 40, `paused ${over.at - pause.at}`);
+  assert.equal(gone.t, "gone");
+  assert.ok(gone.n >= D.minRows, `then ${gone.n} rows went`);
+  // and only ever before the big ones: most of the board gone by the next piece
+  const t = zen(8, "turbo");
+  let pauses = 0, big = 0, at = null;
+  on(t.state, (e, d) => {
+    if (e === "dramaticPause" && d.on) { pauses++; at = blocksOn(t.state); }
+    if (e === "spawn" && at != null) { if (at - blocksOn(t.state) >= Math.min(D.minBlocks, D.minRows * cols) * 0.9) big++; at = null; }
+  });
+  run(t.state, t.log, 12 * 60000);
+  assert.ok(pauses >= 3, `${pauses} pauses`);
+  assert.equal(big, pauses, `${big} of ${pauses} pauses before a big one`);
+});
+
 test("turbo zen: faster, with movements of its own", () => {
   assert.ok(CONFIG.modes.turbo.zen && CONFIG.modes.turbo.timeScale > 1);
   const { state, log } = zen(8, "turbo");

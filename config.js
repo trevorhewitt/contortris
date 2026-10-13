@@ -123,10 +123,12 @@ export const CONFIG = {
     // up the board come down faster; the pieces that bring it all down take their time. And from
     // low (an empty board) to high (a full one), it slows down as it nears the top.
     pace: { small: 0.55, repeat: 0.7, filler: 0.7, key: 2.2, phantom: 0.45, fastest: 0.2, low: 0.6, high: 1.45 },
-    // Before the piece that brings most of the board down (minRows or more), a dramatic pause: it
-    // hangs a couple of rows above where it lands for pauseMs (real time, turbo or not), and says
-    // so. demolitionChance: now and then before a demolition of a full board too.
-    dramatic: { minRows: 12, pauseMs: 1200, demolitionChance: 0.3 },
+    // The piece that brings the whole board down (the director marks it) lands, and then there's a
+    // dramatic pause before it all goes, for pauseMs (real time, turbo or not): the board glows
+    // and sparkles (CONFIG.fx.admire) and the name says "(dramatic pause)". Only for the big ones:
+    // minRows full rows, or for a powerup minBlocks blocks gone. demolitionChance: now and then
+    // before a demolition of a full board too (if that's big enough).
+    dramatic: { minRows: 18, minBlocks: 150, pauseMs: 1500, demolitionChance: 0.3 },
     headroom: 7,         // rows it keeps clear at the top (as it comes)
     dangerRows: 3,       // the player built it up this close to the top: a big powerup comes
     brinkRows: 2,        // ...or the director overdid it (its fills go right up to the brink on purpose)
@@ -554,6 +556,11 @@ export const CONFIG = {
       boardFallPxPerRow: 18,
       quakePerClearedLine: 0.3,
     },
+
+    // The dramatic pause (CONFIG.zen.dramatic): the whole board glows, in its own colours, gently
+    // pulsing in a slow wave across it (glow: how bright), and sparkles twinkle up out of it, the
+    // colours of the pieces they come from (perSec a second, real time; lifeMs; size in px).
+    admire: { glow: 0.34, perSec: 150, lifeMs: [450, 1100], size: [2, 4.5] },
 
     // Rows going: a band of light sweeps along each row, and the row scatters as it passes
     // (game.js rowClearShow, render.js drawRowClears). One family of looks, more of it the more

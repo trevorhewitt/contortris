@@ -1434,6 +1434,41 @@ export function createRenderer(boardCanvas, nextCanvas) {
     bctx.restore();
   }
 
+  // The dramatic pause (CONFIG.fx.admire): the whole board aglow in its own colours, a slow wave
+  // of light rolling across it. (Each block's colour: the average of its pixels.)
+  const glowOf = new WeakMap();
+  function cellGlow(c) {
+    let out = glowOf.get(c);
+    if (out) return out;
+    let r = 0, g = 0, b = 0, n = 0;
+    const add = (hex) => {
+      if (typeof hex !== "string" || hex[0] !== "#" || hex.length < 7) return;
+      r += parseInt(hex.slice(1, 3), 16); g += parseInt(hex.slice(3, 5), 16); b += parseInt(hex.slice(5, 7), 16); n++;
+    };
+    if (typeof c.paint === "string") add(c.paint);
+    else for (const row of c.paint?.pixels ?? []) for (const hex of row) add(hex);
+    if (!n) add(c.style?.baseColor);
+    out = n ? `rgb(${(r / n) | 0},${(g / n) | 0},${(b / n) | 0})` : "#ffffff";
+    glowOf.set(c, out);
+    return out;
+  }
+  function drawAdmire(state, now) {
+    const ad = state.fx.admire;
+    if (!ad) return;
+    const p = ad.elapsedMs / ad.durationMs;
+    const env = Math.min(1, p / 0.25) * Math.min(1, (1 - p) / 0.15); // (in, a while, and out)
+    if (env <= 0) return;
+    bctx.save();
+    bctx.globalCompositeOperation = "lighter";
+    state.board.forEach((row, y) => row.forEach((c, x) => {
+      if (!c) return;
+      bctx.globalAlpha = CONFIG.fx.admire.glow * env * (0.55 + 0.45 * Math.sin(now / 260 - (x + y) * 0.45));
+      bctx.fillStyle = cellGlow(c);
+      bctx.fillRect(x * cell, y * cell, cell, cell);
+    }));
+    bctx.restore();
+  }
+
   function drawParticles(state) {
     const parts = state.fx.particles;
     if (!parts.length) return;
@@ -1443,7 +1478,9 @@ export function createRenderer(boardCanvas, nextCanvas) {
       bctx.globalCompositeOperation = glow ? "lighter" : "source-over";
       for (const p of parts) {
         if (p.delayMs > 0 || !!p.glow !== glow) continue;
-        bctx.globalAlpha = clamp01(p.lifeMs / p.maxLifeMs);
+        // (a twinkle comes and goes; the rest fade out)
+        const life = clamp01(p.lifeMs / p.maxLifeMs);
+        bctx.globalAlpha = p.twinkle ? Math.sin(Math.PI * life) : life;
         bctx.fillStyle = p.color;
         if (p.shape === "plus") { // a little twinkle
           const s = p.size, k = Math.max(1, s / 2);
@@ -1513,6 +1550,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
 
       drawShow(state, now);
       drawFlash(state);
+      drawAdmire(state, now);
       drawDanger(state);
     }
 

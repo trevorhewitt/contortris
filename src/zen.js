@@ -646,9 +646,6 @@ export function zenSpawned(state) {
   const { cols, rows } = CONFIG.board;
   const land = isPhantomPowerup(a.shape.powerup) ? phantomLandingY(state.board, a.x, mat) : dropY(occupancy(state.board), mat, a.x, cols, rows);
   z.fall = Math.max(1, (land ?? 0) - a.y);
-  // a dramatic pause, a couple of rows above where it lands
-  z.dramatic = z.current?.dramatic && land != null ? { at: land - 2, done: false } : null;
-  z.holdMs = 0;
   zenSpeed(state);
   // (and after a big clearance it starts a little further up, out of sight)
   if (z.rest > 0) a.y -= Math.round(z.rest / state.dropMs);
@@ -714,13 +711,6 @@ export function zenTick(state, dt) {
       if (a.rotIdx === g.rot && a.x === g.x) g.glided = true;
     }
   }
-  // (a dramatic pause: it hangs there a moment, and says so)
-  if (z.dramatic && !z.dramatic.done && a.y >= z.dramatic.at) {
-    z.dramatic.done = true;
-    z.holdMs = (CONFIG.zen.dramatic.pauseMs ?? 1200) * (CONFIG.modes[state.mode]?.timeScale ?? 1);
-    zenCaption(state, "(dramatic pause)", "dramaticPause", { quiet: true, row: Math.max(1, a.y - 2) });
-  }
-  if (z.holdMs > 0) { z.holdMs -= dt; state.dropAccum = 0; return; }
   // down at the right depth: slide in under the overhang (or, if it came to rest anywhere
   // else, never mind the slide)
   const t = z.target;
@@ -728,6 +718,23 @@ export function zenTick(state, dt) {
     t.slid = true;
     if (a.y >= t.slide.at) while (a.x !== t.slide.to && tryMove(state, Math.sign(t.slide.to - a.x), 0)) { /* step by step */ }
   }
+}
+
+// The piece the director marked to bring the whole board down has landed (game.js
+// stepLockAndSpawn). If most of the board really is going (CONFIG.zen.dramatic: minRows full
+// rows, or for a powerup minBlocks blocks), a dramatic pause first: how long (game time), or 0.
+export function zenDramatic(state, info) {
+  const z = state.zen, D = CONFIG.zen.dramatic;
+  if (!D || !z?.current?.dramatic || z.userHas || isCalm(state)) return 0;
+  let big;
+  if (info.shape.powerup) {
+    const before = occupancy(state.board).reduce((a, b) => a + b, 0);
+    const after = tryPowerup(state, info.shape, info.rotIdx, info.x, info.y).occ.reduce((a, b) => a + b, 0);
+    big = before - after >= D.minBlocks;
+  } else {
+    big = state.board.filter(row => row.every(Boolean)).length >= D.minRows;
+  }
+  return big ? D.pauseMs * (CONFIG.modes[state.mode]?.timeScale ?? 1) : 0;
 }
 
 // The player let go of the game (paused and came back, say): that's not taking the piece over

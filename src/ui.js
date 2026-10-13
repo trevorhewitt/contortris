@@ -393,6 +393,9 @@ export function bindUI({ state, renderer, sound, achievements }) {
       case "next":
         renderer.drawNextSilhouette(d.next);
         break;
+      case "dramaticPause": // (turbo zen: in place of the piece's name while the board glows)
+        if (d.on) nameLayer.setName("(dramatic pause)", "", "", !!CONFIG.modes[state.mode]?.flashNames);
+        break;
       case "lock":
         sound.play("lock");
         break;

@@ -25,7 +25,7 @@ import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLa
 import { normaliseGroups, trackLevel6, LEVEL6 } from "./level6.js";
 import { trackEndGame, endGameOn, spawnJitter, noteLanding } from "./endgame.js";
 import { remixShape } from "./remix.js";
-import { createZen, zenNext, zenPeek, zenTick, zenSpawned, zenSpeed, zenSteps, zenLockMs, reachableTurns } from "./zen.js";
+import { createZen, zenNext, zenPeek, zenTick, zenSpawned, zenSpeed, zenSteps, zenLockMs, zenDramatic, reachableTurns } from "./zen.js";
 import { buildThreads } from "./threads.js";
 
 /* =========================
@@ -128,6 +128,7 @@ export function createGameState(shapes, powerups, { rng = Math.random, groups = 
       shockwaves: [],  // expanding rings (blasts, and the powerup shows)
       rowClears: [],   // the light sweeping along rows as they go (CONFIG.fx.rowClear)
       show: null,      // the powerup show playing now (planShow; render.js drawShow)
+      admire: null,    // the dramatic pause: the board glowing and sparkling (CONFIG.fx.admire)
       quake: {
         trauma: 0,
         seed: Math.random() * 1000,
@@ -215,6 +216,7 @@ export function resetGame(state) {
   state.active = null;
   state.next = null;
   state.effect = null;
+  state.hold = null;
   state.running = false;
   state.paused = false;
   state.gameOver = false;
@@ -241,6 +243,7 @@ export function resetGame(state) {
   fx.shockwaves.length = 0;
   fx.rowClears.length = 0;
   fx.show = null;
+  fx.admire = null;
   fx.rowFall.active = false;
   fx.rowFall.elapsedMs = 0;
   fx.rowFall.rowDropDistances = Array(CONFIG.board.rows).fill(0);
@@ -1219,6 +1222,31 @@ function startGrowAnim(state, filled, centre, { start = 0, show = null } = {}) {
 
 /* --- the show's particles (visual only: their randomness never touches the game's) --- */
 
+// The dramatic pause: sparkles twinkling up out of the board, each the colour of a pixel of the
+// piece it comes from (CONFIG.fx.admire; a steady number a second however fast the game runs).
+function admire(state, dt) {
+  const ad = state.fx.admire, A = CONFIG.fx.admire;
+  ad.elapsedMs += dt;
+  if (ad.elapsedMs >= ad.durationMs) { state.fx.admire = null; return; }
+  const ts = CONFIG.modes[state.mode]?.timeScale ?? 1, cellPx = CONFIG.render.cellPx;
+  const { cols, rows } = CONFIG.board;
+  for (ad.due += A.perSec * dt / ts / 1000; ad.due >= 1; ad.due--) {
+    let x = 0, y = 0, cell = null;
+    for (let k = 0; k < 8 && !cell; k++) { x = (Math.random() * cols) | 0; y = (Math.random() * rows) | 0; cell = state.board[y][x]; }
+    if (!cell) continue;
+    const px = cell.paint?.pixels, i = Math.random(), j = Math.random();
+    const row = px?.[(j * px.length) | 0];
+    const color = (row && typeof row[(i * row.length) | 0] === "string") ? row[(i * row.length) | 0] : paintColour(cell);
+    const life = (A.lifeMs[0] + Math.random() * (A.lifeMs[1] - A.lifeMs[0])) * ts;
+    addParticle(state, {
+      // (drifting up, as slowly in turbo zen as anywhere)
+      x: (x + i) * cellPx, y: (y + j) * cellPx, vx: (Math.random() - 0.5) * 14 / ts, vy: -(8 + Math.random() * 22) / ts,
+      lifeMs: life, color, glow: true, g: -6 / (ts * ts), drag: 0.6 / ts, shape: "plus", twinkle: true,
+      size: A.size[0] + Math.random() * (A.size[1] - A.size[0]),
+    });
+  }
+}
+
 function addParticle(state, p) {
   state.fx.particles.push({ size: CONFIG.fx.lineClear.particleSizePx, ...p, maxLifeMs: p.lifeMs });
 }
@@ -1462,6 +1490,8 @@ function updateFX(state, dt) {
     parts.length = n; // compact in place (no per-frame allocation)
   }
 
+  if (state.fx.admire) admire(state, dt);
+
   const sh = state.fx.show;
   if (sh) {
     sh.elapsedMs += dt;
@@ -1542,6 +1572,20 @@ function stepLockAndSpawn(state) {
   const lockInfo = lockPiece(state);
   if (state.gameOver) return;
 
+  // (turbo zen: it has landed and the whole board is about to go, so first a dramatic pause,
+  // the board all aglow; updateGame carries on when it's over)
+  const pause = state.zen ? zenDramatic(state, lockInfo) : 0;
+  if (pause > 0) {
+    state.active = null;
+    state.hold = { lockInfo, elapsedMs: 0, durationMs: pause };
+    state.fx.admire = { elapsedMs: 0, durationMs: pause, due: 0 };
+    emit(state, "dramaticPause", { on: true });
+    return;
+  }
+  afterLock(state, lockInfo);
+}
+
+function afterLock(state, lockInfo) {
   if (lockInfo.shape.powerup) {
     // The next piece spawns once the effect has played out (finishTurn).
     state.active = null;
@@ -1596,6 +1640,16 @@ export function updateGame(state, dt) {
 
   if (state.zen) zenTick(state, dt); // zen: the autopilot steers (unless the player is)
   if (state.active?.lastChance) state.active.lastChance.elapsedMs += dt;
+
+  // (a dramatic pause: everything waits but the sparkles)
+  if (state.hold) {
+    const h = state.hold;
+    if ((h.elapsedMs += dt) < h.durationMs) return;
+    state.hold = null;
+    emit(state, "dramaticPause", { on: false });
+    afterLock(state, h.lockInfo);
+    return;
+  }
 
   if (state.effect) {
     updatePowerupEffect(state, dt);
@@ -1656,7 +1710,7 @@ export function updateGame(state, dt) {
 // Drop the active piece straight down and lock it now (the triple tap; and for tests). With
 // `lastChance` (the player's own drop), a piece that would top out gets its last chance first.
 export function hardDropAndLock(state, { lastChance: allowLastChance = false } = {}) {
-  if (!state.active || state.effect || state.gameOver) return false;
+  if (!state.active || state.effect || state.hold || state.gameOver) return false;
   while (tryMove(state, 0, 1)) state.score += CONFIG.scoring.hardDropPerCell ?? 0;
   if (allowLastChance && lastChance(state)) { beginLockIfNeeded(state); return false; }
   stepLockAndSpawn(state);
