@@ -23,7 +23,8 @@ function zen(seed, mode = "zen") {
     if (t === "zenMovement") log.movements.push({ name: d.name, caption: d.caption, drops: state.drops, lines: state.lines, height: height(state) });
     if (t === "zenRescue") log.rescues++;
     if (t === "gameOver") log.over = true;
-    if (t === "lock") log.maxHeight = Math.max(log.maxHeight, height(state));
+    // (the stack: a powerup that vanishes when it fires sits on top only for a moment)
+    if (t === "lock" && !d.shape.powerup?.consume) log.maxHeight = Math.max(log.maxHeight, height(state));
     if (t === "rowsDestroyed" && d.source === "clear") { log.clears.push(d.count); log.callouts.push(...state.fx.callouts.map(c => c.text)); }
   });
   startRun(state, mode);

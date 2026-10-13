@@ -178,7 +178,7 @@ export const CONFIG = {
     wideGravity: { minCols: 6, weight: 3 },
     // ...and these are this much as likely as they would be (the large black hole takes
     // everything: it's better for being rarer). Zen's director goes by the same numbers.
-    rarer: { large_black_hole: 0.3 },
+    rarer: { large_black_hole: 0.3, tidal_wave: 0.45 },
     // The newest things in the game come first (update this with every new batch), so they can be
     // looked at straight away, and then it's God mode as usual: a new piece is newBoost times
     // likelier until it has turned up newUntilShown times since the page was loaded, a new set
@@ -187,6 +187,7 @@ export const CONFIG = {
     newest: {
       sets: ["noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
+        "meteor_shower", "tidal_wave", "dragon_with_hay_fever", "giant_eraser", "hole_in_one",
         "invader_squid_arcade", "invader_crab_neon", "invader_octopus_sticky_notes", "mystery_ship", "invader_squid_neon", "invader_crab_sticky_notes", "invader_octopus_arcade",
         "tile_square_blue", "tile_big_green", "tile_l_terracotta", "tile_t_gold", "tile_s_blue", "tile_lizard_green",
         "a_bee", "two_bees", "bee_line", "queen_bee", "honeycomb", "bees_knees", "bee_bigger_bee", "bee_in_a_bonnet", "cloud_of_bees",
