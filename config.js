@@ -188,6 +188,7 @@ export const CONFIG = {
       sets: ["noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
         "meteor_shower", "tidal_wave", "dragon_with_hay_fever", "giant_eraser", "hole_in_one",
+        "horseshoe_magnet", "sarcastic_thumbs_up", "ice_skate", "hole_punch", "lightning_bolt_with_a_grudge", "lit_fuse", "magic_wand", "toadstool",
         "invader_squid_arcade", "invader_crab_neon", "invader_octopus_sticky_notes", "mystery_ship", "invader_squid_neon", "invader_crab_sticky_notes", "invader_octopus_arcade",
         "tile_square_blue", "tile_big_green", "tile_l_terracotta", "tile_t_gold", "tile_s_blue", "tile_lizard_green",
         "a_bee", "two_bees", "bee_line", "queen_bee", "honeycomb", "bees_knees", "bee_bigger_bee", "bee_in_a_bonnet", "cloud_of_bees",

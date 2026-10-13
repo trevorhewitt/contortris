@@ -20395,4 +20395,294 @@ export const SHAPES = [
     frequency: 0.3,
     claudeDraft: true,
   },
+  {
+    id: "horseshoe_magnet",
+    name: "a horseshoe magnet",
+    grid: [
+        "XXX",
+        "X.X"
+      ],
+    color: [["#e8302f","#ff7a68","#ff7a68","#ff7a68","#ff7a68","#e8302f"],["#e8302f","#e8302f","#a9161f","#a9161f","#e8302f","#a9161f"],["#e8302f","#a9161f","","","#e8302f","#a9161f"],["#f3f5f9","#a3acbb","","","#f3f5f9","#a3acbb"]],
+    powerup: {
+        "type": "destroyer",
+        "tier": 1,
+        "consume": true,
+        "help": 2,
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            "...",
+            ".#.",
+            "#.#",
+            "#.#",
+            "#.#",
+            "#.#"
+          ]
+        },
+        "intro": "Pulls every block out of the two short columns under its poles, four deep, and the one between them. They aren't even metal. It's very persuasive."
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.5,
+    claudeDraft: true,
+  },
+  {
+    id: "sarcastic_thumbs_up",
+    name: "a sarcastic thumbs-up",
+    grid: [
+        "X.",
+        "XX"
+      ],
+    color: [["#f5b92e","#f5b92e","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#d9952a","#b8771f","","","","","","","",""],["#f5b92e","#ffe88a","#fff1cf","#fff1cf","#fff1cf","#fff1cf","#ffd34d","#b8771f","","","","","","","",""],["#d9952a","#ffe88a","#fff1cf","#fff1cf","#fff1cf","#fff1cf","#ffd34d","#d9952a","","","","","","","",""],["#ffe88a","#ffd34d","#e9c98f","#e9c98f","#e9c98f","#e9c98f","#ffd34d","#d9952a","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#d9952a","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#d9952a","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#d9952a","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#c27f22","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#c27f22","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#d9952a"],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#c27f22","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#b8771f"],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#d9952a","#b8771f"],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#c27f22","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#f5b92e","#b8771f"],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#c27f22","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#b8771f"],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#d9952a","#b8771f","#b8771f"],["#f5b92e","#f5b92e","#ffd34d","#ffd34d","#c27f22","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#b8771f","#b8771f"],["#d9952a","#d9952a","#f5b92e","#f5b92e","#c27f22","#d9952a","#d9952a","#d9952a","#d9952a","#d9952a","#d9952a","#d9952a","#d9952a","#d9952a","#b8771f","#b8771f"]],
+    powerup: {
+        "type": "destroyer",
+        "tier": 1,
+        "consume": true,
+        "help": 1.5,
+        "area": {
+          "origin": [
+            1,
+            0
+          ],
+          "grid": [
+            "....",
+            "....",
+            ".#.#",
+            "#.#.",
+            ".#.#",
+            "#.#."
+          ]
+        },
+        "intro": "Takes every other block out of the 4x4 patch under it, like a checkerboard. Great. Really great."
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.5,
+    claudeDraft: true,
+  },
+  {
+    id: "ice_skate",
+    name: "an ice skate",
+    grid: [
+        "..X",
+        "XXX"
+      ],
+    color: [["","","","","","","","","","","","","","","","","","","#e8e3da","#efe8db","#efe8db","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#93b4e3"],["","","","","","","","","","","","","","","","","","","#e8e3da","#efe8db","#d6ccbb","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#93b4e3","#93b4e3"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#c9d1dd","#7d8698","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#cfc6b8","#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#e8e3da","#cfc6b8"],["#cfc6b8","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#7a4a29","#7a4a29","#7a4a29","#7a4a29","#7a4a29","#5c361d"],["#6e4325","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#5c361d","#5c361d","#5c361d","#5c361d","#5c361d","#5c361d"],["#93a0b2","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#7c899d"],["#93a0b2","#5f6b80","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#5f6b80"],["#5f6b80","#93a0b2","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#5f6b80","#5f6b80"]],
+    powerup: {
+        "type": "destroyer",
+        "tier": 2,
+        "consume": true,
+        "help": 2,
+        "area": {
+          "origin": [
+            1,
+            0
+          ],
+          "grid": [
+            ".....",
+            ".....",
+            ".###.",
+            "#...#",
+            "#...#",
+            ".###.",
+            "#...#",
+            "#...#",
+            ".###."
+          ]
+        },
+        "intro": "Carves a figure of eight, seventeen blocks of it, into the stack under its blade. The judges gave it a 5.8. It has never got over it."
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.5,
+    claudeDraft: true,
+  },
+  {
+    id: "hole_punch",
+    name: "a hole punch",
+    grid: [
+        "XXXX",
+        "XXX."
+      ],
+    color: [["#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff","#a6dcff"],["#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#1d5a9c","#3f9be8","#1d5a9c","#3f9be8"],["#c9d0da","#c9d0da","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#3f9be8","#1d5a9c","#3f9be8","#1d5a9c","#3f9be8"],["#c9d0da","#8f99a8","#2d7cc8","#2d7cc8","#2d7cc8","#2d7cc8","#2d7cc8","#2d7cc8","#2d7cc8","#2d7cc8","#2d7cc8","#2d7cc8","#2d7cc8","#2d7cc8","#2d7cc8","#2d7cc8","#2d7cc8","#1d5a9c","#2d7cc8","#1d5a9c"],["#8f99a8","#8f99a8","#96a1b2","#ffffff","#ffffff","#96a1b2","#aeb7c4","#aeb7c4","#aeb7c4","#aeb7c4","#96a1b2","#ffffff","#ffffff","#96a1b2","#aeb7c4","#174a82","#174a82","#174a82","#174a82","#174a82"],["#aeb7c4","#aeb7c4","#aeb7c4","#ffffff","#cfd6e0","#aeb7c4","#aeb7c4","#aeb7c4","#aeb7c4","#aeb7c4","#aeb7c4","#ffffff","#cfd6e0","#aeb7c4","#aeb7c4","","","","",""],["#aeb7c4","#aeb7c4","#aeb7c4","#ffffff","#cfd6e0","#aeb7c4","#aeb7c4","#aeb7c4","#aeb7c4","#aeb7c4","#aeb7c4","#ffffff","#cfd6e0","#aeb7c4","#8a95a5","","","","",""],["#f4f1ea","#f4f1ea","#f4f1ea","#3a404d","#3a404d","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#3a404d","#3a404d","#f4f1ea","#f4f1ea","","","","",""],["#596272","#ffffff","#596272","#596272","#596272","#596272","#ffffff","#596272","#596272","#ffffff","#596272","#596272","#596272","#596272","#ffffff","","","","",""],["#6f7889","#6f7889","#6f7889","#6f7889","#6f7889","#6f7889","#6f7889","#6f7889","#6f7889","#6f7889","#6f7889","#6f7889","#6f7889","#6f7889","#6f7889","","","","",""]],
+    powerup: {
+        "type": "destroyer",
+        "tier": 1,
+        "consume": true,
+        "help": 2,
+        "area": {
+          "origin": [
+            1,
+            0
+          ],
+          "grid": [
+            ".....",
+            ".....",
+            "##.##",
+            "##.##"
+          ]
+        },
+        "intro": "Punches two neat 2x2 holes in the stack under it, the regulation distance apart. It has no idea what you're filing."
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.5,
+    claudeDraft: true,
+  },
+  {
+    id: "lightning_bolt_with_a_grudge",
+    name: "a lightning bolt with a grudge",
+    grid: [
+        "XX.",
+        ".XX"
+      ],
+    color: [["#a8a68d","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#a8a68d","","","","","","",""],["#d18215","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#6e2c06","#6e2c06","#ffe33a","#ffe33a","#ffe33a","#6e2c06","#6e2c06","","","","","","",""],["#d18215","#ff9f1a","#ff9f1a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#6e2c06","#6e2c06","#6e2c06","#ffe33a","#6e2c06","#6e2c06","#6e2c06","","","","","","",""],["#d18215","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#6e2c06","#ffe33a","#6e2c06","#ffe33a","#d1ba30","","","","","","",""],["#d18215","#fff4b0","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ffffff","#ffffff","#2e1103","#ffe33a","#ffffff","#ffffff","#2e1103","","","","","","",""],["#d18215","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ffffff","#ffffff","#2e1103","#ffe33a","#ffffff","#ffffff","#2e1103","","","","","","",""],["#a86911","#d18215","#d18215","#d18215","#d18215","#d18215","#d18215","#ff9f1a","#ff9f1a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d1ba30","","","","","","",""],["","","","","","","","#d1ba30","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#fffbd6","#fffbd6","#d1ceaf","#d1ceaf","#d18215","#d18215","#d18215","#d18215","#a86911"],["","","","","","","","#d1ba30","#6e2c06","#6e2c06","#6e2c06","#6e2c06","#6e2c06","#ffe33a","#ffe33a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#d18215"],["","","","","","","","#d1ba30","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ff9f1a","#fff4b0","#ff9f1a","#d18215"],["","","","","","","","#d1a419","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ff9f1a","#ff9f1a","#d18215"],["","","","","","","","#d1a419","#ffc81f","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d18215"],["","","","","","","","#d1a419","#ffc81f","#ffc81f","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d1ba30"],["","","","","","","","#a88414","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#a88414"]],
+    powerup: {
+        "type": "destroyer",
+        "tier": 1,
+        "consume": true,
+        "help": 1.5,
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            "...",
+            "...",
+            ".#.",
+            ".#.",
+            "#..",
+            "#..",
+            ".#.",
+            "..#",
+            "..#",
+            ".#."
+          ]
+        },
+        "intro": "Strikes a jagged line of blocks, eight long, down into the stack under it. It isn't meant to strike the same place twice. It keeps a list."
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.5,
+    claudeDraft: true,
+  },
+  {
+    id: "lit_fuse",
+    name: "a lit fuse",
+    grid: [
+        "X.",
+        "XX",
+        ".X"
+      ],
+    color: [["#8c6238","#6f4a29","#6f4a29","#8c6238","#8c6238","#6f4a29","","","","","",""],["#c6b48f","#f1dcae","#a97c49","#d7b47a","#d7b47a","#c6b48f","","","","","",""],["#c6b48f","#a97c49","#d7b47a","#d7b47a","#f1dcae","#c6b48f","","","","","",""],["#8b663c","#d7b47a","#d7b47a","#f1dcae","#f1dcae","#c6b48f","","","","","",""],["#b09464","#d7b47a","#f1dcae","#f1dcae","#f1dcae","#8b663c","","","","","",""],["#b09464","#f1dcae","#f1dcae","#f1dcae","#a97c49","#b09464","","","","","",""],["#c6b48f","#f1dcae","#f1dcae","#a97c49","#d7b47a","#d7b47a","#c6b48f","#c6b48f","#c6b48f","#8b663c","#b09464","#967e55"],["#c6b48f","#f1dcae","#a97c49","#d7b47a","#d7b47a","#f1dcae","#f1dcae","#f1dcae","#a97c49","#d7b47a","#d7b47a","#c6b48f"],["#c6b48f","#a97c49","#d7b47a","#d7b47a","#f1dcae","#f1dcae","#f1dcae","#a97c49","#d7b47a","#d7b47a","#f1dcae","#c6b48f"],["#8b663c","#d7b47a","#d7b47a","#f1dcae","#f1dcae","#f1dcae","#a97c49","#d7b47a","#d7b47a","#f1dcae","#f1dcae","#c6b48f"],["#b09464","#d7b47a","#f1dcae","#f1dcae","#f1dcae","#a97c49","#d7b47a","#d7b47a","#f1dcae","#f1dcae","#f1dcae","#8b663c"],["#967e55","#c6b48f","#c6b48f","#c6b48f","#8b663c","#b09464","#d7b47a","#f1dcae","#f1dcae","#f1dcae","#a97c49","#b09464"],["","","","","","","#c6b48f","#f1dcae","#f1dcae","#a97c49","#d7b47a","#b09464"],["","","","","","","#5e3e2a","#7f5534","#5e3e2a","#7f5534","#5e3e2a","#7f5534"],["","","","","","","#e2481f","#ffe347","#ff9124","#ffe347","#ff9124","#e2481f"],["","","","","","","#ff9124","#ffe347","#ffffff","#ffffff","#ffe347","#ff9124"],["","","","","","","#ffe347","#ffffff","#ffffff","#ffffff","#ffffff","#ffe347"],["","","","","","","#ff9124","#ffe347","#ffffff","#ffffff","#ffe347","#e2481f"]],
+    powerup: {
+        "type": "destroyer",
+        "tier": 2,
+        "consume": true,
+        "help": 2.5,
+        "area": {
+          "origin": [
+            3,
+            1
+          ],
+          "grid": [
+            "....#....",
+            "....#....",
+            ".........",
+            ".........",
+            "#########",
+            "....#....",
+            "....#....",
+            "....#....",
+            "....#...."
+          ]
+        },
+        "intro": "Goes off in a plus just under its burning end: four blocks each way, and the one in the middle. It isn't attached to anything. It went off anyway."
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.5,
+    claudeDraft: true,
+  },
+  {
+    id: "magic_wand",
+    name: "a magic wand",
+    grid: [
+        "XX.X"
+      ],
+    color: [["#ffffff","#4f3f6c","#4f3f6c","#4f3f6c","#4f3f6c","#ffffff","","","","#ff9f2a","#ffe35a","#ff9f2a"],["#d8d2ea","#3a2d52","#3a2d52","#3a2d52","#3a2d52","#ffffff","","","","#ffe35a","#ffffff","#ffe35a"],["#a59cc0","#2a2040","#2a2040","#2a2040","#2a2040","#d8d2ea","","","","#ff9f2a","#ffe35a","#ff9f2a"]],
+    powerup: {
+        "type": "destroyer",
+        "tier": 2,
+        "consume": true,
+        "help": 3,
+        "area": {
+          "origin": [
+            1,
+            0
+          ],
+          "grid": [
+            ".......",
+            "...#...",
+            "..###..",
+            "#######",
+            ".#####.",
+            "..#.#..",
+            ".#...#."
+          ]
+        },
+        "intro": "Makes a star of blocks, twenty of them, vanish from the stack under it. It will not tell you how it's done."
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.5,
+    claudeDraft: true,
+  },
+  {
+    id: "toadstool",
+    name: "a toadstool",
+    grid: [
+        "XXX",
+        ".X."
+      ],
+    color: [["#b0202a","#ff6a52","#ff6a52","#e3352f","#fffaf2","#fffaf2","#e3352f","#e3352f","#ff6a52","#ff6a52","#ff6a52","#e3352f"],["#e3352f","#fffaf2","#fffaf2","#e3352f","#fffaf2","#e9ddd0","#e3352f","#e3352f","#e3352f","#fffaf2","#fffaf2","#e3352f"],["#e3352f","#fffaf2","#e9ddd0","#e3352f","#e3352f","#e3352f","#e3352f","#e3352f","#e3352f","#fffaf2","#e9ddd0","#b0202a"],["#b0202a","#d6b388","#f3dcb6","#f3dcb6","#f3dcb6","#f3dcb6","#f3dcb6","#f3dcb6","#f3dcb6","#f3dcb6","#f3dcb6","#d6b388"],["","","","","#efe3cc","#efe3cc","#efe3cc","#ddcdb2","","","",""],["","","","","#f9f2e4","#f9f2e4","#ddcdb2","#ddcdb2","","","",""],["","","","","#f9f2e4","#f9f2e4","#ddcdb2","#ddcdb2","","","",""],["","","","","#f9f2e4","#ddcdb2","#ddcdb2","#bba987","","","",""]],
+    powerup: {
+        "type": "destroyer",
+        "tier": 1,
+        "consume": true,
+        "help": 1.5,
+        "area": {
+          "origin": [
+            3,
+            0
+          ],
+          "grid": [
+            ".........",
+            ".........",
+            "..#####..",
+            ".#.....#.",
+            "#.......#",
+            ".#.....#.",
+            "..#####.."
+          ]
+        },
+        "intro": "Clears a fairy ring of sixteen blocks, nine across, in the stack under it. Nobody has ever seen who dances in them."
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.5,
+    claudeDraft: true,
+  },
 ];
