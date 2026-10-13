@@ -284,6 +284,32 @@ test("turbo zen: tiles in patterns, built up and then all brought down at once",
   assert.ok(log.clears.some(n => n >= 18), `${log.clears}`);
 });
 
+test("turbo zen: now and then a strange piece or two is built into a tiling, the tiles round it grouted", () => {
+  const was = CONFIG.zen.tileGuests;
+  CONFIG.zen.tileGuests = { ...was, counts: [0, 0, 1, 0] }; // (two, always)
+  try {
+    let seen = 0;
+    for (const kind of ["floor", "bricks", "pinwheels", "waves", "lizards"]) for (const seed of [3, 4]) {
+      const { state } = zen(seed, "turbo");
+      state.active = null;
+      const res = planTiles(state, kind);
+      assert.ok(res, `${kind}: no plan`);
+      const guests = res.items.filter(it => !it.key && !it.shape.tags?.includes("tiles"));
+      assert.ok(guests.length <= 2, `${kind}: ${guests.map(g => g.shape.id)}`);
+      if (!guests.length) continue;
+      seen++;
+      for (const g of guests) assert.ok(res.caption.includes(g.shape.name), `${kind}: "${res.caption}"`);
+      // (still the whole thing, every cell of it filled, and then the tallest piece takes it all)
+      const last = res.items[res.items.length - 1];
+      assert.ok(last.key && last.dramatic, `${kind}: ends with ${last.shape.id}`);
+      const before = res.items[res.items.length - 2].expect;
+      const rowsFull = [...Array(rows).keys()].filter(y => [...Array(cols - 1).keys()].every(x => before[y * cols + x])).length;
+      assert.ok(rowsFull >= 18, `${kind}: ${rowsFull} rows ready`);
+    }
+    assert.ok(seen >= 6, `guests in ${seen} of 10`);
+  } finally { CONFIG.zen.tileGuests = was; }
+});
+
 test("turbo zen: a mess is built nearly to the top, full of gaps, and then demolished", () => {
   const { state, log } = zen(6, "turbo");
   let top = null, gaps = 0;

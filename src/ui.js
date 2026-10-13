@@ -395,6 +395,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
   // (and since the page was loaded: God mode shows the newest things once each, then carries on as usual)
   state.shownThisLoad = new Map();
   state.setsShownThisLoad = new Map();
+  state.zenOpenings = new Set(); // (turbo zen's opening, once: CONFIG.zen.opening)
   let seenUnsaved = 0, setStarts = 0;
   function saveSeen() {
     if (!seenUnsaved) return;

@@ -1737,10 +1737,10 @@ export function zenRescue(state) {
 }
 
 // Zen mode: the name of what it's doing now, drifting up over the board. (`quiet`: just the
-// words, not a new movement.)
-export function zenCaption(state, text, name = text, { quiet = false, row = null } = {}) {
+// words, not a new movement; `row`, `col`: somewhere else than over the middle, near the top.)
+export function zenCaption(state, text, name = text, { quiet = false, row = null, col = null, color = null } = {}) {
   const z = CONFIG.zen;
-  if (text) addCallout(state, text, CONFIG.board.cols / 2, row ?? z.captionRow ?? 3, { color: z.captionColour, durationMs: z.captionMs });
+  if (text) addCallout(state, text, col ?? CONFIG.board.cols / 2, row ?? z.captionRow ?? 3, { color: color ?? z.captionColour, durationMs: z.captionMs });
   if (!quiet) emit(state, "zenMovement", { name, caption: text });
 }
 

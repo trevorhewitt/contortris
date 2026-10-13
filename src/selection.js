@@ -221,13 +221,15 @@ export function computeBoardPresence(state) {
 }
 
 // God mode: a piece in CONFIG.godMode.newest is newBoost times likelier until it has turned up
-// newUntilShown times since the page was loaded (counting this game); anything never seen in
-// this browser, unseenBoost times. (state.seenEver and state.shownThisLoad are kept by the UI.)
+// newUntilShown times since the page was loaded (counting this game), one of firstPieces
+// firstBoost times until it has turned up once; anything never seen in this browser,
+// unseenBoost times. (state.seenEver and state.shownThisLoad are kept by the UI.)
 function noveltyMultiplier(sel, shape) {
   if (!isGodMode(sel.mode) || CONFIG.modes[sel.mode]?.calm || !sel.seenEver) return 1; // (zen is as it comes)
   const n = CONFIG.godMode.novelty ?? {};
   const served = sel.servedCounts.get(shape.id) ?? 0;
   const shown = (sel.shownThisLoad?.get(shape.id) ?? 0) + served;
+  if (!CONFIG.modes[sel.mode]?.zen && (CONFIG.godMode.firstPieces ?? []).includes(shape.id) && !shown) return n.firstBoost ?? 1000; // (turbo zen has its own opening)
   if ((CONFIG.godMode.newest?.pieces ?? []).includes(shape.id) && shown < (n.newUntilShown ?? 1)) return n.newBoost ?? 6;
   return (sel.seenEver.get(shape.id) ?? 0) + served ? 1 : (n.unseenBoost ?? 2.5);
 }

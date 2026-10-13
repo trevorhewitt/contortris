@@ -169,6 +169,32 @@ export const CONFIG = {
     // likely none, one, two or three of them (beds; patches), above `belowTop` rows from the top
     // and with `headroom` rows over them.
     extras: { beds: [0.35, 0.4, 0.2, 0.05], patches: [0.5, 0.35, 0.15], belowTop: 6, headroom: 4, minCols: 0 },
+    // Guests in a tiling (turbo zen): how likely none, one, two, or a few (up to `most`) strange
+    // pieces (up to maxSize wide and tall) built into the pattern where they fall.
+    tileGuests: { counts: [0.45, 0.3, 0.15, 0.1], most: 5, maxSize: 8 },
+    // A piece that loves you (turbo zen, now and then): it comes down on its own (arrivePace),
+    // everything is built up around it quickly (buildPace), and brought down around it by up to
+    // `blasts` destroyers that miss it (each taking minBite blocks at least); and then how it
+    // ends (how likely): one very small regret at a time (bitByBit: `regret`, or else one of
+    // regretElse; a pause of pauseMs before the first, hitPauseMs before the rest, each falling
+    // at hitPace), all at once (bigOne), or not at all (spared). After maxHits it gives up.
+    // Then a moment's silence (silenceMs). What it says as it goes, one of each at random (safe:
+    // as the first one waits; hits: before the second, the third, ...; bigOne: before another
+    // big one, if it's still there).
+    loved: {
+      arrivePace: 1.8, buildPace: 0.7, blasts: 7, minBite: 4,
+      endings: { bitByBit: 3, bigOne: 1, spared: 1 },
+      regret: "a_very_small_regret", regretElse: ["mole"], pauseMs: 1800, hitPauseMs: 0, hitPace: 2.6, maxHits: 12, silenceMs: 2600,
+      captions: {
+        spare: ["please keep it alive", "careful now", "mind the little one"],
+        safe: ["it's safe now", "it's still here", "it made it", "it trusts you completely"],
+        spared: ["it's just the two of you now", "it will remember this", "it made it"],
+        hits: [["it's still smiling", "it doesn't know what's happening"], ["it still loves you"], ["it forgives you"], ["it doesn't understand"]],
+        bigOne: ["it never saw it coming", "it trusted you"],
+      },
+    },
+    // What turbo zen opens with, the first time since the page was loaded.
+    opening: { turbo: { movement: "loved", opts: { ending: "bitByBit" } } },
   },
 
   godMode: {
@@ -203,8 +229,10 @@ export const CONFIG = {
     // ...and these are this much as likely as they would be (the large black hole takes
     // everything: it's better for being rarer). Zen's director goes by the same numbers.
     rarer: { large_black_hole: 0.3, tidal_wave: 0.45 },
-    // the set God mode opens with, the first time since the page was loaded
+    // the set God mode opens with, the first time since the page was loaded, and the pieces that
+    // come straight after it (firstBoost times likelier until each has come once)
     firstSet: "emotions_ascent",
+    firstPieces: ["piece_that_loves_you"],
     // The newest things in the game come first (update this with every new batch), so they can be
     // looked at straight away, and then it's God mode as usual: a new piece is newBoost times
     // likelier until it has turned up newUntilShown times since the page was loaded, a new set
@@ -233,7 +261,7 @@ export const CONFIG = {
         "weather_vane", "weather_clock", "hot_water_bottle_of_sea", "very_small_stonehenge", "long_red_ribbon",
       ],
     },
-    novelty: { newBoost: 25, newSetBoost: 40, newUntilShown: 1, unseenBoost: 2.5 },
+    novelty: { newBoost: 25, newSetBoost: 40, newUntilShown: 1, unseenBoost: 2.5, firstBoost: 1e6 },
     // calm spells: after a level 6 set (afterSet), or `giants` giants within `within` pieces
     // (afterGiants), this many ordinary pieces: no giants, no sets
     calm: { afterSet: [8, 14], giants: 2, within: 8, afterGiants: [6, 10] },
