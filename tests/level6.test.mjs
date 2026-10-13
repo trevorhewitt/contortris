@@ -33,10 +33,13 @@ function dropDot(state) {
   drop(state);
 }
 
+// A group's sequences: each of its versions, or its one sequence.
+const sequencesOf = (g) => g.versions ?? [g.sequence];
+
 test("groups in the data are complete (every piece exists)", () => {
   const all = normaliseGroups(GROUPS, shapes);
   for (const g of GROUPS) {
-    for (const step of g.sequence) {
+    for (const step of sequencesOf(g).flat()) {
       const ids = typeof step === "string" ? [step] : step.variant ?? step.repeat ?? (step.chain
         ? [...Object.keys(step.chain.start ?? {}), ...Object.values(step.chain.after ?? {}).flatMap(o => Object.keys(o))].filter(id => id !== "stop")
         : step.pick);
@@ -45,7 +48,7 @@ test("groups in the data are complete (every piece exists)", () => {
   }
   assert.equal(all.length, GROUPS.filter(g => (g.frequency ?? 1) > 0).length, "every group is live (but the banished ones)");
   // every level 6 piece belongs to a group
-  const inGroups = new Set(GROUPS.flatMap(g => g.sequence.flatMap(st => (typeof st === "string" ? [st] : st.variant ?? st.repeat ?? (st.chain
+  const inGroups = new Set(GROUPS.flatMap(g => sequencesOf(g).flat().flatMap(st => (typeof st === "string" ? [st] : st.variant ?? st.repeat ?? (st.chain
     ? [...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))] : st.pick)))));
   for (const s of shapes) if (s.echo) inGroups.add(s.echo); // (echoes come back inside their set)
   for (const s of shapes.filter(s => s.difficulty === 6 && (s.frequency ?? 1) > 0)) assert.ok(inGroups.has(s.id), `${s.id} is level 6 but in no group`);
@@ -113,9 +116,13 @@ test("easy mode never unlocks level 6; dev override forces it either way", () =>
 // of its pieces, and an echo (déjà vu) of an earlier piece anywhere after it. -1 if they don't.
 const echoOf = new Map(shapes.filter(s => s.echo).map(s => [s.echo, s.id]));
 function matchGroupAt(g, ids, at = 0) {
+  // (a set with versions: whichever of them it is)
+  return Math.max(...sequencesOf(g).map(seq => matchSequenceAt(seq, ids, at)));
+}
+function matchSequenceAt(sequence, ids, at) {
   // every way of sharing the pieces out between the steps (a step's count can vary), the most
   // pieces first; an echo can turn up anywhere after its original
-  const steps = g.sequence.map(st => {
+  const steps = sequence.map(st => {
     if (typeof st === "string") return { members: new Set([st]), lo: 1, hi: 1 };
     if (st.variant) return { members: new Set(st.variant), lo: 1, hi: 1 };
     if (st.chain) return { members: new Set([...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))]), lo: st.chain.min ?? 1, hi: st.chain.max ?? 4 };
@@ -142,9 +149,11 @@ test("level 6 pieces never turn up outside a group", () => {
   const firstIds = new Map();
   const add = (id, g) => { if (!firstIds.has(id)) firstIds.set(id, []); firstIds.get(id).push(g); };
   for (const g of GROUPS) {
-    const st = g.sequence[0];
-    if (typeof st === "string") add(st, g);
-    for (const id of [...(st?.variant ?? []), ...(st?.pick ?? []), ...Object.keys(st?.chain?.start ?? {})]) add(id, g);
+    for (const seq of sequencesOf(g)) {
+      const st = seq[0];
+      if (typeof st === "string") add(st, g);
+      for (const id of [...(st?.variant ?? []), ...(st?.pick ?? []), ...Object.keys(st?.chain?.start ?? {})]) add(id, g);
+    }
   }
   for (const seed of [1, 2, 3, 4]) {
     const state = createGameState(shapes, powerups, { rng: makeRng(seed * 17), groups: GROUPS });

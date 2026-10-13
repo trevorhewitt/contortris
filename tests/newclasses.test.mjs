@@ -84,10 +84,11 @@ test("progression: classes open one at a time, starting with a simple one", () =
     assert.ok(CONFIG.assist.powerups.progression.firstClassPool.includes(news[0]));
     firsts.add(news[0]);
     // the second class only opens after newClassEvery powerups of the first, or once
-    // newClassAfterDrops pieces have gone by
+    // newClassAfterDrops pieces have gone by (or sooner, when the first class had nothing that
+    // would help and a powerup was swapped for one of the next class's: stillUseful)
     const prog = CONFIG.assist.powerups.progression;
     const second = seen.findIndex(t => t !== news[0]);
-    if (second >= 0) {
+    if (second >= 0 && !state.pieceSel.powerup.openedBySwap?.has(seen[second])) {
       assert.ok(second >= prog.newClassEvery || at[second] - at[0] >= prog.newClassAfterDrops - 2,
         `second class too soon: ${seen.slice(0, second + 1).join()} at ${at.slice(0, second + 1).join()}`);
     }

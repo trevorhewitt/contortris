@@ -727,6 +727,7 @@ export function stillUseful(state, shape) {
   if (opens) {
     if (!ps.classes.includes(cls)) { ps.classes.push(cls); ps.sinceClass = 0; ps.classAtDrop = sel.dropIndex; }
     ps.lastIntroDrop = sel.dropIndex;
+    (ps.openedBySwap ??= new Set()).add(cls);
   }
   // (the books were written for the one it replaces)
   if (sel.lastShapeId === shape.id) {

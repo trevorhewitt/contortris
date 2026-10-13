@@ -54,7 +54,14 @@ export const GROUPS = [
     id: "tower_of_babel",
     name: "the Tower of Babel",
     frequency: 1,
-    sequence: ["babel_lower", "babel_middle", "babel_top"],
+    // (the same tower at different moments: as it was, overgrown with hanging gardens, still
+    // being built, and fallen into ruin)
+    versions: [
+      ["babel_lower", "babel_middle", "babel_top"],
+      ["babel_lush_lower", "babel_lush_middle", "babel_lush_top"],
+      ["babel_unfinished_lower", "babel_unfinished_middle", "babel_unfinished_top"],
+      ["babel_ruin_lower", "babel_ruin_middle", "babel_ruin_top"],
+    ],
   },
   {
     id: "spam",
