@@ -607,6 +607,9 @@ function pickFamily(state, { calm = false } = {}) {
   const live = (ids) => ids.map(byId).filter(s => s && !s.powerup && (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6);
   const bees = live(["bees", "forgotten_bee", "piano_full_of_bees", "a_bee", "two_bees", "bee_line", "queen_bee", "honeycomb", "bees_knees", "bee_bigger_bee", "bee_in_a_bonnet", "cloud_of_bees"]);
   if (bees.length >= 2) add("bees", "a few bees", bees, 5);
+  const invaders = live(["invader_squid_arcade", "invader_crab_arcade", "invader_octopus_arcade", "invader_squid_neon", "invader_crab_neon", "invader_octopus_neon",
+    "invader_squid_sticky_notes", "invader_crab_sticky_notes", "invader_octopus_sticky_notes", "mystery_ship", "space_invader", "space_invader_2", "space_invader_3", "space_invader_4"]);
+  if (invaders.length >= 3) add("an invasion", "a few invaders", invaders, 3);
   const florg = live(["florgenorflepus", "florgnorfepus_egg", "snorfwiggle", "plorbs", "grumblesac", "schlopwort", "squonch", "blibbets", "mumblethorpe"]);
   if (florg.length >= 3) add("florgnorfepuses, mostly", "some florgnorfepuses", florg, 5);
   const surreal = live([...(state.threads?.members?.get("surreal") ?? [])]);

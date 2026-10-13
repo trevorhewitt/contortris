@@ -184,12 +184,13 @@ export const CONFIG = {
     // newSetBoost times (load the page again to see them all again). Anything never seen in this
     // browser at all comes up unseenBoost times as often. (God mode.)
     newest: {
-      sets: ["dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
+      sets: ["noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
+        "invader_squid_arcade", "invader_crab_neon", "invader_octopus_sticky_notes", "mystery_ship", "invader_squid_neon", "invader_crab_sticky_notes", "invader_octopus_arcade",
         "tile_square_blue", "tile_big_green", "tile_l_terracotta", "tile_t_gold", "tile_s_blue", "tile_lizard_green",
         "a_bee", "two_bees", "bee_line", "queen_bee", "honeycomb", "bees_knees", "bee_bigger_bee", "bee_in_a_bonnet", "cloud_of_bees",
         "storm_cloud", "big_storm_cloud", "rumbling_storm_cloud", "space_invader_2", "space_invader_3", "space_invader_4",
-        "space_invasion", "happy_pills_2", "piece_of_sky_sunset", "piece_of_sky_night",
+        "happy_pills_2", "piece_of_sky_sunset", "piece_of_sky_night",
         "bull", "camel", "mouse", "elephant_in_the_room", "giant_rubber_duck", "dinosaur_fossil",
         "pyramid_box", "big_hot_air_balloon", "lighthouse", "double_decker",
         "rubiks_cube", "mondrian", "qr_code", "space_invader", "mouse_pointer", "stuck_pixel",
