@@ -267,7 +267,16 @@ function giantPiece(state) {
 // the tallest pieces drops into that column (`keyChance`), or else the powerups, the biggest first.
 // (`only`: nothing but next()'s pieces, so when the next won't fit, that's as high as it goes;
 // `label`: what the name says for each of them, the same all the way up.)
-function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 1, maxPieces = 70 * CONFIG.board.cols * CONFIG.board.rows / 336, keyChance = 0.5, blastWith = null, blasts = 7, only = false, label = null } = {}) {
+function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 1, maxPieces = 70 * CONFIG.board.cols * CONFIG.board.rows / 336, keyChance = 0.5, blastWith = null, blasts = 7, only = false, label = null, streaks = 0 } = {}) {
+  // (`streaks`: how often a piece, when it's going quickly, comes two to four times running, so
+  // there's time to read its name)
+  const again = { shape: null, left: 0 };
+  const nextOne = (state) => {
+    if (again.left > 0 && fitsUnder(state, again.shape, 2)) { again.left--; return again.shape; }
+    const s = next(state);
+    if (s && streaks && state.rng() < streaks) { again.shape = s; again.left = int(state, 1, 3); } else again.left = 0;
+    return s;
+  };
   return {
     caption, pace, phase: "fill", target, blasts: 0, pieces: 0, weights: null, leave: 3,
     fill(state) {
@@ -278,7 +287,7 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         this.target = Math.min(rows - 3, Math.max(this.target, stackHeight(state) + 5));
         if (state.rng() < 0.3) this.leave = int(state, 5, 8);
       }
-      let shape = this.phase === "fill" ? next(state) : null;
+      let shape = this.phase === "fill" ? nextOne(state) : null;
       if (shape && !fitsUnder(state, shape, 2)) shape = only ? null : pick(state, smallPool(state)); // (nearly there: nothing too big)
       if (this.phase === "fill" && (!shape || stackHeight(state) >= this.target || this.pieces >= maxPieces)) {
         this.phase = "blast";
@@ -409,7 +418,7 @@ const MOVEMENTS = {
   }),
 
   // build up near the top without clearing anything, then knock it all down
-  build: (state) => fillThenBlast("a slow build", buildPiece, { target: up(int(state, 18, 21)), pace: 0.9 }),
+  build: (state) => fillThenBlast("a slow build", buildPiece, { target: up(int(state, 18, 21)), pace: 0.9, streaks: 0.2 }),
 
   // up near the top again, full of awkward gaps, and then the powerups have at it
   mess: () => planned("a mess", (state) => planMess(state), "demolition"),
@@ -430,7 +439,7 @@ const MOVEMENTS = {
     return fillThenBlast(fam.caption, (st) => {
       const fits = fam.pieces.filter(s => fitsUnder(st, s, 4));
       return fits.length ? pick(st, fits) : pick(st, smallPool(st));
-    }, { target: up(int(state, 17, 20)), pace: 0.75 });
+    }, { target: up(int(state, 17, 20)), pace: 0.75, streaks: 0.3 });
   },
 
   // the board full of one awkward thing, and the name says so all the way up: "Oops, all bagpipes!"
@@ -441,7 +450,7 @@ const MOVEMENTS = {
   },
 
   // small things, lots of them, quickly
-  small: (state) => fillThenBlast("small things", (st) => pick(st, smallPool(st)), { target: up(int(state, 18, 21)), pace: 0.6, maxPieces: 110 * CONFIG.board.cols / 14 }),
+  small: (state) => fillThenBlast("small things", (st) => pick(st, smallPool(st)), { target: up(int(state, 18, 21)), pace: 0.6, maxPieces: 110 * CONFIG.board.cols / 14, streaks: 0.4 }),
 
   // big things
   big: (state) => fillThenBlast("big things", giantPiece, { target: up(int(state, 16, 19)), pace: 1.1 }),
@@ -521,7 +530,7 @@ const MOVEMENTS = {
 
   // built up, then one black hole after another
   blackholes: (state) => fillThenBlast("a series of black holes", buildPiece, {
-    target: up(int(state, 15, 19)), pace: 0.8, blasts: 8,
+    target: up(int(state, 15, 19)), pace: 0.8, blasts: 8, streaks: 0.25,
     blastWith: (st, n) => { const holes = powerupPool(st).filter(p => /black hole/i.test(p.name)); return holes.length && n % 3 !== 2 ? bestPowerup(st, holes) : bigPowerup(st); },
   }),
 
@@ -777,9 +786,11 @@ function formFlock(state, land) {
   const { cols, rows } = CONFIG.board;
   state.flock = [];
   if (!F || isCalm(state) || z.userHas || a.shape.powerup || t?.slide || land == null || cols < F.minCols) return;
-  const room = Math.min(F.most, Math.floor(cols / F.colsEach)) - 1;
-  if (room < 1 || z.simRng() >= F.chance) return;
-  const want = 1 + Math.floor(z.simRng() * room);
+  // (the tiniest pieces come down in a shower: lots of them at once)
+  const tiny = F.tiny && blocks(a.shape) <= 2 ? F.tiny : null;
+  const room = Math.min(tiny?.most ?? F.most, Math.floor(cols / (tiny?.colsEach ?? F.colsEach))) - 1;
+  if (room < 1 || z.simRng() >= (tiny?.chance ?? F.chance)) return;
+  const want = tiny ? Math.ceil(room * (0.5 + 0.5 * z.simRng())) : 1 + Math.floor(z.simRng() * room);
   const planned = !!z.expect;
   const mat = a.shape.rotations[a.rotIdx];
   // the columns taken (a margin either side), and those of the plan's pieces jumped ahead of
@@ -789,7 +800,7 @@ function formFlock(state, land) {
   lay(occ, mat, a.x, land, cols);
   const before = z.queue.slice(), expects = before.map(it => it.expect);
   const members = [], pulled = new Set();
-  for (let i = 0; members.length < want && i < (planned ? 60 : want + 2); i++) {
+  for (let i = 0; members.length < want && i < (planned ? 60 + 4 * want : want + 2); i++) {
     if (!planned && i >= z.queue.length && z.movement && !z.movement.planned && !z.movement.done(state)) z.movement.fill(state);
     const item = z.queue[i];
     if (!item || item.shape.powerup || !!item.expect !== planned || (planned && !item.target)) break;
@@ -1534,13 +1545,17 @@ export function planSquares(state) {
   const rng = state.rng;
   const occ = occupancy(state.board);
   if (!solid(occ, cols, rows) || heightOf(occ, cols, rows) > 2) return null;
-  const sq = 2;
+  // (now and then little ones, 1 x 1, on a big board: a mosaic, coming down in showers)
+  const sq = cols >= (CONFIG.zen.flock?.minCols ?? 22) && rng() < (CONFIG.zen.mosaicChance ?? 0) ? 1 : 2;
   let pieces = plannable(state, 3).filter(s => { const m = s.rotations[0]; return m.length === sq && m[0].length === sq && m.flat().every(Boolean); });
   // (the big tiles, if there are enough colours of them)
-  const tiles = pieces.filter(s => s.tags?.includes("tiles"));
-  if (new Set(tiles.map(colourOf)).size >= 3) pieces = tiles;
+  // (a tile's colour is its glaze: the white ground with blue on it is blue)
+  const glaze = (s) => s.id.match(/^tile_.*_(blue|green|terracotta|gold)$/)?.[1] ?? colourOf(s);
+  const tiles = pieces.filter(s => s.tags?.includes("tiles") && !/half|strip/.test(s.id)); // (not the grout)
+  const useTiles = new Set(tiles.map(glaze)).size >= 3;
+  if (useTiles) pieces = tiles;
   const byCol = new Map();
-  for (const p of pieces) { const c = colourOf(p); if (c && c !== "black") { if (!byCol.has(c)) byCol.set(c, []); byCol.get(c).push(p); } }
+  for (const p of pieces) { const c = useTiles ? glaze(p) : colourOf(p); if (c && c !== "black") { if (!byCol.has(c)) byCol.set(c, []); byCol.get(c).push(p); } }
   const palette = [...byCol.keys()];
   if (palette.length < 3) return null;
   for (let i = palette.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [palette[i], palette[j]] = [palette[j], palette[i]]; }
@@ -1551,11 +1566,13 @@ export function planSquares(state) {
   const slots = [...Array(nx).keys()].filter(i => { for (let x = i * sq; x < (i + 1) * sq; x++) if (colTop(occ, x, cols, rows) < rows) return false; return true; });
   const slot = slots.length ? slots[Math.floor(rng() * slots.length)] : null;
   const gapAt = (j) => (slot != null ? slot : (j * 2 + 1) % nx);
+  const fine = sq === 1;
   const kinds = [
-    { caption: "a checkerboard", colour: (i, j) => palette[(i + j) % 2] },
-    { caption: "diagonal stripes", colour: (i, j) => palette[(i + j) % Math.min(4, palette.length)] },
-    { caption: "the other diagonal", colour: (i, j) => palette[((i - j) % 3 + 3) % 3] },
-    { caption: "rings", colour: (i, j) => palette[(Math.max(Math.abs(i - (nx - 1) / 2), Math.abs(j - (ny - 1) / 2)) | 0) % palette.length] },
+    { caption: fine ? "a fine checkerboard" : "a checkerboard", colour: (i, j) => palette[(i + j) % 2] },
+    { caption: fine ? "fine diagonal stripes" : "diagonal stripes", colour: (i, j) => palette[(i + j) % Math.min(4, palette.length)] },
+    { caption: fine ? "the other diagonal, finely" : "the other diagonal", colour: (i, j) => palette[((i - j) % 3 + 3) % 3] },
+    { caption: fine ? "fine rings" : "rings", colour: (i, j) => palette[(Math.max(Math.abs(i - (nx - 1) / 2), Math.abs(j - (ny - 1) / 2)) | 0) % palette.length] },
+    ...(fine ? [{ caption: "a mosaic of squares", colour: (i, j) => palette[(((i >> 2) + (j >> 2)) % 2) * 2 % palette.length + ((i + j) % 2)] }] : []),
   ];
   const kind = kinds[Math.floor(rng() * kinds.length)];
   const steps = [];
