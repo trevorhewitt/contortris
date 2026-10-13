@@ -117,6 +117,14 @@ export function zenNext(state) {
     zenCaption(state, "never mind", "abandoned");
   }
   z.expect = null;
+  // (a fill can put something in first, now that the board has settled: a bed for one big or
+  // strange piece, a patch of tiles)
+  if (z.movement?.interject && !z.userHas && !z.queue.some(it => it.expect)) {
+    const extra = z.movement.interject(state);
+    // (and what was waiting, picked for the board as it was, is picked again afterwards: it
+    // might not fit any more)
+    if (extra?.length) z.queue = [...extra];
+  }
   if (!z.queue.length) refill(state);
   // in danger, and not on purpose: a big powerup first. The fills and plans go right up to the
   // brink on purpose; the player building it up is another matter, and so is a piece with
@@ -278,10 +286,21 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
     return s;
   };
   return {
-    caption, pace, phase: "fill", target, blasts: 0, pieces: 0, weights: null, leave: 3,
+    caption, pace, phase: "fill", target, blasts: 0, pieces: 0, weights: null, leave: 3, extras: null,
+    // (now and then, on the way up, a bed for one big or strange piece, or a patch of tiles)
+    interject(state) {
+      if (this.phase !== "fill" || !this.extras?.length || only) return null;
+      if (stackHeight(state) < this.extras[0].at) return null;
+      const { kind } = this.extras.shift();
+      const res = kind === "bed" ? planNest(state, { weights: this.weights }) : planPatch(state, { weights: this.weights });
+      if (!res) return null;
+      if (res.caption) zenCaption(state, res.caption, kind, { quiet: true });
+      return res.items;
+    },
     fill(state) {
       const { cols, rows } = CONFIG.board;
       if (!this.weights) {
+        this.extras = extrasFor(state, stackHeight(state), this.target);
         this.weights = { ...weights, well: Math.floor(state.rng() * cols) };
         // (on top of whatever's there; and now and then it leaves some behind for the next)
         this.target = Math.min(rows - 3, Math.max(this.target, stackHeight(state) + 5));
@@ -1191,6 +1210,145 @@ export function planColumn(state) {
 // up to the top of the board, a slot kept clear all the way so no row completes. Then the slot
 // is filled, by one of the tallest pieces if there's one (all of it goes at once), or from the
 // bottom up. Returns { items, first } or null.
+// On the way up (a fill), how many beds and patches of tiles, and at what heights: now none
+// at all, now one or two, now more (CONFIG.zen.extras).
+function extrasFor(state, from, to) {
+  const X = CONFIG.zen.extras;
+  if (!X || isCalm(state) || CONFIG.board.cols < (X.minCols ?? 0)) return [];
+  const out = [];
+  const lo = from + 2, hi = to - (X.belowTop ?? 6);
+  if (hi <= lo) return out;
+  for (const [kind, counts] of [["bed", X.beds], ["patch", X.patches]]) {
+    const n = sampleByWeight(counts.map((w, i) => ({ i, w })), c => c.w, state.rng).i;
+    for (let k = 0; k < n; k++) out.push({ kind, at: lo + Math.floor(state.rng() * (hi - lo)) });
+  }
+  return out.sort((a, b) => a.at - b.at);
+}
+
+// The big and strange ones a fill can make a bed for: giants, awkward pieces, and now and then a
+// level 6 piece on its own, out of its set; each turn it can take, and the row its underside
+// reaches in each column (bottom).
+function nestCandidates(state, maxW, maxH) {
+  const out = [];
+  const pool = state.shapes.filter(s => !s.powerup && !s.remix && (s.frequency ?? 1) > 0 && blocks(s) >= 10);
+  for (const s of pool) {
+    const lvl = s.difficulty ?? 1, big = lvl >= 4;
+    const turns = reachableTurns(s), seen = new Set();
+    s.rotations.forEach((mat, rot) => {
+      const h = mat.length, w = mat[0].length;
+      if (rot >= turns || w > maxW || h > maxH) return;
+      const key = mat.map(r => r.map(Number).join("")).join("/");
+      if (seen.has(key)) return;
+      seen.add(key);
+      const bottom = [...Array(w).keys()].map(i => { for (let j = h - 1; j >= 0; j--) if (mat[j][i]) return j; return -1; });
+      if (bottom.some(b => b < 0)) return;
+      const cells = mat.flat().filter(Boolean).length;
+      const odd = new Set(bottom).size; // (the more uneven its underside, the better a bed shows it off)
+      const w8 = (lvl === LEVEL6 ? 0.5 : big ? 1.4 : 0.7 + (1 - cells / (w * h))) * (0.6 + 0.2 * odd);
+      out.push({ shape: s, rot, mat, w, h, bottom, w8 });
+    });
+  }
+  return out;
+}
+
+// A bed for one big or strange piece, partway through a fill (turbo zen): under where it will
+// go, the stack is built up to fit its underside exactly, with pieces of its colour where they
+// can do it (or else anything small), and then it drops in. Not over the column the fill keeps
+// clear. Returns { items, caption } or null.
+export function planNest(state, { weights = null } = {}) {
+  const { cols, rows } = CONFIG.board, rng = state.rng;
+  const occ = occupancy(state.board);
+  const well = weights?.well;
+  const top = CONFIG.zen.extras?.headroom ?? 4;
+  const big = nestCandidates(state, cols - 2, Math.min(10, rows - 8));
+  if (!big.length) return null;
+  const all = fillerCandidates(state);
+  for (let tries = 0; tries < 10; tries++) {
+    const g = sampleByWeight(big, c => c.w8, rng);
+    const xs = [];
+    for (let x = 0; x + g.w <= cols; x++) if (well == null || well < x || well >= x + g.w) xs.push(x);
+    if (!xs.length) continue;
+    const x = xs[Math.floor(rng() * xs.length)];
+    // as low as it can sit, above what's there; and room above it
+    let y = Infinity;
+    for (let i = 0; i < g.w; i++) y = Math.min(y, colTop(occ, x + i, cols, rows) - 1 - g.bottom[i]);
+    if (y < top) continue;
+    const need = new Uint8Array(cols * rows);
+    let n = 0;
+    for (let i = 0; i < g.w; i++) for (let yy = y + g.bottom[i] + 1; yy < colTop(occ, x + i, cols, rows); yy++) { need[yy * cols + x + i] = 1; n++; }
+    // (one that would sit on top as it is anyway isn't much of a bed)
+    if (n < 3) continue;
+    const colour = colourOf(g.shape);
+    const suits = colour && colour !== "many" ? all.filter(c => colourOf(c.shape) === colour) : [];
+    let bed = null;
+    for (const cands of [suits, all]) {
+      if (!cands.length) continue;
+      const work = occ.slice();
+      bed = tile(work, need, cands, rng, cols, rows);
+      if (bed) break;
+    }
+    if (!bed) continue;
+    const items = toItems(occ, [...asFillers(bed), { shape: g.shape, rot: g.rot, mat: g.mat, x, y, pace: 1.2 }], cols, rows, { mustClear: false });
+    if (items) return { items, caption: `a bed for ${g.shape.name}` };
+  }
+  return null;
+}
+
+// A patch of tiles partway through a fill (turbo zen): over a stretch of columns the dips in the
+// top of the stack filled up to a level, so the patch takes whatever shape the pieces around it
+// leave: little tiles in a pattern of glazes, or one kind of tile with little ones round it. Not
+// over the column the fill keeps clear. Returns { items, caption } or null.
+export function planPatch(state, { weights = null } = {}) {
+  const { cols, rows } = CONFIG.board, rng = state.rng;
+  const occ = occupancy(state.board);
+  const well = weights?.well;
+  const top = CONFIG.zen.extras?.headroom ?? 4;
+  const ones = tileSet(state, ["X"], false).filter(o => !/half|strip/.test(o.shape.id));
+  const glazes = shuffle(groupByColour(ones), rng);
+  if (glazes.length < 2) return null;
+  for (let tries = 0; tries < 6; tries++) {
+    const w = int(state, 4, Math.max(5, Math.min(12, Math.floor(cols / 4))));
+    const x0 = Math.floor(rng() * (cols - w + 1));
+    if (well != null && well >= x0 && well < x0 + w) continue;
+    const tops = [...Array(w).keys()].map(i => colTop(occ, x0 + i, cols, rows));
+    const level = Math.min(...tops) - int(state, 1, 2); // (the patch's top row: a row or two over the highest piece)
+    if (level < top) continue;
+    const need = new Uint8Array(cols * rows);
+    let n = 0;
+    for (let i = 0; i < w; i++) for (let y = level; y < tops[i]; y++) { need[y * cols + x0 + i] = 1; n++; }
+    if (n < 8) continue;
+    let steps = null, caption = null;
+    if (rng() < 0.5) {
+      // one kind of tile, fitted in where it goes, little ones round it
+      const kinds = [["XX", "XX"], ["X.", "XX"], ["XXX", ".X."], [".XX", "XX."], [".X..", "XXX.", ".XXX", "..X."]];
+      const kind = kinds[Math.floor(rng() * kinds.length)];
+      const some = tileSet(state, kind, false);
+      if (some.length) {
+        const cands = candidates([...new Set([...some, ...ones].map(o => o.shape))], 4, 4, 9);
+        const work = occ.slice();
+        steps = tile(work, need, cands, rng, cols, rows, 99);
+        caption = "a patch of tiles";
+      }
+    }
+    if (!steps) {
+      // little tiles in a pattern of glazes
+      const pat = [(i, j) => (i + j) % 2, (i, j) => (i + j) % Math.min(3, glazes.length), (i, j) => (i >> 1) % 2, (i, j) => (j % 2)][Math.floor(rng() * 4)];
+      const out = [];
+      for (let i = 0; i < w; i++) for (let y = tops[i] - 1; y >= level; y--) {
+        const g = glazes[pat(x0 + i, y) % glazes.length];
+        const o = g[Math.floor(rng() * g.length)];
+        out.push({ shape: o.shape, rot: o.rot, mat: o.shape.rotations[o.rot], x: x0 + i, y, pace: 0.6 });
+      }
+      steps = dropOrder(out, cols);
+      caption = "a little tiling";
+    }
+    if (!steps?.length) continue;
+    const items = toItems(occ, steps.map(st => ({ ...st, pace: st.pace ?? 0.6 })), cols, rows, { mustClear: false });
+    if (items) return { items, caption };
+  }
+  return null;
+}
+
 export function planBeds(state) {
   const { cols, rows } = CONFIG.board;
   const rng = state.rng;
@@ -1549,8 +1707,7 @@ export function planSquares(state) {
   const sq = cols >= (CONFIG.zen.flock?.minCols ?? 22) && rng() < (CONFIG.zen.mosaicChance ?? 0) ? 1 : 2;
   let pieces = plannable(state, 3).filter(s => { const m = s.rotations[0]; return m.length === sq && m[0].length === sq && m.flat().every(Boolean); });
   // (the big tiles, if there are enough colours of them)
-  // (a tile's colour is its glaze: the white ground with blue on it is blue)
-  const glaze = (s) => s.id.match(/^tile_.*_(blue|green|terracotta|gold)$/)?.[1] ?? colourOf(s);
+  const glaze = glazeOf;
   const tiles = pieces.filter(s => s.tags?.includes("tiles") && !/half|strip/.test(s.id)); // (not the grout)
   const useTiles = new Set(tiles.map(glaze)).size >= 3;
   if (useTiles) pieces = tiles;
@@ -1767,6 +1924,11 @@ function fillGaps(out, caption, half, bottom, strips = []) {
 
 // The pieces in the shape `pattern` (a matrix as strings, in any turn they can reach): tagged
 // "tiles" (or, with `any`, any regular piece of that shape), each { shape, rot, key, colour }.
+// A tile's colour is its glaze (most of them are white tiles with colour on: the blue one is blue).
+function glazeOf(s) {
+  return s.id.match(/^tile_.*_(blue|green|terracotta|gold)$/)?.[1] ?? colourOf(s);
+}
+
 function tileSet(state, pattern, any) {
   const want = new Set();
   // (the pattern turned every way, as the keys to look for)
@@ -1781,7 +1943,7 @@ function tileSet(state, pattern, any) {
       const key = s.rotations[r].map(row => row.map(c => (c ? "X" : ".")).join("")).join("/");
       // (the first turn of each outline: one turned all the way round looks the same in outline,
       // but its picture is upside down)
-      if (want.has(key) && !seen.has(key)) out.push({ shape: s, rot: r, key, colour: colourOf(s) });
+      if (want.has(key) && !seen.has(key)) out.push({ shape: s, rot: r, key, colour: glazeOf(s) });
       seen.add(key);
     }
   }

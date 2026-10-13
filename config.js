@@ -151,6 +151,10 @@ export const CONFIG = {
     flock: { minCols: 22, colsEach: 12, most: 4, chance: 0.6, margin: 1, headroom: 3, stagger: 5,
       tiny: { most: 12, colsEach: 3, chance: 0.85 } }, // (pieces of one or two blocks: a shower of them)
     mosaicChance: 0.45,    // (on a big board) the squares now and then 1 x 1, a mosaic
+    // On the way up (a fill), beds for one big or strange piece each and patches of tiles: how
+    // likely none, one, two or three of them (beds; patches), above `belowTop` rows from the top
+    // and with `headroom` rows over them.
+    extras: { beds: [0.35, 0.4, 0.2, 0.05], patches: [0.5, 0.35, 0.15], belowTop: 6, headroom: 4, minCols: 0 },
   },
 
   godMode: {
@@ -185,6 +189,8 @@ export const CONFIG = {
     // ...and these are this much as likely as they would be (the large black hole takes
     // everything: it's better for being rarer). Zen's director goes by the same numbers.
     rarer: { large_black_hole: 0.3, tidal_wave: 0.45 },
+    // the set God mode opens with, the first time since the page was loaded
+    firstSet: "emotions_ascent",
     // The newest things in the game come first (update this with every new batch), so they can be
     // looked at straight away, and then it's God mode as usual: a new piece is newBoost times
     // likelier until it has turned up newUntilShown times since the page was loaded, a new set

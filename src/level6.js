@@ -262,6 +262,10 @@ export function maybeStartGroup(state) {
   const recent = state.level6Recent ?? [];
   const fresh = pool.filter(g => !recent.includes(g.id));
   if (fresh.length) pool = fresh;
+  // (God mode opens with a particular set, the first time since the page was loaded:
+  // CONFIG.godMode.firstSet)
+  const opening = firstDue && openingSet(state);
+  if (opening) pool = [opening];
   // ...and only one whose whole run fits on the board (a set can't be cleared until it's down)
   const room = state.board.length - (cfg.headroom ?? 3) - stackRows(state);
   while (pool.length) {
@@ -273,6 +277,14 @@ export function maybeStartGroup(state) {
     pool = pool.filter(g => g !== group);
   }
   return null;
+}
+
+function openingSet(state) {
+  const id = CONFIG.godMode?.firstSet;
+  if (!id || state.mode !== "god") return null;
+  const l6 = state.pieceSel.level6;
+  if ((l6.shownThisLoad?.get(id) ?? 0) + (l6.seen.get(id) ?? 0) > 0) return null;
+  return state.groups.find(g => g.id === id && g.frequency > 0) ?? null;
 }
 
 // God mode: the newest sets first (CONFIG.godMode.newest) until each has come once since the
