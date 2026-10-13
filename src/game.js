@@ -19,7 +19,7 @@
 import { CONFIG } from "../config.js";
 import { clamp01, lerp } from "./util.js";
 import { getShapePaint } from "./shapes.js";
-import { initPieceSelectionState, selectPiece, destroyerCells } from "./selection.js";
+import { initPieceSelectionState, selectPiece, destroyerCells, stillUseful } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
 import { normaliseGroups, trackLevel6, LEVEL6 } from "./level6.js";
@@ -216,6 +216,7 @@ export function resetGame(state) {
   state.instances.clear();
   state.active = null;
   state.next = null;
+  state.nextChosen = false;
   state.effect = null;
   state.hold = null;
   state.running = false;
@@ -495,7 +496,7 @@ function spawnPiece(state) {
   if (state.pieceSel && trackLevel6(state)) emit(state, "level6Unlocked", {});
   // ...or reach two thirds of the board (the end game), or dig their way out of it?
   if (state.pieceSel && !state.zen) updateEndGame(state, trackEndGame(state));
-  let shape;
+  let shape, rotIdx = 0;
   if (state.zen) {
     // zen: the director picks each piece as it's needed, on the board as it is now
     shape = prepareShape(state, zenNext(state));
@@ -503,10 +504,14 @@ function spawnPiece(state) {
   } else {
     if (!state.next) state.next = prepareShape(state, selectPiece(state));
     shape = notDeadly(state, state.next);
+    // (a powerup the last piece left with nothing to do: one of the same outline that can,
+    // unless it was asked for by name)
+    const swap = state.nextChosen ? { shape } : stillUseful(state, shape);
+    if (swap.shape !== shape) { shape = prepareShape(state, swap.shape); rotIdx = swap.rot; }
+    state.nextChosen = false;
     state.next = prepareShape(state, selectPiece(state));
   }
 
-  const rotIdx = 0;
   const mat = shape.rotations[rotIdx];
   const w = mat[0].length;
 
@@ -584,6 +589,7 @@ function fitsSomewhere(state, shape) {
 // Debug helper: make `shape` the next piece.
 export function setNextPiece(state, shape) {
   state.next = prepareShape(state, shape);
+  state.nextChosen = true;
   emit(state, "next", { next: shape });
 }
 

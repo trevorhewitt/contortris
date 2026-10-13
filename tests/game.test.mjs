@@ -11,7 +11,7 @@ import { makeRng } from "../src/util.js";
 import {
   createGameState, startRun, updateGame, hardDropAndLock, setNextPiece, on, insidePairs, tryMove, tryRotate,
 } from "../src/game.js";
-import { computeBoardPresence, varietyMultiplier } from "../src/selection.js";
+import { computeBoardPresence, varietyMultiplier, powerupUsefulness } from "../src/selection.js";
 import { createAchievements } from "../src/achievements.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
@@ -391,4 +391,42 @@ test("a piece's card says how rare it is, in words", async () => {
   assert.deepEqual(rarity(state, byId("everest")), { words: "only ever in a set", set: "Mt Everest" });
   assert.equal(rarity(state, byId("last_straw")).words, "only ever after something else");
   assert.equal(rarity(state, byId("piece_of_string")).words, "only in zen mode");
+});
+
+test("a powerup the piece before it left with nothing to do is swapped for one of the same outline", () => {
+  const outline = (m) => m.map(r => r.map(c => (c ? 1 : 0)).join("")).join("/");
+  // a tidy board: four full-but-one rows, no gaps for a phantom to sink into
+  const tidy = (state) => { for (let y = ROWS - 4; y < ROWS; y++) for (let x = 0; x < COLS - 1; x++) state.board[y][x] = filler(); };
+  {
+    const { state } = newGame("god", 4);
+    tidy(state);
+    placeActive(state, "pea", 0, -1);
+    state.next = byId("friendly_ghost"); // (as if picked a turn ago, when it had a gap to go into)
+    hardDropAndLock(state);
+    const a = state.active;
+    assert.ok(a.shape.powerup, "still a powerup");
+    assert.notEqual(a.shape.id, "friendly_ghost", "swapped");
+    assert.equal(outline(a.shape.rotations[a.rotIdx]), "1", "the same outline as the preview");
+    assert.ok(powerupUsefulness(state.board, a.shape) >= 1, "and it does something");
+  }
+  {
+    // ...turned to match the preview when its own first turn is the other way up
+    const { state } = newGame("god", 4);
+    state.powerups = state.powerups.filter(p => ["ghost_eel", "time_machine"].includes(p.id));
+    tidy(state);
+    placeActive(state, "pea", 0, -1);
+    state.next = byId("ghost_eel");
+    hardDropAndLock(state);
+    assert.equal(state.active.shape.id, "time_machine");
+    assert.equal(outline(state.active.shape.rotations[state.active.rotIdx]), "1111");
+  }
+  {
+    // one asked for by name (dev mode, tests) stays as it is
+    const { state } = newGame("god", 4);
+    tidy(state);
+    placeActive(state, "pea", 0, -1);
+    setNextPiece(state, byId("friendly_ghost"));
+    hardDropAndLock(state);
+    assert.equal(state.active.shape.id, "friendly_ghost");
+  }
 });

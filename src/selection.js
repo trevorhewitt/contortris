@@ -672,6 +672,77 @@ export function powerupUsefulness(board, shape) {
 }
 
 /* =========================================
+   A powerup made useless by the piece before it
+   =========================================
+   The next piece is picked a turn ahead, on the board as it was then, so the piece in
+   between can leave a powerup with nothing to do (it filled the gap a phantom was going
+   to sink into, say). At spawn, one like that is swapped for a powerup of the same
+   outline that does still help, turned to match the preview, so whatever was planned for
+   it still fits. Returns { shape, rot } (rot: the turn to spawn in).
+*/
+const outlineOf = (mat) => mat.map(r => r.map(c => (c ? 1 : 0)).join("")).join("/");
+const turnsOf = (shape) => shape.rotations.map(outlineOf).sort().join("|");
+export function stillUseful(state, shape) {
+  const same = { shape, rot: 0 };
+  const cfg = powerupCfg(state.mode), use = cfg.usability ?? {};
+  if (!shape?.powerup || use.enabled === false || !state.pieceSel) return same;
+  const min = use.minUseful ?? 1;
+  if (powerupUsefulnessCached(state, shape) >= min) return same;
+  const sel = state.pieceSel, ps = sel.powerup;
+  const want = outlineOf(shape.rotations[0]), turns = turnsOf(shape);
+  const live = state.powerups.filter(p => (p.frequency ?? 1) > 0 && !state.devPowerups?.disabled?.has(p.id));
+  const twinsFrom = (classOk) => {
+    const out = [];
+    for (const p of live) {
+      if (p.id === shape.id || !classOk(p) || (p.powerup.bad && !shape.powerup.bad)) continue;
+      if (p.rotations.length !== shape.rotations.length || turnsOf(p) !== turns) continue;
+      const rot = p.rotations.findIndex(m => outlineOf(m) === want);
+      const helped = rot < 0 ? 0 : powerupUsefulnessCached(state, p);
+      if (helped >= min) out.push({ shape: p, rot, helped });
+    }
+    return out;
+  };
+  // from the classes already met (no intro screens out of nowhere)...
+  const met = (cls) => cls === shape.powerup.cls || ps.shownClasses.has(cls);
+  let twins = twinsFrom(p => met(p.powerup.cls) && (!p.powerup.parts || p.powerup.parts.every(part => met(part.cls))));
+  // ...or, early on, when the one class in so far has nothing that would help (gravity on a
+  // tidy board), the next class can open a little early, with one of its starters
+  // (a useless powerup is worse than an intro a little sooner than usual: half the usual gap;
+  // and if this one was itself going to introduce its class, another class's intro takes its place)
+  const prog = cfg.progression, introGap = (prog?.minDropsBetweenIntros ?? 0) / 2;
+  const intro = !ps.shownClasses.has(shape.powerup.cls);
+  let opens = false;
+  if (!twins.length && prog?.enabled && (intro || ps.lastIntroDrop == null || sel.dropIndex - ps.lastIntroDrop >= introGap)) {
+    const starters = new Set(live.filter(p => p.powerup.starter).map(p => p.powerup.cls));
+    const first = ps.shownClasses.size ? null : prog.firstClassPool;
+    twins = twinsFrom(p => p.powerup.cls !== "combo" && !met(p.powerup.cls) && !p.powerup.bad
+      && (p.powerup.starter || !starters.has(p.powerup.cls)) && (!first || first.includes(p.powerup.cls)));
+    opens = twins.length > 0;
+  }
+  if (!twins.length) return same;
+  const god = isGodMode(state.mode);
+  const pick = sampleByWeight(twins, (t) => (t.shape.frequency ?? 1) * Math.min(t.helped, 4)
+    * (t.shape.powerup.cls === shape.powerup.cls ? 3 : 1) * (god ? CONFIG.godMode?.rarer?.[t.shape.id] ?? 1 : 1), state.rng);
+  const cls = pick.shape.powerup.cls;
+  if (opens) {
+    if (!ps.classes.includes(cls)) { ps.classes.push(cls); ps.sinceClass = 0; ps.classAtDrop = sel.dropIndex; }
+    ps.lastIntroDrop = sel.dropIndex;
+  }
+  // (the books were written for the one it replaces)
+  if (sel.lastShapeId === shape.id) {
+    sel.lastShapeId = pick.shape.id;
+    if (sel.recentShapeIds.at(-1) === shape.id) sel.recentShapeIds[sel.recentShapeIds.length - 1] = pick.shape.id;
+    sel.servedCounts.set(shape.id, Math.max(0, (sel.servedCounts.get(shape.id) ?? 1) - 1));
+    sel.servedCounts.set(pick.shape.id, (sel.servedCounts.get(pick.shape.id) ?? 0) + 1);
+    if (ps.recentClasses?.length) ps.recentClasses[ps.recentClasses.length - 1] = cls;
+  }
+  // (an intro that won't happen now: the class is introduced properly later)
+  if (cls !== shape.powerup.cls && !ps.shownClasses.has(shape.powerup.cls)) ps.pendingIntro.delete(shape.powerup.cls);
+  ps.swapped = (ps.swapped ?? 0) + 1;
+  return { shape: pick.shape, rot: pick.rot };
+}
+
+/* =========================================
    Powerup scheduler (Normal mode)
    =========================================
    Decides IF a powerup is due (an accumulating chance, boosted by danger and

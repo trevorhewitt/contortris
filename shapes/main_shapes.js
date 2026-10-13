@@ -6408,7 +6408,8 @@ export const SHAPES = [
             "####"
           ]
         },
-        "help": 2.5
+        "help": 2.5,
+        "starter": true
       },
     rotation: {
         "mode": "any"
