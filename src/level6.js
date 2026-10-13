@@ -30,11 +30,29 @@ export function normaliseGroups(rawGroups, shapes) {
   };
   const out = [];
   for (const g of Array.isArray(rawGroups) ? rawGroups : []) {
-    if (!g || !g.id || !Array.isArray(g.sequence)) continue;
+    // (a set can come in several versions: each its own sequence)
+    const sequences = Array.isArray(g?.versions) ? g.versions.filter(Array.isArray) : [g?.sequence];
+    if (!g || !g.id || !sequences.length || !sequences.every(Array.isArray)) continue;
     if (Number(g.frequency ?? 1) <= 0) continue; // (banished, like the portraits)
+    const versions = sequences.map((seq, vi) => parseSequence(seq, g, vi)).filter(Boolean);
+    if (!versions.length) continue;
+    const steps = versions.flat(); // (every step of every version: all its pieces)
+    // a piece with `echo` comes back later in the same run as that piece (déjà vu)
+    const echoes = new Map();
+    for (const st of steps) for (const sh of [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.repeat ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]) {
+      if (sh.echo && live(sh.echo)) echoes.set(sh.id, live(sh.echo));
+    }
+    // (unique: no piece twice in one run, whichever steps it's in; echoes aside)
+    out.push({ id: String(g.id), name: String(g.name ?? g.id), frequency: Math.max(0, Number(g.frequency ?? 1) || 0), steps, versions,
+      room: Math.max(0, Number(g.room) || 0), echoes, unique: g.unique === true });
+  }
+  return out;
+
+  // One version's steps (null if a fixed piece is missing).
+  function parseSequence(sequence, g, vi) {
     const steps = [];
     let ok = true;
-    for (const step of g.sequence) {
+    for (const step of sequence) {
       if (typeof step === "string") {
         const s = byId.get(step); // (a fixed piece can be one that only ever comes linked: frequency 0)
         if (!s) { ok = false; break; }
@@ -62,7 +80,7 @@ export function normaliseGroups(rawGroups, shapes) {
         // one of these, chosen once a game: the same piece drawn several ways
         const picks = step.variant.map(live).filter(Boolean);
         if (!picks.length) { ok = false; break; }
-        steps.push({ variant: picks, key: `${g.id}:${steps.length}` });
+        steps.push({ variant: picks, key: `${g.id}:${vi}:${steps.length}` });
       } else if (step && step.chain && typeof step.chain === "object") {
         // a chain: each piece picks the next ({ start: {id: weight}, after: {id: {id: weight,
         // stop: weight}}, max }), so the run reacts to what it has already brought
@@ -76,26 +94,22 @@ export function normaliseGroups(rawGroups, shapes) {
         steps.push({ chain: { start, after, max, min: Math.min(max, Math.max(1, Number(step.chain.min) || 1)) } });
       }
     }
-    if (!ok || !steps.length) continue;
-    // a piece with `echo` comes back later in the same run as that piece (déjà vu)
-    const echoes = new Map();
-    for (const st of steps) for (const sh of [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.repeat ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]) {
-      if (sh.echo && live(sh.echo)) echoes.set(sh.id, live(sh.echo));
-    }
-    // (unique: no piece twice in one run, whichever steps it's in; echoes aside)
-    out.push({ id: String(g.id), name: String(g.name ?? g.id), frequency: Math.max(0, Number(g.frequency ?? 1) || 0), steps,
-      room: Math.max(0, Number(g.room) || 0), echoes, unique: g.unique === true });
+    return ok && steps.length ? steps : null;
   }
-  return out;
 }
 
 // One run through a group: the list of pieces, picks rolled. `variants` (a Map, kept for the
-// game) remembers which version of each variant step this game has.
-export function expandGroup(group, rng, variants = null) {
+// game) remembers which version of each variant step this game has. A set with versions comes
+// as one of them, never `avoid` (the one it had last time) if it has another; the list says
+// which (`.version`), for startGroup to remember.
+export function expandGroup(group, rng, variants = null, avoid = null) {
   const out = [];
   let tail = null; // (where a run that ends on one thing over and over starts doing that)
   const pick = (list) => sampleByWeight(list, it => it.w, rng);
-  for (const st of group.steps) {
+  const versions = group.versions ?? [group.steps];
+  const choices = versions.map((_, i) => i).filter(i => versions.length < 2 || i !== avoid);
+  const version = choices[Math.floor(rng() * choices.length)];
+  for (const st of versions[version]) {
     if (st.variant) {
       let s = variants?.get(st.key);
       if (!s) { s = st.variant[Math.floor(rng() * st.variant.length)]; variants?.set(st.key, s); }
@@ -143,6 +157,7 @@ export function expandGroup(group, rng, variants = null) {
     if (lo > hi) lo = hi = end - 1;
     out.splice(lo + Math.floor(rng() * (hi - lo + 1)), 0, group.echoes.get(out[i].id));
   }
+  out.version = version;
   return out;
 }
 
@@ -251,7 +266,7 @@ export function maybeStartGroup(state) {
   const room = state.board.length - (cfg.headroom ?? 3) - stackRows(state);
   while (pool.length) {
     const group = sampleByWeight(pool, g => g.frequency * setNovelty(state, g) * setThreadWeight(state, sel.currentThread, g), state.rng);
-    const pieces = expandGroup(group, state.rng, l6.variants);
+    const pieces = expandGroup(group, state.rng, l6.variants, lastVersion(state, group));
     // (not if its first piece mustn't come straight after the last one: a small piece of the sky)
     if (pieces[0]?.notAfter?.includes(sel.lastShapeId)) { pool = pool.filter(g => g !== group); continue; }
     if ((group.room || roomNeeded(pieces)) <= room) return startGroup(state, group, pieces); // (a set's own `room` has the last word)
@@ -358,11 +373,21 @@ export function bestPile(pieces, beamWidth = 12, perLevel = 3) {
   return best;
 }
 
+// The version of a set it had last time (this game, or in this browser before: state.setVersions,
+// kept by the UI), and remembering the one it has now.
+export function lastVersion(state, group) {
+  return group.versions?.length > 1 ? state.setVersions?.get(group.id) ?? null : null;
+}
+export function noteVersion(state, group, version) {
+  if (group.versions?.length > 1 && version != null) (state.setVersions ??= new Map()).set(group.id, version);
+}
+
 // Start `group` now: returns its first piece (the rest follow, in order).
 export function startGroup(state, group, pieces = null) {
   if (!group) return null;
   const l6 = state.pieceSel.level6;
-  l6.queue = pieces ?? expandGroup(group, state.rng, l6.variants);
+  l6.queue = pieces ?? expandGroup(group, state.rng, l6.variants, lastVersion(state, group));
+  noteVersion(state, group, l6.queue.version);
   l6.group = group.id;
   l6.lastGroup = group.id; // (a one-piece set is over as soon as it starts)
   l6.starts = (l6.starts ?? 0) + 1;

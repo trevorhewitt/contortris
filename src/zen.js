@@ -29,7 +29,7 @@ import { tryMove, tryRotate, zenCaption, timeScaleOf, settleFlock } from "./game
 import { selectPiece, destroyerCells } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup } from "./powerups.js";
-import { expandGroup, roomNeeded, groupUnderWay } from "./level6.js";
+import { expandGroup, roomNeeded, groupUnderWay, lastVersion, noteVersion } from "./level6.js";
 import { makeRng, sampleByWeight } from "./util.js";
 import { colourFamily } from "./threads.js";
 
@@ -456,8 +456,9 @@ const MOVEMENTS = {
       const sets = (state.groups ?? []).filter(g => g.frequency > 0);
       for (let i = 0; i < 4 && sets.length; i++) {
         const g = sampleByWeight(sets, g => g.frequency, state.rng);
-        const pieces = expandGroup(g, state.rng, state.pieceSel?.level6?.variants);
+        const pieces = expandGroup(g, state.rng, state.pieceSel?.level6?.variants, lastVersion(state, g));
         if ((g.room || roomNeeded(pieces)) <= room) {
+          noteVersion(state, g, pieces.version);
           for (const s of pieces) state.zen.queue.push({ shape: s, weights: WEIGHTS.clear });
           return;
         }

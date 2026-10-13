@@ -8,7 +8,7 @@ import { GROUPS } from "../shapes/groups.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, hardDropAndLock, on, updateGame, tryRotate, tryMove, setNextPiece } from "../src/game.js";
-import { normaliseGroups, expandGroup, level6Open, stackRows, startGroup } from "../src/level6.js";
+import { normaliseGroups, expandGroup, lastVersion, noteVersion, level6Open, stackRows, startGroup } from "../src/level6.js";
 import { remixShape } from "../src/remix.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
@@ -449,6 +449,26 @@ test("emotions: two to four ordinary ones, then on to the strange, mostly ending
   const count = (list) => list.reduce((n, id) => n + (lasts.get(id) ?? 0), 0);
   assert.ok(count(absurd) > 400 * 0.6, `ends on the absurd ${count(absurd)} of 400 (before any déjà vu)`);
   assert.ok(count(plainEnds) > 0, "and now and then on a plain one");
+});
+
+test("a set with versions comes as a different one each time", () => {
+  const raw = ["a", "b", "c", "d", "e", "f"].map(id => ({ id: "v_" + id, name: id, grid: ["XX"], difficulty: 6 }));
+  const { shapes: vs } = loadShapes(raw);
+  const [g] = normaliseGroups([{ id: "vset", name: "vset", versions: [["v_a", "v_b"], ["v_c", "v_d"], ["v_e", { pick: ["v_f", "v_a"], count: 1 }]] }], vs);
+  assert.equal(g.versions.length, 3);
+  const rng = makeRng(4);
+  const state = { setVersions: new Map() };
+  let last = null;
+  const seen = new Set();
+  for (let i = 0; i < 60; i++) {
+    const run = expandGroup(g, rng, null, lastVersion(state, g));
+    assert.notEqual(run.version, last, "never the same version twice running");
+    assert.ok([["v_a", "v_b"], ["v_c", "v_d"]].some(v => v.join() === run.map(s => s.id).join()) || run[0].id === "v_e", run.map(s => s.id).join());
+    noteVersion(state, g, run.version);
+    last = run.version;
+    seen.add(run.version);
+  }
+  assert.equal(seen.size, 3, "all of them");
 });
 
 test("dinosaur bones: one dinosaur's bones in order, then its head; all four dinosaurs turn up", () => {

@@ -18,6 +18,9 @@
  *                                   set it to say otherwise: higher for a set that's awkward to
  *                                   place, lower for one that fits together better than that)
  *   unique: true,                   optional: no piece twice in one run, whichever steps it's in
+ *   versions: [ [step, ...], ... ], optional, in place of `sequence`: the set in several versions
+ *                                   (the same tower lush, unfinished or crumbling); each time it
+ *                                   comes, one of them, never the one it had last time
  *   sequence: [ step, step, ... ],  the pieces, in order. A step is either:
  *     "piece_id"                      that piece, or
  *     { pick: ["id", "id", ...],      a run of pieces picked at random from the list:

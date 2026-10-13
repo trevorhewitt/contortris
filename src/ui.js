@@ -386,6 +386,9 @@ export function bindUI({ state, renderer, sound, achievements }) {
   const SEEN_KEY = "extris.seen.v1", SEEN_SETS_KEY = "extris.seenSets.v1";
   state.seenEver = new Map(Object.entries(store.getJSON(SEEN_KEY, {})));
   state.seenSetsEver = new Map(Object.entries(store.getJSON(SEEN_SETS_KEY, {})));
+  // (and which version of each set came last, so the next one is another)
+  const SET_VERSIONS_KEY = "extris.setVersions.v1";
+  state.setVersions = new Map(Object.entries(store.getJSON(SET_VERSIONS_KEY, {})));
   // (and since the page was loaded: God mode shows the newest things once each, then carries on as usual)
   state.shownThisLoad = new Map();
   state.setsShownThisLoad = new Map();
@@ -394,6 +397,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
     if (!seenUnsaved) return;
     store.setJSON(SEEN_KEY, Object.fromEntries(state.seenEver));
     store.setJSON(SEEN_SETS_KEY, Object.fromEntries(state.seenSetsEver));
+    store.setJSON(SET_VERSIONS_KEY, Object.fromEntries(state.setVersions));
     seenUnsaved = 0;
   }
   function noteSeen(shape) {

@@ -63,7 +63,7 @@ const allOf = (state) => [...(state.allShapes ?? state.shapes ?? []), ...(state.
 function groupPieces(g) {
   const ids = [];
   for (const st of g.steps ?? []) {
-    for (const s of [...(st.shapes ?? []), ...(st.variant ?? [])]) ids.push(s.id);
+    for (const s of [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.repeat ?? [])]) ids.push(s.id);
     if (st.chain) for (const it of [...st.chain.start, ...Object.values(st.chain.after).flat()]) if (it.s) ids.push(it.s.id);
   }
   for (const s of g.echoes?.values() ?? []) ids.push(s.id);
