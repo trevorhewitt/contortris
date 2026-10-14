@@ -245,11 +245,11 @@ test("movement and rotation respect walls", () => {
   placeActive(state, "katana", 3, 5);
   const before = state.active.shape.powerup.areaRotations[0];
   assert.equal(tryRotate(state), true, "every powerup turns");
-  // ...but its effect doesn't: still its own row
+  // ...but its effect doesn't: still its own rows (its own and the two under it)
   const after = state.active.shape.powerup.areaRotations[state.active.rotIdx];
-  assert.equal(after.rows.length, 1);
+  assert.equal(after.rows.length, 3);
   assert.equal(after.cols.length, 0);
-  assert.equal(before.rows.length, 1);
+  assert.equal(before.rows.length, 3);
   setNextPiece(state, byId("pea"));
   assert.equal(state.next.id, "pea");
 });

@@ -641,6 +641,7 @@
                 <button data-ach="-" title="This cell's whole board row">-</button>
                 <button data-ach="|" title="This cell's whole board column">|</button>
                 <button data-ach="+" title="Whole row and whole column">+</button>
+                <button data-ach="v" title="This cell and every cell under it, down to the floor">v</button>
                 <button data-ach="." title="Erase (right-click also erases)">.</button>
               </div>
               <div class="row">
@@ -1057,7 +1058,7 @@
   const LAYER_COUNT = 5;
   const MAX_BLOCKS = 64;
   const ID_RE = /^[a-z0-9_]+$/;
-  const AREA_CHARS = new Set(["#", "-", "|", "+"]);
+  const AREA_CHARS = new Set(["#", "-", "|", "+", "v"]);
   const PU_TYPES = ["destroyer", "gravity", "expander", "acid", "blast", "goo", "phantom", "combo"];
   // Types a combo part may have, in the order the parts fire (the game sorts them like this)
   const COMBO_PART_TYPES = ["destroyer", "acid", "blast", "gravity", "expander"];
@@ -3612,6 +3613,7 @@
       if (c.ch === "#") add(c.x, c.y);
       if (c.ch === "-" || c.ch === "+") for (let x = vx0; x < vx0 + cols; x++) add(x, c.y);
       if (c.ch === "|" || c.ch === "+") for (let y = vy0; y < vy0 + rows; y++) add(c.x, y);
+      if (c.ch === "v") for (let y = c.y; y < vy0 + rows; y++) add(c.x, y);
     }
     return set;
   }
@@ -3641,6 +3643,7 @@
     for (const c of bandCells){
       if (c.ch === "-" || c.ch === "+") ctx.fillRect(0, (c.y - v.y0) * cs, W, cs);
       if (c.ch === "|" || c.ch === "+") ctx.fillRect((c.x - v.x0) * cs, 0, cs, H);
+      if (c.ch === "v") ctx.fillRect((c.x - v.x0) * cs, (c.y - v.y0) * cs, cs, H - (c.y - v.y0) * cs);
     }
     ctx.save(); ctx.translate(0.5, 0.5);
     ctx.strokeStyle = "rgba(255,255,255,0.07)"; ctx.lineWidth = 1; ctx.beginPath();
@@ -3778,6 +3781,10 @@
       }
       if (ch === "-" || ch === "+") ctx.fillRect(px + 3 - grow, py + mid - th / 2 - grow, cs - 6 + grow * 2, th + grow * 2);
       if (ch === "|" || ch === "+") ctx.fillRect(px + mid - th / 2 - grow, py + 3 - grow, th + grow * 2, cs - 6 + grow * 2);
+      if (ch === "v"){ // (an arrow down: to the floor)
+        ctx.fillRect(px + mid - th / 2 - grow, py + 3 - grow, th + grow * 2, cs - 9 + grow * 2);
+        ctx.beginPath(); ctx.moveTo(px + 4 - grow, py + cs - 10); ctx.lineTo(px + cs - 4 + grow, py + cs - 10); ctx.lineTo(px + mid, py + cs - 3 + grow); ctx.closePath(); ctx.fill();
+      }
     };
     paint("rgba(0,0,0,0.75)", 1);
     paint(col || (ch === "#" ? "rgba(255,255,255,0.9)" : "rgba(255,207,106,0.95)"), 0);

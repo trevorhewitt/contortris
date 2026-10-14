@@ -295,6 +295,7 @@ function fixedArea(base, mat0, mat) {
     cells: base.cells.map(({ dx, dy }) => ({ dx: dx + sx, dy: dy + sy })),
     rows: base.rows.map(dy => dy + sy),
     cols: base.cols.map(dx => dx + sx),
+    downs: (base.downs ?? []).map(({ dx, dy }) => ({ dx: dx + sx, dy: dy + sy })),
   };
 }
 

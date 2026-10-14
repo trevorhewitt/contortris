@@ -898,7 +898,7 @@ export function destroyerCells(shape) {
   for (const p of pu.type === "combo" ? (pu.parts ?? []) : [pu]) {
     if (p.type !== "destroyer" && p.type !== "acid") continue;
     const a = p.areaRotations?.[0];
-    if (a) n += a.cells.length + a.rows.length * CONFIG.board.cols + a.cols.length * CONFIG.board.rows;
+    if (a) n += a.cells.length + a.rows.length * CONFIG.board.cols + a.cols.length * CONFIG.board.rows + (a.downs?.length ?? 0) * CONFIG.board.rows / 2;
   }
   return n;
 }

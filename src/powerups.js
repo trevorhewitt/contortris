@@ -59,12 +59,14 @@ const DIRECTIONS = {
 export const AREA_CELL = 1;
 export const AREA_ROW = 2;
 export const AREA_COL = 4;
+export const AREA_DOWN = 8; // (this cell and every one under it, down to the floor)
 
 const AREA_CHAR_FLAGS = {
   "#": AREA_CELL,
   "-": AREA_ROW,
   "|": AREA_COL,
   "+": AREA_ROW | AREA_COL,
+  "v": AREA_DOWN,
 };
 
 /* =========================
@@ -75,7 +77,7 @@ const AREA_CHAR_FLAGS = {
 // `trim` = {top, left}: how many empty rows/cols were trimmed off the top/left
 // of the piece grid when it was normalised (so the origin still lines up).
 export function parseArea(area, trim = { top: 0, left: 0 }) {
-  const out = { cells: [], rows: [], cols: [] };
+  const out = { cells: [], rows: [], cols: [], downs: [] };
   if (!area || !area.grid) return out;
 
   const lines = Array.isArray(area.grid) ? area.grid : String(area.grid).split("\n");
@@ -94,6 +96,7 @@ export function parseArea(area, trim = { top: 0, left: 0 }) {
       if (flags & AREA_CELL) out.cells.push({ dx, dy });
       if (flags & AREA_ROW) rowSet.add(dy);
       if (flags & AREA_COL) colSet.add(dx);
+      if (flags & AREA_DOWN) out.downs.push({ dx, dy });
     }
   }
 
@@ -112,6 +115,8 @@ export function rotateArea90CW(area, pieceH) {
     // a whole row at dy becomes a whole column at (H - 1 - dy), and vice versa
     rows: area.cols.slice().sort((a, b) => a - b),
     cols: area.rows.map(dy => pieceH - 1 - dy).sort((a, b) => a - b),
+    // (down to the floor stays down: it's where things fall)
+    downs: (area.downs ?? []).map(rot),
   };
 }
 
@@ -126,7 +131,7 @@ export function areaRotationsFor(area, rotations, trim = { top: 0, left: 0 }) {
 }
 
 export function isEmptyArea(a) {
-  return !a.cells.length && !a.rows.length && !a.cols.length;
+  return !a.cells.length && !a.rows.length && !a.cols.length && !a.downs?.length;
 }
 
 // Normalise a raw `powerup` object. `rotations` are the piece's boolean
@@ -156,6 +161,22 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
       .filter(Boolean)
       .sort((a, b) => COMBO_PART_TYPES.indexOf(a.type) - COMBO_PART_TYPES.indexOf(b.type));
     if ((raw.parts?.length ?? 0) < 2) console.warn(`[${id}] a combo needs at least two parts.`);
+    // (with only one part left, it's just a powerup of that kind now, in the combo's words)
+    if (parts.length === 1) {
+      const [only] = parts;
+      return {
+        ...only,
+        starter: raw.starter === true,
+        tier,
+        description: (typeof raw.description === "string" && raw.description.trim()) ? raw.description.trim() : DEFAULT_EFFECT_TEXT[only.type],
+        intro: typeof raw.intro === "string" ? raw.intro.trim() : "",
+        consume: typeof raw.consume === "boolean" ? raw.consume : CONSUMES[only.type],
+        help: Number.isFinite(Number(raw.help)) && raw.help !== null && raw.help !== "" ? Math.max(1, Math.min(5, Number(raw.help))) : DEFAULT_HELP_BY_TIER[tier],
+        fill: only.fill ?? raw.fill ?? null,
+        bad: raw.bad === true,
+        stripped: true,
+      };
+    }
     areaRotations = rotations.map((_, i) => unionAreas(parts.map(p => p.areaRotations[i])));
   } else if (type === "acid") {
     // everything within `reach` steps of the piece, plus any explicit area
@@ -167,11 +188,12 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
         t.cells.push(...extra[i].cells);
         t.rows = [...new Set([...t.rows, ...extra[i].rows])];
         t.cols = [...new Set([...t.cols, ...extra[i].cols])];
+        t.downs = [...t.downs, ...extra[i].downs];
       }
       return t;
     });
   } else if (type === "goo" || type === "phantom") {
-    areaRotations = rotations.map(() => ({ cells: [], rows: [], cols: [] }));
+    areaRotations = rotations.map(() => ({ cells: [], rows: [], cols: [], downs: [] }));
   } else if (raw.scatter && type === "destroyer") {
     // a random spray of cells, re-rolled each time the piece spawns (rollScatter); the first
     // one is seeded from its id, so a game is the same every time with the same seed
@@ -244,7 +266,7 @@ export function scatterAreas(rotations, sc, rng) {
   const offs = scatterOffsets({ radius: Number(sc?.radius) || 5, density: Number(sc?.density) || 0.5 }, rng);
   return rotations.map(mat => {
     const cx = Math.floor(mat[0].length / 2), cy = Math.floor(mat.length / 2);
-    return { cells: offs.map(({ ox, oy }) => ({ dx: cx + ox, dy: cy + oy })), rows: [], cols: [] };
+    return { cells: offs.map(({ ox, oy }) => ({ dx: cx + ox, dy: cy + oy })), rows: [], cols: [], downs: [] };
   });
 }
 
@@ -257,12 +279,13 @@ export function rollScatter(shape, rng = Math.random) {
 }
 
 function unionAreas(list) {
-  const out = { cells: [], rows: [], cols: [] };
+  const out = { cells: [], rows: [], cols: [], downs: [] };
   for (const a of list) {
     if (!a) continue;
     out.cells.push(...a.cells);
     out.rows.push(...a.rows);
     out.cols.push(...a.cols);
+    out.downs.push(...(a.downs ?? []));
   }
   out.rows = [...new Set(out.rows)].sort((a, b) => a - b);
   out.cols = [...new Set(out.cols)].sort((a, b) => a - b);
@@ -291,7 +314,7 @@ export function touchArea(mat, reach = 1) {
       if (best <= reach) cells.push({ dx, dy });
     }
   }
-  return { cells, rows: [], cols: [] };
+  return { cells, rows: [], cols: [], downs: [] };
 }
 
 /* =========================
@@ -322,6 +345,11 @@ export function resolveArea(areaRot, px, py, cols, rows) {
     const x = px + dx;
     if (x < 0 || x >= cols) continue;
     for (let y = 0; y < rows; y++) flags[y * cols + x] |= AREA_COL;
+  }
+  for (const { dx, dy } of areaRot.downs ?? []) {
+    const x = px + dx;
+    if (x < 0 || x >= cols) continue;
+    for (let y = Math.max(0, py + dy); y < rows; y++) flags[y * cols + x] |= AREA_CELL;
   }
 
   const indices = [];

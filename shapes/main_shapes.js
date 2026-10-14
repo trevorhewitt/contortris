@@ -75,7 +75,8 @@
  *   area: {                   the highlighted ("effected") cells:
  *     origin: [x, y],         where the piece's top-left block sits inside `grid`
  *     grid: ["..."],          "." not affected, "#" this cell, "-" this cell's whole row,
- *   },                        "|" this cell's whole column, "+" both row and column
+ *   },                        "|" this cell's whole column, "+" both row and column,
+ *                             "v" this cell and every cell under it, down to the floor
  *   fill: "#hex" | [[...]],   expander / goo: art for the cells it fills (one block of k×k pixels)
  *   consume: true,            optional: vanish when fired (default: yes, except expanders)
  *   collapse: false,          destroyer / acid: wiped wall-to-wall rows close up like a line clear
@@ -4165,18 +4166,20 @@ export const SHAPES = [
         "tier": 2,
         "area": {
           "origin": [
-            1,
+            2,
             0
           ],
           "grid": [
-            "...",
-            "###",
-            "###",
-            "###"
+            ".....",
+            ".###.",
+            "#####",
+            "#####",
+            "#####",
+            ".###."
           ]
         },
-        "intro": "Swallows the 3x3 square of blocks right under it. Mind the event horizon.",
-        "help": 2.5
+        "intro": "Swallows a disc of blocks five across right under it. Mind the event horizon.",
+        "help": 3.5
       },
     rotation: {
         "mode": "any"
@@ -4259,7 +4262,7 @@ export const SHAPES = [
     color: [["#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#c97f1e","#c97f1e","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633"],["#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#feae34","#c97f1e","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633"],["#c97f1e","#feae34","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#feae34","#c97f1e","#feae34","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#ffffff","#ffffff","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#ffffff","#ffffff"],["#c97f1e","#feae34","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#feae34","#c97f1e","#feae34","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#ffffff","#a22633","#a22633"],["#c97f1e","#feae34","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#feae34","#c97f1e","#c97f1e","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#a22633","#a22633","#a22633"],["#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#feae34","#c97f1e","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633"],["#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#c97f1e","#c97f1e","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633"]],
     powerup: {
         "type": "destroyer",
-        "tier": 2,
+        "tier": 3,
         "collapse": true,
         "area": {
           "origin": [
@@ -4267,17 +4270,19 @@ export const SHAPES = [
             0
           ],
           "grid": [
+            "-----",
+            "-----",
             "-----"
           ]
         },
-        "intro": "Slices its whole row clean off, and everything above drops down. It is very cool and knows it.",
-        "help": 4,
+        "intro": "Slices its own row and the two under it clean off, and everything above drops down. It is very cool and knows it.",
+        "help": 5,
         "starter": true
       },
     rotation: {
         "mode": "any"
       },
-    frequency: 0.9,
+    frequency: 0.7,
     claudeDraft: true,
   },
   {
@@ -4357,18 +4362,16 @@ export const SHAPES = [
         ],
         "area": {
           "origin": [
-            2,
+            3,
             0
           ],
           "grid": [
-            "#####",
-            "#####",
-            "#####",
-            ".###."
+            "vvv-vvv",
+            "...v..."
           ]
         },
-        "intro": "Puffs up and fills every empty cell beside and below it. Don't get it in your hair.",
-        "help": 3,
+        "intro": "Puffs up into every empty cell in its own row, wall to wall, and everything under it, seven wide, all the way down to the floor. Don't get it in your hair.",
+        "help": 4.5,
         "starter": true
       },
     rotation: {
@@ -4527,11 +4530,12 @@ export const SHAPES = [
           ],
           "grid": [
             "..",
+            "-.",
             "-."
           ]
         },
-        "intro": "Mows the whole row underneath it clean away, and everything above drops down. Nobody is pushing it.",
-        "help": 4,
+        "intro": "Mows the two rows underneath it clean away, and everything above drops down. Nobody is pushing it.",
+        "help": 4.5,
         "starter": true
       },
     rotation: {
@@ -4588,15 +4592,15 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "...",
+            "---",
             "---",
             "###",
             "###"
           ]
         },
         "collapse": true,
-        "intro": "Blows away its whole row, wall to wall, and a 3x2 crater under that. It knows, and it is not okay.",
-        "help": 4.5,
+        "intro": "Blows away both of its rows, wall to wall, and a 3x2 crater under that. It knows, and it is not okay.",
+        "help": 5,
         "starter": true
       },
     rotation: {
@@ -4829,12 +4833,13 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            ".",
-            "-"
+            "-",
+            "-",
+            "v"
           ]
         },
-        "intro": "Floods the entire row underneath it, which usually means that row is done. Call a plumber.",
-        "help": 3,
+        "intro": "Floods its own row and the row under it, wall to wall, and drips down the column under it to the floor. Call a plumber.",
+        "help": 4.5,
         "starter": true
       },
     rotation: {
@@ -4921,24 +4926,17 @@ export const SHAPES = [
         ],
         "area": {
           "origin": [
-            0,
+            2,
             0
           ],
           "grid": [
-            ".",
-            ".",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#"
+            "vv.vv",
+            ".....",
+            "-.v.."
           ]
         },
-        "intro": "Squirts filler into the eight cells below it, even the air pockets under overhangs. Very satisfying.",
-        "help": 1.5
+        "intro": "Squirts filler into every gap two out either side of it and under it, down to the floor, and right along the row under it, wall to wall, air pockets and all. Very satisfying.",
+        "help": 4
       },
     rotation: {
         "mode": "any"
@@ -5023,17 +5021,16 @@ export const SHAPES = [
         ],
         "area": {
           "origin": [
-            2,
+            0,
             0
           ],
           "grid": [
-            "##.##",
-            ".###.",
-            "..#.."
+            "-",
+            "-"
           ]
         },
-        "intro": "Pops into a puff of popcorn that fills the empty cells beside and below it. You can't stop at one.",
-        "help": 2.5,
+        "intro": "Pops sideways into every empty cell in its own row and the row under it, wall to wall. You can't stop at one.",
+        "help": 4.5,
         "starter": true
       },
     rotation: {
@@ -5215,18 +5212,17 @@ export const SHAPES = [
         ],
         "area": {
           "origin": [
-            2,
+            4,
             0
           ],
           "grid": [
-            "##.##",
-            "##.##",
-            "#####",
-            ".###."
+            "vvvv.vvvv",
+            ".........",
+            "....v...."
           ]
         },
-        "intro": "Escapes and fills the empty cells beside and below it. It has a name now and it is Gerald.",
-        "help": 3,
+        "intro": "Rises out of its jar and into every empty cell beside it and under it, nine columns wide, all the way down to the floor. It has a name now and it is Gerald.",
+        "help": 4.5,
         "starter": true
       },
     rotation: {
@@ -5342,18 +5338,19 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 1,
-        "intro": "Wind them up and they chomp straight down through the 2x3 of blocks under them. Nobody knows whose teeth these were.",
-        "help": 2.5,
+        "intro": "Wind them up and they chomp a 4x4 bite out of the blocks under them. Nobody knows whose teeth these were.",
+        "help": 3.5,
         "area": {
           "origin": [
-            0,
+            1,
             0
           ],
           "grid": [
-            "..",
-            "##",
-            "##",
-            "##"
+            "....",
+            "####",
+            "####",
+            "####",
+            "####"
           ]
         }
       },
@@ -5470,19 +5467,20 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 2,
-        "intro": "The 4x4 block of the stack under it becomes lava, and lava means gone. You know the rules.",
-        "help": 3.5,
+        "intro": "The 6x5 block of the stack under it becomes lava, and lava means gone. You know the rules.",
+        "help": 4,
         "area": {
           "origin": [
-            0,
+            1,
             0
           ],
           "grid": [
-            "....",
-            "####",
-            "####",
-            "####",
-            "####"
+            "......",
+            "######",
+            "######",
+            "######",
+            "######",
+            "######"
           ]
         }
       },
@@ -6626,19 +6624,20 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 1,
-        "intro": "On Monday it ate one leaf. Today it eats the two rows of six blocks underneath it. It will still be hungry.",
+        "intro": "On Monday it ate one leaf. Today it eats the 10x3 patch of blocks under it. It will still be hungry.",
         "area": {
           "origin": [
-            2,
+            4,
             0
           ],
           "grid": [
-            "......",
-            "######",
-            "######"
+            "..........",
+            "##########",
+            "##########",
+            "##########"
           ]
         },
-        "help": 2
+        "help": 4
       },
     rotation: {
         "mode": "any"
@@ -6662,19 +6661,21 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 1,
-        "intro": "Not the grey one that just smears. It rubs out the 4x2 patch of blocks beneath it, cleanly.",
+        "intro": "Not the grey one that just smears. It rubs out the 6x4 patch of blocks beneath it, cleanly.",
         "area": {
           "origin": [
-            1,
+            2,
             0
           ],
           "grid": [
-            "....",
-            "####",
-            "####"
+            "......",
+            "######",
+            "######",
+            "######",
+            "######"
           ]
         },
-        "help": 2
+        "help": 3.5
       },
     rotation: {
         "mode": "any"
@@ -6693,21 +6694,23 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 2,
-        "intro": "It came in like one. Smashes the 4x3 chunk of blocks right below it. The bird is staying on.",
+        "intro": "It came in like one. Smashes the 6x5 chunk of blocks right below it. The bird is staying on.",
         "area": {
           "origin": [
-            1,
+            2,
             0
           ],
           "grid": [
-            "....",
-            "....",
-            "####",
-            "####",
-            "####"
+            "......",
+            "......",
+            "######",
+            "######",
+            "######",
+            "######",
+            "######"
           ]
         },
-        "help": 2.5,
+        "help": 4,
         "starter": true
       },
     rotation: {
@@ -6850,20 +6853,19 @@ export const SHAPES = [
           ]
         ],
         "tier": 2,
-        "intro": "Face down, sadly. It splats into the 4x3 space underneath, filling every empty cell with lasagne. Five second rule.",
+        "intro": "Face down, sadly. It splats into the two rows under it, wall to wall, in layers. Five second rule.",
         "area": {
           "origin": [
-            1,
+            2,
             0
           ],
           "grid": [
-            "....",
-            "####",
-            "####",
-            "####"
+            "......",
+            "------",
+            "------"
           ]
         },
-        "help": 2
+        "help": 4.5
       },
     rotation: {
         "mode": "any"
@@ -7292,14 +7294,15 @@ export const SHAPES = [
     powerup: {
         "type": "expander",
         "tier": 1,
-        "intro": "Your marbles roll out both sides and fill the empty cells in its own row, up to four on each side. You can't find them anywhere. Look, there they are.",
+        "intro": "Your marbles roll out of both sides and fill every empty cell in its own row, wall to wall, and the rest drop into everything under it, five wide, down to the floor. You can't find them anywhere. Look, there they are.",
         "area": {
           "origin": [
-            4,
+            2,
             0
           ],
           "grid": [
-            "####.####"
+            "vv-vv",
+            "..v.."
           ]
         },
         "fill": [
@@ -7367,7 +7370,7 @@ export const SHAPES = [
             "#061d28"
           ]
         ],
-        "help": 2
+        "help": 4.5
       },
     rotation: {
         "mode": "any"
@@ -7560,18 +7563,15 @@ export const SHAPES = [
     powerup: {
         "type": "expander",
         "tier": 1,
-        "intro": "Flops pancakes into every empty cell in the four rows under it, two wide, plugging the gaps. Syrup is not included. Syrup is never included.",
+        "intro": "Flops pancakes into every empty cell under it, six columns wide, all the way down to the plate, and right along the row under it, wall to wall. Syrup is not included. Syrup is never included.",
         "area": {
           "origin": [
-            0,
+            2,
             0
           ],
           "grid": [
-            "..",
-            "##",
-            "##",
-            "##",
-            "##"
+            "vv..vv",
+            "-.vv.."
           ]
         },
         "fill": [
@@ -7639,7 +7639,7 @@ export const SHAPES = [
             "#e8a654"
           ]
         ],
-        "help": 1.5
+        "help": 4.5
       },
     rotation: {
         "mode": "any"
@@ -7655,17 +7655,16 @@ export const SHAPES = [
     color: [["#ff4d5e","#ff4d5e","#ff4d5e","#ff4d5e","#ff4d5e","#ff4d5e","#ff4d5e","#ff4d5e","#ff4d5e","#ff4d5e","#ff4d5e","#ff4d5e","#ff4d5e","#ff4d5e"],["#2f5fd0","#ff4d5e","#ff4d5e","#2b2d42","#ffd23f","#ffd23f","#2b2d42","#3fa7ff","#3fa7ff","#2b2d42","#4cd97b","#4cd97b","#2b2d42","#2f5fd0"],["#2f5fd0","#ff4d5e","#ff4d5e","#2b2d42","#ffd23f","#ffd23f","#2b2d42","#3fa7ff","#3fa7ff","#2b2d42","#4cd97b","#4cd97b","#2b2d42","#2f5fd0"],["#2f5fd0","#2b2d42","#3fa7ff","#3fa7ff","#2b2d42","#c86bff","#c86bff","#2b2d42","#ff4d5e","#ff4d5e","#2b2d42","#ffd23f","#ffd23f","#2f5fd0"],["#2f5fd0","#2b2d42","#3fa7ff","#3fa7ff","#2b2d42","#c86bff","#c86bff","#2b2d42","#ff4d5e","#ff4d5e","#2b2d42","#ffd23f","#ffd23f","#2f5fd0"],["#2f5fd0","#4cd97b","#4cd97b","#2b2d42","#ff4d5e","#ff4d5e","#2b2d42","#ffd23f","#ffd23f","#2b2d42","#3fa7ff","#3fa7ff","#2b2d42","#2f5fd0"],["#2f5fd0","#2f5fd0","#2f5fd0","#2f5fd0","#2f5fd0","#2f5fd0","#2f5fd0","#2f5fd0","#2f5fd0","#2f5fd0","#2f5fd0","#2f5fd0","#2f5fd0","#2f5fd0"]],
     powerup: {
         "type": "expander",
-        "tier": 2,
-        "intro": "Fills a bowl of empty cells with balls: three on each side of it, and the two 8-wide rows underneath. Nobody knows what is at the bottom.",
+        "tier": 3,
+        "intro": "Fills every empty cell in the twelve columns around it with balls, all the way down to the floor. Nobody knows what is at the bottom.",
         "area": {
           "origin": [
-            3,
+            5,
             0
           ],
           "grid": [
-            "###..###",
-            "########",
-            "########"
+            "vvvvv..vvvvv",
+            ".....vv....."
           ]
         },
         "fill": [
@@ -7733,12 +7732,12 @@ export const SHAPES = [
             "#2b2d42"
           ]
         ],
-        "help": 2
+        "help": 5
       },
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0.7,
   },
   {
     id: "lego_brick",
@@ -7749,19 +7748,21 @@ export const SHAPES = [
     color: [["#3d0a0e","#ff8a8a","#e8333f","#3d0a0e","#ff8a8a","#e8333f","#3d0a0e"],["#3d0a0e","#e8333f","#9e1f2a","#3d0a0e","#e8333f","#9e1f2a","#3d0a0e"],["#ff8a8a","#ff8a8a","#e8333f","#e8333f","#e8333f","#e8333f","#e8333f"],["#ff8a8a","#e8333f","#e8333f","#e8333f","#e8333f","#e8333f","#9e1f2a"],["#e8333f","#e8333f","#e8333f","#e8333f","#e8333f","#e8333f","#9e1f2a"],["#e8333f","#e8333f","#e8333f","#e8333f","#e8333f","#9e1f2a","#9e1f2a"],["#9e1f2a","#9e1f2a","#9e1f2a","#9e1f2a","#9e1f2a","#9e1f2a","#9e1f2a"]],
     powerup: {
         "type": "expander",
-        "tier": 2,
-        "intro": "Multiplies and builds a step pyramid under it: 1, 3, 5 and 7 cells wide, filling every empty cell. You will find the last piece with your foot at 3am.",
+        "tier": 3,
+        "intro": "Multiplies and builds a solid step pyramid under it, thirteen bricks wide at the bottom, every empty cell of it right down to the floor. You will find the last piece with your foot at 3am.",
         "area": {
           "origin": [
-            3,
+            6,
             0
           ],
           "grid": [
-            ".......",
-            "...#...",
-            "..###..",
-            ".#####.",
-            "#######"
+            ".............",
+            ".....vvv.....",
+            "....v...v....",
+            "...v.....v...",
+            "..v.......v..",
+            ".v.........v.",
+            "v...........v"
           ]
         },
         "fill": [
@@ -7829,12 +7830,12 @@ export const SHAPES = [
             "#c9921a"
           ]
         ],
-        "help": 2.5
+        "help": 5
       },
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0.7,
   },
   {
     id: "cotton_candy",
@@ -7846,16 +7847,17 @@ export const SHAPES = [
     color: [["#963169","#ff7cc4","#ff7cc4","#ffe3f3","#ffb3dc","#ffb3dc","#ff7cc4"],["#ff7cc4","#d982b2","#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc","#ff7cc4"],["#963169","#ffb3dc","#ff7cc4","#ffb3dc","#ffb3dc","#ffe3f3","#ffb3dc"],["#963169","#d982b2","#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc"],["#963169","#d982b2","#ffb3dc","#ff7cc4","#ffb3dc","#ffb3dc","#ffb3dc"],["#ffe3f3","#d982b2","#ffb3dc","#ffb3dc","#ffe3f3","#ffb3dc","#963169"],["#d982b2","#ff7cc4","#ffb3dc","#ffb3dc","#ffb3dc","#963169","#963169"],["#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc","#963169"],["#963169","#ffb3dc","#ffe3f3","#ffb3dc","#ff7cc4","#d982b2","#963169"],["#963169","#d982b2","#ffb3dc","#ffb3dc","#ffb3dc","#d982b2","#d982b2"],["#ff7cc4","#d982b2","#ffb3dc","#ff7cc4","#ffb3dc","#ffb3dc","#ff7cc4"],["#ff7cc4","#d982b2","#ffb3dc","#ffb3dc","#ffb3dc","#ffb3dc","#ff7cc4"],["#d982b2","#ff7cc4","#ffb3dc","#ffb3dc","#ffb3dc","#ff7cc4","#963169"],["#963169","#d982b2","#ffb3dc","#ff7cc4","#ff7cc4","#963169","#963169"]],
     powerup: {
         "type": "expander",
-        "tier": 1,
-        "intro": "Fluffs out sideways, filling the empty cells two to each side of it, in both of its rows. It is 98% air and 2% regret.",
+        "tier": 3,
+        "intro": "Fluffs out sideways into every empty cell in its two rows and the row under them, wall to wall. It is 98% air and 2% regret.",
         "area": {
           "origin": [
-            2,
+            0,
             0
           ],
           "grid": [
-            "##.##",
-            "##.##"
+            "-",
+            "-",
+            "-"
           ]
         },
         "fill": [
@@ -7923,12 +7925,12 @@ export const SHAPES = [
             "#ffb3dc"
           ]
         ],
-        "help": 2.5
+        "help": 5
       },
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0.6,
   },
   {
     id: "foam_cousin",
@@ -7941,41 +7943,16 @@ export const SHAPES = [
     powerup: {
         "type": "expander",
         "tier": 3,
-        "intro": "Fills every empty cell in the three columns under it, all the way to the floor, and the cells beside it. It is only staying for a few days. It said that in March.",
+        "intro": "Fills every empty cell in the thirteen columns around it, all the way down to the floor. It is only staying for a few days. It said that in March.",
         "area": {
           "origin": [
-            1,
+            6,
             0
           ],
           "grid": [
-            "#.#",
-            "#.#",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###"
+            "vvvvvv.vvvvvv",
+            ".............",
+            "......v......"
           ]
         },
         "fill": [
@@ -8043,12 +8020,12 @@ export const SHAPES = [
             "#b8f05a"
           ]
         ],
-        "help": 3.5
+        "help": 5
       },
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0.4,
   },
   {
     id: "zeus_bolt",
@@ -8089,17 +8066,18 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 1,
-        "intro": "Eats every block in its row, wall to wall, and the row closes up. Waka waka. It has not stopped saying waka since 1980.",
+        "intro": "Eats every block in its row and the row under it, wall to wall, and the rows close up. Waka waka. It has not stopped saying waka since 1980.",
         "area": {
           "origin": [
             0,
             0
           ],
           "grid": [
+            "-",
             "-"
           ]
         },
-        "help": 4,
+        "help": 4.5,
         "collapse": true
       },
     rotation: {
@@ -8188,18 +8166,20 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 1,
-        "intro": "Squirts along the row under it, dissolving the block below it and three to each side. Straight in the eye, every time.",
+        "intro": "Squirts along the two rows under it, wall to wall, and they dissolve and close up. Straight in the eye, every time.",
         "area": {
           "origin": [
-            3,
+            0,
             0
           ],
           "grid": [
-            ".......",
-            "#######"
+            ".",
+            "-",
+            "-"
           ]
         },
-        "help": 1.5
+        "help": 4.5,
+        "collapse": true
       },
     rotation: {
         "mode": "any"
@@ -8251,18 +8231,20 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 2,
-        "intro": "Digests the 5x2 patch of blocks under it. It has been empty since lunch and it is not happy about it.",
-        "help": 2.5,
+        "intro": "Digests the 7x4 patch of blocks under it. It has been empty since lunch and it is not happy about it.",
+        "help": 4,
         "area": {
           "origin": [
-            1,
+            2,
             0
           ],
           "grid": [
-            ".....",
-            ".....",
-            "#####",
-            "#####"
+            ".......",
+            ".......",
+            "#######",
+            "#######",
+            "#######",
+            "#######"
           ]
         }
       },
@@ -9329,7 +9311,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 2,
-        "intro": "First everything in the five columns under it settles down, squashing out the air pockets. Then it pours cement into every empty cell of the 5x2 patch just below it. Keep it turning.",
+        "intro": "First everything in the five columns under it settles down, squashing out the air pockets. Then it pours cement into the two rows under it, wall to wall. Keep it turning.",
         "parts": [
           {
             "type": "gravity",
@@ -9419,13 +9401,13 @@ export const SHAPES = [
               "grid": [
                 ".....",
                 ".....",
-                "#####",
-                "#####"
+                "-....",
+                "-...."
               ]
             }
           }
         ],
-        "help": 1.5
+        "help": 4.5
       },
     rotation: {
         "mode": "any"
@@ -10015,7 +9997,7 @@ export const SHAPES = [
     color: [["#3a0810","#6a1220","#c84058","#c84058","#c84058","#c84058","#a8243a"],["#3a0810","#6a1220","#f0c94a","#f0c94a","#f0c94a","#f0c94a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#a8243a","#a8243a","#a8243a"],["#3a0810","#6a1220","#f0c94a","#f0c94a","#f0c94a","#f0c94a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#a8243a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#f0c94a","#f0c94a","#f0c94a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#f0c94a","#a8243a","#a8243a"],["#3a0810","#6a1220","#8a1a2c","#a8243a","#a8243a","#a8243a","#a8243a"],["#3a0810","#6a1220","#b08a20","#b08a20","#b08a20","#b08a20","#a8243a"],["#3a0810","#6a1220","#6a1220","#6a1220","#6a1220","#6a1220","#6a1220"]],
     powerup: {
         "type": "expander",
-        "tier": 2,
+        "tier": 3,
         "fill": [
           [
             "#d6b872",
@@ -10081,27 +10063,27 @@ export const SHAPES = [
             "#d6b872"
           ]
         ],
-        "intro": "Loaves and fishes: fills every empty cell beside it and in a wide basket below it with bread and fish. Somehow there are leftovers.",
+        "intro": "Loaves and fishes: fills every empty cell in the three rows under it, wall to wall, with bread and fish. Somehow there are leftovers.",
         "area": {
           "origin": [
-            3,
+            0,
             0
           ],
           "grid": [
-            ".##.##.",
-            ".##.##.",
-            "#######",
-            "#######",
-            ".#####."
+            ".",
+            ".",
+            "-",
+            "-",
+            "-"
           ]
         },
-        "help": 3,
+        "help": 5,
         "starter": true
       },
     rotation: {
         "mode": "any"
       },
-    frequency: 0.8,
+    frequency: 0.5,
     tags: [
         "scripture"
       ],
@@ -10152,23 +10134,24 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 3,
-        "intro": "Its gaze burns a cone into the stack below it: 9 wide under it, narrowing to a point five rows down. It sees you. It sees everything. It is mostly a lighthouse.",
+        "intro": "Its gaze burns a cone into the stack below it: 11 wide under it, narrowing to a point six rows down. It sees you. It sees everything. It is mostly a lighthouse.",
         "area": {
           "origin": [
-            3,
+            4,
             0
           ],
           "grid": [
-            ".........",
-            ".........",
-            "#########",
-            ".#######.",
-            "..#####..",
-            "...###...",
-            "....#...."
+            "...........",
+            "...........",
+            "###########",
+            ".#########.",
+            "..#######..",
+            "...#####...",
+            "....###....",
+            ".....#....."
           ]
         },
-        "help": 3
+        "help": 4
       },
     rotation: {
         "mode": "any"
@@ -10292,26 +10275,27 @@ export const SHAPES = [
     color: [["#8d929b","#a3a9b4","#a3a9b4","#a3a9b4","#a3a9b4","#a3a9b4","#a3a9b4","#a3a9b4","#a3a9b4","#a3a9b4","#a3a9b4","#a3a9b4","#a3a9b4","#8d929b"],["#a3a9b4","#dde2ea","#3e4658","#3e4658","#dde2ea","#dde2ea","#3e4658","#3e4658","#3e4658","#dde2ea","#3e4658","#dde2ea","#dde2ea","#a3a9b4"],["#a3a9b4","#dde2ea","#3e4658","#dde2ea","#3e4658","#dde2ea","#3e4658","#dde2ea","#dde2ea","#dde2ea","#3e4658","#dde2ea","#dde2ea","#a3a9b4"],["#a3a9b4","#dde2ea","#3e4658","#dde2ea","#3e4658","#dde2ea","#3e4658","#3e4658","#dde2ea","#dde2ea","#3e4658","#dde2ea","#dde2ea","#a3a9b4"],["#a3a9b4","#dde2ea","#3e4658","#dde2ea","#3e4658","#dde2ea","#3e4658","#dde2ea","#dde2ea","#dde2ea","#3e4658","#dde2ea","#dde2ea","#a3a9b4"],["#a3a9b4","#dde2ea","#3e4658","#3e4658","#dde2ea","#dde2ea","#3e4658","#3e4658","#3e4658","#dde2ea","#3e4658","#3e4658","#3e4658","#a3a9b4"],["#757b87","#888f9d","#888f9d","#888f9d","#888f9d","#888f9d","#888f9d","#888f9d","#888f9d","#888f9d","#888f9d","#888f9d","#888f9d","#757b87"]],
     powerup: {
         "type": "destroyer",
-        "tier": 1,
+        "tier": 3,
         "area": {
           "origin": [
             0,
             0
           ],
           "grid": [
-            "......",
-            "######",
-            "..####",
-            "....##"
+            "..",
+            "-.",
+            "-.",
+            "-."
           ]
         },
-        "intro": "Deletes a staircase of blocks under it and to its right, each step one deeper: six, then four, then two. Like the real key, it only ever deletes forwards.",
-        "help": 2
+        "intro": "Deletes the three rows under it, wall to wall, and the rows close up. Like the real key, once you hold it down it doesn't stop.",
+        "help": 5,
+        "collapse": true
       },
     rotation: {
         "mode": "any"
       },
-    frequency: 0.95,
+    frequency: 0.6,
   },
   {
     id: "egg_timer",
@@ -10324,28 +10308,26 @@ export const SHAPES = [
     color: [["#69411e","#794b23","#794b23","#794b23","#794b23","#794b23","#69411e"],["#a26937","#dff6ff","#dff6ff","#dff6ff","#dff6ff","#dff6ff","#a26937"],["#a26937","#a8d8ef","#dff6ff","#dff6ff","#dff6ff","#a8d8ef","#a26937"],["#a26937","#a8d8ef","#dff6ff","#dff6ff","#dff6ff","#a8d8ef","#a26937"],["#a26937","#b8773f","#a8d8ef","#f5c242","#a8d8ef","#b8773f","#a26937"],["#a26937","#b8773f","#b8773f","#f5c242","#b8773f","#b8773f","#a26937"],["#a26937","#b8773f","#b8773f","#f5c242","#b8773f","#b8773f","#a26937"],["#a26937","#b8773f","#b8773f","#f5c242","#b8773f","#b8773f","#a26937"],["#a26937","#b8773f","#a8d8ef","#f5c242","#a8d8ef","#b8773f","#a26937"],["#a26937","#a8d8ef","#dff6ff","#f5c242","#dff6ff","#a8d8ef","#a26937"],["#a26937","#a8d8ef","#f5c242","#f5c242","#f5c242","#a8d8ef","#a26937"],["#a26937","#f5c242","#d99a2b","#f5c242","#d99a2b","#f5c242","#a26937"],["#a26937","#d99a2b","#f5c242","#d99a2b","#f5c242","#d99a2b","#a26937"],["#69411e","#794b23","#794b23","#794b23","#794b23","#794b23","#69411e"],["#080926","#24093e","#24093e","#24093e","#24093e","#24093e","#24093e"],["#080926","#2e0754","#2e0754","#2e0754","#2e0754","#2e0754","#24093e"],["#080926","#2e0754","#2e0754","#080926","#69411e","#69411e","#69411e"],["#080926","#24093e","#2e0754","#080926","#080926","#2e0754","#24093e"],["#080926","#24093e","#2e0754","#2e0754","#2e0754","#2e0754","#24093e"],["#080926","#24093e","#24093e","#24093e","#2e0754","#2e0754","#24093e"],["#080926","#080926","#080926","#080926","#080926","#080926","#080926"]],
     powerup: {
         "type": "destroyer",
-        "tier": 2,
+        "tier": 3,
         "area": {
           "origin": [
-            2,
+            0,
             0
           ],
           "grid": [
-            ".....",
-            ".....",
-            ".....",
-            "#####",
-            ".###.",
-            "..#.."
+            "-",
+            "-",
+            "-"
           ]
         },
-        "intro": "Destroys the top half of an hourglass of blocks under it: 5 wide, then 3, then 1. Time's up for them. Also for the egg.",
-        "help": 2
+        "intro": "When time's up, all three rows it stands in vanish, wall to wall, and the rows close up. Also the egg.",
+        "help": 5,
+        "collapse": true
       },
     rotation: {
         "mode": "any"
       },
-    frequency: 0.9,
+    frequency: 0.6,
   },
   {
     id: "fizzing_aspirin",
@@ -10360,17 +10342,17 @@ export const SHAPES = [
         "collapse": true,
         "area": {
           "origin": [
-            1,
+            0,
             1
           ],
           "grid": [
-            ".#.",
-            "---",
-            ".#."
+            "-",
+            "-",
+            "-"
           ]
         },
-        "intro": "Fizzes away every block touching it and then its whole row, wall to wall, and everything above drops down. Take two and call the stack in the morning.",
-        "help": 4
+        "intro": "Fizzes away its own row and the rows either side of it, wall to wall, and everything above drops down. Take two and call the stack in the morning.",
+        "help": 5
       },
     rotation: {
         "mode": "any"
@@ -10388,20 +10370,21 @@ export const SHAPES = [
     powerup: {
         "type": "destroyer",
         "tier": 3,
-        "intro": "Dissolves every block in the big 6x4 block under it. Everything. Do not read the reviews.",
-        "help": 3.5,
+        "intro": "Dissolves every block in the big 8x5 block under it. Everything. Do not read the reviews.",
+        "help": 4.5,
         "area": {
           "origin": [
-            2,
+            3,
             0
           ],
           "grid": [
-            "......",
-            "......",
-            "######",
-            "######",
-            "######",
-            "######"
+            "........",
+            "........",
+            "########",
+            "########",
+            "########",
+            "########",
+            "########"
           ]
         }
       },
@@ -10422,20 +10405,21 @@ export const SHAPES = [
         "tier": 2,
         "area": {
           "origin": [
-            1,
+            2,
             0
           ],
           "grid": [
-            "...",
-            "###",
-            "###",
-            "###",
-            "###",
-            "###"
+            ".....",
+            "#####",
+            "#####",
+            "#####",
+            "#####",
+            "#####",
+            "#####"
           ]
         },
-        "intro": "Sinks and fizzes down through the 3-wide strip of blocks under it, five deep. The bath is now purple. The bath will always be purple.",
-        "help": 2.5
+        "intro": "Sinks and fizzes down through the 5-wide strip of blocks under it, six deep. The bath is now purple. The bath will always be purple.",
+        "help": 4
       },
     rotation: {
         "mode": "any"
@@ -10454,16 +10438,17 @@ export const SHAPES = [
         "tier": 2,
         "area": {
           "origin": [
-            2,
+            0,
             0
           ],
           "grid": [
-            "......",
-            "######"
+            "-.",
+            "-."
           ]
         },
-        "intro": "Dissolves a thin layer of the stack right under it, six cells wide. Half the pot has already vanished. It works.",
-        "help": 2
+        "intro": "Dissolves its own row and the row right under it, wall to wall, and the rows close up. Half the pot has already vanished. It works.",
+        "help": 4.5,
+        "collapse": true
       },
     rotation: {
         "mode": "any"
@@ -10547,18 +10532,17 @@ export const SHAPES = [
         ],
         "area": {
           "origin": [
-            2,
+            3,
             0
           ],
           "grid": [
-            "......",
-            "######",
-            ".####.",
-            "..##.."
+            "........",
+            "-vvvvvvv",
+            "v......."
           ]
         },
-        "intro": "Bubbles fill every empty cell in a bowl under it: 6 wide, then 4, then 2. There is a duck in there somewhere and it is fine.",
-        "help": 1.5
+        "intro": "The bath overflows: bubbles fill the row under it, wall to wall, and everything under it, eight wide, all the way down to the floor. There is a duck in there somewhere and it is fine.",
+        "help": 4.5
       },
     rotation: {
         "mode": "any"
@@ -10642,42 +10626,16 @@ export const SHAPES = [
         ],
         "area": {
           "origin": [
-            0,
+            3,
             0
           ],
           "grid": [
-            ".",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#"
+            ".......",
+            "vvvvvvv"
           ]
         },
-        "intro": "Pours itself into every empty cell in the column under it, all the way to the floor. If it fits, it sits. It always fits.",
-        "help": 2.5
+        "intro": "Pours itself into every empty cell under it, seven columns wide, all the way to the floor. If it fits, it sits. It always fits.",
+        "help": 4
       },
     rotation: {
         "mode": "any"
@@ -10766,33 +10724,7 @@ export const SHAPES = [
           ],
           "grid": [
             ".",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#",
-            "#"
+            "v"
           ]
         },
         "intro": "Fills its column, all the way down to the floor.",
@@ -10881,18 +10813,16 @@ export const SHAPES = [
         ],
         "area": {
           "origin": [
-            3,
+            4,
             0
           ],
           "grid": [
-            "###.###",
-            "..###..",
-            "...#...",
-            "...#..."
+            "vvvv-vvvv",
+            "....v...."
           ]
         },
-        "intro": "Swells out, filling the empty cells three out from it to the left, the right and below. It has absorbed a whole sink and it wants more.",
-        "help": 3
+        "intro": "Swells out along its own row, wall to wall, and into every empty cell under it, nine columns wide, all the way down to the floor. It has absorbed a whole sink and it wants more.",
+        "help": 5
       },
     rotation: {
         "mode": "any"
@@ -10909,7 +10839,7 @@ export const SHAPES = [
     color: [["#c2beb6","#e0dcd3","#c2b699","#e0dcd3","#e0dcd3","#e0dcd3","#c2b699","#e0dcd3","#e0dcd3","#c2b699","#e0dcd3","#c2beb6"],["#e0dcd3","#dccfae","#fffaf0","#fffaf0","#fffaf0","#dccfae","#fffaf0","#fffaf0","#fffaf0","#fffaf0","#dccfae","#e0dcd3"],["#c8a26a","#e3b878","#e3b878","#e3b878","#e3b878","#e3b878","#e3b878","#e3b878","#e3b878","#e3b878","#e3b878","#c8a26a"],["#ac7941","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#ac7941"],["#ac7941","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#e8434f","#e8434f","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#ac7941"],["#ac7941","#c48a4a","#c48a4a","#c48a4a","#e8434f","#e8434f","#e8434f","#e8434f","#c48a4a","#c48a4a","#c48a4a","#ac7941"],["#ac7941","#c48a4a","#c48a4a","#e8434f","#e8434f","#e8434f","#e8434f","#e8434f","#e8434f","#c48a4a","#c48a4a","#ac7941"],["#ac7941","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#e8434f","#e8434f","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#ac7941"],["#ac7941","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#e8434f","#e8434f","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#ac7941"],["#ac7941","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#e8434f","#e8434f","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#ac7941"],["#ac7941","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#c48a4a","#9c6a36","#c48a4a","#ac7941"],["#956938","#895d30","#ac7941","#ac7941","#ac7941","#ac7941","#ac7941","#ac7941","#ac7941","#ac7941","#ac7941","#956938"]],
     powerup: {
         "type": "expander",
-        "tier": 2,
+        "tier": 3,
         "fill": [
           [
             "#dccfae",
@@ -10977,18 +10907,17 @@ export const SHAPES = [
         ],
         "area": {
           "origin": [
-            2,
+            4,
             0
           ],
           "grid": [
-            "##..##",
-            "##..##",
-            "######",
-            "######"
+            "vvvv..vvvv",
+            "..........",
+            "....vv...."
           ]
         },
-        "intro": "Fills every empty cell in the gaps either side of it, two out, and in the two rows under it, six wide. Nobody has ever successfully put them back in the box.",
-        "help": 2
+        "intro": "Fills every empty cell beside it, four out each side, and everything under it, ten columns in all, down to the floor. Nobody has ever successfully put them back in the box.",
+        "help": 4.5
       },
     rotation: {
         "mode": "any"
@@ -11166,17 +11095,19 @@ export const SHAPES = [
         ],
         "area": {
           "origin": [
-            6,
+            5,
             0
           ],
           "grid": [
-            "....##.##....",
-            "..#########..",
-            "#############"
+            "....v.v....",
+            "...v.v.v...",
+            "..v.....v..",
+            ".v.......v.",
+            "v.........v"
           ]
         },
-        "intro": "Explodes into a drift of snow, filling empty cells: two beside it, nine in the row under it and thirteen in the row under that.",
-        "help": 3.5
+        "intro": "Explodes into a drift of snow: every empty cell in a heap eleven wide around it, sloping down from it all the way to the floor.",
+        "help": 5
       },
     rotation: {
         "mode": "any"
@@ -11192,7 +11123,7 @@ export const SHAPES = [
     color: [["#c2a038","#e0b941","#e0b941","#e07b25","#e0b941","#e0b941","#e0b941","#c59325","#e0b941","#e0b941","#e0b941","#cc3b46","#e0b941","#c2a038"],["#e0b941","#ff8c2a","#ffd24a","#ff8c2a","#ffd24a","#ff8c2a","#ffd24a","#ffd24a","#ffd24a","#e8434f","#ffd24a","#e8434f","#ffd24a","#cc3b46"],["#e0b941","#ff8c2a","#ff8c2a","#ff8c2a","#ff8c2a","#ff8c2a","#ffd24a","#e0a72a","#ffd24a","#e8434f","#e8434f","#e8434f","#e8434f","#cc3b46"],["#e0b941","#ffd24a","#ff8c2a","#ff8c2a","#ff8c2a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#e8434f","#e8434f","#e8434f","#e0b941"],["#e0b941","#ff8c2a","#ff8c2a","#ff8c2a","#ff8c2a","#ff8c2a","#ffd24a","#ffd24a","#e0a72a","#e8434f","#e8434f","#e8434f","#e8434f","#cc3b46"],["#e0b941","#ffd24a","#ffd24a","#9c6a36","#ffd24a","#ffd24a","#e0a72a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#9c6a36","#ffd24a","#e0b941"],["#aa7f20","#e0b941","#e0b941","#895d30","#e0b941","#e0b941","#e0b941","#e0b941","#c59325","#e0b941","#e0b941","#895d30","#e0b941","#aa7f20"]],
     powerup: {
         "type": "expander",
-        "tier": 1,
+        "tier": 3,
         "fill": [
           [
             "#ff8c2a",
@@ -11260,24 +11191,25 @@ export const SHAPES = [
         ],
         "area": {
           "origin": [
-            4,
+            5,
             0
           ],
           "grid": [
-            "..........",
-            "...####...",
-            "..##..##..",
-            ".##....##.",
-            "##......##"
+            "............",
+            "....vvvv....",
+            "...v....v...",
+            "..v......v..",
+            ".v........v.",
+            "v..........v"
           ]
         },
-        "intro": "Leaves drift down in two trails falling away from it, filling the empty cells: four under it, then two-wide steps out to each side, four rows deep. Someone has to rake all this.",
-        "help": 2
+        "intro": "The leaves drift down into a heap around it and settle into every gap underneath, twelve wide, all the way to the ground. Someone has to rake all this.",
+        "help": 5
       },
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0.8,
   },
   {
     id: "self_raising_cake",
@@ -12381,15 +12313,13 @@ export const SHAPES = [
               "grid": [
                 ".......",
                 ".......",
-                "#######",
-                "#######",
-                ".#####."
+                "vvvvvvv"
               ]
             }
           }
         ],
-        "intro": "Lands with a thwack that wipes out its whole row, wall to wall, then wobbles into every empty cell of the big patch under it (7 wide, 3 deep). Nobody asked for lime.",
-        "help": 4.5
+        "intro": "Lands with a thwack that wipes out its whole row, wall to wall, then wobbles into every empty cell under it, seven wide, all the way down to the floor. Nobody asked for lime.",
+        "help": 5
       },
     rotation: {
         "mode": "any"
@@ -12769,7 +12699,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 2,
-        "intro": "Lands, and everything in its two columns and one either side drops down into the gaps. Then it goes off to rearrange someone else's furniture.",
+        "intro": "Lands, and everything in its two columns and two either side drops down into the gaps. Then it goes off to rearrange someone else's furniture.",
         "parts": [
           {
             "type": "phantom"
@@ -12779,16 +12709,16 @@ export const SHAPES = [
             "direction": "down",
             "area": {
               "origin": [
-                1,
+                2,
                 0
               ],
               "grid": [
-                "||||"
+                "||||||"
               ]
             }
           }
         ],
-        "help": 3,
+        "help": 4,
         "starter": true
       },
     rotation: {
@@ -12807,7 +12737,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 2,
-        "intro": "Fills every empty cell one step around it (corners too) with glowing mist.",
+        "intro": "Its glowing mist pours out along both of its rows, wall to wall, and settles into the column under it, all the way down to the floor.",
         "parts": [
           {
             "type": "phantom"
@@ -12881,19 +12811,18 @@ export const SHAPES = [
             ],
             "area": {
               "origin": [
-                1,
-                1
+                0,
+                0
               ],
               "grid": [
-                "###",
-                "#.#",
-                "#.#",
-                "###"
+                "-",
+                "-",
+                "v"
               ]
             }
           }
         ],
-        "help": 2.5,
+        "help": 4.5,
         "starter": true
       },
     rotation: {
@@ -21339,22 +21268,23 @@ export const SHAPES = [
         "type": "destroyer",
         "tier": 1,
         "consume": true,
-        "help": 2,
+        "help": 4,
         "area": {
           "origin": [
-            0,
+            1,
             0
           ],
           "grid": [
-            "...",
-            ".#.",
-            "#.#",
-            "#.#",
-            "#.#",
-            "#.#"
+            ".....",
+            ".....",
+            "#####",
+            "#####",
+            "#####",
+            "#####",
+            "#####"
           ]
         },
-        "intro": "Pulls every block out of the two short columns under its poles, four deep, and the one between them. They aren't even metal. It's very persuasive."
+        "intro": "Pulls every block out of the 5x5 patch under its poles. They aren't even metal. It's very persuasive."
       },
     rotation: {
         "mode": "any"
@@ -21374,22 +21304,22 @@ export const SHAPES = [
         "type": "destroyer",
         "tier": 1,
         "consume": true,
-        "help": 1.5,
+        "help": 3.5,
         "area": {
           "origin": [
-            1,
+            2,
             0
           ],
           "grid": [
-            "....",
-            "....",
-            ".#.#",
-            "#.#.",
-            ".#.#",
-            "#.#."
+            "......",
+            "......",
+            "######",
+            "######",
+            "######",
+            "#####."
           ]
         },
-        "intro": "Takes every other block out of the 4x4 patch under it, like a checkerboard. Great. Really great."
+        "intro": "Takes out the 6x4 patch of blocks under it, apart from one, out of spite. Great. Really great."
       },
     rotation: {
         "mode": "any"
@@ -21409,7 +21339,7 @@ export const SHAPES = [
         "type": "destroyer",
         "tier": 2,
         "consume": true,
-        "help": 2,
+        "help": 4.5,
         "area": {
           "origin": [
             1,
@@ -21418,16 +21348,12 @@ export const SHAPES = [
           "grid": [
             ".....",
             ".....",
-            ".###.",
-            "#...#",
-            "#...#",
-            ".###.",
-            "#...#",
-            "#...#",
-            ".###."
+            "-....",
+            "-...."
           ]
         },
-        "intro": "Carves a figure of eight, seventeen blocks of it, into the stack under its blade. The judges gave it a 5.8. It has never got over it."
+        "intro": "Skates the length of the two rows under its blade, and they crack and fall away, wall to wall. The judges gave it a 5.8. It has never got over it.",
+        "collapse": true
       },
     rotation: {
         "mode": "any"
@@ -21447,20 +21373,22 @@ export const SHAPES = [
         "type": "destroyer",
         "tier": 1,
         "consume": true,
-        "help": 2,
+        "help": 3.5,
         "area": {
           "origin": [
             1,
             0
           ],
           "grid": [
-            ".....",
-            ".....",
-            "##.##",
-            "##.##"
+            "......",
+            "......",
+            "######",
+            "######",
+            "######",
+            "######"
           ]
         },
-        "intro": "Punches two neat 2x2 holes in the stack under it, the regulation distance apart. It has no idea what you're filing."
+        "intro": "Punches one big neat hole in the stack under it: every block in the 6x4 patch, in one go. It has no idea what you're filing."
       },
     rotation: {
         "mode": "any"
@@ -21480,7 +21408,7 @@ export const SHAPES = [
         "type": "destroyer",
         "tier": 1,
         "consume": true,
-        "help": 1.5,
+        "help": 4,
         "area": {
           "origin": [
             0,
@@ -21489,17 +21417,10 @@ export const SHAPES = [
           "grid": [
             "...",
             "...",
-            ".#.",
-            ".#.",
-            "#..",
-            "#..",
-            ".#.",
-            "..#",
-            "..#",
-            ".#."
+            "vvv"
           ]
         },
-        "intro": "Strikes a jagged line of blocks, eight long, down into the stack under it. It isn't meant to strike the same place twice. It keeps a list."
+        "intro": "Strikes every block under it, three columns wide, all the way down to the floor. It isn't meant to strike the same place twice. It keeps a list."
       },
     rotation: {
         "mode": "any"
@@ -21520,25 +21441,24 @@ export const SHAPES = [
         "type": "destroyer",
         "tier": 2,
         "consume": true,
-        "help": 2.5,
+        "help": 4,
         "area": {
           "origin": [
-            3,
-            1
+            2,
+            0
           ],
           "grid": [
-            "....#....",
-            "....#....",
-            ".........",
-            ".........",
-            "#########",
-            "....#....",
-            "....#....",
-            "....#....",
-            "....#...."
+            "......",
+            "......",
+            "......",
+            "######",
+            "######",
+            "######",
+            "######",
+            "######"
           ]
         },
-        "intro": "Goes off in a plus just under its burning end: four blocks each way, and the one in the middle. It isn't attached to anything. It went off anyway."
+        "intro": "Goes off under its burning end and blows a 6x5 crater in the stack. It isn't attached to anything. It went off anyway."
       },
     rotation: {
         "mode": "any"
@@ -21557,23 +21477,23 @@ export const SHAPES = [
         "type": "destroyer",
         "tier": 2,
         "consume": true,
-        "help": 3,
+        "help": 4,
         "area": {
           "origin": [
-            1,
+            2,
             0
           ],
           "grid": [
-            ".......",
-            "...#...",
-            "..###..",
-            "#######",
-            ".#####.",
-            "..#.#..",
-            ".#...#."
+            "........",
+            "..####..",
+            ".######.",
+            "########",
+            "########",
+            ".######.",
+            "..####.."
           ]
         },
-        "intro": "Makes a star of blocks, twenty of them, vanish from the stack under it. It will not tell you how it's done."
+        "intro": "Makes a big round chunk of the stack under it vanish, thirty-six blocks of it. It will not tell you how it's done."
       },
     rotation: {
         "mode": "any"
@@ -21593,7 +21513,7 @@ export const SHAPES = [
         "type": "destroyer",
         "tier": 1,
         "consume": true,
-        "help": 1.5,
+        "help": 4.5,
         "area": {
           "origin": [
             3,
@@ -21603,13 +21523,15 @@ export const SHAPES = [
             ".........",
             ".........",
             "..#####..",
-            ".#.....#.",
-            "#.......#",
-            ".#.....#.",
+            ".#######.",
+            "#########",
+            "#########",
+            "#########",
+            ".#######.",
             "..#####.."
           ]
         },
-        "intro": "Clears a fairy ring of sixteen blocks, nine across, in the stack under it. Nobody has ever seen who dances in them."
+        "intro": "Clears a fairy ring: every block in a solid circle nine across, in the stack under it. Nobody has ever seen who dances in them."
       },
     rotation: {
         "mode": "any"

@@ -55,7 +55,7 @@ test("every bundled powerup normalises with a non-empty area", () => {
     assert.ok(pu, `${p.id} normalises`);
     const a = pu.areaRotations[0];
     if (pu.type !== "goo" && pu.type !== "phantom") {
-      assert.ok(a.cells.length + a.rows.length + a.cols.length > 0, `${p.id} has an area`);
+      assert.ok(a.cells.length + a.rows.length + a.cols.length + a.downs.length > 0, `${p.id} has an area`);
     }
     assert.ok(pu.description.length > 0);
   }
@@ -195,12 +195,12 @@ test("analyseBoard counts holes under blocks", () => {
   assert.equal(s.filled, 4);
 });
 
-test("katana area covers its whole row", () => {
+test("katana area covers its whole row, and the two under it", () => {
   const katana = POWERUPS.find(p => p.id === "katana");
   const pu = normalisePowerup(katana.powerup, [[[true, true, true, true, true]]]);
   const r = resolveArea(pu.areaRotations[0], 4, 10, 14, 28);
-  assert.deepEqual(r.fullRows, [10]);
-  assert.equal(r.indices.length, 14);
+  assert.deepEqual(r.fullRows, [10, 11, 12]);
+  assert.equal(r.indices.length, 14 * 3);
   assert.equal(pu.collapse, true);
 });
 
@@ -218,3 +218,23 @@ test("a powerup that sprays at random, once rolled, keeps its spray (what zen's 
   assert.notEqual(rollScatter(p, rng), p, "the original rolls afresh");
 });
 
+
+test("v: a cell and every cell under it, down to the floor (through anything in the way)", () => {
+  const a = parseArea({ origin: [1, 0], grid: [".", "v"] });
+  assert.deepEqual(a.downs, [{ dx: -1, dy: 1 }]);
+  const board = makeBoard([
+    "....",
+    "....",
+    "##..",
+    ".#..",
+    "##..",
+  ]);
+  // (the piece at x=1, y=0: its cell under-left is x=0, y=1, and down from there)
+  const area = resolveArea(a, 1, 0, 4, 5);
+  assert.deepEqual(area.indices, [4, 8, 12, 16]);
+  applyExpand(board, area, 4, () => ({ ch: "+" }));
+  assert.deepEqual(show(board), ["....", "+...", "##..", "+#..", "##.."]);
+  // a powerup's area stays put when the piece turns, down included
+  const pu = normalisePowerup({ type: "expander", area: { origin: [0, 0], grid: [".", "v"] } }, [[[1]]], { top: 0, left: 0 }, "t");
+  assert.equal(pu.areaRotations[0].downs.length, 1);
+});
