@@ -20461,13 +20461,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.23,
-        0.14,
-        0.14,
-        0.14
+        0.13,
+        0.08,
+        0.08,
+        0.08
       ],
     nextShapes: [
         "tile_square_blue",
@@ -20490,13 +20490,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.23,
-        0.14,
-        0.14
+        0.08,
+        0.13,
+        0.08,
+        0.08
       ],
     nextShapes: [
         "tile_square_blue",
@@ -20519,13 +20519,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.14,
-        0.23,
-        0.14
+        0.08,
+        0.08,
+        0.13,
+        0.08
       ],
     nextShapes: [
         "tile_square_blue",
@@ -20548,13 +20548,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.14,
-        0.14,
-        0.23
+        0.08,
+        0.08,
+        0.08,
+        0.13
       ],
     nextShapes: [
         "tile_square_blue",
@@ -20578,13 +20578,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.23,
-        0.14,
-        0.14,
-        0.14
+        0.13,
+        0.08,
+        0.08,
+        0.08
       ],
     nextShapes: [
         "tile_big_blue",
@@ -20608,13 +20608,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.23,
-        0.14,
-        0.14
+        0.08,
+        0.13,
+        0.08,
+        0.08
       ],
     nextShapes: [
         "tile_big_blue",
@@ -20638,13 +20638,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.14,
-        0.23,
-        0.14
+        0.08,
+        0.08,
+        0.13,
+        0.08
       ],
     nextShapes: [
         "tile_big_blue",
@@ -20668,13 +20668,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.14,
-        0.14,
-        0.23
+        0.08,
+        0.08,
+        0.08,
+        0.13
       ],
     nextShapes: [
         "tile_big_blue",
@@ -20698,13 +20698,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.23,
-        0.14,
-        0.14,
-        0.14
+        0.13,
+        0.08,
+        0.08,
+        0.08
       ],
     nextShapes: [
         "tile_l_blue",
@@ -20728,13 +20728,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.23,
-        0.14,
-        0.14
+        0.08,
+        0.13,
+        0.08,
+        0.08
       ],
     nextShapes: [
         "tile_l_blue",
@@ -20758,13 +20758,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.14,
-        0.23,
-        0.14
+        0.08,
+        0.08,
+        0.13,
+        0.08
       ],
     nextShapes: [
         "tile_l_blue",
@@ -20788,13 +20788,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.14,
-        0.14,
-        0.23
+        0.08,
+        0.08,
+        0.08,
+        0.13
       ],
     nextShapes: [
         "tile_l_blue",
@@ -20818,13 +20818,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.23,
-        0.14,
-        0.14,
-        0.14
+        0.13,
+        0.08,
+        0.08,
+        0.08
       ],
     nextShapes: [
         "tile_t_blue",
@@ -20848,13 +20848,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.23,
-        0.14,
-        0.14
+        0.08,
+        0.13,
+        0.08,
+        0.08
       ],
     nextShapes: [
         "tile_t_blue",
@@ -20878,13 +20878,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.14,
-        0.23,
-        0.14
+        0.08,
+        0.08,
+        0.13,
+        0.08
       ],
     nextShapes: [
         "tile_t_blue",
@@ -20908,13 +20908,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.14,
-        0.14,
-        0.23
+        0.08,
+        0.08,
+        0.08,
+        0.13
       ],
     nextShapes: [
         "tile_t_blue",
@@ -20938,13 +20938,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.23,
-        0.14,
-        0.14,
-        0.14
+        0.13,
+        0.08,
+        0.08,
+        0.08
       ],
     nextShapes: [
         "tile_s_blue",
@@ -20968,13 +20968,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.23,
-        0.14,
-        0.14
+        0.08,
+        0.13,
+        0.08,
+        0.08
       ],
     nextShapes: [
         "tile_s_blue",
@@ -20998,13 +20998,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.14,
-        0.23,
-        0.14
+        0.08,
+        0.08,
+        0.13,
+        0.08
       ],
     nextShapes: [
         "tile_s_blue",
@@ -21028,13 +21028,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.14,
-        0.14,
-        0.23
+        0.08,
+        0.08,
+        0.08,
+        0.13
       ],
     nextShapes: [
         "tile_s_blue",
@@ -21060,13 +21060,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.23,
-        0.14,
-        0.14,
-        0.14
+        0.13,
+        0.08,
+        0.08,
+        0.08
       ],
     nextShapes: [
         "tile_lizard_blue",
@@ -21092,13 +21092,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.23,
-        0.14,
-        0.14
+        0.08,
+        0.13,
+        0.08,
+        0.08
       ],
     nextShapes: [
         "tile_lizard_blue",
@@ -21124,13 +21124,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.14,
-        0.23,
-        0.14
+        0.08,
+        0.08,
+        0.13,
+        0.08
       ],
     nextShapes: [
         "tile_lizard_blue",
@@ -21156,13 +21156,13 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.12,
+    frequency: 0.05,
     claudeDraft: true,
     nextShapeProbs: [
-        0.14,
-        0.14,
-        0.14,
-        0.23
+        0.08,
+        0.08,
+        0.08,
+        0.13
       ],
     nextShapes: [
         "tile_lizard_blue",
@@ -21185,7 +21185,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.05,
+    frequency: 0.02,
     claudeDraft: true,
     tags: [
         "tiles"
@@ -21204,7 +21204,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.05,
+    frequency: 0.02,
     claudeDraft: true,
     tags: [
         "tiles"

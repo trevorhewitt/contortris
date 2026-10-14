@@ -308,7 +308,9 @@ function tryLinkedNextShape(state, prevShape, idToShape, debug = false) {
   for (let i = recentIds.length - 1; i >= 0 && family.has(recentIds[i]); i--) run++;
   if (run >= (CONFIG.assist.variety?.linkRun ?? Infinity)) return null;
   const dangerOk = computeStackDanger01(state) <= (hardCfg(state.mode).hardMaxDanger ?? 0.32);
-  const hardOk = endGameOn(state) || (!state.pieceSel?.lastWasHard && dangerOk);
+  // (nor before the first giant could come anyway: the big blue fish waits for the giants' time)
+  const soonest = hardCfg(state.mode).firstGiantBetween?.[0] ?? 0;
+  const hardOk = endGameOn(state) || (!state.pieceSel?.lastWasHard && dangerOk && (state.pieceSel?.dropIndex ?? 0) >= soonest);
   const chainOk = endGameOn(state) || dangerOk;
   const fresh = (state.pieceSel?.recentShapeIds ?? []).slice(-(CONFIG.assist.variety?.noRepeatWithin ?? 5));
   const cand = [];

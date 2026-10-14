@@ -91,7 +91,7 @@ function createNameLayer(nameLayerEl) {
     shown = name;
 
     const nextEl = document.createElement("div");
-    nextEl.className = "nameText " + (instant ? "enterToCenter instant" : "enterFromRight") + (effect ? ` powerup cls-${cls || "combo"}` : "");
+    nextEl.className = "nameText " + (instant ? "enterToCenter instant" : "enterFromRight") + (effect || cls ? ` powerup cls-${cls || "combo"}` : "");
 
     const main = document.createElement("span");
     main.className = "nameMain";
@@ -120,11 +120,13 @@ function createNameLayer(nameLayerEl) {
     currentEl = nextEl;
   }
 
-  // (`label`: said in place of the name, and left as it is while it stays the same)
+  // (`label`: said in place of the name, and left as it is while it stays the same. In turbo
+  // zen, `instant`, a powerup's name comes in its colours but without what it does under it:
+  // there's no time to read it)
   function setShape(shape, instant = false, label = null) {
     if (!shape) { clear(); return; }
     if (label) { if (label !== shown) setName(label, "", "", instant); return; }
-    setName(shape.name, shape.powerup?.description ?? "", shape.powerup?.cls ?? "", instant);
+    setName(shape.name, instant ? "" : shape.powerup?.description ?? "", shape.powerup ? shape.powerup.cls ?? "combo" : "", instant);
   }
 
   return { setName, setShape, clear };
