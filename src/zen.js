@@ -101,7 +101,7 @@ export function createZen(state) {
 // For the dev panel: every movement there is, by name, and the ways some of them can go.
 export function zenMovementChoices() {
   const ghosts = !(CONFIG.assist.powerups.disabledTypes ?? []).includes("phantom");
-  const ways = { crack: { end: Object.keys(CRACK_ENDS).filter(k => ghosts || !GHOSTLY.has(k)) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] }, combo: { id: COMBOS.map(c => c.id) } };
+  const ways = { crack: { end: Object.keys(CRACK_ENDS).filter(k => ghosts || !GHOSTLY.has(k)) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] }, combo: { id: COMBOS.map(c => c.id) }, expanders: { way: ["only", "among", "showcase"] } };
   const out = [];
   for (const name of Object.keys(MOVEMENTS)) {
     if (["pacmen", "taps", "pacmenAndTaps", "settle", "sweep"].includes(name)) continue; // (they only come after others)
@@ -511,7 +511,7 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
     const B = CONFIG.zen.batches ?? {}, same = isCalm(state) ? 0 : sameness(state), fast = pace <= (B.fastPace ?? 0.85);
     const chance = Math.min(0.95, repeats * (streaks + (B.base ?? 0) + same * (fast ? B.fast ?? 0 : B.slow ?? 0)));
     // (and the bigger the piece, the shorter the run: about B.blocks blocks' worth at most)
-    if (s && state.rng() < chance) { again.shape = s; again.left = Math.min(longest ?? Infinity, Math.floor((B.blocks ?? 30) / blocks(s)), int(state, 1, 1 + Math.round(same * (fast ? B.longFast ?? 3 : B.longSlow ?? 2)))); } else again.left = 0;
+    if (s && !s.powerup && state.rng() < chance) { again.shape = s; again.left = Math.min(longest ?? Infinity, Math.floor((B.blocks ?? 30) / blocks(s)), int(state, 1, 1 + Math.round(same * (fast ? B.longFast ?? 3 : B.longSlow ?? 2)))); } else again.left = 0;
     return s;
   };
   return {
@@ -522,6 +522,8 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
       if (state.zen.userHas || this.phase !== "fill" || !this.extras?.length || only) return null;
       if (stackHeight(state) < this.extras[0].at) return null;
       const { kind } = this.extras.shift();
+      // (or one of the Expanderz, filling what it can of the gaps on the way up)
+      if (kind === "grow") return growWith(state, this.weights);
       const res = kind === "bed" ? planNest(state, { weights: this.weights }) : planPatch(state, { weights: this.weights });
       if (!res) return null;
       if (res.caption) zenCaption(state, res.caption, kind, { quiet: true });
@@ -854,22 +856,37 @@ const MOVEMENTS = {
     blastWith: (st, n) => { const holes = powerupPool(st).filter(p => /black hole/i.test(p.name)); return holes.length && n % 3 !== 2 ? bestPowerup(st, holes) : bigPowerup(st); },
   }),
 
-  // the board filled by expanding pieces, then the powerups
-  expanders: (state) => ({
-    caption: "expanding", used: 0, target: up(int(state, 16, 20)), phase: "grow", blasts: 0,
-    fill(state) {
-      const pool = powerupPool(state).filter(p => p.powerup.type === "expander" && !p.powerup.bad);
-      if (this.phase === "grow" && (stackHeight(state) >= this.target || this.used >= 16 * CONFIG.board.cols / 14 || !pool.length)) { this.phase = "blast"; zenCaption(state, "demolition", "demolition"); }
-      if (this.phase === "grow") {
-        state.zen.queue.push({ shape: bestPowerup(state, pool, CONFIG.zen.powerupChoices, WEIGHTS.grow), weights: WEIGHTS.grow });
-        this.used++;
-        return;
+  // the board filled by Expanderz, then the powerups: nothing but Expanderz (a different one each
+  // time, as far as it can); or a fill of pieces that go together with one every few pieces,
+  // filling the gaps they leave; or the biggest ones, one after another, with a few pieces between
+  expanders: (state) => {
+    const way = state.zen.opts?.way ?? sampleByWeight([["only", 1], ["among", 2], ["showcase", 1.4]], ([, w]) => w, state.rng)[0];
+    state.zen.opts = null;
+    const all = powerupPool(state).filter(p => p.powerup.type === "expander" && !p.powerup.bad);
+    // (one that fits, of a few of the freshest, where it fills the most)
+    const grower = (st, pool) => {
+      const fits = pool.filter(p => fitsUnder(st, p, 3));
+      if (!fits.length) return null;
+      const few = [];
+      for (let i = 0; i < Math.min(4, fits.length); i++) { const p = pickFresh(st, fits.filter(f => !few.includes(f))); few.push(p); }
+      return bestPowerup(st, few, few.length, WEIGHTS.grow);
+    };
+    if (way === "only") {
+      return fillThenBlast("expanding", (st) => grower(st, all), { target: up(int(state, 16, 20)), pace: 0.9, only: true, keyChance: 0.3, weights: WEIGHTS.grow, maxPieces: 16 * CONFIG.board.cols / 14 });
+    }
+    const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= 3), pal = palettePick(state, pool);
+    const big = all.filter(p => (p.powerup.tier ?? 1) >= 3 || (p.powerup.help ?? 0) >= 4.5);
+    const every = way === "showcase" ? [4, 7] : [2, 4];
+    let left = int(state, every[0], every[1]);
+    return fillThenBlast(way === "showcase" ? "the big ones" : `${pal?.caption ?? "things"}, expanding`, (st) => {
+      if (--left <= 0) {
+        left = int(st, every[0], every[1]);
+        const p = grower(st, way === "showcase" && big.length ? big : all);
+        if (p) return p;
       }
-      state.zen.queue.push({ shape: this.blasts < 2 ? bigPowerup(state) : bestPowerup(state), weights: WEIGHTS.clear, blast: this.blasts });
-      this.blasts++;
-    },
-    done(state) { return this.phase === "blast" && (this.blasts >= 7 || stackHeight(state) <= 3 || !stillWorthIt(this, state, this.blasts)); },
-  }),
+      return fromPalette(st, pal, pool);
+    }, { target: up(int(state, 17, 20)), pace: way === "showcase" ? 1 : 0.85, streaks: 0.15 });
+  },
 
   // zen: a few of one family of pieces (a few bees, some florgnorfepuses)
   family: (state) => {
@@ -1137,6 +1154,16 @@ function bestPowerup(state, pool = powerupPool(state), tries = CONFIG.zen.poweru
     if (place && (!best || place.s > best.s)) best = { p, s: place.s };
   }
   return best?.p ?? pool[0];
+}
+
+// On the way up a fill: one of the Expanderz (the bigger ones likelier) put where it fills the
+// most without clearing anything, keeping the fill's column clear. [item] or null.
+function growWith(state, weights) {
+  const pool = powerupPool(state).filter(p => p.powerup.type === "expander" && !p.powerup.bad && fitsUnder(state, p, 4));
+  if (!pool.length) return null;
+  const big = pool.filter(p => (p.powerup.tier ?? 1) >= 2);
+  const p = bestPowerup(state, big.length && state.rng() < 0.75 ? big : pool, CONFIG.zen.powerupChoices, { ...WEIGHTS.grow, well: weights?.well });
+  return [{ shape: p, weights: { ...WEIGHTS.grow, well: weights?.well } }];
 }
 
 // ...of the biggest ones (black holes, earthquakes), for the big moments and for emergencies.
@@ -1639,7 +1666,7 @@ function extrasFor(state, from, to) {
   const out = [];
   const lo = from + 2, hi = to - (X.belowTop ?? 6);
   if (hi <= lo) return out;
-  for (const [kind, counts] of [["bed", X.beds], ["patch", X.patches]]) {
+  for (const [kind, counts] of [["bed", X.beds], ["patch", X.patches], ["grow", X.grows ?? [1]]]) {
     const n = sampleByWeight(counts.map((w, i) => ({ i, w })), c => c.w, state.rng).i;
     for (let k = 0; k < n; k++) out.push({ kind, at: lo + Math.floor(state.rng() * (hi - lo)) });
   }
@@ -1858,7 +1885,7 @@ export function planBeds(state) {
 //   columns: not the rows at all but the columns, eaten away left to right, right to left, from
 //   both sides or from the middle out (termite queens, Zeus's lightning, existential horror)
 // (the ones with phantoms in, GHOSTLY, only while there are phantoms: CONFIG.assist.powerups)
-const CRACK_ENDS = { up: 2, down: 1.4, shaker: 1.2, middle: 1.2, random: 1, powered: 0.4, columns: 1.6 };
+const CRACK_ENDS = { up: 2, down: 1.4, shaker: 1.2, middle: 1.2, random: 1, powered: 0.4, columns: 1.6, flood: 1.6 };
 const GHOSTLY = new Set(["up", "shaker", "middle", "random"]);
 
 // The friendly ghost, if phantoms are about (one block of phantom, so it just fills a gap), or
@@ -1900,14 +1927,18 @@ export function planCrack(state, end = null) {
   const wander = (d) => { const u = rng(); return u < 0.6 ? [d, 0, -d] : u < 0.85 ? [0, d, -d] : [-d, 0, d]; };
   const bolt = (d) => (rng() < 0.75 ? [2 * d, d, -2 * d, -d] : [0, 2 * d, -2 * d]);
   const half = (cols >> 1) - 1;
+  const narrow = () => { const n = int(state, 2, 4), a = int(state, 1, cols - 1 - n); return walk(a, a + n - 1, wander); };
   const kinds = [
     { caption: "a crack running through it", lines: [walk(1, cols - 2, wander)] },
-    { caption: "a zigzag", lines: [walk(1, cols - 2, (d) => [d, -d])] },
+    { caption: "a zigzag", lines: [walk(1, cols - 2, (d) => [d, -d])], narrow: true },
     { caption: "lightning, more or less", lines: [walk(1, cols - 2, bolt)] },
     { caption: "two cracks, not touching", lines: [walk(1, half - 1, wander), walk(half + 2, cols - 2, wander)] },
+    { caption: "a narrow crack", lines: [narrow()], narrow: true },
   ];
+  // (to be flooded by one of the Expanderz, a crack narrow enough for one to cover)
+  const fit = end === "flood" ? kinds.filter(k => k.narrow) : kinds;
   for (let tries = 0; tries < 12; tries++) {
-    const kind = kinds[Math.floor(rng() * kinds.length)];
+    const kind = fit[Math.floor(rng() * fit.length)];
     const holes = new Uint8Array(cols * rows), list = [];
     let ok = true;
     for (const line of kind.lines) {
@@ -1974,6 +2005,10 @@ function crackEnd(state, end, list, { ghost, singles, top }) {
     const sweep = columnSweep(state);
     if (sweep) return sweep;
   }
+  if (end === "flood") {
+    const flood = floodOver(state, list, top);
+    if (flood) return flood;
+  }
   if (!ghost) return singles.length ? down() : { then: "pacmen" };
   return { steps: sealOrder(list, g => -g.y).map(ghostAt), caption: "sealed from the bottom up" };
 }
@@ -1993,6 +2028,33 @@ function sealOrder(gaps, rank) {
     out.push(left.splice(best, 1)[0]);
   }
   return out;
+}
+
+// One of the Expanderz that, dropped on top of the board as it will be (every row from `top` up
+// full but for the gaps), fills every gap at once: the rain, a waterfall, the fog. { extra,
+// caption }, or null if none can.
+function floodOver(state, gaps, top) {
+  const { cols, rows } = CONFIG.board;
+  const occ = new Uint8Array(cols * rows);
+  for (let y = top; y < rows; y++) for (let x = 0; x < cols; x++) occ[y * cols + x] = 1;
+  for (const g of gaps) occ[g.y * cols + g.x] = 0;
+  const want = gaps.map(g => g.y * cols + g.x), options = [];
+  for (const p of powerupPool(state).filter(p => p.powerup.type === "expander" && !p.powerup.bad)) {
+    for (let r = 0; r < reachableTurns(p); r++) {
+      const mat = p.rotations[r], w = mat[0].length;
+      for (let x = 0; x + w <= cols; x++) {
+        const y = dropY(occ, mat, x, cols, rows);
+        if (y == null || y < 1) continue;
+        const area = resolvePowerupArea(p.powerup, r, x, y, cols, rows);
+        if (want.every(i => area.flags[i])) options.push({ p, r, x, spare: area.indices.length - want.length });
+      }
+    }
+  }
+  if (!options.length) return null;
+  // (one of those with the least to spare: it's the crack it's for)
+  options.sort((a, b) => a.spare - b.spare);
+  const o = options[Math.floor(state.rng() * Math.min(4, options.length))];
+  return { extra: [{ shape: o.p, target: { rot: o.r, x: o.x }, weights: WEIGHTS.clear, pace: 1.1, dramatic: true }], caption: `flooded: ${o.p.name}` };
 }
 
 // The board eaten away column by column, by powerups that destroy whole columns: { extra,
