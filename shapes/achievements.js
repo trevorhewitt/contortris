@@ -10,8 +10,8 @@
  *   icon: [[...]],            pixel art: a square grid of hex colours, "" = transparent
  *                             (12×12 recommended; any size up to 32×32 works)
  *   trigger: { type, ... },   when it unlocks (see below)
- *   mode: "any",              optional: "any" (default), "easy", "normal", "extreme", or
- *                             "powerups" (any mode with powerups: Easy or Normal)
+ *   mode: "any",              optional: "any" (default), "normal" (Classic), "extreme", or
+ *                             "powerups" (any mode with powerups: Classic or God)
  *   variants: [{ name, description }],
  *                             optional: other names for the same achievement. One of the names
  *                             (main or a variant) is picked at random when it unlocks, so
@@ -13336,6 +13336,7 @@ export const ACHIEVEMENTS = [
         ]
       ],
     mode: "easy",
+    retired: true, // (Easy mode is gone)
     trigger: {
         "type": "rowsDestroyed",
         "count": 15

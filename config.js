@@ -12,8 +12,9 @@ export const CONFIG = {
     //         the first piece
     // everything: every powerup class and the combos are in from the first piece (no intro
     //         screens, nothing to wait for)
-    easy: { label: "Easy", tagline: "powerups, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true },
-    normal: { label: "Normal", tagline: "powerups help you out", powerups: true, giants: true, level6: true, warmup: true },
+    // (Easy is gone from the menu: kept here so a game remembered as Easy still means something)
+    easy: { label: "Easy", tagline: "powerups, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true, hidden: true },
+    normal: { label: "Classic", tagline: "the full game, powerups and all", powerups: true, giants: true, level6: true, warmup: true },
     extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true },
     god: { label: "God", tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true },
     // speeds: a speed setting on the pause menu, these times timeScale (1 to start with).
@@ -22,7 +23,7 @@ export const CONFIG = {
     // zenMovements: "turbo" for turbo zen's own mix of movements; flashNames: the falling piece's
     // name just appears, no sliding in and out; captions: false, no words over the board for what
     // zen's director is up to
-    zen: { label: "Zen", tagline: "slow, easy, and impossible to lose", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
+    zen: { label: "Zen", tagline: "slow and easy: it plays itself, or you do", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
     turbo: { label: "Turbo zen", tagline: "it plays itself, and doesn't stop", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2], captions: false },
     // (behind the home screen, CONFIG.home: turbo zen with no words in it at all, no names, no
     // callouts; its demolitions leave `keep` rows or so, so the board is seldom bare; and it

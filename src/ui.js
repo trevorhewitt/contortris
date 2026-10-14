@@ -10,6 +10,7 @@ import {
 } from "./game.js";
 import { makeShapePreviewCanvas, drawIcon } from "./render.js";
 import { createDemo, runDemos } from "./demo.js";
+import { createModeDemo } from "./modedemo.js";
 import { CLASS_INFO, analyseBoard } from "./powerups.js";
 import { introduceAllPowerups, computeStackDanger01 } from "./selection.js";
 import { level6Status, startGroup, scheduleFirstGroup } from "./level6.js";
@@ -596,7 +597,7 @@ export function bindUI({ state, renderer, achievements }) {
       } else {
         const pr = achievements.progressOf(def);
         if (pr && !hidden) meta = `${pr.best ? "Best" : "Progress"}: ${Math.min(pr.value, pr.target)} / ${pr.target}`;
-        if (def.mode && def.mode !== "any") meta += `${meta ? " · " : ""}${def.mode === "powerups" ? "Easy, Normal or God" : modeLabel(def.mode)} mode`;
+        if (def.mode && def.mode !== "any") meta += `${meta ? " · " : ""}${def.mode === "powerups" ? `${modeLabel("normal")} or ${modeLabel("god")}` : modeLabel(def.mode)} mode`;
       }
       txt.innerHTML =
         `<div class="achName">${escapeHtml(name)}</div>` +
@@ -638,6 +639,15 @@ export function bindUI({ state, renderer, achievements }) {
     return { row, demo: createDemo(cvs, shape, { cell }) };
   }
 
+  // How to play: each powerup class (its demo, its name, what it does), and each mode (a little
+  // game of it, what it is, and a button to go and play it)
+  const HOWTO_MODES = [
+    ["normal", "The full game: weird pieces, giants, and powerups to help you out."],
+    ["extreme", "The original. No powerups. No mercy."],
+    ["god", "Everything at once: the biggest pieces in the game, and powerups from the start."],
+    ["zen", "Slow and easy. It places each piece for you; take one over whenever you like."],
+    ["turbo", "It plays itself, quickly, and never stops. Sit back and watch."],
+  ];
   let howToBuilt = null;
   function startHowToDemos() {
     if (!howToBuilt) {
@@ -648,10 +658,30 @@ export function bindUI({ state, renderer, achievements }) {
         const ex = exampleOf(type);
         if (!ex) continue;
         const info = CLASS_INFO[type];
-        const card = demoCard(ex, { title: info.name, text: `${escapeHtml(info.text)}<div class="demoEg">e.g. ${escapeHtml(ex.name)}</div>` });
+        const card = demoCard(ex, { title: info.name, text: escapeHtml(info.text) });
         box.appendChild(card.row);
         howToBuilt.push(card.demo);
       }
+      const modes = $("howtoModes");
+      modes.innerHTML = "";
+      HOWTO_MODES.forEach(([mode, text], i) => {
+        if (!CONFIG.modes[mode] || CONFIG.modes[mode].hidden) return;
+        const row = document.createElement("div");
+        row.className = "demoRow modeRow";
+        const cvs = document.createElement("canvas");
+        cvs.className = "demo";
+        row.appendChild(cvs);
+        const txt = document.createElement("div");
+        txt.innerHTML = `<div class="demoName">${escapeHtml(modeLabel(mode))}</div><div class="modeText">${escapeHtml(text)}</div>`;
+        const go = document.createElement("button");
+        go.className = "small";
+        go.textContent = `\u25B6 Play ${modeLabel(mode)}`;
+        go.addEventListener("click", () => home.play(mode, { burst: false }));
+        txt.appendChild(go);
+        row.appendChild(txt);
+        modes.appendChild(row);
+        howToBuilt.push(createModeDemo(cvs, mode, { shapes: state.allShapes, powerups: state.allPowerups.filter(p => isPowerupEnabled(p)), cell: 11, seed: i + 1 }));
+      });
     }
     playDemos(howToBuilt);
   }
