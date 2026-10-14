@@ -98,6 +98,18 @@ export function createZen(state) {
 
 // Start `name` at the next piece (for tests and the dev panel). `opts`: how it goes, if it has a
 // choice (a crack's `end`).
+// For the dev panel: every movement there is, by name, and the ways some of them can go.
+export function zenMovementChoices() {
+  const ways = { loved: { ending: ["bitByBit", "bigOne", "spared"] }, crack: { end: Object.keys(CRACK_ENDS) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] } };
+  const out = [];
+  for (const name of Object.keys(MOVEMENTS)) {
+    if (["pacmen", "taps", "pacmenAndTaps", "settle", "sweep"].includes(name)) continue; // (they only come after others)
+    out.push({ name, label: name, opts: null });
+    for (const [key, values] of Object.entries(ways[name] ?? {})) for (const v of values) out.push({ name, label: `${name}: ${v}`, opts: { [key]: v } });
+  }
+  return out;
+}
+
 export function zenStart(state, name, opts = null) {
   const z = state.zen;
   if (!z) return;

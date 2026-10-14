@@ -15,7 +15,7 @@ import { CLASS_INFO, analyseBoard } from "./powerups.js";
 import { introduceAllPowerups, computeStackDanger01 } from "./selection.js";
 import { level6Status, startGroup, scheduleFirstGroup } from "./level6.js";
 import { endGameStatus } from "./endgame.js";
-import { zenIgnoreInput } from "./zen.js";
+import { zenIgnoreInput, zenMovementChoices, zenStart } from "./zen.js";
 import { rarity } from "./rarity.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
@@ -810,6 +810,15 @@ export function bindUI({ state, renderer, sound, achievements }) {
       const first = g && state.pieceSel ? startGroup(state, g) : null;
       if (first) setNextPiece(state, first);
       $("devNextStatus").textContent = first ? `next: ${g.name} (${1 + state.pieceSel.level6.queue.length} pieces)` : "no group";
+    });
+    // zen: start a movement (or one way of it) next
+    const zsel = $("devZenMovement"), choices = zenMovementChoices();
+    choices.forEach((c, i) => zsel.appendChild(new Option(c.label, String(i))));
+    $("btnDevZen").addEventListener("click", () => {
+      const c = choices[Number(zsel.value)];
+      if (!state.zen || !c) { $("devNextStatus").textContent = "zen modes only"; return; }
+      zenStart(state, c.name, c.opts);
+      $("devNextStatus").textContent = `next: ${c.label} (on a clean board, if it needs one)`;
     });
     const rate = $("devRate");
     const rateLabel = () => { $("devRateValue").textContent = dev.rate === 0 ? "off" : `×${dev.rate}`; };
