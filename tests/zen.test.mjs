@@ -459,6 +459,20 @@ test("turbo zen: a piece that loves you — built up round it and brought down r
   }
 });
 
+test("turbo zen on a big board, a few pieces at once: a piece that loves you still keeps every block until the finale", () => {
+  const usual = { ...CONFIG.board };
+  try {
+    CONFIG.board.cols = 40; CONFIG.board.rows = 24;
+    for (const seed of [4, 5]) {
+      const { story } = lovedRun(seed, "bitByBit");
+      assert.ok(story.ended, `seed ${seed}: never finished`);
+      const before = story.spawns.slice(1).filter(s => s.phase !== "finale");
+      assert.ok(before.every(s => s.blocks === 4), `seed ${seed}: ${before.map(s => s.blocks)}`);
+      assert.equal(story.died?.phase, "finale", `seed ${seed}`);
+    }
+  } finally { Object.assign(CONFIG.board, usual); }
+});
+
 test("turbo zen: now and then a piece that loves you is spared after all, or goes all at once", () => {
   const spared = lovedRun(7, "spared");
   assert.ok(spared.story.ended && !spared.story.died, "spared");
