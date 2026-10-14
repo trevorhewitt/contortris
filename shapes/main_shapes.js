@@ -24006,4 +24006,722 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
   },
+  {
+    id: "sandbag_wall",
+    name: "a wall of sandbags",
+    grid: [
+        "XX",
+        "XX"
+      ],
+    color: [["#cfc7b1","#d4c69f","#d4c69f","#d4c69f","#d4c69f","#d4c69f","#e0d7bf","#483e24","#483e24","#e0d7bf","#d4c69f","#d4c69f","#d4c69f","#d4c69f","#d4c69f","#cfc7b1"],["#c1b189","#e6d7ad","#d2c095","#d2c095","#d2c095","#d2c095","#d2c095","#4e4327","#4e4327","#d2c095","#e6d7ad","#d2c095","#d2c095","#d2c095","#d2c095","#aa996d"],["#aa996d","#d2c095","#d2c095","#d2c095","#ab9869","#d2c095","#b9a677","#9a875b","#b9a677","#d2c095","#d2c095","#ab9869","#d2c095","#d2c095","#b9a677","#8e7c54"],["#8e7c54","#b9a677","#b9a677","#b9a677","#b9a677","#b9a677","#9a875b","#77683f","#9a875b","#b9a677","#b9a677","#b9a677","#b9a677","#b9a677","#9a875b","#6d603a"],["#483e24","#77683f","#77683f","#77683f","#77683f","#77683f","#77683f","#4e4327","#4e4327","#77683f","#77683f","#77683f","#77683f","#77683f","#77683f","#483e24"],["#d4c69f","#e6d7ad","#f4ead0","#4e4327","#4e4327","#f4ead0","#e6d7ad","#e6d7ad","#e6d7ad","#e6d7ad","#e6d7ad","#e6d7ad","#f4ead0","#4e4327","#4e4327","#e0d7bf"],["#c1b189","#d2c095","#b9a677","#4e4327","#4e4327","#d2c095","#e6d7ad","#d2c095","#d2c095","#d2c095","#d2c095","#d2c095","#b9a677","#4e4327","#4e4327","#c1b189"],["#c1b189","#b9a677","#9a875b","#9a875b","#b9a677","#d2c095","#d2c095","#d2c095","#ab9869","#d2c095","#d2c095","#d2c095","#b9a677","#9a875b","#b9a677","#c1b189"],["#aa996d","#b9a677","#9a875b","#77683f","#9a875b","#b9a677","#b9a677","#b9a677","#b9a677","#b9a677","#b9a677","#b9a677","#9a875b","#77683f","#9a875b","#aa996d"],["#8e7c54","#9a875b","#9a875b","#77683f","#77683f","#9a875b","#b9a677","#b9a677","#b9a677","#b9a677","#b9a677","#9a875b","#9a875b","#77683f","#77683f","#8e7c54"],["#6d603a","#77683f","#4e4327","#4e4327","#4e4327","#4e4327","#77683f","#77683f","#77683f","#77683f","#77683f","#77683f","#4e4327","#4e4327","#4e4327","#483e24"],["#e0d7bf","#e6d7ad","#e6d7ad","#e6d7ad","#e6d7ad","#e6d7ad","#f4ead0","#4e4327","#4e4327","#f4ead0","#e6d7ad","#e6d7ad","#e6d7ad","#e6d7ad","#e6d7ad","#e0d7bf"],["#c1b189","#e6d7ad","#d2c095","#d2c095","#ab9869","#d2c095","#d2c095","#4e4327","#4e4327","#d2c095","#e6d7ad","#d2c095","#ab9869","#d2c095","#d2c095","#aa996d"],["#aa996d","#d2c095","#d2c095","#d2c095","#d2c095","#b9a677","#b9a677","#9a875b","#b9a677","#d2c095","#d2c095","#d2c095","#d2c095","#d2c095","#b9a677","#8e7c54"],["#8e7c54","#b9a677","#b9a677","#b9a677","#b9a677","#b9a677","#9a875b","#77683f","#9a875b","#b9a677","#b9a677","#b9a677","#b9a677","#b9a677","#9a875b","#6d603a"],["#423921","#6d603a","#6d603a","#6d603a","#6d603a","#6d603a","#6d603a","#483e24","#483e24","#6d603a","#6d603a","#6d603a","#6d603a","#6d603a","#6d603a","#423921"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#4e4327",
+            "#f4ead0",
+            "#e6d7ad",
+            "#e6d7ad",
+            "#e6d7ad",
+            "#f4ead0"
+          ],
+          [
+            "#4e4327",
+            "#d2c095",
+            "#d2c095",
+            "#d2c095",
+            "#ab9869",
+            "#b9a677"
+          ],
+          [
+            "#4e4327",
+            "#9a875b",
+            "#9a875b",
+            "#9a875b",
+            "#77683f",
+            "#4e4327"
+          ],
+          [
+            "#e6d7ad",
+            "#f4ead0",
+            "#4e4327",
+            "#4e4327",
+            "#f4ead0",
+            "#e6d7ad"
+          ],
+          [
+            "#d2c095",
+            "#b9a677",
+            "#4e4327",
+            "#4e4327",
+            "#d2c095",
+            "#d2c095"
+          ],
+          [
+            "#9a875b",
+            "#77683f",
+            "#4e4327",
+            "#4e4327",
+            "#9a875b",
+            "#9a875b"
+          ]
+        ],
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            "..",
+            "..",
+            "-.",
+            "-."
+          ]
+        },
+        "intro": "Fills the two rows under it, wall to wall, with sandbags. The water was never coming this way, but it is good to be prepared.",
+        "help": 4.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.7,
+    claudeDraft: true,
+  },
+  {
+    id: "avalanche",
+    name: "a small avalanche",
+    grid: [
+        ".X.",
+        "XXX",
+        ".X."
+      ],
+    color: [["","","","","#bec3ca","#b7c5d7","#35884f","#1b5530","","","",""],["","","","","#e0e0e0","#3c9a5a","#3c9a5a","#1e5d35","","","",""],["","","","","#d1d7df","#d0e0f4","#226a3c","#d1d7df","","","",""],["","","","","#b7c5d7","#7a5232","#edf4fd","#d1d7df","","","",""],["#697fa6","#b7c5d7","#e0e0e0","#b7c5d7","#ffffff","#edf4fd","#839fd0","#a8c0e4","#e0e0e0","#d1d7df","#5a73a6","#697fa6"],["#414651","#4a4f5c","#edf4fd","#d0e0f4","#edf4fd","#edf4fd","#6683bd","#a8c0e4","#edf4fd","#d0e0f4","#526ca6","#cc3e33"],["#d1d7df","#ffffff","#4a4f5c","#6683bd","#d0e0f4","#a8c0e4","#edf4fd","#d0e0f4","#6683bd","#e8463a","#e8463a","#94a9c9"],["#a6b3c3","#d1d7df","#b7c5d7","#94a9c9","#edf4fd","#d0e0f4","#d0e0f4","#d0e0f4","#cc3e33","#942a25","#942a25","#526997"],["","","","","#e0e0e0","#edf4fd","#d0e0f4","#d1d7df","","","",""],["","","","","#d1d7df","#edf4fd","#a8c0e4","#d1d7df","","","",""],["","","","","#34251c","#a8c0e4","#edf4fd","#b7c5d7","","","",""],["","","","","#2f221a","#34251c","#94a9c9","#697fa6","","","",""]],
+    powerup: {
+        "type": "expander",
+        "tier": 3,
+        "fill": [
+          [
+            "#edf4fd",
+            "#ffffff",
+            "#edf4fd",
+            "#d0e0f4",
+            "#a8c0e4",
+            "#edf4fd",
+            "#edf4fd"
+          ],
+          [
+            "#ffffff",
+            "#edf4fd",
+            "#edf4fd",
+            "#d0e0f4",
+            "#a8c0e4",
+            "#d0e0f4",
+            "#edf4fd"
+          ],
+          [
+            "#edf4fd",
+            "#edf4fd",
+            "#d0e0f4",
+            "#a8c0e4",
+            "#a8c0e4",
+            "#d0e0f4",
+            "#edf4fd"
+          ],
+          [
+            "#d0e0f4",
+            "#a8c0e4",
+            "#a8c0e4",
+            "#edf4fd",
+            "#ffffff",
+            "#edf4fd",
+            "#d0e0f4"
+          ],
+          [
+            "#edf4fd",
+            "#d0e0f4",
+            "#edf4fd",
+            "#ffffff",
+            "#edf4fd",
+            "#edf4fd",
+            "#a8c0e4"
+          ],
+          [
+            "#edf4fd",
+            "#d0e0f4",
+            "#d0e0f4",
+            "#edf4fd",
+            "#edf4fd",
+            "#d0e0f4",
+            "#a8c0e4"
+          ],
+          [
+            "#a8c0e4",
+            "#edf4fd",
+            "#d0e0f4",
+            "#d0e0f4",
+            "#a8c0e4",
+            "#a8c0e4",
+            "#edf4fd"
+          ]
+        ],
+        "area": {
+          "origin": [
+            5,
+            0
+          ],
+          "grid": [
+            ".............",
+            ".............",
+            "....vv.vv....",
+            "...v..v..v...",
+            "..v.......v..",
+            ".v.........v.",
+            "v...........v"
+          ]
+        },
+        "intro": "Comes down in a huge heap: snow fills every empty cell under it and to each side, thirteen columns wide, sloping down from it to the floor. It's only a small one. It has been practising.",
+        "help": 5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.3,
+    claudeDraft: true,
+  },
+  {
+    id: "tipped_honey_jar",
+    name: "a tipped-over jar of honey",
+    grid: [
+        "XX",
+        ".X"
+      ],
+    color: [["#6a5e4b","#ad9e84","#ad9e84","#ad9e84","#ad9e84","#ad9e84","#ad9e84","#ad9e84","#ad9e84","#ad9e84","#ad9e84","#ad9e84","#ad9e84","#dbb64f","#dbd197","#b78122"],["#ad9e84","#fffdf6","#f4ead6","#ffffff","#ffffff","#ffffff","#ffffff","#f4ead6","#fff6dc","#fff6dc","#fff6dc","#f4ead6","#c9b89a","#ffd45c","#ffd45c","#d49628"],["#ad9e84","#fff3b0","#ffd45c","#ffd45c","#ffd45c","#ffd45c","#ffd45c","#ffd45c","#fff6dc","#3a2a18","#ffcf3a","#fff6dc","#c9b89a","#e9e2d0","#a99f88","#dbb64f"],["#ad9e84","#ffd45c","#f7ae2e","#f7ae2e","#f7ae2e","#f7ae2e","#f7ae2e","#ffd45c","#fff6dc","#ffcf3a","#3a2a18","#fff6dc","#c9b89a","#a99f88","#e9e2d0","#d49628"],["#ad9e84","#f7ae2e","#f7ae2e","#e08a16","#e08a16","#e08a16","#f7ae2e","#f7ae2e","#fff6dc","#fff6dc","#fff6dc","#fff6dc","#c9b89a","#e9e2d0","#a99f88","#dbb64f"],["#ad9e84","#f7ae2e","#e08a16","#e08a16","#e08a16","#e08a16","#e08a16","#f7ae2e","#e7d4a8","#e7d4a8","#e7d4a8","#e7d4a8","#c9b89a","#a99f88","#e9e2d0","#c17713"],["#ad9e84","#e08a16","#e08a16","#b9660b","#b9660b","#b9660b","#e08a16","#e08a16","#e08a16","#e08a16","#e08a16","#b9660b","#c9b89a","#ffd45c","#f7ae2e","#c17713"],["#6a5e4b","#ad9e84","#ad9e84","#ad9e84","#ad9e84","#ad9e84","#ad9e84","#ad9e84","#c9b89a","#c9b89a","#c9b89a","#c9b89a","#c9b89a","#f7ae2e","#ffd45c","#9f5809"],["","","","","","","","","#d49628","#f7ae2e","#f7ae2e","#ffd45c","#fff3b0","#ffd45c","#f7ae2e","#9f5809"],["","","","","","","","","#d49628","#f7ae2e","#f7ae2e","#ffd45c","#fff3b0","#ffd45c","#e08a16","#9f5809"],["","","","","","","","","#c17713","#f7ae2e","#f7ae2e","#ffd45c","#fff3b0","#ffd45c","#f7ae2e","#9f5809"],["","","","","","","","","#d49628","#f7ae2e","#f7ae2e","#ffd45c","#fff3b0","#ffd45c","#e08a16","#9f5809"],["","","","","","","","","#d49628","#f7ae2e","#ffd45c","#ffd45c","#fff3b0","#ffd45c","#f7ae2e","#9f5809"],["","","","","","","","","#d49628","#ffd45c","#fff3b0","#ffd45c","#ffd45c","#ffd45c","#f7ae2e","#c17713"],["","","","","","","","","#dbb64f","#fff3b0","#ffd45c","#f7ae2e","#f7ae2e","#f7ae2e","#f7ae2e","#c17713"],["","","","","","","","","#894b08","#c17713","#d49628","#d49628","#c17713","#c17713","#c17713","#683504"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#b9660b",
+            "#ffd45c",
+            "#ffd45c",
+            "#ffd45c",
+            "#b9660b",
+            "#f7ae2e"
+          ],
+          [
+            "#ffd45c",
+            "#fff3b0",
+            "#ffd45c",
+            "#ffd45c",
+            "#ffd45c",
+            "#b9660b"
+          ],
+          [
+            "#ffd45c",
+            "#ffd45c",
+            "#ffd45c",
+            "#f7ae2e",
+            "#f7ae2e",
+            "#b9660b"
+          ],
+          [
+            "#b9660b",
+            "#f7ae2e",
+            "#f7ae2e",
+            "#f7ae2e",
+            "#b9660b",
+            "#e08a16"
+          ],
+          [
+            "#ffd45c",
+            "#b9660b",
+            "#e08a16",
+            "#b9660b",
+            "#ffd45c",
+            "#fff3b0"
+          ],
+          [
+            "#f7ae2e",
+            "#b9660b",
+            "#e08a16",
+            "#b9660b",
+            "#ffd45c",
+            "#ffd45c"
+          ]
+        ],
+        "area": {
+          "origin": [
+            2,
+            0
+          ],
+          "grid": [
+            "-......",
+            "vvvvvvv"
+          ]
+        },
+        "intro": "Honey fills every empty cell of its own row, wall to wall, and everything under it seven columns wide, all the way down to the floor. It has never once been in a hurry.",
+        "help": 4.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.8,
+    claudeDraft: true,
+  },
+  {
+    id: "slumped_beanbag",
+    name: "a beanbag (slumped)",
+    grid: [
+        "XXX",
+        "XXX"
+      ],
+    color: [["#7e211a","#a92e24","#d0402f","#d0402f","#d0402f","#a92e24","#7e211a","#7e211a","#7e211a","#7e211a","#a92e24","#a92e24"],["#a92e24","#f05f4d","#ff9a8a","#ff9a8a","#f05f4d","#d0402f","#a92e24","#581612","#581612","#581612","#a92e24","#d0402f"],["#d0402f","#ff9a8a","#ffe0d8","#ffe0d8","#ff9a8a","#f05f4d","#d0402f","#a92e24","#7e211a","#7e211a","#d0402f","#f05f4d"],["#d0402f","#f05f4d","#ff9a8a","#ff9a8a","#f05f4d","#f05f4d","#f05f4d","#d0402f","#a92e24","#d0402f","#f05f4d","#ff9a8a"],["#d0402f","#d0402f","#f05f4d","#f05f4d","#f05f4d","#f05f4d","#f05f4d","#f05f4d","#f05f4d","#ff9a8a","#ff9a8a","#f05f4d"],["#a92e24","#d0402f","#d0402f","#d0402f","#f05f4d","#f05f4d","#f05f4d","#ff9a8a","#ff9a8a","#ffe0d8","#ff9a8a","#f05f4d"],["#7e211a","#a92e24","#a92e24","#a92e24","#d0402f","#d0402f","#d0402f","#d0402f","#d0402f","#d0402f","#d0402f","#a92e24"],["#581612","#581612","#7e211a","#7e211a","#7e211a","#7e211a","#7e211a","#7e211a","#7e211a","#7e211a","#7e211a","#581612"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#f05f4d"
+          ],
+          [
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#f05f4d",
+            "#d0402f"
+          ],
+          [
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#f05f4d",
+            "#d0402f",
+            "#d0402f"
+          ],
+          [
+            "#a92e24",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f"
+          ],
+          [
+            "#d0402f",
+            "#a92e24",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f"
+          ],
+          [
+            "#d0402f",
+            "#d0402f",
+            "#a92e24",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f"
+          ],
+          [
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f",
+            "#d0402f"
+          ]
+        ],
+        "area": {
+          "origin": [
+            3,
+            0
+          ],
+          "grid": [
+            ".........",
+            ".........",
+            "..vvvvv..",
+            ".v.....v.",
+            "v.......v"
+          ]
+        },
+        "intro": "Slumps into a heap nine wide around it, and into every empty cell under that, down to the floor. Someone sat in it in 1997 and it has never really recovered.",
+        "help": 4
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.9,
+    claudeDraft: true,
+  },
+  {
+    id: "unravelling_yarn",
+    name: "a ball of yarn (unravelling)",
+    grid: [
+        "X"
+      ],
+    color: [["#4b2b76","#583289","#7547a9","#9363c1","#9363c1","#9363c1","#7547a9","#583289","#4b2b76"],["#7547a9","#ab73e0","#cfa2f5","#cfa2f5","#f1e0ff","#f1e0ff","#cfa2f5","#ab73e0","#7547a9"],["#9363c1","#cfa2f5","#f1e0ff","#cfa2f5","#cfa2f5","#cfa2f5","#f1e0ff","#cfa2f5","#9363c1"],["#7547a9","#ab73e0","#cfa2f5","#f1e0ff","#f1e0ff","#f1e0ff","#cfa2f5","#ab73e0","#7547a9"],["#9363c1","#cfa2f5","#f1e0ff","#cfa2f5","#cfa2f5","#cfa2f5","#f1e0ff","#f1e0ff","#7547a9"],["#7547a9","#ab73e0","#cfa2f5","#f1e0ff","#f1e0ff","#f1e0ff","#cfa2f5","#663a9f","#cfc1db"],["#583289","#8852c4","#ab73e0","#cfa2f5","#cfa2f5","#cfa2f5","#663a9f","#f1e0ff","#583289"],["#583289","#663a9f","#8852c4","#ab73e0","#ab73e0","#663a9f","#f1e0ff","#663a9f","#583289"],["#351c55","#583289","#583289","#583289","#583289","#cfc1db","#583289","#583289","#4b2b76"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#cfa2f5",
+            "#cfa2f5",
+            "#ab73e0",
+            "#cfa2f5",
+            "#cfa2f5",
+            "#663a9f"
+          ],
+          [
+            "#ab73e0",
+            "#cfa2f5",
+            "#cfa2f5",
+            "#cfa2f5",
+            "#ab73e0",
+            "#663a9f"
+          ],
+          [
+            "#8852c4",
+            "#ab73e0",
+            "#cfa2f5",
+            "#ab73e0",
+            "#8852c4",
+            "#663a9f"
+          ],
+          [
+            "#cfa2f5",
+            "#cfa2f5",
+            "#ab73e0",
+            "#cfa2f5",
+            "#cfa2f5",
+            "#663a9f"
+          ],
+          [
+            "#ab73e0",
+            "#cfa2f5",
+            "#cfa2f5",
+            "#cfa2f5",
+            "#ab73e0",
+            "#663a9f"
+          ],
+          [
+            "#8852c4",
+            "#ab73e0",
+            "#cfa2f5",
+            "#ab73e0",
+            "#8852c4",
+            "#663a9f"
+          ]
+        ],
+        "area": {
+          "origin": [
+            1,
+            0
+          ],
+          "grid": [
+            "v.v",
+            "-v.",
+            "-.."
+          ]
+        },
+        "intro": "Knits itself into every empty cell of the two rows under it, wall to wall, and of its own column and the one either side, from it down to the floor. Nobody is holding the needles.",
+        "help": 4.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.8,
+    claudeDraft: true,
+  },
+  {
+    id: "patchwork_quilt",
+    name: "a patchwork quilt",
+    grid: [
+        "X"
+      ],
+    color: [["#175450","#288c85","#288c85","#288c85","#288c85","#d09d2b","#a97718","#d09d2b","#175450"],["#288c85","#d9473f","#d9473f","#d9473f","#2fa39b","#f2b632","#f2b632","#c48a1c","#288c85"],["#288c85","#d9473f","#d9473f","#a8322c","#2fa39b","#f2b632","#c48a1c","#f2b632","#288c85"],["#288c85","#a8322c","#d9473f","#d9473f","#2fa39b","#c48a1c","#f2b632","#f2b632","#288c85"],["#288c85","#2fa39b","#2fa39b","#2fa39b","#2fa39b","#3a5197","#3a5197","#3a5197","#288c85"],["#288c85","#f2b632","#f2b632","#f2b632","#3a5197","#f6ecd6","#d9cba8","#f6ecd6","#288c85"],["#288c85","#c48a1c","#f2b632","#f2b632","#3a5197","#f6ecd6","#f6ecd6","#f6ecd6","#1b625d"],["#288c85","#f2b632","#f2b632","#c48a1c","#283a6e","#283a6e","#3a5197","#f6ecd6","#288c85"],["#175450","#288c85","#288c85","#288c85","#288c85","#288c85","#288c85","#1b625d","#175450"]],
+    powerup: {
+        "type": "expander",
+        "tier": 3,
+        "fill": [
+          [
+            "#d9473f",
+            "#f6ecd6",
+            "#d9473f",
+            "#3a5197",
+            "#3a5197",
+            "#3a5197"
+          ],
+          [
+            "#f6ecd6",
+            "#d9473f",
+            "#f6ecd6",
+            "#3a5197",
+            "#283a6e",
+            "#3a5197"
+          ],
+          [
+            "#d9473f",
+            "#f6ecd6",
+            "#d9473f",
+            "#3a5197",
+            "#3a5197",
+            "#3a5197"
+          ],
+          [
+            "#f2b632",
+            "#f2b632",
+            "#f2b632",
+            "#2fa39b",
+            "#2fa39b",
+            "#2fa39b"
+          ],
+          [
+            "#f2b632",
+            "#c48a1c",
+            "#f2b632",
+            "#1f726c",
+            "#1f726c",
+            "#1f726c"
+          ],
+          [
+            "#f2b632",
+            "#f2b632",
+            "#f2b632",
+            "#2fa39b",
+            "#2fa39b",
+            "#2fa39b"
+          ]
+        ],
+        "area": {
+          "origin": [
+            1,
+            0
+          ],
+          "grid": [
+            "-..",
+            "-..",
+            "-.."
+          ]
+        },
+        "intro": "Unfolds into every empty cell of its own row and the two rows under it, wall to wall. Every square was sewn by a different aunt, and they all have opinions.",
+        "help": 5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.4,
+    claudeDraft: true,
+  },
+  {
+    id: "spilled_paint",
+    name: "a spilled tin of paint",
+    grid: [
+        "X..",
+        "X..",
+        "XXX"
+      ],
+    color: [["#3a404a","#49b540","#86cb6b","#86cb6b","#49b540","#3a404a","","","","","","","","","","","",""],["#636a76","#f6f8fb","#f6f8fb","#ced4dd","#55d24a","#636a76","","","","","","","","","","","",""],["#8a909d","#f6f8fb","#f6f8fb","#ced4dd","#55d24a","#8a909d","","","","","","","","","","","",""],["#dbdbdb","#ffffff","#ffffff","#ffffff","#55d24a","#c2c6cb","","","","","","","","","","","",""],["#dbdbdb","#55d24a","#55d24a","#ffffff","#33aa3c","#c2c6cb","","","","","","","","","","","",""],["#dbdbdb","#55d24a","#55d24a","#ffffff","#55d24a","#c2c6cb","","","","","","","","","","","",""],["#c2c6cb","#ffffff","#ffffff","#ffffff","#e2e6ec","#49b540","","","","","","","","","","","",""],["#8a909d","#f6f8fb","#f6f8fb","#ced4dd","#a0a8b6","#49b540","","","","","","","","","","","",""],["#8a909d","#f6f8fb","#f6f8fb","#ced4dd","#55d24a","#2c9234","","","","","","","","","","","",""],["#636a76","#f6f8fb","#ced4dd","#ced4dd","#55d24a","#636a76","","","","","","","","","","","",""],["#8a909d","#f6f8fb","#ced4dd","#ced4dd","#a0a8b6","#49b540","","","","","","","","","","","",""],["#444a56","#737b89","#737b89","#737b89","#737b89","#444a56","","","","","","","","","","","",""],["#49b540","#55d24a","#9cec7c","#9cec7c","#55d24a","#55d24a","#86cb6b","#c4dbb8","#86cb6b","#86cb6b","#49b540","#49b540","#49b540","#49b540","#b1b6be","#d4d5d8","#8a909d","#3f9b37"],["#86cb6b","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#9cec7c","#55d24a","#55d24a","#55d24a","#55d24a","#9cec7c","#a0a8b6","#ced4dd","#737b89","#9cec7c","#49b540"],["#2c9234","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#55d24a","#2c9234"],["#2c9234","#55d24a","#33aa3c","#33aa3c","#33aa3c","#55d24a","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#55d24a","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#55d24a","#2c9234"],["#2c9234","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#33aa3c","#2c9234"],["#195c24","#1d6c2a","#1d6c2a","#1d6c2a","#1d6c2a","#1d6c2a","#1d6c2a","#1d6c2a","#1d6c2a","#1d6c2a","#1d6c2a","#1d6c2a","#1d6c2a","#1d6c2a","#1d6c2a","#1d6c2a","#1d6c2a","#195c24"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#62d955",
+            "#62d955",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a"
+          ],
+          [
+            "#55d24a",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a",
+            "#62d955",
+            "#62d955",
+            "#62d955"
+          ],
+          [
+            "#55d24a",
+            "#4bc744",
+            "#4bc744",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a"
+          ],
+          [
+            "#55d24a",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a",
+            "#4bc744",
+            "#4bc744"
+          ],
+          [
+            "#62d955",
+            "#62d955",
+            "#62d955",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a"
+          ],
+          [
+            "#55d24a",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a"
+          ],
+          [
+            "#55d24a",
+            "#55d24a",
+            "#4bc744",
+            "#4bc744",
+            "#55d24a",
+            "#55d24a",
+            "#55d24a"
+          ]
+        ],
+        "area": {
+          "origin": [
+            2,
+            0
+          ],
+          "grid": [
+            ".......",
+            "vvvvvvv",
+            ".......",
+            "-......"
+          ]
+        },
+        "intro": "Flows into every empty cell under it, seven columns wide, all the way down to the floor, and right along the row it lands on, wall to wall. It said 'one coat' on the tin.",
+        "help": 4.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.8,
+    claudeDraft: true,
+  },
+  {
+    id: "mountain_of_post",
+    name: "a mountain of unopened post",
+    grid: [
+        ".X.",
+        "XX.",
+        "XXX"
+      ],
+    color: [["","","","","","","","#89653a","#9f7544","#9f7544","#d3c9b3","#9f7544","#9f7544","#89653a","","","","","","",""],["","","","","","","","#9f7544","#8a6232","#b9884f","#f5ead0","#b9884f","#8a6232","#9f7544","","","","","","",""],["","","","","","","","#d3c9b3","#f5ead0","#f5ead0","#f5ead0","#f5ead0","#f5ead0","#d3c9b3","","","","","","",""],["","","","","","","","#9f7544","#8a6232","#b9884f","#f5ead0","#b9884f","#8a6232","#9f7544","","","","","","",""],["","","","","","","","#77542b","#b9884f","#b9884f","#f5ead0","#b9884f","#b9884f","#77542b","","","","","","",""],["","","","","","","","#d8d7d4","#dedbd2","#fbfaf6","#fbfaf6","#fbfaf6","#dedbd2","#d8d7d4","","","","","","",""],["","","","","","","","#d8d7d4","#fbfaf6","#dedbd2","#fbfaf6","#dedbd2","#fbfaf6","#d8d7d4","","","","","","",""],["#a9905c","#c4a76b","#c4a76b","#c4a76b","#c4a76b","#c4a76b","#c4a76b","#fbfaf6","#fbfaf6","#fbfaf6","#dedbd2","#fbfaf6","#fbfaf6","#d8d7d4","","","","","","",""],["#a48447","#e4c27c","#e4c27c","#e4c27c","#e4c27c","#bf9a52","#e4c27c","#dedbd2","#dedbd2","#dedbd2","#dedbd2","#dedbd2","#dedbd2","#bfbcb5","","","","","","",""],["#c4a76b","#bf9a52","#e4c27c","#e4c27c","#bf9a52","#e4c27c","#e4c27c","#f4b8c8","#f4b8c8","#f4b8c8","#f4b8c8","#f4b8c8","#d8413a","#ba3832","","","","","","",""],["#c4a76b","#e4c27c","#bf9a52","#bf9a52","#e4c27c","#e4c27c","#e4c27c","#d58aa0","#f4b8c8","#f4b8c8","#f4b8c8","#f4b8c8","#d58aa0","#ba3832","","","","","","",""],["#d8d7d4","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#d8413a","#d8413a","#f4b8c8","#d58aa0","#f4b8c8","#d58aa0","#f4b8c8","#f4b8c8","#d29eac","","","","","","",""],["#d8d7d4","#c4c0b6","#fbfaf6","#c4c0b6","#fbfaf6","#d8413a","#d8413a","#f4b8c8","#f4b8c8","#d58aa0","#f4b8c8","#f4b8c8","#f4b8c8","#d29eac","","","","","","",""],["#d8d7d4","#fbfaf6","#c4c0b6","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#d58aa0","#d58aa0","#d58aa0","#d58aa0","#d58aa0","#d58aa0","#b7778a","","","","","","",""],["#bfbcb5","#dedbd2","#dedbd2","#dedbd2","#dedbd2","#dedbd2","#dedbd2","#e64a4a","#3a64c8","#e64a4a","#3a64c8","#e64a4a","#3a64c8","#e64a4a","#3256ac","#d8d7d4","#d8d7d4","#d8d7d4","#d8d7d4","#ba3832","#a0302b"],["#cfc8b2","#f1e8cf","#f1e8cf","#f1e8cf","#f1e8cf","#d8413a","#d8413a","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#3a64c8","#fbfaf6","#dedbd2","#fbfaf6","#dedbd2","#d8413a","#ba3832"],["#cfc8b2","#d3c6a2","#f1e8cf","#d3c6a2","#f1e8cf","#f1e8cf","#fbfaf6","#9aa1ad","#9aa1ad","#9aa1ad","#9aa1ad","#9aa1ad","#9aa1ad","#fbfaf6","#e64a4a","#fbfaf6","#fbfaf6","#dedbd2","#fbfaf6","#fbfaf6","#d8d7d4"],["#cfc8b2","#f1e8cf","#d3c6a2","#f1e8cf","#f1e8cf","#f1e8cf","#3a64c8","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#3a64c8","#fbfaf6","#9aa1ad","#9aa1ad","#9aa1ad","#fbfaf6","#d8d7d4"],["#cfc8b2","#f1e8cf","#f1e8cf","#f1e8cf","#f1e8cf","#f1e8cf","#f1e8cf","#e64a4a","#3a64c8","#e64a4a","#3a64c8","#e64a4a","#3a64c8","#e64a4a","#3a64c8","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#fbfaf6","#d8d7d4"],["#a2b8d0","#bcd6f2","#bcd6f2","#bcd6f2","#bcd6f2","#bcd6f2","#bcd6f2","#8fb3dc","#e4c27c","#e4c27c","#e4c27c","#e4c27c","#e4c27c","#e4c27c","#e4c27c","#dedbd2","#dedbd2","#dedbd2","#dedbd2","#dedbd2","#bfbcb5"],["#8b9eb3","#7b9abd","#a2b8d0","#a2b8d0","#a2b8d0","#7b9abd","#a2b8d0","#7b9abd","#a48447","#a48447","#a48447","#a48447","#a48447","#a48447","#a48447","#9f7544","#9f7544","#9f7544","#9f7544","#9f7544","#89653a"]],
+    powerup: {
+        "type": "expander",
+        "tier": 3,
+        "fill": [
+          [
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6",
+            "#d8413a",
+            "#d8413a"
+          ],
+          [
+            "#fbfaf6",
+            "#c4c0b6",
+            "#fbfaf6",
+            "#fbfaf6",
+            "#c4c0b6",
+            "#d8413a",
+            "#d8413a"
+          ],
+          [
+            "#fbfaf6",
+            "#fbfaf6",
+            "#c4c0b6",
+            "#c4c0b6",
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6"
+          ],
+          [
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6"
+          ],
+          [
+            "#fbfaf6",
+            "#9aa1ad",
+            "#9aa1ad",
+            "#9aa1ad",
+            "#9aa1ad",
+            "#9aa1ad",
+            "#fbfaf6"
+          ],
+          [
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6",
+            "#fbfaf6"
+          ],
+          [
+            "#dedbd2",
+            "#dedbd2",
+            "#dedbd2",
+            "#dedbd2",
+            "#dedbd2",
+            "#dedbd2",
+            "#dedbd2"
+          ]
+        ],
+        "area": {
+          "origin": [
+            3,
+            0
+          ],
+          "grid": [
+            ".........",
+            "...v.v...",
+            "..v.v.v..",
+            ".v..-..v.",
+            "v.......v"
+          ]
+        },
+        "intro": "Piles into a heap nine wide that slopes down from it to the floor, and fills the row it lands on, wall to wall. Most of it is for the previous occupant.",
+        "help": 5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.5,
+    claudeDraft: true,
+  },
 ];

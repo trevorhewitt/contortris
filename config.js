@@ -269,6 +269,7 @@ export const CONFIG = {
     newest: {
       sets: ["great_and_terrible", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
+        "sandbag_wall", "avalanche", "tipped_honey_jar", "slumped_beanbag", "unravelling_yarn", "patchwork_quilt", "spilled_paint", "mountain_of_post",
         "tipper_truck", "bath_left_running", "split_rice_sack", "memory_foam_mattress", "week_of_laundry", "thanksgiving_mash",
         "advancing_glacier", "last_jigsaw_piece", "paper_shredder", "medium_black_hole", "small_asteroid", "tablecloth_trick",
         "spaghetti_os", "spam_can", "bull", "china_shop", "bees_knees", "queen_bee",
