@@ -12,8 +12,8 @@ export const CONFIG = {
     //         the first piece
     // everything: every powerup class and the combos are in from the first piece (no intro
     //         screens, nothing to wait for)
-    easy: { label: "Easy", tagline: "powerups, and no giant pieces", powerups: true, giants: false, level6: false },
-    normal: { label: "Normal", tagline: "powerups help you out", powerups: true, giants: true, level6: true },
+    easy: { label: "Easy", tagline: "powerups, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true },
+    normal: { label: "Normal", tagline: "powerups help you out", powerups: true, giants: true, level6: true, warmup: true },
     extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true },
     god: { label: "God", tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true },
     // speeds: a speed setting on the pause menu, these times timeScale (1 to start with).
@@ -356,6 +356,19 @@ export const CONFIG = {
     },
 
     openingNoLevel0UntilDrop: 17, // no level-0 (tiny) pieces in the first 17 drops
+
+    // The start of a game (a mode with `warmup`) plays nicely, not much harder than Tetris: for
+    // the first `fullUntil` pieces, fading out by `goneBy`, the levels lean to `levelWeight`, and
+    // each piece is picked `draws` times over the usual way, and then one of those that would sit
+    // well on the board as it is: a piece that couldn't help leaving n gaps under itself is
+    // (1 + n)^-strength as likely (src/selection.js pickFitting). The giants still come (the
+    // first while it's still funny), but ones that fit; a level 6 set only now and then
+    // (`sets`: this much of the time it would have, at the start).
+    warmup: { fullUntil: 25, goneBy: 90, strength: 2.5, draws: 8, sets: 0.1, levelWeight: { 0: 0.08, 1: 0.6, 2: 0.27, 3: 0.05 } },
+    // ...and later on (a mode with `warmup`), from piece `from` to piece `by`, the mix opens up a
+    // little at a time, towards something like God mode's: the levels lean to `levelWeight`, the
+    // giants come `hardRate` times as often and the level 6 sets `setRate` times (src/pacing.js).
+    later: { from: 90, by: 300, levelWeight: { 0: 0.1, 1: 0.38, 2: 0.32, 3: 0.2 }, hardRate: 2.5, setRate: 2 },
 
     // “Danger” bands (rows-from-top). Higher = assistance kicks in earlier.
     topRowsForDiff2Only: 19,  // (scaled with the board: it was 22 of 28 rows)

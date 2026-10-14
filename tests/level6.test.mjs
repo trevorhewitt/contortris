@@ -85,6 +85,8 @@ test("level 6 is locked until the comeback: above row 10, then back down to row 
   assert.equal(unlocks, 1);
 
   // the first group arrives within a few pieces, whole and in order, nothing in between
+  // (once the warm-up at the start of a game is over: in it, the sets hardly ever start)
+  state.pieceSel.dropIndex = Math.max(state.pieceSel.dropIndex, CONFIG.assist.warmup.goneBy);
   const served = [];
   on(state, (t, d) => { if (t === "spawn") served.push(d.shape); });
   for (let i = 0; i < 25 && !state.gameOver; i++) { setStack(state, 2); drop(state); }

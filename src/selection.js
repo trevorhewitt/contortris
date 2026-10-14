@@ -17,6 +17,7 @@ import { LEVEL6, initLevel6, nextGroupPiece, maybeStartGroup, groupUnderWay } fr
 import { initEndGame, endGameOn, endGameLevelWeights } from "./endgame.js";
 import { isGodMode, godConfig, gravityColumns } from "./godmode.js";
 import { pickThread, threadWeight } from "./threads.js";
+import { warmth, lateness } from "./pacing.js";
 
 const DEBUG_LINK = false; // verbose console logging for linked shapes
 
@@ -373,7 +374,8 @@ export function selectPiece(state) {
   if (sel.giantDueAt != null && !sel.hadGiant && sel.dropIndex >= sel.giantDueAt && !sel.lastWasHard && danger01 < 0.55) {
     const giants = state.shapes.filter(s => (s.difficulty ?? 1) === 5 && (s.frequency ?? 1) > 0);
     if (giants.length) {
-      const g = sampleByWeight(giants, s => (s.frequency ?? 1) * varietyMultiplier(sel, s), state.rng);
+      // (one that sits well on the board as it is: the first one's a laugh, not a disaster)
+      const g = pickFitting(state, giants, s => (s.frequency ?? 1) * varietyMultiplier(sel, s));
       commitSelectedShape(sel, g);
       noteHardDropped(sel);
       return g;
@@ -437,6 +439,16 @@ export function selectPiece(state) {
 
   let levelW = {};
   for (const k of LEVELS) levelW[k] = lerp(baseW[k] ?? 0, openingW[k] ?? 0, openingT);
+  // (the start of a game leans to the easy levels, fading; later the mix opens up: src/pacing.js)
+  const warm = warmth(state), late = lateness(state);
+  if (late > 0) {
+    const lateW = normaliseWeights({ ...CONFIG.assist.later.levelWeight });
+    for (const k of LEVELS) levelW[k] = lerp(levelW[k] ?? 0, lateW[k] ?? 0, late);
+  }
+  if (warm > 0) {
+    const warmW = normaliseWeights({ ...CONFIG.assist.warmup.levelWeight });
+    for (const k of LEVELS) levelW[k] = lerp(levelW[k] ?? 0, warmW[k] ?? 0, warm);
+  }
 
   // 2) Danger blend towards assistance mix (never allocates to 4/5 directly).
   const dangerTarget = normaliseWeights({ ...mixCfg.dangerTargetMix });
@@ -457,7 +469,7 @@ export function selectPiece(state) {
     sel.dropIndex >= (hard.softWindowStart ?? 6) &&
     sel.dropIndex <= (hard.softWindowEnd ?? 25);
 
-  const recharge = (hard.rechargePerDrop ?? 0.005) * (inWindow ? 1.4 : 0.8);
+  const recharge = (hard.rechargePerDrop ?? 0.005) * (inWindow ? 1.4 : 0.8) * lerp(1, CONFIG.assist.later?.hardRate ?? 1, late);
   sel.urge.hard = clamp01(Math.min(hard.maxUrge ?? 0.95, (sel.urge.hard ?? 0) + recharge));
 
   const addHardWeight = allowHard ? (sel.urge.hard ?? 0) : 0;
@@ -526,11 +538,7 @@ export function selectPiece(state) {
     return any[Math.floor(state.rng() * any.length)] ?? state.shapes[0];
   }
 
-  const chosenShape = sampleByWeight(
-    candidates,
-    (s) => (s.frequency ?? 1) * varietyMultiplier(sel, s),
-    state.rng
-  );
+  const chosenShape = pickFitting(state, candidates, (s) => (s.frequency ?? 1) * varietyMultiplier(sel, s));
 
   commitSelectedShape(sel, chosenShape);
 
@@ -557,7 +565,70 @@ function pickAlongThread(state, levelW, thread) {
   }
   const cand = [];
   for (const [L, b] of byLevel) for (const [s, w] of b.list) cand.push({ s, w: (levelW[L] * w / b.mass) * threadWeight(thread, s, sel.servedCounts.get(s.id) ?? 0) });
-  return cand.length ? sampleByWeight(cand, c => c.w, state.rng).s : null;
+  if (!cand.length) return null;
+  const weightOf = new Map(cand.map(c => [c.s, c.w]));
+  return pickFitting(state, cand.map(c => c.s), s => weightOf.get(s));
+}
+
+/* =========================================
+   The warm-up: pieces that fit
+   =========================================
+   For the first while (src/pacing.js warmth), a piece is picked the usual way a few times
+   over (CONFIG.assist.warmup.draws), and then one of those that would sit best on the board
+   as it is: one that leaves no gaps under itself, or finishes a row, rather than one that
+   leaves a gap nothing will fill. With no warm-up left it's just the usual pick.
+*/
+function pickFitting(state, list, weightFn) {
+  const cfg = CONFIG.assist.warmup ?? {};
+  const p = warmth(state) * (cfg.strength ?? 2);
+  const first = sampleByWeight(list, weightFn, state.rng);
+  if (!(p > 0) || list.length < 2 || !first) return first;
+  // (the others from the same level as the first: each level keeps its share, so the big ones
+  // still come, only the ones that fit)
+  const L = first.difficulty ?? 1;
+  const same = list.filter(s => (s.difficulty ?? 1) === L);
+  const drawn = [first];
+  for (let i = 1; i < (cfg.draws ?? 8); i++) drawn.push(sampleByWeight(same, weightFn, state.rng));
+  const bad = new Map();
+  for (const s of drawn) if (!bad.has(s)) bad.set(s, fitBadness(state.board, s));
+  // (no gaps left: as likely as ever; each gap it can't help leaving: much less likely; a row
+  // finished: a little more likely)
+  return sampleByWeight(drawn, s => { const b = bad.get(s); return b <= 0 ? 1 + 0.4 * Math.min(2, -b) : Math.pow(1 + b, -p); }, state.rng);
+}
+
+// How badly a piece fits the board at its best: the gaps it would leave under itself (and
+// inside itself) in its best place, dropped straight down as a player would, less the rows it
+// would finish there. 0: it sits flat; the more, the worse; 99: it doesn't fit at all.
+export function fitBadness(board, shape) {
+  const rows = board.length, cols = board[0].length;
+  // the top of each column (the first block down), and how full each row is
+  const top = new Array(cols).fill(rows), fill = new Array(rows).fill(0);
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) if (board[y][x]) { fill[y]++; if (top[x] === rows) top[x] = y; }
+  let best = Infinity;
+  for (const mat of shape.rotations) {
+    const h = mat.length, w = mat[0].length;
+    // each of its columns: its lowest block, and the gaps inside it (a block above an empty cell)
+    const low = [], inner = [], per = [];
+    for (let c = 0; c < w; c++) {
+      let lo = -1, seen = false, gaps = 0, run = 0;
+      for (let r = 0; r < h; r++) {
+        if (mat[r][c]) { if (seen) gaps += run; seen = true; run = 0; lo = r; } else if (seen) run++;
+      }
+      low.push(lo); inner.push(gaps);
+    }
+    for (let r = 0; r < h; r++) { let n = 0; for (let c = 0; c < w; c++) if (mat[r][c]) n++; per.push(n); }
+    for (let x = 0; x + w <= cols; x++) {
+      let y = rows;
+      for (let c = 0; c < w; c++) if (low[c] >= 0) y = Math.min(y, top[x + c] - 1 - low[c]);
+      if (y < 0) continue; // (it would stick out of the top)
+      let holes = 0, lines = 0;
+      for (let c = 0; c < w; c++) if (low[c] >= 0) holes += top[x + c] - 1 - (y + low[c]) + inner[c];
+      for (let r = 0; r < h; r++) if (per[r] && fill[y + r] + per[r] === cols) lines++;
+      const b = holes - 1.2 * lines;
+      if (b < best) best = b;
+    }
+  }
+  return best === Infinity ? 99 : best;
 }
 
 function noteHardDropped(sel, lvl = 5) {

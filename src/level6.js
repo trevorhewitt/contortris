@@ -15,6 +15,7 @@
 import { CONFIG } from "../config.js";
 import { sampleByWeight } from "./util.js";
 import { godConfig, isGodMode } from "./godmode.js";
+import { lateness, warmth } from "./pacing.js";
 import { setThreadWeight } from "./threads.js";
 
 export const LEVEL6 = 6;
@@ -248,10 +249,15 @@ export function maybeStartGroup(state) {
   if (sel.lastWasHard) return null; // never straight after a giant
   if (sel.calmUntil != null && sel.dropIndex < sel.calmUntil) return null; // (God mode: a calm spell)
   if (stackRows(state) > (cfg.maxStackRows ?? 8)) return null;
+  // (in the warm-up at the start of a game, hardly ever yet: CONFIG.assist.warmup.sets)
+  const warm = warmth(state);
+  if (warm > 0 && state.rng() < warm * (1 - (CONFIG.assist.warmup?.sets ?? 0.1))) return null;
   const firstDue = l6.firstDueAt != null && !l6.seen.size && sel.dropIndex >= l6.firstDueAt;
   if (!firstDue) {
     if (sel.dropIndex - l6.lastEnd < (cfg.cooldownDrops ?? 30)) return null;
-    if (state.rng() >= (cfg.chancePerDrop ?? 0.04)) return null;
+    // (later in a game, more often: CONFIG.assist.later)
+    const more = 1 + ((CONFIG.assist.later?.setRate ?? 1) - 1) * lateness(state);
+    if (state.rng() >= (cfg.chancePerDrop ?? 0.04) * more) return null;
   }
   // No set comes round again until every other one has had its turn this game, and the last
   // ones served (this game or the one before) wait if anything else can go.
