@@ -124,9 +124,9 @@ export const GROUPS = [
     name: "space",
     frequency: 1,
     sequence: [
-      {pick: ["moon", "harvest_moon", "blue_moon"], weights: [1, 1, 0.35], count: 1},
-      {pick: ["earth", "mars", "saturn"], count: 1},
-      {pick: ["asteroid_belt", "voyager_1"], count: 1},
+      {pick: ["crescent_moon", "half_moon", "gibbous_moon", "full_moon", "moon", "harvest_moon", "blue_moon"], weights: [1, 1, 1, 1, 0.6, 0.6, 0.25], count: 1},
+      {pick: ["earth", "earth_americas", "earth_asia", "mars", "venus"], count: 1},
+      {pick: ["asteroid_belt", "saturn", "moons_of_mars", "neptune", "jupiter"], count: 1},
     ],
   },
   {

@@ -267,7 +267,7 @@ export const CONFIG = {
     // newSetBoost times (load the page again to see them all again). Anything never seen in this
     // browser at all comes up unseenBoost times as often. (God mode.)
     newest: {
-      sets: ["great_and_terrible", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
+      sets: ["great_and_terrible", "space", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
         "paddling_swan", "candle_both_ends", "wandering_washing_machine", "unwanted_present", "unbothered_capybara", "exasperated_life_ring", "rubber_chicken", "storm_in_a_teacup",
         "sandbag_wall", "avalanche", "tipped_honey_jar", "slumped_beanbag", "unravelling_yarn", "patchwork_quilt", "spilled_paint", "mountain_of_post",
@@ -283,7 +283,7 @@ export const CONFIG = {
         "happy_pills_2", "piece_of_sky_sunset", "piece_of_sky_night",
         "bull", "camel", "mouse", "elephant_in_the_room", "giant_rubber_duck", "dinosaur_fossil",
         "pyramid_box", "big_hot_air_balloon", "lighthouse", "double_decker",
-        "rubiks_cube", "mondrian", "qr_code", "space_invader", "mouse_pointer", "stuck_pixel",
+        "rubiks_cube", "mondrian", "qr_code", "space_invader", "stuck_pixel",
         "watermelon_slice", "stop_sign", "lego_brick_2x4", "swiss_cheese_lump",
         "caveman_in_ice", "piece_of_sky",
         "kilometerworm", "lightyearworm", "nebula",
@@ -294,6 +294,10 @@ export const CONFIG = {
       ],
     },
     novelty: { newBoost: 25, newSetBoost: 40, newUntilShown: 1, unseenBoost: 2.5, firstBoost: 1e6 },
+    // Sets being shown off (for trying them out): they come round whenever they like, not waiting
+    // for every other set to have had its turn (just never twice running), `weight` times as
+    // likely. Empty it when they've been seen enough.
+    featured: { sets: ["townhouses"], weight: 10 },
     // calm spells: after a level 6 set (afterSet), or `giants` giants within `within` pieces
     // (afterGiants), this many ordinary pieces: no giants, no sets
     calm: { afterSet: [8, 14], giants: 2, within: 8, afterGiants: [6, 10] },

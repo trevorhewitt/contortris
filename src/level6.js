@@ -287,6 +287,10 @@ export function maybeStartGroup(state) {
   const recent = (state.level6Recent ?? []).slice(0, cfg.rememberRecent ?? 2);
   const fresh = pool.filter(g => !recent.includes(g.id));
   if (fresh.length) pool = fresh;
+  // (God mode: the sets being shown off come round whenever they like, just not twice running:
+  // CONFIG.godMode.featured)
+  const featured = isGodMode(state.mode) ? CONFIG.godMode?.featured ?? {} : {};
+  for (const g of live) if (featured.sets?.includes(g.id) && !pool.includes(g) && state.level6Recent?.[0] !== g.id) pool.push(g);
   // (God mode opens with a particular set, or one of a few, the first time since the page was
   // loaded: CONFIG.godMode.firstSet)
   const opening = firstDue && openingSet(state);
@@ -294,7 +298,8 @@ export function maybeStartGroup(state) {
   // ...and only one whose whole run fits on the board (a set can't be cleared until it's down)
   const room = state.board.length - (cfg.headroom ?? 3) - stackRows(state);
   while (pool.length) {
-    const group = sampleByWeight(pool, g => g.frequency * setNovelty(state, g) * setThreadWeight(state, sel.currentThread, g) * familyWeight(state, g, cfg), state.rng);
+    const shown = (g) => (featured.sets?.includes(g.id) ? featured.weight ?? 1 : 1);
+    const group = sampleByWeight(pool, g => g.frequency * setNovelty(state, g) * setThreadWeight(state, sel.currentThread, g) * familyWeight(state, g, cfg) * shown(g), state.rng);
     const pieces = expandGroup(group, state.rng, l6.variants, lastVersion(state, group));
     // (not if its first piece mustn't come straight after the last one: a small piece of the sky)
     if (pieces[0]?.notAfter?.includes(sel.lastShapeId)) { pool = pool.filter(g => g !== group); continue; }

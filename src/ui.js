@@ -241,10 +241,10 @@ export function bindUI({ state, renderer, achievements }) {
   const overlayShowing = () => !!currentPanel;
 
   function renderMenu() {
-    // (each mode's button says what it is, from CONFIG.modes; the last one played glows)
+    // (each mode's button says what it is, from CONFIG.modes; all alike, none picked out)
+    if (document.activeElement?.classList?.contains("modeBtn")) document.activeElement.blur();
     for (const b of document.querySelectorAll(".modeBtn")) {
       const m = b.dataset.mode;
-      b.classList.toggle("last", m === lastMode);
       const tag = b.querySelector(".modeTag");
       if (tag) tag.textContent = CONFIG.modes[m]?.tagline ?? "";
     }
