@@ -225,6 +225,9 @@ function refill(state) {
   if (!z.queue.length) z.queue.push({ shape: pick(state, smallPool(state)), weights: WEIGHTS.clear });
 }
 
+// (the ones that only clear up after the others: what came before them still counts as the last)
+const HOUSEKEEPING = new Set(["tidy", "settle", "sweep", "demolition"]);
+
 function begin(state, name) {
   const z = state.zen;
   if (z.after === name) { z.after = null; z.waited = 0; z.asked = null; }
@@ -232,6 +235,7 @@ function begin(state, name) {
   z.movement.name = name;
   z.movement.careful = z.simRng() < (CONFIG.zen.pace.carefulChance ?? 1); // (slows down near the top)
   z.last = name;
+  if (!HOUSEKEEPING.has(name)) z.lastShow = name;
   // (a planned one says what it is once it knows it can be done; one with nothing to say still
   // lets the game know)
   if (!z.movement.planned) zenCaption(state, z.movement.caption ?? null, name);
@@ -245,9 +249,9 @@ function pickMovement(state) {
   const h = heightOf(occ, cols, rows);
   if (z.after && !PLANNED.has(z.after)) return z.after;
   // (zen: never building anything up, so no waiting for a tidy board)
-  if (isCalm(state)) return sampleByWeight(Object.entries(MOVEMENT_WEIGHTS.zen).filter(([k]) => k !== z.last), ([, w]) => w, state.rng)[0];
+  if (isCalm(state)) return sampleByWeight(Object.entries(MOVEMENT_WEIGHTS.zen).filter(([k]) => k !== z.last && k !== z.lastShow), ([, w]) => w, state.rng)[0];
   if (!z.after) {
-    let options = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => k !== z.last);
+    let options = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => k !== z.last && k !== z.lastShow);
     // left high: carry on building on what's there (only near the top, a quick tidy first)
     if (h > up(9)) {
       if (h > CONFIG.board.rows - 8) return "tidy";
@@ -270,7 +274,7 @@ function pickMovement(state) {
       return pickMovement(state);
     }
     if ((z.waited = (z.waited ?? 0) + 1) > 3) z.after = null;
-    const blends = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => BLENDS.has(k) && k !== z.last);
+    const blends = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => BLENDS.has(k) && k !== z.last && k !== z.lastShow);
     return sampleByWeight(blends, ([, w]) => w, state.rng)[0];
   }
   return z.after;
@@ -855,7 +859,13 @@ const MOVEMENTS = {
   // piece: what's left, the next movement builds on)
   tidy: () => ({
     caption: "tidying up", used: 0,
-    fill(state) { state.zen.queue.push({ shape: bestPowerup(state), weights: WEIGHTS.clear }); this.used++; },
+    // (turbo zen: in big bites, while there are any, unless it's for something asked for by name,
+    // which needs the board clean; zen: as useful as can be)
+    fill(state) {
+      const z = state.zen, asked = z.asked && PLANNED.has(z.asked);
+      z.queue.push({ shape: isCalm(state) || asked ? bestPowerup(state) : bigPowerup(state), weights: WEIGHTS.clear, blast: asked ? null : this.used });
+      this.used++;
+    },
     done(state) {
       const { cols, rows } = CONFIG.board;
       const occ = occupancy(state.board);
