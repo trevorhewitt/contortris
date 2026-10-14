@@ -25844,4 +25844,373 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
   },
+  {
+    id: "microwave_popcorn",
+    name: "a big microwave bag of popcorn",
+    grid: [
+        "XXX",
+        "XXX",
+        "XXX"
+      ],
+    color: [["#bfae86","#e6e6e6","#e6e6e6","#e6e6e6","#e6dcc8","#d7c397","#e6e6e6","#e6e6e6","#e6e6e6","#e6dcc8","#d7c397","#a6864e"],["#e6e6e6","#ffffff","#ffffff","#ffffff","#fff4de","#efd9a8","#ffffff","#ffffff","#fff4de","#fff4de","#efd9a8","#e6d485"],["#e6e6e6","#ffffff","#fff4de","#fff4de","#efd9a8","#cfa862","#ffffff","#fff4de","#efd9a8","#efd9a8","#ffec94","#e6bd39"],["#d7c397","#fff4de","#efd9a8","#efd9a8","#cfa862","#ffffff","#fff4de","#efd9a8","#cfa862","#ffec94","#ffd23f","#d29422"],["#e6e6e6","#fff4de","#efd9a8","#cfa862","#efd9a8","#fff4de","#efd9a8","#cfa862","#fff2dc","#e9a526","#cfa862","#e6dac6"],["#e6dcc8","#efd9a8","#ea3c2f","#ea3c2f","#ea3c2f","#ea3c2f","#ea3c2f","#ea3c2f","#ea3c2f","#ffec94","#e9a526","#b82820"],["#b82820","#ffd83a","#ffd83a","#ffd83a","#ff6a57","#ffd83a","#ffd83a","#ffd83a","#ea3c2f","#ffd83a","#ffd83a","#e6c234"],["#b82820","#ffd83a","#ff6a57","#ffd83a","#ff6a57","#ffd83a","#ea3c2f","#ffd83a","#ea3c2f","#ffd83a","#ea3c2f","#e6c234"],["#b82820","#ffd83a","#ffd83a","#ffd83a","#ea3c2f","#ffd83a","#ea3c2f","#ffd83a","#ea3c2f","#ffd83a","#ffd83a","#e6c234"],["#b82820","#ffd83a","#ea3c2f","#ea3c2f","#ea3c2f","#ffd83a","#ea3c2f","#ffd83a","#ea3c2f","#ffd83a","#ea3c2f","#b82820"],["#951f17","#ffd83a","#cc2c23","#ea3c2f","#ea3c2f","#ffd83a","#ffd83a","#ffd83a","#cc2c23","#ffd83a","#cc2c23","#951f17"],["#63120c","#951f17","#951f17","#951f17","#951f17","#951f17","#951f17","#951f17","#951f17","#951f17","#70150e","#63120c"]],
+    powerup: {
+        "type": "expander",
+        "tier": 3,
+        "fill": [
+          [
+            "#fff4de",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#fff4de",
+            "#efd9a8",
+            "#cfa862"
+          ],
+          [
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#fff4de",
+            "#efd9a8"
+          ],
+          [
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#fff4de",
+            "#efd9a8",
+            "#cfa862"
+          ],
+          [
+            "#efd9a8",
+            "#fff4de",
+            "#ffffff",
+            "#fff4de",
+            "#efd9a8",
+            "#efd9a8",
+            "#ffec94"
+          ],
+          [
+            "#cfa862",
+            "#efd9a8",
+            "#efd9a8",
+            "#cfa862",
+            "#ffec94",
+            "#ffd23f",
+            "#ffd23f"
+          ],
+          [
+            "#ffffff",
+            "#efd9a8",
+            "#cfa862",
+            "#ffec94",
+            "#ffd23f",
+            "#ffd23f",
+            "#e9a526"
+          ],
+          [
+            "#ffffff",
+            "#fff4de",
+            "#efd9a8",
+            "#cfa862",
+            "#e9a526",
+            "#e9a526",
+            "#cfa862"
+          ]
+        ],
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            "-",
+            "-",
+            "-"
+          ]
+        },
+        "intro": "Pops into every empty cell of its own three rows, wall to wall. The bag said to stop when the pops were two seconds apart. They were never two seconds apart.",
+        "help": 5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.45,
+    claudeDraft: true,
+  },
+  {
+    id: "fog_machine",
+    name: "a fog machine (left on)",
+    grid: [
+        "X"
+      ],
+    color: [["#a9b1bb","#cad1da","#dde2e7","#ededed","#ededed","#ededed","#dde2e7","#cad1da","#a9b1bb"],["#cad1da","#eef3f8","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#eef3f8","#cad1da"],["#b6c0ca","#c4ced9","#eef3f8","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#dde2e7"],["#b6c0ca","#c4ced9","#c4ced9","#d9e1ea","#ffffff","#ffffff","#ffffff","#ffffff","#dde2e7"],["#8e98a6","#99a3b3","#99a3b3","#99a3b3","#99a3b3","#d8dde4","#ffffff","#ffffff","#dde2e7"],["#646e7d","#4f5867","#4f5867","#4f5867","#4f5867","#a3abb8","#eef3f8","#ffffff","#cad1da"],["#646e7d","#3a414d","#ff4636","#3a414d","#3a414d","#6c7686","#d9e1ea","#eef3f8","#b6c0ca"],["#646e7d","#2b3039","#2b3039","#2b3039","#2b3039","#6c7686","#d9e1ea","#c4ced9","#b6c0ca"],["#a9b1bb","#a2acb9","#b6c0ca","#b6c0ca","#b6c0ca","#b6c0ca","#a2acb9","#b6c0ca","#a9b1bb"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#e0e6ee",
+            "#e0e6ee",
+            "#eef2f7",
+            "#eef2f7",
+            "#eef2f7",
+            "#e0e6ee",
+            "#e0e6ee"
+          ],
+          [
+            "#e0e6ee",
+            "#e0e6ee",
+            "#e0e6ee",
+            "#e0e6ee",
+            "#e0e6ee",
+            "#eef2f7",
+            "#eef2f7"
+          ],
+          [
+            "#d1d9e4",
+            "#e0e6ee",
+            "#e0e6ee",
+            "#e0e6ee",
+            "#e0e6ee",
+            "#e0e6ee",
+            "#d1d9e4"
+          ],
+          [
+            "#d1d9e4",
+            "#d1d9e4",
+            "#d1d9e4",
+            "#d1d9e4",
+            "#d1d9e4",
+            "#d1d9e4",
+            "#d1d9e4"
+          ],
+          [
+            "#c1ccd9",
+            "#d1d9e4",
+            "#d1d9e4",
+            "#d1d9e4",
+            "#d1d9e4",
+            "#d1d9e4",
+            "#d1d9e4"
+          ],
+          [
+            "#d1d9e4",
+            "#d1d9e4",
+            "#c1ccd9",
+            "#c1ccd9",
+            "#d1d9e4",
+            "#d1d9e4",
+            "#d1d9e4"
+          ],
+          [
+            "#e0e6ee",
+            "#e0e6ee",
+            "#e0e6ee",
+            "#d1d9e4",
+            "#d1d9e4",
+            "#d1d9e4",
+            "#d1d9e4"
+          ]
+        ],
+        "area": {
+          "origin": [
+            4,
+            0
+          ],
+          "grid": [
+            ".........",
+            "vvvvvvvvv"
+          ]
+        },
+        "intro": "Rolls fog into every empty cell of the nine columns centred on it, from the row under it all the way down to the floor. The school play finished in 2009.",
+        "help": 4.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.7,
+    claudeDraft: true,
+  },
+  {
+    id: "spreading_cloud",
+    name: "a cloud (spreading out)",
+    grid: [
+        "X"
+      ],
+    color: [["#b5beca","#ededed","#ededed","#ededed","#dde2e8","#b5beca"],["#ededed","#ffffff","#ffffff","#ffffff","#ffffff","#dde2e8"],["#ededed","#ffffff","#ffffff","#ffffff","#eef3f9","#c3cedb"],["#dde2e8","#ffffff","#eef3f9","#eef3f9","#d2ddeb","#9dadc3"],["#9dadc3","#d2ddeb","#a9bad2","#a9bad2","#d2ddeb","#8a9bb5"],["#7f90a8","#8a9bb5","#8a9bb5","#8a9bb5","#8a9bb5","#697993"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff"
+          ],
+          [
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff"
+          ],
+          [
+            "#f2f5f9",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#f2f5f9"
+          ],
+          [
+            "#e0e6ee",
+            "#f2f5f9",
+            "#f2f5f9",
+            "#ffffff",
+            "#ffffff",
+            "#f2f5f9",
+            "#e0e6ee"
+          ],
+          [
+            "#c9d2de",
+            "#e0e6ee",
+            "#f2f5f9",
+            "#f2f5f9",
+            "#f2f5f9",
+            "#e0e6ee",
+            "#c9d2de"
+          ],
+          [
+            "#ffffff",
+            "#c9d2de",
+            "#e0e6ee",
+            "#e0e6ee",
+            "#e0e6ee",
+            "#c9d2de",
+            "#ffffff"
+          ],
+          [
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff",
+            "#ffffff"
+          ]
+        ],
+        "area": {
+          "origin": [
+            5,
+            0
+          ],
+          "grid": [
+            ".####.####.",
+            "-..........",
+            "-..........",
+            "..#######.."
+          ]
+        },
+        "intro": "Spreads out into a big cloud around it: every empty cell in its own row nine columns wide, the two rows under it wall to wall, and seven columns of the row under those. It was about the size of a sheep this morning.",
+        "help": 4.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.6,
+    claudeDraft: true,
+  },
+  {
+    id: "sun_in_a_cloud",
+    name: "a cloud with the sun in it",
+    grid: [
+        "XX",
+        "XX"
+      ],
+    color: [["#d6be66","#ebd070","#ebd070","#ebb035","#ebb035","#ebb035","#ebd070","#ebd070","#ebd070","#ebb035","#ebb035","#ebd070","#ebd070","#ebd070","#ebb035","#d6a031"],["#ebd070","#ffe27a","#ffe27a","#ffe27a","#ffbf3a","#ffbf3a","#ffbf3a","#ffe27a","#f08c12","#f08c12","#f08c12","#f08c12","#ffe27a","#ffbf3a","#ffbf3a","#ebb035"],["#ebd070","#ffe27a","#ffe27a","#ffe27a","#ffe27a","#ffbf3a","#f08c12","#f08c12","#fff6b8","#fff6b8","#ffd63c","#ffd63c","#f08c12","#f08c12","#ffbf3a","#ebd070"],["#ebd070","#ffe27a","#ffe27a","#ffe27a","#ffe27a","#ffe27a","#f08c12","#fff6b8","#fff6b8","#fff6b8","#fff6b8","#ffd63c","#ffd63c","#f08c12","#ffe27a","#ebd070"],["#ebb035","#ffbf3a","#ffbf3a","#ffbf3a","#ffe27a","#f08c12","#ffd63c","#fff6b8","#fff6b8","#fff6b8","#fff6b8","#ffd63c","#ffd63c","#ffd63c","#f08c12","#ebd070"],["#ebb035","#ffbf3a","#ffbf3a","#ffbf3a","#ffbf3a","#f08c12","#ffd63c","#fff6b8","#fff6b8","#5a3410","#fff6b8","#ffd63c","#5a3410","#ffd63c","#f08c12","#ebb035"],["#ebb035","#ffbf3a","#ffbf3a","#ffbf3a","#ffbf3a","#8d9fbd","#8d9fbd","#8d9fbd","#8d9fbd","#8d9fbd","#ffd63c","#ffd63c","#ffd63c","#ffd63c","#f08c12","#ebb035"],["#ebd070","#8d9fbd","#8d9fbd","#8d9fbd","#8d9fbd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#8d9fbd","#ffd63c","#8d9fbd","#f08c12","#ffe27a","#ebd070"],["#8292ae","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#8d9fbd","#ffffff","#8d9fbd","#8d9fbd","#ebd070"],["#ebebeb","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#8292ae"],["#ebebeb","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ebebeb"],["#ebebeb","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ebebeb"],["#ebebeb","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ebebeb"],["#ebebeb","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ebebeb"],["#d5dbe3","#e8eef7","#e8eef7","#e8eef7","#e8eef7","#e8eef7","#e8eef7","#e8eef7","#e8eef7","#e8eef7","#e8eef7","#e8eef7","#e8eef7","#e8eef7","#e8eef7","#d5dbe3"],["#a9b2c0","#b9c3d2","#b9c3d2","#b9c3d2","#b9c3d2","#b9c3d2","#b9c3d2","#b9c3d2","#b9c3d2","#b9c3d2","#b9c3d2","#b9c3d2","#b9c3d2","#b9c3d2","#b9c3d2","#a9b2c0"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#ff4a4a",
+            "#ff9f2a",
+            "#ffe03d",
+            "#45cf5f",
+            "#3d8eff",
+            "#9b5cf6"
+          ],
+          [
+            "#ff4a4a",
+            "#ff9f2a",
+            "#ffe03d",
+            "#45cf5f",
+            "#3d8eff",
+            "#9b5cf6"
+          ],
+          [
+            "#ff4a4a",
+            "#ff9f2a",
+            "#ffe03d",
+            "#45cf5f",
+            "#3d8eff",
+            "#9b5cf6"
+          ],
+          [
+            "#ff4a4a",
+            "#ff9f2a",
+            "#ffe03d",
+            "#45cf5f",
+            "#3d8eff",
+            "#9b5cf6"
+          ],
+          [
+            "#ff4a4a",
+            "#ff9f2a",
+            "#ffe03d",
+            "#45cf5f",
+            "#3d8eff",
+            "#9b5cf6"
+          ],
+          [
+            "#ff4a4a",
+            "#ff9f2a",
+            "#ffe03d",
+            "#45cf5f",
+            "#3d8eff",
+            "#9b5cf6"
+          ]
+        ],
+        "area": {
+          "origin": [
+            2,
+            0
+          ],
+          "grid": [
+            "......",
+            "......",
+            "vvvvvv",
+            "-....."
+          ]
+        },
+        "intro": "Pours a rainbow straight down out of itself: every empty cell in the six columns under it, from the row under it all the way down to the floor, and a band of it right across the row under that, wall to wall. There is no pot of gold at the bottom, just the bottom.",
+        "help": 4
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.8,
+    claudeDraft: true,
+  },
 ];

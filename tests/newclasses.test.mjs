@@ -201,16 +201,19 @@ test("combos actually turn up, and soon after two classes are in", () => {
     let first = null, i = 0;
     on(state, (t, d) => { if (t === "spawn") { i++; if (d.shape.powerup?.type === "combo" && first == null) first = i; } });
     startRun(state, "normal");
+    // (each drop onto a low stack with a gap in every row, so there's something for a combo to do)
+    const filler = { paint: "#888888", style: { baseColor: "#888888" }, pid: 1e9 };
     for (let k = 0; k < 120 && !state.gameOver; k++) {
+      const R = state.board.length, C = state.board[0].length;
+      state.board = Array.from({ length: R }, (_, y) => Array.from({ length: C }, (_, x) => (y >= R - 3 && x !== (y % C) ? { ...filler } : null)));
+      state.instances.clear();
       hardDropAndLock(state);
       for (let j = 0; j < 200 && state.effect; j++) updateGame(state, 16);
-      state.board = state.board.map(r => r.fill(null));
     }
     games++;
     if (first != null && first <= 100) withCombo++;
   }
-  // (the board is cleared every drop here, which makes combos less often usable than in play)
-  assert.ok(withCombo >= games - 2, `combo within 100 pieces in ${withCombo}/${games} games`);
+  assert.ok(withCombo >= games - 1, `combo within 100 pieces in ${withCombo}/${games} games`);
 });
 
 test("powerup effects never rotate with the piece", () => {
