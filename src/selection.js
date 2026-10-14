@@ -429,7 +429,7 @@ export function selectPiece(state) {
   if (endGame) {
     const w = normaliseWeights(endGameLevelWeights(state, CONFIG.modes[state.mode]?.giants !== false));
     const lvl = sampleDiscrete(w, state.rng);
-    let pool = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) === lvl);
+    let pool = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) === lvl && (!s.once || !(sel.servedCounts.get(s.id) > 0)));
     if (!pool.length) pool = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6);
     const shape = sampleByWeight(pool, s => (s.frequency ?? 1) * varietyMultiplier(sel, s), state.rng);
     commitSelectedShape(sel, shape);
@@ -531,14 +531,15 @@ export function selectPiece(state) {
   // Choose a level.
   const chosenLevel = sampleDiscrete(levelW, state.rng);
 
-  // Candidate shapes in that level (frequency>0).
+  // Candidate shapes in that level (frequency>0; one that only ever comes once, if it hasn't yet).
+  const unspent = (s) => !s.once || !(sel.servedCounts.get(s.id) > 0);
   let candidates = state.shapes.filter(s =>
-    (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) === chosenLevel
+    (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) === chosenLevel && unspent(s)
   );
 
   // Fallback: if no shapes exist for that level, broaden to any frequency>0 (never level 6).
   if (candidates.length === 0) {
-    candidates = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6);
+    candidates = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6 && unspent(s));
   }
   if (candidates.length === 0) {
     const any = state.shapes.filter(s => (s.difficulty ?? 1) !== LEVEL6);
@@ -563,6 +564,7 @@ function pickAlongThread(state, levelW, thread) {
   for (const s of state.shapes) {
     const L = s.difficulty ?? 1;
     if ((s.frequency ?? 1) <= 0 || L === LEVEL6 || !(levelW[L] > 0)) continue;
+    if (s.once && sel.servedCounts.get(s.id) > 0) continue;
     const w = (s.frequency ?? 1) * varietyMultiplier(sel, s);
     if (!(w > 0)) continue;
     if (!byLevel.has(L)) byLevel.set(L, { mass: 0, list: [] });

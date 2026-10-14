@@ -27,6 +27,8 @@
  *   noShake: true,            big pieces (difficulty 4-6) shake the board when they land; this
  *                             one doesn't (e.g. a swarm of bees)
  *   shake: true,              this one does, however small (e.g. a small boulder)
+ *   once: true,               it only ever turns up once a game (turbo zen: once since the page
+ *                             was loaded), e.g. a sock with no match
  *   remix: { mix: ["townhouses", "schnauzers"] } | { scramble: "spam" },
  *                             rebuilt at random every time it arrives: `mix` blends two pieces
  *                             drawn on the same grid (and the same k), block by block; `scramble`

@@ -494,3 +494,18 @@ test("achievements that watch a piece's life: destroyed straight away, kept aliv
     assert.ok(!got.includes("end") && !got.includes("dead"), got.join());
   }
 });
+
+test("a piece marked once only ever turns up once a game (a sock with no match)", async () => {
+  const { selectPiece } = await import("../src/selection.js");
+  const lone = { id: "lone_sock_test", name: "a sock with no match", grid: ["X", "X", "XX"], color: "#aa3344", difficulty: 1, frequency: 50, once: true, rotation: { mode: "any" } };
+  const { shapes: S, powerups: P } = loadShapes([...SHAPES, lone]);
+  assert.equal(S.find(s => s.id === lone.id).once, true);
+  const state = createGameState(S, P, { rng: makeRng(3) });
+  startRun(state, "extreme");
+  let seen = 0;
+  for (let i = 0; i < 400; i++) {
+    const s = selectPiece(state);
+    if (s.id === lone.id) seen++;
+  }
+  assert.equal(seen, 1, "once, and only once");
+});
