@@ -101,7 +101,7 @@ export function createZen(state) {
 // For the dev panel: every movement there is, by name, and the ways some of them can go.
 export function zenMovementChoices() {
   const ghosts = !(CONFIG.assist.powerups.disabledTypes ?? []).includes("phantom");
-  const ways = { crack: { end: Object.keys(CRACK_ENDS).filter(k => ghosts || !GHOSTLY.has(k)) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] }, combo: { id: COMBOS.map(c => c.id) }, expanders: { way: ["only", "among", "showcase"] } };
+  const ways = { crack: { end: Object.keys(CRACK_ENDS).filter(k => ghosts || !GHOSTLY.has(k)) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] }, combo: { id: COMBOS.map(c => c.id) }, expanders: { way: ["only", "among", "showcase"] }, colour: { kind: Object.keys(COLOUR_KINDS) } };
   const out = [];
   for (const name of Object.keys(MOVEMENTS)) {
     if (["pacmen", "taps", "pacmenAndTaps", "settle", "sweep"].includes(name)) continue; // (they only come after others)
@@ -839,7 +839,7 @@ const MOVEMENTS = {
   standing: () => planned("standing up", (state) => planStanding(state)),
 
   // the board built up in bands of colour, a rainbow, then down it all comes
-  colour: () => planned(null, (state) => planColour(state), "demolition"),
+  colour: () => planned(null, (state) => { const kind = state.zen.opts?.kind; state.zen.opts = null; return planColour(state, kind); }, "demolition"),
 
   // squares of colour in a pattern, a checkerboard or diagonal stripes, then down it comes
   squares: () => planned(null, (state) => planSquares(state), "demolition"),
@@ -2154,44 +2154,131 @@ function colourOf(shape) {
   return c === "pink" ? "purple" : c;
 }
 
-// The board built up in bands of colour, a rainbow from the bottom up (or upside down, or from
-// left to right), with a slot left for one of the tallest pieces if there is one; then down it
-// comes. Returns { items, caption } or null.
-export function planColour(state) {
+// The board built up in colour, then down it comes: a rainbow from the bottom up (or upside down,
+// or from left to right, or the proper shape, an arch), a gradient from one colour to another,
+// stripes, a zigzag, rings from the middle, wide diagonal stripes. A slot is left for one of the
+// tallest pieces if there is one. `kind`: one of COLOUR_KINDS (or one at random). Returns
+// { items, caption } or null.
+const COLOUR_KINDS = { rainbow: 2, gradient: 1.5, stripes: 1.2, zigzag: 1.2, arch: 1.2, rings: 0.9, diagonal: 0.8 };
+const RAINBOW = ["red", "orange", "yellow", "green", "blue", "purple"];
+export function planColour(state, kind = null) {
   const { cols, rows } = CONFIG.board;
   const rng = state.rng;
   const occ = occupancy(state.board);
   if (!solid(occ, cols, rows) || heightOf(occ, cols, rows) > 2) return null;
   const keys = zenKeys(state).filter(k => k.rotations[0][0].length === 1);
   const key = keys.length ? keys[Math.floor(rng() * keys.length)] : null;
-  const H = key ? rows : rows - 3;
+  const H = key ? rows : rows - 3, top = rows - H;
   const kx = freeSlot(occ, 1, rng, cols, rows);
   if (kx == null) return null;
-  const flip = rng() < 0.25, across = rng() < 0.35;
-  const order = flip ? ["purple", "blue", "green", "yellow", "orange", "red"] : ["red", "orange", "yellow", "green", "blue", "purple"];
   const all = fillerCandidates(state);
   const of = (c) => all.filter(k => colourOf(k.shape) === c);
-  const work = occ.slice(), steps = [];
-  const n = order.length, top = rows - H;
-  const xs = [...Array(cols).keys()].filter(x => x !== kx);
-  for (let i = 0; i < n; i++) {
-    const need = new Uint8Array(cols * rows);
-    if (across) {
-      // stripes of columns, left to right
-      const a = Math.round(xs.length * i / n), b = Math.round(xs.length * (i + 1) / n);
-      for (const x of xs.slice(a, b)) for (let y = top; y < rows; y++) if (!work[y * cols + x]) need[y * cols + x] = 1;
-    } else {
-      // bands of rows, from the bottom up
-      const y0 = rows - Math.round(H * (i + 1) / n), y1 = rows - Math.round(H * i / n);
-      for (let y = y0; y < y1; y++) for (const x of xs) if (!work[y * cols + x]) need[y * cols + x] = 1;
+  kind ??= sampleByWeight(Object.entries(COLOUR_KINDS), ([, w]) => w, rng)[0];
+  const pat = colourPattern(kind, { cols, rows, H, top, rng, enough: (c) => of(c).length >= 6 });
+  if (!pat) return null;
+  // the pieces of each colour, each only ever in its own colour's cells (tile's regions)
+  const byColour = pat.palette.map((c, i) => of(c).map(k => ({ ...k, region: i + 1 })));
+  // in slabs from the bottom up (each piece within one slab, one colour)
+  let work = occ.slice(), slabs = 0, misses = 0;
+  const steps = [];
+  for (let y1 = rows; y1 > top;) {
+    const h = Math.min(y1 - top, int(state, 3, 5)), y0 = y1 - h;
+    const need = new Uint8Array(cols * rows), regions = new Set();
+    for (let y = y0; y < y1; y++) for (let x = 0; x < cols; x++) {
+      if (x === kx || work[y * cols + x]) continue;
+      const r = pat.at(x, y) + 1;
+      need[y * cols + x] = r;
+      regions.add(r);
     }
-    const placed = tile(work, need, of(order[i]), rng, cols, rows, 4, null, 3000) ?? tile(work, need, all, rng, cols, rows);
-    if (!placed) return null;
+    const cands = [...regions].flatMap(r => byColour[r - 1]);
+    let w = work.slice(), placed = cands.length ? tile(w, need, cands, rng, cols, rows, 4, null, 4000) : null;
+    // (and if that can't be done, the slab in any colours: the pattern a little out there; but
+    // not too often, or it's no pattern at all)
+    slabs++;
+    if (!placed) { misses++; w = work.slice(); placed = tile(w, need.map(v => (v ? 1 : 0)), all, rng, cols, rows); }
+    if (!placed || misses > Math.max(1, slabs * 0.2)) return null;
+    work = w;
     steps.push(...asFillers(placed));
+    y1 = y0;
   }
   if (key) steps.push({ shape: key, rot: 0, mat: key.rotations[0], x: kx, key: true });
   const items = toItems(occ, steps, cols, rows, { mustClear: !!key });
-  return items && { items, caption: across ? "a rainbow, sideways" : flip ? "a rainbow, upside down" : "a rainbow" };
+  return items && { items, caption: pat.caption };
+}
+
+// A pattern of colours over the rows from `top` down: { palette (colour names), at(x, y) (an
+// index into it), caption }, or null if there aren't enough pieces of the colours it needs.
+function colourPattern(kind, { cols, rows, H, top, rng, enough }) {
+  // (colours that stand apart)
+  const PAIRS = [["blue", "white"], ["red", "white"], ["green", "white"], ["blue", "orange"], ["purple", "yellow"], ["green", "purple"],
+    ["red", "grey"], ["blue", "yellow"], ["orange", "grey"], ["green", "red"], ["purple", "white"]];
+  const TRIPLES = [["red", "white", "blue"], ["green", "white", "orange"], ["purple", "yellow", "blue"], ["red", "yellow", "blue"],
+    ["grey", "white", "red"], ["green", "yellow", "purple"], ["blue", "white", "orange"]];
+  const choose = (n) => {
+    const ok = (n === 2 ? PAIRS : TRIPLES).filter(p => p.every(enough));
+    if (!ok.length) return null;
+    const p = ok[Math.floor(rng() * ok.length)];
+    return rng() < 0.5 ? [...p].reverse() : [...p];
+  };
+  const up = (y) => rows - 1 - y; // (rows from the floor)
+  if (kind === "rainbow") {
+    const flip = rng() < 0.25, across = rng() < 0.35, order = flip ? [...RAINBOW].reverse() : RAINBOW;
+    if (!order.every(enough)) return null;
+    return { palette: order, caption: across ? "a rainbow, sideways" : flip ? "a rainbow, upside down" : "a rainbow",
+      at: across ? (x) => Math.min(5, Math.floor(x * 6 / cols)) : (x, y) => Math.min(5, Math.floor(up(y) * 6 / H)) };
+  }
+  if (kind === "gradient") {
+    // from one colour to another: bands of the first getting thinner as the second's get thicker
+    const pal = choose(2);
+    if (!pal) return null;
+    const across = rng() < 0.3, n = across ? cols : H, steps = 4;
+    const runs = [];
+    for (let i = 0; i < steps; i++) runs.push([0, steps - i], [1, i + 1]);
+    const total = runs.reduce((s, [, k]) => s + k, 0), edge = [];
+    let acc = 0;
+    for (const [c, k] of runs) { acc += k; edge.push([c, acc * n / total]); }
+    const at = (u) => edge.find(([, e]) => u < e)?.[0] ?? 1;
+    return { palette: pal, caption: `from ${pal[0]} to ${pal[1]}`, at: across ? (x) => at(x) : (x, y) => at(up(y)) };
+  }
+  if (kind === "stripes") {
+    const pal = choose(rng() < 0.6 ? 2 : 3);
+    if (!pal) return null;
+    const w = rng() < 0.5 ? 2 : 3, across = rng() < 0.4;
+    return { palette: pal, caption: across ? `${pal.join(" and ")} stripes, up and down` : `${pal.join(" and ")} stripes`,
+      at: across ? (x) => Math.floor(x / w) % pal.length : (x, y) => Math.floor(up(y) / w) % pal.length };
+  }
+  if (kind === "zigzag") {
+    const pal = rng() < 0.35 && RAINBOW.every(enough) ? RAINBOW : choose(rng() < 0.7 ? 2 : 3);
+    if (!pal) return null;
+    const w = rng() < 0.5 ? 3 : 4, period = 4 + Math.floor(rng() * 3), amp = 3;
+    const zig = (x) => { const p = x % (2 * period); return Math.round(amp * (p < period ? p : 2 * period - p) / period); };
+    return { palette: pal, caption: pal === RAINBOW ? "a rainbow, zigzagging" : "a zigzag", at: (x, y) => Math.floor((up(y) + zig(x)) / w) % pal.length };
+  }
+  if (kind === "arch") {
+    // a rainbow the shape a rainbow is: arcs (stretched to the board) round a point under the
+    // middle of the floor, red on the outside, a white cloud inside and blue sky outside
+    if (!RAINBOW.every(enough) || !enough("white") || !enough("blue")) return null;
+    const cx = (cols - 1) / 2, sink = Math.max(1, Math.round(H * 0.1)), cy = rows - 1 + sink;
+    const rx = cols / 2 + 0.5, ry = H - 1 + sink, r0 = 0.32, band = (0.97 - r0) / 6;
+    const pal = ["white", ...[...RAINBOW].reverse(), "blue"];
+    return { palette: pal, caption: "a rainbow, the right shape", at: (x, y) => {
+      const d = Math.hypot((x - cx) / rx, (y - cy) / ry);
+      return d < r0 ? 0 : Math.min(pal.length - 1, 1 + Math.floor((d - r0) / band));
+    } };
+  }
+  if (kind === "rings") {
+    const pal = rng() < 0.5 && RAINBOW.every(enough) ? RAINBOW : choose(3);
+    if (!pal) return null;
+    const cx = (cols - 1) / 2, cy = top + (H - 1) / 2, w = rng() < 0.5 ? 2 : 3;
+    return { palette: pal, caption: pal === RAINBOW ? "a rainbow from the middle" : "rings from the middle", at: (x, y) => Math.floor(Math.hypot(x - cx, y - cy) / w) % pal.length };
+  }
+  if (kind === "diagonal") {
+    const pal = choose(rng() < 0.5 ? 2 : 3);
+    if (!pal) return null;
+    const w = 3 + Math.floor(rng() * 2), back = rng() < 0.5;
+    return { palette: pal, caption: "wide diagonal stripes", at: (x, y) => Math.floor(((back ? cols - 1 - x : x) + up(y)) / w) % pal.length };
+  }
+  return null;
 }
 
 // Squares in a pattern across the board: a checkerboard, diagonal stripes or rings of colour,
@@ -2794,7 +2881,7 @@ function tile(occ, need, cands, rng, cols, rows, maxUses = 3, holes = null, budg
       const x = x0 + nf[n], y = y0 + nf[n + 1];
       if (x < 0 || x >= cols || y < 0 || y >= rows) return false;
       const k = y * cols + x;
-      if (!need[k] || occ[k]) return false;
+      if (!need[k] || occ[k] || (c.region && need[k] !== c.region)) return false;
     }
     let supported = false;
     const cf = c.cellsF, m = c.mask, w = c.w;
