@@ -458,11 +458,11 @@ export function bindUI({ state, renderer, achievements }) {
         if (state.level6Recent !== savedRecent) { savedRecent = state.level6Recent; store.setJSON(LEVEL6_RECENT_KEY, savedRecent); }
         noteSeen(d.shape);
         nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames, d.label); // (turbo zen: no time to slide)
-        renderer.drawNext(d.next, true);
+        renderer.drawNext(d.next, true, { glow: CONFIG.modes[state.mode]?.hints !== false });
         if (d.isNew && !skipIntros()) showIntro(d.shape);
         break;
       case "next":
-        renderer.drawNext(d.next, true);
+        renderer.drawNext(d.next, true, { glow: CONFIG.modes[state.mode]?.hints !== false });
         break;
       case "dramaticPause": // (turbo zen: in place of the piece's name while the board glows)
         if (d.on) nameLayer.setName("(dramatic pause)", "", "", !!CONFIG.modes[state.mode]?.flashNames);
@@ -1289,7 +1289,7 @@ export function bindUI({ state, renderer, achievements }) {
   document.body.addEventListener("pointerdown", (e) => {
     if (!e.isPrimary) return;
     // Menus, buttons and scrolling panels handle their own input.
-    if (overlayShowing() || e.target.closest?.("button, .overlay, .toast")) return;
+    if (overlayShowing() || e.target.closest?.("button, .overlay, .toast, .hudLogo")) return;
     e.preventDefault();
 
     const zone = getZone(e.clientX, e.clientY);

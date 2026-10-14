@@ -1567,9 +1567,12 @@ export function createRenderer(boardCanvas, nextCanvas) {
     bctx.restore();
   }
 
-  // The next piece, in its own art, on a little patch of board with a glow of its colours
-  // behind it; a powerup's shell goes rainbow (index.html, .nextMiniShell.power).
-  let nextShape = null;
+  // The next piece, as a silhouette: a cool gradient for an ordinary piece, a powerup in its
+  // class's colours (a combo in stripes of each of its parts'), with a bevel round its edges and
+  // its cells faintly marked, on a little patch of board; and a soft glow behind it in the colours
+  // of its own art, as a hint of what's coming (not in a mode without hints: `glow: false`). A
+  // powerup's shell goes rainbow too (index.html, .nextMiniShell.power).
+  let nextShape = null, nextGlowOn = true;
   const nextGlow = new WeakMap();
   function averageColour(shape) {
     if (nextGlow.has(shape)) return nextGlow.get(shape);
@@ -1588,9 +1591,21 @@ export function createRenderer(boardCanvas, nextCanvas) {
     nextGlow.set(shape, out);
     return out;
   }
-  function drawNext(shape = nextShape, pop = false) {
+  // (the colours to fill it with: two ends of a gradient, or stripes)
+  function silhouetteFill(shape) {
+    const pu = shape.powerup;
+    const cls = (t) => CONFIG.fx.powerup.classColours?.[classOf(t)];
+    const ends = (pal) => [`hsl(${pal.hues[0]},${pal.sat ?? 100}%,${pal.light ?? 60}%)`, `hsl(${pal.hues[1]},${pal.sat ?? 100}%,${Math.max(30, (pal.light ?? 60) - 8)}%)`];
+    if (!pu) return { ends: ["#c9d3ff", "#7a5cff"] };
+    const parts = (pu.parts ?? [pu]).map(p => cls(p.type)).filter(Boolean);
+    if (parts.length > 1) return { stripes: parts.map(p => ends(p)[0]) };
+    if (parts.length === 1) return { ends: ends(parts[0]) };
+    return { ends: ["#ff4d6d", "#4dc3ff"] };
+  }
+  function drawNext(shape = nextShape, pop = false, opts = null) {
     if (pop && shape && shape !== nextShape) { nextCanvas.classList.remove("pop"); void nextCanvas.offsetWidth; nextCanvas.classList.add("pop"); }
     nextShape = shape;
+    if (opts && "glow" in opts) nextGlowOn = !!opts.glow;
     nextCanvas.parentElement?.classList.toggle("power", !!shape?.powerup);
     const rect = nextCanvas.getBoundingClientRect(), dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
     const W = Math.max(1, Math.round(rect.width * dpr)), Hh = Math.max(1, Math.round(rect.height * dpr));
@@ -1600,36 +1615,74 @@ export function createRenderer(boardCanvas, nextCanvas) {
     if (!shape) return;
     const mat = shape.rotations[0], ph = mat.length, pw = mat[0].length;
     const pad = Math.round(3 * dpr);
-    let c = Math.floor(Math.min((W - pad * 2) / pw, (Hh - pad * 2) / ph, 22 * dpr));
-    // (whole pixels of its art where there's room for them)
-    const k = shape.cellPaints?.[0]?.flat().find(p => p && typeof p === "object")?.k ?? 1;
-    if (k > 1 && c >= k * 1.5) c = Math.floor(c / k) * k;
-    c = Math.max(1, c);
+    const c = Math.max(1, Math.floor(Math.min((W - pad * 2) / pw, (Hh - pad * 2) / ph, 22 * dpr)));
     const dw = pw * c, dh = ph * c, ox = Math.floor((W - dw) / 2), oy = Math.floor((Hh - dh) / 2);
-    // a faint grid, lined up with the piece's cells, fading away from it
     const cx = ox + dw / 2, cy = oy + dh / 2, rad = Math.max(dw, dh) * 0.8 + 6 * dpr;
+    const line = Math.max(1, Math.round(dpr / 2));
+    // a faint grid, lined up with the piece's cells, fading away from it
     nctx.fillStyle = "rgba(255,255,255,0.06)";
-    for (let x = ((ox % c) + c) % c; x < W; x += c) nctx.fillRect(x, 0, Math.max(1, Math.round(dpr / 2)), Hh);
-    for (let y = ((oy % c) + c) % c; y < Hh; y += c) nctx.fillRect(0, y, W, Math.max(1, Math.round(dpr / 2)));
+    for (let x = ((ox % c) + c) % c; x < W; x += c) nctx.fillRect(x, 0, line, Hh);
+    for (let y = ((oy % c) + c) % c; y < Hh; y += c) nctx.fillRect(0, y, W, line);
     const fade = nctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, Hh) * 0.55);
     fade.addColorStop(0, "rgba(0,0,0,1)"); fade.addColorStop(1, "rgba(0,0,0,0)");
     nctx.globalCompositeOperation = "destination-in";
     nctx.fillStyle = fade;
     nctx.fillRect(0, 0, W, Hh);
     nctx.globalCompositeOperation = "source-over";
-    // the glow behind it
-    const [r, g, b] = averageColour(shape);
-    const glow = nctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
-    glow.addColorStop(0, `rgba(${r},${g},${b},0.42)`);
-    glow.addColorStop(1, `rgba(${r},${g},${b},0)`);
-    nctx.fillStyle = glow;
-    nctx.fillRect(0, 0, W, Hh);
-    // its shadow, then the piece
+    // the glow behind it, in its own colours
+    if (nextGlowOn) {
+      const [r, g, b] = averageColour(shape);
+      const glow = nctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
+      glow.addColorStop(0, `rgba(${r},${g},${b},0.55)`);
+      glow.addColorStop(0.55, `rgba(${r},${g},${b},0.22)`);
+      glow.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      nctx.fillStyle = glow;
+      nctx.fillRect(0, 0, W, Hh);
+    }
+    const filled = (x, y) => x >= 0 && y >= 0 && x < pw && y < ph && !!mat[y][x];
+    // its shadow
     const drop = Math.max(1, Math.round(c * 0.12));
-    nctx.fillStyle = "rgba(0,0,0,0.55)";
+    nctx.fillStyle = "rgba(0,0,0,0.5)";
     for (let y = 0; y < ph; y++) for (let x = 0; x < pw; x++) if (mat[y][x]) nctx.fillRect(ox + x * c + drop, oy + y * c + drop, c, c);
+    // the silhouette, filled
+    const f = silhouetteFill(shape);
+    if (f.stripes) {
+      // (diagonal stripes, each part's colour in turn, cut to the piece's outline)
+      const off = document.createElement("canvas");
+      off.width = dw; off.height = dh;
+      const o = off.getContext("2d");
+      const n = f.stripes.length, band = Math.max(3, Math.round(c * 0.45));
+      for (let k = -dh, i = 0; k < dw + dh; k += band, i++) {
+        o.fillStyle = f.stripes[i % n];
+        o.beginPath(); o.moveTo(k, 0); o.lineTo(k + band, 0); o.lineTo(k + band - dh, dh); o.lineTo(k - dh, dh); o.closePath(); o.fill();
+      }
+      // (the outline as one path, cut out in one go: cell by cell, each would wipe out the rest)
+      o.globalCompositeOperation = "destination-in";
+      o.fillStyle = "#fff";
+      o.beginPath();
+      for (let y = 0; y < ph; y++) for (let x = 0; x < pw; x++) if (mat[y][x]) o.rect(x * c, y * c, c, c);
+      o.fill();
+      nctx.drawImage(off, ox, oy);
+    } else {
+      const grad = nctx.createLinearGradient(ox, oy, ox + dw * 0.4, oy + dh);
+      grad.addColorStop(0, f.ends[0]); grad.addColorStop(1, f.ends[1]);
+      nctx.fillStyle = grad;
+      for (let y = 0; y < ph; y++) for (let x = 0; x < pw; x++) if (mat[y][x]) nctx.fillRect(ox + x * c, oy + y * c, c, c);
+    }
+    // its cells, faintly; and a bevel round its edges: light on top and left, dark under and right
+    const bev = Math.max(1, Math.round(c * 0.1));
     for (let y = 0; y < ph; y++) for (let x = 0; x < pw; x++) {
-      if (mat[y][x]) drawBlockWithPaintStatic(nctx, ox + x * c, oy + y * c, c, getShapePaint(shape, 0, x, y), shape.style ?? {});
+      if (!mat[y][x]) continue;
+      const x0 = ox + x * c, y0 = oy + y * c;
+      nctx.fillStyle = "rgba(255,255,255,0.14)";
+      if (filled(x + 1, y)) nctx.fillRect(x0 + c - line, y0, line, c);
+      if (filled(x, y + 1)) nctx.fillRect(x0, y0 + c - line, c, line);
+      nctx.fillStyle = "rgba(255,255,255,0.55)";
+      if (!filled(x, y - 1)) nctx.fillRect(x0, y0, c, bev);
+      if (!filled(x - 1, y)) nctx.fillRect(x0, y0, bev, c);
+      nctx.fillStyle = "rgba(0,0,0,0.35)";
+      if (!filled(x, y + 1)) nctx.fillRect(x0, y0 + c - bev, c, bev);
+      if (!filled(x + 1, y)) nctx.fillRect(x0 + c - bev, y0, bev, c);
     }
   }
   if (typeof ResizeObserver !== "undefined") new ResizeObserver(() => drawNext()).observe(nextCanvas);

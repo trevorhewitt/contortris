@@ -15,7 +15,7 @@ export const CONFIG = {
     // (Easy is gone from the menu: kept here so a game remembered as Easy still means something)
     easy: { label: "Easy", tagline: "powerups, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true, hidden: true },
     normal: { label: "Classic", tagline: "the full game, powerups and all", powerups: true, giants: true, level6: true, warmup: true },
-    extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true },
+    extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true, hints: false },
     god: { label: "God", tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true },
     // speeds: a speed setting on the pause menu, these times timeScale (1 to start with).
     // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); calm: zen for playing, slow

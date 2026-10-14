@@ -999,7 +999,17 @@
     /* (all three parts the bar's full height) */
     .bottomLeft, .bottomCenter, .bottomRight{ display: flex; min-height: 0; }
     .bottomLeft{ justify-content: flex-start; }
-    .bottomCenter{ justify-content: center; }
+    /* (the pause button small and low, the logo over it: a tap at the bottom of the screen meant
+       for the piece doesn't pause it; the logo does nothing at all) */
+    .bottomCenter{ flex-direction: column; justify-content: flex-end; align-items: center; gap: 5px; }
+    .hudLogo{
+      display: flex; gap: 1px; font-family: var(--font-display); font-size: clamp(10px, 3vw, 14px); line-height: 1;
+      user-select: none; cursor: default;
+    }
+    .hudLogo span{
+      color: hsl(var(--h), 100%, 62%);
+      text-shadow: 0 0.12em 0 hsl(var(--h), 85%, 30%), 0 0 0.5em hsla(var(--h), 100%, 60%, 0.45);
+    }
     .bottomRight{ justify-content: flex-end; }
 
     .nextMiniShell, .statPill{
@@ -1030,8 +1040,8 @@
     @keyframes powerEdge{ from{ background-position: 0 0, 0 0, 0 0; } to{ background-position: 0 0, 0 0, 75% 0; } }
 
     .pauseBtn{
-      box-sizing: border-box; height: 100%;
-      width: clamp(56px, 16vw, 80px);
+      box-sizing: border-box; height: 44px; flex: 0 0 auto;
+      width: clamp(52px, 15vw, 72px);
       min-height: 0;
       border-radius: var(--ui-radius);
       padding: 0;
@@ -1182,7 +1192,7 @@
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
             <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
-            <div class="small" id="gameVersion">version 202610141531</div>
+            <div class="small" id="gameVersion">version 202610141542</div>
           </div>
 
           <div class="msg panel" id="panelHowTo" hidden>
@@ -1200,7 +1210,7 @@
               <h3>Modes</h3>
               <div id="howtoModes"></div>
 
-              <p class="small menuFoot">[Extris version 202610141531 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610141542 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>
@@ -1321,6 +1331,7 @@
       </div>
     
       <div class="bottomCenter">
+        <div class="hudLogo" aria-hidden="true"><span style="--h:350">E</span><span style="--h:35">X</span><span style="--h:58">T</span><span style="--h:140">R</span><span style="--h:200">I</span><span style="--h:275">S</span></div>
         <button id="pauseBtn" class="pauseBtn" aria-label="Pause/Play">▶</button>
       </div>
     
