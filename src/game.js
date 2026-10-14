@@ -771,7 +771,7 @@ export function insidePairs(state, pid, zoneName = "inside") {
 }
 
 // A piece's last block has gone: the game says so, and the piece can have last words
-// (`onDeath`: "it loved you").
+// (shape.onDeath).
 function pieceGone(state, pid, inst, at = null) {
   const words = inst.shape?.onDeath;
   // (a little above where it was, clear of the name of any rows that went with it, and lingering)
@@ -1739,10 +1739,10 @@ export function zenRescue(state) {
 }
 
 // Zen mode: the name of what it's doing now, drifting up over the board. (`quiet`: just the
-// words, not a new movement; `row`, `col`: somewhere else than over the middle, near the top.)
-export function zenCaption(state, text, name = text, { quiet = false, row = null, col = null, color = null } = {}) {
+// words, not a new movement.)
+export function zenCaption(state, text, name = text, { quiet = false, row = null } = {}) {
   const z = CONFIG.zen;
-  if (text) addCallout(state, text, col ?? CONFIG.board.cols / 2, row ?? z.captionRow ?? 3, { color: color ?? z.captionColour, durationMs: z.captionMs });
+  if (text) addCallout(state, text, CONFIG.board.cols / 2, row ?? z.captionRow ?? 3, { color: z.captionColour, durationMs: z.captionMs });
   if (!quiet) emit(state, "zenMovement", { name, caption: text });
 }
 

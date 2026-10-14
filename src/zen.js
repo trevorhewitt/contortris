@@ -15,9 +15,8 @@
 // the brink and then brings it all down: rows built around a slot and then the one piece that
 // fills it (the tallest pieces fill a slot the whole height of the board), perfect beds for
 // awkward giants one on top of another, a crack running through every row that a run of
-// phantoms seals, a mess that powerups demolish, a board full of nothing but spam, a piece that
-// loves you with everything built up and brought down all around it, spared, and then not...
-// with quieter interludes between. Small and repetitive things come down faster; the big moments
+// phantoms seals, a mess that powerups demolish, a board full of nothing but spam... with
+// quieter interludes between. Small and repetitive things come down faster; the big moments
 // take their time (CONFIG.zen.pace).
 //
 // Nothing can top either out. If the player builds it up into danger, a big powerup comes
@@ -57,10 +56,10 @@ const WEIGHTS = {
 const MOVEMENT_WEIGHTS = {
   zen: { natural: 5, rain: 1, family: 1.6, colours: 1, twos: 0.7 },
   turbo: { natural: 0.25, rain: 0.15, build: 0.5, giants: 0.3, column: 2.5, beds: 2, crack: 2, mess: 0.9, fall: 0.3, well: 0.3, chorus: 1.2,
-    mono: 5, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1, oops: 2.5, tiles: 2, loved: 0.3 },
+    mono: 5, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1, oops: 2.5, tiles: 2 },
 };
 // (the ones that need a low, tidy board to build on)
-const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "standing", "colour", "squares", "tiles", "loved"]);
+const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "standing", "colour", "squares", "tiles"]);
 // (the ones happy to carry on from whatever the last one left behind)
 const BLENDS = new Set(["build", "chorus", "mono", "small", "big", "waves", "expanders", "blackholes", "oops"]);
 
@@ -100,7 +99,7 @@ export function createZen(state) {
 // choice (a crack's `end`).
 // For the dev panel: every movement there is, by name, and the ways some of them can go.
 export function zenMovementChoices() {
-  const ways = { loved: { ending: ["bitByBit", "bigOne", "spared"] }, crack: { end: Object.keys(CRACK_ENDS) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] } };
+  const ways = { crack: { end: Object.keys(CRACK_ENDS) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] } };
   const out = [];
   for (const name of Object.keys(MOVEMENTS)) {
     if (["pacmen", "taps", "pacmenAndTaps", "settle", "sweep"].includes(name)) continue; // (they only come after others)
@@ -166,9 +165,7 @@ export function zenNext(state) {
   // brink on purpose; the player building it up is another matter, and so is a piece with
   // nowhere to go.
   if (!z.queue[0].expect && inDanger(state, occ, z.queue[0])) {
-    // (not one that would take a piece that loves you with it, while it's being spared)
-    const spare = z.movement?.sparing?.() ? sparingPowerup(state, true) : null;
-    z.queue.unshift({ shape: spare ?? bigPowerup(state), weights: WEIGHTS.clear, emergency: true, loved: spare ? "spare" : null });
+    z.queue.unshift({ shape: bigPowerup(state), weights: WEIGHTS.clear, emergency: true });
     zenCaption(state, "steady", "steady");
   } else if (isCalm(state) && !z.queue[0].shape.powerup && needsHelp(state, occ)) {
     // zen: left high or full of gaps, a little help (now and then)
@@ -183,15 +180,11 @@ export function zenNext(state) {
   if (!item.expect && !item.key && !item.shape.powerup && blocks(item.shape) >= 10 && !fitsUnder(state, item.shape, 2)) {
     item = { ...item, shape: pick(state, smallPool(state)), label: null };
   }
-  if (item.caption) zenCaption(state, item.caption, "finale", { quiet: true, ...item.captionAt }); // (what happens next, as it starts)
+  if (item.caption) zenCaption(state, item.caption, "finale", { quiet: true }); // (what happens next, as it starts)
   // (after a big clearance, a breath before the next piece)
   const n = occ.reduce((a, b) => a + b, 0);
   const gone = z.blocks != null ? z.blocks - n : 0;
   z.rest = gone >= 30 ? Math.min(CONFIG.zen.restMs, gone * 10) : 0;
-  // (and a moment's silence, if the director asked for one, or a wait before this one: `wait`,
-  // real time, before it comes into view)
-  if (z.silence) { z.rest = Math.max(z.rest, z.silence); z.silence = 0; }
-  if (item.wait) z.rest = Math.max(z.rest, item.wait * timeScaleOf(state));
   z.blocks = n + blocks(item.shape);
   z.current = item;
   z.expect = item.expect ?? null;
@@ -407,7 +400,7 @@ function stray(state, chance = CONFIG.zen.strays?.chance ?? 0) {
   const S = CONFIG.zen.strays;
   if (!S || isCalm(state) || state.rng() >= chance) return null;
   const uses = state.zenUses ?? new Map();
-  const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= (S.maxDifficulty ?? 5) && !lovesYou(s) && fitsUnder(state, s, S.headroom ?? 4));
+  const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= (S.maxDifficulty ?? 5) && fitsUnder(state, s, S.headroom ?? 4));
   if (!pool.length) return null;
   return sampleByWeight(pool, s => 1 / (1 + (uses.get(s.id) ?? 0)) ** (S.power ?? 1.5), state.rng);
 }
@@ -794,10 +787,6 @@ const MOVEMENTS = {
     blastWith: (st, n) => { const holes = powerupPool(st).filter(p => /black hole/i.test(p.name)); return holes.length && n % 3 !== 2 ? bestPowerup(st, holes) : bigPowerup(st); },
   }),
 
-  // a piece that loves you: everything built up all around it and brought down all around it,
-  // and it's spared; and then, mostly, it isn't
-  loved: (state) => loved(state),
-
   // the board filled by expanding pieces, then the powerups
   expanders: (state) => ({
     caption: "expanding", used: 0, target: up(int(state, 16, 20)), phase: "grow", blasts: 0,
@@ -1024,219 +1013,6 @@ function bigPowerup(state) {
 }
 
 /* =========================
-   A piece that loves you
-   =========================
-   It comes down to the bottom of the board on its own, and the board is built up all around it,
-   leaving it a shaft to the sky (so it can see out, and so no row it's in can fill and clear);
-   then everything around it is brought down, carefully, by destroyers that can miss it; and
-   then, mostly, it isn't spared after all: a very small regret at a time, from the outside in,
-   or all at once. Now and then it is, and it stays, and whatever comes next builds on it. Its
-   last words are its own (shape.onDeath). (CONFIG.zen.loved)
-*/
-const lovesYou = (s) => !!s && !s.powerup && !!s.tags?.includes("loves_you");
-
-function loved(state) {
-  const L = CONFIG.zen.loved ?? {}, C = L.captions ?? {}, { cols, rows } = CONFIG.board;
-  const ones = state.shapes.filter(lovesYou);
-  if (!ones.length) return MOVEMENTS.mono(state);
-  const ending = state.zen.opts?.ending ?? sampleByWeight(Object.entries(L.endings ?? { bitByBit: 1 }), ([, w]) => w, state.rng)[0];
-  state.zen.opts = null;
-  const one = pick(state, ones), w = one.rotations[0][0].length;
-  // (near the middle, with a column clear either side of it; on a narrow board, right in the
-  // middle, so there's room to build either side)
-  const spread = cols >= 22 ? Math.floor(cols / 6) : 0;
-  const x = Math.max(1, Math.min(cols - w - 1, Math.floor((cols - w) / 2) + int(state, -spread, spread)));
-  const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= 3 && !lovesYou(s)), pal = palettePick(state, pool);
-  const say = (list) => (list?.length ? list[Math.floor(state.rng() * list.length)] : null);
-  return {
-    caption: null, phase: "arrive", ending, pid: null, pieces: 0, blasts: 0, hits: 0, over: false,
-    target: up(int(state, 17, 20)), maxPieces: 70 * cols * rows / 336,
-    weights: { ...WEIGHTS.build, well: x - 1, wellW: w + 2, wellCost: 80 },
-    // (while it's being spared, an emergency powerup spares it too)
-    sparing() { return this.phase === "build" || this.phase === "spare"; },
-    cells(state) { return state.instances.get(this.pid)?.cells ?? []; },
-    // what comes next, on the board as it is now (zenNext: it has settled)
-    interject(state) {
-      const z = state.zen;
-      if (this.phase === "arrive" || this.over) return null;
-      if (this.pid == null) {
-        // (where it actually landed: the player might have moved it)
-        for (const [pid, inst] of state.instances) if (inst.shape?.id === one.id && pid > (this.pid ?? -1)) this.pid = pid;
-        const xs = this.cells(state).map(c => c.x);
-        if (xs.length) {
-          const x0 = Math.max(0, Math.min(...xs) - 1), x1 = Math.min(cols, Math.max(...xs) + 2);
-          this.weights.well = x0;
-          this.weights.wellW = x1 - x0;
-        }
-      }
-      const cells = this.cells(state);
-      // (gone already, by someone else's hand)
-      if (!cells.length) return this.end(state);
-      const top = Math.min(...cells.map(c => c.y)), cx = cells.reduce((a, c) => a + c.x, 0) / cells.length + 0.5;
-      const near = { row: Math.max(1, top - 3), col: cx };
-      if (this.phase === "build") {
-        if (stackHeight(state) < this.target && this.pieces < this.maxPieces) return null;
-        this.phase = "spare";
-        zenCaption(state, say(C.spare), "loved", { quiet: true });
-      }
-      if (this.phase === "spare") {
-        const p = this.blasts < (L.blasts ?? 7) && stillWorthIt(this, state, this.blasts) ? sparingPowerup(state, this.blasts < 2, biteNeeded(state, this.blasts)) : null;
-        if (p) { this.blasts++; return [{ shape: p, weights: WEIGHTS.clear, loved: "spare" }]; }
-        this.phase = "finale";
-        if (this.ending === "spared") {
-          zenCaption(state, say(C.spared), "loved", { quiet: true, ...near });
-          return this.end(state, false);
-        }
-      }
-      // the finale: one very small regret at a time, from the outside in (or one big one), the
-      // first after a moment ("it's safe now")
-      if (this.hits >= (L.maxHits ?? 12)) return this.end(state);
-      const all = this.ending !== "bitByBit" || this.hits >= (L.maxHits ?? 12) - 2;
-      const shape = all ? aimedPowerup(state, "all") : regret(state);
-      const lines = !this.hits ? C.safe : all ? C.bigOne : C.hits?.[Math.min(this.hits, C.hits.length) - 1];
-      this.hits++;
-      return [{ shape, weights: WEIGHTS.clear, loved: all ? "all" : "one", exactPace: L.hitPace ?? 2.4, pause: this.hits === 1 ? L.pauseMs ?? 1600 : 0, wait: this.hits > 1 ? L.hitWaitMs ?? 0 : 0, caption: say(lines), captionAt: near }];
-    },
-    // (and for the preview, a guess; it's decided once the board has settled)
-    fill(state) {
-      const z = state.zen;
-      if (this.phase === "arrive") {
-        z.queue.push({ shape: one, target: { rot: 0, x }, weights: WEIGHTS.build, exactPace: L.arrivePace ?? 1.8, solo: true });
-        this.phase = "build";
-        return;
-      }
-      if (this.phase === "build") {
-        let shape = state.rng() < 0.12 ? buildPiece(state) : fromPalette(state, pal, pool);
-        if (!fitsUnder(state, shape, 2)) shape = pick(state, smallPool(state));
-        z.queue.push({ shape, weights: this.weights, pace: L.buildPace ?? 0.7 });
-        this.pieces++;
-        return;
-      }
-      const guess = this.phase === "spare" ? sparingPowerup(state, this.blasts < 2) : null;
-      const bit = this.ending === "bitByBit";
-      z.queue.push({ shape: guess ?? (bit ? regret(state) : aimedPowerup(state, "all")), weights: WEIGHTS.clear, loved: guess ? "spare" : bit ? "one" : "all" });
-    },
-    // (and that's that: a moment's silence, if it's gone)
-    end(state, gone = true) {
-      this.over = true;
-      state.zen.queue = [];
-      if (gone) state.zen.silence = L.silenceMs ?? 2400;
-      return null;
-    },
-    done() { return this.over; },
-  };
-}
-
-// The pieces that love you on the board (their pids).
-function lovedPids(state) {
-  const out = new Set();
-  for (const [pid, inst] of state.instances) if (inst.cells.length && lovesYou(inst.shape)) out.add(pid);
-  return out;
-}
-
-// What a powerup at (rot, x, y) would do to them: how many of their blocks it would take (with
-// any row it leaves full, which clears), and how many others; and where the first of theirs is.
-// (Tried out on a copy of the board; `before`: how many blocks of theirs there are, as lovedLeft.)
-function toTheLoved(state, shape, rot, x, y, pids, before) {
-  const { board, fx } = tryPowerup(state, shape, rot, x, y);
-  const theirs = fx.destroyed.filter(d => pids.has(d.cell?.pid));
-  return { killed: before - lovedLeft(board, pids), others: fx.destroyed.length - theirs.length, at: theirs[0] ?? null };
-}
-function lovedLeft(board, pids) {
-  let n = 0;
-  for (const row of board) { const full = row.every(Boolean); for (const c of row) if (c && pids.has(c.pid) && !full) n++; }
-  return n;
-}
-// ...the same, quickly, for a destroyer that vanishes as it goes off: just what's in its area
-// (`loved`: their cells), and any row it finishes itself, all of it (it clears).
-function areaToTheLoved(pu, mat, rot, x, y, occ, loved, cols, rows) {
-  const done = [];
-  for (let j = 0; j < mat.length; j++) {
-    const yy = y + j;
-    if (yy < 0 || !mat[j].some(Boolean)) continue;
-    let full = true;
-    for (let xx = 0; xx < cols && full; xx++) full = !!occ[yy * cols + xx] || (xx >= x && xx < x + mat[0].length && !!mat[j][xx - x]);
-    if (full) done.push(yy);
-  }
-  let killed = 0, others = 0, at = null;
-  const hit = (i) => { if (loved.has(i)) { killed++; at ??= i; } else others++; };
-  for (const i of resolvePowerupArea(pu, rot, x, y, cols, rows).indices) if (occ[i] && !done.includes(Math.floor(i / cols))) hit(i);
-  for (const yy of done) for (let xx = 0; xx < cols; xx++) if (occ[yy * cols + xx]) hit(yy * cols + xx);
-  return { killed, others, at: at == null ? null : { x: at % cols, y: Math.floor(at / cols) } };
-}
-
-// Where a powerup goes to spare them (`spare`: as much of everything else as it can, and none of
-// them), or to take one block of them (`one`: from the outside in), or all of them (`all`).
-function lovedPlacement(state, shape, how) {
-  const { cols, rows } = CONFIG.board;
-  const pids = lovedPids(state), pu = shape.powerup;
-  if (!pids.size || !pu) return null;
-  const occ = occupancy(state.board);
-  const loved = new Set();
-  for (const pid of pids) for (const c of state.instances.get(pid).cells) loved.add(c.y * cols + c.x);
-  let cx = 0;
-  for (const i of loved) cx += i % cols;
-  cx /= loved.size;
-  const plain = (pu.type === "destroyer" || pu.type === "acid") && pu.consume && !pu.parts && !isPhantomPowerup(pu);
-  const before = plain ? 0 : lovedLeft(state.board, pids);
-  let best = null;
-  for (let r = 0; r < Math.min(4, reachableTurns(shape)); r++) {
-    const mat = shape.rotations[r];
-    for (let x = 0; x + mat[0].length <= cols; x++) {
-      const y = isPhantomPowerup(pu) ? phantomLandingY(state.board, x, mat) : dropY(occ, mat, x, cols, rows);
-      if (y == null || mat.some((row, j) => y + j < 0 && row.some(Boolean))) continue;
-      const t = plain ? areaToTheLoved(pu, mat, r, x, y, occ, loved, cols, rows) : toTheLoved(state, shape, r, x, y, pids, before);
-      let s;
-      if (how === "spare") { if (t.killed || t.others < 1) continue; s = t.others; }
-      else if (!t.killed) continue;
-      else if (how === "one") s = 100 - 40 * (t.killed - 1) - t.others + 3 * Math.abs((t.at?.x ?? cx) - cx);
-      else s = 100 * t.killed + 0.1 * t.others;
-      s += z01(state) * 0.01;
-      if (!best || s > best.s) best = { rot: r, x, y, s, ...t };
-    }
-  }
-  return best;
-}
-
-// The destroyer (of a handful) that takes the most while sparing them (the biggest, if `big`), as
-// long as it takes `need` (or minBite); null if none can.
-function sparingPowerup(state, big = false, need = 0) {
-  const D = (p) => (p.powerup.type === "destroyer" || p.powerup.type === "acid") && !p.powerup.bad;
-  let pool = powerupPool(state).filter(D);
-  if (big && pool.some(p => destroyerCells(p) >= 40)) pool = pool.filter(p => destroyerCells(p) >= 40);
-  const min = Math.max(need, CONFIG.zen.loved?.minBite ?? 4), tried = new Set();
-  let best = null;
-  for (let i = 0; i < CONFIG.zen.powerupChoices * 2 && pool.length; i++) {
-    const p = pool[Math.floor(state.rng() * pool.length)];
-    const rare = CONFIG.godMode?.rarer?.[p.id];
-    if (tried.has(p) || (rare != null && pool.length > 1 && z01(state) >= rare)) continue;
-    tried.add(p);
-    const place = lovedPlacement(state, p, "spare");
-    if (place && place.others >= min && (!best || place.s > best.s)) best = { p, s: place.s };
-  }
-  return best?.p ?? null;
-}
-
-// ...the one that takes them (all of them, at the end), and the very small regret, one block at
-// a time (or, if there isn't one, the smallest destroyer there is).
-function aimedPowerup(state, how) {
-  const pool = powerupPool(state).filter(p => (p.powerup.type === "destroyer" || p.powerup.type === "acid") && !p.powerup.bad);
-  const big = pool.filter(p => destroyerCells(p) >= 40);
-  let best = null;
-  for (const p of (big.length ? big : pool)) {
-    const place = lovedPlacement(state, p, how);
-    if (place && (!best || place.s > best.s)) best = { p, s: place.s };
-  }
-  return best?.p ?? regret(state);
-}
-function regret(state) {
-  const L = CONFIG.zen.loved ?? {};
-  for (const id of [L.regret, ...(L.regretElse ?? [])]) { const p = id && state.allById?.get(id); if (p?.powerup) return p; }
-  const pool = state.powerups.filter(p => p.powerup.type === "destroyer" && !p.powerup.bad);
-  return pool.reduce((a, b) => (destroyerCells(b) < destroyerCells(a) ? b : a), pool[0]);
-}
-
-/* =========================
    The autopilot
    ========================= */
 
@@ -1276,8 +1052,6 @@ export function zenSpawned(state) {
   // (a powerup about to bring most of the board down: the dramatic pause comes before it falls;
   // game.js holds everything for it)
   z.pauseFirst = a.shape.powerup && land != null && bigMoment(state, a.shape, a.rotIdx, a.x, land) ? CONFIG.zen.dramatic.pauseMs * timeScaleOf(state) : 0;
-  // (or the director wants a moment before this one, whatever it does: `pause`, game time)
-  if (z.current?.pause && z.current.shape.id === a.shape.id) z.pauseFirst = Math.max(z.pauseFirst, z.current.pause * timeScaleOf(state));
   zenSpeed(state);
   // (each takes a moment at least, however short the way down, but it falls at the same speed
   // all the way: a short way down, it starts a little further up, out of sight)
@@ -1306,7 +1080,7 @@ function formFlock(state, land) {
   const z = state.zen, F = CONFIG.zen.flock, a = state.active, t = z.target;
   const { cols, rows } = CONFIG.board;
   state.flock = [];
-  if (!F || isCalm(state) || z.userHas || a.shape.powerup || t?.slide || land == null || cols < F.minCols || z.current?.solo) return;
+  if (!F || isCalm(state) || z.userHas || a.shape.powerup || t?.slide || land == null || cols < F.minCols) return;
   // (the tiniest pieces come down in a shower: lots of them at once)
   const tiny = F.tiny && blocks(a.shape) <= 2 ? F.tiny : null;
   const room = Math.min(tiny?.most ?? F.most, Math.floor(cols / (tiny?.colsEach ?? F.colsEach))) - 1;
@@ -1388,8 +1162,7 @@ function formFlock(state, land) {
 
 // Where a flock's piece goes: the best place in the columns still free (`free(x0, x1)`), dropped
 // straight down onto `occ`, at least `headroom` rows below the top, and never in the column a
-// fill keeps clear (or a piece that loves you, its shaft): a flock's piece can always stay
-// behind and come on its own.
+// fill keeps clear: a flock's piece can always stay behind and come on its own.
 function flockSpot(occ, shape, weights, free, cols, rows, headroom, rng) {
   let best = null;
   for (let r = 0; r < reachableTurns(shape); r++) {
@@ -1433,7 +1206,6 @@ export function zenLockMs(state) {
 function paceFor(state, item, shape) {
   const z = state.zen, P = CONFIG.zen.pace;
   if (item?.key) return P.key;
-  if (item?.exactPace) return item.exactPace; // (the director's own, whatever the piece)
   let p = (item?.pace ?? 1) * (z.movement?.pace ?? 1);
   if (blocks(shape) <= 3) p *= P.small;
   if (z.lastId === shape.id) p *= P.repeat;
@@ -1507,11 +1279,6 @@ function targetFor(state) {
   const z = state.zen, a = state.active;
   const item = z.current;
   if (item?.target && item.shape.id === a.shape.id) return { ...item.target };
-  // (a powerup that has to miss the pieces that love you, or mustn't)
-  if (item?.loved && a.shape.powerup) {
-    const p = lovedPlacement(state, a.shape, item.loved);
-    if (p) return { rot: p.rot, x: p.x, slide: null };
-  }
   // (with the next piece in mind, if it's known: the moon goes where the earth can stand beside it)
   const best = bestPlacement(state, a.shape, item?.weights ?? WEIGHTS.clear, 4, z.queue[0]?.shape ?? null);
   return best ? { rot: best.rot, x: best.x, slide: best.slide ?? null } : null;
@@ -1541,7 +1308,7 @@ export function bestPlacement(state, shape, weights = WEIGHTS.clear, maxTurns = 
     }
     const over = mat.some((row, j) => y + j < 0 && row.some(Boolean)) ? 1000 : 0; // it would top out
     // (and the column kept clear stays clear, even for a row or two cleared)
-    const inWell = !pu && intoWell(mat, x, weights) ? weights.wellCost ?? 12 : 0;
+    const inWell = !pu && intoWell(mat, x, weights) ? 12 : 0;
     const base = score(occ, lines, weights, cols, rows);
     const extra = bonus - over - inWell + z01(state) * 0.01 - (slide ? 0.05 : 0);
     const c = { rot: r, x: slide ? slide.from : x, y, s: base + extra, slide: slide ? { at: slide.at, to: x } : null };
@@ -1591,23 +1358,19 @@ function lookAhead(occ, shape, weights, cols, rows, lines) {
       if (y == null || mat.some((row, j) => y + j < 0 && row.some(Boolean))) continue;
       const o = occ.slice();
       const n = placeAndClear(o, mat, x, y, cols, rows);
-      best = Math.max(best, score(o, lines + n, weights, cols, rows) - (intoWell(mat, x, weights) ? weights.wellCost ?? 12 : 0));
+      best = Math.max(best, score(o, lines + n, weights, cols, rows) - (intoWell(mat, x, weights) ? 12 : 0));
     }
   }
   return best;
 }
 
-// Would it go into the column being kept clear (weights.well, or wellW columns from there)?
+// Would it go into the column being kept clear (weights.well)?
 function intoWell(mat, x, weights) {
-  if (weights.well == null) return false;
-  for (let i = Math.max(0, weights.well - x), end = Math.min(mat[0].length, weights.well + (weights.wellW ?? 1) - x); i < end; i++) {
-    if (mat.some(row => row[i])) return true;
-  }
-  return false;
+  const i = weights.well - x;
+  return weights.well != null && i >= 0 && i < mat[0].length && mat.some(row => row[i]);
 }
 
-// A powerup's effect, tried on a copy of the board: { occ, lines, affected } (and the board
-// afterwards, rows not yet cleared, and the effect).
+// A powerup's effect, tried on a copy of the board: { occ, lines, affected }.
 function tryPowerup(state, shape, rot, x, y) {
   const { cols, rows } = CONFIG.board;
   const board = state.board.map(r => r.slice());
@@ -1625,7 +1388,7 @@ function tryPowerup(state, shape, rot, x, y) {
     rng: state.zen?.simRng ?? Math.random, keepRows, makeFill: () => ({ pid: -2 }),
   });
   const occ = occupancy(board);
-  return { occ, lines: clearFull(occ, cols, rows), affected: fx.destroyed.length + fx.moves.length + fx.filled.length, board, fx };
+  return { occ, lines: clearFull(occ, cols, rows), affected: fx.destroyed.length + fx.moves.length + fx.filled.length };
 }
 
 // The turns a piece can actually get to: it only turns one way, a quarter at a time, so a turn
@@ -1746,7 +1509,7 @@ function extrasFor(state, from, to) {
 // reaches in each column (bottom).
 function nestCandidates(state, maxW, maxH) {
   const out = [];
-  const pool = state.shapes.filter(s => !s.powerup && !s.remix && (s.frequency ?? 1) > 0 && blocks(s) >= (CONFIG.zen.extras?.minBlocks ?? 10) && !lovesYou(s));
+  const pool = state.shapes.filter(s => !s.powerup && !s.remix && (s.frequency ?? 1) > 0 && blocks(s) >= (CONFIG.zen.extras?.minBlocks ?? 10));
   for (const s of pool) {
     const lvl = s.difficulty ?? 1, big = lvl >= 4;
     const turns = reachableTurns(s), seen = new Set();
@@ -2403,7 +2166,7 @@ function withGuests(state, steps, half) {
   const ys = [...at.keys()].map(c => Math.floor(c / cols));
   const top = Math.min(...ys), bottom = Math.max(...ys);
   const cands = nestCandidates(state, Math.min(G.maxSize ?? 8, cols - 3), Math.min(G.maxSize ?? 8, bottom - top + 1))
-    .filter(c => !c.shape.tags?.includes("tiles") && !lovesYou(c.shape) && (c.shape.difficulty ?? 1) !== LEVEL6);
+    .filter(c => !c.shape.tags?.includes("tiles") && (c.shape.difficulty ?? 1) !== LEVEL6);
   if (!cands.length) return null;
   const grout = groupByColour(half)[0];
   let cur = steps, gone = new Set(), near = new Set();
@@ -2667,7 +2430,7 @@ function strayCandidates(state) {
   const S = CONFIG.zen.strays;
   if (!S || isCalm(state) || state.rng() >= (S.planChance ?? 0)) return [];
   const uses = state.zenUses ?? new Map(), out = [];
-  const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= (S.maxDifficulty ?? 5) && !lovesYou(s) && !s.tags?.includes("tiles"));
+  const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= (S.maxDifficulty ?? 5) && !s.tags?.includes("tiles"));
   for (let i = 0; i < (S.perPlan ?? 3) && pool.length; i++) {
     const one = sampleByWeight(pool, s => 1 / (1 + (uses.get(s.id) ?? 0)) ** (S.power ?? 1.5), state.rng);
     pool.splice(pool.indexOf(one), 1);
@@ -3007,7 +2770,7 @@ function score(occ, lines, w, cols, rows) {
       if (occ[y * cols + x]) { if (!h) h = rows - y; }
       else if (h) holes++;
     }
-    if (w.well != null && x >= w.well && x < w.well + (w.wellW ?? 1)) { inWell = Math.max(inWell, h); continue; }
+    if (x === w.well) { inWell = h; continue; }
     agg += h;
     if (h > maxH) maxH = h;
     if (prev >= 0) bump += Math.abs(h - prev);

@@ -448,14 +448,14 @@ test("a run on a board of another size starts on a board that size (turbo zen fi
   }
 });
 
-test("achievements: a piece that loves you, killed straight away, kept alive, alive at the end; and its last words", () => {
-  const cute = shapes.find(s => s.id === "piece_that_loves_you");
-  assert.ok(cute?.tags.includes("loves_you") && cute.onDeath, "the piece");
-  // (its achievements, as they are, but kept alive for five pieces rather than thirty)
-  const ids = { killing_it: "quick", heartbreaker: "dead", a_good_home: "alive5", till_death_do_us_part: "end" };
-  const defs = ACHIEVEMENTS.filter(a => ids[a.id]).map(a => ({ ...a, id: ids[a.id], trigger: a.id === "a_good_home" ? { ...a.trigger, drops: 5 } : a.trigger }));
-  assert.equal(defs.length, 4);
-  assert.ok(ACHIEVEMENTS.some(a => a.id === "growing_old_together" && a.trigger.type === "keptAlive" && a.trigger.drops === 100));
+test("achievements that watch a piece's life: destroyed straight away, kept alive, alive at the end; and its last words", () => {
+  const [cute] = loadShapes([{ id: "fragile", name: "a fragile thing", grid: ["XXX", ".X."], difficulty: 1, tags: ["cute"], onDeath: "goodbye" }]).shapes;
+  const defs = [
+    { id: "quick", name: "q", description: "", trigger: { type: "killedQuickly", match: { tags: ["cute"] }, drops: 2 } },
+    { id: "dead", name: "d", description: "", trigger: { type: "killed", match: { tags: ["cute"] } } },
+    { id: "alive5", name: "a", description: "", trigger: { type: "keptAlive", match: { tags: ["cute"] }, drops: 5 } },
+    { id: "end", name: "e", description: "", trigger: { type: "aliveAtEnd", match: { tags: ["cute"] } } },
+  ];
   const play = () => {
     const state = createGameState(shapes, powerups, { rng: makeRng(3) });
     const got = [];
@@ -470,7 +470,7 @@ test("achievements: a piece that loves you, killed straight away, kept alive, al
     for (let x = 0; x < COLS; x++) { if (x !== 1) state.board[ROWS - 1][x] = filler(); if (x > 2) state.board[ROWS - 2][x] = filler(); }
     state.active = { shape: cute, rotIdx: 0, x: 0, y: ROWS - 4 };
     hardDropAndLock(state);
-    assert.ok(state.fx.callouts.some(c => c.text === "it loved you"), "its last words");
+    assert.ok(state.fx.callouts.some(c => c.text === "goodbye"), "its last words");
     assert.deepEqual(got.sort(), ["dead", "quick"]);
   }
   {

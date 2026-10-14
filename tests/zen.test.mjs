@@ -417,80 +417,18 @@ test("turbo zen on a big board: often a few pieces fall at once, each in columns
   assert.equal(flocks, 0);
 });
 
-// (the pieces that love you on the board: how many blocks of them)
-const lovedBlocks = (state) => [...state.instances.values()].filter(i => i.shape?.tags?.includes("loves_you")).reduce((n, i) => n + i.cells.length, 0);
-// Turbo zen with a piece that loves you, from the start of it to the end (`ending`: how it ends).
-function lovedRun(seed, ending) {
-  const { state, log } = zen(seed, "turbo");
-  const story = { spawns: [], died: null, high: 0, ended: false };
-  on(state, (t, d) => {
-    const m = state.zen.movement;
-    if (m?.name !== "loved") return;
-    if (t === "spawn") story.spawns.push({ phase: m.phase, id: d.shape.id, blocks: lovedBlocks(state) });
-    if (t === "lock" && m.phase === "build") story.high = Math.max(story.high, height(state));
-    if (t === "pieceGone" && d.shape.tags?.includes("loves_you")) story.died = { phase: m.phase, words: state.fx.callouts.map(c => c.text) };
-  });
-  zenStart(state, "loved", { ending });
-  for (let t = 0; t < 8 * 60000 && !story.ended; t += 32) {
-    updateGame(state, 32);
-    if (story.spawns.length && state.zen.movement?.name !== "loved") story.ended = true;
-  }
-  return { state, log, story };
-}
-
-test("turbo zen: a piece that loves you — built up round it and brought down round it, and it's spared; then, a block at a time, it isn't", () => {
-  for (const seed of [5, 6]) {
-    const { log, story } = lovedRun(seed, "bitByBit");
-    assert.ok(story.ended, `seed ${seed}: never finished`);
-    assert.equal(log.rescues, 0);
-    const [first, ...rest] = story.spawns;
-    assert.ok(first.id.startsWith("piece_that_loves_you"), `seed ${seed}: began with ${first.id}`);
-    assert.ok(story.high >= rows - 8, `seed ${seed}: built up only ${story.high} rows`);
-    // (all the way through the build and the demolition round it, not a block of it lost)
-    const spared = rest.filter(s => s.phase !== "finale");
-    assert.ok(spared.every(s => s.blocks === 4), `seed ${seed}: ${spared.map(s => s.blocks)}`);
-    assert.ok(spared.filter(s => s.phase === "spare").length >= 2, `seed ${seed}: ${spared.map(s => s.phase)}`);
-    // ...and then one very small regret at a time, a block each
-    const hits = rest.filter(s => s.phase === "finale");
-    assert.ok(hits.every(s => s.id === "a_very_small_regret"), `seed ${seed}: ${hits.map(s => s.id)}`);
-    assert.deepEqual(hits.map(s => s.blocks), [4, 3, 2, 1], `seed ${seed}`);
-    assert.equal(story.died?.phase, "finale");
-    assert.ok(story.died.words.includes("it loved you"), `seed ${seed}: ${story.died.words}`);
-  }
-});
-
-test("turbo zen on a big board, a few pieces at once: a piece that loves you still keeps every block until the finale", () => {
-  const usual = { ...CONFIG.board };
+test("turbo zen can open with something in particular, the first time since the page was loaded", () => {
+  const was = CONFIG.zen.opening;
+  CONFIG.zen.opening = { turbo: { movement: "squares" } };
   try {
-    CONFIG.board.cols = 40; CONFIG.board.rows = 24;
-    for (const seed of [4, 5]) {
-      const { story } = lovedRun(seed, "bitByBit");
-      assert.ok(story.ended, `seed ${seed}: never finished`);
-      const before = story.spawns.slice(1).filter(s => s.phase !== "finale");
-      assert.ok(before.every(s => s.blocks === 4), `seed ${seed}: ${before.map(s => s.blocks)}`);
-      assert.equal(story.died?.phase, "finale", `seed ${seed}`);
-    }
-  } finally { Object.assign(CONFIG.board, usual); }
-});
-
-test("turbo zen: now and then a piece that loves you is spared after all, or goes all at once", () => {
-  const spared = lovedRun(7, "spared");
-  assert.ok(spared.story.ended && !spared.story.died, "spared");
-  assert.equal(lovedBlocks(spared.state), 4, "still all there");
-  const big = lovedRun(8, "bigOne");
-  assert.ok(big.story.ended && big.story.died?.phase === "finale", "all at once");
-  assert.ok(big.story.spawns.filter(s => s.phase === "finale").length <= 2, `${big.story.spawns.filter(s => s.phase === "finale").map(s => s.id)}`);
-});
-
-test("turbo zen opens with a piece that loves you, the first time since the page was loaded", () => {
-  const state = createGameState(shapes, powerups, { rng: makeRng(9), groups: GROUPS, threads: { threads: THREADS, sets: SET_THREADS } });
-  state.zenOpenings = new Set();
-  startRun(state, "turbo");
-  assert.equal(state.zen.movement?.name, "loved");
-  assert.ok(state.active.shape.id.startsWith("piece_that_loves_you"), state.active.shape.id);
-  // (and the next game doesn't)
-  startRun(state, "turbo");
-  assert.notEqual(state.zen.movement?.name, "loved");
+    const state = createGameState(shapes, powerups, { rng: makeRng(9), groups: GROUPS, threads: { threads: THREADS, sets: SET_THREADS } });
+    state.zenOpenings = new Set(); // (as the UI keeps it)
+    startRun(state, "turbo");
+    assert.equal(state.zen.movement?.name, "squares");
+    // (and the next game doesn't)
+    startRun(state, "turbo");
+    assert.notEqual(state.zen.after, "squares");
+  } finally { CONFIG.zen.opening = was; }
 });
 
 test("turbo zen on a board of another height: the tallest pieces as tall as it is, the ends as they were", () => {
