@@ -938,7 +938,7 @@ function recomputeSpeed(state) {
 // falls a bit faster than the last (CONFIG.endGame.speedPerPiece).
 function updateEndGame(state, change) {
   const cfg = CONFIG.endGame ?? {};
-  // (no callouts, no sounds: the end game is never announced)
+  // (no callouts: the end game is never announced)
   if (change === "enter") {
     state.endGameMs = state.dropMs;
     emit(state, "endGame", { on: true });
@@ -1731,7 +1731,7 @@ export function zenRescue(state) {
   addQuakeFromBlocks(state, gone.length);
   markBoardDirty(state);
   state.blocksDestroyed += gone.length;
-  addCallout(state, "phew", cols / 2, rows / 2, { big: true });
+  if (CONFIG.modes[state.mode]?.captions !== false) addCallout(state, "phew", cols / 2, rows / 2, { big: true });
   if (state.zen) { state.zen.queue = []; state.zen.movement = null; state.zen.expect = null; }
   for (const f of state.flock) f.landed = true;
   state.flock = [];
@@ -1742,7 +1742,8 @@ export function zenRescue(state) {
 // words, not a new movement.)
 export function zenCaption(state, text, name = text, { quiet = false, row = null } = {}) {
   const z = CONFIG.zen;
-  if (text) addCallout(state, text, CONFIG.board.cols / 2, row ?? z.captionRow ?? 3, { color: z.captionColour, durationMs: z.captionMs });
+  // (a mode can do without the words: turbo zen, CONFIG.modes.turbo.captions)
+  if (text && CONFIG.modes[state.mode]?.captions !== false) addCallout(state, text, CONFIG.board.cols / 2, row ?? z.captionRow ?? 3, { color: z.captionColour, durationMs: z.captionMs });
   if (!quiet) emit(state, "zenMovement", { name, caption: text });
 }
 

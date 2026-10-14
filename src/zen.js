@@ -15,7 +15,7 @@
 // the brink and then brings it all down: rows built around a slot and then the one piece that
 // fills it (the tallest pieces fill a slot the whole height of the board), perfect beds for
 // awkward giants one on top of another, a crack running through every row that a run of
-// phantoms seals, a mess that powerups demolish, a board full of nothing but spam... with
+// single blocks seals, a mess that powerups demolish, a board full of nothing but spam... with
 // quieter interludes between. Small and repetitive things come down faster; the big moments
 // take their time (CONFIG.zen.pace).
 //
@@ -39,7 +39,7 @@ const LEVEL6 = 6;
 // How the autopilot weighs up a placement (higher is better).
 //   clear: the usual: keep it low and tidy, clear rows
 //   build: build up neatly without clearing anything (for the demolition)
-//   holey: build up evenly, leaving gaps (for the gravitizers and phantoms to sort out)
+//   holey: build up evenly, leaving gaps (for the gravitizers to sort out)
 //   grow:  (for expanders) the more blocks the better, nothing cleared
 // headroom: rows it keeps clear at the top (CONFIG.zen.headroom if not given)
 const WEIGHTS = {
@@ -99,7 +99,8 @@ export function createZen(state) {
 // choice (a crack's `end`).
 // For the dev panel: every movement there is, by name, and the ways some of them can go.
 export function zenMovementChoices() {
-  const ways = { crack: { end: Object.keys(CRACK_ENDS) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] } };
+  const ghosts = !(CONFIG.assist.powerups.disabledTypes ?? []).includes("phantom");
+  const ways = { crack: { end: Object.keys(CRACK_ENDS).filter(k => ghosts || !GHOSTLY.has(k)) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] } };
   const out = [];
   for (const name of Object.keys(MOVEMENTS)) {
     if (["pacmen", "taps", "pacmenAndTaps", "settle", "sweep"].includes(name)) continue; // (they only come after others)
@@ -557,7 +558,7 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
   };
 }
 
-// Comings and goings: built up full of gaps, then the gravitizers and phantoms sort the gaps out,
+// Comings and goings: built up full of gaps, then the gravitizers sort the gaps out,
 // then up again, higher, and again, until at last it all comes down.
 function waves(state) {
   const { rows } = CONFIG.board;
@@ -606,7 +607,7 @@ function gaps(state) {
   return n;
 }
 
-// The gravitizer or phantom (of a handful) that would close the most gaps.
+// The gravitizer (or phantom, while there are any) of a handful that would close the most gaps.
 function consolidator(state) {
   const pool = powerupPool(state).filter(p => ["gravity", "phantom"].includes(p.powerup.type) && !p.powerup.bad);
   return bestPowerup(state, pool.length ? pool : powerupPool(state));
@@ -1717,7 +1718,16 @@ export function planBeds(state) {
 //   powered: pacmen, or leaky taps, or both, taking the rows away a row or two at a time
 //   columns: not the rows at all but the columns, eaten away left to right, right to left, from
 //   both sides or from the middle out (termite queens, Zeus's lightning, existential horror)
+// (the ones with phantoms in, GHOSTLY, only while there are phantoms: CONFIG.assist.powerups)
 const CRACK_ENDS = { up: 2, down: 1.4, shaker: 1.2, middle: 1.2, random: 1, powered: 0.4, columns: 1.6 };
+const GHOSTLY = new Set(["up", "shaker", "middle", "random"]);
+
+// The friendly ghost, if phantoms are about (one block of phantom, so it just fills a gap), or
+// any other phantom of one block, or null.
+function ghostOf(state) {
+  const ghosts = (state?.powerups ?? []).filter(p => p.powerup.type === "phantom" && blocks(p) === 1);
+  return ghosts.find(p => p.id === "friendly_ghost") ?? ghosts[0] ?? null;
+}
 
 // A gap in every row (or two), wandering up the board, the board built up around them nearly to
 // the top, and then sealed (`end`, one of CRACK_ENDS, or one at random). Returns { items, caption,
@@ -1727,12 +1737,11 @@ export function planCrack(state, end = null) {
   const rng = state.rng;
   const occ = occupancy(state.board);
   if (!solid(occ, cols, rows) || heightOf(occ, cols, rows) > 2) return null;
-  // (only phantom, one block of it, so it just fills the gap: the friendly ghost if it's here)
-  const ghosts = state.powerups.filter(p => p.powerup.type === "phantom" && blocks(p) === 1);
-  const ghost = ghosts.find(p => p.id === "friendly_ghost") ?? ghosts[0];
-  if (!ghost) return null;
+  const ghost = ghostOf(state);
   const singles = regularPool(state).filter(s => blocks(s) === 1 && (s.difficulty ?? 1) <= 1);
-  end ??= sampleByWeight(Object.entries(CRACK_ENDS).filter(([k]) => singles.length || (k !== "down" && k !== "shaker")), ([, w]) => w, rng)[0];
+  end ??= sampleByWeight(Object.entries(CRACK_ENDS).filter(([k]) => (ghost || !GHOSTLY.has(k)) && (singles.length || (k !== "down" && k !== "shaker"))), ([, w]) => w, rng)[0];
+  // (a way with phantoms in it, asked for by name with none about: the nearest without)
+  if (!ghost && GHOSTLY.has(end)) end = singles.length ? "down" : "powered";
   const H = int(state, up(18), rows - 1), top = rows - H;
   // One gap a row (or two), wandering up from the floor but never into the end columns: a gap
   // against the wall would leave the cells over it with nothing to stand on, all the way up.
@@ -1808,7 +1817,8 @@ function crackEnd(state, end, list, { ghost, singles, top }) {
   const blockAt = (g) => { const s = singles[Math.floor(rng() * singles.length)]; return { shape: s, rot: 0, mat: s.rotations[0], x: g.x, pace }; };
   const byRow = [...new Set(list.map(g => g.y))].sort((a, b) => b - a); // (bottom up)
   // (a block dropped in lands in the highest gap of its column: from the top, it's the top row's)
-  if (end === "down") return { steps: [...list].sort((a, b) => a.y - b.y).map(blockAt), caption: "filled in from the top, with whatever was to hand" };
+  const down = () => ({ steps: [...list].sort((a, b) => a.y - b.y).map(blockAt), caption: "filled in from the top, with whatever was to hand" });
+  if (end === "down") return down();
   if (end === "shaker") {
     // the bottom row, the top row, the next row up, the next row down...
     const steps = [];
@@ -1825,6 +1835,7 @@ function crackEnd(state, end, list, { ghost, singles, top }) {
     const sweep = columnSweep(state);
     if (sweep) return sweep;
   }
+  if (!ghost) return singles.length ? down() : { then: "pacmen" };
   return { steps: sealOrder(list, g => -g.y).map(ghostAt), caption: "sealed from the bottom up" };
 }
 

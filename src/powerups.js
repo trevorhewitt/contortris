@@ -6,6 +6,7 @@
 // Area format: see the doc comment at the top of shapes/powerup_shapes.js.
 
 import { valueNoise, makeRng } from "./util.js";
+import { CONFIG } from "../config.js";
 
 export const POWERUP_TYPES = ["destroyer", "gravity", "expander", "acid", "blast", "goo", "phantom", "combo"];
 
@@ -145,13 +146,16 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
   let areaRotations;
   let parts = null;
   if (type === "combo") {
-    // each part is a small powerup of its own (no goo / phantom / nested combos)
+    // each part is a small powerup of its own (no goo / phantom / nested combos); a part of a
+    // kind that's taken out of combos (CONFIG.assist.powerups.stripFromCombos) is left off, and
+    // the combo does the rest
+    const strip = CONFIG.assist?.powerups?.stripFromCombos ?? [];
     parts = (Array.isArray(raw.parts) ? raw.parts : [])
-      .filter(p => p && COMBO_PART_TYPES.includes(p.type))
+      .filter(p => p && COMBO_PART_TYPES.includes(p.type) && !strip.includes(p.type))
       .map(p => normalisePowerup({ ...p, consume: false, tier: raw.tier, area: p.type === "phantom" ? undefined : p.area }, rotations, trim, `${id}/${p.type}`))
       .filter(Boolean)
       .sort((a, b) => COMBO_PART_TYPES.indexOf(a.type) - COMBO_PART_TYPES.indexOf(b.type));
-    if (parts.length < 2) console.warn(`[${id}] a combo needs at least two parts.`);
+    if ((raw.parts?.length ?? 0) < 2) console.warn(`[${id}] a combo needs at least two parts.`);
     areaRotations = rotations.map((_, i) => unionAreas(parts.map(p => p.areaRotations[i])));
   } else if (type === "acid") {
     // everything within `reach` steps of the piece, plus any explicit area
@@ -190,7 +194,7 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
       : DEFAULT_EFFECT_TEXT[type],
     intro: typeof raw.intro === "string" ? raw.intro.trim() : "",
     consume: (typeof raw.consume === "boolean") ? raw.consume
-      : (type === "combo" && Array.isArray(raw.parts) && raw.parts.some(p => p?.type === "phantom")) ? false
+      : (type === "combo" && parts?.some(p => p.type === "phantom")) ? false
       : CONSUMES[type],
     collapse: (type === "destroyer" || type === "acid") && raw.collapse === true,
     reach: Math.max(1, Math.round(Number(raw.reach) || 1)),

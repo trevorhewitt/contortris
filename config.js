@@ -20,9 +20,10 @@ export const CONFIG = {
     // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); calm: zen for playing, slow
     // and easy (CONFIG.zen.calm, which also has its own numbers for the pieces); timeScale: how fast it all runs;
     // zenMovements: "turbo" for turbo zen's own mix of movements; flashNames: the falling piece's
-    // name just appears, no sliding in and out
+    // name just appears, no sliding in and out; captions: false, no words over the board for what
+    // zen's director is up to
     zen: { label: "Zen", tagline: "slow, easy, and impossible to lose", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
-    turbo: { label: "Turbo zen", tagline: "it plays itself, and doesn't stop", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2] },
+    turbo: { label: "Turbo zen", tagline: "it plays itself, and doesn't stop", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2], captions: false },
   },
   defaultMode: "normal",
 
@@ -482,8 +483,11 @@ export const CONFIG = {
       maxChance: 0.8,
 
       // Powerup types that are switched off: their pieces stay in shapes/main_shapes.js but are
-      // never served (combos with a part of these types are off too).
-      disabledTypes: ["blast", "goo"],
+      // never served (combos with a part of these types are off too, unless that part is taken
+      // out of combos: stripFromCombos, and then the combo does the rest). Phantoms are out for
+      // now: the phantoms themselves never come, and combos come without their phantom part.
+      disabledTypes: ["blast", "goo", "phantom"],
+      stripFromCombos: ["phantom"],
 
       // Powerups are introduced class by class (each class with an intro screen). Once a
       // class is in, every powerup of that class can turn up.
@@ -590,12 +594,6 @@ export const CONFIG = {
     toastMs: 3200,     // how long an unlock toast stays up
     maxToastsAtOnce: 1, // more unlocks than this wait their turn...
     maxToastsQueued: 3, // ...up to this many in all; any more unlock quietly (no toast)
-  },
-
-  sound: {
-    enabled: true,     // players can toggle it in the menus (remembered per browser)
-    volume: 0.45,      // master volume 0–1
-    moveClicks: true,  // tiny clicks when moving/rotating
   },
 
   fx: {

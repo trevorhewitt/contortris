@@ -11,7 +11,6 @@ import { loadShapes } from "./shapes.js";
 import { createGameState, on, updateGame, hardDropAndLock, setNextPiece, timeScaleOf } from "./game.js";
 import { createRenderer } from "./render.js";
 import { createAchievements } from "./achievements.js";
-import { createSound } from "./sound.js";
 import { bindUI } from "./ui.js";
 
 const { shapes, powerups } = loadShapes(RAW_SHAPES);
@@ -23,7 +22,6 @@ document.documentElement.style.setProperty("--rows", String(CONFIG.board.rows));
 window.__fitBoard?.();
 
 const renderer = createRenderer(document.getElementById("boardCanvas"), document.getElementById("nextCanvas"));
-const sound = createSound(CONFIG.sound);
 
 // Achievements listen first, so the game-over screen can show what was unlocked.
 let ui = null;
@@ -31,12 +29,12 @@ const achievements = createAchievements(ACHIEVEMENTS, { onUnlock: (def) => ui?.t
 // (not in zen mode: it plays itself)
 if (CONFIG.achievements.enabled) on(state, (type, data, st) => { if (!CONFIG.modes[st.mode]?.zen) achievements.handle(type, data, st); });
 
-ui = bindUI({ state, renderer, sound, achievements });
+ui = bindUI({ state, renderer, achievements });
 
 // Handy for testing in the browser console: open index.html?debug
 if (new URLSearchParams(location.search).has("debug")) {
   window.__extris = {
-    state, CONFIG, shapes, powerups, renderer, achievements, ui, sound,
+    state, CONFIG, shapes, powerups, renderer, achievements, ui,
     step: (dt = 16) => updateGame(state, dt),           // advance without waiting for frames
     drop: () => hardDropAndLock(state),                  // drop + lock the current piece now
     setNext: (id) => setNextPiece(state, state.idToShape.get(id) ?? [...shapes, ...powerups].find(s => s.id === id)),

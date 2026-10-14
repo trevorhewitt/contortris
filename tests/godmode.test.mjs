@@ -42,7 +42,9 @@ test("god mode: everything is open from the first piece, with no intro screens",
     const { state, served, intros } = play("god", seed, 60);
     assert.ok(level6Open(state), "level 6 open");
     const ps = state.pieceSel.powerup;
-    for (const cls of ["destroyer", "gravity", "expander", "phantom", "combo"]) assert.ok(ps.classes.includes(cls), cls);
+    // (every class that's switched on: CONFIG.assist.powerups.disabledTypes)
+    const off = CONFIG.assist.powerups.disabledTypes ?? [];
+    for (const cls of ["destroyer", "gravity", "expander", "phantom", "combo"]) assert.equal(ps.classes.includes(cls), !off.includes(cls), cls);
     assert.deepEqual(intros, [], "no intro screens");
     // the first level 6 set soon after the start (CONFIG.godMode.level6.firstAfter; a few
     // pieces later if giants are in the way: a set never comes straight after one)

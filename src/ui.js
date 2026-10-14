@@ -7,7 +7,6 @@ import { escapeHtml, store } from "./util.js";
 import { getDifficultyZone } from "./selection.js";
 import {
   on, startRun, resetGame, tryMove, tryRotate, beginLockIfNeeded, markInput, setNextPiece, markBoardDirty, isPowerupEnabled, hardDropAndLock,
-  timeScaleOf,
 } from "./game.js";
 import { makeShapePreviewCanvas, drawIcon } from "./render.js";
 import { createDemo, runDemos } from "./demo.js";
@@ -158,7 +157,7 @@ function loadLastMode() {
 // bindUI
 // ============================================================
 
-export function bindUI({ state, renderer, sound, achievements }) {
+export function bindUI({ state, renderer, achievements }) {
   const $ = (id) => document.getElementById(id);
 
   const scoreText = $("scoreText");
@@ -247,13 +246,6 @@ export function bindUI({ state, renderer, sound, achievements }) {
     $("btnZen").classList.toggle("secondary", lastMode !== "zen");
     $("btnTurbo").classList.toggle("secondary", lastMode !== "turbo");
     $("achCount").textContent = `${achievements.unlockedCount()}/${achievements.defs.length}`;
-    syncSoundButtons();
-  }
-
-  function syncSoundButtons() {
-    for (const b of document.querySelectorAll(".soundToggle")) {
-      b.textContent = `Sound: ${sound.isEnabled() ? "on" : "off"}`;
-    }
   }
 
   /* ---------- turbo zen: the whole window ---------- */
@@ -304,7 +296,6 @@ export function bindUI({ state, renderer, sound, achievements }) {
   // pause menu, since the page was loaded)
   let turboWhole = true;
   function startGame(mode = lastMode) {
-    sound.unlock();
     markInput(state, "touch");
     lastMode = CONFIG.modes[mode] ? mode : CONFIG.defaultMode;
     store.set("extris.mode", lastMode);
@@ -316,7 +307,6 @@ export function bindUI({ state, renderer, sound, achievements }) {
   }
 
   function resumeGame() {
-    sound.unlock();
     markInput(state, "touch");
     zenIgnoreInput(state); // (zen: coming back isn't taking the piece over)
     if (state.gameOver) return;
@@ -449,7 +439,6 @@ export function bindUI({ state, renderer, sound, achievements }) {
         noteSeen(d.shape);
         nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames, d.label); // (turbo zen: no time to slide)
         renderer.drawNextSilhouette(d.next);
-        if (d.shape.powerup) sound.play("powerupSpawn");
         if (d.isNew && !skipIntros()) showIntro(d.shape);
         break;
       case "next":
@@ -459,35 +448,15 @@ export function bindUI({ state, renderer, sound, achievements }) {
         if (d.on) nameLayer.setName("(dramatic pause)", "", "", !!CONFIG.modes[state.mode]?.flashNames);
         else if (d.shape) nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames); // (and then the one that waited)
         break;
-      case "lock":
-        sound.play("lock");
-        break;
-      case "rowsDestroyed":
-        if (d.source === "clear") sound.play("clear", d.count);
-        break;
-      case "levelUp":
-        sound.play("levelUp");
-        break;
       case "level6Unlocked":
         store.set(LEVEL6_KEY, "1");
         state.level6Remembered = true;
-        break;
-      case "lastChance":
-        sound.play("danger");
-        break;
-      case "powerupCharge":
-        sound.play("charge", CONFIG.fx.powerup.chargeMs);
-        break;
-      case "powerupFire":
-        if (d.show) sound.play("show", d.show, timeScaleOf(state));
-        else sound.play(d.type);
         break;
       case "gameOver":
         saveOpening();
         saveSeen();
         nameLayer.clear();
         renderer.drawNextSilhouette(null);
-        sound.play("gameOver");
         // let the last achievement toasts show before the panel covers them
         setTimeout(showGameOver, 350);
         break;
@@ -578,7 +547,6 @@ export function bindUI({ state, renderer, sound, achievements }) {
         pumpToasts();
       }, 400);
     }, CONFIG.achievements.toastMs);
-    sound.play("achievement");
   }
 
   /* ---------- achievements page ---------- */
@@ -1082,12 +1050,6 @@ export function bindUI({ state, renderer, sound, achievements }) {
   for (const b of document.querySelectorAll("[data-back]")) {
     b.addEventListener("click", () => showPanel(panelBack));
   }
-  for (const b of document.querySelectorAll(".soundToggle")) {
-    b.addEventListener("click", () => {
-      sound.setEnabled(!sound.isEnabled());
-      syncSoundButtons();
-    });
-  }
 
   pauseBtn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -1165,22 +1127,21 @@ export function bindUI({ state, renderer, sound, achievements }) {
     if (!state.running || state.gameOver || state.paused) return;
 
     markInput(state, "keyboard");
-    sound.unlock();
 
     switch (e.code) {
       case "ArrowLeft":
         e.preventDefault();
         downTaps.n = 0;
-        if (tryMove(state, -1, 0)) sound.play("move");
+        tryMove(state, -1, 0);
         break;
       case "ArrowRight":
         e.preventDefault();
         downTaps.n = 0;
-        if (tryMove(state, +1, 0)) sound.play("move");
+        tryMove(state, +1, 0);
         break;
       case "ArrowUp":
         e.preventDefault();
-        if (tryRotate(state)) sound.play("rotate");
+        tryRotate(state);
         break;
       case "ArrowDown":
         e.preventDefault();
@@ -1205,7 +1166,7 @@ export function bindUI({ state, renderer, sound, achievements }) {
     if (!canAct()) return;
     state.softDropping = false;
     stopRepeat();
-    if (hardDropAndLock(state, { lastChance: true })) sound.play("lock");
+    hardDropAndLock(state, { lastChance: true });
   }
 
   window.addEventListener("keyup", (e) => {
@@ -1259,9 +1220,9 @@ export function bindUI({ state, renderer, sound, achievements }) {
     if (!canAct()) return;
     markInput(state, "touch");
 
-    if (zone === "left") { if (tryMove(state, -1, 0)) sound.play("move"); }
-    else if (zone === "right") { if (tryMove(state, +1, 0)) sound.play("move"); }
-    else if (zone === "top") { if (tryRotate(state)) sound.play("rotate"); }
+    if (zone === "left") { tryMove(state, -1, 0); }
+    else if (zone === "right") { tryMove(state, +1, 0); }
+    else if (zone === "top") { tryRotate(state); }
     else if (zone === "bottom") {
       const moved = tryMove(state, 0, 1);
       if (!moved) beginLockIfNeeded(state);
@@ -1284,7 +1245,6 @@ export function bindUI({ state, renderer, sound, achievements }) {
 
   document.body.addEventListener("pointerdown", (e) => {
     if (!e.isPrimary) return;
-    sound.unlock();
     // Menus, buttons and scrolling panels handle their own input.
     if (overlayShowing() || e.target.closest?.("button, .overlay, .toast")) return;
     e.preventDefault();

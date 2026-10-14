@@ -4194,7 +4194,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 3,
-        "intro": "Sinks into the deepest gap it fits, then swallows every block in a huge circle around it, wider than the board.",
+        "intro": "Swallows every block in a huge circle around where it lands, wider than the board.",
         "parts": [
           {
             "type": "phantom"
@@ -12694,7 +12694,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 3,
-        "intro": "Rolls down through your blocks into the deepest gap it fits, then wipes out the whole row it lands in, wall to wall (itself included), and the rows above drop down like a line clear. Last stop.",
+        "intro": "Wipes out the whole row it lands in, wall to wall (itself included), and the rows above drop down like a line clear. Last stop.",
         "parts": [
           {
             "type": "phantom"
@@ -12731,7 +12731,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 3,
-        "intro": "Sneaks down through your blocks into the deepest gap it fits, then saws out the two rows above it, wall to wall, so everything higher drops down onto it. It stays there, looking innocent.",
+        "intro": "Saws out the two rows under it, wall to wall, and everything above drops down. Nobody saw a thing.",
         "parts": [
           {
             "type": "phantom"
@@ -12742,12 +12742,12 @@ export const SHAPES = [
             "area": {
               "origin": [
                 0,
-                2
+                0
               ],
               "grid": [
+                "..",
                 "-.",
-                "-.",
-                ".."
+                "-."
               ]
             }
           }
@@ -12769,7 +12769,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 2,
-        "intro": "Floats down through your blocks into the deepest gap it fits, then everything in its two columns and one either side drops down into the gaps. It stays to rearrange the furniture.",
+        "intro": "Lands, and everything in its two columns and one either side drops down into the gaps. Then it goes off to rearrange someone else's furniture.",
         "parts": [
           {
             "type": "phantom"
@@ -12807,7 +12807,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 2,
-        "intro": "Drifts down through your blocks into the deepest gap it fits, then fills every empty cell one step around it (corners too) with glowing mist. It stays to keep the light on.",
+        "intro": "Fills every empty cell one step around it (corners too) with glowing mist.",
         "parts": [
           {
             "type": "phantom"
@@ -12911,7 +12911,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 2,
-        "intro": "Flutters down through your blocks into the deepest gap it fits, eats every block touching it and a tunnel two wide and six high straight up, then flies off out of it. It saw a light.",
+        "intro": "Eats every block touching it and a tunnel two wide and seven deep straight down, then flies off. It saw a light.",
         "parts": [
           {
             "type": "phantom"
@@ -12921,17 +12921,17 @@ export const SHAPES = [
             "area": {
               "origin": [
                 1,
-                7
+                1
               ],
               "grid": [
                 ".##.",
-                ".##.",
-                ".##.",
-                ".##.",
-                ".##.",
-                ".##.",
-                ".##.",
                 "#..#",
+                ".##.",
+                ".##.",
+                ".##.",
+                ".##.",
+                ".##.",
+                ".##.",
                 ".##."
               ]
             }
@@ -13187,7 +13187,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 3,
-        "intro": "Slips down through your blocks into the deepest gap it fits. Then it destroys the row it lands in, wall to wall (itself included), which closes up like a line clear, lets everything in its five columns settle, and fills every empty cell of the 5x4 patch under where it was. There is a tool for that.",
+        "intro": "Destroys the row it lands in, wall to wall (itself included), which closes up like a line clear, lets everything in its five columns settle, and fills every empty cell of the 5x4 patch under where it was. There is a tool for that.",
         "parts": [
           {
             "type": "phantom"
@@ -13318,7 +13318,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 3,
-        "intro": "Phases down through your blocks into the deepest gap it fits, dissolves every block touching it, lets everything in the six columns around it settle, then builds bricks into every empty cell of the 4x4 patch under where it landed. He finished this job next Tuesday.",
+        "intro": "Dissolves every block touching it, lets everything in the six columns around it settle, then builds bricks into every empty cell of the 4x4 patch under where it landed. He finished this job next Tuesday.",
         "parts": [
           {
             "type": "phantom"
@@ -13452,7 +13452,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 3,
-        "intro": "Sinks down through your blocks into the deepest gap it fits, then zaps away both rows it lands in, wall to wall (hat included), which close up like a line clear. Everything in its five columns settles, and every empty cell of the 5x4 patch below gets filled with magic. Master of none.",
+        "intro": "Zaps away both rows it lands in, wall to wall (hat included), which close up like a line clear. Everything in its five columns settles, and every empty cell of the 5x4 patch below gets filled with magic. Master of none.",
         "parts": [
           {
             "type": "phantom"
