@@ -1375,17 +1375,19 @@ function formFlock(state, land) {
 }
 
 // Where a flock's piece goes: the best place in the columns still free (`free(x0, x1)`), dropped
-// straight down onto `occ`, at least `headroom` rows below the top.
+// straight down onto `occ`, at least `headroom` rows below the top, and never in the column a
+// fill keeps clear (or a piece that loves you, its shaft): a flock's piece can always stay
+// behind and come on its own.
 function flockSpot(occ, shape, weights, free, cols, rows, headroom, rng) {
   let best = null;
   for (let r = 0; r < reachableTurns(shape); r++) {
     const mat = shape.rotations[r], w = mat[0].length;
     for (let x = 0; x + w <= cols; x++) {
-      if (!free(x, x + w)) continue;
+      if (!free(x, x + w) || intoWell(mat, x, weights)) continue;
       const y = dropY(occ, mat, x, cols, rows);
       if (y == null || y < headroom) continue;
       const o = occ.slice(), lines = placeAndClear(o, mat, x, y, cols, rows);
-      const s = score(o, lines, weights, cols, rows) - (intoWell(mat, x, weights) ? weights.wellCost ?? 12 : 0) + rng() * 0.01;
+      const s = score(o, lines, weights, cols, rows) + rng() * 0.01;
       if (!best || s > best.s) best = { rot: r, x, s };
     }
   }
