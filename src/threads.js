@@ -38,11 +38,13 @@ export function pickThread(state) {
   const T = CONFIG.assist.threads, th = state.threads, sel = state.pieceSel;
   if (!T?.enabled || !th || !sel) return null;
   const rng = state.rng, recent = sel.recentShapeIds;
-  if (!recent.length || rng() >= T.follow) { sel.thread = null; return null; }
+  // (and never more than maxRun in a row: then a moment of plain randomness, so no thread, the
+  // tiles say, takes over)
+  if (!recent.length || rng() >= T.follow || (sel.threadRun ?? 0) >= (T.maxRun ?? Infinity)) { sel.thread = null; sel.threadRun = 0; return null; }
   // mostly from the last piece, sometimes from the one before
   const from = recent.length > 1 && rng() < T.lookBack ? recent[recent.length - 2] : recent[recent.length - 1];
   const names = th.of.get(from);
-  if (!names?.length) { sel.thread = null; return null; }
+  if (!names?.length) { sel.thread = null; sel.threadRun = 0; return null; }
   let name;
   if (sel.thread && names.includes(sel.thread) && rng() < T.stay) name = sel.thread; // stay on it a while
   else {
@@ -53,6 +55,7 @@ export function pickThread(state) {
     name = names[w.findIndex(c => r < c)] ?? names[0];
   }
   sel.thread = name;
+  sel.threadRun = (sel.threadRun ?? 0) + 1;
   return { name, members: th.members.get(name), formal: name.includes(":") };
 }
 

@@ -44,10 +44,12 @@ export function normaliseGroups(rawGroups, shapes) {
     for (const st of steps) for (const sh of [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.repeat ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]) {
       if (sh.echo && live(sh.echo)) echoes.set(sh.id, live(sh.echo));
     }
-    // (a set with powerups in it: the classes it needs met before it can come, src/level6.js
-    // groupPlayable)
-    const pieces = steps.flatMap(st => [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.repeat ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]);
-    const powerupClasses = [...new Set(pieces.filter(s => s.powerup).map(s => s.powerup.cls))];
+    // (a set with powerups in it that it can't do without, a step of nothing but powerups: the
+    // classes it needs met before it can come, groupPlayable. One that only might come, in a
+    // chain or among other pieces or now and then, is left out of the run where it can't:
+    // playableRun)
+    const needed = steps.filter(st => st.shapes?.length && st.count?.[0] >= 1 && st.chance == null && st.shapes.every(s => s.powerup));
+    const powerupClasses = [...new Set(needed.flatMap(st => st.shapes.map(s => s.powerup.cls)))];
     // (unique: no piece twice in one run, whichever steps it's in; echoes aside)
     out.push({ id: String(g.id), name: String(g.name ?? g.id), frequency: Math.max(0, Number(g.frequency ?? 1) || 0), steps, versions,
       room: Math.max(0, Number(g.room) || 0), echoes, unique: g.unique === true, powerupClasses });
@@ -73,9 +75,11 @@ export function normaliseGroups(rawGroups, shapes) {
         const c = Array.isArray(step.count) ? step.count : [step.count ?? 1, step.count ?? 1];
         const lo = Math.max(0, c[0] | 0);
         const hi = Math.max(lo, c[1] | 0);
-        // (unique: each piece at most once, so never more of them than there are pieces)
+        // (unique: each piece at most once, so never more of them than there are pieces; chance:
+        // the step only happens now and then)
         const unique = step.unique === true;
-        steps.push({ shapes: picks, weights, count: unique ? [Math.min(lo, picks.length), Math.min(hi, picks.length)] : [lo, hi], unique });
+        const chance = step.chance != null ? Math.max(0, Math.min(1, Number(step.chance) || 0)) : null;
+        steps.push({ shapes: picks, weights, count: unique ? [Math.min(lo, picks.length), Math.min(hi, picks.length)] : [lo, hi], unique, ...(chance != null ? { chance } : {}) });
       } else if (step && Array.isArray(step.repeat)) {
         // now and then (chance), one of these again and again (`times`), now and then as its echo
         const picks = step.repeat.map(live).filter(Boolean);
@@ -142,6 +146,7 @@ export function expandGroup(group, rng, variants = null, avoid = null) {
       }
       continue;
     }
+    if (st.chance != null && rng() >= st.chance) continue; // (a step that only happens now and then)
     const n = st.count[0] + Math.floor(rng() * (st.count[1] - st.count[0] + 1));
     let pool = st.shapes.map((s, k) => ({ s, w: st.weights[k] }));
     if (group.unique) pool = pool.filter(it => !out.includes(it.s));
@@ -164,6 +169,18 @@ export function expandGroup(group, rng, variants = null, avoid = null) {
     out.splice(lo + Math.floor(rng() * (hi - lo + 1)), 0, group.echoes.get(out[i].id));
   }
   out.version = version;
+  return out;
+}
+
+// A run, as it can be played here and now: a powerup the set might bring (in a chain, or among
+// other pieces) that can't come in this mode, or not yet (its class not met), is left out.
+export function playableRun(state, pieces) {
+  if (!pieces.some(s => s.powerup)) return pieces;
+  const mode = CONFIG.modes[state.mode] ?? {}, ps = state.pieceSel?.powerup;
+  const off = CONFIG.assist.powerups?.disabledTypes ?? [];
+  const ok = (p) => !p.powerup || (mode.powerups && !off.includes(p.powerup.type) && (mode.everything || !!ps?.shownClasses.has(p.powerup.cls)));
+  const out = pieces.filter(ok);
+  out.version = pieces.version;
   return out;
 }
 
@@ -300,7 +317,7 @@ export function maybeStartGroup(state) {
   while (pool.length) {
     const shown = (g) => (featured.sets?.includes(g.id) ? featured.weight ?? 1 : 1);
     const group = sampleByWeight(pool, g => g.frequency * setNovelty(state, g) * setThreadWeight(state, sel.currentThread, g) * familyWeight(state, g, cfg) * shown(g), state.rng);
-    const pieces = expandGroup(group, state.rng, l6.variants, lastVersion(state, group));
+    const pieces = playableRun(state, expandGroup(group, state.rng, l6.variants, lastVersion(state, group)));
     // (not if its first piece mustn't come straight after the last one: a small piece of the sky)
     if (pieces[0]?.notAfter?.includes(sel.lastShapeId)) { pool = pool.filter(g => g !== group); continue; }
     if ((group.room || roomNeeded(pieces)) <= room) return startGroup(state, group, pieces); // (a set's own `room` has the last word)
@@ -440,7 +457,7 @@ export function noteVersion(state, group, version) {
 export function startGroup(state, group, pieces = null) {
   if (!group) return null;
   const l6 = state.pieceSel.level6;
-  l6.queue = pieces ?? expandGroup(group, state.rng, l6.variants, lastVersion(state, group));
+  l6.queue = pieces ?? playableRun(state, expandGroup(group, state.rng, l6.variants, lastVersion(state, group)));
   noteVersion(state, group, l6.queue.version);
   l6.group = group.id;
   l6.lastGroup = group.id; // (a one-piece set is over as soon as it starts)

@@ -29,7 +29,7 @@ import { tryMove, tryRotate, zenCaption, timeScaleOf, settleFlock } from "./game
 import { selectPiece, destroyerCells, pickFitting } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
-import { expandGroup, roomNeeded, groupUnderWay, lastVersion, noteVersion, groupPlayable } from "./level6.js";
+import { expandGroup, roomNeeded, groupUnderWay, lastVersion, noteVersion, groupPlayable, playableRun } from "./level6.js";
 import { makeRng, sampleByWeight } from "./util.js";
 import { loadShapes } from "./shapes.js";
 import { colourFamily } from "./threads.js";
@@ -727,7 +727,7 @@ const MOVEMENTS = {
       const sets = (state.groups ?? []).filter(g => groupPlayable(state, g));
       for (let i = 0; i < 4 && sets.length; i++) {
         const g = sampleByWeight(sets, g => g.frequency, state.rng);
-        const pieces = expandGroup(g, state.rng, state.pieceSel?.level6?.variants, lastVersion(state, g));
+        const pieces = playableRun(state, expandGroup(g, state.rng, state.pieceSel?.level6?.variants, lastVersion(state, g)));
         if ((g.room || roomNeeded(pieces)) <= room) {
           noteVersion(state, g, pieces.version);
           for (const s of pieces) state.zen.queue.push({ shape: s, weights: WEIGHTS.clear });
@@ -1615,7 +1615,13 @@ export function planPatch(state, { weights = null } = {}) {
     for (let i = 0; i < w; i++) for (let y = level; y < tops[i]; y++) { need[y * cols + x0 + i] = 1; n++; }
     if (n < 8) continue;
     let steps = null, caption = null;
-    if (rng() < 0.5) {
+    // now and then Lego, and only Lego, where it'll fit (the pieces tagged "lego_tiles")
+    const lego = rng() < 0.25 ? candidates((state.allShapes ?? state.shapes).filter(sh => sh.tags?.includes("lego_tiles")), 4, 4, 16) : [];
+    if (lego.length) {
+      steps = tile(occ.slice(), need, lego, rng, cols, rows, 99);
+      if (steps) caption = "a patch of Lego";
+    }
+    if (!steps && rng() < 0.5) {
       // one kind of tile, fitted in where it goes, little ones round it
       const kinds = [["XX", "XX"], ["X.", "XX"], ["XXX", ".X."], [".XX", "XX."], [".X..", "XXX.", ".XXX", "..X."]];
       const kind = kinds[Math.floor(rng() * kinds.length)];
@@ -2151,6 +2157,56 @@ export function planTiles(state, kind = null, { any = false } = {}) {
       return fillGaps(out, "lizards", half, bottom, strips);
     },
   };
+  // a wall of Lego (the pieces tagged "lego_tiles", and never the other Lego or Duplo): courses
+  // of bricks two, three or four high, laid like brickwork, each course's joints clear of the
+  // ones under it where it can be, all the way up but for a row or so
+  kinds.lego = () => {
+    const bricks = (pattern) => tileSet(state, pattern, false, "lego_tiles");
+    const W = cols - 1;
+    // (each course height: the units it's laid in, a unit a brick or two stacked one on another)
+    const units = {
+      2: [[["XX", "XX"]], [["XXXX", "XXXX"]], [["XXX", "XXX"]]],
+      3: [[["XXX", "XXX", "XXX"]], [["XX", "XX", "XX"]]],
+      4: [[["XXXX", "XXXX", "XXXX", "XXXX"]], [["XX", "XX", "XX", "XX"]], [["XX", "XX"], ["XX", "XX"]], [["XXX", "XXX"], ["XXX", "XXX"]], [["XXXX", "XXXX"], ["XXXX", "XXXX"]]],
+    };
+    const have = new Map();
+    const opts = (mat) => { const k = mat.join("/"); if (!have.has(k)) have.set(k, bricks(mat)); return have.get(k); };
+    for (const h of [2, 3, 4]) units[h] = units[h].filter(u => u.every(m => opts(m).length));
+    const out = [];
+    let y = bottom, joints = new Set(), courses = 0;
+    while (y - 1 >= 3) {
+      const room = y - 3 + 1;
+      const hs = [2, 3, 4].filter(h => h <= room && units[h].length && (W % 2 === 0 || units[h].some(u => u[0][0].length % 2)));
+      const h = hs.length ? sampleByWeight(hs.map(v => ({ v, w: { 2: 3, 3: 4, 4: 2 }[v] })), o => o.w, rng).v : null;
+      if (!h) break;
+      // (the widths: a few tries, the one whose joints line up least with the course under it)
+      let best = null;
+      for (let t = 0; t < 24; t++) {
+        const row = [];
+        let x = 0;
+        while (x < W) {
+          const fit = units[h].filter(u => { const w = u[0][0].length; return x + w === W || x + w <= W - 2; });
+          if (!fit.length) break;
+          const u = fit[Math.floor(rng() * fit.length)];
+          row.push({ u, x });
+          x += u[0][0].length;
+        }
+        if (x !== W) continue;
+        const bad = row.slice(1).filter(r => joints.has(r.x)).length;
+        if (!best || bad < best.bad) best = { row, bad };
+        if (!bad) break;
+      }
+      if (!best) break;
+      for (const { u, x } of best.row) {
+        let top = y - h + 1;
+        for (const mat of u) { out.push({ g: opts(mat), mat, x, y: top }); top += mat.length; }
+      }
+      joints = new Set(best.row.slice(1).map(r => r.x));
+      y -= h;
+      courses++;
+    }
+    return courses >= 3 ? { caption: "a wall of Lego", out, lego: true } : null;
+  };
   const names = Object.keys(kinds);
   // (the column left empty is the last one; one of the tallest pieces, a column wide, fills it)
   const key = zenKeys(state).find(k => k.rotations[0][0].length === 1);
@@ -2165,8 +2221,8 @@ export function planTiles(state, kind = null, { any = false } = {}) {
       if (!o) { steps.length = 0; break; }
       steps.push({ shape: o.shape, rot: o.rot, mat: o.shape.rotations[o.rot], x: p.x, y: p.y, pace: 0.6 });
     }
-    // (now and then a guest or two built into it)
-    const guests = steps.length ? withGuests(state, steps, half) : null;
+    // (now and then a guest or two built into it; never in the Lego)
+    const guests = steps.length && !res.lego ? withGuests(state, steps, half) : null;
     const order = steps.length && dropOrder(guests?.steps ?? steps, cols);
     if (!order) continue;
     if (key) order.push({ shape: key, rot: 0, mat: key.rotations[0], x: cols - 1, key: true });
@@ -2295,7 +2351,7 @@ function glazeOf(s) {
   return s.id.match(/^tile_.*_(blue|green|terracotta|gold)$/)?.[1] ?? colourOf(s);
 }
 
-function tileSet(state, pattern, any) {
+function tileSet(state, pattern, any, tag = "tiles") {
   const want = new Set();
   // (the pattern turned every way, as the keys to look for)
   let m = pattern.map(r => [...r].map(c => c === "X"));
@@ -2303,7 +2359,7 @@ function tileSet(state, pattern, any) {
   const out = [];
   for (const s of (state.allShapes ?? state.shapes)) {
     if (s.powerup || s.remix || (s.difficulty ?? 1) === LEVEL6) continue;
-    if (!(s.tags?.includes("tiles") || (any && (s.frequency ?? 1) > 0))) continue;
+    if (!(s.tags?.includes(tag) || (any && (s.frequency ?? 1) > 0))) continue;
     const turns = reachableTurns(s), seen = new Set();
     for (let r = 0; r < turns; r++) {
       const key = s.rotations[r].map(row => row.map(c => (c ? "X" : ".")).join("")).join("/");

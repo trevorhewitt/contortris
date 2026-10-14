@@ -592,12 +592,14 @@ export function pickFitting(state, list, weightFn) {
   const bad = new Map();
   for (const s of drawn) if (!bad.has(s)) bad.set(s, fitBadness(state.board, s));
   // (no gaps left: as likely as ever; each gap it can't help leaving: much less likely; a row
-  // finished: a little more likely. And one of the last few again much less likely: something
-  // that fits anywhere, a square, mustn't come round and round)
-  const recent = new Set((state.pieceSel?.recentShapeIds?.slice(-3) ?? []).map(id => state.idToShape?.get(id)).filter(Boolean).map(outlineKey));
+  // finished: a little more likely. And the shape of one of the last few again much less likely,
+  // and less likely still for each of them it was: something that fits anywhere, a square,
+  // mustn't come round and round)
+  const recent = (state.pieceSel?.recentShapeIds?.slice(-4) ?? []).map(id => state.idToShape?.get(id)).filter(Boolean).map(outlineKey);
   return sampleByWeight(drawn, s => {
     const b = bad.get(s), fit = b <= 0 ? 1 + 0.4 * Math.min(2, -b) : Math.pow(1 + b, -p);
-    return fit * (recent.has(outlineKey(s)) ? 0.15 : 1);
+    const k = outlineKey(s), times = recent.filter(r => r === k).length;
+    return fit * Math.pow(0.15, times);
   }, state.rng);
 }
 

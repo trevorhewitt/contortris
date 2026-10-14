@@ -269,6 +269,7 @@ export const CONFIG = {
     newest: {
       sets: ["great_and_terrible", "space", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
+        "spam_tin_opened", "beans_tin_on_its_side", "spaghetti_os_tin_upended", "lego_cube_2x2_red", "lego_cube_3x3", "lego_cube_4x4", "lego_slab_2x4", "lego_block_3x2", "lego_cube_2x2_blue",
         "paddling_swan", "candle_both_ends", "wandering_washing_machine", "unwanted_present", "unbothered_capybara", "exasperated_life_ring", "rubber_chicken", "storm_in_a_teacup",
         "sandbag_wall", "avalanche", "tipped_honey_jar", "slumped_beanbag", "unravelling_yarn", "patchwork_quilt", "spilled_paint", "mountain_of_post",
         "tipper_truck", "bath_left_running", "split_rice_sack", "memory_foam_mattress", "week_of_laundry", "thanksgiving_mash",
@@ -385,6 +386,7 @@ export const CONFIG = {
       setWeight: 3,       // a level 6 set on the thread
       bigThread: 40,      // threads bigger than this pull less hard on each of their pieces
       fatigue: 0.8,       // ...and a thread pulls less on pieces it's brought already this game
+      maxRun: 7,          // ...and after this many picks in a row that followed one, a plain random one
       powerups: true,     // powerups follow threads too
       powerupWeight: 40,  // ...this many times likelier (their weight is mostly how much they'd help)
     },

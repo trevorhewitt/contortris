@@ -44,7 +44,7 @@ test("groups in the data are complete (every piece exists)", () => {
       const ids = typeof step === "string" ? [step] : step.variant ?? step.repeat ?? (step.chain
         ? [...Object.keys(step.chain.start ?? {}), ...Object.values(step.chain.after ?? {}).flatMap(o => Object.keys(o))].filter(id => id !== "stop")
         : step.pick);
-      for (const id of ids) assert.ok(shapes.some(s => s.id === id) || powerups.some(p => p.id === id && p.powerup.setOnly), `${g.id}: missing piece ${id}`);
+      for (const id of ids) assert.ok(shapes.some(s => s.id === id) || powerups.some(p => p.id === id), `${g.id}: missing piece ${id}`);
     }
   }
   assert.equal(all.length, GROUPS.filter(g => (g.frequency ?? 1) > 0).length, "every group is live (but the banished ones)");
