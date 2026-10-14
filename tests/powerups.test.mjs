@@ -14,6 +14,7 @@ import {
   analyseBoard,
 } from "../src/powerups.js";
 import { SHAPES } from "../shapes/main_shapes.js";
+import { loadShapes } from "../src/shapes.js";
 const POWERUPS = SHAPES.filter(s => s.powerup);
 
 // Board helpers: rows of "#" (block) and "." (empty).
@@ -237,4 +238,24 @@ test("v: a cell and every cell under it, down to the floor (through anything in 
   // a powerup's area stays put when the piece turns, down included
   const pu = normalisePowerup({ type: "expander", area: { origin: [0, 0], grid: [".", "v"] } }, [[[1]]], { top: 0, left: 0 }, "t");
   assert.equal(pu.areaRotations[0].downs.length, 1);
+});
+
+test("a picture fill is drawn over the whole of the area: its edges as drawn, the middle repeated to fit", async () => {
+  const { computeEffect, resolvePowerupArea } = await import("../src/powerups.js");
+  const C = ["#ff0000", "#00ff00", "#0000ff", "#ffff00"];
+  // three blocks wide, four tall (k = 1): red on top, green and blue in the middle, yellow at the bottom
+  const picture = [0, 1, 2, 3].map(i => [C[i], C[i], C[i]]);
+  const { powerups: pus } = loadShapes([{ id: "picture_test", name: "a test", grid: ["X"], color: "#888888", rotation: { mode: "any" },
+    powerup: { type: "expander", tier: 2, area: { origin: [1, 0], grid: ["...", "vvv"] }, fill: { picture, k: 1, slice: { top: 1, bottom: 1 } } } }]);
+  const pu = pus[0].powerup;
+  assert.ok(pu.fillPicture && pu.fillPicture.W === 3 && pu.fillPicture.H === 4);
+  const cols = 7, rows = 12, at = { rot: 0, x: 3, y: 2 };
+  const board = Array.from({ length: rows }, () => Array(cols).fill(null));
+  board[2][3] = { paint: "#888888", pid: 1 };
+  const area = resolvePowerupArea(pu, 0, at.x, at.y, cols, rows);
+  computeEffect(board, pu, { area, placed: [{ x: 3, y: 2 }], pid: 1, centre: { x: 3, y: 2 }, cols, rows, makeFill: () => ({ paint: pu.fillPaint, pid: 9 }), at });
+  const col = (y) => board[y].slice(2, 5).map(c => c?.paint);
+  assert.deepEqual(col(3), [C[0], C[0], C[0]], "the top as drawn");
+  assert.deepEqual(col(rows - 1), [C[3], C[3], C[3]], "the bottom on the floor");
+  for (let y = 4; y < rows - 1; y++) assert.deepEqual(col(y), Array(3).fill(C[1 + ((y - 4) % 2)]), `the middle repeated (row ${y})`);
 });

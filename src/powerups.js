@@ -434,6 +434,36 @@ export function applyExpand(board, area, cols, makeCell) {
   return filled;
 }
 
+// A picture fill (fill: { picture, k, slice }): one picture laid over the whole of the area, not
+// one block over and over. The picture goes over the box the area spans from where the piece is
+// (past the walls too, so it stays where the piece is; "v" columns and whole columns down to the
+// floor), its edges (`slice`: blocks at the top, bottom, left and right) kept as they are, and the
+// rest repeated (or cut down the middle) to the size of the box, like a nine-patch.
+// `at`: { rot, x, y }, the piece's turn and its top-left block.
+export function pictureBox(areaRot, at, cols, rows) {
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  const take = (x, y) => { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; };
+  for (const { dx, dy } of areaRot.cells) take(at.x + dx, at.y + dy);
+  for (const { dx, dy } of areaRot.downs ?? []) { take(at.x + dx, at.y + dy); take(at.x + dx, rows - 1); }
+  for (const dy of areaRot.rows) { take(0, at.y + dy); take(cols - 1, at.y + dy); }
+  for (const dx of areaRot.cols) { take(at.x + dx, 0); take(at.x + dx, rows - 1); }
+  return x0 <= x1 ? { x0, x1, y0, y1 } : null;
+}
+// (which of `size` picture blocks goes `u` blocks into a box `n` long, with `a` and `b` kept at
+// the two ends and the middle repeated, or cut down the middle when there's less room)
+function sliceAt(u, n, size, a, b) {
+  if (u < a) return Math.min(u, size - 1);
+  if (u >= n - b) return Math.max(0, size - (n - u));
+  const mid = Math.max(1, size - a - b);
+  if (n <= size) return Math.min(size - 1, a + Math.floor((mid - (n - a - b)) / 2) + (u - a));
+  return a + ((u - a) % mid);
+}
+export function picturePaint(pic, box, x, y) {
+  const u = sliceAt(x - box.x0, box.x1 - box.x0 + 1, pic.W, pic.left, pic.right);
+  const v = sliceAt(y - box.y0, box.y1 - box.y0 + 1, pic.H, pic.top, pic.bottom);
+  return pic.blocks[Math.max(0, Math.min(pic.H - 1, v))][Math.max(0, Math.min(pic.W - 1, u))];
+}
+
 // Remove whole rows and drop everything above them (like a line clear).
 // Returns { removed: [{y, cells}], dropDistances } where dropDistances[newY]
 // is how many rows the row now at newY fell (for the fall animation).
@@ -676,7 +706,8 @@ export function phantomLandingY(board, x, mat) {
 
 // Apply a powerup's effect to `board` (mutates it). Shared by the game and the demos.
 //   ctx: { area, placed: [{x,y}] (the powerup's own cells), pid, centre, cols, rows, rng, makeFill,
-//          keepRows (optional Set of rows: a vanishing powerup keeps its blocks in these) }
+//          keepRows (optional Set of rows: a vanishing powerup keeps its blocks in these),
+//          at (optional { rot, x, y }: where the piece is, for a picture fill: picturePaint) }
 // Returns { consumed, destroyed, moves, filled, collapsed }.
 export function computeEffect(board, pu, ctx) {
   const { area, pid, centre, cols, rows, rng = Math.random, makeFill, keepRows } = ctx;
@@ -705,9 +736,12 @@ export function computeEffect(board, pu, ctx) {
     case "gravity":
       out.moves = applyGravity(board, area, cols, rows, pu.direction);
       break;
-    case "expander":
-      out.filled = applyExpand(board, area, cols, makeFill);
+    case "expander": {
+      // (a picture fill: each cell its own block of the picture)
+      const box = pu.fillPicture && ctx.at && makeFill ? pictureBox(pu.areaRotations[ctx.at.rot] ?? pu.areaRotations[0], ctx.at, cols, rows) : null;
+      out.filled = applyExpand(board, area, cols, box ? (x, y) => ({ ...makeFill(x, y), paint: picturePaint(pu.fillPicture, box, x, y) }) : makeFill);
       break;
+    }
     case "blast":
       out.moves = applyBlast(board, area, cols, rows, centre, pu.push, rng);
       break;

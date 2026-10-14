@@ -3213,7 +3213,8 @@
     const part = curPart(), tgt = areaTarget();
     const fp = fillPart();
     el.fillBox.classList.toggle("hidden", !(PU_FILL_TYPES.includes(type) || fp));
-    el.fillBoxTitle.textContent = fp ? `Fill art · part ${state.pu.partSel + 1} (expander)` : type === "goo" ? "Goo fill art" : "Expander fill art";
+    el.fillBoxTitle.textContent = (fp ? `Fill art · part ${state.pu.partSel + 1} (expander)` : type === "goo" ? "Goo fill art" : "Expander fill art")
+      + (state.fill.mode === "picture" ? " (a picture over the whole area, kept as in the file)" : "");
     const usesArea = puUsesArea();
     const tType = tgt ? tgt.type : type;
     el.puAreaBox.classList.toggle("hidden", !usesArea);
@@ -4055,7 +4056,7 @@
         fctx.fillStyle = "#1c1c1c"; fctx.fillRect(x * cs, y * cs, cs / 2, cs / 2); fctx.fillRect(x * cs + cs / 2, y * cs + cs / 2, cs / 2, cs / 2);
       }
     }
-    if (f.mode === "pixel"){
+    if (f.mode !== "solid"){
       fctx.save(); fctx.translate(0.5, 0.5); fctx.strokeStyle = "rgba(255,255,255,0.18)"; fctx.beginPath();
       for (let i = 1; i < f.k; i++){ fctx.moveTo(i * cs, 0); fctx.lineTo(i * cs, S); fctx.moveTo(0, i * cs); fctx.lineTo(S, i * cs); }
       fctx.stroke(); fctx.restore();
@@ -4077,7 +4078,7 @@
   el.fillCanvas.addEventListener("pointerdown", (evt) => {
     evt.preventDefault();
     blurFields();
-    if (state.fill.mode !== "pixel"){ toast("Fill art is solid. Switch it to Pixel art to draw."); return; }
+    if (state.fill.mode !== "pixel"){ toast(state.fill.mode === "picture" ? "This fill is a picture over the whole area (edit it in the file). Switch it to Pixel art to draw one block instead." : "Fill art is solid. Switch it to Pixel art to draw."); return; }
     const p = fillPixelFromEvent(evt);
     if (!p) return;
     let tool = state.fill.tool;
@@ -4123,6 +4124,7 @@
     commit(() => {
       if (state.fill.mode === mode) return false;
       state.fill.mode = mode;
+      delete state.fill.keep;
       // starting pixel art from an empty block: seed it with the solid colour
       if (mode === "pixel" && state.fill.data.every(u => u === 0)) state.fill.data.fill(argbFromHex(state.fill.solidHex));
       return true;
@@ -4487,6 +4489,7 @@
     return Object.keys(out).length ? out : undefined;
   }
   function exportFill(f = state._fill){
+    if (f.mode === "picture") return clone(f.keep); // (a picture over the whole area: kept as it was)
     if (f.mode === "solid") return f.solidHex;
     const rows = [];
     for (let y = 0; y < f.k; y++){ const r = []; for (let x = 0; x < f.k; x++) r.push(hexFromARGB(f.data[y * f.k + x])); rows.push(r); }
@@ -4536,6 +4539,14 @@
   }
   // A fill value from a file as fill-editor state (k: pixels per block for a solid fill)
   function fillStateFrom(fill, fallbackHex, P){
+    // a picture over the whole area ({ picture, k, slice }): kept as it is, and its first block
+    // shown; switching to Solid or Pixel art replaces it
+    if (isPlainObject(fill) && Array.isArray(fill.picture) && Array.isArray(fill.picture[0])){
+      const k = clamp(Math.round(Number(fill.k)) || 1, 1, 9);
+      const f = { mode: "picture", keep: clone(fill), k, data: new Uint32Array(k * k), solidHex: normHex(fill.picture[0][0]) || fallbackHex, tool: "draw" };
+      for (let y = 0; y < k; y++) for (let x = 0; x < k; x++) f.data[y * k + x] = argbFromHex(fill.picture[y] && fill.picture[y][x]);
+      return f;
+    }
     if (Array.isArray(fill) && Array.isArray(fill[0])){
       const k = clamp(fill.length, 1, 9);
       const f = { mode: "pixel", k, data: new Uint32Array(k * k), solidHex: normHex(fill[0][0]) || "#ffffff", tool: "draw" };

@@ -83,7 +83,7 @@ function simulate(board, shape, x) {
   const area = resolvePowerupArea(pu, 0, x, y, COLS, ROWS);
   const fx = computeEffect(after, pu, {
     area, placed, pid: -1, centre, cols: COLS, rows: ROWS, rng: makeRng(7),
-    makeFill: () => ({ paint: pu.fillPaint, style: pu.fillStyle }),
+    makeFill: () => ({ paint: pu.fillPaint, style: pu.fillStyle }), at: { rot: 0, x, y },
   });
   let preview = area.indices;
   const layers = pu.parts && area.parts ? pu.parts.map((p, k) => [p, p.type === "phantom" ? placed.map(q => q.y * COLS + q.x) : area.parts[k].indices]) : null;

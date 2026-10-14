@@ -1066,7 +1066,7 @@ function firePowerupEffect(state, e) {
   const keepRows = new Set(pu.consume ? e.placed.map(c => c.y).filter(y => state.board[y]?.every(c => c !== null)) : []);
   const fx = computeEffect(state.board, pu, {
     area: e.area, placed: e.placed, pid: e.pid, centre: e.centre, cols, rows, rng: state.rng, keepRows,
-    makeFill: () => ({ paint: pu.fillPaint, style: pu.fillStyle, pid: fillPid }),
+    makeFill: () => ({ paint: pu.fillPaint, style: pu.fillStyle, pid: fillPid }), at: { rot: e.rotIdx, x: e.x, y: e.y },
   });
   // (rows the effect itself collapsed are gone already; the ones above them moved down)
   const gone = new Set(fx.collapsed?.rows ?? []);

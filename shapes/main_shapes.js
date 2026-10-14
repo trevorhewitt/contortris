@@ -78,6 +78,14 @@
  *   },                        "|" this cell's whole column, "+" both row and column,
  *                             "v" this cell and every cell under it, down to the floor
  *   fill: "#hex" | [[...]],   expander / goo: art for the cells it fills (one block of k×k pixels)
+ *     | { picture: [[...]], k: 6, slice: { top: 1, bottom: 1, left: 0, right: 0 } }
+ *                             expander (or a combo's expander part): one picture drawn over the
+ *                             whole of the area instead (k pixels per block, a whole number of
+ *                             blocks each way), laid over the box the area spans from where the
+ *                             piece is (its "v" and "|" columns reaching the floor). The `slice`
+ *                             blocks at each edge stay as drawn; the rest repeats to fit the box
+ *                             (or is cut down the middle when the box is smaller), so a waterfall
+ *                             keeps its top and its splash however far it falls
  *   consume: true,            optional: vanish when fired (default: yes, except expanders)
  *   collapse: false,          destroyer / acid: wiped wall-to-wall rows close up like a line clear
  *   scatter: { radius: 6, density: 0.6 },  destroyer only: instead of `area`, a random spray of

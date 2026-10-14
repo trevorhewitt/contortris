@@ -199,11 +199,13 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
         powerup.areaRotations = allowed.map(i => fixedArea(powerup.areaRotations[0], allRotations[0], allRotations[i]));
         const fill = normaliseFillPaint(powerup.fill, style.baseColor);
         powerup.fillPaint = fill.paint;
+        powerup.fillPicture = fill.picture ?? null;
         powerup.fillStyle = { ...style, baseColor: fill.baseColor };
         for (const part of powerup.parts ?? []) {
           part.areaRotations = allowed.map(i => fixedArea(part.areaRotations[0], allRotations[0], allRotations[i]));
           const pf = part.fill != null ? normaliseFillPaint(part.fill, style.baseColor) : fill;
           part.fillPaint = pf.paint;
+          part.fillPicture = pf.picture ?? null;
           part.fillStyle = { ...style, baseColor: pf.baseColor };
         }
       }
@@ -338,6 +340,28 @@ function buildCellPaints(mat, grid, k, baseColor) {
 // Expander fill art: "#hex" or a k×k grid of hex colours.
 function normaliseFillPaint(fill, fallback) {
   if (isHexColour(fill)) return { paint: fill.trim(), baseColor: fill.trim() };
+  // a picture over the whole area: { picture: pixel grid, k: pixels per block, slice: { top,
+  // bottom, left, right } (blocks kept at each edge; the rest repeats): src/powerups.js
+  // picturePaint. Each of its blocks is a paint of its own.
+  if (fill && typeof fill === "object" && !Array.isArray(fill) && fill.picture) {
+    const grid = normaliseGrid(fill.picture), k = Math.max(1, Math.min(9, Math.round(Number(fill.k) || 0)));
+    if (grid && grid.length % k === 0 && grid[0].length % k === 0) {
+      const H = grid.length / k, W = grid[0].length / k, base = firstNonEmptyColour(grid) ?? fallback;
+      const blocks = Array.from({ length: H }, (_, by) => Array.from({ length: W }, (_, bx) => {
+        const pixels = Array.from({ length: k }, (_, j) => Array.from({ length: k }, (_, i) => {
+          const v = grid[by * k + j][bx * k + i];
+          return isHexColour(v) ? v.trim() : base;
+        }));
+        return k === 1 ? pixels[0][0] : { k, pixels };
+      }));
+      const s = fill.slice ?? {}, n = (v, max) => Math.max(0, Math.min(max, Math.round(Number(v) || 0)));
+      const top = n(s.top, H - 1), left = n(s.left, W - 1);
+      const picture = { W, H, blocks, top, bottom: n(s.bottom, H - 1 - top), left, right: n(s.right, W - 1 - left) };
+      return { paint: blocks[0][0], baseColor: base, picture };
+    }
+    console.warn("a picture fill must be a pixel grid a whole number of k-pixel blocks wide and tall");
+    return { paint: fallback, baseColor: fallback };
+  }
   const grid = normaliseGrid(fill);
   if (grid && grid.length === grid[0].length && grid.length <= 7) {
     const base = firstNonEmptyColour(grid) ?? fallback;

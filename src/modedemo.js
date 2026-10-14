@@ -136,7 +136,7 @@ export function createModeDemo(canvas, mode, { shapes, powerups, cell = 12, seed
       const area = resolvePowerupArea(pu, place.r, place.x, place.y, COLS, ROWS);
       const fx = computeEffect(board, pu, {
         area, placed, pid: null, centre: { x: place.x + (mat[0].length - 1) / 2, y: place.y + (mat.length - 1) / 2 },
-        cols: COLS, rows: ROWS, rng, makeFill: () => ({ paint: pu.fillPaint, style: pu.fillStyle }),
+        cols: COLS, rows: ROWS, rng, makeFill: () => ({ paint: pu.fillPaint, style: pu.fillStyle }), at: { rot: place.r, x: place.x, y: place.y },
       });
       burst = { at: now, cls: pu.cls, cells: [...fx.destroyed, ...fx.filled].map(c => ({ x: c.x, y: c.y })) };
     }
