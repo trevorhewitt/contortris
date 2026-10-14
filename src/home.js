@@ -14,7 +14,8 @@
 // canvas as usual); the home screen only shows it through the camera, on a canvas of its own.
 
 import { CONFIG } from "../config.js";
-import { startRun, resetGame, updateGame } from "./game.js";
+import { startRun, resetGame, updateGame, getGhostDropY, collides } from "./game.js";
+import { resolvePowerupArea } from "./powerups.js";
 const H = () => CONFIG.home ?? {};
 const rand = (a, b) => a + Math.random() * (b - a);
 const pickIn = ([a, b]) => rand(a, b);
@@ -102,52 +103,166 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
 
   /* ---------- the camera ---------- */
 
-  // In shots: each a steady, straight move for a few seconds (CONFIG.home.shotMs), mostly a pan
-  // along the stack or a zoom in or out on it, now and then at a slight tilt, and then a cut to
-  // the next, framed on the stack as it is by then: mostly stack, with a little air over it.
-  const SHOTS = ["panX", "panX", "panY", "pushIn", "pullOut", "drift"];
+  // Where the action is, in board cells ({ x0, y0, x1, y1 }, the far edges exclusive): the piece
+  // coming down, from a little above where it lands (and with a powerup, all it will reach), the
+  // others falling with it, a powerup going off; or null if nothing is.
+  function actionBox(must = false) {
+    const { cols, rows } = CONFIG.board;
+    let box = null;
+    const add = (x0, y0, x1, y1) => {
+      x0 = Math.max(0, x0); y0 = Math.max(0, y0); x1 = Math.min(cols, x1); y1 = Math.min(rows, y1);
+      if (x1 <= x0 || y1 <= y0) return;
+      box = box ? { x0: Math.min(box.x0, x0), y0: Math.min(box.y0, y0), x1: Math.max(box.x1, x1), y1: Math.max(box.y1, y1) } : { x0, y0, x1, y1 };
+    };
+    const addArea = (area) => {
+      if (!area?.indices?.length) return;
+      let x0 = cols, y0 = rows, x1 = 0, y1 = 0;
+      for (const k of area.indices) {
+        const x = k % cols, y = (k / cols) | 0;
+        x0 = Math.min(x0, x); x1 = Math.max(x1, x + 1); y0 = Math.min(y0, y); y1 = Math.max(y1, y + 1);
+      }
+      add(x0, y0, x1, y1);
+    };
+    const piece = (p, land) => {
+      const mat = p.shape.rotations[p.rotIdx] ?? p.shape.rotations[0];
+      add(p.x, land - (must ? 0 : 3), p.x + mat[0].length, land + mat.length); // (and a little of the way down)
+      if (p.shape.powerup && !must) addArea(resolvePowerupArea(p.shape.powerup, p.rotIdx, p.x, land, cols, rows));
+    };
+    // (`must`: just where things land and go off, which the shot has to see; otherwise all a
+    // powerup will reach, which it should see as much of as it can)
+    if (state.effect?.area) { if (must) { const c = state.effect.centre; add(Math.floor(c.x) - 1, Math.floor(c.y) - 1, Math.floor(c.x) + 2, Math.floor(c.y) + 2); } else addArea(state.effect.area); }
+    const a = state.active;
+    if (a) piece(a, Math.max(0, getGhostDropY(state) ?? a.y));
+    for (const f of state.flock ?? []) {
+      if (!f?.shape) continue;
+      let land = f.land;
+      if (land == null) { const mat = f.shape.rotations[f.rotIdx] ?? f.shape.rotations[0]; land = Math.max(0, f.y ?? 0); while (!collides(state, f.x, land + 1, mat)) land++; }
+      piece(f, land);
+    }
+    return box;
+  }
+  // ...and where the next piece or two will land, if the director has planned it already
+  function nextBox() {
+    const { cols, rows } = CONFIG.board;
+    let box = null;
+    for (const it of (state.zen?.queue ?? []).slice(0, 2)) {
+      const t = it?.target, mat = it?.shape?.rotations?.[t?.rot ?? 0];
+      if (!t || !mat || t.x == null) continue;
+      const w = mat[0].length, h = mat.length;
+      let top = rows;
+      for (let x = Math.max(0, t.x); x < Math.min(cols, t.x + w); x++) for (let y = 0; y < top; y++) if (state.board[y]?.[x]) { top = y; break; }
+      const b = { x0: Math.max(0, t.x), y0: Math.max(0, top - h - 2), x1: Math.min(cols, t.x + w), y1: Math.min(rows, top + 1) };
+      box = box ? { x0: Math.min(box.x0, b.x0), y0: Math.min(box.y0, b.y0), x1: Math.max(box.x1, b.x1), y1: Math.max(box.y1, b.y1) } : b;
+    }
+    return box;
+  }
+  const union = (a, b) => (!a ? b : !b ? a : { x0: Math.min(a.x0, b.x0), y0: Math.min(a.y0, b.y0), x1: Math.max(a.x1, b.x1), y1: Math.max(a.y1, b.y1) });
+  // ...or else the top of the stack, somewhere
+  function stackBox() {
+    const { cols, rows } = CONFIG.board;
+    let top = rows;
+    for (let y = 0; y < rows; y++) if (state.board[y]?.some(Boolean)) { top = y; break; }
+    const x = Math.floor(Math.random() * Math.max(1, cols - 8));
+    return { x0: x, y0: Math.max(0, top - 4), x1: Math.min(cols, x + 8), y1: Math.min(rows, top + 4) };
+  }
+
+  // In shots: each a steady, straight move for a few seconds (CONFIG.home.shotMs) framed on where
+  // the action is: a pan past it, or a push in on it, or a pull back from it, now and then at a
+  // slight tilt; never quite still. Then a cut to the next. And the moment the action is
+  // somewhere the shot can't see (the next piece lands further along, a powerup's about to go
+  // off out of frame), a cut to it, so nothing happens just out of sight.
+  const SHOTS = ["pan", "pan", "pan", "push", "pull"];
   const camera = {
     shot: null, x: 0, y: 0, z: 1, rot: 0, S: 1,
     reset() { this.shot = null; },
-    frame(now) {
-      const c = H(), { cols, rows } = CONFIG.board, W = view.w, Hh = view.h;
-      let top = rows;
-      for (let y = 0; y < rows; y++) if (state.board[y]?.some(Boolean)) { top = y; break; }
+    half(z, rot = this.rot, cover = this.shot?.cover ?? 1) {
+      const S = cover * z, ca = Math.abs(Math.cos(rot)), sa = Math.abs(Math.sin(rot));
+      return { hw: (view.w * ca + view.h * sa) / (2 * S), hh: (view.w * sa + view.h * ca) / (2 * S) };
+    },
+    // (does the view at the moment take in all of this box, with `m` cells to spare?)
+    sees(b, m = 0.5) {
+      const { hw, hh } = this.half(this.z), { cols, rows } = CONFIG.board, e = 0.01;
+      // (the room to spare only where there's board: a piece on the floor is seen with none under it)
+      return Math.max(0, b.x0 - m) >= this.x - hw - e && Math.min(cols, b.x1 + m) <= this.x + hw + e
+        && Math.max(0, b.y0 - m) >= this.y - hh - e && Math.min(rows, b.y1 + m) <= this.y + hh + e;
+    },
+    frame(now, want = null) {
+      const c = H(), { cols, rows } = CONFIG.board, m = 1.2;
       const turn = (c.maxTurn ?? 5) * Math.PI / 180;
       const rot = reduced || Math.random() > (c.tiltChance ?? 0.3) ? 0 : rand(-turn, turn);
-      const cover = coverScale(W, Hh, rot, cols, rows), zMax = c.zoom ?? 2.6;
-      // (how close: the lower the stack, the closer in)
-      const wantRows = Math.max(7, Math.min(rows, (rows - top) * 1.45 + 4));
-      const zFit = (k) => Math.max(1, Math.min(zMax, Hh / (cover * wantRows * k)));
-      const half = (z) => {
-        const S = cover * z, ca = Math.abs(Math.cos(rot)), sa = Math.abs(Math.sin(rot));
-        return { hw: (W * ca + Hh * sa) / (2 * S), hh: (W * sa + Hh * ca) / (2 * S) };
+      const cover = coverScale(view.w, view.h, rot, cols, rows), zMax = c.zoom ?? 2.6;
+      const half = (z) => this.half(z, rot, cover);
+      // what to frame: all of the action and the next landings; or, if that's more than the view
+      // can take in, the landings without all a powerup will reach; or just where things land
+      const fits = (f) => { const h = half(1); return f && Math.min(cols, f.x1 + m) - Math.max(0, f.x0 - m) <= 2 * h.hw && Math.min(rows, f.y1 + m) - Math.max(0, f.y0 - m) <= 2 * h.hh; };
+      const must = actionBox(true);
+      const focus = [want, union(actionBox(), nextBox()), union(must, nextBox()), must].find(fits) ?? must ?? stackBox();
+      // the closest it can be with all of the action in view, with room to spare (but never so
+      // close that the next piece is likely to land out of sight: at least CONFIG.home.minView
+      // cells across and down, or the whole board where that's smaller)
+      const bw = Math.min(cols, focus.x1 + m) - Math.max(0, focus.x0 - m), bh = Math.min(rows, focus.y1 + m) - Math.max(0, focus.y0 - m);
+      const [vx, vy] = c.minView ?? [10, 9];
+      const h1 = half(1);
+      const zCap = Math.max(1, Math.min(zMax, (2 * h1.hw) / Math.min(cols, vx), (2 * h1.hh) / Math.min(rows, vy)));
+      const zTight = Math.max(1, Math.min(zCap, (2 * h1.hw) / bw, (2 * h1.hh) / bh));
+      // the centres the view can have with the box in it, at zoom z (and never past the board's edge)
+      const range = (z) => {
+        const { hw, hh } = half(z);
+        const lims = (a0, a1, h, n) => {
+          const lo = Math.max(h, Math.min(n, a1 + m) - h), hi = Math.min(n - h, Math.max(0, a0 - m) + h);
+          return lo <= hi ? [lo, hi] : Array(2).fill(Math.max(h, Math.min(n - h, (a0 + a1) / 2)));
+        };
+        return { x: lims(focus.x0, focus.x1, hw, cols), y: lims(focus.y0, focus.y1, hh, rows) };
       };
-      // the centre at fractions (fx, fy) of the room there is for it at zoom z
-      const at = (z, fx, fy) => { const { hw, hh } = half(z); return { x: hw + fx * Math.max(0, cols - 2 * hw), y: hh + fy * Math.max(0, rows - 2 * hh) }; };
-      // (fy that puts the top of the stack a little above the middle)
-      const fyStack = (z) => { const { hh } = half(z); const room = rows - 2 * hh; return room > 0 ? Math.max(0, Math.min(1, (top + 0.3 * hh - hh) / room)) : 0.5; };
-      const kind = reduced ? "still" : SHOTS[Math.floor(Math.random() * SHOTS.length)];
-      let z0 = zFit(rand(0.85, 1.1)), z1 = z0, a, b;
-      const fx = Math.random(), fy = fyStack(z0), back = Math.random() < 0.5;
-      if (kind === "panX") { const f0 = rand(0, 0.25), f1 = rand(0.75, 1); a = at(z0, back ? f1 : f0, fy); b = at(z1, back ? f0 : f1, fy); }
-      else if (kind === "panY") { const f0 = fy, f1 = Math.min(1, fy + rand(0.35, 0.7)); a = at(z0, fx, back ? f1 : f0); b = at(z1, fx, back ? f0 : f1); }
-      else if (kind === "pushIn" || kind === "pullOut") {
-        const zc = Math.min(zMax, z0 * rand(1.3, 1.7));
-        if (kind === "pullOut") { z1 = z0; z0 = zc; } else z1 = zc;
-        a = at(z0, fx, fyStack(z0)); b = at(z1, fx, fyStack(z1));
-      } else if (kind === "drift") { a = at(z0, rand(0, 0.4), fy); b = at(z1, rand(0.6, 1), Math.min(1, fy + rand(0, 0.3))); if (back) [a, b] = [b, a]; }
-      else { a = at(z0, 0.5, fy); b = a; }
+      const mid = (r) => (r[0] + r[1]) / 2, at = (r) => ({ x: mid(r.x), y: mid(r.y) });
+      let z = Math.max(1, zTight * rand(0.6, 0.85));
+      let kind = reduced ? "still" : SHOTS[Math.floor(Math.random() * SHOTS.length)];
+      let z0 = z, z1 = z, a, b;
+      // a pan: from one end to the other of where the view can be with it all in sight, the
+      // longer way; it needs a good few cells of room, or else it's a push or a pull
+      const pan = () => {
+        const r = range(z), dx = r.x[1] - r.x[0], dy = r.y[1] - r.y[0];
+        if (Math.max(dx, dy) < Math.max(2.5, 0.25 * 2 * half(z).hw)) return false;
+        const ends = dx >= dy ? [{ x: r.x[0], y: mid(r.y) }, { x: r.x[1], y: mid(r.y) }] : [{ x: mid(r.x), y: r.y[0] }, { x: mid(r.x), y: r.y[1] }];
+        [a, b] = Math.random() < 0.5 ? ends : [ends[1], ends[0]];
+        return true;
+      };
+      // a push in (or a pull back): between a wide view and the closest that still has it all
+      const zoom = (inward) => {
+        const close = Math.max(1, Math.min(zTight, z * rand(1.1, 1.3))), wide = Math.max(1, close / rand(1.35, 1.7));
+        if (close / wide < 1.08) return false;
+        [z0, z1] = inward ? [wide, close] : [close, wide];
+        a = at(range(z0)); b = at(range(z1));
+        return true;
+      };
+      if (kind === "pan") { if (!pan() && !zoom(Math.random() < 0.5)) kind = "still"; }
+      else if (kind === "push" || kind === "pull") { if (!zoom(kind === "push") && !pan()) kind = "still"; }
+      if (kind === "still") {
+        // (never quite still, though: a slow drift in)
+        z0 = z; z1 = Math.min(zMax, z * 1.05);
+        a = at(range(z0)); b = at(range(z1));
+      }
       const [m0, m1] = c.shotMs ?? [2600, 4200];
-      this.shot = { start: now, end: now + rand(m0, m1), a, b, z0, z1, rot, cover, half };
+      this.shot = { start: now, end: now + rand(m0, m1), a, b, z0, z1, rot, cover, kind, focus };
     },
     step(dt, now) {
-      if (!this.shot || now >= this.shot.end) this.frame(now); // (a cut)
+      const s0 = this.shot;
+      if (!s0 || now >= s0.end) this.frame(now); // (a cut)
+      else if (!reduced) {
+        // the next thing to land, or go off, somewhere this shot can't see: cut to it (a new
+        // piece the moment it comes, so you see it come down; never two cuts within minShotMs)
+        const b = actionBox(true), piece = state.active?.shape ?? null;
+        const fresh = piece !== this.piece;
+        this.piece = piece;
+        if (b && !this.sees(b, 0.2) && (fresh || state.effect || now - s0.start > (H().minShotMs ?? 600))) {
+          if (now - s0.start > (H().minShotMs ?? 600) || state.effect || piece?.powerup) this.frame(now);
+        }
+      }
       const s = this.shot, u = Math.min(1, (now - s.start) / (s.end - s.start));
       this.rot = s.rot;
       this.z = s.z0 + (s.z1 - s.z0) * u;
       this.S = s.cover * this.z;
-      const { hw, hh } = s.half(this.z), { cols, rows } = CONFIG.board;
+      const { hw, hh } = this.half(this.z), { cols, rows } = CONFIG.board;
       // (straight and steady; and never so far that anything beyond the board shows)
       this.x = Math.max(hw, Math.min(cols - hw, s.a.x + (s.b.x - s.a.x) * u));
       this.y = Math.max(hh, Math.min(rows - hh, s.a.y + (s.b.y - s.a.y) * u));
@@ -519,5 +634,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     enter, play, frame, finish: finishStart,
     active: () => phase === "home" || phase === "fading",
     phase: () => phase,
+    // (for looking at in dev mode: what the camera can see, and where the action is)
+    debug: () => ({ x: camera.x, y: camera.y, z: camera.z, ...camera.half(camera.z), action: actionBox(true), reach: actionBox(), shot: camera.shot, sees: (b) => camera.sees(b, 0) }),
   };
 }

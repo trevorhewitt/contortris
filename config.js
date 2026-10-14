@@ -37,10 +37,12 @@ export const CONFIG = {
   // The home screen (src/home.js). Turbo zen plays behind it (mode "home"), on a board `rows`
   // tall and as wide as the window's shape allows (`widthShare` of it, `minCols` to `maxCols`),
   // seen through a camera that works in shots, like a film: a steady, straight move lasting
-  // `shotMs` (a pan along the stack, mostly, or a push in or a pull back), then a cut to the
-  // next; now and then (`tiltChance`) one at a tilt of up to `maxTurn` degrees. It keeps the top
-  // of the stack in view, zoomed in (up to `zoom` times as close as just filling the screen) so
-  // the view is mostly stack with a little air over it. Over it, effects drift by, a different
+  // `shotMs` (a pan past the action, mostly, or a push in or a pull back), then a cut to the
+  // next; now and then (`tiltChance`) one at a tilt of up to `maxTurn` degrees. Each shot is
+  // framed on where the action is (the next piece's landing and all a powerup will reach, and the
+  // next few landings), zoomed in up to `zoom` times as close as just filling the screen but never
+  // to less than `minView` cells across and down; and when the next piece will land out of
+  // sight, it cuts to it (no two cuts within `minShotMs`). Over it, effects drift by, a different
   // kind every `fxEvery` ms or so, and the logo does a different move every `logoEvery` ms.
   // Left alone for `idleMs`, it all fades away into plain turbo zen filling the window (a fresh
   // one whenever the window changes size), with a small button to play; any touch, click, key or
@@ -49,7 +51,7 @@ export const CONFIG = {
   // all, the last `fadeMs` of it the fade), and the game comes up out of the dark (`fadeMs`).
   home: {
     rows: 24, minCols: 14, maxCols: 30, widthShare: 0.85,
-    zoom: 2.6, shotMs: [2600, 4200], tiltChance: 0.3, maxTurn: 5,
+    zoom: 2.6, shotMs: [2600, 4200], tiltChance: 0.3, maxTurn: 5, minView: [10, 9], minShotMs: 600,
     fxEvery: [14000, 22000], logoEvery: 2600,
     idleMs: 30000,
     burstMs: 600, fadeMs: 240,
