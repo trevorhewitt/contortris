@@ -269,6 +269,7 @@ export const CONFIG = {
     newest: {
       sets: ["great_and_terrible", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
+        "paddling_swan", "candle_both_ends", "wandering_washing_machine", "unwanted_present", "unbothered_capybara", "exasperated_life_ring", "rubber_chicken", "storm_in_a_teacup",
         "sandbag_wall", "avalanche", "tipped_honey_jar", "slumped_beanbag", "unravelling_yarn", "patchwork_quilt", "spilled_paint", "mountain_of_post",
         "tipper_truck", "bath_left_running", "split_rice_sack", "memory_foam_mattress", "week_of_laundry", "thanksgiving_mash",
         "advancing_glacier", "last_jigsaw_piece", "paper_shredder", "medium_black_hole", "small_asteroid", "tablecloth_trick",
@@ -286,10 +287,10 @@ export const CONFIG = {
         "watermelon_slice", "stop_sign", "lego_brick_2x4", "swiss_cheese_lump",
         "caveman_in_ice", "piece_of_sky",
         "kilometerworm", "lightyearworm", "nebula",
-        "storm_in_a_teacup", "umbrella_for_a_fish", "goldfish_bowl_moon", "anvil_of_feathers", "jar_of_fog", "fossilised_sandwich",
-        "sock_full_of_night", "piano_full_of_bees", "snowman_on_holiday", "bucket_of_yesterday", "red_balloon",
+        "umbrella_for_a_fish", "goldfish_bowl_moon", "anvil_of_feathers", "jar_of_fog", "fossilised_sandwich",
+        "sock_full_of_night", "piano_full_of_bees", "snowman_on_holiday",
         "ladder_to_nowhere", "kite_in_a_storm", "flock_of_starlings", "trail_of_footprints", "portrait_of_a_potato", "moons_spare_tooth",
-        "weather_vane", "weather_clock", "hot_water_bottle_of_sea", "very_small_stonehenge", "long_red_ribbon",
+        "hot_water_bottle_of_sea", "very_small_stonehenge", "long_red_ribbon",
       ],
     },
     novelty: { newBoost: 25, newSetBoost: 40, newUntilShown: 1, unseenBoost: 2.5, firstBoost: 1e6 },

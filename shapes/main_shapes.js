@@ -1460,9 +1460,10 @@ export const SHAPES = [
     name: "a rubber chicken",
     grid: [
         "XX.",
+        ".X.",
         ".XX"
       ],
-    color: [["#9e8724","#b52521","#b52521","#b52521","#c7a92d","#c7a92d","#c7a92d","#c7a92d","#c7a92d","#c7bb6c","#c7bb6c","#9e9556","","","","","",""],["#b52521","#e8302a","#e8302a","#e8302a","#e8302a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#c7a92d","","","","","",""],["#c76c14","#ff8a1a","#ffd93a","#2a1a10","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#c7a92d","","","","","",""],["#c76c14","#ff8a1a","#ff8a1a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#c7a92d","","","","","",""],["#c76c14","#e8302a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#c7a92d","","","","","",""],["#9e8724","#b52521","#c7a92d","#c7a92d","#c7a92d","#c7a92d","#e3c134","#ffd93a","#e8b020","#e8b020","#ffd93a","#c7a92d","","","","","",""],["","","","","","","#c7a92d","#ffd93a","#e8b020","#e8b020","#e8b020","#ce9d1c","#c7a92d","#c7a92d","#c7a92d","#c7a92d","#c7a92d","#9e8724"],["","","","","","","#c7a92d","#e8b020","#e8b020","#e8b020","#e8b020","#e8b020","#e8b020","#ffd93a","#ffd93a","#ffd93a","#fff08a","#c7bb6c"],["","","","","","","#c7a92d","#ffd93a","#ffd93a","#e8b020","#e8b020","#e8b020","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#fff08a","#c7bb6c"],["","","","","","","#c7a92d","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#c7a92d"],["","","","","","","#c7a92d","#ffd93a","#ff8a1a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ffd93a","#ff8a1a","#ffd93a","#ffd93a","#c7a92d"],["","","","","","","#9e8724","#c76c14","#c76c14","#c76c14","#c7a92d","#c7a92d","#c7a92d","#c76c14","#c76c14","#c76c14","#c7a92d","#9e8724"]],
+    color: [["#a04e09","#db8918","#db8918","#db8918","#db8918","#db8918","#db8918","#db8918","#dbb728","#c82226","#c82226","#901118","#c82226","#c82226","#901118","#ac1e21","","","","","","","",""],["#db8918","#ffc95a","#ffc95a","#ffc95a","#ffc95a","#ff9f1c","#ff9f1c","#ff9f1c","#ffd52e","#e8282c","#ff7362","#e8282c","#e8282c","#ff7362","#e8282c","#c82226","","","","","","","",""],["#7a111f","#c42a3e","#d86a0c","#d86a0c","#ff9f1c","#ff9f1c","#ff9f1c","#ff9f1c","#ffd52e","#ffd52e","#a8141c","#e8282c","#e8282c","#e8282c","#e8282c","#901118","","","","","","","",""],["#7a111f","#c42a3e","#c42a3e","#c42a3e","#d86a0c","#d86a0c","#ff9f1c","#ff9f1c","#ff9f1c","#ffd52e","#ffffff","#ffffff","#ffffff","#ffd52e","#ffd52e","#901118","","","","","","","",""],["#7a111f","#ff8a9a","#ff8a9a","#c42a3e","#8e1424","#8e1424","#8e1424","#8e1424","#8e1424","#ffd52e","#ffffff","#241418","#ffffff","#ffd52e","#ffd52e","#dbb728","","","","","","","",""],["#7a111f","#c42a3e","#c42a3e","#c42a3e","#d86a0c","#d86a0c","#ff9f1c","#ff9f1c","#ff9f1c","#ffd52e","#ffffff","#ffffff","#ffffff","#ffd52e","#ffd52e","#dbb728","","","","","","","",""],["#ba5b0a","#d86a0c","#ff9f1c","#ff9f1c","#ff9f1c","#ff9f1c","#ff9f1c","#ff9f1c","#e8282c","#e8282c","#e8282c","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ce9a18","","","","","","","",""],["#a04e09","#db8918","#db8918","#db8918","#db8918","#db8918","#db8918","#db8918","#e8282c","#e8282c","#a8141c","#ffd52e","#ffd52e","#ffd52e","#efb31c","#ce9a18","","","","","","","",""],["","","","","","","","","#c82226","#a8141c","#efb31c","#fff08a","#ffd52e","#ffd52e","#efb31c","#b2770f","","","","","","","",""],["","","","","","","","","#b2770f","#efb31c","#fff08a","#ffd52e","#ffd52e","#ffd52e","#efb31c","#b2770f","","","","","","","",""],["","","","","","","","","#b2770f","#efb31c","#f2c224","#f2c224","#f2c224","#f2c224","#efb31c","#b2770f","","","","","","","",""],["","","","","","","","","#b2770f","#efb31c","#fff08a","#ffd52e","#ffd52e","#ffd52e","#efb31c","#b2770f","","","","","","","",""],["","","","","","","","","#b2770f","#efb31c","#fff08a","#ffd52e","#ffd52e","#ffd52e","#efb31c","#b2770f","","","","","","","",""],["","","","","","","","","#b2770f","#efb31c","#f2c224","#f2c224","#f2c224","#f2c224","#efb31c","#b2770f","","","","","","","",""],["","","","","","","","","#b2770f","#efb31c","#fff08a","#ffd52e","#ffd52e","#ffd52e","#efb31c","#b2770f","","","","","","","",""],["","","","","","","","","#b2770f","#efb31c","#fff08a","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ce9a18","","","","","","","",""],["","","","","","","","","#ce9a18","#fff08a","#fff08a","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#dbb728","#dbb728","#dbce77","#dbce77","#dbce77","#dbb728","#dbb728","#b18415"],["","","","","","","","","#ce9a18","#fff08a","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ce9a18"],["","","","","","","","","#dbb728","#ffd52e","#ffd52e","#ffd52e","#f2c224","#f2c224","#f2c224","#f2c224","#f2c224","#f2c224","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ffd52e","#ce9a18"],["","","","","","","","","#ce9a18","#ffd52e","#ffd52e","#f2c224","#f2c224","#f2c224","#f2c224","#f2c224","#f2c224","#f2c224","#f2c224","#cf8a12","#ffd52e","#ffd52e","#ffd52e","#ce9a18"],["","","","","","","","","#ce9a18","#efb31c","#ffd52e","#ffd52e","#cf8a12","#f2c224","#f2c224","#f2c224","#f2c224","#cf8a12","#cf8a12","#ffd52e","#ffd52e","#efb31c","#efb31c","#ce9a18"],["","","","","","","","","#ce9a18","#efb31c","#efb31c","#efb31c","#b44c08","#efb31c","#efb31c","#efb31c","#efb31c","#efb31c","#efb31c","#b44c08","#efb31c","#efb31c","#efb31c","#ce9a18"],["","","","","","","","","#ce9a18","#efb31c","#efb31c","#efb31c","#b44c08","#efb31c","#efb31c","#efb31c","#efb31c","#efb31c","#efb31c","#b44c08","#efb31c","#efb31c","#efb31c","#ce9a18"],["","","","","","","","","#b18415","#ce9a18","#9b4107","#ce9a18","#9b4107","#ce9a18","#9b4107","#ce9a18","#ce9a18","#9b4107","#ce9a18","#9b4107","#ce9a18","#9b4107","#ce9a18","#b18415"]],
     difficulty: 1,
     rotation: {
         "mode": "any"
@@ -17823,13 +17824,11 @@ export const SHAPES = [
         0.12,
         0.04,
         0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
         "tulip",
         "dandelion_clock",
-        "old_wheelbarrow",
         "stone_path",
         "watering_can",
         "cracked_pot"
@@ -17854,13 +17853,11 @@ export const SHAPES = [
         0.12,
         0.04,
         0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
         "bluebell",
         "poppy",
-        "hosepipe",
         "rusty_trowel",
         "bird_bath",
         "compost_heap"
@@ -17884,14 +17881,12 @@ export const SHAPES = [
         0.12,
         0.04,
         0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
         "dandelion_clock",
         "forget_me_not",
         "garden_gnome",
-        "old_wheelbarrow",
         "stone_path",
         "watering_can"
       ],
@@ -17915,14 +17910,12 @@ export const SHAPES = [
         0.12,
         0.04,
         0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
         "poppy",
         "lavender",
         "cracked_pot",
-        "hosepipe",
         "rusty_trowel",
         "bird_bath"
       ],
@@ -17946,7 +17939,6 @@ export const SHAPES = [
         0.12,
         0.04,
         0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
@@ -17954,7 +17946,6 @@ export const SHAPES = [
         "snowdrop",
         "compost_heap",
         "garden_gnome",
-        "old_wheelbarrow",
         "stone_path"
       ],
   },
@@ -17976,7 +17967,6 @@ export const SHAPES = [
         0.12,
         0.04,
         0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
@@ -17984,7 +17974,6 @@ export const SHAPES = [
         "daisy",
         "watering_can",
         "cracked_pot",
-        "hosepipe",
         "rusty_trowel"
       ],
   },
@@ -18008,7 +17997,6 @@ export const SHAPES = [
         0.12,
         0.04,
         0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
@@ -18016,8 +18004,7 @@ export const SHAPES = [
         "tulip",
         "bird_bath",
         "compost_heap",
-        "garden_gnome",
-        "old_wheelbarrow"
+        "garden_gnome"
       ],
   },
   {
@@ -18039,7 +18026,6 @@ export const SHAPES = [
         0.12,
         0.04,
         0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
@@ -18047,8 +18033,7 @@ export const SHAPES = [
         "bluebell",
         "stone_path",
         "watering_can",
-        "cracked_pot",
-        "hosepipe"
+        "cracked_pot"
       ],
   },
   {
@@ -18064,7 +18049,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.15,
+    frequency: 0,
     claudeDraft: true,
     nextShapeProbs: [
         0.08
@@ -18149,7 +18134,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.15,
+    frequency: 0,
     claudeDraft: true,
     nextShapeProbs: [
         0.08
@@ -18566,7 +18551,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -18581,7 +18566,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -18637,7 +18622,7 @@ export const SHAPES = [
         "XX",
         "XX"
       ],
-    color: [["#253c73","#3858a4","#3858a4","#a37f2e","#cba644","#cba644","#cba644","#cba644","#cba644","#cba644","#cba644","#cba644","#a37f2e","#3858a4","#3858a4","#253c73"],["#3858a4","#b58d33","#e2b84c","#b3bad0","#b3bad0","#b3bad0","#7d849f","#f3efe6","#b3bad0","#7d849f","#f3efe6","#f3efe6","#f3efe6","#e2b84c","#b58d33","#3858a4"],["#cba644","#7a3e1d","#7d849f","#b3bad0","#b3bad0","#b3bad0","#b3bad0","#7d849f","#b3bad0","#b3bad0","#7d849f","#7d849f","#7a3e1d","#7a3e1d","#a35b2b","#cba644"],["#cba644","#7a3e1d","#596080","#434965","#434965","#434965","#434965","#434965","#434965","#434965","#434965","#596080","#7a3e1d","#7a3e1d","#7a3e1d","#cba644"],["#cba644","#7a3e1d","#7a3e1d","#7a3e1d","#b5e3ff","#7a3e1d","#b5e3ff","#7a3e1d","#7a3e1d","#ffe338","#ffe338","#7a3e1d","#7a3e1d","#a35b2b","#7a3e1d","#cba644"],["#3858a4","#e2b84c","#e2b84c","#b5e3ff","#7a3e1d","#b5e3ff","#7a3e1d","#7a3e1d","#ffe338","#ffe338","#7a3e1d","#7a3e1d","#7a3e1d","#e2b84c","#e2b84c","#294482"],["#3858a4","#3e62b6","#3e62b6","#e2b84c","#e2b84c","#e2b84c","#7a3e1d","#c88450","#ffe338","#c88450","#e2b84c","#e2b84c","#e2b84c","#2e4b90","#2e4b90","#294482"],["#6482c4","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#2e4b90","#294482"],["#3858a4","#6f90da","#6f90da","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#294482"],["#294482","#6f90da","#6f90da","#3e62b6","#3e62b6","#3e62b6","#e8eefc","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#6f90da","#3e62b6","#f4f1ea","#f4f1ea","#3858a4"],["#dcd9d3","#2e4b90","#6f90da","#3e62b6","#3e62b6","#e8eefc","#ffe338","#e8eefc","#3e62b6","#3e62b6","#6f90da","#3e62b6","#2e4b90","#f4f1ea","#f4f1ea","#294482"],["#dcd9d3","#f4f1ea","#2e4b90","#3e62b6","#3e62b6","#3e62b6","#e8eefc","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#2e4b90","#2e4b90","#2e4b90","#2e4b90","#dcd9d3"],["#dcd9d3","#f4f1ea","#f4f1ea","#f4f1ea","#2e4b90","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#3e62b6","#2e4b90","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#dcd9d3"],["#dcd9d3","#f4f1ea","#f4f1ea","#d2cdc3","#d2cdc3","#d2cdc3","#d2cdc3","#d2cdc3","#d2cdc3","#d2cdc3","#d2cdc3","#d2cdc3","#f4f1ea","#f4f1ea","#f4f1ea","#dcd9d3"],["#cba644","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#e2b84c","#a37f2e"],["#97928a","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#aaa59c","#97928a"]],
+    color: [["#272a3b","#2d3044","#2d3044","#2d3044","#2d3044","#2d3044","#8f96b3","#8f96b3","#8f96b3","#8f96b3","#6e7491","#515672","#2d3044","#2d3044","#2d3044","#2d3044","#2d3044","#272a3b"],["#2d3044","#a3aacb","#a3aacb","#7d84a5","#454a64","#a3aacb","#a3aacb","#a3aacb","#a3aacb","#7d84a5","#7d84a5","#ffe14a","#ffe14a","#454a64","#a3aacb","#7d84a5","#5c6281","#2d3044"],["#8f96b3","#a3aacb","#a3aacb","#7d84a5","#454a64","#a3aacb","#a3aacb","#a3aacb","#7d84a5","#7d84a5","#ffe14a","#fffbd2","#454a64","#454a64","#454a64","#7d84a5","#5c6281","#515672"],["#8f96b3","#a3aacb","#7d84a5","#7d84a5","#454a64","#7d84a5","#7d84a5","#7d84a5","#7d84a5","#ffe14a","#fffbd2","#ffe14a","#ffe14a","#454a64","#454a64","#7d84a5","#5c6281","#3d4158"],["#6e7491","#7d84a5","#7d84a5","#5c6281","#454a64","#7d84a5","#7d84a5","#7d84a5","#5c6281","#5c6281","#5c6281","#ffe14a","#fffbd2","#454a64","#454a64","#5c6281","#5c6281","#3d4158"],["#515672","#5c6281","#5c6281","#454a64","#454a64","#5c6281","#5c6281","#5c6281","#5c6281","#454a64","#ffe14a","#fffbd2","#454a64","#454a64","#454a64","#454a64","#454a64","#3d4158"],["#c9cad1","#7a4a24","#7a4a24","#7a4a24","#7a4a24","#a8703c","#7a4a24","#7a4a24","#7a4a24","#ffe14a","#7a4a24","#7a4a24","#7a4a24","#e4e6ee","#454a64","#33374d","#454a64","#2d3044"],["#dfdcd5","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#454a64","#454a64","#33374d","#2d3044"],["#c9cad1","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#e4e6ee","#fdfaf2","#fdfaf2","#fdfaf2","#aeb4bf"],["#c9cad1","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#3f6fd6","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#c6ccd9","#687189","#687189","#fdfaf2","#aeb4bf"],["#aeb4bf","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#3f6fd6","#fdfaf2","#3f6fd6","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#c6ccd9","#687189","#687189","#fdfaf2","#aeb4bf"],["#aeb4bf","#e4e6ee","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#3f6fd6","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#e4e6ee","#c6ccd9","#687189","#fdfaf2","#fdfaf2","#aeb4bf"],["#8e95a5","#c6ccd9","#e4e6ee","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#e4e6ee","#c6ccd9","#fdfaf2","#fdfaf2","#fdfaf2","#c6ccd9","#c9cad1"],["#c9cad1","#e4e6ee","#a1a9bb","#c6ccd9","#e4e6ee","#e4e6ee","#e4e6ee","#e4e6ee","#e4e6ee","#e4e6ee","#e4e6ee","#c6ccd9","#a1a9bb","#e4e6ee","#e4e6ee","#e4e6ee","#e4e6ee","#c9cad1"],["#c9cad1","#e4e6ee","#e4e6ee","#a1a9bb","#c6ccd9","#c6ccd9","#c6ccd9","#c6ccd9","#c6ccd9","#c6ccd9","#c6ccd9","#a1a9bb","#e4e6ee","#e4e6ee","#e4e6ee","#e4e6ee","#e4e6ee","#c9cad1"],["#dfdcd5","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#fdfaf2","#dfdcd5"],["#aeb4bf","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#3f6fd6","#aeb4bf"],["#7a808e","#aeb4bf","#aeb4bf","#aeb4bf","#aeb4bf","#aeb4bf","#aeb4bf","#aeb4bf","#aeb4bf","#aeb4bf","#aeb4bf","#aeb4bf","#aeb4bf","#aeb4bf","#aeb4bf","#aeb4bf","#aeb4bf","#969ba5"]],
     difficulty: 1,
     rotation: {
         "mode": "any"
@@ -18788,7 +18773,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -18808,7 +18793,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -24722,6 +24707,104 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
+  },
+  {
+    id: "paddling_swan",
+    name: "a swan, paddling furiously underneath",
+    grid: [
+        "XX.",
+        ".X.",
+        "XXX"
+      ],
+    color: [["#abaeb8","#d6d8dd","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#d6d8dd","#c1c4cf","#d6d8dd","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#d6d8dd","#abaeb8","","","","","","","",""],["#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#d6d8dd","#eef0f6","#eef0f6","#26222e","#26222e","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#e67c19","#ff8a1c","#ff8a1c","#26222e","#26222e","#ffffff","#26222e","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#e67c19","#ff8a1c","#ff8a1c","#ff8a1c","#26222e","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#b4bacb","#d6dae6","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#c35a0d","#d9640e","#d9640e","#d9640e","#eef0f6","#eef0f6","#ffffff","#ffffff","#ffffff","#d6dae6","#b4bacb","#b4bacb","#eef0f6","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#c1c4cf","#eef0f6","#eef0f6","#eef0f6","#eef0f6","#eef0f6","#eef0f6","#ffffff","#d6dae6","#b4bacb","#b4bacb","#eef0f6","#ffffff","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#abaeb8","#c1c4cf","#c1c4cf","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#b4bacb","#b4bacb","#eef0f6","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#c1c4cf","","","","","","","",""],["","","","","","","","","#c1c4cf","#eef0f6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6d8dd","","","","","","","",""],["","","","","","","","","#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#e6e6e6","","","","","","","",""],["#abaeb8","#d6d8dd","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#d6d8dd","#c1c4cf","#a2a7b7","#cccccc"],["#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#ffffff","#e6e6e6"],["#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#b4bacb","#e6e6e6"],["#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#d6dae6","#d6d8dd"],["#c1c4cf","#eef0f6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#d6dae6","#d6dae6","#eef0f6","#d6d8dd"],["#c1c4cf","#eef0f6","#eef0f6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#d6dae6","#d6dae6","#eef0f6","#eef0f6","#eef0f6","#c1c4cf"],["#a2a7b7","#d6dae6","#eef0f6","#eef0f6","#eef0f6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#eef0f6","#eef0f6","#eef0f6","#d6dae6","#d6dae6","#a2a7b7"],["#777d8e","#a2a7b7","#c1c4cf","#c1c4cf","#c1c4cf","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#c1c4cf","#c1c4cf","#c1c4cf","#a2a7b7","#a2a7b7","#777d8e"]],
+    difficulty: 2,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "candle_both_ends",
+    name: "a candle burning at both ends",
+    grid: [
+        "X",
+        "X",
+        "X",
+        "X",
+        "X",
+        "X",
+        "X"
+      ],
+    color: [["#70210e","#b03d17","#e67c1b","#e6bd34","#b03d17","#70210e"],["#b03d17","#ff8a1e","#ffd23a","#ffd23a","#ff8a1e","#b03d17"],["#b03d17","#ff8a1e","#ffd23a","#fff7cf","#ff8a1e","#b03d17"],["#e67c1b","#ffd23a","#fff7cf","#fff7cf","#ffd23a","#e67c1b"],["#e67c1b","#ffd23a","#fff7cf","#fff7cf","#ffd23a","#e67c1b"],["#b03d17","#ff8a1e","#ffd23a","#3e261c","#ff8a1e","#b03d17"],["#dab07c","#ffdca6","#ffdca6","#ffdca6","#ffdca6","#dab07c"],["#e6e1d6","#fffaee","#f4e9cf","#fffaee","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#fffaee","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#f4e9cf","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#fffaee","#dfd0aa","#b2a178"],["#e6e1d6","#fffaee","#f4e9cf","#fffaee","#dfd0aa","#b2a178"],["#dab07c","#ffdca6","#ffdca6","#ffdca6","#ffdca6","#dab07c"],["#b03d17","#ff8a1e","#ffd23a","#3e261c","#ff8a1e","#b03d17"],["#e67c1b","#ffd23a","#fff7cf","#fff7cf","#ffd23a","#e67c1b"],["#e67c1b","#ffd23a","#fff7cf","#fff7cf","#ffd23a","#e67c1b"],["#b03d17","#ff8a1e","#ffd23a","#fff7cf","#ff8a1e","#b03d17"],["#b03d17","#ff8a1e","#ffd23a","#ffd23a","#ff8a1e","#b03d17"],["#70210e","#b03d17","#e67c1b","#e6bd34","#b03d17","#70210e"]],
+    difficulty: 2,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "wandering_washing_machine",
+    name: "a washing machine, halfway across the kitchen",
+    grid: [
+        "XX",
+        "XX"
+      ],
+    color: [["#a8abb0","#c2c6cb","#c2c6cb","#c2c6cb","#c2c6cb","#c2c6cb","#c2c6cb","#c2c6cb","#c2c6cb","#c2c6cb","#c2c6cb","#c2c6cb","#c2c6cb","#c2c6cb","#c2c6cb","#c2c6cb","#a5abb4","#8f939b"],["#c2c6cb","#f6f7f9","#959dab","#959dab","#f6f7f9","#f6f7f9","#f6f7f9","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#bcc2cc","#ffffff","#bcc2cc","#959dab","#a5abb4"],["#c2c6cb","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#dde1e7","#dde1e7","#5be07a","#dde1e7","#ff5a4a","#dde1e7","#959dab","#bcc2cc","#959dab","#959dab","#a5abb4"],["#c2c6cb","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#dde1e7","#bcc2cc","#a5abb4"],["#a5abb4","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#a5abb4"],["#d8d9db","#f6f7f9","#f6f7f9","#f6f7f9","#f6f7f9","#f6f7f9","#7f8797","#7f8797","#7f8797","#7f8797","#7f8797","#7f8797","#f6f7f9","#f6f7f9","#f6f7f9","#dde1e7","#dde1e7","#c2c6cb"],["#d8d9db","#f6f7f9","#f6f7f9","#f6f7f9","#f6f7f9","#7f8797","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d3d7de","#7f8797","#f6f7f9","#f6f7f9","#dde1e7","#dde1e7","#c2c6cb"],["#d8d9db","#f6f7f9","#f6f7f9","#f6f7f9","#7f8797","#ffffff","#9fd6f2","#9fd6f2","#2c4868","#ec4236","#ec4236","#d3d7de","#d3d7de","#7f8797","#f6f7f9","#dde1e7","#dde1e7","#c2c6cb"],["#d8d9db","#f6f7f9","#f6f7f9","#7f8797","#ffffff","#ffffff","#9fd6f2","#2c4868","#ffd24a","#2c4868","#ec4236","#2c4868","#d3d7de","#d3d7de","#7f8797","#dde1e7","#dde1e7","#c2c6cb"],["#d8d9db","#f6f7f9","#f6f7f9","#7f8797","#ffffff","#2c4868","#2c4868","#ffd24a","#ffd24a","#2c4868","#ec4236","#ec4236","#2c4868","#a3aab8","#7f8797","#dde1e7","#dde1e7","#c2c6cb"],["#d8d9db","#f6f7f9","#f6f7f9","#7f8797","#ffffff","#bfe0f2","#e6f3fb","#bfe0f2","#e6f3fb","#bfe0f2","#e6f3fb","#bfe0f2","#e6f3fb","#a3aab8","#7f8797","#dde1e7","#dde1e7","#c2c6cb"],["#d8d9db","#f6f7f9","#f6f7f9","#7f8797","#d3d7de","#3d86b5","#3d86b5","#3d86b5","#3d86b5","#3d86b5","#3d86b5","#3d86b5","#3d86b5","#a3aab8","#7f8797","#dde1e7","#dde1e7","#c2c6cb"],["#d8d9db","#f6f7f9","#f6f7f9","#7f8797","#d3d7de","#d3d7de","#5aa2cf","#3d86b5","#2f6f99","#2f6f99","#3d86b5","#3d86b5","#a3aab8","#a3aab8","#7f8797","#dde1e7","#dde1e7","#c2c6cb"],["#d8d9db","#f6f7f9","#f6f7f9","#f6f7f9","#7f8797","#d3d7de","#d3d7de","#3d86b5","#3d86b5","#3d86b5","#2f6f99","#a3aab8","#a3aab8","#7f8797","#f6f7f9","#dde1e7","#dde1e7","#c2c6cb"],["#d8d9db","#f6f7f9","#f6f7f9","#f6f7f9","#f6f7f9","#7f8797","#d3d7de","#a3aab8","#a3aab8","#a3aab8","#a3aab8","#a3aab8","#7f8797","#f6f7f9","#f6f7f9","#dde1e7","#dde1e7","#c2c6cb"],["#d8d9db","#f6f7f9","#f6f7f9","#f6f7f9","#f6f7f9","#f6f7f9","#7f8797","#7f8797","#7f8797","#7f8797","#7f8797","#7f8797","#f6f7f9","#f6f7f9","#f6f7f9","#dde1e7","#dde1e7","#c2c6cb"],["#a5abb4","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#bcc2cc","#a5abb4"],["#717782","#838a96","#838a96","#838a96","#838a96","#838a96","#838a96","#838a96","#838a96","#838a96","#838a96","#838a96","#838a96","#838a96","#838a96","#838a96","#838a96","#717782"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "unwanted_present",
+    name: "a present you will have to pretend to like",
+    grid: [
+        "XX",
+        "XX"
+      ],
+    color: [["#8e1923","#e6da90","#e6bd43","#9f1c28","#9f1c28","#e6bd43","#e6da90","#8e1923"],["#d12b34","#ffd24a","#d79a1e","#ffd24a","#ffd24a","#d79a1e","#ffd24a","#d12b34"],["#e65f63","#e8303a","#e8303a","#ffd24a","#ffd24a","#e8303a","#e8303a","#d12b34"],["#e6da90","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#e6bd43"],["#c28b1b","#d79a1e","#d79a1e","#ffd24a","#ffd24a","#d79a1e","#d79a1e","#c28b1b"],["#e65f63","#e8303a","#e8303a","#ffd24a","#d79a1e","#e8303a","#e8303a","#9f1c28"],["#d12b34","#e8303a","#e8303a","#ffd24a","#d79a1e","#e8303a","#e8303a","#9f1c28"],["#8e1923","#9f1c28","#9f1c28","#c28b1b","#c28b1b","#9f1c28","#9f1c28","#8e1923"]],
+    difficulty: 1,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+  },
+  {
+    id: "unbothered_capybara",
+    name: "a capybara who is fine with all of this",
+    grid: [
+        "XXXXX",
+        "XXXX.",
+        "XX.X."
+      ],
+    color: [["#674220","#b07e48","#c59d6b","#c59d6b","#c59d6b","#c59d6b","#c59d6b","#c59d6b","#c59d6b","#c59d6b","#c59d6b","#c59d6b","#c59d6b","#c59d6b","#c59d6b","#c59d6b","#c59d6b","#774d25","#543317","#543317","#c59d6b","#c76817","#e09020","#e09020","#5fa841","#ba8853","#ba8853","#ba8853","#b07e48","#674220"],["#774d25","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#87572a","#5f3a1a","#a0683a","#e2761a","#ffa424","#ffd27a","#ffa424","#e2761a","#d39a5e","#c88f52","#c88f52","#3f2512","#372110"],["#774d25","#c88f52","#ab733c","#c88f52","#c88f52","#ab733c","#c88f52","#c88f52","#c88f52","#ab733c","#c88f52","#c88f52","#c88f52","#c88f52","#ab733c","#c88f52","#c88f52","#87572a","#c88f52","#d39a5e","#c88f52","#e2761a","#e2761a","#e2761a","#c88f52","#87572a","#87572a","#c88f52","#3f2512","#130b05"],["#774d25","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#87572a","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#160d06","#160d06","#c88f52","#3f2512","#372110"],["#774d25","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#87572a","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#87572a","#543317"],["#543317","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#87572a","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#b07e48","#774d25","#774d25","#774d25","#774d25","#482c14"],["#543317","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#87572a","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#b07e48","","","","","",""],["#543317","#87572a","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#87572a","#c88f52","#c88f52","#c88f52","#c88f52","#c88f52","#774d25","","","","","",""],["#543317","#87572a","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#87572a","#c88f52","#c88f52","#c88f52","#c88f52","#87572a","#966535","","","","","",""],["#543317","#87572a","#87572a","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#87572a","#87572a","#87572a","#87572a","#ab733c","#966535","","","","","",""],["#543317","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#ab733c","#ab733c","#ab733c","#ab733c","#ab733c","#774d25","","","","","",""],["#543317","#5f3a1a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#87572a","#774d25","#774d25","#774d25","#774d25","#774d25","#774d25","#87572a","#ab733c","#ab733c","#ab733c","#87572a","#774d25","","","","","",""],["#543317","#87572a","#ab733c","#c88f52","#ab733c","#ab733c","#87572a","#87572a","#ab733c","#c88f52","#ab733c","#966535","","","","","","","#543317","#c88f52","#ab733c","#ab733c","#ab733c","#543317","","","","","",""],["#543317","#87572a","#ab733c","#c88f52","#ab733c","#ab733c","#87572a","#5f3a1a","#ab733c","#c88f52","#ab733c","#966535","","","","","","","#543317","#c88f52","#ab733c","#ab733c","#ab733c","#543317","","","","","",""],["#543317","#87572a","#ab733c","#c88f52","#ab733c","#ab733c","#87572a","#5f3a1a","#87572a","#c88f52","#ab733c","#966535","","","","","","","#543317","#c88f52","#ab733c","#ab733c","#ab733c","#543317","","","","","",""],["#543317","#87572a","#ab733c","#c88f52","#ab733c","#ab733c","#87572a","#5f3a1a","#87572a","#c88f52","#ab733c","#774d25","","","","","","","#543317","#c88f52","#ab733c","#ab733c","#ab733c","#543317","","","","","",""],["#543317","#5f3a1a","#3f2512","#5f3a1a","#3f2512","#5f3a1a","#5f3a1a","#5f3a1a","#3f2512","#5f3a1a","#3f2512","#543317","","","","","","","#543317","#3f2512","#5f3a1a","#3f2512","#5f3a1a","#543317","","","","","",""],["#482c14","#543317","#543317","#543317","#543317","#543317","#543317","#543317","#543317","#543317","#543317","#482c14","","","","","","","#482c14","#543317","#543317","#543317","#543317","#482c14","","","","","",""]],
+    difficulty: 3,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.15,
+    claudeDraft: true,
+  },
+  {
+    id: "exasperated_life_ring",
+    name: "a life ring at the end of its rope",
+    grid: [
+        "XXX.X",
+        "X.X.X",
+        "XXXXX"
+      ],
+    color: [["#898a95","#bfbfc5","#dad8d3","#dad8d3","#d03d24","#d03d24","#d03d24","#d03d24","#dad8d3","#dad8d3","#bfbfc5","#898a95","","","","","#b0986c","#815c33","#ccb07d","#957544"],["#bfbfc5","#f8f6f0","#f8f6f0","#f8f6f0","#ec4529","#ff7a5a","#ec4529","#ec4529","#f8f6f0","#f8f6f0","#f8f6f0","#bfbfc5","","","","","#815c33","#e8c88e","#e8c88e","#815c33"],["#dad8d3","#f8f6f0","#f8f6f0","#d9d9e0","#ec4529","#ec4529","#ec4529","#b82c1c","#d9d9e0","#f8f6f0","#f8f6f0","#dad8d3","","","","","#614121","#93683a","#93683a","#614121"],["#dad8d3","#f8f6f0","#d9d9e0","#b4b6c4","#a22719","#a22719","#a22719","#a22719","#b4b6c4","#d9d9e0","#f8f6f0","#dad8d3","","","","","#ccb07d","#c49a5a","#93683a","#ac884f"],["#d03d24","#ec4529","#ec4529","#a22719","","","","","#d03d24","#ec4529","#ec4529","#a22719","","","","","#ccb07d","#e8c88e","#c49a5a","#614121"],["#d03d24","#ff7a5a","#ec4529","#a22719","","","","","#d03d24","#ff7a5a","#ec4529","#a22719","","","","","#815c33","#e8c88e","#e8c88e","#815c33"],["#d03d24","#ec4529","#ec4529","#a22719","","","","","#d03d24","#ec4529","#ec4529","#a22719","","","","","#ac884f","#93683a","#e8c88e","#ac884f"],["#a22719","#b82c1c","#b82c1c","#a22719","","","","","#a22719","#b82c1c","#b82c1c","#a22719","","","","","#ccb07d","#c49a5a","#93683a","#ac884f"],["#dad8d3","#f8f6f0","#d9d9e0","#b4b6c4","#d03d24","#d03d24","#d03d24","#d03d24","#b4b6c4","#d9d9e0","#f8f6f0","#f8f6f0","#815c33","#ccb07d","#ac884f","#815c33","#e8c88e","#e8c88e","#c49a5a","#815c33"],["#dad8d3","#f8f6f0","#f8f6f0","#d9d9e0","#ec4529","#ff7a5a","#ec4529","#ec4529","#d9d9e0","#f8f6f0","#f8f6f0","#93683a","#e8c88e","#c49a5a","#93683a","#e8c88e","#e8c88e","#c49a5a","#93683a","#ccb07d"],["#bfbfc5","#f8f6f0","#f8f6f0","#f8f6f0","#ec4529","#ec4529","#ec4529","#b82c1c","#f8f6f0","#f8f6f0","#f8f6f0","#93683a","#c49a5a","#93683a","#e8c88e","#e8c88e","#c49a5a","#93683a","#e8c88e","#ccb07d"],["#898a95","#bfbfc5","#bfbfc5","#bfbfc5","#a22719","#a22719","#a22719","#a22719","#bfbfc5","#bfbfc5","#9ea0ac","#9ea0ac","#815c33","#ac884f","#ac884f","#815c33","#614121","#ac884f","#ac884f","#704f2c"]],
+    difficulty: 2,
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.15,
     claudeDraft: true,
   },
 ];

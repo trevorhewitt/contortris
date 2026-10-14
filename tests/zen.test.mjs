@@ -18,14 +18,17 @@ const height = (state) => { const y = state.board.findIndex(r => r.some(Boolean)
 
 function zen(seed, mode = "zen") {
   const state = createGameState(shapes, powerups, { rng: makeRng(seed), groups: GROUPS, threads: { threads: THREADS, sets: SET_THREADS } });
-  const log = { movements: [], rescues: 0, over: false, maxHeight: 0, clears: [], callouts: [], high: 0, frames: 0 };
+  const log = { movements: [], rescues: 0, over: false, maxHeight: 0, clears: [], helped: [], callouts: [], high: 0, frames: 0 };
+  let lastLock = null;
   on(state, (t, d) => {
+    if (t === "lock") lastLock = d.shape;
     if (t === "zenMovement") log.movements.push({ name: d.name, caption: d.caption, drops: state.drops, lines: state.lines, height: height(state) });
     if (t === "zenRescue") log.rescues++;
     if (t === "gameOver") log.over = true;
     // (the stack: a powerup that vanishes when it fires sits on top only for a moment)
     if (t === "lock" && !d.shape.powerup?.consume) log.maxHeight = Math.max(log.maxHeight, height(state));
-    if (t === "rowsDestroyed" && d.source === "clear") { log.clears.push(d.count); log.callouts.push(...state.fx.callouts.map(c => c.text)); }
+    // (rows a powerup filled in, apart: a big filler on a gappy stack can bring a lot down at once)
+    if (t === "rowsDestroyed" && d.source === "clear") { (lastLock?.powerup ? log.helped : log.clears).push(d.count); log.callouts.push(...state.fx.callouts.map(c => c.text)); }
   });
   startRun(state, mode);
   return { state, log };
@@ -50,6 +53,7 @@ test("zen: slow and easy — it plays itself, keeps the board low, and never end
   assert.ok(low / log.frames > 0.9, `low ${(low / log.frames * 100).toFixed(0)}% of the time`);
   assert.ok(log.maxHeight <= rows - 6, `up to ${log.maxHeight} rows`);
   assert.ok(Math.max(...log.clears) <= 6, `never anything built up to bring down: ${Math.max(...log.clears)} rows at once`);
+  assert.ok(Math.max(0, ...log.helped) <= 12, `a powerup's help, ${Math.max(0, ...log.helped)} rows at once`);
   const kinds = new Set(log.movements.map(m => m.name));
   for (const k of ["column", "beds", "crack", "mess", "build", "demolition", "mono", "waves"]) assert.ok(!kinds.has(k), `${k} in zen`);
   assert.ok(["family", "colours", "twos", "rain"].filter(k => kinds.has(k)).length >= 3, `${[...kinds]}`);
