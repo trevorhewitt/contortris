@@ -18277,6 +18277,16 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    remix: {
+        "stickers": [
+          "#ff7300",
+          "#1e5fe0",
+          "#ffd60a",
+          "#15a84c",
+          "#f7f7f2",
+          "#d4202c"
+        ]
+      },
   },
   {
     id: "mondrian",
@@ -18508,7 +18518,7 @@ export const SHAPES = [
   },
   {
     id: "trail_of_footprints",
-    name: "a trail of footprints, going nowhere",
+    name: "a trail of footprints",
     grid: [
         "....X..",
         ".X....X",
@@ -18554,7 +18564,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -18615,7 +18625,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -24517,7 +24527,7 @@ export const SHAPES = [
   },
   {
     id: "unravelling_yarn",
-    name: "a ball of yarn (unravelling)",
+    name: "a loose ball of yarn",
     grid: [
         "X"
       ],
@@ -24910,7 +24920,7 @@ export const SHAPES = [
   },
   {
     id: "wandering_washing_machine",
-    name: "a washing machine, halfway across the kitchen",
+    name: "a washing machine",
     grid: [
         "XX",
         "XX"
@@ -25607,7 +25617,7 @@ export const SHAPES = [
   },
   {
     id: "rubiks_cube_checkerboard",
-    name: "a Rubik's cube in a checkerboard",
+    name: "a Rubik's cube",
     grid: [
         "XXX",
         "XXX",
@@ -25618,8 +25628,18 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.25,
+    frequency: 0.45,
     claudeDraft: true,
+    remix: {
+        "stickers": [
+          "#ff7300",
+          "#1e5fe0",
+          "#ffd60a",
+          "#15a84c",
+          "#f7f7f2",
+          "#d4202c"
+        ]
+      },
   },
   {
     id: "rubiks_cube_one_turn",
@@ -25634,7 +25654,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.25,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -25650,7 +25670,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.25,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -25666,7 +25686,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.25,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -25682,7 +25702,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.25,
+    frequency: 0,
     claudeDraft: true,
   },
   {

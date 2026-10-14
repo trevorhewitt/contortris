@@ -279,11 +279,12 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
   });
 }
 
-// remix: { mix: ["id", "id"] } or { scramble: "id" } (see src/remix.js)
+// remix: { mix: ["id", "id"] }, { scramble: "id" } or { stickers: ["#hex", ...] } (see src/remix.js)
 function normaliseRemix(r) {
   if (!r || typeof r !== "object") return null;
   if (Array.isArray(r.mix) && r.mix.length >= 2) return { mix: r.mix.slice(0, 2).map(String) };
   if (typeof r.scramble === "string" && r.scramble) return { scramble: r.scramble };
+  if (Array.isArray(r.stickers) && r.stickers.length >= 2) return { stickers: r.stickers.filter(c => typeof c === "string") };
   return null;
 }
 

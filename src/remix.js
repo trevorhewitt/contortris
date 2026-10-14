@@ -8,6 +8,9 @@
 //       from the other (taken from the same place in each), so it can be smaller than either
 //   remix: { scramble: "spam" }
 //       the blocks of another piece shuffled (and some turned round) into this piece's shape
+//   remix: { stickers: ["#hex", ...] }
+//       its own art, but each block's pixels of these colours all one of them, at random (a
+//       Rubik's cube in a fresh scramble every time; and now and then, solved)
 // The piece's own grid and colours in the data are what the designer and the lists show.
 
 import { loadAndNormaliseShapes } from "./shapes.js";
@@ -33,7 +36,7 @@ export function remixRaw(shape, byId, rng = Math.random) {
   } else if (r.scramble) {
     const src = byId.get(r.scramble);
     if (src) built = scrambleTiles(shape, tilesOf(src), rng);
-  }
+  } else if (r.stickers) built = restickered(shape, r.stickers, rng);
   return built ? toRaw(shape, built.cells, built.k) : null;
 }
 
@@ -128,6 +131,19 @@ function scrambleTiles(shape, S, rng) {
     cells.push({ x, y, pixels: turn(resize(t, k), rng() < 0.45 ? 1 + Math.floor(rng() * 3) : 0) });
   }
   return { cells, k };
+}
+
+function restickered(shape, colours, rng) {
+  const T = tilesOf(shape), set = new Set(colours.map(c => c.toLowerCase()));
+  const solved = rng() < 0.03 ? colours[Math.floor(rng() * colours.length)] : null;
+  const cells = [];
+  for (let y = 0; y < T.h; y++) for (let x = 0; x < T.w; x++) {
+    const t = T.at(x, y);
+    if (!t) continue;
+    const c = solved ?? colours[Math.floor(rng() * colours.length)];
+    cells.push({ x, y, pixels: t.map(row => row.map(p => (typeof p === "string" && set.has(p.toLowerCase()) ? c : p))) });
+  }
+  return { cells, k: T.k };
 }
 
 // Cells -> a raw entry with the base piece's id, name, level, tags...
