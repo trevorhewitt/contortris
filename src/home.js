@@ -14,7 +14,7 @@
 // canvas as usual); the home screen only shows it through the camera, on a canvas of its own.
 
 import { CONFIG } from "../config.js";
-import { startRun, resetGame, updateGame, timeScaleOf } from "./game.js";
+import { startRun, resetGame, updateGame } from "./game.js";
 import { sampleByWeight } from "./util.js";
 
 const H = () => CONFIG.home ?? {};
@@ -487,6 +487,8 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     e.stopImmediatePropagation();
   }, { capture: true });
   idleBtn.addEventListener("click", (e) => { e.preventDefault(); leaveIdle(); });
+  // (back from another tab: the time away doesn't count as being left alone)
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && phase === "home") noteInput(); });
   window.addEventListener("click", (e) => {
     if (performance.now() < guardUntil) { e.preventDefault(); e.stopImmediatePropagation(); }
   }, { capture: true });
@@ -498,7 +500,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     last = now;
     if (phase === "home" || phase === "fading") {
       // (it comes on with something on the board already: a fast start, a little each frame)
-      for (let i = 0; warmLeft > 0 && i < 8; i++) { updateGame(state, 50); warmLeft -= 50 / Math.max(0.01, timeScaleOf(state)); }
+      for (let i = 0; warmLeft > 0 && i < 8; i++) { updateGame(state, 50); warmLeft -= 50; }
       camera.step(dt, now);
       camera.draw();
       stepFx(dt, now);
