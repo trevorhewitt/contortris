@@ -8,7 +8,7 @@ import { GROUPS } from "../shapes/groups.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, hardDropAndLock, on, updateGame, tryRotate, tryMove, setNextPiece } from "../src/game.js";
-import { normaliseGroups, expandGroup, lastVersion, noteVersion, level6Open, stackRows, startGroup, groupPlayable } from "../src/level6.js";
+import { normaliseGroups, expandGroup, lastVersion, noteVersion, level6Open, stackRows, startGroup, groupPlayable, maybeStartGroup } from "../src/level6.js";
 import { selectPiece } from "../src/selection.js";
 import { remixShape } from "../src/remix.js";
 
@@ -586,4 +586,34 @@ test("a set can have powerups in it: ones that only ever come in it, once their 
   const served = [startGroup(n, g, expandGroup(g, n.rng)).id]; // (starting it hands out its first piece)
   for (let i = 0; i < 2; i++) served.push(selectPiece(n).id);
   assert.deepEqual(served, [big[0].id, big[1].id, "t_set_only"]);
+});
+
+test("the tins: after spam, beans or spaghetti-os, the other two are unlikely for a while", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(41), groups: GROUPS });
+  startRun(state, "normal");
+  state.devLevel6 = "on";
+  for (const c of ["destroyer", "gravity", "expander", "combo"]) state.pieceSel.powerup.shownClasses.add(c);
+  assert.ok(CONFIG.assist.level6.families.some(f => ["spam", "beans", "spaghetti_os"].every(id => f.includes(id))));
+  // how often the next set is spam or spaghetti-os, straight after these sets (latest first)
+  const share = (before) => {
+    let n = 0, tinned = 0;
+    for (let i = 0; i < 800; i++) {
+      const sel = state.pieceSel, l6 = sel.level6;
+      Object.assign(l6, { queue: [], group: null, seen: new Map(), lastEnd: -1000, firstDueAt: 0 });
+      Object.assign(sel, { lastWasHard: false, calmUntil: null, dropIndex: 500 });
+      state.level6Recent = [...before];
+      if (!maybeStartGroup(state)) continue;
+      n++;
+      if (l6.lastGroup === "spam" || l6.lastGroup === "spaghetti_os") tinned++;
+    }
+    return tinned / Math.max(1, n);
+  };
+  const usual = share(["tower_of_babel"]), afterBeans = share(["beans"]);
+  const threeAgo = share(["noahs_ark", "trees", "beans"]), fourAgo = share(["noahs_ark", "trees", "everest", "beans"]);
+  assert.ok(usual > 0.04, `as usual ${usual.toFixed(3)}`);
+  assert.ok(afterBeans < usual * 0.25, `straight after beans ${afterBeans.toFixed(3)} vs ${usual.toFixed(3)}`);
+  assert.ok(threeAgo < usual * 0.25, `beans three sets ago ${threeAgo.toFixed(3)} vs ${usual.toFixed(3)}`);
+  assert.ok(fourAgo > usual * 0.6, `beans four sets ago: as usual again ${fourAgo.toFixed(3)} vs ${usual.toFixed(3)}`);
+  // (and the game remembers enough sets for it)
+  assert.ok(Math.max(CONFIG.assist.level6.rememberRecent, CONFIG.assist.level6.familyGap) >= 3);
 });

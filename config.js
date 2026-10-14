@@ -507,6 +507,12 @@ export const CONFIG = {
       // `rememberRecent` sets served (also in the previous game, in this browser) wait if any
       // other set can go.
       rememberRecent: 2,
+      // Sets of a kind (`families`: the tins): one soon after another is unlikely. A set with one
+      // of its family among the last `familyGap` sets served (this game or the one before) is
+      // only `familyWeight` times as likely as it would be.
+      families: [["spam", "beans", "spaghetti_os"]],
+      familyGap: 3,
+      familyWeight: 0.08,
     },
 
     // Powerup scheduler (Normal mode only). Runs before the regular level mix:

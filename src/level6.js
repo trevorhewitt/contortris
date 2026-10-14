@@ -9,8 +9,9 @@
 //
 // state.devLevel6: "auto" (the rule above), "on" or "off" — the dev mode override.
 // state.level6Remembered: true if it ever unlocked in this browser (used if level6.persist).
-// state.level6Recent: ids of the last groups served (the UI keeps them across games), so the
-// same set doesn't come again straight away, even in the next game.
+// state.level6Recent: ids of the last groups served, latest first (the UI keeps them across
+// games), so the same set doesn't come again straight away, even in the next game, nor one of
+// its family (the tins: CONFIG.assist.level6.families).
 
 import { CONFIG } from "../config.js";
 import { sampleByWeight } from "./util.js";
@@ -283,7 +284,7 @@ export function maybeStartGroup(state) {
   const turns = (g) => l6.seen.get(g.id) ?? 0;
   const least = Math.min(...live.map(turns));
   let pool = live.filter(g => turns(g) === least);
-  const recent = state.level6Recent ?? [];
+  const recent = (state.level6Recent ?? []).slice(0, cfg.rememberRecent ?? 2);
   const fresh = pool.filter(g => !recent.includes(g.id));
   if (fresh.length) pool = fresh;
   // (God mode opens with a particular set, or one of a few, the first time since the page was
@@ -293,7 +294,7 @@ export function maybeStartGroup(state) {
   // ...and only one whose whole run fits on the board (a set can't be cleared until it's down)
   const room = state.board.length - (cfg.headroom ?? 3) - stackRows(state);
   while (pool.length) {
-    const group = sampleByWeight(pool, g => g.frequency * setNovelty(state, g) * setThreadWeight(state, sel.currentThread, g), state.rng);
+    const group = sampleByWeight(pool, g => g.frequency * setNovelty(state, g) * setThreadWeight(state, sel.currentThread, g) * familyWeight(state, g, cfg), state.rng);
     const pieces = expandGroup(group, state.rng, l6.variants, lastVersion(state, group));
     // (not if its first piece mustn't come straight after the last one: a small piece of the sky)
     if (pieces[0]?.notAfter?.includes(sel.lastShapeId)) { pool = pool.filter(g => g !== group); continue; }
@@ -313,6 +314,14 @@ function openingSet(state) {
   const live = ids.map(id => state.groups.find(g => g.id === id && g.frequency > 0)).filter(Boolean);
   if (!live.length) return null;
   return live.find(g => !(l6.seenBefore?.get(g.id) ?? 0)) ?? live[Math.floor(state.rng() * live.length)];
+}
+
+// Sets of a kind (CONFIG.assist.level6.families: the tins): one soon after another is unlikely.
+function familyWeight(state, g, cfg) {
+  const family = (cfg.families ?? []).find(f => f.includes(g.id));
+  if (!family) return 1;
+  const recent = (state.level6Recent ?? []).slice(0, cfg.familyGap ?? 3);
+  return recent.some(id => family.includes(id)) ? cfg.familyWeight ?? 0.1 : 1;
 }
 
 // God mode: the newest sets first (CONFIG.godMode.newest) until each has come once since the
@@ -432,7 +441,8 @@ export function startGroup(state, group, pieces = null) {
   l6.lastGroup = group.id; // (a one-piece set is over as soon as it starts)
   l6.starts = (l6.starts ?? 0) + 1;
   l6.seen.set(group.id, (l6.seen.get(group.id) ?? 0) + 1);
-  state.level6Recent = [group.id, ...(state.level6Recent ?? []).filter(id => id !== group.id)].slice(0, CONFIG.assist.level6?.rememberRecent ?? 2);
+  const keep = Math.max(CONFIG.assist.level6?.rememberRecent ?? 2, CONFIG.assist.level6?.familyGap ?? 0);
+  state.level6Recent = [group.id, ...(state.level6Recent ?? []).filter(id => id !== group.id)].slice(0, keep);
   return nextGroupPiece(state);
 }
 
