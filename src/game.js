@@ -774,7 +774,9 @@ export function insidePairs(state, pid, zoneName = "inside") {
 // (`onDeath`: "it loved you").
 function pieceGone(state, pid, inst, at = null) {
   const words = inst.shape?.onDeath;
-  if (words && at) addCallout(state, words, at.x + 0.5, at.y, { color: CONFIG.fx.callouts?.mournColour ?? "#ffc4d6" });
+  // (a little above where it was, clear of the name of any rows that went with it, and lingering)
+  const C = CONFIG.fx.callouts ?? {}, cols = CONFIG.board.cols;
+  if (words && at) addCallout(state, words, Math.max(3, Math.min(cols - 3, at.x + 0.5)), Math.max(1, at.y - 2), { color: C.mournColour ?? "#ffc4d6", durationMs: (C.durationMs ?? 1200) * 1.6 });
   emit(state, "pieceGone", { pid, shape: inst.shape, drops: state.drops });
 }
 
