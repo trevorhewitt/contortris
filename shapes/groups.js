@@ -330,7 +330,13 @@ export const GROUPS = [
     id: "sunshine",
     name: "sunshine, rainbows and butterflies",
     frequency: 1,
-    sequence: ["sunshine", { pick: ["rainbow","double_rainbow"], count: 1 }, { pick: ["happy_cloud"], count: [1,2] }, "butterflies"],
+    room: 18,
+    sequence: [
+      "sunshine",
+      {pick: ["rainbow", "double_rainbow"], count: [1, 1]},
+      {pick: ["butterflies", "bunch_of_roses", "flowerbed", "basket_of_kittens", "big_hug"], count: [1, 2], unique: true},
+      "happy_cloud",
+    ],
   },
   {
     // (the humongous piece always comes after the other two; mostly by day, sometimes as the
