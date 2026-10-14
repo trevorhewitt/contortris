@@ -1,10 +1,9 @@
 // Run with:  node --test tests/
-// The home screen's sums (src/home.js): the board behind it, the camera, the start texts.
+// The home screen's sums (src/home.js): the board behind it, and the camera.
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CONFIG } from "../config.js";
-import { homeBoardSize, coverScale, pickStartText, startTextParts } from "../src/home.js";
-import { makeRng } from "../src/util.js";
+import { homeBoardSize, coverScale } from "../src/home.js";
 
 test("the board behind the home screen is the window's shape, within limits", () => {
   const H = CONFIG.home;
@@ -26,22 +25,4 @@ test("the camera never shows anything beyond the board, turned or not", () => {
     // and only just: one way or the other it fills the board exactly
     assert.ok(Math.abs((W * c + Hh * s) / S - cols) < 1e-6 || Math.abs((W * s + Hh * c) / S - rows) < 1e-6);
   }
-});
-
-test("the start texts: as likely as their weights, not the same twice running, said a part at a time", () => {
-  const rng = makeRng(3), counts = new Map();
-  let last = null, repeats = 0;
-  for (let i = 0; i < 3000; i++) {
-    const t = pickStartText(rng, last);
-    if (t === last) repeats++;
-    counts.set(t, (counts.get(t) ?? 0) + 1);
-    last = t;
-  }
-  assert.equal(repeats, 0, "never the same twice running");
-  const list = CONFIG.home.startTexts;
-  for (const { text } of list) assert.ok(counts.get(text) > 0, `${text} came`);
-  const heaviest = list.reduce((a, b) => (b.weight > a.weight ? b : a)), lightest = list.reduce((a, b) => (b.weight < a.weight ? b : a));
-  assert.ok(counts.get(heaviest.text) > counts.get(lightest.text) * 2, "the weights count");
-  assert.deepEqual(startTextParts("Ready, set, go!"), ["Ready,", "set,", "go!"]);
-  assert.deepEqual(startTextParts("It's Extris time"), ["It's Extris time"]);
 });

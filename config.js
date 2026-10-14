@@ -26,45 +26,31 @@ export const CONFIG = {
     zen: { label: "Zen", tagline: "slow and easy: it plays itself, or you do", warmup: "always", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
     turbo: { label: "Turbo zen", tagline: "it plays itself, and doesn't stop", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2], captions: false },
     // (behind the home screen, CONFIG.home: turbo zen with no words in it at all, no names, no
-    // callouts; its demolitions leave `keep` rows or so, so the board is seldom bare; and it
-    // stops while the page is hidden. Never one to play.)
-    home: { label: "Home", hidden: true, powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, captions: false, callouts: false, names: false, home: true, keep: [6, 10] },
+    // callouts, at an easier pace so you see the pieces fall; its demolitions leave `keep` rows or
+    // so, so the board is seldom bare; and it stops while the page is hidden. Never one to play.)
+    home: { label: "Home", hidden: true, powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 1, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, captions: false, callouts: false, names: false, home: true, keep: [6, 10] },
   },
   defaultMode: "normal",
 
   // The home screen (src/home.js). Turbo zen plays behind it (mode "home"), on a board `rows`
   // tall and as wide as the window's shape allows (`widthShare` of it, `minCols` to `maxCols`),
-  // seen through a slow camera: every `moveEvery` ms or so it drifts somewhere else along the
-  // board, turned up to `maxTurn` degrees, easing there over about `ease` ms; it keeps the top of
-  // the stack in view, zoomed in (up to `zoom` times as close as just filling the screen) so the
-  // view is mostly stack with a little air over it. Over it, effects drift by, a different kind
-  // every `fxEvery` ms or so.
+  // seen through a camera that works in shots, like a film: a steady, straight move lasting
+  // `shotMs` (a pan along the stack, mostly, or a push in or a pull back), then a cut to the
+  // next; now and then (`tiltChance`) one at a tilt of up to `maxTurn` degrees. It keeps the top
+  // of the stack in view, zoomed in (up to `zoom` times as close as just filling the screen) so
+  // the view is mostly stack with a little air over it. Over it, effects drift by, a different
+  // kind every `fxEvery` ms or so, and the logo does a different move every `logoEvery` ms.
   // Left alone for `idleMs`, it all fades away into plain turbo zen filling the window (a fresh
   // one whenever the window changes size), with a small button to play; any touch, click, key or
   // move of the mouse brings the home screen back.
-  // Choosing a mode: everything on the screen bursts into pieces (`burstMs`), then a few words
-  // to start it off, one of `startTexts` (as likely as its weight; said a part at a time, at each
-  // comma), for `startTextMs`, and off it goes. Edit the list as you like.
+  // Choosing a mode: everything on the screen bursts into pieces and fades to dark (`burstMs` in
+  // all, the last `fadeMs` of it the fade), and the game comes up out of the dark (`fadeMs`).
   home: {
     rows: 24, minCols: 14, maxCols: 30, widthShare: 0.85,
-    zoom: 2.6, maxTurn: 9, moveEvery: [6000, 11000], ease: 2600,
-    fxEvery: [14000, 22000],
+    zoom: 2.6, shotMs: [2600, 4200], tiltChance: 0.3, maxTurn: 5,
+    fxEvery: [14000, 22000], logoEvery: 2600,
     idleMs: 30000,
-    burstMs: 1000, startTextMs: 1900,
-    startTexts: [
-      { text: "Ready, set, go!", weight: 3 },
-      { text: "It's Extris time", weight: 2.5 },
-      { text: "Extris, Extris, Extris", weight: 1.5 },
-      { text: "Game, set and match", weight: 1 },
-      { text: "Three, two, one, Extris!", weight: 1.5 },
-      { text: "On your marks, get set, stack", weight: 1 },
-      { text: "Here come the pieces", weight: 1 },
-      { text: "Let the blocks fall", weight: 1 },
-      { text: "Brace yourself", weight: 0.8 },
-      { text: "It begins", weight: 0.8 },
-      { text: "The pieces have been told", weight: 0.5 },
-      { text: "Extris will see you now", weight: 0.5 },
-    ],
+    burstMs: 600, fadeMs: 240,
   },
 
   timing: {

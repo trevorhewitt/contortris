@@ -2,21 +2,19 @@
 // HOME — the home screen (DOM)
 // ============================================================
 // Behind the menu, turbo zen plays itself (mode "home": no words anywhere in it) on a board a
-// little wider than usual, seen through a slow camera that drifts, turns and zooms, and keeps
-// the top of the stack in view; over it, effects drift by, a different kind every so often. In
-// front of it, the logo and the modes. Left alone a while (CONFIG.home.idleMs), all of that fades
-// away into plain turbo zen filling the window, with a small button to play (a fresh one whenever
-// the window changes size); any touch, click, key or move of the mouse brings the home screen
-// back. And choosing a mode: everything on the screen bursts into pieces, a few words to start it
-// off (CONFIG.home.startTexts), and the game begins.
+// little wider than usual, seen through a camera that works in shots, like a film: a steady pan
+// along the stack, or a push in, or a pull back, and then a cut to the next. Over it, effects
+// drift by, a different kind every so often. In front of it, the logo and the modes. Left alone a
+// while (CONFIG.home.idleMs), all of that fades away into plain turbo zen filling the window, with
+// a small button to play (a fresh one whenever the window changes size); any touch, click, key or
+// move of the mouse brings the home screen back. And choosing a mode: everything on the screen
+// bursts into pieces and fades to dark, and the game comes up.
 //
 // The board behind the menu is the game's own (state, drawn by the renderer onto the board
 // canvas as usual); the home screen only shows it through the camera, on a canvas of its own.
 
 import { CONFIG } from "../config.js";
 import { startRun, resetGame, updateGame } from "./game.js";
-import { sampleByWeight } from "./util.js";
-
 const H = () => CONFIG.home ?? {};
 const rand = (a, b) => a + Math.random() * (b - a);
 const pickIn = ([a, b]) => rand(a, b);
@@ -37,30 +35,17 @@ export function coverScale(w, h, rot, cols, rows) {
   return Math.max((w * c + h * s) / cols, (w * s + h * c) / rows);
 }
 
-// One of the start texts (as likely as its weight), not the same as last time if it can help it.
-export function pickStartText(rng = Math.random, last = null) {
-  const list = (H().startTexts ?? []).filter(t => t?.text && (t.weight ?? 1) > 0);
-  if (!list.length) return "Ready, set, go!";
-  const pool = list.length > 1 ? list.filter(t => t.text !== last) : list;
-  return sampleByWeight(pool, t => t.weight ?? 1, rng).text;
-}
-
-// The parts it's said in: a part at a time, at each comma (the comma stays with its part).
-export function startTextParts(text) {
-  return String(text).split(/(?<=,)\s+/).map(s => s.trim()).filter(Boolean);
-}
-
 export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, setWholeWindow, onPlay, onShowMenu, menuShowing, lastMode, hideOverlay }) {
   const $ = (id) => document.getElementById(id);
   // (the effects are drawn over the board on the same canvas: one layer for the browser to put
   // together with the menu, not two)
-  const bg = $("homeBg"), fxc = bg, burstc = $("homeBurst"), textEl = $("startText"), idleBtn = $("idlePlay");
+  const bg = $("homeBg"), fxc = bg, burstc = $("homeBurst"), dark = $("homeDark"), idleBtn = $("idlePlay"), logo = $("homeLogo");
   const bgx = bg.getContext("2d"), fx = bgx, bx = burstc.getContext("2d");
   const body = document.body;
   const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
   let phase = "off"; // off | home | idle | starting
-  let idleAt = 0, warmLeft = 0, lastText = null, resizeTimer = null, last = performance.now(), guardUntil = 0;
+  let idleAt = 0, warmLeft = 0, resizeTimer = null, last = performance.now(), guardUntil = 0;
   let saved = null; // (what the background mustn't change for the next real game)
   const view = { w: 0, h: 0, dpr: 1, fx: 1, burst: 1 };
 
@@ -117,40 +102,55 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
 
   /* ---------- the camera ---------- */
 
+  // In shots: each a steady, straight move for a few seconds (CONFIG.home.shotMs), mostly a pan
+  // along the stack or a zoom in or out on it, now and then at a slight tilt, and then a cut to
+  // the next, framed on the stack as it is by then: mostly stack, with a little air over it.
+  const SHOTS = ["panX", "panX", "panY", "pushIn", "pullOut", "drift"];
   const camera = {
-    x: 0, y: 0, z: 1.2, rot: 0, tx: 0, tz: 1.2, trot: 0, nextMove: 0, ready: false,
-    reset() { this.ready = false; this.nextMove = 0; },
-    step(dt, now) {
+    shot: null, x: 0, y: 0, z: 1, rot: 0, S: 1,
+    reset() { this.shot = null; },
+    frame(now) {
       const c = H(), { cols, rows } = CONFIG.board, W = view.w, Hh = view.h;
-      if (now >= this.nextMove) {
-        this.nextMove = now + pickIn(c.moveEvery ?? [6000, 11000]);
-        const turn = (c.maxTurn ?? 9) * Math.PI / 180;
-        this.trot = reduced ? 0 : rand(-turn, turn);
-        this.tz = reduced ? 1 : rand(0.8, 1.15); // (how much of the stack it takes in, roughly: below)
-        this.tx = Math.random();
-      }
-      // (the top of the stack, a little above the middle of the view)
       let top = rows;
       for (let y = 0; y < rows; y++) if (state.board[y]?.some(Boolean)) { top = y; break; }
-      const k = this.ready ? 1 - Math.exp(-dt / (c.ease ?? 2600)) : 1;
-      this.rot += (this.trot - this.rot) * k;
-      // (zoomed in so that what it shows is mostly stack, with a little air over it: the lower
-      // the stack, the closer in; never so far out that anything beyond the board shows)
-      const cover = coverScale(W, Hh, this.rot, cols, rows);
-      const wantRows = Math.max(7, Math.min(rows, (rows - top) * 1.45 + 4)) * this.tz;
-      const z = Math.max(1, Math.min(c.zoom ?? 1.9, Hh / (cover * wantRows)));
-      this.z += (z - this.z) * (this.ready ? 1 - Math.exp(-dt / 1800) : 1);
-      const S = cover * this.z;
-      const ca = Math.abs(Math.cos(this.rot)), sa = Math.abs(Math.sin(this.rot));
-      const hw = (W * ca + Hh * sa) / (2 * S), hh = (W * sa + Hh * ca) / (2 * S);
-      const want = { x: hw + this.tx * Math.max(0, cols - 2 * hw), y: top + 0.25 * hh };
-      want.y = Math.max(hh, Math.min(rows - hh, want.y));
-      this.x += (want.x - this.x) * k;
-      this.y += (want.y - this.y) * (this.ready ? 1 - Math.exp(-dt / 1400) : 1);
-      this.x = Math.max(hw, Math.min(cols - hw, this.x));
-      this.y = Math.max(hh, Math.min(rows - hh, this.y));
-      this.ready = true;
-      this.S = S;
+      const turn = (c.maxTurn ?? 5) * Math.PI / 180;
+      const rot = reduced || Math.random() > (c.tiltChance ?? 0.3) ? 0 : rand(-turn, turn);
+      const cover = coverScale(W, Hh, rot, cols, rows), zMax = c.zoom ?? 2.6;
+      // (how close: the lower the stack, the closer in)
+      const wantRows = Math.max(7, Math.min(rows, (rows - top) * 1.45 + 4));
+      const zFit = (k) => Math.max(1, Math.min(zMax, Hh / (cover * wantRows * k)));
+      const half = (z) => {
+        const S = cover * z, ca = Math.abs(Math.cos(rot)), sa = Math.abs(Math.sin(rot));
+        return { hw: (W * ca + Hh * sa) / (2 * S), hh: (W * sa + Hh * ca) / (2 * S) };
+      };
+      // the centre at fractions (fx, fy) of the room there is for it at zoom z
+      const at = (z, fx, fy) => { const { hw, hh } = half(z); return { x: hw + fx * Math.max(0, cols - 2 * hw), y: hh + fy * Math.max(0, rows - 2 * hh) }; };
+      // (fy that puts the top of the stack a little above the middle)
+      const fyStack = (z) => { const { hh } = half(z); const room = rows - 2 * hh; return room > 0 ? Math.max(0, Math.min(1, (top + 0.3 * hh - hh) / room)) : 0.5; };
+      const kind = reduced ? "still" : SHOTS[Math.floor(Math.random() * SHOTS.length)];
+      let z0 = zFit(rand(0.85, 1.1)), z1 = z0, a, b;
+      const fx = Math.random(), fy = fyStack(z0), back = Math.random() < 0.5;
+      if (kind === "panX") { const f0 = rand(0, 0.25), f1 = rand(0.75, 1); a = at(z0, back ? f1 : f0, fy); b = at(z1, back ? f0 : f1, fy); }
+      else if (kind === "panY") { const f0 = fy, f1 = Math.min(1, fy + rand(0.35, 0.7)); a = at(z0, fx, back ? f1 : f0); b = at(z1, fx, back ? f0 : f1); }
+      else if (kind === "pushIn" || kind === "pullOut") {
+        const zc = Math.min(zMax, z0 * rand(1.3, 1.7));
+        if (kind === "pullOut") { z1 = z0; z0 = zc; } else z1 = zc;
+        a = at(z0, fx, fyStack(z0)); b = at(z1, fx, fyStack(z1));
+      } else if (kind === "drift") { a = at(z0, rand(0, 0.4), fy); b = at(z1, rand(0.6, 1), Math.min(1, fy + rand(0, 0.3))); if (back) [a, b] = [b, a]; }
+      else { a = at(z0, 0.5, fy); b = a; }
+      const [m0, m1] = c.shotMs ?? [2600, 4200];
+      this.shot = { start: now, end: now + rand(m0, m1), a, b, z0, z1, rot, cover, half };
+    },
+    step(dt, now) {
+      if (!this.shot || now >= this.shot.end) this.frame(now); // (a cut)
+      const s = this.shot, u = Math.min(1, (now - s.start) / (s.end - s.start));
+      this.rot = s.rot;
+      this.z = s.z0 + (s.z1 - s.z0) * u;
+      this.S = s.cover * this.z;
+      const { hw, hh } = s.half(this.z), { cols, rows } = CONFIG.board;
+      // (straight and steady; and never so far that anything beyond the board shows)
+      this.x = Math.max(hw, Math.min(cols - hw, s.a.x + (s.b.x - s.a.x) * u));
+      this.y = Math.max(hh, Math.min(rows - hh, s.a.y + (s.b.y - s.a.y) * u));
     },
     draw() {
       const { cols } = CONFIG.board, pc = boardCanvas.width / cols, d = view.dpr;
@@ -167,9 +167,26 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     },
   };
 
+  /* ---------- the logo ---------- */
+
+  // A different move every few seconds, passed from letter to letter along the word: a spin on
+  // one axis or another, a grow, a shrink, a hop, a wave; or the whole word at once (index.html,
+  // .homeLogo.fx-...)
+  const LOGO_FX = ["spin", "flip", "tumble", "twist", "grow", "shrink", "hop", "wave", "spinAll", "growAll"];
+  let logoFx = null, logoAt = 0;
+  function stepLogo(now) {
+    if (!logo || reduced || now < logoAt) return;
+    logoAt = now + (H().logoEvery ?? 2800);
+    const next = LOGO_FX.filter(f => f !== logoFx)[Math.floor(Math.random() * (LOGO_FX.length - 1))];
+    if (logoFx) logo.classList.remove(`fx-${logoFx}`);
+    void logo.offsetWidth; // (so the same move can start again)
+    logo.classList.add(`fx-${next}`);
+    logoFx = next;
+  }
+
   /* ---------- the effects over it ---------- */
 
-  const MOODS = ["embers", "sparkles", "confetti", "bubbles", "comets", "snow"];
+  const MOODS = ["embers", "sparkles", "confetti", "comets", "snow"];
   const motes = [];
   let mood = MOODS[Math.floor(Math.random() * MOODS.length)], moodUntil = 0, spawnAcc = 0, shade = null;
   // (the edges a little darker, so the menu reads, and a tint of colour: made once, small, and
@@ -210,12 +227,11 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     if (kind === "embers") Object.assign(m, { x: rand(0, W), y: Hh + 10, vx: rand(-12, 12), vy: rand(-70, -30), size: rand(6, 16), life: rand(5, 9) });
     else if (kind === "sparkles") Object.assign(m, { x: rand(0, W), y: rand(0, Hh), vx: 0, vy: 0, size: rand(8, 22), life: rand(1.2, 2.4) });
     else if (kind === "confetti") Object.assign(m, { x: rand(0, W), y: -10, vx: rand(-25, 25), vy: rand(30, 80), size: rand(4, 9), life: rand(7, 12), hue: rand(0, 360) });
-    else if (kind === "bubbles") Object.assign(m, { x: rand(0, W), y: Hh + 20, vx: 0, vy: rand(-55, -25), size: rand(6, 20), life: rand(6, 11), phase: rand(0, 6.28) });
     else if (kind === "comets") { const fromLeft = Math.random() < 0.5; Object.assign(m, { x: fromLeft ? -40 : W + 40, y: rand(-0.1, 0.6) * Hh, vx: (fromLeft ? 1 : -1) * rand(380, 620), vy: rand(80, 200), size: rand(3, 6), life: 3 }); }
     else Object.assign(m, { x: rand(0, W), y: -10, vx: rand(-10, 10), vy: rand(15, 40), size: rand(2, 5), life: rand(10, 16), phase: rand(0, 6.28), hue: 210 }); // snow
     return m;
   }
-  const RATE = { embers: 9, sparkles: 7, confetti: 10, bubbles: 5, comets: 0.7, snow: 16 }; // (a second, on a 1000×700 screen)
+  const RATE = { embers: 9, sparkles: 7, confetti: 10, comets: 0.7, snow: 16 }; // (a second, on a 1000×700 screen)
   function stepFx(dt, now) {
     const W = view.w, Hh = view.h, d = view.fx, s = dt / 1000;
     if (now >= moodUntil) {
@@ -236,7 +252,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       if (m.age >= m.life) continue;
       motes[n++] = m;
       const t = m.age / m.life, fade = Math.min(1, t * 5, (1 - t) * 3);
-      if (m.kind === "bubbles" || m.kind === "snow") m.x += Math.sin(m.age * 2 + m.phase) * 18 * s;
+      if (m.kind === "snow") m.x += Math.sin(m.age * 2 + m.phase) * 18 * s;
       m.x += m.vx * s; m.y += m.vy * s; m.rot += m.vr * s;
       const x = m.x * d, y = m.y * d, z = m.size * d;
       fx.globalAlpha = fade * (m.kind === "snow" ? 0.6 : 0.85);
@@ -244,11 +260,6 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
         fx.fillStyle = `hsl(${m.hue},95%,62%)`;
         const w = z * (0.5 + 0.5 * Math.abs(Math.cos(m.rot)));
         fx.fillRect(x - w / 2, y - z / 2, w, z);
-      } else if (m.kind === "bubbles") {
-        fx.strokeStyle = `hsla(${m.hue},100%,75%,0.9)`;
-        fx.lineWidth = Math.max(1, d * 1.5);
-        fx.beginPath(); fx.arc(x, y, z, 0, Math.PI * 2); fx.stroke();
-        fx.drawImage(glow(m.hue), x - z * 0.6, y - z * 0.9, z * 0.6, z * 0.6);
       } else if (m.kind === "sparkles") {
         const p = Math.sin(t * Math.PI), r = z * p;
         fx.drawImage(glow(m.hue), x - r, y - r, r * 2, r * 2);
@@ -317,7 +328,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   /* ---------- the way into a game ---------- */
 
   const bits = [];
-  let startAt = 0, textAt = 0, endAt = 0, playMode = null, textShown = false;
+  let startAt = 0, endAt = 0, playMode = null, darkTimer = null;
 
   function burstFrom(cx, cy) {
     const W = view.w, Hh = view.h;
@@ -376,54 +387,46 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     bx.globalAlpha = 1;
   }
 
-  function showText(text) {
-    textEl.innerHTML = "";
-    const parts = startTextParts(text), each = (H().startTextMs ?? 1900) * 0.62 / Math.max(1, parts.length);
-    parts.forEach((p, i) => {
-      const span = document.createElement("span");
-      span.className = "startPart";
-      span.textContent = p;
-      span.style.animationDelay = `${Math.round(i * each)}ms`;
-      span.style.setProperty("--hue", String((i * 70 + Math.random() * 60) % 360));
-      textEl.appendChild(span);
-    });
-    textEl.hidden = false;
-    textEl.classList.remove("out");
-    textShown = true;
-  }
-
-  // Starting a mode: from the home screen with the burst, or (from, say, game over) the words alone.
-  function play(mode, { from = null, burst = phase === "home" } = {}) {
+  // Starting a mode from the home screen: it all bursts into pieces and fades to dark
+  // (CONFIG.home.burstMs in all, the last fadeMs of it the fade; from How to play, just the
+  // fade), and the game comes up out of the dark. From anywhere else, straight in.
+  function play(mode, { from = null, burst = true } = {}) {
     if (phase === "starting") return;
-    const now = performance.now();
-    const wasHome = phase === "home";
+    if (phase !== "home") { onPlay(mode); return; }
+    const now = performance.now(), c = H(), fade = c.fadeMs ?? 240;
+    const bursting = burst && !reduced;
     playMode = mode;
     phase = "starting";
+    startAt = now;
     sizeCanvases();
-    if (burst && wasHome) {
+    if (bursting) {
       const r = from?.getBoundingClientRect?.();
       burstFrom(r ? r.left + r.width / 2 : view.w / 2, r ? r.top + r.height / 2 : view.h / 2);
+      body.classList.add("starting"); // (all of it gone at once: what's left is its pieces, flying)
     }
-    body.classList.add("starting");
-    if (wasHome) { stopBackground(); restore(); }
-    lastText = pickStartText(Math.random, lastText);
-    startAt = now;
-    textAt = now + (burst && wasHome ? (H().burstMs ?? 1000) * 0.4 : 0);
-    endAt = textAt + (H().startTextMs ?? 1900);
-    textShown = false;
+    stopBackground();
+    restore();
+    const total = bursting ? Math.max(fade, c.burstMs ?? 600) : fade;
+    endAt = now + total;
+    dark.style.transitionDuration = `${fade}ms`;
+    clearTimeout(darkTimer);
+    darkTimer = setTimeout(() => { if (phase === "starting") dark.classList.add("on"); }, total - fade);
   }
 
   function finishStart() {
     if (phase !== "starting") return;
     phase = "off";
+    clearTimeout(darkTimer);
+    body.classList.remove("home", "starting", "homeFade");
     bits.length = 0;
     burstc.hidden = true;
-    textEl.hidden = true;
-    textEl.innerHTML = "";
-    body.classList.remove("home", "starting", "homeFade");
     restoreBoard();
     state.backdrop = false;
     onPlay(playMode);
+    // (and up it comes, out of the dark)
+    dark.classList.add("on");
+    void dark.offsetWidth;
+    dark.classList.remove("on");
   }
 
   /* ---------- in and out ---------- */
@@ -504,11 +507,10 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       camera.step(dt, now);
       camera.draw();
       stepFx(dt, now);
+      stepLogo(now);
       if (phase === "home" && menuShowing() && now >= idleAt && !document.hidden) goIdle();
     } else if (phase === "starting") {
-      drawBurst(dt);
-      if (!textShown && now >= textAt) showText(lastText);
-      if (textShown && now >= endAt - 280) textEl.classList.add("out");
+      if (bits.length) drawBurst(dt);
       if (now >= endAt) finishStart();
     }
   }

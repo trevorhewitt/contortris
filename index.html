@@ -329,28 +329,59 @@
       gap: clamp(8px, 2.4vmin, 24px);
     }
     body.home .overlay #panelMenu.panel[hidden]{ display: none; }
-    .homeLogoWrap{ perspective: 900px; animation: logoZoom 7s ease-in-out infinite; }
+    .homeLogoWrap{ perspective: 900px; animation: logoZoom 4.4s ease-in-out infinite; }
     .homeLogo{
       display: flex; justify-content: center; gap: 0.02em;
       font-family: var(--font-display); font-size: clamp(34px, min(13.5vw, 15vh), 150px); line-height: 1.15;
-      animation: logoSpin 16s ease-in-out infinite;
       transform-style: preserve-3d;
     }
+    /* (each letter's colour goes round the rainbow a step at a time: --turn, from 0 to 360) */
+    @property --turn{ syntax: "<number>"; inherits: true; initial-value: 0; }
     .homeLogo span{
-      display: inline-block;
-      color: hsl(var(--h), 100%, 62%);
+      display: inline-block; perspective: 3em;
+      --hue: calc(var(--h) + var(--turn));
+      color: hsl(var(--hue), 100%, 62%);
       text-shadow:
-        0 0.05em 0 hsl(var(--h), 85%, 40%),
-        0 0.10em 0 hsl(var(--h), 85%, 28%),
+        0 0.05em 0 hsl(var(--hue), 85%, 40%),
+        0 0.10em 0 hsl(var(--hue), 85%, 28%),
         0 0.15em 0 rgba(0,0,0,0.9),
-        0 0 0.35em hsla(var(--h), 100%, 60%, 0.7);
-      animation: letterHop 2.6s ease-in-out infinite, letterHue 7s steps(21) infinite;
-      animation-delay: calc(var(--i) * -0.2s), calc(var(--i) * -0.6s);
+        0 0 0.35em hsla(var(--hue), 100%, 60%, 0.7);
+      animation: letterHop 1.9s ease-in-out infinite, letterHue 5s steps(15) infinite;
+      animation-delay: calc(var(--i) * -0.16s), calc(var(--i) * -0.5s);
     }
-    @keyframes logoZoom{ 0%, 100%{ transform: scale(0.93) rotate(-2.5deg); } 50%{ transform: scale(1.07) rotate(2.5deg); } }
-    @keyframes logoSpin{ 0%, 80%{ transform: rotateY(0deg); } 90%{ transform: rotateY(180deg) scale(1.08); } 100%{ transform: rotateY(360deg); } }
-    @keyframes letterHop{ 0%, 100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-0.12em) rotate(-5deg); } }
-    @keyframes letterHue{ from{ filter: hue-rotate(0deg); } to{ filter: hue-rotate(360deg); } }
+    .homeLogo b{ display: inline-block; font-weight: inherit; }
+    @keyframes logoZoom{ 0%, 100%{ transform: scale(0.94) rotate(-2.5deg); } 50%{ transform: scale(1.06) rotate(2.5deg); } }
+    @keyframes letterHop{ 0%, 100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-0.08em) rotate(-4deg); } }
+    @keyframes letterHue{ from{ --turn: 0; } to{ --turn: 360; } }
+    /* the moves (src/home.js picks one every few seconds), passed from letter to letter */
+    .homeLogo[class*="fx-"] b{
+      animation-duration: 620ms; animation-timing-function: cubic-bezier(.45, .05, .35, 1);
+      animation-fill-mode: both; animation-delay: calc(var(--i) * 85ms);
+    }
+    .homeLogo.fx-spin b{ animation-name: fxSpin; }
+    .homeLogo.fx-flip b{ animation-name: fxFlip; }
+    .homeLogo.fx-tumble b{ animation-name: fxTumble; animation-duration: 760ms; }
+    .homeLogo.fx-twist b{ animation-name: fxTwist; }
+    .homeLogo.fx-grow b{ animation-name: fxGrow; animation-duration: 520ms; animation-timing-function: ease-in-out; animation-delay: calc(var(--i) * 70ms); }
+    .homeLogo.fx-shrink b{ animation-name: fxShrink; animation-duration: 520ms; animation-timing-function: ease-in-out; animation-delay: calc(var(--i) * 70ms); }
+    .homeLogo.fx-hop b{ animation-name: fxHop; animation-duration: 560ms; animation-timing-function: ease-out; animation-delay: calc(var(--i) * 75ms); }
+    .homeLogo.fx-wave b{ animation-name: fxWave; animation-duration: 1000ms; animation-timing-function: ease-in-out; animation-delay: calc(var(--i) * 100ms); }
+    .homeLogo.fx-spinAll{ animation: fxSpinAll 1000ms cubic-bezier(.45, .05, .3, 1) both; }
+    .homeLogo.fx-growAll{ animation: fxGrowAll 800ms ease-in-out both; }
+    .homeLogo.fx-spinAll b, .homeLogo.fx-growAll b{ animation: none; }
+    @keyframes fxSpin{ from{ transform: rotateY(0deg); } to{ transform: rotateY(360deg); } }
+    @keyframes fxFlip{ from{ transform: rotateX(0deg); } to{ transform: rotateX(360deg); } }
+    @keyframes fxTumble{ from{ transform: rotate3d(1, 1, 0, 0deg); } to{ transform: rotate3d(1, 1, 0, 360deg); } }
+    @keyframes fxTwist{ from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
+    @keyframes fxGrow{ 0%, 100%{ transform: scale(1); } 45%{ transform: scale(1.45); } }
+    @keyframes fxShrink{ 0%, 100%{ transform: scale(1); } 45%{ transform: scale(0.5); } }
+    @keyframes fxHop{
+      0%, 100%{ transform: translateY(0) scale(1); } 14%{ transform: translateY(0) scale(1.14, 0.86); }
+      48%{ transform: translateY(-0.42em) scale(0.94, 1.08); } 82%{ transform: translateY(0) scale(1.1, 0.9); }
+    }
+    @keyframes fxWave{ 0%, 100%{ transform: none; } 25%{ transform: translateY(-0.22em) rotate(-10deg) scale(1.08); } 75%{ transform: translateY(0.14em) rotate(8deg) scale(0.95); } }
+    @keyframes fxSpinAll{ from{ transform: rotateY(0deg); } to{ transform: rotateY(360deg); } }
+    @keyframes fxGrowAll{ 0%, 100%{ transform: scale(1); } 35%{ transform: scale(1.16); } 70%{ transform: scale(0.95); } }
 
     .homeModes{
       --gap: clamp(8px, 1.8vmin, 18px); --per: 3;
@@ -395,22 +426,11 @@
     body.home .overlay #panelMenu #gameVersion{ margin: 0; padding: 3px 8px; background: rgba(8,8,16,0.6); color: rgba(245,245,255,0.6); }
     @media (max-height: 460px){ .modeTag{ display: none; } button.modeBtn{ min-height: 40px; padding: 0.5em; } }
 
-    .startText{
-      position: fixed; inset: 0; z-index: 60; pointer-events: none;
-      display: flex; flex-wrap: wrap; align-content: center; justify-content: center;
-      gap: 0.25em 0.55em; padding: 6vmin; box-sizing: border-box; text-align: center;
-      font-family: var(--font-display); font-size: clamp(22px, min(7.5vw, 10vh), 92px); line-height: 1.3;
-      text-transform: uppercase;
+    .homeDark{
+      position: fixed; inset: 0; z-index: 60; background: #000; opacity: 0;
+      pointer-events: none; transition: opacity 240ms ease;
     }
-    .startText[hidden]{ display: none; }
-    .startPart{
-      display: inline-block; color: hsl(var(--hue), 100%, 66%);
-      text-shadow: 0 0.07em 0 hsl(var(--hue), 80%, 30%), 0 0.14em 0 #000, 0 0 0.4em hsla(var(--hue), 100%, 60%, 0.65);
-      animation: startPop 560ms cubic-bezier(.2, 1.5, .35, 1) both;
-    }
-    .startText.out .startPart{ animation: startOut 280ms ease-in both; animation-delay: 0ms !important; }
-    @keyframes startPop{ 0%{ transform: scale(3.2) rotate(-10deg); opacity: 0; } 100%{ transform: none; opacity: 1; } }
-    @keyframes startOut{ to{ transform: scale(0.3) rotate(8deg); opacity: 0; } }
+    .homeDark.on{ opacity: 1; }
 
     .idlePlay{
       position: fixed; z-index: 70; right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom));
@@ -420,6 +440,7 @@
     .idlePlay:hover{ opacity: 0.95; }
     @media (prefers-reduced-motion: reduce){
       .homeLogoWrap, .homeLogo, .homeLogo span, button.modeBtn{ animation-duration: 60s; }
+      .homeLogo[class*="fx-"], .homeLogo[class*="fx-"] b{ animation: none; }
     }
 
     .menuBtns{
@@ -1172,7 +1193,7 @@
           </div>
 
           <div class="msg panel homeMenu" id="panelMenu" hidden>
-            <div class="homeLogoWrap"><div class="homeLogo" id="homeLogo" role="img" aria-label="Extris"><span style="--i:0;--h:350">E</span><span style="--i:1;--h:35">X</span><span style="--i:2;--h:58">T</span><span style="--i:3;--h:140">R</span><span style="--i:4;--h:200">I</span><span style="--i:5;--h:275">S</span></div></div>
+            <div class="homeLogoWrap"><div class="homeLogo" id="homeLogo" role="img" aria-label="Extris"><span style="--i:0;--h:350"><b>E</b></span><span style="--i:1;--h:35"><b>X</b></span><span style="--i:2;--h:58"><b>T</b></span><span style="--i:3;--h:140"><b>R</b></span><span style="--i:4;--h:200"><b>I</b></span><span style="--i:5;--h:275"><b>S</b></span></div></div>
             <div class="homeModes">
               <button id="btnNormal" class="modeBtn" style="--i:0" data-mode="normal"><span class="modeName">Classic</span><span class="modeTag"></span></button>
               <button id="btnExtreme" class="modeBtn" style="--i:1" data-mode="extreme"><span class="modeName">Extreme</span><span class="modeTag"></span></button>
@@ -1185,7 +1206,7 @@
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
             <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
-            <div class="small" id="gameVersion">version 202610141252</div>
+            <div class="small" id="gameVersion">version 202610141307</div>
           </div>
 
           <div class="msg panel" id="panelHowTo" hidden>
@@ -1203,7 +1224,7 @@
               <h3>Modes</h3>
               <div id="howtoModes"></div>
 
-              <p class="small menuFoot">[Extris version 202610141252 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610141307 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>
@@ -1342,7 +1363,7 @@
   <div id="devPanel" class="devPanel" hidden></div>
   <!-- (choosing a mode: everything bursts into pieces, and a few words to start it off) -->
   <canvas id="homeBurst" class="homeTop" aria-hidden="true" hidden></canvas>
-  <div id="startText" class="startText" aria-live="polite" hidden></div>
+  <div id="homeDark" class="homeDark" aria-hidden="true"></div>
   <!-- (left alone, the home screen is plain turbo zen: this, or anything at all, brings it back) -->
   <button id="idlePlay" class="idlePlay" hidden>&#9654; Play</button>
 

@@ -1085,7 +1085,7 @@ export function bindUI({ state, renderer, achievements }) {
   const editable = (t) => t instanceof Element && t.closest("input, textarea, select");
   document.addEventListener("selectstart", (e) => { if (!editable(e.target)) e.preventDefault(); });
   document.addEventListener("contextmenu", (e) => { if (!editable(e.target)) e.preventDefault(); });
-  $("btnAgain").addEventListener("click", () => home.play(state.mode, { burst: false }));
+  $("btnAgain").addEventListener("click", () => startGame(state.mode));
   $("btnGameOverMenu").addEventListener("click", () => goToMenu());
   $("btnResetAch").addEventListener("click", () => {
     if (window.confirm("Reset all achievements and lifetime stats in this browser?")) {
@@ -1165,7 +1165,7 @@ export function bindUI({ state, renderer, achievements }) {
     }
     if (e.code === "Enter") {
       if (currentPanel === "menu") { e.preventDefault(); home.play(lastMode); }
-      else if (currentPanel === "gameover") { e.preventDefault(); home.play(state.mode, { burst: false }); }
+      else if (currentPanel === "gameover") { e.preventDefault(); startGame(state.mode); }
       else if (currentPanel === "intro") { e.preventDefault(); resumeGame(); }
       return;
     }
