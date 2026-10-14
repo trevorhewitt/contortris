@@ -41,9 +41,7 @@ export function normaliseGroups(rawGroups, shapes) {
     const steps = versions.flat(); // (every step of every version: all its pieces)
     // a piece with `echo` comes back later in the same run as that piece (déjà vu)
     const echoes = new Map();
-    for (const st of steps) for (const sh of [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.repeat ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]) {
-      if (sh.echo && live(sh.echo)) echoes.set(sh.id, live(sh.echo));
-    }
+    for (const sh of stepPieces(steps)) if (sh.echo && live(sh.echo)) echoes.set(sh.id, live(sh.echo));
     // (a set with powerups in it that it can't do without, a step of nothing but powerups: the
     // classes it needs met before it can come, groupPlayable. One that only might come, in a
     // chain or among other pieces or now and then, is left out of the run where it can't:
@@ -106,6 +104,15 @@ export function normaliseGroups(rawGroups, shapes) {
     }
     return ok && steps.length ? steps : null;
   }
+}
+
+// Every piece a set's steps can bring (in a pick, a variant, a repeat or a chain), once each.
+export function groupMembers(group) {
+  return [...new Set(stepPieces(group?.steps ?? []))];
+}
+function stepPieces(steps) {
+  return steps.flatMap(st => [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.repeat ?? []),
+    ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]);
 }
 
 // One run through a group: the list of pieces, picks rolled. `variants` (a Map, kept for the

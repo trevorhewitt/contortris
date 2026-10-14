@@ -29,10 +29,11 @@ import { tryMove, tryRotate, zenCaption, timeScaleOf, settleFlock } from "./game
 import { selectPiece, destroyerCells, pickFitting } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
-import { expandGroup, roomNeeded, groupUnderWay, lastVersion, noteVersion, groupPlayable, playableRun } from "./level6.js";
+import { expandGroup, roomNeeded, groupUnderWay, lastVersion, noteVersion, groupPlayable, playableRun, groupMembers } from "./level6.js";
 import { makeRng, sampleByWeight } from "./util.js";
 import { loadShapes } from "./shapes.js";
 import { colourFamily } from "./threads.js";
+import { COMBOS } from "../shapes/combos.js";
 
 const LEVEL6 = 6;
 
@@ -56,7 +57,7 @@ const WEIGHTS = {
 const MOVEMENT_WEIGHTS = {
   zen: { natural: 5, rain: 1, family: 1.6, colours: 1, twos: 0.7 },
   turbo: { natural: 0.25, rain: 0.15, build: 0.5, giants: 0.3, column: 2.5, beds: 2, crack: 2, mess: 0.9, fall: 0.3, well: 0.3, chorus: 1.2,
-    mono: 5, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1, oops: 2.5, tiles: 2 },
+    mono: 5, combo: 4, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1, oops: 2.5, tiles: 2 },
 };
 // (the ones that need a low, tidy board to build on)
 const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "standing", "colour", "squares", "tiles"]);
@@ -100,7 +101,7 @@ export function createZen(state) {
 // For the dev panel: every movement there is, by name, and the ways some of them can go.
 export function zenMovementChoices() {
   const ghosts = !(CONFIG.assist.powerups.disabledTypes ?? []).includes("phantom");
-  const ways = { crack: { end: Object.keys(CRACK_ENDS).filter(k => ghosts || !GHOSTLY.has(k)) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] } };
+  const ways = { crack: { end: Object.keys(CRACK_ENDS).filter(k => ghosts || !GHOSTLY.has(k)) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] }, combo: { id: COMBOS.map(c => c.id) } };
   const out = [];
   for (const name of Object.keys(MOVEMENTS)) {
     if (["pacmen", "taps", "pacmenAndTaps", "settle", "sweep"].includes(name)) continue; // (they only come after others)
@@ -204,7 +205,7 @@ function inDanger(state, occ, item) {
   const danger = isCalm(state) ? CONFIG.zen.calm.dangerRows : CONFIG.zen.dangerRows;
   if (z.userAt != null && state.drops - z.userAt <= 8 && h >= rows - danger) return true;
   if (h < rows - CONFIG.zen.brinkRows || item.shape.powerup) return false;
-  const best = bestPlacement(state, item.shape, item.weights ?? WEIGHTS.clear, 4);
+  const best = bestPlacement(state, item.shape, item.weights ?? WEIGHTS.clear, item.turns ?? 4);
   return !best || best.s < -500;
 }
 
@@ -371,6 +372,10 @@ export function palettePick(state, pool) {
   for (const [caption, list] of both) add(caption, list, (P.colourTheme ?? 0.5) / both.length);
   const shapes = [...byShape].filter(([, l]) => l.length >= 2);
   for (const [, list] of shapes) add(shapeCaption(list[0]), list, (P.shape ?? 0.6) / shapes.length, "shape");
+  // (and the combinations in shapes/combos.js, as far as this fill's pieces go)
+  const here = new Set(pool), curated = zenCombos(state).map(c => [c, c.pieces.map(it => it.s).filter(s => here.has(s))]).filter(([, l]) => l.length >= 2);
+  const wsum = curated.reduce((n, [c]) => n + (c.weight ?? 1), 0);
+  for (const [c, list] of curated) add(c.id.replace(/_/g, " "), list, (P.curated ?? 0) * (c.weight ?? 1) / wsum, "combo");
   if (!groups.length) return null;
   const g = sampleByWeight(groups, x => x.w, rng);
   // how many kinds: mostly two to five, now and then up to fifteen
@@ -487,20 +492,26 @@ function sweeper(state) {
 // all the way down so nothing clears on the way up, then bring it all down: sometimes one of
 // the tallest pieces drops into that column (`keyChance`), or else the powerups, the biggest first.
 // (`only`: nothing but next()'s pieces, so when the next won't fit, that's as high as it goes;
-// `label`: what the name says for each of them, the same all the way up.)
-function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 1, maxPieces = 70 * CONFIG.board.cols * CONFIG.board.rows / 336, keyChance = 0.5, blastWith = null, blasts = 7, only = false, label = null, streaks = 0, strays = CONFIG.zen.strays?.chance ?? 0 } = {}) {
+// `label`: what the name says for each of them, the same all the way up; `turns`: how many of
+// their turns they can come in, 1 for only the way up they were drawn; `loose`: the level 6
+// pieces among them aren't in a set, so they can fall with others in a flock.)
+function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 1, maxPieces = 70 * CONFIG.board.cols * CONFIG.board.rows / 336, keyChance = 0.5, blastWith = null, blasts = 7, only = false, label = null, turns = null, streaks = 0, repeats = 1, longest = null, loose = false, strays = CONFIG.zen.strays?.chance ?? 0 } = {}) {
   // (`streaks`: how often a piece, when it's going quickly, comes two to four times running, so
-  // there's time to read its name; `strays`: how often something else altogether)
+  // there's time to read its name, and `repeats` times as likely as that, at most `longest` more
+  // times; `strays`: how often something else altogether)
   const again = { shape: null, left: 0 };
   const nextOne = (state) => {
     if (again.left > 0 && fitsUnder(state, again.shape, 2)) { again.left--; return again.shape; }
     const odd = only ? null : stray(state, strays);
     if (odd) { again.stray = true; return odd; }
-    const s = next(state);
+    let s = next(state);
+    // (one that ends the fill, `{ shape, last: true }`: never twice, and nothing after it)
+    if (s?.last) { again.left = 0; again.last = true; return s.shape; }
     // (batches: as the mood takes it, likelier and longer when it's going quickly)
     const B = CONFIG.zen.batches ?? {}, same = isCalm(state) ? 0 : sameness(state), fast = pace <= (B.fastPace ?? 0.85);
-    const chance = Math.min(0.95, streaks + (B.base ?? 0) + same * (fast ? B.fast ?? 0 : B.slow ?? 0));
-    if (s && state.rng() < chance) { again.shape = s; again.left = int(state, 1, 1 + Math.round(same * (fast ? B.longFast ?? 3 : B.longSlow ?? 2))); } else again.left = 0;
+    const chance = Math.min(0.95, repeats * (streaks + (B.base ?? 0) + same * (fast ? B.fast ?? 0 : B.slow ?? 0)));
+    // (and the bigger the piece, the shorter the run: about B.blocks blocks' worth at most)
+    if (s && state.rng() < chance) { again.shape = s; again.left = Math.min(longest ?? Infinity, Math.floor((B.blocks ?? 30) / blocks(s)), int(state, 1, 1 + Math.round(same * (fast ? B.longFast ?? 3 : B.longSlow ?? 2)))); } else again.left = 0;
     return s;
   };
   return {
@@ -531,9 +542,9 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         const keep = CONFIG.modes[state.mode]?.keep;
         if (keep) this.leave = int(state, keep[0], keep[1]);
       }
-      let shape = this.phase === "fill" ? nextOne(state) : null;
+      let shape = this.phase === "fill" && !again.last ? nextOne(state) : null;
       if (shape && !fitsUnder(state, shape, 2)) shape = only ? null : pick(state, smallPool(state)); // (nearly there: nothing too big)
-      if (this.phase === "fill" && (!shape || stackHeight(state) >= this.target || this.pieces >= maxPieces)) {
+      if (this.phase === "fill" && (!shape || (!again.last && stackHeight(state) >= this.target) || this.pieces >= maxPieces)) {
         this.phase = "blast";
         this.pace = 1;
         const wx = this.weights.well, keys = zenKeys(state).filter(k => k.rotations[0][0].length === 1);
@@ -549,7 +560,7 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         zenCaption(state, "demolition", "demolition");
       }
       if (this.phase === "fill") {
-        state.zen.queue.push({ shape, weights: this.weights, label, ...(again.stray ? { stray: true } : {}) });
+        state.zen.queue.push({ shape, weights: this.weights, label, ...(turns && !again.stray ? { turns } : {}), ...(loose ? { loose: true } : {}), ...(again.stray ? { stray: true } : {}) });
         again.stray = false;
         this.pieces++;
       } else {
@@ -695,7 +706,7 @@ const MOVEMENTS = {
     return fillThenBlast(fam.caption, (st) => {
       const fits = fam.pieces.filter(s => fitsUnder(st, s, 4));
       return fits.length ? pickFresh(st, fits) : pickFresh(st, smallPool(st));
-    }, { target: up(int(state, 17, 20)), pace: 0.75, streaks: 0.3, strays: (CONFIG.zen.strays?.chance ?? 0) / 2 });
+    }, { target: up(int(state, 17, 20)), pace: 0.75, streaks: 0.3, loose: true, strays: (CONFIG.zen.strays?.chance ?? 0) / 2 });
   },
 
   // the board full of one awkward thing, and the name says so all the way up: "Oops, all bagpipes!"
@@ -703,6 +714,53 @@ const MOVEMENTS = {
     const s = awkwardOne(state);
     if (!s) return MOVEMENTS.mono(state);
     return fillThenBlast(null, () => s, { target: up(int(state, 17, 20)), pace: 0.75, only: true, keyChance: 0.3, label: oopsName(state, s) });
+  },
+
+  // the board full of one of the combinations in shapes/combos.js: the portraits; the papers, the
+  // static and the zebras; flowers; the animals; the tins; Oops, all dinosaur bones! The emotion
+  // cards, getting stranger as they go up...
+  combo: (state) => {
+    const want = state.zen.opts?.id;
+    state.zen.opts = null;
+    const c = pickCombo(state, want);
+    if (!c) return MOVEMENTS.mono(state);
+    const { cols, rows } = CONFIG.board;
+    // (as high as fillThenBlast will take it: on top of whatever's there)
+    const h0 = stackHeight(state), target = Math.min(rows - 3, Math.max(up(int(state, 17, 20)), h0 + 5));
+    const labels = c.label == null ? [] : [].concat(c.label);
+    const label = labels.length && state.rng() < (c.labelChance ?? 1) ? labels[Math.floor(state.rng() * labels.length)] : null;
+    // (small things quickly, and enough of them to fill it; big things slowly)
+    const all = c.stages ? c.stages.flat() : c.pieces, wsum = all.reduce((n, it) => n + it.w, 0);
+    const size = all.reduce((n, it) => n + it.w * blocks(it.s), 0) / wsum;
+    const pace = Math.max(0.55, Math.min(1.05, 0.5 + size / 40));
+    let prev = null, reached = -1;
+    return fillThenBlast(c.id, (st) => {
+      let list = c.pieces;
+      if (c.stages) {
+        // (the stage for how far up it's got; now and then one from the stage before, so the
+        // change isn't too tidy; and nearly at the top, the one that goes on top, once)
+        const n = c.stages.length, h = stackHeight(st), p = (h - h0) / Math.max(1, target - h0), span = c.top ? 0.86 : 1;
+        let i = Math.max(0, Math.min(n - 1, Math.floor(p / span * n)));
+        if (i > 0 && st.rng() < 0.2) i--;
+        // (nearly at the top, or nothing more of this stage fits: the last stage, if it hasn't
+        // been yet, and then the one that goes on top)
+        const fit = (l) => l.some(it => fitsUnder(st, it.s, 3));
+        const top = c.top?.filter(it => fitsUnder(st, it.s, 2)) ?? [];
+        const close = h + Math.min(...c.stages[n - 1].map(it => it.s.rotations[0].length)) >= target;
+        if (c.top && (p >= span || close || !fit(c.stages[i]))) {
+          if (reached < n - 1 && fit(c.stages[n - 1])) i = n - 1;
+          else if (top.length) return { shape: sampleByWeight(top, it => it.w, st.rng).s, last: true };
+        }
+        reached = Math.max(reached, i);
+        list = c.stages[i];
+      }
+      // (and not the same one twice running, if there's a choice)
+      let fits = list.filter(it => fitsUnder(st, it.s, 3));
+      if (fits.length > 1) fits = fits.filter(it => it.s !== prev);
+      return fits.length ? (prev = sampleByWeight(fits, it => it.w * fresh(st, it.s), st.rng).s) : null;
+    }, { target, pace, only: true, label, loose: true, turns: state.rng() < (c.upright ?? 0) ? 1 : null, keyChance: 0.35, streaks: 0.15,
+      repeats: c.stages ? 0.15 : size >= 9 ? 0.5 : 1, longest: c.stages ? 1 : size >= 9 ? 2 : null,
+      maxPieces: Math.min(220, 0.95 * cols * rows / Math.max(1, size)) });
   },
 
   // small things, lots of them, quickly
@@ -886,6 +944,64 @@ const MOVEMENTS = {
   }),
 };
 
+// The combinations (shapes/combos.js), with their pieces looked up: { id, pieces: [{ s, w }],
+// stages?: [[{ s, w }]], label, labelChance, upright, weight }. Missing and banished pieces are
+// left out, and so is a combination that has fewer than two left (or a stage with none).
+const combosCache = new WeakMap();
+export function zenCombos(state) {
+  const key = state.allById;
+  if (!key) return [];
+  if (combosCache.has(key)) return combosCache.get(key);
+  const ok = alivePieces(state);
+  const listOf = (spec) => {
+    const out = [];
+    const add = (id, w) => { const s = key.get(id); if (s && ok.has(s) && w > 0 && !out.some(it => it.s === s)) out.push({ s, w }); };
+    for (const it of Array.isArray(spec) ? spec : [spec ?? {}]) {
+      if (typeof it === "string") add(it, 1);
+      else if (it && typeof it === "object") for (const [id, w] of Object.entries(it)) add(id, Number(w));
+    }
+    return out;
+  };
+  const out = [];
+  for (const c of COMBOS) {
+    const sets = (c.sets ?? []).flatMap(id => groupMembers((state.groups ?? []).find(g => g.id === id)).filter(s => ok.has(s)).map(s => s.id));
+    if (c.stages) {
+      const stages = c.stages.map(listOf), top = c.top ? listOf(c.top) : null;
+      if (stages.every(l => l.length) && new Set(stages.flat().map(it => it.s)).size >= 2) out.push({ ...c, stages, top: top?.length ? top : null, pieces: [...stages.flat(), ...(top ?? [])] });
+      continue;
+    }
+    const pieces = listOf([...(Array.isArray(c.pieces) ? c.pieces : c.pieces ? [c.pieces] : []), ...sets]);
+    if (pieces.length >= 2) out.push({ ...c, pieces });
+  }
+  combosCache.set(key, out);
+  return out;
+}
+// (one at random, the ones not seen for a while the likeliest; or the one asked for by id)
+function pickCombo(state, id = null) {
+  const all = zenCombos(state);
+  if (id) return all.find(c => c.id === id) ?? null;
+  const z = state.zen, seen = (z.combosSeen ??= []);
+  const options = all.filter(c => !seen.includes(c.id));
+  const c = (options.length ? sampleByWeight(options, c => c.weight ?? 1, state.rng) : null) ?? (all.length ? sampleByWeight(all, c => c.weight ?? 1, state.rng) : null);
+  if (c) { seen.push(c.id); if (seen.length > Math.min(8, all.length - 1)) seen.shift(); }
+  return c;
+}
+// Every ordinary piece that can turn up at all: not banished (frequency 0), or else only ever
+// after another one that can (one fish, two fish...), or in a set, or only in zen.
+function alivePieces(state) {
+  const all = [...state.allById.values()].filter(s => !s.powerup);
+  const ok = new Set(all.filter(s => (s.frequency ?? 1) > 0 || s.tags?.includes("zen")));
+  for (const g of state.groups ?? []) for (const s of groupMembers(g)) if (!s.powerup) ok.add(s);
+  for (let grew = true; grew;) {
+    grew = false;
+    for (const s of [...ok]) (s.nextShapes ?? []).forEach((id, i) => {
+      const n = state.allById.get(id);
+      if (n && !n.powerup && !ok.has(n) && (s.nextShapeProbs?.[i] ?? 1) > 0) { ok.add(n); grew = true; }
+    });
+  }
+  return ok;
+}
+
 // One kind of thing to fill the board with: a set's pieces, Big Bens, or everything on a thread
 // (the sets and the Bens more often than any one thread). With `calm` (zen), only the easier
 // pieces of each, and said more quietly.
@@ -896,10 +1012,11 @@ function pickFamily(state, { calm = false } = {}) {
     if (calm) pieces = pieces.filter(s => (s.difficulty ?? 1) <= 3 && blocks(s) <= 16);
     if (pieces.length >= (calm ? 3 : 1)) fams.push({ caption: calm ? quiet : caption, pieces, w });
   };
-  const named = { spam: ["nothing but spam", "a little spam"], noahs_ark: ["two by two", "two by two"], emotions: ["a wall of feelings", "some feelings"] };
+  const named = { spam: ["nothing but spam", "a little spam"], beans: ["nothing but beans", "a few beans"], spaghetti_os: ["nothing but Spaghetti-Os", "a few Spaghetti-Os"],
+    noahs_ark: ["two by two", "two by two"], emotions: ["a wall of feelings", "some feelings"] };
   for (const g of state.groups ?? []) {
     if (!named[g.id]) continue;
-    const pieces = [...new Set(g.steps.flatMap(st => st.shapes ?? st.variant ?? []))].filter(s => blocks(s) <= 30);
+    const pieces = groupMembers(g).filter(s => !s.powerup && blocks(s) <= 30);
     if (pieces.length >= 3) add(...named[g.id], pieces, 5);
   }
   const bens = ["big_ben", "little_ben"].map(byId).filter(Boolean);
@@ -1116,9 +1233,9 @@ function formFlock(state, land) {
     const item = z.queue[i];
     if (!item || item.shape.powerup || !!item.expect !== planned || (planned && !item.target)) break;
     let spot = null;
-    if (!item.key && !item.dramatic && !item.emergency && !item.target?.slide && item.shape.difficulty !== LEVEL6) {
+    if (!item.key && !item.dramatic && !item.emergency && !item.target?.slide && (item.shape.difficulty !== LEVEL6 || item.loose)) {
       spot = item.target ? { rot: item.target.rot, x: item.target.x }
-        : flockSpot(occ, item.shape, item.weights ?? WEIGHTS.clear, (x0, x1) => apart(x0, x1, taken), cols, rows, F.headroom, z.simRng);
+        : flockSpot(occ, item.shape, item.weights ?? WEIGHTS.clear, (x0, x1) => apart(x0, x1, taken), cols, rows, F.headroom, z.simRng, item.turns ?? 4);
     }
     const m = spot && item.shape.rotations[spot.rot];
     const fits = m && apart(spot.x, spot.x + m[0].length, taken) && apart(spot.x, spot.x + m[0].length, passed);
@@ -1179,9 +1296,9 @@ function formFlock(state, land) {
 // Where a flock's piece goes: the best place in the columns still free (`free(x0, x1)`), dropped
 // straight down onto `occ`, at least `headroom` rows below the top, and never in the column a
 // fill keeps clear: a flock's piece can always stay behind and come on its own.
-function flockSpot(occ, shape, weights, free, cols, rows, headroom, rng) {
+function flockSpot(occ, shape, weights, free, cols, rows, headroom, rng, maxTurns = 4) {
   let best = null;
-  for (let r = 0; r < reachableTurns(shape); r++) {
+  for (let r = 0; r < Math.min(maxTurns, reachableTurns(shape)); r++) {
     const mat = shape.rotations[r], w = mat[0].length;
     for (let x = 0; x + w <= cols; x++) {
       if (!free(x, x + w) || intoWell(mat, x, weights)) continue;
@@ -1305,7 +1422,7 @@ function targetFor(state) {
   const item = z.current;
   if (item?.target && item.shape.id === a.shape.id) return { ...item.target };
   // (with the next piece in mind, if it's known: the moon goes where the earth can stand beside it)
-  const best = bestPlacement(state, a.shape, item?.weights ?? WEIGHTS.clear, 4, z.queue[0]?.shape ?? null);
+  const best = bestPlacement(state, a.shape, item?.weights ?? WEIGHTS.clear, item?.turns ?? 4, z.queue[0]?.shape ?? null);
   return best ? { rot: best.rot, x: best.x, slide: best.slide ?? null } : null;
 }
 

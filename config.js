@@ -184,14 +184,15 @@ export const CONFIG = {
     mosaicChance: 0.45,    // (on a big board) the squares now and then 1 x 1, a mosaic
     // Turbo zen's fills are a few kinds of piece that go together (src/zen.js palettePick): how
     // often no palette (anything goes), how often something else turns up among them (odd), how
-    // likely each way of going together is (a colour, a theme, both, a shape), and how many
+    // likely each way of going together is (a colour, a theme, both, a shape, one of the
+    // combinations in shapes/combos.js), and how many
     // kinds: the weights for 2, 3, 4, ... up to 15 of them.
-    palette: { none: 0.12, odd: 0.04, colour: 1, theme: 1.1, colourTheme: 0.6, shape: 0.7,
+    palette: { none: 0.12, odd: 0.04, colour: 1, theme: 1.1, colourTheme: 0.6, shape: 0.7, curated: 0.9,
       kinds: [0.18, 0.24, 0.2, 0.14, 0.05, 0.04, 0.03, 0.03, 0.02, 0.02, 0.02, 0.01, 0.01, 0.01] },
     // ...and the same piece a few times running, to read its name: a mood that wanders up and
     // down (wander, now and then a jump), more of it and longer runs when it's going quickly
-    // (pace at most fastPace).
-    batches: { base: 0.06, fast: 0.6, slow: 0.3, longFast: 7, longSlow: 4, wander: 0.2, jump: 0.03, fastPace: 0.85 },
+    // (pace at most fastPace); the bigger the piece, the shorter (about `blocks` blocks' worth).
+    batches: { base: 0.06, fast: 0.6, slow: 0.3, longFast: 7, longSlow: 4, wander: 0.2, jump: 0.03, fastPace: 0.85, blocks: 30 },
     // Bringing the board down (turbo zen) goes on only while it's spectacular: after the first
     // `free` blasts, another only if it takes a big bite at once, minBlocks (on the usual board;
     // on a bigger one, that times its size to the power `grow`) and minShare of what's there
@@ -273,6 +274,8 @@ export const CONFIG = {
     newest: {
       sets: ["sunshine", "trees", "great_and_terrible", "space", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
+        "sphinx", "extris", "present_big", "present_wide", "present_tall", "present_long", "present_small", "dinosaur_footprints", "bigfoot_footprints",
+        "stop_sign", "dynamite", "umbrella_for_a_fish", "seen_things", "storm_in_a_teacup",
         "microwave_popcorn", "fog_machine", "spreading_cloud", "sun_in_a_cloud",
         "box_of_eggs", "spare_allen_key", "bees_knees", "popcorn",
         "rubiks_cube_checkerboard", "rubiks_cube", "tuning_fork",

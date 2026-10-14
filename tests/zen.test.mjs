@@ -10,7 +10,8 @@ import { THREADS, SET_THREADS } from "../shapes/threads.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, updateGame, hardDropAndLock, markInput, tryMove, on } from "../src/game.js";
-import { zenStart, zenIgnoreInput, pluralName, planTiles, oopsName, zenKeys } from "../src/zen.js";
+import { zenStart, zenIgnoreInput, pluralName, planTiles, oopsName, zenKeys, zenCombos } from "../src/zen.js";
+import { COMBOS } from "../shapes/combos.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const { rows, cols } = CONFIG.board;
@@ -268,6 +269,58 @@ test("turbo zen: oops, all one awkward thing, said all the way up, and then down
   assert.ok(after.some(m => m.height <= 8), `and then down it came (${log.movements.slice(i, i + 6).map(m => `${m.name}@${m.height}`).join(" ")})`);
 });
 
+test("turbo zen: the combinations in shapes/combos.js are all there, and each fills the board with its own pieces", () => {
+  const combos = zenCombos(zen(1, "turbo").state);
+  const ids = new Set(SHAPES.map(s => s.id));
+  for (const c of COMBOS) {
+    const listed = (c.stages ? [...c.stages.flat(), ...[].concat(c.top ?? [])] : [].concat(c.pieces ?? [])).flatMap(it => (typeof it === "string" ? [it] : Object.keys(it)));
+    for (const id of listed) assert.ok(ids.has(id), `${c.id}: there's no piece ${id}`);
+    assert.ok(combos.some(g => g.id === c.id), `${c.id}: at least two of its pieces can turn up`);
+  }
+  for (const id of ["portraits", "flowers", "tins", "fish", "feelings_strange"]) {
+    const { state, log } = zen(8, "turbo");
+    const c = combos.find(g => g.id === id);
+    const seen = [];
+    let phase = "before", peak = 0;
+    on(state, (t, d) => {
+      if (t === "zenMovement") phase = phase === "before" && d.name === "combo" ? "fill" : phase === "fill" ? "after" : phase; // (the first one)
+      if (t === "spawn" && phase === "fill" && !d.shape.powerup && !d.shape.tags?.includes("zen")) seen.push(d.shape);
+      if (t === "lock" && phase === "fill") peak = Math.max(peak, height(state));
+    });
+    zenStart(state, "combo", { id });
+    run(state, log, 3 * 60000);
+    const own = seen.filter(s => c.pieces.some(it => it.s.id === s.id));
+    assert.ok(seen.length >= 3 && own.length >= 0.85 * seen.length, `${id}: ${own.length} of ${seen.length} its own (${seen.filter(s => !own.includes(s)).map(s => s.id)})`);
+    assert.ok(new Set(own.map(s => s.id)).size >= Math.min(3, c.pieces.length), `${id}: a mix of them`);
+    assert.ok(peak >= 14, `${id}: up to ${peak} rows`);
+  }
+});
+
+test("turbo zen: an emotions chart that gets stranger on the way up, with the one at the very top last", () => {
+  const { state, log } = zen(9, "turbo");
+  const c = zenCombos(state).find(g => g.id === "feelings_ascending");
+  const stageOf = (s) => c.stages.findIndex(l => l.some(it => it.s.id === s.id));
+  const seen = [];
+  let phase = "before";
+  on(state, (t, d) => {
+    if (t === "zenMovement" && phase === "before" && d.name === "combo") phase = "fill";
+    // (until the first of the blasts that bring it down: the last of the fill comes just after
+    // the demolition begins)
+    if (t === "spawn" && phase === "fill" && (d.shape.powerup || d.shape.tags?.includes("zen"))) phase = "after";
+    if (t === "spawn" && phase === "fill" && c.pieces.some(it => it.s.id === d.shape.id)) seen.push(d.shape);
+  });
+  zenStart(state, "combo", { id: "feelings_ascending" });
+  run(state, log, 3 * 60000);
+  assert.ok(seen.length >= 10, `${seen.length} cards`);
+  assert.equal(seen.at(-1).id, "emotion_heat_death", "the heat death of the universe on top");
+  assert.equal(seen.filter(s => s.id === "emotion_heat_death").length, 1, "only the once");
+  const stages = seen.slice(0, -1).map(stageOf);
+  // (never back down, but for one from the stage before now and then)
+  stages.forEach((k, i) => assert.ok(k >= Math.max(0, ...stages.slice(0, i)) - 1, `in order: ${stages.join(" ")}`));
+  assert.equal(stages[0], 0, "plain feelings first");
+  assert.ok(Math.max(...stages) === c.stages.length - 1, `all the way up: ${stages.join(" ")}`);
+});
+
 test("a board full of one thing has a name for it, now and then just its own", () => {
   const state = { rng: makeRng(3) };
   const said = (kind) => oopsName(state, "a bagpipe", kind);
@@ -464,7 +517,8 @@ test("turbo zen on a board of another height: the tallest pieces as tall as it i
       CONFIG.board.rows = h; CONFIG.board.cols = 17;
       const state = createGameState(shapes, powerups, { rng: makeRng(3) });
       const keys = zenKeys(state);
-      assert.equal(keys.length, 5, `${h}: ${keys.map(k => k.id)}`);
+      assert.equal(keys.length, shapes.filter(s => s.tags?.includes("zen") && s.rotations[0].length === 24).length, `${h}: ${keys.map(k => k.id)}`);
+      assert.ok(keys.length >= 15, `${h}: ${keys.length} of them`);
       for (const k of keys) {
         const base = shapes.find(s => k.id === `${s.id}_${h}`);
         assert.ok(base, k.id);
