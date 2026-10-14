@@ -14,7 +14,7 @@ import { CONFIG } from "../config.js";
 export function rarity(state, shape) {
   const f = shape.frequency ?? 1;
   if (!shape.powerup && f <= 0 && shape.tags?.includes("zen")) return { words: "only in zen mode" };
-  if (!shape.powerup && (shape.difficulty ?? 1) === 6) {
+  if ((!shape.powerup && (shape.difficulty ?? 1) === 6) || shape.powerup?.setOnly) {
     const set = (state.groups ?? []).find(g => groupPieces(g).includes(shape.id));
     return { words: "only ever in a set", set: set?.name };
   }

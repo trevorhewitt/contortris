@@ -619,7 +619,7 @@ export function bindUI({ state, renderer, achievements }) {
   }
 
   // Powerups that can turn up at all (not switched off), and the classes they make.
-  const livePowerups = () => state.allPowerups.filter(p => isPowerupEnabled(p) && (p.frequency ?? 1) > 0);
+  const livePowerups = () => state.allPowerups.filter(p => isPowerupEnabled(p) && (p.frequency ?? 1) > 0 && !p.powerup.setOnly);
   const liveClasses = () => Object.keys(CLASS_INFO).filter(c => livePowerups().some(p => p.powerup.cls === c));
   const ofClass = (cls) => livePowerups().filter(p => p.powerup.cls === cls);
 

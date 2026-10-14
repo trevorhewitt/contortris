@@ -42,8 +42,8 @@ export function createGameState(shapes, powerups, { rng = Math.random, groups = 
     allPowerups: powerups,
     allById: new Map([...shapes, ...powerups].map(s => [s.id, s])),
 
-    // Level 6 groups (shapes/groups.js, src/level6.js)
-    groups: normaliseGroups(groups, shapes),
+    // Level 6 groups (shapes/groups.js, src/level6.js): powerups can be in them too
+    groups: normaliseGroups(groups, [...shapes, ...powerups]),
     // Threads (shapes/threads.js, src/threads.js): the loose themes pieces share
     threads: threads ? buildThreads([...shapes, ...powerups], threads.threads, threads.sets) : null,
     devLevel6: "auto",         // dev mode override: "auto", "on" or "off"
@@ -163,8 +163,9 @@ export function configureMode(state, modeId) {
   const mode = CONFIG.modes[state.mode];
   // Easy mode: no giant (difficulty 4/5) pieces
   state.shapes = mode.giants === false ? state.allShapes.filter(s => (s.difficulty ?? 1) < 4) : state.allShapes;
-  // switched-off powerup types (and combos using them) never turn up
-  state.powerups = mode.powerups ? state.allPowerups.filter(isPowerupEnabled) : [];
+  // switched-off powerup types (and combos using them) never turn up, and nor do the ones that
+  // only ever come in their level 6 set (setOnly: they come with it)
+  state.powerups = mode.powerups ? state.allPowerups.filter(p => isPowerupEnabled(p) && !p.powerup.setOnly) : [];
   state.idToShape = new Map();
   for (const s of [...state.shapes, ...state.powerups]) state.idToShape.set(s.id, s);
 }

@@ -773,6 +773,7 @@ export function stillUseful(state, shape) {
   const same = { shape, rot: 0 };
   const cfg = powerupCfg(state.mode), use = cfg.usability ?? {};
   if (!shape?.powerup || use.enabled === false || !state.pieceSel) return same;
+  if (shape.powerup.setOnly) return same; // (it's part of its set's story: it comes as it is)
   const min = use.minUseful ?? 1;
   if (powerupUsefulnessCached(state, shape) >= min) return same;
   const sel = state.pieceSel, ps = sel.powerup;

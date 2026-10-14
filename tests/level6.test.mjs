@@ -8,7 +8,8 @@ import { GROUPS } from "../shapes/groups.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, hardDropAndLock, on, updateGame, tryRotate, tryMove, setNextPiece } from "../src/game.js";
-import { normaliseGroups, expandGroup, lastVersion, noteVersion, level6Open, stackRows, startGroup } from "../src/level6.js";
+import { normaliseGroups, expandGroup, lastVersion, noteVersion, level6Open, stackRows, startGroup, groupPlayable } from "../src/level6.js";
+import { selectPiece } from "../src/selection.js";
 import { remixShape } from "../src/remix.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
@@ -554,4 +555,35 @@ test("existence: a thing at each stage, from the physical to the end of everythi
   assert.equal(seen.size, stages.flat().length, `every one turns up: ${[...seen]}`);
   for (const [c, v] of versions) assert.ok(v.size >= 2, `${c} in more than one version`);
   assert.ok(sometimes > 120 && sometimes < 280, `questions or doubt in ${sometimes} of 400`);
+});
+
+test("a set can have powerups in it: ones that only ever come in it, once their class is met, and only where there are powerups", () => {
+  // (a made-up set: two ordinary level 6 pieces, then a powerup that's only for it)
+  const big = shapes.filter(s => s.difficulty === 6).slice(0, 2);
+  const raw = SHAPES.find(s => s.powerup?.type === "destroyer" && (s.frequency ?? 1) > 0);
+  const own = loadShapes([{ ...raw, id: "t_set_only", powerup: { ...raw.powerup, setOnly: true } }]).powerups[0];
+  const groups = [{ id: "t_with_powerup", name: "test", frequency: 1, sequence: [big[0].id, big[1].id, "t_set_only"] }];
+  const make = (mode) => {
+    const state = createGameState(shapes, [...powerups, own], { rng: makeRng(5), groups });
+    startRun(state, mode);
+    return state;
+  };
+  const g = make("normal").groups.find(x => x.id === "t_with_powerup");
+  assert.ok(g, "the set, with its powerup");
+  assert.deepEqual(g.powerupClasses, ["destroyer"]);
+  // never outside its set
+  const state = make("normal");
+  assert.ok(!state.powerups.some(p => p.id === "t_set_only"), "not one of the mode's powerups");
+  // where it can come: not where there are no powerups; in Classic once Dissolverz are met
+  assert.equal(groupPlayable(make("extreme"), g), false, "Extreme has no powerups");
+  const n = make("normal");
+  assert.equal(groupPlayable(n, g), false, "not before the Dissolverz have been met");
+  n.pieceSel.powerup.shownClasses.add("destroyer");
+  assert.equal(groupPlayable(n, g), true);
+  assert.equal(groupPlayable(make("god"), g), true, "God mode: everything from the start");
+  // and it comes in order, the powerup last, as it is
+  n.devLevel6 = "on";
+  const served = [startGroup(n, g, expandGroup(g, n.rng)).id]; // (starting it hands out its first piece)
+  for (let i = 0; i < 2; i++) served.push(selectPiece(n).id);
+  assert.deepEqual(served, [big[0].id, big[1].id, "t_set_only"]);
 });

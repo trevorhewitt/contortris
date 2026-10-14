@@ -43,9 +43,13 @@ export function normaliseGroups(rawGroups, shapes) {
     for (const st of steps) for (const sh of [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.repeat ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]) {
       if (sh.echo && live(sh.echo)) echoes.set(sh.id, live(sh.echo));
     }
+    // (a set with powerups in it: the classes it needs met before it can come, src/level6.js
+    // groupPlayable)
+    const pieces = steps.flatMap(st => [...(st.shapes ?? []), ...(st.variant ?? []), ...(st.repeat ?? []), ...(st.chain ? [...st.chain.start, ...Object.values(st.chain.after).flat()].map(it => it.s).filter(Boolean) : [])]);
+    const powerupClasses = [...new Set(pieces.filter(s => s.powerup).map(s => s.powerup.cls))];
     // (unique: no piece twice in one run, whichever steps it's in; echoes aside)
     out.push({ id: String(g.id), name: String(g.name ?? g.id), frequency: Math.max(0, Number(g.frequency ?? 1) || 0), steps, versions,
-      room: Math.max(0, Number(g.room) || 0), echoes, unique: g.unique === true });
+      room: Math.max(0, Number(g.room) || 0), echoes, unique: g.unique === true, powerupClasses });
   }
   return out;
 
@@ -238,6 +242,19 @@ export function nextGroupPiece(state) {
   return shape;
 }
 
+// Can this set come now? Not banished; and one with powerups in it only where there are
+// powerups, once every class it has in it has been met (in a mode with everything from the
+// start, straight away).
+export function groupPlayable(state, g) {
+  if (!(g.frequency > 0)) return false;
+  if (!g.powerupClasses?.length) return true;
+  const mode = CONFIG.modes[state.mode] ?? {};
+  if (!mode.powerups) return false;
+  if (mode.everything) return true;
+  const ps = state.pieceSel?.powerup;
+  return !!ps && g.powerupClasses.every(c => ps.shownClasses.has(c));
+}
+
 export function groupUnderWay(state) {
   return (state.pieceSel?.level6?.queue.length ?? 0) > 0;
 }
@@ -261,7 +278,8 @@ export function maybeStartGroup(state) {
   }
   // No set comes round again until every other one has had its turn this game, and the last
   // ones served (this game or the one before) wait if anything else can go.
-  const live = state.groups.filter(g => g.frequency > 0);
+  const live = state.groups.filter(g => groupPlayable(state, g));
+  if (!live.length) return null;
   const turns = (g) => l6.seen.get(g.id) ?? 0;
   const least = Math.min(...live.map(turns));
   let pool = live.filter(g => turns(g) === least);

@@ -174,6 +174,7 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
         help: Number.isFinite(Number(raw.help)) && raw.help !== null && raw.help !== "" ? Math.max(1, Math.min(5, Number(raw.help))) : DEFAULT_HELP_BY_TIER[tier],
         fill: only.fill ?? raw.fill ?? null,
         bad: raw.bad === true,
+        setOnly: raw.setOnly === true,
         stripped: true,
       };
     }
@@ -229,6 +230,8 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
     parts,
     areaRotations,
     bad: raw.bad === true,
+    // (one that only ever comes in its level 6 set: shapes/groups.js)
+    setOnly: raw.setOnly === true,
     scatter: (raw.scatter && type === "destroyer") ? {
       radius: Math.max(1, Number(raw.scatter.radius) || 5),
       density: Math.max(0.05, Math.min(1, Number(raw.scatter.density) || 0.5)),
