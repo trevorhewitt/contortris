@@ -212,7 +212,7 @@ export const CONFIG = {
     // least), patches of tiles, and Expanderz filling what they can of the gaps (grows): how
     // likely none, one, two or three of them (beds; patches; grows), above `belowTop` rows from
     // the top and with `headroom` rows over them.
-    extras: { beds: [0.3, 0.4, 0.22, 0.08], patches: [0.5, 0.35, 0.15], grows: [0.45, 0.35, 0.2], belowTop: 6, headroom: 4, minCols: 0, minBlocks: 6 },
+    extras: { beds: [0.3, 0.4, 0.22, 0.08], patches: [0.4, 0.4, 0.2], grows: [0.45, 0.35, 0.2], belowTop: 6, headroom: 4, minCols: 0, minBlocks: 6 },
     // Now and then (chance, each piece of a fill; half that in a board of one family; never in
     // "Oops, all..."), something else altogether: one of the pieces turbo zen hardly uses, up to
     // maxDifficulty, the less it has been used since the page was loaded the likelier (to the

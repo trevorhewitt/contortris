@@ -57,7 +57,7 @@ const WEIGHTS = {
 const MOVEMENT_WEIGHTS = {
   zen: { natural: 5, rain: 1, family: 1.6, colours: 1, twos: 0.7 },
   turbo: { natural: 0.25, rain: 0.15, build: 0.5, giants: 0.3, column: 2.5, beds: 2, crack: 2, mess: 0.9, fall: 0.3, well: 0.3, chorus: 1.2,
-    mono: 5, combo: 4, pile: 2, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1, oops: 2.5, tiles: 2 },
+    mono: 5, combo: 4, pile: 2, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1, oops: 2.5, tiles: 1.2 },
 };
 // (the ones that need a low, tidy board to build on)
 const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "standing", "colour", "squares", "tiles", "pile"]);
@@ -101,7 +101,7 @@ export function createZen(state) {
 // For the dev panel: every movement there is, by name, and the ways some of them can go.
 export function zenMovementChoices() {
   const ghosts = !(CONFIG.assist.powerups.disabledTypes ?? []).includes("phantom");
-  const ways = { crack: { end: Object.keys(CRACK_ENDS).filter(k => ghosts || !GHOSTLY.has(k)) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] }, combo: { id: COMBOS.map(c => c.id) }, expanders: { way: ["only", "among", "showcase"] }, colour: { kind: Object.keys(COLOUR_KINDS) }, pile: { from: ["middle", "left", "right"] } };
+  const ways = { crack: { end: Object.keys(CRACK_ENDS).filter(k => ghosts || !GHOSTLY.has(k)) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards", "lego", "freeform"] }, combo: { id: COMBOS.map(c => c.id) }, expanders: { way: ["only", "among", "showcase"] }, colour: { kind: Object.keys(COLOUR_KINDS) }, pile: { from: ["middle", "left", "right"] } };
   const out = [];
   for (const name of Object.keys(MOVEMENTS)) {
     if (["pacmen", "taps", "pacmenAndTaps", "settle", "sweep"].includes(name)) continue; // (they only come after others)
@@ -2146,18 +2146,34 @@ export function planStanding(state) {
   if (!solid(occ, cols, rows) || heightOf(occ, cols, rows) > 2) return null;
   const keys = zenKeys(state);
   if (keys.length && heightOf(occ, cols, rows) === 0) {
-    const order = [];
+    // (mostly with strips of other things between them, the whole height of the board too; now
+    // and then nothing but the tallest)
+    const mixed = rng() < 0.65, order = [], strips = [];
     for (let x = 0; x < cols;) {
-      const fit = keys.filter(k => k.rotations[0][0].length <= cols - x);
-      if (!fit.length) break;
+      const room = cols - x;
+      if (mixed && room >= 2 && rng() < 0.4) { const w = Math.min(room, int(state, 2, 4)); strips.push({ x, w }); x += w; continue; }
+      const fit = keys.filter(k => k.rotations[0][0].length <= room);
+      if (!fit.length) { strips.push({ x, w: room }); break; }
       const k = fit[Math.floor(rng() * fit.length)];
       order.push({ shape: k, rot: 0, mat: k.rotations[0], x, pace: 1.2 });
       x += k.rotations[0][0].length;
     }
-    for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
-    order[order.length - 1].key = true;
-    const items = toItems(occ, order, cols, rows);
-    if (items) return { items, caption: "standing up" };
+    // the strips first, built up from the floor with whatever fits
+    let work = occ.slice(), fillers = [];
+    for (const s of strips) {
+      const need = new Uint8Array(cols * rows);
+      for (let y = 0; y < rows; y++) for (let x = s.x; x < s.x + s.w; x++) need[y * cols + x] = 1;
+      const w = work.slice(), placed = tile(w, need, fillerCandidates(state), rng, cols, rows);
+      if (!placed) { fillers = null; break; }
+      work = w;
+      fillers.push(...asFillers(placed));
+    }
+    if (fillers && order.length) {
+      for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+      order[order.length - 1].key = true;
+      const items = toItems(occ, [...fillers, ...order], cols, rows);
+      if (items) return { items, caption: strips.length ? "standing up, among other things" : "standing up" };
+    }
   }
   // sticks: each column on its own, sticks whose lengths add up exactly to its height
   const sticks = candidates(plannable(state, 4), 1, rows, 99).filter(c => c.w === 1 && c.h >= 2);
@@ -2576,6 +2592,16 @@ export function planTiles(state, kind = null, { any = false } = {}) {
     }
     return courses >= 3 ? { caption: "a wall of Lego", out, lego: true } : null;
   };
+  // the tiles of every shape and glaze mixed, freeform, wherever they fit
+  kinds.freeform = () => {
+    const pool = (state.allShapes ?? state.shapes).filter(s => !s.powerup && !s.remix && s.tags?.includes("tiles"));
+    const cands = candidates(pool, 5, 5, 9);
+    if (cands.length < 6) return null;
+    const need = new Uint8Array(cols * rows);
+    for (let y = bottom; y >= 3; y--) for (let x = 0; x < cols - 1; x++) if (!work[y * cols + x]) need[y * cols + x] = 1;
+    const placed = tile(work.slice(), need, cands, rng, cols, rows, 6);
+    return placed && { caption: "tiles, every which way", direct: placed.map(p => ({ ...p, pace: 0.6 })) };
+  };
   const names = Object.keys(kinds);
   // (the column left empty is the last one; one of the tallest pieces, a column wide, fills it)
   const key = zenKeys(state).find(k => k.rotations[0][0].length === 1);
@@ -2583,8 +2609,8 @@ export function planTiles(state, kind = null, { any = false } = {}) {
     const res = kinds[kind ?? names[Math.floor(rng() * names.length)]]();
     if (!res) continue;
     // each into its piece: the glaze's piece, turned to the shape wanted
-    const steps = [];
-    for (const p of res.out) {
+    const steps = res.direct ? [...res.direct] : [];
+    for (const p of res.direct ? [] : res.out) {
       const opts = p.g.filter(o => o.key === p.mat.join("/"));
       const o = opts.length ? opts[Math.floor(rng() * opts.length)] : null;
       if (!o) { steps.length = 0; break; }
