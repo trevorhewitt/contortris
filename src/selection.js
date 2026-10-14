@@ -592,8 +592,21 @@ function pickFitting(state, list, weightFn) {
   const bad = new Map();
   for (const s of drawn) if (!bad.has(s)) bad.set(s, fitBadness(state.board, s));
   // (no gaps left: as likely as ever; each gap it can't help leaving: much less likely; a row
-  // finished: a little more likely)
-  return sampleByWeight(drawn, s => { const b = bad.get(s); return b <= 0 ? 1 + 0.4 * Math.min(2, -b) : Math.pow(1 + b, -p); }, state.rng);
+  // finished: a little more likely. And one of the last few again much less likely: something
+  // that fits anywhere, a square, mustn't come round and round)
+  const recent = new Set((state.pieceSel?.recentShapeIds?.slice(-3) ?? []).map(id => state.idToShape?.get(id)).filter(Boolean).map(outlineKey));
+  return sampleByWeight(drawn, s => {
+    const b = bad.get(s), fit = b <= 0 ? 1 + 0.4 * Math.min(2, -b) : Math.pow(1 + b, -p);
+    return fit * (recent.has(outlineKey(s)) ? 0.15 : 1);
+  }, state.rng);
+}
+
+// A piece's outline, whichever way it's turned (the same for all the 2x2 tiles, say).
+const outlineKeys = new WeakMap();
+function outlineKey(shape) {
+  let k = outlineKeys.get(shape);
+  if (k === undefined) { k = shape.rotations.map(m => m.map(r => r.map(c => (c ? 1 : 0)).join("")).join("/")).sort().join("|"); outlineKeys.set(shape, k); }
+  return k;
 }
 
 // How badly a piece fits the board at its best: the gaps it would leave under itself (and

@@ -482,10 +482,11 @@ test("beans and Spaghetti-Os: a can (that also turns up on its own), then more a
   }
 });
 
-test("the emotions chart's other endings: for business (stonks), very British (a nice cup of tea), online (touching grass)", () => {
+test("the emotions chart's other endings: very British (a nice cup of tea), online (touching grass); for business (stonks), banished for now", () => {
   const all = normaliseGroups(GROUPS, shapes);
   const raw = (id) => GROUPS.find(g => g.id === id);
-  for (const [id, usual, now] of [["emotions_business", "emotion_stonks", "emotion_not_stonks"], ["emotions_british", "emotion_cup_of_tea", "emotion_sorry"], ["emotions_online", "emotion_touching_grass", "emotion_off_and_on_again"]]) {
+  assert.ok(!all.some(g => g.id === "emotions_business"), "the business chart is banished");
+  for (const [id, usual, now] of [["emotions_british", "emotion_cup_of_tea", "emotion_sorry"], ["emotions_online", "emotion_touching_grass", "emotion_off_and_on_again"]]) {
     const g = all.find(g => g.id === id);
     assert.ok(g, id);
     assert.deepEqual(raw(id).sequence.slice(0, 4), raw("emotions").sequence.slice(0, 4), `${id}: the usual opening`);

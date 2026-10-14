@@ -265,14 +265,14 @@ export const CONFIG = {
       bad: { minDrop: 0 },
     },
     // gravitizers that collapse at least `minCols` columns are this many times likelier
-    wideGravity: { minCols: 6, weight: 3 },
+    wideGravity: { minCols: 6, weight: 4.5 },
     // ...and these are this much as likely as they would be (the large black hole takes
     // everything: it's better for being rarer). Zen's director goes by the same numbers.
     rarer: { large_black_hole: 0.3, tidal_wave: 0.45 },
     // the set God mode opens with, the first time since the page was loaded (of these, the first
     // never seen in this browser, or else any of them), and the pieces that come straight after
     // it (firstBoost times likelier until each has come once)
-    firstSet: ["emotions_ascent", "emotions_business", "emotions_british", "emotions_online"],
+    firstSet: ["emotions_ascent", "emotions_british", "emotions_online"],
     firstPieces: [],
     // The newest things in the game come first (update this with every new batch), so they can be
     // looked at straight away, and then it's God mode as usual: a new piece is newBoost times
@@ -280,8 +280,10 @@ export const CONFIG = {
     // newSetBoost times (load the page again to see them all again). Anything never seen in this
     // browser at all comes up unseenBoost times as often. (God mode.)
     newest: {
-      sets: ["emotions_business", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
+      sets: ["emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
+        "tipper_truck", "bath_left_running", "split_rice_sack", "memory_foam_mattress", "week_of_laundry", "thanksgiving_mash",
+        "advancing_glacier", "last_jigsaw_piece", "paper_shredder", "medium_black_hole", "small_asteroid", "tablecloth_trick",
         "spaghetti_os", "spam_can", "bull", "china_shop", "bees_knees", "queen_bee",
         "meteor_shower", "tidal_wave", "dragon_with_hay_fever", "giant_eraser", "hole_in_one",
         "horseshoe_magnet", "sarcastic_thumbs_up", "ice_skate", "hole_punch", "lightning_bolt_with_a_grudge", "lit_fuse", "magic_wand", "toadstool",

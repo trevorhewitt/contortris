@@ -449,7 +449,7 @@ export const GROUPS = [
   {
     id: "emotions_business",
     name: "an emotions chart (for business)",
-    frequency: 0.25,
+    frequency: 0, // (banished for now)
     unique: true,
     sequence: [
       {pick: ["emotion_happiness", "emotion_sadness", "emotion_anger", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy"], count: [2, 4], unique: true},

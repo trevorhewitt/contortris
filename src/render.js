@@ -1030,6 +1030,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       for (const i of la.indices) {
         const x = i % cols, y = (i / cols) | 0;
         const isPiece = pieceCells.has(i);
+        if (isPiece && lp.type === "expander") continue; // (a fill down to the floor passes through it: nothing to mark)
         const filled = !!board[y][x] && !isPiece;
         const effective = (lp.type === "goo" || lp.type === "phantom") ? true
           : lp.type === "expander" ? (!filled && !isPiece) : filled;

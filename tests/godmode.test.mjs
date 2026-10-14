@@ -67,7 +67,11 @@ test("god mode: more big pieces (above all level 6 sets) and more powerups, and 
     }
     return { giants: giants / n, sets: sets / n, pus: pus / n, wide: wide / Math.max(1, pus) };
   };
-  const god = count("god"), normal = count("normal");
+  // (the long-run mix: not the newest things, which God mode brings first for a while)
+  const newest = CONFIG.godMode.newest.pieces;
+  CONFIG.godMode.newest.pieces = [];
+  let god, normal;
+  try { god = count("god"); normal = count("normal"); } finally { CONFIG.godMode.newest.pieces = newest; }
   const big = (m) => m.giants + m.sets;
   assert.ok(big(god) > big(normal) * 1.5, `big pieces ${big(god).toFixed(3)} vs ${big(normal).toFixed(3)}`);
   assert.ok(god.sets > god.giants, `level 6 ${god.sets.toFixed(3)}, giants ${god.giants.toFixed(3)}`);
@@ -252,8 +256,9 @@ test("God mode opens with the emotions chart's ascent into the pseudo-spiritual"
 });
 
 test("God mode can bring particular pieces soon after its opening set, the first time since the page was loaded", () => {
-  const was = CONFIG.godMode.firstPieces;
+  const was = CONFIG.godMode.firstPieces, newest = CONFIG.godMode.newest.pieces;
   CONFIG.godMode.firstPieces = ["portrait_of_a_potato"];
+  CONFIG.godMode.newest.pieces = []; // (the newest things come first too: not what this is about)
   try {
     const state = createGameState(shapes, powerups, { rng: makeRng(4), groups: GROUPS });
     state.seenEver = new Map(); state.shownThisLoad = new Map(); // (as the UI keeps them)
@@ -269,5 +274,5 @@ test("God mode can bring particular pieces soon after its opening set, the first
     const setEnds = served.findIndex((s, i) => i > 0 && served[i - 1].set && !s.set);
     assert.ok(at >= 0, `never came: ${served.map(s => s.id).slice(0, 40).join(" ")}`);
     assert.ok(setEnds >= 0 && at >= setEnds - 1 && at <= setEnds + 6, `at piece ${at}, the opening set over at ${setEnds}`);
-  } finally { CONFIG.godMode.firstPieces = was; }
+  } finally { CONFIG.godMode.firstPieces = was; CONFIG.godMode.newest.pieces = newest; }
 });

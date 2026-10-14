@@ -22844,4 +22844,882 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
   },
+  {
+    id: "tipper_truck",
+    name: "a tipper truck full of sand",
+    grid: [
+        "XXX",
+        "XXX"
+      ],
+    color: [["#90713b","#a88445","#bb9c59","#cbb278","#cbb278","#d4c697","#d4c697","#cbb278","#cbb278","#bb9c59","#bb9c59","#a88445","#40444d","#865405","#b2770c","#db771a","#b2770c","#734904"],["#a88445","#dab568","#eccf8c","#f7e6b0","#f7e6b0","#eccf8c","#f7e6b0","#f7e6b0","#eccf8c","#eccf8c","#dab568","#c39950","#4a4f5a","#f4b21c","#92c8ea","#e2f5ff","#e2f5ff","#b2770c"],["#bb9c59","#eccf8c","#f7e6b0","#f7e6b0","#f7e6b0","#f7e6b0","#f7e6b0","#eccf8c","#eccf8c","#eccf8c","#dab568","#dab568","#4a4f5a","#f4b21c","#92c8ea","#e2f5ff","#92c8ea","#b2770c"],["#bb9c59","#eccf8c","#eccf8c","#f7e6b0","#eccf8c","#f7e6b0","#eccf8c","#eccf8c","#eccf8c","#dab568","#dab568","#c39950","#4a4f5a","#f4b21c","#5f93bd","#92c8ea","#92c8ea","#b2770c"],["#a88445","#dab568","#dab568","#eccf8c","#dab568","#dab568","#dab568","#dab568","#dab568","#dab568","#c39950","#c39950","#4a4f5a","#ffd54a","#f4b21c","#f4b21c","#f4b21c","#b2770c"],["#865405","#cf8a0e","#cf8a0e","#cf8a0e","#cf8a0e","#cf8a0e","#cf8a0e","#cf8a0e","#cf8a0e","#cf8a0e","#cf8a0e","#cf8a0e","#9c6206","#f4b21c","#f4b21c","#f4b21c","#f4b21c","#b2770c"],["#c53c32","#ffd54a","#f4b21c","#f4b21c","#cf8a0e","#ffd54a","#f4b21c","#f4b21c","#cf8a0e","#ffd54a","#f4b21c","#cf8a0e","#4a4f5a","#f4b21c","#f4b21c","#f4b21c","#f4b21c","#dbd097"],["#b2770c","#f4b21c","#f4b21c","#f4b21c","#cf8a0e","#f4b21c","#f4b21c","#f4b21c","#cf8a0e","#f4b21c","#f4b21c","#cf8a0e","#4a4f5a","#f4b21c","#5d6370","#f4b21c","#f4b21c","#dbd097"],["#865405","#cf8a0e","#3b3b46","#3b3b46","#cf8a0e","#cf8a0e","#cf8a0e","#3b3b46","#3b3b46","#cf8a0e","#cf8a0e","#9c6206","#4a4f5a","#cf8a0e","#3b3b46","#3b3b46","#cf8a0e","#865405"],["#b2770c","#3b3b46","#b9bfc9","#8b919d","#3b3b46","#cf8a0e","#3b3b46","#b9bfc9","#8b919d","#3b3b46","#cf8a0e","#cf8a0e","#4a4f5a","#3b3b46","#b9bfc9","#8b919d","#3b3b46","#9fa4ad"],["#b2770c","#3b3b46","#8b919d","#8b919d","#3b3b46","#cf8a0e","#3b3b46","#8b919d","#8b919d","#3b3b46","#cf8a0e","#cf8a0e","#4a4f5a","#3b3b46","#8b919d","#8b919d","#3b3b46","#787d87"],["#734904","#b2770c","#33333c","#33333c","#b2770c","#b2770c","#b2770c","#33333c","#33333c","#b2770c","#b2770c","#865405","#40444d","#40444d","#33333c","#33333c","#40444d","#734904"]],
+    powerup: {
+        "type": "expander",
+        "tier": 3,
+        "fill": [
+          [
+            "#eccf8c",
+            "#eccf8c",
+            "#dab568",
+            "#eccf8c",
+            "#eccf8c",
+            "#f7e6b0",
+            "#eccf8c"
+          ],
+          [
+            "#dab568",
+            "#eccf8c",
+            "#eccf8c",
+            "#eccf8c",
+            "#dab568",
+            "#eccf8c",
+            "#eccf8c"
+          ],
+          [
+            "#eccf8c",
+            "#eccf8c",
+            "#f7e6b0",
+            "#eccf8c",
+            "#eccf8c",
+            "#eccf8c",
+            "#dab568"
+          ],
+          [
+            "#eccf8c",
+            "#dab568",
+            "#eccf8c",
+            "#eccf8c",
+            "#c39950",
+            "#eccf8c",
+            "#eccf8c"
+          ],
+          [
+            "#f7e6b0",
+            "#eccf8c",
+            "#eccf8c",
+            "#dab568",
+            "#eccf8c",
+            "#eccf8c",
+            "#eccf8c"
+          ],
+          [
+            "#eccf8c",
+            "#eccf8c",
+            "#eccf8c",
+            "#eccf8c",
+            "#eccf8c",
+            "#dab568",
+            "#eccf8c"
+          ],
+          [
+            "#dab568",
+            "#eccf8c",
+            "#c39950",
+            "#eccf8c",
+            "#eccf8c",
+            "#eccf8c",
+            "#eccf8c"
+          ]
+        ],
+        "area": {
+          "origin": [
+            4,
+            0
+          ],
+          "grid": [
+            "...........",
+            "...........",
+            "...vvvvv...",
+            "..v.....v..",
+            ".v.......v.",
+            "v.........v"
+          ]
+        },
+        "intro": "Tips its whole load: sand fills every empty cell under it and to each side, in a heap eleven columns wide that slopes down from it to the floor. It was meant for next door.",
+        "help": 5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.5,
+    claudeDraft: true,
+  },
+  {
+    id: "bath_left_running",
+    name: "a bath someone left running",
+    grid: [
+        "X...",
+        "XXXX"
+      ],
+    color: [["#b6b8b9","#d4d5d7","#d4d5d7","#d4d5d7","#d4d5d7","#d4d5d7","#b6b8b9","","","","","","","","","","","","","","","","","","","","",""],["#8c2940","#c2405a","#ff5a4a","#c2405a","#4a8cff","#c2405a","#a7374d","","","","","","","","","","","","","","","","","","","","",""],["#8c2940","#c2405a","#e2e8ee","#e2e8ee","#e2e8ee","#e2e8ee","#9ba3ad","","","","","","","","","","","","","","","","","","","","",""],["#8c2940","#c2405a","#7a8592","#ffffff","#ffffff","#ffffff","#9ba3ad","","","","","","","","","","","","","","","","","","","","",""],["#8c2940","#c2405a","#c2405a","#c2405a","#7a8592","#8fd2ff","#328bcd","","","","","","","","","","","","","","","","","","","","",""],["#8c2940","#c2405a","#c2405a","#c2405a","#c2405a","#8fd2ff","#328bcd","","","","","","","","","","","","","","","","","","","","",""],["#8c2940","#c2405a","#c2405a","#c2405a","#c2405a","#8fd2ff","#328bcd","","","","","","","","","","","","","","","","","","","","",""],["#8c2940","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#328bcd","#7bb5db","#328bcd","#328bcd","#328bcd","#328bcd","#328bcd","#328bcd","#7bb5db","#328bcd","#328bcd","#328bcd","#328bcd","#328bcd","#328bcd","#328bcd","#328bcd","#7bb5db","#328bcd","#328bcd","#2b78b0"],["#8c2940","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#3aa2ee","#3aa2ee","#3aa2ee","#3aa2ee","#2276cc","#3aa2ee","#3aa2ee","#3aa2ee","#3aa2ee","#3aa2ee","#3aa2ee","#3aa2ee","#2276cc","#3aa2ee","#3aa2ee","#3aa2ee","#3aa2ee","#3aa2ee","#3aa2ee","#2276cc","#328bcd"],["#d4d5d7","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#3aa2ee","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#3aa2ee","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#f6f8fa","#328bcd"],["#8c2940","#e0687e","#e0687e","#e0687e","#e0687e","#e0687e","#e0687e","#e0687e","#e0687e","#3aa2ee","#e0687e","#e0687e","#e0687e","#e0687e","#e0687e","#e0687e","#e0687e","#e0687e","#e0687e","#e0687e","#e0687e","#3aa2ee","#e0687e","#e0687e","#e0687e","#e0687e","#e0687e","#328bcd"],["#8c2940","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#3aa2ee","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#8fd2ff","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#328bcd"],["#8c2940","#f2c14e","#c8902a","#f2c14e","#a3304a","#c2405a","#c2405a","#c2405a","#c2405a","#8fd2ff","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#c2405a","#f2c14e","#c8902a","#f2c14e","#8c2940"],["#5e1929","#ac7c24","#7b5214","#ac7c24","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#6d1d30","#ac7c24","#7b5214","#ac7c24","#5e1929"]],
+    powerup: {
+        "type": "expander",
+        "tier": 3,
+        "fill": [
+          [
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee"
+          ],
+          [
+            "#3aa2ee",
+            "#8fd2ff",
+            "#8fd2ff",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee"
+          ],
+          [
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#2276cc",
+            "#3aa2ee"
+          ],
+          [
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee"
+          ],
+          [
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#8fd2ff",
+            "#8fd2ff",
+            "#3aa2ee"
+          ],
+          [
+            "#3aa2ee",
+            "#e8f7ff",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee"
+          ],
+          [
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#2276cc",
+            "#3aa2ee",
+            "#3aa2ee",
+            "#3aa2ee"
+          ]
+        ],
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            "....",
+            "....",
+            "-...",
+            "-...",
+            "-..."
+          ]
+        },
+        "intro": "Floods the three whole rows under it, wall to wall. Someone is going to have to tell the people downstairs.",
+        "help": 5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.4,
+    claudeDraft: true,
+  },
+  {
+    id: "split_rice_sack",
+    name: "a split sack of rice",
+    grid: [
+        "XX",
+        "XX"
+      ],
+    color: [["#886c43","#9e7e4d","#b89b69","#b89b69","#c4ac7c","#7b5e35","#cfbd97","#c4ac7c","#c4ac7c","#cfbd97","#7b5e35","#b89b69","#c4ac7c","#b89b69","#9e7e4d","#886c43"],["#9e7e4d","#d6b47a","#e4c890","#d6b47a","#d6b47a","#8f6d3e","#e4c890","#f1dcb0","#f1dcb0","#e4c890","#8f6d3e","#d6b47a","#d6b47a","#d6b47a","#e4c890","#9e7e4d"],["#c4ac7c","#d6b47a","#d6b47a","#d6b47a","#8f6d3e","#c2643a","#8a3a22","#8a3a22","#8a3a22","#8a3a22","#c2643a","#8f6d3e","#e4c890","#d6b47a","#d6b47a","#b89b69"],["#b89b69","#d6b47a","#e4c890","#8f6d3e","#d6b47a","#d6b47a","#b8925a","#d6b47a","#d6b47a","#b8925a","#e4c890","#d6b47a","#8f6d3e","#d6b47a","#e4c890","#b89b69"],["#c4ac7c","#d6b47a","#b8925a","#d6b47a","#e4c890","#d6b47a","#e4c890","#d6b47a","#e4c890","#d6b47a","#d6b47a","#d6b47a","#e4c890","#b8925a","#d6b47a","#b89b69"],["#b89b69","#d6b47a","#e4c890","#e4c890","#d6b47a","#e4c890","#e4c890","#e4c890","#d6b47a","#d6b47a","#e4c890","#d6b47a","#d6b47a","#d6b47a","#e4c890","#b89b69"],["#c4ac7c","#b8322a","#b8322a","#d6b47a","#e4c890","#b8322a","#b8322a","#b8322a","#e4c890","#d6b47a","#b8322a","#b8322a","#e4c890","#b8322a","#b8322a","#9e2b24"],["#b89b69","#b8322a","#e4c890","#b8322a","#d6b47a","#e4c890","#b8322a","#e4c890","#d6b47a","#b8322a","#e4c890","#d6b47a","#d6b47a","#b8322a","#e4c890","#b89b69"],["#c4ac7c","#b8322a","#b8322a","#d6b47a","#e4c890","#d6b47a","#b8322a","#d6b47a","#e4c890","#b8322a","#d6b47a","#d6b47a","#e4c890","#b8322a","#b8322a","#b89b69"],["#b89b69","#b8322a","#e4c890","#b8322a","#d6b47a","#e4c890","#b8322a","#e4c890","#d6b47a","#b8322a","#e4c890","#d6b47a","#d6b47a","#b8322a","#e4c890","#b89b69"],["#c4ac7c","#b8322a","#d6b47a","#b8322a","#e4c890","#b8322a","#b8322a","#b8322a","#e4c890","#d6b47a","#b8322a","#b8322a","#e4c890","#b8322a","#b8322a","#9e2b24"],["#b89b69","#d6b47a","#e4c890","#d6b47a","#d6b47a","#d6b47a","#e4c890","#d6b47a","#d6b47a","#8f6d3e","#5e4428","#5e4428","#5e4428","#5e4428","#8f6d3e","#b89b69"],["#c4ac7c","#d6b47a","#d6b47a","#d6b47a","#e4c890","#d6b47a","#d6b47a","#d6b47a","#e4c890","#5e4428","#ffffff","#f7f4ea","#e8e2cf","#ffffff","#5e4428","#ffffff"],["#b89b69","#d6b47a","#e4c890","#d6b47a","#d6b47a","#d6b47a","#e4c890","#d6b47a","#d6b47a","#d6b47a","#e8e2cf","#ffffff","#ffffff","#e8e2cf","#5e4428","#b89b69"],["#c4ac7c","#d6b47a","#d6b47a","#d6b47a","#e4c890","#d6b47a","#d6b47a","#d6b47a","#ffffff","#d6b47a","#ffffff","#f7f4ea","#cbc3a9","#ffffff","#ffffff","#e8e2cf"],["#9e855a","#b89b69","#c4ac7c","#b89b69","#b89b69","#b89b69","#c4ac7c","#b89b69","#ffffff","#f7f4ea","#cbc3a9","#e8e2cf","#ffffff","#ffffff","#cbc3a9","#f7f4ea"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#ffffff",
+            "#f7f4ea",
+            "#cbc3a9",
+            "#cbc3a9",
+            "#e8e2cf",
+            "#ffffff",
+            "#f7f4ea"
+          ],
+          [
+            "#cbc3a9",
+            "#cbc3a9",
+            "#e8e2cf",
+            "#ffffff",
+            "#cbc3a9",
+            "#cbc3a9",
+            "#cbc3a9"
+          ],
+          [
+            "#e8e2cf",
+            "#e8e2cf",
+            "#e8e2cf",
+            "#f7f4ea",
+            "#cbc3a9",
+            "#e8e2cf",
+            "#e8e2cf"
+          ],
+          [
+            "#e8e2cf",
+            "#ffffff",
+            "#f7f4ea",
+            "#e8e2cf",
+            "#e8e2cf",
+            "#ffffff",
+            "#cbc3a9"
+          ],
+          [
+            "#e8e2cf",
+            "#cbc3a9",
+            "#cbc3a9",
+            "#ffffff",
+            "#f7f4ea",
+            "#f7f4ea",
+            "#cbc3a9"
+          ],
+          [
+            "#ffffff",
+            "#cbc3a9",
+            "#e8e2cf",
+            "#cbc3a9",
+            "#cbc3a9",
+            "#e8e2cf",
+            "#e8e2cf"
+          ],
+          [
+            "#f7f4ea",
+            "#cbc3a9",
+            "#ffffff",
+            "#f7f4ea",
+            "#e8e2cf",
+            "#ffffff",
+            "#f7f4ea"
+          ]
+        ],
+        "area": {
+          "origin": [
+            3,
+            0
+          ],
+          "grid": [
+            "vvv..vvv",
+            "........",
+            "...vv..."
+          ]
+        },
+        "intro": "Rice runs into every empty cell beside it, three out each side, and everything under it, eight columns in all, down to the floor. You will still be finding it in ten years.",
+        "help": 4
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.8,
+    claudeDraft: true,
+  },
+  {
+    id: "memory_foam_mattress",
+    name: "a memory foam mattress",
+    grid: [
+        "XXXX"
+      ],
+    color: [["#7d8897","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#7d8897"],["#919eaf","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#8796ae","#e4e9f0","#8796ae","#e4e9f0","#8796ae","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#919eaf"],["#919eaf","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#8796ae","#b3c0d3","#f3f6fa","#8796ae","#f3f6fa","#8796ae","#f3f6fa","#8796ae","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#919eaf"],["#919eaf","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#8796ae","#b3c0d3","#f3f6fa","#8796ae","#f3f6fa","#8796ae","#e4e9f0","#8796ae","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#e4e9f0","#f3f6fa","#919eaf"],["#919eaf","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#8796ae","#c3cede","#8796ae","#c3cede","#8796ae","#c3cede","#8796ae","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#919eaf"],["#919eaf","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#8796ae","#c3cede","#c3cede","#c3cede","#c3cede","#c3cede","#c3cede","#b3c0d3","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#e4e9f0","#f3f6fa","#919eaf"],["#919eaf","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#8796ae","#c3cede","#c3cede","#c3cede","#c3cede","#b3c0d3","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#f3f6fa","#f3f6fa","#f3f6fa","#e4e9f0","#919eaf"],["#7d8897","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#748196","#9aa5b5","#9aa5b5","#9aa5b5","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#919eaf","#7d8897"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#f3f6fa",
+            "#f3f6fa",
+            "#f3f6fa",
+            "#e4e9f0",
+            "#f3f6fa",
+            "#f3f6fa",
+            "#f3f6fa"
+          ],
+          [
+            "#f3f6fa",
+            "#f3f6fa",
+            "#e4e9f0",
+            "#f3f6fa",
+            "#e4e9f0",
+            "#f3f6fa",
+            "#f3f6fa"
+          ],
+          [
+            "#f3f6fa",
+            "#e4e9f0",
+            "#f3f6fa",
+            "#f3f6fa",
+            "#f3f6fa",
+            "#e4e9f0",
+            "#f3f6fa"
+          ],
+          [
+            "#e4e9f0",
+            "#f3f6fa",
+            "#f3f6fa",
+            "#f3f6fa",
+            "#f3f6fa",
+            "#f3f6fa",
+            "#e4e9f0"
+          ],
+          [
+            "#f3f6fa",
+            "#e4e9f0",
+            "#f3f6fa",
+            "#f3f6fa",
+            "#f3f6fa",
+            "#e4e9f0",
+            "#f3f6fa"
+          ],
+          [
+            "#f3f6fa",
+            "#f3f6fa",
+            "#e4e9f0",
+            "#f3f6fa",
+            "#e4e9f0",
+            "#f3f6fa",
+            "#f3f6fa"
+          ],
+          [
+            "#f3f6fa",
+            "#f3f6fa",
+            "#f3f6fa",
+            "#e4e9f0",
+            "#f3f6fa",
+            "#f3f6fa",
+            "#f3f6fa"
+          ]
+        ],
+        "area": {
+          "origin": [
+            1,
+            0
+          ],
+          "grid": [
+            "-....",
+            "-...."
+          ]
+        },
+        "intro": "Moulds itself into every empty cell of its own row and the row under it, wall to wall. It remembers everything.",
+        "help": 4.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.7,
+    claudeDraft: true,
+  },
+  {
+    id: "week_of_laundry",
+    name: "a week of laundry",
+    grid: [
+        "XX.",
+        "XXX"
+      ],
+    color: [["#a0322b","#ba3a32","#146563","#d2d2d2","#1c908d","#d2d2d2","#1c908d","#d2d2d2","#947828","#d3ac39","#bb8b24","#906418","#906418","#bb8b24","#904d69","#ce6d96","#ce6d96","#b15e81","","","","","","","","",""],["#ba3a32","#d8433a","#177573","#f4f4f4","#21a7a4","#f4f4f4","#f4f4f4","#f4f4f4","#ababab","#ac8c2e","#d9a22a","#a8741c","#a8741c","#d9a22a","#b0aaac","#ef7fae","#ef7fae","#d8d1d4","","","","","","","","",""],["#d1c6b2","#f3e6cf","#aaa191","#aaa191","#aaa191","#ababab","#f4f4f4","#f4f4f4","#f4f4f4","#ac8c2e","#f5c842","#d9a22a","#d9a22a","#f5c842","#ac8c2e","#a7597a","#ef7fae","#ce6d96","","","","","","","","",""],["#d1c6b2","#f3e6cf","#f3e6cf","#f3e6cf","#f3e6cf","#aaa191","#aaa191","#ababab","#c9c9ce","#ac8c2e","#f5c842","#f5c842","#f5c842","#f5c842","#d9a22a","#ac8c2e","#a7597a","#ce6d96","","","","","","","","",""],["#ba3a32","#d8433a","#d8433a","#d8433a","#d8433a","#d8433a","#d8433a","#972f29","#ac8c2e","#d9a22a","#f5c842","#f5c842","#f5c842","#f5c842","#d9a22a","#f5c842","#ac8c2e","#979294","","","","","","","","",""],["#ba3a32","#d8433a","#d8433a","#d8433a","#d8433a","#d8433a","#d8433a","#d8433a","#ac8c2e","#f5c842","#d9a22a","#f5c842","#f5c842","#f5c842","#f5c842","#d9a22a","#f5c842","#836119","","","","","","","","",""],["#d1c6b2","#f3e6cf","#f3e6cf","#f3e6cf","#f3e6cf","#f3e6cf","#f3e6cf","#f3e6cf","#98711d","#f5c842","#f5c842","#f5c842","#f5c842","#f5c842","#f5c842","#d9a22a","#f5c842","#bb8b24","","","","","","","","",""],["#d1c6b2","#f3e6cf","#f3e6cf","#f3e6cf","#f3e6cf","#f3e6cf","#f3e6cf","#ac8c2e","#f5c842","#d9a22a","#f5c842","#f5c842","#f5c842","#f5c842","#f5c842","#f5c842","#d9a22a","#bb8b24","","","","","","","","",""],["#ba3a32","#d8433a","#d8433a","#d8433a","#d8433a","#d8433a","#d8433a","#ac8c2e","#f5c842","#f5c842","#d9a22a","#f5c842","#f5c842","#f5c842","#f5c842","#f5c842","#f5c842","#bb8b24","","","","","","","","",""],["#ba3a32","#d8433a","#d8433a","#d8433a","#d8433a","#d8433a","#d8433a","#972f29","#ac8c2e","#f5c842","#f5c842","#f5c842","#f5c842","#f5c842","#f5c842","#f5c842","#f5c842","#f5c842","#533778","#774fab","#774fab","#5b3a8a","#774fab","#774fab","#5b3a8a","#916cc1","#4e3276"],["#d1c6b2","#f3e6cf","#f3e6cf","#f3e6cf","#f3e6cf","#f3e6cf","#f3e6cf","#f3e6cf","#3f5f8f","#2c4e7f","#ac8c2e","#f5c842","#f5c842","#f5c842","#f5c842","#f5c842","#4a2f70","#61408b","#8a5cc7","#8a5cc7","#8a5cc7","#8a5cc7","#6a43a0","#8a5cc7","#6a43a0","#a97ee0","#5b3a8a"],["#d1c6b2","#f3e6cf","#f3e6cf","#f3e6cf","#f3e6cf","#2c4e7f","#2c4e7f","#3f5f8f","#3f6fb6","#3f6fb6","#3f5f8f","#2c4e7f","#ac8c2e","#f5c842","#f5c842","#61408b","#8a5cc7","#6a43a0","#8a5cc7","#8a5cc7","#8a5cc7","#8a5cc7","#8a5cc7","#6a43a0","#6a43a0","#a97ee0","#5b3a8a"],["#ba3a32","#a82e28","#d8433a","#a82e28","#2c4e7f","#3f6fb6","#e0a040","#3f6fb6","#3f6fb6","#e0a040","#3f6fb6","#3f6fb6","#3f5f8f","#2c4e7f","#2c4e7f","#3f5f8f","#2c4e7f","#61408b","#6a43a0","#8a5cc7","#8a5cc7","#8a5cc7","#8a5cc7","#8a5cc7","#6a43a0","#a97ee0","#5b3a8a"],["#236540","#76201c","#d8433a","#2c4e7f","#3f6fb6","#5a88cc","#e0a040","#3f6fb6","#5a88cc","#e0a040","#3f6fb6","#e0a040","#3f6fb6","#e0a040","#3f6fb6","#e0a040","#3f6fb6","#9d702d","#2c4e7f","#9d702d","#61408b","#8a5cc7","#8a5cc7","#8a5cc7","#6a43a0","#a97ee0","#5b3a8a"],["#246e45","#29764a","#29764a","#2c4e7f","#5a88cc","#3f6fb6","#e0a040","#e0a040","#e0a040","#e0a040","#5a88cc","#3f6fb6","#3f6fb6","#5a88cc","#3f6fb6","#3f6fb6","#5a88cc","#3f6fb6","#3f6fb6","#5a88cc","#2c4e7f","#2c4e7f","#3f5f8f","#2c4e7f","#4a2f70","#a97ee0","#5b3a8a"],["#32905b","#3aa86a","#e9f5ee","#a3aca7","#2c4e7f","#3f6fb6","#5a88cc","#3f6fb6","#3f6fb6","#5a88cc","#3f6fb6","#3f6fb6","#2c4f8a","#2c4f8a","#2c4f8a","#2c4f8a","#2c4f8a","#2c4f8a","#2c4f8a","#2c4f8a","#2c4f8a","#2c4f8a","#2c4f8a","#2c4f8a","#55719a","#55719a","#496184"],["#246e45","#e9f5ee","#e9f5ee","#3aa86a","#1d5a38","#3f5f8f","#3f6fb6","#3f6fb6","#5a88cc","#3f6fb6","#3f6fb6","#5a88cc","#3f6fb6","#3f6fb6","#5a88cc","#3f6fb6","#3f6fb6","#5a88cc","#3f6fb6","#3f6fb6","#5a88cc","#3f6fb6","#3f6fb6","#5a88cc","#7aa2dc","#7aa2dc","#698bbd"],["#acb5b0","#c8d3cd","#246e45","#32905b","#32905b","#236540","#26436d","#4d75af","#365f9d","#365f9d","#4d75af","#365f9d","#365f9d","#4d75af","#365f9d","#365f9d","#4d75af","#365f9d","#365f9d","#4d75af","#365f9d","#365f9d","#4d75af","#365f9d","#4d75af","#4d75af","#436597"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#3f6fb6",
+            "#3f6fb6",
+            "#5a88cc",
+            "#3f6fb6",
+            "#f2efe8",
+            "#f2efe8",
+            "#d6d2c8"
+          ],
+          [
+            "#3f6fb6",
+            "#3f6fb6",
+            "#3f6fb6",
+            "#2c4f8a",
+            "#f2efe8",
+            "#f2efe8",
+            "#f2efe8"
+          ],
+          [
+            "#5a88cc",
+            "#3f6fb6",
+            "#3f6fb6",
+            "#2c4f8a",
+            "#d6d2c8",
+            "#f5c842",
+            "#f5c842"
+          ],
+          [
+            "#2c4f8a",
+            "#2c4f8a",
+            "#3f6fb6",
+            "#3f6fb6",
+            "#3f6fb6",
+            "#f5c842",
+            "#d9a22a"
+          ],
+          [
+            "#f2efe8",
+            "#f2efe8",
+            "#d6d2c8",
+            "#3f6fb6",
+            "#3f6fb6",
+            "#3f6fb6",
+            "#5a88cc"
+          ],
+          [
+            "#d8433a",
+            "#f3e6cf",
+            "#d8433a",
+            "#d6d2c8",
+            "#3f6fb6",
+            "#3f6fb6",
+            "#3f6fb6"
+          ],
+          [
+            "#d8433a",
+            "#f3e6cf",
+            "#d8433a",
+            "#d6d2c8",
+            "#3f6fb6",
+            "#5a88cc",
+            "#3f6fb6"
+          ]
+        ],
+        "area": {
+          "origin": [
+            4,
+            0
+          ],
+          "grid": [
+            "......v....",
+            "...v...v...",
+            "..v.vvv.v..",
+            ".v.......v.",
+            "v.........v"
+          ]
+        },
+        "intro": "Slumps into a heap around it and settles into every gap underneath, eleven columns wide, all the way to the floor. Exactly one sock is missing.",
+        "help": 4
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.8,
+    claudeDraft: true,
+  },
+  {
+    id: "thanksgiving_mash",
+    name: "an entire Thanksgiving of mashed potato",
+    grid: [
+        ".X.",
+        "XXX"
+      ],
+    color: [["","","","","","","#bdbaac","#dbd8c8","#d5cdaf","#d5cdaf","#d5cdaf","#aca27c","","","","","",""],["","","","","","","#dbd8c8","#f8eecb","#f8eecb","#f8eecb","#e9dba8","#c8bc90","","","","","",""],["","","","","","","#d5cdaf","#8b5a2b","#8b5a2b","#8b5a2b","#f8eecb","#c8bc90","","","","","",""],["","","","","","","#784d25","#ffd84a","#f0b828","#8b5a2b","#8b5a2b","#c8bc90","","","","","",""],["","","","","","","#d5cdaf","#8b5a2b","#8b5a2b","#8b5a2b","#e9dba8","#784d25","","","","","",""],["","","","","","","#dbd8c8","#f8eecb","#f8eecb","#e9dba8","#e9dba8","#784d25","","","","","",""],["#bdbaac","#dbd8c8","#d5cdaf","#d5cdaf","#d5cdaf","#d5cdaf","#fffbe8","#f8eecb","#f8eecb","#f8eecb","#f8eecb","#f8eecb","#784d25","#d5cdaf","#d5cdaf","#d5cdaf","#d5cdaf","#aca27c"],["#dbd8c8","#f8eecb","#fffbe8","#fffbe8","#f8eecb","#f8eecb","#f8eecb","#fffbe8","#fffbe8","#fffbe8","#f8eecb","#f8eecb","#8b5a2b","#f8eecb","#fffbe8","#fffbe8","#f8eecb","#c8bc90"],["#d5cdaf","#fffbe8","#f8eecb","#f8eecb","#e9dba8","#f8eecb","#fffbe8","#f8eecb","#f8eecb","#f8eecb","#e9dba8","#f8eecb","#f8eecb","#8b5a2b","#fffbe8","#f8eecb","#e9dba8","#c8bc90"],["#d5cdaf","#f8eecb","#f8eecb","#e9dba8","#e9dba8","#f8eecb","#f8eecb","#f8eecb","#f8eecb","#e9dba8","#e9dba8","#f8eecb","#f8eecb","#f8eecb","#f8eecb","#e9dba8","#e9dba8","#b5a473"],["#b5a473","#f8eecb","#4f9a3a","#f8eecb","#f8eecb","#f8eecb","#f8eecb","#4f9a3a","#f8eecb","#f8eecb","#f8eecb","#f8eecb","#f8eecb","#f8eecb","#4f9a3a","#f8eecb","#d3bf86","#b5a473"],["#9fb4d6","#eef2f8","#eef2f8","#eef2f8","#eef2f8","#eef2f8","#eef2f8","#eef2f8","#eef2f8","#eef2f8","#eef2f8","#eef2f8","#eef2f8","#eef2f8","#eef2f8","#eef2f8","#eef2f8","#9fb4d6"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb"
+          ],
+          [
+            "#f8eecb",
+            "#f8eecb",
+            "#fffbe8",
+            "#fffbe8",
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb"
+          ],
+          [
+            "#f8eecb",
+            "#fffbe8",
+            "#f8eecb",
+            "#f8eecb",
+            "#e9dba8",
+            "#f8eecb",
+            "#f8eecb"
+          ],
+          [
+            "#fffbe8",
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb",
+            "#e9dba8",
+            "#e9dba8",
+            "#f8eecb"
+          ],
+          [
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb",
+            "#e9dba8",
+            "#e9dba8",
+            "#f8eecb",
+            "#f8eecb"
+          ],
+          [
+            "#f8eecb",
+            "#e9dba8",
+            "#e9dba8",
+            "#e9dba8",
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb"
+          ],
+          [
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb",
+            "#f8eecb"
+          ]
+        ],
+        "area": {
+          "origin": [
+            3,
+            0
+          ],
+          "grid": [
+            "vvvv.vvvv",
+            ".........",
+            "....v...."
+          ]
+        },
+        "intro": "Fills every empty cell beside it and under it, nine columns in all, all the way down to the floor, with mashed potato. It was made for forty people. Four came.",
+        "help": 4
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.8,
+    claudeDraft: true,
+  },
+  {
+    id: "advancing_glacier",
+    name: "a glacier (advancing)",
+    grid: [
+        "X..",
+        "XX.",
+        "XXX"
+      ],
+    color: [["#babbbd","#d8dadb","#d8dadb","#a3afb8","","","","","","","",""],["#bdcbd5","#cbe6f6","#cbe6f6","#407baa","","","","","","","",""],["#afc6d4","#3d74ad","#a3d2ee","#407baa","","","","","","","",""],["#afc6d4","#3d74ad","#a3d2ee","#629dc4","","","","","","","",""],["#afc6d4","#a3d2ee","#3d74ad","#cbe6f6","#d8dadb","#d8dadb","#d8dadb","#a3afb8","","","",""],["#8cb5cd","#cbe6f6","#a3d2ee","#3d74ad","#dcecf8","#cbe6f6","#cbe6f6","#407baa","","","",""],["#afc6d4","#a3d2ee","#cbe6f6","#a3d2ee","#cbe6f6","#3d74ad","#a3d2ee","#407baa","","","",""],["#8cb5cd","#cbe6f6","#a3d2ee","#cbe6f6","#a3d2ee","#cbe6f6","#3d74ad","#629dc4","","","",""],["#afc6d4","#a3d2ee","#a3d2ee","#cbe6f6","#a3d2ee","#cbe6f6","#a3d2ee","#a3d2ee","#d8dadb","#d8dadb","#d8dadb","#a3afb8"],["#8cb5cd","#cbe6f6","#a3d2ee","#a3d2ee","#cbe6f6","#a3d2ee","#a3d2ee","#cbe6f6","#dcecf8","#cbe6f6","#3d74ad","#407baa"],["#8cb5cd","#a3d2ee","#72b6e4","#a3d2ee","#a3d2ee","#72b6e4","#a3d2ee","#a3d2ee","#cbe6f6","#a3d2ee","#3d74ad","#407baa"],["#7e7b84","#787681","#5a5761","#928f99","#787681","#5a5761","#928f99","#787681","#5a5761","#928f99","#787681","#4e4b54"]],
+    powerup: {
+        "type": "expander",
+        "tier": 3,
+        "fill": [
+          [
+            "#dcecf8",
+            "#dcecf8",
+            "#cbe6f6",
+            "#cbe6f6"
+          ],
+          [
+            "#dcecf8",
+            "#cbe6f6",
+            "#cbe6f6",
+            "#a3d2ee"
+          ],
+          [
+            "#cbe6f6",
+            "#cbe6f6",
+            "#a3d2ee",
+            "#72b6e4"
+          ],
+          [
+            "#cbe6f6",
+            "#a3d2ee",
+            "#72b6e4",
+            "#72b6e4"
+          ]
+        ],
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            ".",
+            ".",
+            ".",
+            "-",
+            "-",
+            "-",
+            "-"
+          ]
+        },
+        "intro": "Fills the four whole rows under it, wall to wall, with ice. It is advancing at two metres a year, which for a glacier is reckless.",
+        "help": 5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.25,
+    claudeDraft: true,
+  },
+  {
+    id: "last_jigsaw_piece",
+    name: "the last piece of the jigsaw",
+    grid: [
+        "X"
+      ],
+    color: [["#1f6a3a","#1f6a3a","#a6f2ad","#4cd05e","#2e9a40","#174f2b","#1f6a3a","#1f6a3a","#1f6a3a"],["#1f6a3a","#1f6a3a","#a6f2ad","#4cd05e","#2e9a40","#174f2b","#1f6a3a","#1f6a3a","#1f6a3a"],["#a6f2ad","#a6f2ad","#4cd05e","#4cd05e","#4cd05e","#a6f2ad","#4cd05e","#174f2b","#1f6a3a"],["#2e9a40","#4cd05e","#4cd05e","#4cd05e","#4cd05e","#4cd05e","#2e9a40","#174f2b","#1f6a3a"],["#174f2b","#a6f2ad","#4cd05e","#4cd05e","#4cd05e","#4cd05e","#4cd05e","#a6f2ad","#a6f2ad"],["#1f6a3a","#a6f2ad","#4cd05e","#4cd05e","#4cd05e","#4cd05e","#4cd05e","#4cd05e","#4cd05e"],["#1f6a3a","#a6f2ad","#4cd05e","#4cd05e","#4cd05e","#4cd05e","#4cd05e","#2e9a40","#2e9a40"],["#a6f2ad","#4cd05e","#2e9a40","#2e9a40","#2e9a40","#4cd05e","#2e9a40","#174f2b","#174f2b"],["#4cd05e","#2e9a40","#174f2b","#174f2b","#174f2b","#a6f2ad","#2e9a40","#174f2b","#1f6a3a"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "fill": [
+          [
+            "#1f6a3a",
+            "#1f6a3a",
+            "#a6f2ad",
+            "#4cd05e",
+            "#174f2b",
+            "#1f6a3a",
+            "#1f6a3a"
+          ],
+          [
+            "#a6f2ad",
+            "#a6f2ad",
+            "#4cd05e",
+            "#4cd05e",
+            "#a6f2ad",
+            "#4cd05e",
+            "#174f2b"
+          ],
+          [
+            "#4cd05e",
+            "#4cd05e",
+            "#4cd05e",
+            "#4cd05e",
+            "#4cd05e",
+            "#2e9a40",
+            "#174f2b"
+          ],
+          [
+            "#174f2b",
+            "#a6f2ad",
+            "#4cd05e",
+            "#4cd05e",
+            "#4cd05e",
+            "#4cd05e",
+            "#4cd05e"
+          ],
+          [
+            "#1f6a3a",
+            "#a6f2ad",
+            "#4cd05e",
+            "#4cd05e",
+            "#4cd05e",
+            "#4cd05e",
+            "#2e9a40"
+          ],
+          [
+            "#a6f2ad",
+            "#2e9a40",
+            "#4cd05e",
+            "#4cd05e",
+            "#2e9a40",
+            "#2e9a40",
+            "#174f2b"
+          ],
+          [
+            "#4cd05e",
+            "#174f2b",
+            "#4cd05e",
+            "#2e9a40",
+            "#174f2b",
+            "#4cd05e",
+            "#174f2b"
+          ]
+        ],
+        "area": {
+          "origin": [
+            2,
+            0
+          ],
+          "grid": [
+            "vv-vv",
+            "..v.."
+          ]
+        },
+        "intro": "Fills its own row, wall to wall, and every empty cell under it, five columns wide, down to the floor. It was under the sofa the whole time.",
+        "help": 4.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.8,
+    claudeDraft: true,
+  },
+  {
+    id: "paper_shredder",
+    name: "an industrial paper shredder",
+    grid: [
+        "XX",
+        "XX",
+        "XX"
+      ],
+    color: [["#a1a19a","#d4d4d0","#d4d4d0","#d4d4d0","#d4d4d0","#d4d4d0","#d4d4d0","#a1a19a"],["#d4d4d0","#9aa0aa","#9aa0aa","#9aa0aa","#f6f6f2","#9aa0aa","#9aa0aa","#d4d4d0"],["#d4d4d0","#f6f6f2","#f6f6f2","#f6f6f2","#f6f6f2","#d8402e","#d8402e","#d4d4d0"],["#d4d4d0","#9aa0aa","#9aa0aa","#f6f6f2","#f6f6f2","#d8402e","#d8402e","#d4d4d0"],["#6b7284","#2c313b","#2c313b","#2c313b","#2c313b","#2c313b","#2c313b","#6b7284"],["#6b7284","#7c859a","#7c859a","#7c859a","#7c859a","#7c859a","#5bea6a","#6b7284"],["#d2a929","#f4c430","#3a3f4a","#3a3f4a","#f4c430","#f4c430","#3a3f4a","#323640"],["#323640","#f4c430","#f4c430","#3a3f4a","#3a3f4a","#f4c430","#f4c430","#323640"],["#787e8c","#eeeee8","#b9bcc4","#eeeee8","#8c93a3","#eeeee8","#b9bcc4","#787e8c"],["#787e8c","#b9bcc4","#eeeee8","#b9bcc4","#eeeee8","#b9bcc4","#eeeee8","#787e8c"],["#cdcdc8","#b9bcc4","#eeeee8","#eeeee8","#b9bcc4","#eeeee8","#b9bcc4","#cdcdc8"],["#2b2f38","#323641","#323641","#323641","#323641","#323641","#323641","#2b2f38"]],
+    powerup: {
+        "type": "destroyer",
+        "tier": 3,
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            ".",
+            ".",
+            ".",
+            "-",
+            "-",
+            "-"
+          ]
+        },
+        "intro": "Shreds the three whole rows under it, wall to wall, and everything above drops down. It was all very important, apparently.",
+        "collapse": true,
+        "help": 5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.5,
+    claudeDraft: true,
+  },
+  {
+    id: "medium_black_hole",
+    name: "a medium black hole",
+    grid: [
+        "X"
+      ],
+    color: [["#4a2a9c","#5e35b1","#9a3ad0","#c8389a","#ff6a3d","#6a3cc4","#42238e"],["#5e35b1","#a446d6","#ff8a3a","#ffc24a","#fff6dc","#ff8a3a","#5e35b1"],["#7a3cc8","#ff7a2a","#8a3a9a","#33157a","#8a3a9a","#ffc24a","#9a3ad0"],["#c8389a","#ffc24a","#33157a","#1e0a46","#33157a","#ffc24a","#c8389a"],["#9a3ad0","#ffc24a","#8a3a9a","#33157a","#8a3a9a","#ff7a2a","#7a3cc8"],["#5e35b1","#ff8a3a","#fff6dc","#ffc24a","#ff8a3a","#a446d6","#5e35b1"],["#42238e","#6a3cc4","#ff6a3d","#c8389a","#9a3ad0","#5e35b1","#4a2a9c"]],
+    powerup: {
+        "type": "destroyer",
+        "tier": 3,
+        "area": {
+          "origin": [
+            4,
+            4
+          ],
+          "grid": [
+            "..#####..",
+            ".#######.",
+            "#########",
+            "#########",
+            "####.####",
+            "#########",
+            "#########",
+            ".#######.",
+            "..#####.."
+          ]
+        },
+        "intro": "Swallows every block in a solid disc nine across, centred on it. It's the middle one. Nobody ever asks how it's doing.",
+        "help": 5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.5,
+    claudeDraft: true,
+  },
+  {
+    id: "small_asteroid",
+    name: "a small asteroid",
+    grid: [
+        ".XX",
+        "XXX",
+        ".X."
+      ],
+    color: [["","","","","#9b9082","#9a8c7c","#9a8c7c","#9a8c7c","#9a8c7c","#817363","#9a8c7c","#6f6355"],["","","","","#9a8c7c","#968673","#b3a390","#483d35","#483d35","#483d35","#968673","#817363"],["","","","","#9a8c7c","#b3a390","#b3a390","#483d35","#483d35","#b3a390","#7a6b5b","#695c4e"],["","","","","#9a8c7c","#b3a390","#b3a390","#483d35","#5f5246","#b3a390","#968673","#695c4e"],["#84796b","#9a8c7c","#b5a897","#817363","#968673","#968673","#968673","#968673","#968673","#7a6b5b","#7a6b5b","#695c4e"],["#9a8c7c","#968673","#483d35","#483d35","#968673","#483d35","#968673","#968673","#7a6b5b","#7a6b5b","#7a6b5b","#695c4e"],["#9a8c7c","#b3a390","#d8642a","#d8642a","#968673","#7a6b5b","#7a6b5b","#968673","#d8642a","#7a6b5b","#5f5246","#ba5624"],["#ffc040","#ff8a3a","#ffc040","#ff8a3a","#7a6b5b","#7a6b5b","#7a6b5b","#7a6b5b","#ff8a3a","#ffc040","#ff8a3a","#ffc040"],["","","","","#695c4e","#7a6b5b","#483d35","#695c4e","","","",""],["","","","","#817363","#483d35","#483d35","#9a8c7c","","","",""],["","","","","#695c4e","#d8642a","#b3a390","#ba5624","","","",""],["","","","","#ff8a3a","#ff8a3a","#ff8a3a","#ffc040","","","",""]],
+    powerup: {
+        "type": "destroyer",
+        "tier": 3,
+        "area": {
+          "origin": [
+            4,
+            0
+          ],
+          "grid": [
+            "...........",
+            "...........",
+            "...........",
+            "###########",
+            "###########",
+            "###########",
+            ".#########.",
+            ".#########.",
+            "..#######..",
+            "...#####..."
+          ]
+        },
+        "intro": "Knocks a solid crater into the stack under it: eleven wide, seven deep, rounded at the bottom. It's only a small one, said the dinosaurs.",
+        "help": 5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.4,
+    claudeDraft: true,
+  },
+  {
+    id: "tablecloth_trick",
+    name: "the tablecloth trick",
+    grid: [
+        "XXX"
+      ],
+    color: [["#bbb6b3","#dad4d0","#dad4d0","#cb7b78","#cb7b78","#cb7b78","#dad4d0","#dad4d0","#dad4d0","#cb7b78","#cb7b78","#cb7b78","#dad4d0","#dad4d0","#dad4d0","#cb7b78","#89a7b8","#cdd4d9","#cdd4d9","#cdd4d9","#89a7b8","#cb7b78","#cb7b78","#db7724","#dad4d0","#dad4d0","#bbb6b3"],["#dad4d0","#8e96a2","#fdf6f2","#8e96a2","#ec8f8c","#ec8f8c","#fdf6f2","#fdf6f2","#fdf6f2","#ec8f8c","#ec8f8c","#ec8f8c","#fdf6f2","#fdf6f2","#fdf6f2","#ec8f8c","#9fc2d6","#ec8f8c","#fdf6f2","#fdf6f2","#9fc2d6","#ec8f8c","#ec8f8c","#ffe066","#fdf6f2","#fdf6f2","#dad4d0"],["#dad4d0","#8e96a2","#8e96a2","#8e96a2","#ec8f8c","#ec8f8c","#aeb7c3","#e3e8ee","#e3e8ee","#e3e8ee","#aeb7c3","#ec8f8c","#fdf6f2","#fdf6f2","#8e96a2","#ec8f8c","#9fc2d6","#7e1028","#c22a48","#7e1028","#9fc2d6","#ec8f8c","#ec8f8c","#fff3d0","#fdf6f2","#fdf6f2","#dad4d0"],["#cb7b78","#ec8f8c","#8e96a2","#d63c36","#d63c36","#e3e8ee","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#e3e8ee","#ec8f8c","#8e96a2","#8e96a2","#d63c36","#d63c36","#9fc2d6","#7e1028","#9fc2d6","#ec8f8c","#d63c36","#d63c36","#fff3d0","#ec8f8c","#ec8f8c","#cb7b78"],["#cb7b78","#ec8f8c","#8e96a2","#d63c36","#e3e8ee","#ffffff","#ffffff","#e0a050","#b87430","#5aa83a","#ffffff","#ffffff","#e3e8ee","#8e96a2","#8e96a2","#d63c36","#d63c36","#d63c36","#9fc2d6","#ec8f8c","#ec8f8c","#d63c36","#d63c36","#e6d3a0","#ec8f8c","#ec8f8c","#cb7b78"],["#cb7b78","#ec8f8c","#8e96a2","#d63c36","#e3e8ee","#ffffff","#5aa83a","#b87430","#e0a050","#ffffff","#ffffff","#ffffff","#e3e8ee","#ec8f8c","#8e96a2","#d63c36","#d63c36","#d63c36","#9fc2d6","#ec8f8c","#ec8f8c","#d63c36","#d63c36","#fff3d0","#ec8f8c","#ec8f8c","#cb7b78"],["#dad4d0","#fdf6f2","#8e96a2","#ec8f8c","#ec8f8c","#e3e8ee","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#e3e8ee","#fdf6f2","#fdf6f2","#8e96a2","#ec8f8c","#ec8f8c","#9fc2d6","#eef7fc","#9fc2d6","#fdf6f2","#ec8f8c","#e8b840","#a87820","#e8b840","#fdf6f2","#dad4d0"],["#dad4d0","#fdf6f2","#8e96a2","#ec8f8c","#ec8f8c","#ec8f8c","#aeb7c3","#e3e8ee","#e3e8ee","#e3e8ee","#aeb7c3","#ec8f8c","#fdf6f2","#fdf6f2","#8e96a2","#ec8f8c","#ec8f8c","#ec8f8c","#fdf6f2","#fdf6f2","#fdf6f2","#ec8f8c","#a87820","#e8b840","#a87820","#fdf6f2","#dad4d0"],["#bbb6b3","#dad4d0","#dad4d0","#cb7b78","#cb7b78","#cb7b78","#dad4d0","#dad4d0","#dad4d0","#cb7b78","#cb7b78","#cb7b78","#dad4d0","#dad4d0","#dad4d0","#cb7b78","#cb7b78","#cb7b78","#dad4d0","#dad4d0","#dad4d0","#cb7b78","#cb7b78","#cb7b78","#dad4d0","#dad4d0","#bbb6b3"]],
+    powerup: {
+        "type": "destroyer",
+        "tier": 2,
+        "area": {
+          "origin": [
+            1,
+            0
+          ],
+          "grid": [
+            "-...",
+            "-..."
+          ]
+        },
+        "intro": "Whips away its own row and the row under it, wall to wall, and the rows above drop down. Everything else on the table stays exactly where it was, more or less.",
+        "collapse": true,
+        "help": 4.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.7,
+    claudeDraft: true,
+  },
 ];
