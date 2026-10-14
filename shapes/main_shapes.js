@@ -111,6 +111,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "Davids",
+        "lines": [
+          "Michelangelo got carried away",
+          "Florence has run out of plinths"
+        ]
+      },
     shake: true,
     tags: [
         "art"
@@ -130,6 +137,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "Mona Lisas",
+        "lines": [
+          "all originals, apparently",
+          "they're smiling about something"
+        ]
+      },
     tags: [
         "art"
       ],
@@ -152,6 +166,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "hot dogs",
+        "lines": [
+          "and not a single bun",
+          "frankly, too many"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -170,6 +191,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "donuts",
+        "lines": [
+          "the holes are intentional",
+          "a dozen, give or take"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -192,6 +220,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "Marges",
+        "lines": [
+          "the hair goes all the way up",
+          "a low, disapproving hum"
+        ]
+      },
   },
   {
     id: "hooootdoooog",
@@ -217,6 +252,13 @@ export const SHAPES = [
       },
     frequency: 1,
     noShake: true,
+    oops: {
+        "many": "hoooot doooogs",
+        "lines": [
+          "sooooo maaaaany",
+          "hot dogs, but more so"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -233,6 +275,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "lentils",
+        "lines": [
+          "soup, eventually",
+          "a minor legume incident"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -252,6 +301,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "straight bananas",
+        "lines": [
+          "the ones you were waiting for",
+          "botanists are baffled"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -270,6 +326,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "hearts",
+        "lines": [
+          "<3 <3 <3",
+          "all heart, no strategy"
+        ]
+      },
   },
   {
     id: "diamond",
@@ -287,6 +350,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "diamonds",
+        "lines": [
+          "each one more beautiful than the last",
+          "the diamond market has collapsed"
+        ]
+      },
   },
   {
     id: "solo",
@@ -318,6 +388,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "pills",
+        "lines": [
+          "to be taken with food",
+          "side effects may include this"
+        ]
+      },
     tags: [
         "medicine"
       ],
@@ -337,6 +414,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "brains",
+        "lines": [
+          "a think tank",
+          "great minds, thinking alike"
+        ]
+      },
   },
   {
     id: "smiley",
@@ -352,6 +436,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "smileys",
+        "lines": [
+          "nobody is this happy",
+          "a mandatory good mood"
+        ]
+      },
   },
   {
     id: "spam_can",
@@ -368,6 +459,14 @@ export const SHAPES = [
       },
     frequency: 0.3,
     noShake: true,
+    oops: {
+        "many": "spam",
+        "lines": [
+          "anything without spam?",
+          "the Vikings have started singing",
+          "and no way to unsubscribe"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -406,6 +505,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "beans",
+        "lines": [
+          "full of beans",
+          "best before 2089",
+          "someone is preparing for something"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -714,6 +821,14 @@ export const SHAPES = [
         "forgotten_bee"
       ],
     noShake: true,
+    oops: {
+        "many": "bees",
+        "lines": [
+          "a swarm of swarms",
+          "this is a bee matter now",
+          "Bees bees bees!"
+        ]
+      },
   },
   {
     id: "log",
@@ -733,6 +848,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "logs",
+        "lines": [
+          "it's big, it's heavy, it's wood",
+          "the beavers have been busy"
+        ]
+      },
     shake: true,
   },
   {
@@ -751,6 +873,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "Luxembourgs",
+        "lines": [
+          "Europe is mostly Luxembourg now",
+          "the Grand Duchy expands",
+          "still quite small, really"
+        ]
+      },
     shake: true,
   },
   {
@@ -766,6 +896,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "rice",
+        "lines": [
+          "no longer a single grain",
+          "about one bowl"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -782,6 +919,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "cherry tomatoes",
+        "lines": [
+          "a salad is forming",
+          "just cherry tomatoes, then"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -799,6 +943,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "hourglasses",
+        "lines": [
+          "all the time in the world",
+          "someone keeps turning them over"
+        ]
+      },
   },
   {
     id: "tomatoe",
@@ -813,6 +964,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "tomatoes",
+        "lines": [
+          "you say tomato, we say tomatoe",
+          "technically a fruit bowl"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -834,6 +992,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "sausages",
+        "lines": [
+          "back-to-back bangers",
+          "breakfast has escalated"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -852,6 +1017,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "colour bars",
+        "lines": [
+          "please do not adjust your set",
+          "a long, steady beep"
+        ]
+      },
   },
   {
     id: "there",
@@ -866,6 +1038,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "finger pointies",
+        "lines": [
+          "it's rude to point",
+          "it went that way"
+        ]
+      },
   },
   {
     id: "nicholas",
@@ -883,6 +1062,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "Nic Cages",
+        "lines": [
+          "a national treasure, in bulk",
+          "he said yes to all of them",
+          "a Cage match"
+        ]
+      },
   },
   {
     id: "chess",
@@ -912,6 +1099,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "small intestines",
+        "lines": [
+          "six metres each, allegedly",
+          "small, but numerous"
+        ]
+      },
   },
   {
     id: "largentestine",
@@ -934,6 +1128,13 @@ export const SHAPES = [
     nextShapes: [
         "smallintestine"
       ],
+    oops: {
+        "many": "large intestines",
+        "lines": [
+          "the small ones will be along shortly",
+          "biology, at scale"
+        ]
+      },
   },
   {
     id: "eyeball",
@@ -949,6 +1150,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "eyeballs",
+        "lines": [
+          "all eyes on the board",
+          "an eye for an eye for an eye"
+        ]
+      },
   },
   {
     id: "paino",
@@ -982,6 +1190,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "feet",
+        "lines": [
+          "the board has put its foot down",
+          "measured in feet"
+        ]
+      },
   },
   {
     id: "juggling",
@@ -997,6 +1212,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "juggling balls",
+        "lines": [
+          "too many balls in the air",
+          "the juggler has given up"
+        ]
+      },
   },
   {
     id: "orbiting",
@@ -1012,6 +1234,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "moons",
+        "lines": [
+          "orbiting nothing in particular",
+          "Jupiter, basically"
+        ]
+      },
   },
   {
     id: "inchworm",
@@ -1034,6 +1263,13 @@ export const SHAPES = [
         "kilometerworm",
         "lightyearworm"
       ],
+    oops: {
+        "many": "inchworms",
+        "lines": [
+          "measuring the marigolds",
+          "inch by inch by inch"
+        ]
+      },
   },
   {
     id: "worm",
@@ -1049,6 +1285,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "worms",
+        "lines": [
+          "the can of worms is open",
+          "the early bird is overwhelmed"
+        ]
+      },
   },
   {
     id: "little2",
@@ -1062,6 +1305,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "dirty little blocks",
+        "lines": [
+          "the usual suspects",
+          "they all know what they did"
+        ]
+      },
   },
   {
     id: "seeyou1",
@@ -1081,6 +1331,13 @@ export const SHAPES = [
     nextShapes: [
         "seeyou2"
       ],
+    oops: {
+        "many": "sleep watchers",
+        "lines": [
+          "try to get some sleep",
+          "lights out, eyes open"
+        ]
+      },
   },
   {
     id: "seeyou2",
@@ -1100,6 +1357,13 @@ export const SHAPES = [
     nextShapes: [
         "seeyou3"
       ],
+    oops: {
+        "many": "dream seers",
+        "lines": [
+          "they've seen the exam dream",
+          "sweet dreams, supervised"
+        ]
+      },
   },
   {
     id: "seeyou3",
@@ -1113,6 +1377,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "spectators",
+        "lines": [
+          "you're not even playing",
+          "a live studio audience",
+          "they have notes"
+        ]
+      },
   },
   {
     id: "doorway",
@@ -1127,6 +1399,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "doorways",
+        "lines": [
+          "which one is the doorway?",
+          "you've forgotten why you came in"
+        ]
+      },
   },
   {
     id: "darkness",
@@ -1140,6 +1419,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "voids",
+        "lines": [
+          "quite a lot of nothing",
+          "the void is getting full"
+        ]
+      },
   },
   {
     id: "another",
@@ -1155,6 +1441,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "mouths to feed",
+        "lines": [
+          "another, and another, and another",
+          "every one of them hungry"
+        ]
+      },
     tags: [
         "mouth"
       ],
@@ -1186,6 +1479,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "tongues",
+        "lines": [
+          "please hold your tongues",
+          "collectively tongue-tied"
+        ]
+      },
   },
   {
     id: "egg",
@@ -1205,6 +1505,13 @@ export const SHAPES = [
     nextShapes: [
         "fried_egg"
       ],
+    oops: {
+        "many": "eggs",
+        "lines": [
+          "every egg in one basket",
+          "the chicken has some explaining to do"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -1225,6 +1532,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "ziggurats",
+        "lines": [
+          "Ur has outdone itself",
+          "Mesopotamia is full"
+        ]
+      },
   },
   {
     id: "capacity",
@@ -1238,6 +1552,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "sentient blocks",
+        "lines": [
+          "at full capacity",
+          "a collective sigh"
+        ]
+      },
   },
   {
     id: "feathers",
@@ -1270,6 +1591,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "vicious little blocks",
+        "lines": [
+          "we were told to keep them apart",
+          "they've found each other"
+        ]
+      },
   },
   {
     id: "pea",
@@ -1283,6 +1611,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "peas",
+        "lines": [
+          "the princess slept badly",
+          "too many for one pod"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -1301,6 +1636,13 @@ export const SHAPES = [
       },
     frequency: 0.9,
     claudeDraft: true,
+    oops: {
+        "many": "pizza",
+        "lines": [
+          "nobody ordered this much",
+          "the box won't close"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -1320,6 +1662,13 @@ export const SHAPES = [
       },
     frequency: 0.9,
     claudeDraft: true,
+    oops: {
+        "many": "traffic cones",
+        "lines": [
+          "roadworks until further notice",
+          "expect delays"
+        ]
+      },
   },
   {
     id: "pickle_jar",
@@ -1334,6 +1683,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    oops: {
+        "many": "pickles",
+        "lines": [
+          "in quite a pickle",
+          "and not one lid will budge"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -1352,6 +1708,13 @@ export const SHAPES = [
       },
     frequency: 0.9,
     claudeDraft: true,
+    oops: {
+        "many": "catloaves",
+        "lines": [
+          "none of them will move",
+          "a warm, purring wall"
+        ]
+      },
   },
   {
     id: "sad_avocado",
@@ -1367,6 +1730,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    oops: {
+        "many": "rock-solid avocados",
+        "lines": [
+          "ripe by Thursday, possibly",
+          "the avocados are load-bearing"
+        ]
+      },
     shake: true,
     tags: [
         "food"
@@ -1393,6 +1763,13 @@ export const SHAPES = [
     nextShapes: [
         "stone_path"
       ],
+    oops: {
+        "many": "gnomes",
+        "lines": [
+          "Gnomes gnomes gnomes!",
+          "the garden remains ungardened"
+        ]
+      },
   },
   {
     id: "hug_cactus",
@@ -1409,6 +1786,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    oops: {
+        "many": "cacti",
+        "lines": [
+          "free hugs, at your own risk",
+          "a lot of unclaimed hugs"
+        ]
+      },
   },
   {
     id: "disguise",
@@ -1424,6 +1808,13 @@ export const SHAPES = [
       },
     frequency: 0.9,
     claudeDraft: true,
+    oops: {
+        "many": "disguises",
+        "lines": [
+          "totally different pieces, honest",
+          "we've never seen them before"
+        ]
+      },
   },
   {
     id: "mullet",
@@ -1439,6 +1830,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    oops: {
+        "many": "mullets",
+        "lines": [
+          "whose are these?",
+          "the party is at the back"
+        ]
+      },
   },
   {
     id: "evil_sock",
@@ -1470,6 +1868,13 @@ export const SHAPES = [
       },
     frequency: 0.9,
     claudeDraft: true,
+    oops: {
+        "many": "rubber chickens",
+        "lines": [
+          "one long, continuous squeak",
+          "this bit has gone on too long"
+        ]
+      },
   },
   {
     id: "trombone",
@@ -1515,6 +1920,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "floppy disks",
+        "lines": [
+          "please insert disk 23 of 47",
+          "one of them has your homework"
+        ]
+      },
   },
   {
     id: "skateboard",
@@ -1547,6 +1959,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "traffic lights",
+        "lines": [
+          "permanently amber",
+          "a very complicated junction"
+        ]
+      },
   },
   {
     id: "set_square",
@@ -1628,6 +2047,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "trophies",
+        "lines": [
+          "Winner winner winner!",
+          "everybody gets a trophy",
+          "the trophy cabinet has given up"
+        ]
+      },
     tags: [
         "sport"
       ],
@@ -1668,6 +2095,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "saxophones",
+        "lines": [
+          "Smooth smooth smooth!",
+          "a smooth jazz emergency",
+          "smoother than strictly necessary"
+        ]
+      },
     tags: [
         "music"
       ],
@@ -1685,6 +2120,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "cursed VHS tapes",
+        "lines": [
+          "nobody press play",
+          "be kind, don't rewind",
+          "the late fees will be enormous"
+        ]
+      },
   },
   {
     id: "dumbbell",
@@ -1701,6 +2144,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "dumbbells",
+        "lines": [
+          "every day is arm day",
+          "the floor has concerns",
+          "lift with your knees"
+        ]
+      },
     shake: true,
     tags: [
         "sport"
@@ -1721,6 +2172,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "flasks of goo",
+        "lines": [
+          "an unexplained goo event",
+          "the goo is multiplying"
+        ]
+      },
     tags: [
         "science"
       ],
@@ -1740,6 +2198,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "marble busts",
+        "lines": [
+          "all of them disappointed in you",
+          "nobody remembers who this was",
+          "a great deal of frowning"
+        ]
+      },
     tags: [
         "art"
       ],
@@ -1776,6 +2242,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "baguettes",
+        "lines": [
+          "France has been notified",
+          "line after line of bread"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -1793,6 +2266,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "fried eggs",
+        "lines": [
+          "breakfast has got out of hand",
+          "the outlook remains sunny"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -1831,6 +2311,13 @@ export const SHAPES = [
     nextShapes: [
         "pea"
       ],
+    oops: {
+        "many": "pea pods",
+        "lines": [
+          "peas and quiet",
+          "an estimated nine thousand peas"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -1879,6 +2366,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "candy canes",
+        "lines": [
+          "peppermint as far as the eye can see",
+          "Santa will want these back"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -1896,6 +2390,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "snails",
+        "lines": [
+          "Hurry hurry hurry!",
+          "a snail stampede",
+          "they're late for something"
+        ]
+      },
   },
   {
     id: "knowing_owl",
@@ -1912,6 +2414,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "owls",
+        "lines": [
+          "Who? Who? Who?",
+          "parliament is now in session",
+          "the owls know"
+        ]
+      },
   },
   {
     id: "inside_out_umbrella",
@@ -1943,6 +2453,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "sofas",
+        "lines": [
+          "the remote is in here somewhere",
+          "have you checked down the back?"
+        ]
+      },
   },
   {
     id: "goldfish",
@@ -1972,6 +2489,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "dying houseplants",
+        "lines": [
+          "they all still love you",
+          "please water the board",
+          "crispy, but forgiving"
+        ]
+      },
   },
   {
     id: "just_boiled_kettle",
@@ -2004,6 +2529,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "frogs",
+        "lines": [
+          "one of them must be a prince",
+          "still waiting, patiently"
+        ]
+      },
   },
   {
     id: "lonely_wellie",
@@ -2020,6 +2552,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "wellies",
+        "lines": [
+          "Wellies wellies wellies!",
+          "all left feet",
+          "it must be a very big puddle"
+        ]
+      },
   },
   {
     id: "stubborn_sugar_cube",
@@ -2034,6 +2574,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "sugar cubes",
+        "lines": [
+          "one lump or several thousand?",
+          "load-bearing sugar"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -2051,6 +2598,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "unlucky dice",
+        "lines": [
+          "snake eyes, every single time",
+          "a statistically alarming number of ones"
+        ]
+      },
   },
   {
     id: "ambitious_sesame",
@@ -2087,6 +2641,14 @@ export const SHAPES = [
     nextShapes: [
         "macro_sim_card"
       ],
+    oops: {
+        "many": "SIM cards",
+        "lines": [
+          "none of them fit your phone",
+          "still no signal",
+          "every SIM card you ever lost"
+        ]
+      },
   },
   {
     id: "barefoot_lego",
@@ -2114,6 +2676,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "sprinkles",
+        "lines": [
+          "all sprinkles, no cake",
+          "none of them lonely any more"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -2144,6 +2713,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "blank dominoes",
+        "lines": [
+          "nothing to report",
+          "the dullest game of dominoes ever played"
+        ]
+      },
   },
   {
     id: "overpacked_suitcase",
@@ -2205,6 +2781,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "faded rainbows",
+        "lines": [
+          "washed on hot, by mistake",
+          "all seven colours, mostly beige"
+        ]
+      },
     tags: [
         "weather"
       ],
@@ -2222,6 +2805,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "postcards from Slough",
+        "lines": [
+          "wish you were here, apparently",
+          "Slough's tourism board thanks you"
+        ]
+      },
     tags: [
         "travel"
       ],
@@ -2255,6 +2845,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "astronaut ice cream",
+        "lines": [
+          "astronauts not included",
+          "the entire gift shop's supply"
+        ]
+      },
     tags: [
         "food",
         "space"
@@ -2273,6 +2870,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "asteroids",
+        "lines": [
+          "it's an asteroid belt now",
+          "the dinosaurs would like a word"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -2290,6 +2894,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "UFOs",
+        "lines": [
+          "we are very much not alone",
+          "they only wanted directions"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -2325,6 +2936,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "wizard hats",
+        "lines": [
+          "pick a hat, any hat",
+          "somewhere, a lot of bald wizards"
+        ]
+      },
   },
   {
     id: "frog_prince",
@@ -2435,6 +3053,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "unicycles",
+        "lines": [
+          "the circus is in town",
+          "half a bicycle each"
+        ]
+      },
   },
   {
     id: "tiny_armour",
@@ -2451,6 +3076,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "lightly armoured knights",
+        "lines": [
+          "the armour was half price",
+          "a very draughty army"
+        ]
+      },
   },
   {
     id: "genie_lamp",
@@ -2498,6 +3130,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "model railways",
+        "lines": [
+          "delays on all lines",
+          "somebody's dad is thrilled"
+        ]
+      },
   },
   {
     id: "stubborn_knight",
@@ -2530,6 +3169,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "bagpipes",
+        "lines": [
+          "the neighbours have complained",
+          "this is the quiet version"
+        ]
+      },
   },
   {
     id: "hot_air_balloon",
@@ -2581,6 +3227,13 @@ export const SHAPES = [
       },
     frequency: 1,
     noShake: true,
+    oops: {
+        "many": "long cats",
+        "lines": [
+          "several hundred metres of cat",
+          "this might all be one cat"
+        ]
+      },
   },
   {
     id: "moose_head_on",
@@ -2809,6 +3462,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "Great Walls",
+        "lines": [
+          "finally visible from space",
+          "only the Mutianyu sections, though"
+        ]
+      },
     tags: [
         "landmark"
       ],
@@ -2828,6 +3488,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "sausage dogs",
+        "lines": [
+          "walkies is going to take all day",
+          "the back halves arrive tomorrow"
+        ]
+      },
     tags: [
         "animal"
       ],
@@ -2897,6 +3564,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "tiny violins",
+        "lines": [
+          "the world's tiniest orchestra",
+          "a huge amount of tiny sympathy"
+        ]
+      },
   },
   {
     id: "censored",
@@ -2914,6 +3588,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "(censored)",
+        "lines": [
+          "nothing to see here",
+          "redacted, top to bottom"
+        ]
+      },
   },
   {
     id: "steel",
@@ -2933,6 +3614,13 @@ export const SHAPES = [
     nextShapes: [
         "feathers_container"
       ],
+    oops: {
+        "many": "steel",
+        "lines": [
+          "exactly as heavy as feathers",
+          "a ton, one pound at a time"
+        ]
+      },
   },
   {
     id: "rapunzels",
@@ -2956,6 +3644,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "Rapunzel's hair",
+        "lines": [
+          "think of the conditioner",
+          "the prince is going to be a while"
+        ]
+      },
   },
   {
     id: "sock",
@@ -2974,6 +3669,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "tube socks",
+        "lines": [
+          "so this is where they all went",
+          "one size fits nobody"
+        ]
+      },
   },
   {
     id: "fancy",
@@ -2993,6 +3695,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "fancy hats",
+        "lines": [
+          "the dress code is hats",
+          "the hats keep getting taller"
+        ]
+      },
   },
   {
     id: "importand",
@@ -3010,6 +3719,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "buisness papers",
+        "lines": [
+          "buisness is booming",
+          "this could have been an email",
+          "please initial every page"
+        ]
+      },
   },
   {
     id: "nuclear",
@@ -3024,6 +3741,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "nuclear waste",
+        "lines": [
+          "the glowing is perfectly normal",
+          "come back in ten thousand years"
+        ]
+      },
   },
   {
     id: "boulder",
@@ -3038,6 +3762,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "boulders",
+        "lines": [
+          "an orderly landslide",
+          "rock bottom, all the way up",
+          "small, individually"
+        ]
+      },
     shake: true,
   },
   {
@@ -3053,6 +3785,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "gelatine cubes",
+        "lines": [
+          "it has stopped wobbling",
+          "no spoon is strong enough"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -3070,6 +3809,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "cursed mirrors",
+        "lines": [
+          "avoid eye contact",
+          "it's always this room"
+        ]
+      },
   },
   {
     id: "raviolo",
@@ -3083,6 +3829,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "ravioli",
+        "lines": [
+          "ravioli, technically",
+          "one each, no seconds"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -3106,6 +3859,13 @@ export const SHAPES = [
     nextShapes: [
         "mirror"
       ],
+    oops: {
+        "many": "mean mirrors",
+        "lines": [
+          "mirror, mirror, on every wall",
+          "the verdict is unanimous"
+        ]
+      },
   },
   {
     id: "millipede",
@@ -3120,6 +3880,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "millipedes",
+        "lines": [
+          "a ball pit with legs",
+          "everyone is feeling shy"
+        ]
+      },
   },
   {
     id: "illusion",
@@ -3134,6 +3901,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "illusions of time",
+        "lines": [
+          "no time has passed at all",
+          "later than it looks"
+        ]
+      },
   },
   {
     id: "snowflakes",
@@ -3147,6 +3921,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "identical snowflakes",
+        "lines": [
+          "meteorologists are baffled",
+          "a blizzard of exact copies"
+        ]
+      },
   },
   {
     id: "bone",
@@ -3161,6 +3942,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "fish bones",
+        "lines": [
+          "the cat has been busy",
+          "just the heads, for some reason"
+        ]
+      },
   },
   {
     id: "florgenorflepus",
@@ -3185,6 +3973,14 @@ export const SHAPES = [
         "plorbs",
         "snorfwiggle"
       ],
+    oops: {
+        "many": "florgnorfepuses",
+        "lines": [
+          "fresh in this morning",
+          "nobody can pronounce any of them",
+          "all the eyes are fine"
+        ]
+      },
     tags: [
         "squelchy"
       ],
@@ -3202,6 +3998,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "TV static",
+        "lines": [
+          "please stand by",
+          "the message is: drink more water"
+        ]
+      },
   },
   {
     id: "rasberry",
@@ -3217,6 +4020,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "blue raspberries",
+        "lines": [
+          "not found anywhere in nature",
+          "a flavour, not a fruit"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -3234,6 +4044,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "rectangular pizzas",
+        "lines": [
+          "a pizza that actually stacks",
+          "the dinner ladies would be proud"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -3251,6 +4068,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "ramen",
+        "lines": [
+          "noodles all the way down",
+          "not nearly enough chopsticks"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -3269,6 +4093,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "threatening letters",
+        "lines": [
+          "final notice, in crayon",
+          "see you in court, after nap time"
+        ]
+      },
   },
   {
     id: "pepper",
@@ -3283,6 +4114,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "chilli peppers",
+        "lines": [
+          "Hot hot hot!",
+          "a heat warning is in effect"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -3301,6 +4139,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "North Stars",
+        "lines": [
+          "south has been cancelled",
+          "sailors everywhere are confused"
+        ]
+      },
   },
   {
     id: "popes",
@@ -3317,6 +4162,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "pope hats",
+        "lines": [
+          "a conclave of hats",
+          "one pope, far too many hats"
+        ]
+      },
   },
   {
     id: "hellfire",
@@ -3334,6 +4186,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "eternal flames",
+        "lines": [
+          "could someone turn the heating down",
+          "eternal, and now numerous"
+        ]
+      },
   },
   {
     id: "uranium",
@@ -3348,6 +4207,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "spicy uranium",
+        "lines": [
+          "approaching critical mass",
+          "Yum yum yum!"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -3365,6 +4231,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "shiny beetles",
+        "lines": [
+          "full-blown Beetlemania",
+          "shiny, green, and everywhere"
+        ]
+      },
   },
   {
     id: "button",
@@ -3378,6 +4251,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "lost buttons",
+        "lines": [
+          "so this is where they go",
+          "every button anyone ever lost"
+        ]
+      },
   },
   {
     id: "pyramid",
@@ -3395,6 +4275,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "pyramids",
+        "lines": [
+          "a pyramid scheme",
+          "Giza would like these back",
+          "built in record time"
+        ]
+      },
   },
   {
     id: "morrrocan",
@@ -3418,6 +4306,14 @@ export const SHAPES = [
       },
     frequency: 1,
     noShake: true,
+    oops: {
+        "many": "Morrrocan rugs",
+        "lines": [
+          "really ties the board together",
+          "wall-to-wall rugs",
+          "Rrrugs rrrugs rrrugs!"
+        ]
+      },
   },
   {
     id: "cookie",
@@ -3431,6 +4327,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "cookies",
+        "lines": [
+          "accept all cookies",
+          "fine, have all the cookies"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -3447,6 +4350,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "saltines",
+        "lines": [
+          "extremely dry in here",
+          "Saltines saltines saltines!"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -3467,6 +4377,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "Flemish castles",
+        "lines": [
+          "a 12th century housing boom",
+          "Flanders, heavily fortified"
+        ]
+      },
   },
   {
     id: "refreshing",
@@ -3483,6 +4400,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "paint thinner",
+        "lines": [
+          "so refreshing, so flammable",
+          "please do not drink any of it"
+        ]
+      },
   },
   {
     id: "column",
@@ -3502,6 +4426,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "tiny vases",
+        "lines": [
+          "a colonnade, technically",
+          "no vases were harmed"
+        ]
+      },
   },
   {
     id: "onefish",
@@ -3522,6 +4453,13 @@ export const SHAPES = [
     nextShapes: [
         "twofish"
       ],
+    oops: {
+        "many": "fish",
+        "lines": [
+          "one fish, one fish, one fish",
+          "still no sign of two fish"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -3629,6 +4567,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "flowers with faces",
+        "lines": [
+          "a garden that stares back",
+          "they've all noticed you"
+        ]
+      },
   },
   {
     id: "croissant",
@@ -3643,6 +4588,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "croissants",
+        "lines": [
+          "an alarming amount of butter",
+          "breakfast as far as the eye can see"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -3667,6 +4619,13 @@ export const SHAPES = [
         "florgenorflepus",
         "blibbets"
       ],
+    oops: {
+        "many": "pkforfer eggs",
+        "lines": [
+          "an enormous clutch",
+          "something is about to hatch"
+        ]
+      },
     tags: [
         "squelchy"
       ],
@@ -3694,6 +4653,13 @@ export const SHAPES = [
         "plorbs",
         "florgenorflepus"
       ],
+    oops: {
+        "many": "snorfwiggles",
+        "lines": [
+          "a wiggle of snorfwiggles",
+          "the snorfwiggles are thriving"
+        ]
+      },
     tags: [
         "squelchy"
       ],
@@ -3719,6 +4685,13 @@ export const SHAPES = [
         "florgnorfepus_egg",
         "blibbets"
       ],
+    oops: {
+        "many": "plorbs",
+        "lines": [
+          "a record year for plorbs",
+          "all plorbs accounted for"
+        ]
+      },
     tags: [
         "squelchy"
       ],
@@ -3745,6 +4718,13 @@ export const SHAPES = [
         "schlopwort",
         "snorfwiggle"
       ],
+    oops: {
+        "many": "grumblesacs",
+        "lines": [
+          "the grumblesacs have concerns",
+          "Grumble grumble grumble!"
+        ]
+      },
     tags: [
         "squelchy"
       ],
@@ -3770,6 +4750,13 @@ export const SHAPES = [
         "grumblesac",
         "squonch"
       ],
+    oops: {
+        "many": "schlopworts",
+        "lines": [
+          "peak schlopwort season",
+          "Schlopworts schlopworts schlopworts!"
+        ]
+      },
     tags: [
         "squelchy"
       ],
@@ -3796,6 +4783,13 @@ export const SHAPES = [
         "plorbs",
         "mumblethorpe"
       ],
+    oops: {
+        "many": "squaberflabsnorts",
+        "lines": [
+          "a squaberflabsnort majority",
+          "spellcheck has given up"
+        ]
+      },
     tags: [
         "squelchy"
       ],
@@ -3823,6 +4817,13 @@ export const SHAPES = [
         "plorbs",
         "mumblethorpe"
       ],
+    oops: {
+        "many": "hingerflabberabs",
+        "lines": [
+          "a slew of slews",
+          "well beyond a slew now"
+        ]
+      },
     tags: [
         "squelchy"
       ],
@@ -3851,6 +4852,13 @@ export const SHAPES = [
         "florgnorfepus_egg",
         "grumblesac"
       ],
+    oops: {
+        "many": "mumblethorpes",
+        "lines": [
+          "which one is the real mumblethorpe?",
+          "the mumblethorpes have gathered"
+        ]
+      },
     tags: [
         "squelchy"
       ],
@@ -3878,6 +4886,13 @@ export const SHAPES = [
         "happy_pills",
         "happy_pills_2"
       ],
+    oops: {
+        "many": "happy pills",
+        "lines": [
+          "Happy happy happy!",
+          "ask your doctor about all this"
+        ]
+      },
     tags: [
         "medicine"
       ],
@@ -3894,6 +4909,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    oops: {
+        "many": "teeth",
+        "lines": [
+          "whose are all these?",
+          "the tooth fairy is overwhelmed"
+        ]
+      },
   },
   {
     id: "breath_mint",
@@ -3907,6 +4929,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    oops: {
+        "many": "stinky mints",
+        "lines": [
+          "this is not helping",
+          "minty, allegedly"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -3923,6 +4952,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    oops: {
+        "many": "emotional support bricks",
+        "lines": [
+          "a wall of emotional support",
+          "everyone feels very supported"
+        ]
+      },
   },
   {
     id: "seen_things",
@@ -3938,6 +4974,13 @@ export const SHAPES = [
       },
     frequency: 0.9,
     claudeDraft: true,
+    oops: {
+        "many": "rubber ducks",
+        "lines": [
+          "we don't talk about the bath",
+          "you weren't there, man"
+        ]
+      },
   },
   {
     id: "haunted_toaster",
@@ -3985,6 +5028,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    oops: {
+        "many": "licked sandwiches",
+        "lines": [
+          "lunch is cancelled",
+          "nobody is claiming these"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -4003,6 +5053,13 @@ export const SHAPES = [
       },
     frequency: 0.8,
     claudeDraft: true,
+    oops: {
+        "many": "Tuesdays",
+        "lines": [
+          "it's been Tuesday for days",
+          "the concept is spreading"
+        ]
+      },
   },
   {
     id: "pisa",
@@ -4026,6 +5083,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "leaning towers",
+        "lines": [
+          "everything leans now",
+          "leaning, but holding steady"
+        ]
+      },
     tags: [
         "landmark"
       ],
@@ -4050,6 +5114,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "Easter Island heads",
+        "lines": [
+          "nobody knows how they got here",
+          "so many serious faces"
+        ]
+      },
     tags: [
         "landmark"
       ],
@@ -4071,6 +5142,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "Stonehenges",
+        "lines": [
+          "the druids are delighted",
+          "henge after henge",
+          "the solstice is very confused"
+        ]
+      },
     tags: [
         "landmark"
       ],
@@ -4108,6 +5187,14 @@ export const SHAPES = [
     nextShapes: [
         "little_ben"
       ],
+    oops: {
+        "many": "Big Bens",
+        "lines": [
+          "it's Big Ben o'clock",
+          "Bong bong bong!",
+          "punctual, to a fault"
+        ]
+      },
     tags: [
         "landmark"
       ],
@@ -9535,6 +10622,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    oops: {
+        "many": "cow tornadoes",
+        "lines": [
+          "cow, another cow, another cow",
+          "a severe cow warning"
+        ]
+      },
   },
   {
     id: "hot_glue_gun",
@@ -13643,6 +14737,13 @@ export const SHAPES = [
         "steel"
       ],
     noShake: true,
+    oops: {
+        "many": "pounds of feathers",
+        "lines": [
+          "about a ton of feathers now",
+          "still exactly a pound each"
+        ]
+      },
   },
   {
     id: "magritte_pipe",
@@ -13658,6 +14759,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "pipes",
+        "lines": [
+          "these are not pipes",
+          "definitely not a pile of pipes"
+        ]
+      },
     tags: [
         "surreal"
       ],
@@ -13676,6 +14784,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "bowler hats",
+        "lines": [
+          "it's raining bowler hats",
+          "the gentlemen are elsewhere"
+        ]
+      },
     tags: [
         "surreal"
       ],
@@ -13713,6 +14828,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "lobster telephones",
+        "lines": [
+          "it's for you (it's a lobster)",
+          "please hold for the next lobster"
+        ]
+      },
     tags: [
         "surreal"
       ],
@@ -13756,6 +14878,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "long-legged elephants",
+        "lines": [
+          "elephants all the way up",
+          "it's mostly legs at this point"
+        ]
+      },
     shake: true,
     tags: [
         "surreal"
@@ -13786,6 +14915,13 @@ export const SHAPES = [
         "piece_of_sky_sunset",
         "piece_of_sky_night"
       ],
+    oops: {
+        "many": "pieces of sky",
+        "lines": [
+          "the sky is falling, piece by piece",
+          "there's a hole in the sky now"
+        ]
+      },
     seam: "sky",
     tags: [
         "surreal"
@@ -14321,6 +15457,13 @@ export const SHAPES = [
         "everything"
       ],
     noShake: true,
+    oops: {
+        "many": "nothing",
+        "lines": [
+          "a whole lot of nothing",
+          "nothing to see here"
+        ]
+      },
   },
   {
     id: "everything",
@@ -15236,6 +16379,13 @@ export const SHAPES = [
     nextShapes: [
         "iceberg_rest"
       ],
+    oops: {
+        "many": "iceberg tips",
+        "lines": [
+          "ninety percent is under the board",
+          "this is only the beginning"
+        ]
+      },
     seam: "iceberg",
   },
   {
@@ -15468,6 +16618,13 @@ export const SHAPES = [
     frequency: 0.5,
     claudeDraft: true,
     nameAgain: "another storm cloud",
+    oops: {
+        "many": "storm clouds",
+        "lines": [
+          "bring an umbrella, maybe several",
+          "the forecast was right, for once"
+        ]
+      },
     tags: [
         "weather"
       ],
@@ -15488,6 +16645,13 @@ export const SHAPES = [
     frequency: 0.3,
     claudeDraft: true,
     nameAgain: "another big storm cloud",
+    oops: {
+        "many": "big storm clouds",
+        "lines": [
+          "a significant weather event",
+          "and then the big ones came"
+        ]
+      },
     tags: [
         "weather"
       ],
@@ -15509,6 +16673,13 @@ export const SHAPES = [
     claudeDraft: true,
     nameAgain: "another rumbling storm cloud",
     noShake: true,
+    oops: {
+        "many": "rumbling clouds",
+        "lines": [
+          "the sky sounds hungry",
+          "the clouds are clearing their throats"
+        ]
+      },
     shake: true,
     tags: [
         "weather"
@@ -15864,6 +17035,13 @@ export const SHAPES = [
         "big_raindrop"
       ],
     noShake: true,
+    oops: {
+        "many": "raindrops",
+        "lines": [
+          "Drip drip drip!",
+          "one drop at a time"
+        ]
+      },
   },
   {
     id: "big_raindrop",
@@ -15881,6 +17059,13 @@ export const SHAPES = [
     claudeDraft: true,
     nameAgain: "another big raindrop",
     noShake: true,
+    oops: {
+        "many": "big raindrops",
+        "lines": [
+          "rain, but chunkier",
+          "the drops are getting bigger"
+        ]
+      },
   },
   {
     id: "drizzle",
@@ -15897,6 +17082,13 @@ export const SHAPES = [
     claudeDraft: true,
     nameAgain: "a bit more drizzle",
     noShake: true,
+    oops: {
+        "many": "drizzle",
+        "lines": [
+          "more than a bit of drizzle",
+          "persistent drizzle, all afternoon"
+        ]
+      },
   },
   {
     id: "the_multiverse",
@@ -16625,6 +17817,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "mitochondria",
+        "lines": [
+          "the powerhouse of the board",
+          "the cell has never felt better"
+        ]
+      },
     tags: [
         "science"
       ],
@@ -16647,6 +17846,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "stuck Santas",
+        "lines": [
+          "Christmas has been delayed",
+          "ho ho ho, a little help?"
+        ]
+      },
   },
   {
     id: "microchip",
@@ -16667,6 +17873,13 @@ export const SHAPES = [
     nextShapes: [
         "macrochip"
       ],
+    oops: {
+        "many": "microchips",
+        "lines": [
+          "the chip shortage is over",
+          "nearly enough for a smart fridge"
+        ]
+      },
   },
   {
     id: "macrochip",
@@ -16706,6 +17919,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "smoke stacks",
+        "lines": [
+          "stacks on stacks on stacks",
+          "a small industrial revolution"
+        ]
+      },
   },
   {
     id: "dali_moustache",
@@ -16730,6 +17950,13 @@ export const SHAPES = [
         "dali_elephant",
         "lobster_telephone"
       ],
+    oops: {
+        "many": "Dalí moustaches",
+        "lines": [
+          "Dalí only had the one",
+          "maximum moustache"
+        ]
+      },
     tags: [
         "art"
       ],
@@ -16755,6 +17982,13 @@ export const SHAPES = [
     nextShapes: [
         "oed"
       ],
+    oops: {
+        "many": "encyclopaedias",
+        "lines": [
+          "everything, alphabetically",
+          "see also: more encyclopaedias"
+        ]
+      },
   },
   {
     id: "oed",
@@ -16772,6 +18006,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "dictionaries",
+        "lines": [
+          "words fail us",
+          "every word, several times over"
+        ]
+      },
   },
   {
     id: "caveman_in_ice",
@@ -16789,6 +18030,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "frozen cavemen",
+        "lines": [
+          "the Stone Age, on ice",
+          "keep frozen"
+        ]
+      },
   },
   {
     id: "stapler_in_jello",
@@ -16810,6 +18058,13 @@ export const SHAPES = [
     nextShapes: [
         "congealed"
       ],
+    oops: {
+        "many": "staplers in jello",
+        "lines": [
+          "this prank has gone too far",
+          "the office supplies have set"
+        ]
+      },
   },
   {
     id: "tuning_fork",
@@ -16827,6 +18082,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "tuning forks",
+        "lines": [
+          "all humming the same A",
+          "pitch perfect"
+        ]
+      },
   },
   {
     id: "gingerbread_man",
@@ -16845,6 +18107,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "gingerbread men",
+        "lines": [
+          "it turns out you can catch them",
+          "the fox has been sent for",
+          "left on the board to cool"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -17386,6 +18656,14 @@ export const SHAPES = [
     nextShapes: [
         "china_shop"
       ],
+    oops: {
+        "many": "bulls",
+        "lines": [
+          "a bull market",
+          "someone wore red",
+          "the china shop has closed early"
+        ]
+      },
     tags: [
         "animal"
       ],
@@ -17452,6 +18730,13 @@ export const SHAPES = [
     nextShapes: [
         "last_straw"
       ],
+    oops: {
+        "many": "camels",
+        "lines": [
+          "a caravan, and then some",
+          "the last straw is on its way"
+        ]
+      },
   },
   {
     id: "last_straw",
@@ -17492,6 +18777,14 @@ export const SHAPES = [
     nextShapes: [
         "elephant_on_chair"
       ],
+    oops: {
+        "many": "mice",
+        "lines": [
+          "we may have mice",
+          "Mice mice mice!",
+          "the cat has handed in its notice"
+        ]
+      },
   },
   {
     id: "elephant_on_chair",
@@ -17531,6 +18824,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "elephants in the room",
+        "lines": [
+          "still, nobody says a word",
+          "the room is now mostly elephant",
+          "we need to talk about the elephants"
+        ]
+      },
   },
   {
     id: "giant_rubber_duck",
@@ -17550,6 +18851,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "giant rubber ducks",
+        "lines": [
+          "each one the world's largest",
+          "the record is under review",
+          "duck, duck, still no goose"
+        ]
+      },
   },
   {
     id: "dinosaur_fossil",
@@ -17568,6 +18877,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "dinosaur fossils",
+        "lines": [
+          "still just the one dinosaur",
+          "a very thorough dinosaur",
+          "the museum has some questions"
+        ]
+      },
   },
   {
     id: "pyramid_box",
@@ -17587,6 +18904,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "pyramid boxes",
+        "lines": [
+          "we kept the boxes, just in case",
+          "flattened for recycling",
+          "pyramids not included"
+        ]
+      },
   },
   {
     id: "big_hot_air_balloon",
@@ -17607,6 +18932,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "hot air balloons",
+        "lines": [
+          "mostly hot air",
+          "they were supposed to go up",
+          "the sky is fully booked"
+        ]
+      },
   },
   {
     id: "lighthouse",
@@ -17629,6 +18962,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "lighthouses",
+        "lines": [
+          "the coast is extremely clear",
+          "more lighthouses than coastline",
+          "a lot of stairs for one keeper"
+        ]
+      },
   },
   {
     id: "double_decker",
@@ -17646,6 +18987,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "double-deckers",
+        "lines": [
+          "you wait ages for one",
+          "upstairs is also full",
+          "a rail replacement service"
+        ]
+      },
   },
   {
     id: "humongous_piece_of_sky",
@@ -17696,6 +19045,14 @@ export const SHAPES = [
         "piece_of_sky_sunset",
         "piece_of_sky_night"
       ],
+    oops: {
+        "many": "bits of sunset",
+        "lines": [
+          "sunset, by the square metre",
+          "a very long evening",
+          "the sky would like these back"
+        ]
+      },
     seam: "sky_sunset",
     tags: [
         "surreal"
@@ -17773,6 +19130,13 @@ export const SHAPES = [
         "piece_of_sky_sunset",
         "piece_of_sky_night"
       ],
+    oops: {
+        "many": "bits of night",
+        "lines": [
+          "the whole night, in pieces",
+          "well past everyone's bedtime"
+        ]
+      },
     seam: "sky_night",
     tags: [
         "surreal"
@@ -17852,6 +19216,13 @@ export const SHAPES = [
         "watering_can",
         "cracked_pot"
       ],
+    oops: {
+        "many": "daisies",
+        "lines": [
+          "the daisy chain got out of hand",
+          "the lawn never stood a chance"
+        ]
+      },
   },
   {
     id: "tulip",
@@ -17881,6 +19252,13 @@ export const SHAPES = [
         "bird_bath",
         "compost_heap"
       ],
+    oops: {
+        "many": "tulips",
+        "lines": [
+          "tulip mania, again",
+          "they all came up at once"
+        ]
+      },
   },
   {
     id: "bluebell",
@@ -17909,6 +19287,13 @@ export const SHAPES = [
         "stone_path",
         "watering_can"
       ],
+    oops: {
+        "many": "bluebells",
+        "lines": [
+          "a bluebell wood, without the wood",
+          "all bells, no ringing"
+        ]
+      },
   },
   {
     id: "dandelion_clock",
@@ -17938,6 +19323,14 @@ export const SHAPES = [
         "rusty_trowel",
         "bird_bath"
       ],
+    oops: {
+        "many": "dandelion clocks",
+        "lines": [
+          "nobody breathe",
+          "it's all o'clock",
+          "a backlog of wishes"
+        ]
+      },
   },
   {
     id: "poppy",
@@ -17967,6 +19360,13 @@ export const SHAPES = [
         "garden_gnome",
         "stone_path"
       ],
+    oops: {
+        "many": "poppies",
+        "lines": [
+          "Poppies poppies poppies!",
+          "everyone is feeling a bit sleepy"
+        ]
+      },
   },
   {
     id: "forget_me_not",
@@ -17995,6 +19395,13 @@ export const SHAPES = [
         "cracked_pot",
         "rusty_trowel"
       ],
+    oops: {
+        "many": "forget-me-nots",
+        "lines": [
+          "all right, we won't forget",
+          "it's all coming back to me now"
+        ]
+      },
   },
   {
     id: "lavender",
@@ -18025,6 +19432,13 @@ export const SHAPES = [
         "compost_heap",
         "garden_gnome"
       ],
+    oops: {
+        "many": "lavender",
+        "lines": [
+          "a dangerous level of calm",
+          "the drawers will smell lovely"
+        ]
+      },
   },
   {
     id: "snowdrop",
@@ -18054,6 +19468,13 @@ export const SHAPES = [
         "watering_can",
         "cracked_pot"
       ],
+    oops: {
+        "many": "snowdrops",
+        "lines": [
+          "heavy snowdrops expected overnight",
+          "spring is being quite insistent"
+        ]
+      },
   },
   {
     id: "old_wheelbarrow",
@@ -18103,6 +19524,13 @@ export const SHAPES = [
     nextShapes: [
         "bird_bath"
       ],
+    oops: {
+        "many": "stone paths",
+        "lines": [
+          "please keep to the path",
+          "every path leads to more path"
+        ]
+      },
   },
   {
     id: "watering_can",
@@ -18124,6 +19552,13 @@ export const SHAPES = [
     nextShapes: [
         "cracked_pot"
       ],
+    oops: {
+        "many": "watering cans",
+        "lines": [
+          "the plants have had enough",
+          "in case of hosepipe ban"
+        ]
+      },
   },
   {
     id: "cracked_pot",
@@ -18139,6 +19574,13 @@ export const SHAPES = [
       },
     frequency: 0.15,
     claudeDraft: true,
+    oops: {
+        "many": "cracked pots",
+        "lines": [
+          "none of them hold water",
+          "the crackpots have assembled"
+        ]
+      },
   },
   {
     id: "hosepipe",
@@ -18176,6 +19618,13 @@ export const SHAPES = [
       },
     frequency: 0.15,
     claudeDraft: true,
+    oops: {
+        "many": "rusty trowels",
+        "lines": [
+          "laying it on with a trowel",
+          "the shed has been emptied"
+        ]
+      },
   },
   {
     id: "bird_bath",
@@ -18192,6 +19641,13 @@ export const SHAPES = [
       },
     frequency: 0.15,
     claudeDraft: true,
+    oops: {
+        "many": "bird baths",
+        "lines": [
+          "the cleanest birds in the county",
+          "the birds can't believe their luck"
+        ]
+      },
   },
   {
     id: "compost_heap",
@@ -18213,6 +19669,13 @@ export const SHAPES = [
     nextShapes: [
         "rusty_trowel"
       ],
+    oops: {
+        "many": "compost heaps",
+        "lines": [
+          "heaps of heaps",
+          "remember to turn them weekly"
+        ]
+      },
   },
   {
     id: "kilometerworm",
@@ -18277,6 +19740,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "Rubik's cubes",
+        "lines": [
+          "not a single one solved",
+          "forty-three quintillion ways to be wrong"
+        ]
+      },
     remix: {
         "stickers": [
           "#ff7300",
@@ -18304,6 +19774,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "Mondrians",
+        "lines": [
+          "a major retrospective",
+          "red, yellow, blue, repeat",
+          "the gallery has run out of wall"
+        ]
+      },
     tags: [
         "art"
       ],
@@ -18327,6 +19805,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "QR codes",
+        "lines": [
+          "page not found",
+          "nowhere, in bulk"
+        ]
+      },
   },
   {
     id: "space_invader",
@@ -18346,6 +19831,13 @@ export const SHAPES = [
       },
     frequency: 0.35,
     claudeDraft: true,
+    oops: {
+        "many": "space invaders",
+        "lines": [
+          "they have reached the bottom",
+          "nobody is shooting back"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -18383,6 +19875,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "stuck pixels",
+        "lines": [
+          "do not adjust your set",
+          "the warranty does not cover this"
+        ]
+      },
   },
   {
     id: "watermelon_slice",
@@ -18399,6 +19898,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "watermelon slices",
+        "lines": [
+          "the picnic has escalated",
+          "one melon was not enough"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -18420,6 +19926,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "stop signs",
+        "lines": [
+          "Stop stop stop!",
+          "a full stop",
+          "and yet, here comes another"
+        ]
+      },
   },
   {
     id: "lego_brick_2x4",
@@ -18442,6 +19956,13 @@ export const SHAPES = [
     nextShapes: [
         "barefoot_lego"
       ],
+    oops: {
+        "many": "duplo bricks",
+        "lines": [
+          "a toddler's magnum opus",
+          "much kinder to bare feet"
+        ]
+      },
   },
   {
     id: "swiss_cheese_lump",
@@ -18458,6 +19979,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "swiss cheese",
+        "lines": [
+          "more holes than cheese",
+          "Switzerland remains neutral"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -18480,6 +20008,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "ladders to nowhere",
+        "lines": [
+          "nowhere is now fully accessible",
+          "impossible not to walk under one"
+        ]
+      },
   },
   {
     id: "kite_in_a_storm",
@@ -18498,6 +20033,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "kites",
+        "lines": [
+          "not a good day for kites",
+          "the forecast was ignored"
+        ]
+      },
   },
   {
     id: "flock_of_starlings",
@@ -18515,6 +20057,13 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     noShake: true,
+    oops: {
+        "many": "starlings",
+        "lines": [
+          "a murmuration, at full volume",
+          "they appear to be spelling something"
+        ]
+      },
   },
   {
     id: "trail_of_footprints",
@@ -18533,6 +20082,13 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     noShake: true,
+    oops: {
+        "many": "footprints",
+        "lines": [
+          "someone has been going round in circles",
+          "please wipe your feet"
+        ]
+      },
   },
   {
     id: "portrait_of_a_potato",
@@ -18549,6 +20105,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "potato portraits",
+        "lines": [
+          "the eyes follow you round the room",
+          "the potato sat for every one"
+        ]
+      },
     tags: [
         "art"
       ],
@@ -18643,6 +20206,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "red ribbons",
+        "lines": [
+          "the ribbon-cutting went badly",
+          "the wind has won"
+        ]
+      },
   },
   {
     id: "storm_in_a_teacup",
@@ -18658,6 +20228,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "storms in teacups",
+        "lines": [
+          "much ado about tea",
+          "it will all blow over"
+        ]
+      },
   },
   {
     id: "umbrella_for_a_fish",
@@ -18673,6 +20250,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "fish umbrellas",
+        "lines": [
+          "in case it rains underwater",
+          "the fish have never been drier"
+        ]
+      },
   },
   {
     id: "goldfish_bowl_moon",
@@ -18689,6 +20273,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "goldfish bowls",
+        "lines": [
+          "one small swim for a fish",
+          "a lunar aquarium"
+        ]
+      },
   },
   {
     id: "anvil_of_feathers",
@@ -18704,6 +20295,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "feather anvils",
+        "lines": [
+          "light as an anvil",
+          "perfectly safe to stand under"
+        ]
+      },
   },
   {
     id: "jar_of_fog",
@@ -18719,6 +20317,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "jars of fog",
+        "lines": [
+          "visibility remains poor",
+          "a pea-souper, bottled"
+        ]
+      },
   },
   {
     id: "fossilised_sandwich",
@@ -18734,6 +20339,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "fossilised sandwiches",
+        "lines": [
+          "best before the Jurassic",
+          "someone's lunch, finally found"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -18770,6 +20382,13 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     noShake: true,
+    oops: {
+        "many": "pianos full of bees",
+        "lines": [
+          "everything is in B flat",
+          "the recital has been postponed"
+        ]
+      },
     tags: [
         "music"
       ],
@@ -18789,6 +20408,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "snowmen on holiday",
+        "lines": [
+          "having a lovely time, briefly",
+          "the pool is getting fuller"
+        ]
+      },
   },
   {
     id: "bucket_of_yesterday",
@@ -19043,6 +20669,13 @@ export const SHAPES = [
       },
     frequency: 0.25,
     claudeDraft: true,
+    oops: {
+        "many": "space invaders",
+        "lines": [
+          "the invasion is going well",
+          "they did say they were coming"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -19065,6 +20698,13 @@ export const SHAPES = [
       },
     frequency: 0.25,
     claudeDraft: true,
+    oops: {
+        "many": "space invaders",
+        "lines": [
+          "a hostile takeover",
+          "they seem to be staying"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -19087,6 +20727,13 @@ export const SHAPES = [
       },
     frequency: 0.25,
     claudeDraft: true,
+    oops: {
+        "many": "space invaders",
+        "lines": [
+          "the bunkers did not hold",
+          "a new high score, for them"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -19112,6 +20759,13 @@ export const SHAPES = [
     frequency: 0.15,
     claudeDraft: true,
     noShake: false,
+    oops: {
+        "many": "space invaders",
+        "lines": [
+          "thirty points each",
+          "insert coin to continue"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -19137,6 +20791,13 @@ export const SHAPES = [
     frequency: 0.15,
     claudeDraft: true,
     noShake: false,
+    oops: {
+        "many": "space invaders",
+        "lines": [
+          "twenty points apiece",
+          "still in formation, somehow"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -19162,6 +20823,13 @@ export const SHAPES = [
     frequency: 0.15,
     claudeDraft: true,
     noShake: false,
+    oops: {
+        "many": "space invaders",
+        "lines": [
+          "ten points each, sadly",
+          "they come in peace, apparently"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -19187,6 +20855,13 @@ export const SHAPES = [
     frequency: 0.15,
     claudeDraft: true,
     noShake: false,
+    oops: {
+        "many": "space invaders",
+        "lines": [
+          "you can see these from space",
+          "Earth has been most welcoming"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -19212,6 +20887,13 @@ export const SHAPES = [
     frequency: 0.15,
     claudeDraft: true,
     noShake: false,
+    oops: {
+        "many": "space invaders",
+        "lines": [
+          "at least they're well lit",
+          "they've given up going sideways"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -19237,6 +20919,13 @@ export const SHAPES = [
     frequency: 0.15,
     claudeDraft: true,
     noShake: false,
+    oops: {
+        "many": "space invaders",
+        "lines": [
+          "the mothership is proud of them",
+          "that's the whole fleet, then"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -19262,6 +20951,14 @@ export const SHAPES = [
     frequency: 0.15,
     claudeDraft: true,
     noShake: false,
+    oops: {
+        "many": "space invaders",
+        "lines": [
+          "the invasion has been noted",
+          "thirty points each, apparently",
+          "Earth has yet to respond"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -19287,6 +20984,14 @@ export const SHAPES = [
     frequency: 0.15,
     claudeDraft: true,
     noShake: false,
+    oops: {
+        "many": "space invaders",
+        "lines": [
+          "sideways, then down, then sideways",
+          "the stationery cupboard is empty",
+          "the invasion came from accounts"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -19312,6 +21017,13 @@ export const SHAPES = [
     frequency: 0.15,
     claudeDraft: true,
     noShake: false,
+    oops: {
+        "many": "space invaders",
+        "lines": [
+          "the invaders have landed",
+          "it was a team-building exercise"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -19334,6 +21046,14 @@ export const SHAPES = [
       },
     frequency: 0.1,
     claudeDraft: true,
+    oops: {
+        "many": "mystery ships",
+        "lines": [
+          "the mystery deepens",
+          "not much of a mystery any more",
+          "unidentified, in bulk"
+        ]
+      },
     tags: [
         "space"
       ],
@@ -19381,6 +21101,14 @@ export const SHAPES = [
     nextShapes: [
         "happy_pills"
       ],
+    oops: {
+        "many": "happy pills",
+        "lines": [
+          "the pills are in great spirits",
+          "a very cheerful pharmacy",
+          "the mood has improved considerably"
+        ]
+      },
     tags: [
         "medicine"
       ],
@@ -19952,6 +21680,14 @@ export const SHAPES = [
       },
     frequency: 0.5,
     claudeDraft: true,
+    oops: {
+        "many": "bees",
+        "lines": [
+          "one bee at a time",
+          "individually wrapped bees",
+          "the bee census is ongoing"
+        ]
+      },
     tags: [
         "bugs"
       ],
@@ -19971,6 +21707,13 @@ export const SHAPES = [
     frequency: 0.4,
     claudeDraft: true,
     noShake: true,
+    oops: {
+        "many": "pairs of bees",
+        "lines": [
+          "every bee has a buddy",
+          "two by two by two by two"
+        ]
+      },
     tags: [
         "bugs"
       ],
@@ -19988,6 +21731,14 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    oops: {
+        "many": "bee-lines",
+        "lines": [
+          "a very direct swarm",
+          "the bees are queuing nicely",
+          "making a bee-line for the top"
+        ]
+      },
     tags: [
         "bugs"
       ],
@@ -20009,6 +21760,14 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    oops: {
+        "many": "queen bees",
+        "lines": [
+          "a constitutional crisis",
+          "the portrait gallery is complete",
+          "this is not how hives work"
+        ]
+      },
     tags: [
         "bugs"
       ],
@@ -20028,6 +21787,13 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    oops: {
+        "many": "honeycombs",
+        "lines": [
+          "maximum structural efficiency",
+          "the hexagon lobby has won"
+        ]
+      },
     tags: [
         "bugs"
       ],
@@ -20047,6 +21813,14 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    oops: {
+        "many": "bees' knees",
+        "lines": [
+          "Knees knees knees!",
+          "the bees will want these back",
+          "a surplus of excellence"
+        ]
+      },
     tags: [
         "bugs"
       ],
@@ -20065,6 +21839,14 @@ export const SHAPES = [
       },
     frequency: 0.25,
     claudeDraft: true,
+    oops: {
+        "many": "bees carrying bees",
+        "lines": [
+          "bees all the way up",
+          "a slightly larger problem",
+          "the larger bees are not helping"
+        ]
+      },
     tags: [
         "bugs"
       ],
@@ -20083,6 +21865,13 @@ export const SHAPES = [
       },
     frequency: 0.25,
     claudeDraft: true,
+    oops: {
+        "many": "bees in bonnets",
+        "lines": [
+          "they simply won't let it go",
+          "a lot of strong opinions"
+        ]
+      },
     tags: [
         "bugs"
       ],
@@ -20104,6 +21893,14 @@ export const SHAPES = [
     frequency: 0.2,
     claudeDraft: true,
     noShake: true,
+    oops: {
+        "many": "clouds of bees",
+        "lines": [
+          "overcast, with bees",
+          "a severe bee warning",
+          "the sky is mostly bees now"
+        ]
+      },
     tags: [
         "bugs"
       ],
@@ -20475,6 +22272,13 @@ export const SHAPES = [
         "tile_square_terracotta",
         "tile_square_gold"
       ],
+    oops: {
+        "many": "blue tiles",
+        "lines": [
+          "entering a blue period",
+          "a kitchen with ambitions"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20504,6 +22308,13 @@ export const SHAPES = [
         "tile_square_terracotta",
         "tile_square_gold"
       ],
+    oops: {
+        "many": "green tiles",
+        "lines": [
+          "the splashback got out of hand",
+          "grouting is next week"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20533,6 +22344,13 @@ export const SHAPES = [
         "tile_square_terracotta",
         "tile_square_gold"
       ],
+    oops: {
+        "many": "terracotta tiles",
+        "lines": [
+          "a very long Victorian hallway",
+          "wipe your feet, please"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20562,6 +22380,13 @@ export const SHAPES = [
         "tile_square_terracotta",
         "tile_square_gold"
       ],
+    oops: {
+        "many": "gold tiles",
+        "lines": [
+          "a regrettable amount of gold",
+          "the budget was never discussed"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20592,6 +22417,13 @@ export const SHAPES = [
         "tile_big_terracotta",
         "tile_big_gold"
       ],
+    oops: {
+        "many": "big blue tiles",
+        "lines": [
+          "large format, as is the fashion",
+          "the pool just needs water now"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20622,6 +22454,13 @@ export const SHAPES = [
         "tile_big_terracotta",
         "tile_big_gold"
       ],
+    oops: {
+        "many": "big green tiles",
+        "lines": [
+          "a bold choice, in green",
+          "fewer, bigger, greener"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20652,6 +22491,13 @@ export const SHAPES = [
         "tile_big_terracotta",
         "tile_big_gold"
       ],
+    oops: {
+        "many": "big terracotta tiles",
+        "lines": [
+          "a Tuscan kitchen, allegedly",
+          "the tiler is finishing early"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20682,6 +22528,13 @@ export const SHAPES = [
         "tile_big_terracotta",
         "tile_big_gold"
       ],
+    oops: {
+        "many": "big gold tiles",
+        "lines": [
+          "worth more than the house",
+          "sunglasses are recommended"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20712,6 +22565,13 @@ export const SHAPES = [
         "tile_l_terracotta",
         "tile_l_gold"
       ],
+    oops: {
+        "many": "L-shaped tiles",
+        "lines": [
+          "an L of a job",
+          "no corner left untiled"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20742,6 +22602,13 @@ export const SHAPES = [
         "tile_l_terracotta",
         "tile_l_gold"
       ],
+    oops: {
+        "many": "L-shaped tiles",
+        "lines": [
+          "corners, nothing but corners",
+          "the tiler insists it's a pattern"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20772,6 +22639,13 @@ export const SHAPES = [
         "tile_l_terracotta",
         "tile_l_gold"
       ],
+    oops: {
+        "many": "L-shaped tiles",
+        "lines": [
+          "it was meant to be a border",
+          "L after L after L"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20802,6 +22676,13 @@ export const SHAPES = [
         "tile_l_terracotta",
         "tile_l_gold"
       ],
+    oops: {
+        "many": "L-shaped tiles",
+        "lines": [
+          "premium corners throughout",
+          "ninety degrees of luxury"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20832,6 +22713,13 @@ export const SHAPES = [
         "tile_t_terracotta",
         "tile_t_gold"
       ],
+    oops: {
+        "many": "T-shaped tiles",
+        "lines": [
+          "tiled to a T",
+          "the pattern makes sense from above"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20862,6 +22750,13 @@ export const SHAPES = [
         "tile_t_terracotta",
         "tile_t_gold"
       ],
+    oops: {
+        "many": "T-shaped tiles",
+        "lines": [
+          "every T is crossed",
+          "there is a system to this"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20892,6 +22787,13 @@ export const SHAPES = [
         "tile_t_terracotta",
         "tile_t_gold"
       ],
+    oops: {
+        "many": "T-shaped tiles",
+        "lines": [
+          "the patio is done, at last",
+          "you can barely tell they're Ts"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20922,6 +22824,13 @@ export const SHAPES = [
         "tile_t_terracotta",
         "tile_t_gold"
       ],
+    oops: {
+        "many": "T-shaped tiles",
+        "lines": [
+          "the hotel lobby is finished",
+          "five-star flooring"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20952,6 +22861,13 @@ export const SHAPES = [
         "tile_s_terracotta",
         "tile_s_gold"
       ],
+    oops: {
+        "many": "wavy tiles",
+        "lines": [
+          "a gentle ceramic swell",
+          "high tide in the en suite"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -20982,6 +22898,13 @@ export const SHAPES = [
         "tile_s_terracotta",
         "tile_s_gold"
       ],
+    oops: {
+        "many": "wavy tiles",
+        "lines": [
+          "the floor is moving, slightly",
+          "a little seasick, honestly"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -21012,6 +22935,13 @@ export const SHAPES = [
         "tile_s_terracotta",
         "tile_s_gold"
       ],
+    oops: {
+        "many": "wavy tiles",
+        "lines": [
+          "sand dunes, but tiled",
+          "wavy, and entirely on purpose"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -21042,6 +22972,13 @@ export const SHAPES = [
         "tile_s_terracotta",
         "tile_s_gold"
       ],
+    oops: {
+        "many": "wavy tiles",
+        "lines": [
+          "liquid gold, nearly",
+          "golden hour, permanently"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -21074,6 +23011,13 @@ export const SHAPES = [
         "tile_lizard_terracotta",
         "tile_lizard_gold"
       ],
+    oops: {
+        "many": "tessellating lizards",
+        "lines": [
+          "the floor is lizards",
+          "Escher's downstairs bathroom"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -21106,6 +23050,13 @@ export const SHAPES = [
         "tile_lizard_terracotta",
         "tile_lizard_gold"
       ],
+    oops: {
+        "many": "tessellating lizards",
+        "lines": [
+          "Lizards lizards lizards!",
+          "they fit together unsettlingly well"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -21138,6 +23089,13 @@ export const SHAPES = [
         "tile_lizard_terracotta",
         "tile_lizard_gold"
       ],
+    oops: {
+        "many": "tessellating lizards",
+        "lines": [
+          "a reptile-based flooring solution",
+          "lizards, edge to edge, forever"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -21170,6 +23128,13 @@ export const SHAPES = [
         "tile_lizard_terracotta",
         "tile_lizard_gold"
       ],
+    oops: {
+        "many": "tessellating lizards",
+        "lines": [
+          "not a lizard out of place",
+          "the lizards look expensive"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -21187,6 +23152,13 @@ export const SHAPES = [
       },
     frequency: 0.02,
     claudeDraft: true,
+    oops: {
+        "many": "half tiles",
+        "lines": [
+          "someone only measured once",
+          "the tiler gave up halfway"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -21206,6 +23178,14 @@ export const SHAPES = [
       },
     frequency: 0.02,
     claudeDraft: true,
+    oops: {
+        "many": "strips of grout",
+        "lines": [
+          "all grout, no tiles",
+          "the tiles never arrived",
+          "a grout-first approach"
+        ]
+      },
     tags: [
         "tiles"
       ],
@@ -21714,6 +23694,14 @@ export const SHAPES = [
     frequency: 0.5,
     claudeDraft: true,
     nameAgain: "another can of Spaghetti-Os",
+    oops: {
+        "many": "Spaghetti-Os",
+        "lines": [
+          "the pantry is fully stocked",
+          "the can opener is missing",
+          "a strong position in canned pasta"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -24897,6 +26885,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "paddling swans",
+        "lines": [
+          "everything is under control",
+          "the bottom row is paddling hardest"
+        ]
+      },
   },
   {
     id: "candle_both_ends",
@@ -24917,6 +26912,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "candles",
+        "lines": [
+          "nobody has slept in days",
+          "a lot of light, briefly",
+          "burnout expected shortly"
+        ]
+      },
   },
   {
     id: "wandering_washing_machine",
@@ -24932,6 +26935,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "washing machines",
+        "lines": [
+          "the spin cycle has begun",
+          "they walked here during the spin",
+          "a sock is still missing"
+        ]
+      },
   },
   {
     id: "unwanted_present",
@@ -24947,6 +26958,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "unwanted presents",
+        "lines": [
+          "you really shouldn't have",
+          "Lovely. Lovely. Lovely.",
+          "a regifting backlog"
+        ]
+      },
   },
   {
     id: "unbothered_capybara",
@@ -24963,6 +26982,14 @@ export const SHAPES = [
       },
     frequency: 0.15,
     claudeDraft: true,
+    oops: {
+        "many": "capybaras",
+        "lines": [
+          "a deeply relaxed stack",
+          "the oranges remain balanced",
+          "the capybaras are taking it well"
+        ]
+      },
   },
   {
     id: "exasperated_life_ring",
@@ -24979,6 +27006,14 @@ export const SHAPES = [
       },
     frequency: 0.15,
     claudeDraft: true,
+    oops: {
+        "many": "life rings",
+        "lines": [
+          "the life rings have had enough",
+          "who rescues the life rings?",
+          "morale is low but buoyant"
+        ]
+      },
   },
   {
     id: "crescent_moon",
@@ -25517,6 +27552,13 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    oops: {
+        "many": "Lego cubes",
+        "lines": [
+          "every red brick in the house",
+          "watch where you step"
+        ]
+      },
     tags: [
         "lego_tiles"
       ],
@@ -25535,6 +27577,13 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    oops: {
+        "many": "Lego cubes",
+        "lines": [
+          "someone sorted them by colour",
+          "it was meant to be a spaceship"
+        ]
+      },
     tags: [
         "lego_tiles"
       ],
@@ -25554,6 +27603,13 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    oops: {
+        "many": "Lego cubes",
+        "lines": [
+          "a Lego house with no rooms",
+          "solid all the way through"
+        ]
+      },
     tags: [
         "lego_tiles"
       ],
@@ -25574,6 +27630,13 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    oops: {
+        "many": "big Lego cubes",
+        "lines": [
+          "a load-bearing amount of Lego",
+          "the whole set, in one lump"
+        ]
+      },
     tags: [
         "lego_tiles"
       ],
@@ -25592,6 +27655,13 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    oops: {
+        "many": "Lego slabs",
+        "lines": [
+          "these will never come apart",
+          "fetch the brick separator"
+        ]
+      },
     tags: [
         "lego_tiles"
       ],
@@ -25611,6 +27681,13 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    oops: {
+        "many": "Lego blocks",
+        "lines": [
+          "the instructions were optional",
+          "the vacuum cleaner is nervous"
+        ]
+      },
     tags: [
         "lego_tiles"
       ],
@@ -25630,6 +27707,14 @@ export const SHAPES = [
       },
     frequency: 0.45,
     claudeDraft: true,
+    oops: {
+        "many": "Rubik's cubes",
+        "lines": [
+          "practice is going well",
+          "43 quintillion ways, and this one",
+          "all of them still unsolved"
+        ]
+      },
     remix: {
         "stickers": [
           "#ff7300",
@@ -25798,6 +27883,13 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "egg boxes",
+        "lines": [
+          "handle with extreme care",
+          "an omelette waiting to happen"
+        ]
+      },
     tags: [
         "food"
       ],
@@ -25817,6 +27909,14 @@ export const SHAPES = [
       },
     frequency: 1,
     claudeDraft: true,
+    oops: {
+        "many": "spare allen keys",
+        "lines": [
+          "the drawer has finally overflowed",
+          "one of these must fit something",
+          "keep them, just in case"
+        ]
+      },
   },
   {
     id: "tree_of_reincarnation",

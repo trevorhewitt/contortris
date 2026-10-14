@@ -702,7 +702,7 @@ const MOVEMENTS = {
   oops: (state) => {
     const s = awkwardOne(state);
     if (!s) return MOVEMENTS.mono(state);
-    return fillThenBlast(null, () => s, { target: up(int(state, 17, 20)), pace: 0.75, only: true, keyChance: 0.3, label: oopsName(state, s.name) });
+    return fillThenBlast(null, () => s, { target: up(int(state, 17, 20)), pace: 0.75, only: true, keyChance: 0.3, label: oopsName(state, s) });
   },
 
   // small things, lots of them, quickly
@@ -956,15 +956,22 @@ function awkwardOne(state) {
 const OOPS = {
   plain: () => null,
   oops: (one, many) => `Oops, all ${many}!`,
-  thrice: (one) => `${one} ${one} ${one}!!`,
+  // (a short name three times; a long one, its plural: "gnomes gnomes gnomes!!")
+  thrice: (one, many, own) => { const w = !own && one.split(/\s+/).length <= 2 ? one : many; return `${w} ${w} ${w}!!`; },
   more: (one, many) => `${many} ${many} and more ${many}`,
   reserve: (one, many) => `the strategic reserve of ${many}`,
 };
-export function oopsName(state, name, kind = null) {
+// `what`: the piece (or just its name). A piece with lines of its own (its `oops`: shapes/
+// main_shapes.js) says one of them as often as not (CONFIG.zen.oopsOwnLines), and its own short
+// plural goes into the rest.
+export function oopsName(state, what, kind = null) {
+  const shape = what && typeof what === "object" ? what : null, name = shape ? shape.name : String(what ?? "");
+  const own = shape?.oops ?? null;
+  if (!kind && own?.lines?.length && state.rng() < (CONFIG.zen.oopsOwnLines ?? 0.55)) return own.lines[Math.floor(state.rng() * own.lines.length)];
   const w = CONFIG.zen.oopsNames ?? { oops: 1 };
   kind ??= sampleByWeight(Object.keys(OOPS).filter(k => w[k] > 0), k => w[k], state.rng);
   const one = name.trim().replace(/^(?:just |only )?(?:a|an|the|some|one|another)\s+/i, "");
-  return OOPS[kind](one, pluralName(name));
+  return OOPS[kind](one, own?.many ?? pluralName(name), !!own?.many);
 }
 
 export function pluralName(name) {

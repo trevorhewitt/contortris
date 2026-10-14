@@ -257,7 +257,9 @@ test("turbo zen: oops, all one awkward thing, said all the way up, and then down
   assert.ok(labels.length >= 4, `${labels.length} of them`); // (the bigger the thing, the fewer it takes)
   assert.equal(shapes.size, 1, `only one thing: ${[...shapes]}`);
   assert.equal(new Set(labels).size, 1, "said the same all the way up");
-  assert.ok(labels[0] === null || /^(Oops, all .+!|(.+) \2 \2!!|(.+) \3 and more \3|the strategic reserve of .+)$/.test(labels[0]), labels[0]);
+  // (one of the names for lots of one thing, or one of the piece's own lines)
+  const own = SHAPES.find(x => x.id === [...shapes][0])?.oops?.lines ?? [];
+  assert.ok(labels[0] === null || own.includes(labels[0]) || /^(Oops, all .+!|(.+) \2 \2!!|(.+) \3 and more \3|the strategic reserve of .+)$/.test(labels[0]), labels[0]);
   assert.ok(peak >= 14, `up to ${peak} rows`);
   const i = log.movements.findIndex(m => m.name === "oops");
   // (by the demolition, or the tidying up after it; or, if that left some of it to build on, the

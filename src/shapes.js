@@ -240,6 +240,9 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
       shake: s.shake === true, // shakes the board when it lands, however small (a small boulder)
       // the name it goes by when it comes straight after itself ("another raindrop")
       nameAgain: typeof s.nameAgain === "string" && s.nameAgain.trim() ? s.nameAgain.trim() : null,
+      // what turbo zen calls a board full of it: `many` (its plural, short), and `lines` of its own
+      // (src/zen.js oopsName)
+      oops: s.oops && typeof s.oops === "object" ? { many: typeof s.oops.many === "string" && s.oops.many.trim() ? s.oops.many.trim() : null, lines: Array.isArray(s.oops.lines) ? s.oops.lines.filter(l => typeof l === "string" && l.trim()) : [] } : null,
       // other names it goes by now and then (src/game.js prepareShape)
       names: Array.isArray(s.names) && s.names.length ? s.names.filter(n => typeof n === "string" && n.trim()).map(n => n.trim()) : null,
       // its last words, when the last of it is destroyed
