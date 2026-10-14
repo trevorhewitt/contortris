@@ -247,8 +247,9 @@ export function scatterAreas(rotations, sc, rng) {
 // A copy of a scatter powerup piece with a freshly rolled spray.
 export function rollScatter(shape, rng = Math.random) {
   const pu = shape?.powerup;
-  if (!pu?.scatter) return shape;
-  return { ...shape, powerup: { ...pu, areaRotations: scatterAreas(shape.rotations, pu.scatter, rng) } };
+  // (one already rolled, say by zen's director to see what it would do, keeps its spray)
+  if (!pu?.scatter || pu.rolled) return shape;
+  return { ...shape, powerup: { ...pu, areaRotations: scatterAreas(shape.rotations, pu.scatter, rng), rolled: true } };
 }
 
 function unionAreas(list) {

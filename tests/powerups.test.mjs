@@ -203,3 +203,18 @@ test("katana area covers its whole row", () => {
   assert.equal(r.indices.length, 14);
   assert.equal(pu.collapse, true);
 });
+
+test("a powerup that sprays at random, once rolled, keeps its spray (what zen's director judged it by)", async () => {
+  const { rollScatter } = await import("../src/powerups.js");
+  const { loadShapes } = await import("../src/shapes.js");
+  const { SHAPES } = await import("../shapes/main_shapes.js");
+  const { makeRng } = await import("../src/util.js");
+  const p = loadShapes(SHAPES).powerups.find(q => q.powerup.scatter);
+  assert.ok(p, "a powerup that sprays");
+  const rng = makeRng(5);
+  const once = rollScatter(p, rng);
+  assert.notEqual(once, p, "rolled: a copy");
+  assert.equal(rollScatter(once, rng), once, "and not rolled again");
+  assert.notEqual(rollScatter(p, rng), p, "the original rolls afresh");
+});
+

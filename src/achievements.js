@@ -148,9 +148,10 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
       case "lock": {
         game.drops = d.drops ?? game.drops + 1;
         // (pieces whose life is watched: kept alive so many pieces, killed so soon)
-        if (d.shape && d.pid != null && lifeTriggers().some(t => matchShape(d.shape, t.match))) game.lives.set(d.pid, { shape: d.shape, at: game.drops });
+        // (only one that landed on the board: one that locked above the top never lived)
+        if (d.shape && d.pid != null && d.cells?.length && lifeTriggers().some(t => matchShape(d.shape, t.match))) game.lives.set(d.pid, { shape: d.shape, at: game.drops });
         for (const [pid, life] of game.lives) {
-          if (state && !state.instances?.has(pid)) continue;
+          if (state && !state.instances?.get(pid)?.cells.length) continue; // (none of it left)
           each("keptAlive", (def, t) => { if (matchShape(life.shape, t.match) && game.drops - life.at >= (t.drops ?? 1)) unlock(def); });
         }
         each("together", (def, t) => {
@@ -234,7 +235,7 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
 
       case "gameOver": {
         for (const [pid, life] of game.lives) {
-          if (state && !state.instances?.has(pid)) continue;
+          if (state && !state.instances?.get(pid)?.cells.length) continue; // (none of it left)
           each("aliveAtEnd", (def, t) => { if (matchShape(life.shape, t.match)) unlock(def); });
         }
         each("gameOver", (def, t) => {

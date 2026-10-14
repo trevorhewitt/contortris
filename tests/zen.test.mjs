@@ -160,6 +160,24 @@ test("turbo zen: plays itself for half an hour, filling the board to the brink a
   assert.ok(kinds.size >= 10, `${[...kinds]}`);
 });
 
+test("turbo zen: a piece still out of sight when the player takes it comes straight to the top of the board", () => {
+  const { state } = zen(3, "turbo");
+  let found = false;
+  for (let t = 0; t < 120000 && !found; t += 16) {
+    updateGame(state, 16);
+    const a = state.active;
+    if (!a || state.effect || state.hold || state.zen.userHas || a !== state.zen.piece) continue;
+    const h = a.shape.rotations[a.rotIdx].length;
+    if (a.y >= -h - 2) continue; // (one well out of sight)
+    found = true;
+    markInput(state, "keyboard");
+    updateGame(state, 16);
+    assert.equal(state.zen.userHas, true);
+    assert.ok(a.y >= -h - 1, `${a.shape.id} still ${-a.y - h} rows out of sight`);
+  }
+  assert.ok(found, "no piece came from out of sight");
+});
+
 test("turbo zen: every piece starts out over the place it's going, already turned", () => {
   const { state, log } = zen(2, "turbo");
   let checked = 0, planned = 0;

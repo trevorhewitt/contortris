@@ -483,4 +483,13 @@ test("achievements that watch a piece's life: destroyed straight away, kept aliv
     ach.handle("gameOver", {}, state);
     assert.ok(got.includes("end") && !got.includes("dead"), got.join());
   }
+  {
+    // locked entirely above the top: it never lived, so it isn't still there at the end
+    const { state, got } = play();
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) state.board[y][x] = filler();
+    state.active = { shape: cute, rotIdx: 0, x: 0, y: -2 };
+    hardDropAndLock(state);
+    assert.ok(state.gameOver, "it topped out");
+    assert.ok(!got.includes("end") && !got.includes("dead"), got.join());
+  }
 });

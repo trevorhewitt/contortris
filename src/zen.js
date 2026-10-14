@@ -28,7 +28,7 @@ import { CONFIG } from "../config.js";
 import { tryMove, tryRotate, zenCaption, timeScaleOf, settleFlock } from "./game.js";
 import { selectPiece, destroyerCells } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
-import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup } from "./powerups.js";
+import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
 import { expandGroup, roomNeeded, groupUnderWay, lastVersion, noteVersion } from "./level6.js";
 import { makeRng, sampleByWeight } from "./util.js";
 import { loadShapes } from "./shapes.js";
@@ -151,8 +151,10 @@ export function zenNext(state) {
   // one that's only just been picked, if the movement had nothing waiting.)
   for (let tries = 0; tries < 3; tries++) {
     if (!z.queue.length) refill(state);
-    const blast = z.queue[0];
+    let blast = z.queue[0];
     if (!(blast?.blast != null && !blast.expect && !isCalm(state))) break;
+    // (one that sprays at random is rolled now, and judged by the spray it will have)
+    if (blast.shape.powerup?.scatter && !blast.shape.powerup.rolled) z.queue[0] = blast = { ...blast, shape: rollScatter(blast.shape, state.rng) };
     const need = biteNeeded(state, blast.blast);
     if (biteOf(state, blast.shape) >= need) break;
     const p = blast.keep ? null : biggestBite(state, need);
@@ -456,8 +458,9 @@ function biggestBite(state, need) {
     if (tried.has(p) || (rare != null && pool.length > 1 && z01(state) >= rare)) continue;
     tried.add(p);
     if (tried.size > CONFIG.zen.powerupChoices) break;
-    const bite = biteOf(state, p);
-    if (bite >= need && (!best || bite > best.bite)) best = { p, bite };
+    const q = rollScatter(p, state.rng); // (judged by the spray it will have)
+    const bite = biteOf(state, q);
+    if (bite >= need && (!best || bite > best.bite)) best = { p: q, bite };
   }
   return best?.p ?? null;
 }
@@ -471,8 +474,9 @@ function sweeper(state) {
   for (const p of powerupPool(state).filter(p => !p.powerup.bad && destroyerCells(p) >= (S.size ?? 90))) {
     const rare = CONFIG.godMode?.rarer?.[p.id];
     if (rare != null && z01(state) >= rare) continue;
-    const bite = biteOf(state, p);
-    if (bite >= (S.most ?? 0.6) * there && (!best || bite > best.bite)) best = { p, bite };
+    const q = rollScatter(p, state.rng); // (judged by the spray it will have)
+    const bite = biteOf(state, q);
+    if (bite >= (S.most ?? 0.6) * there && (!best || bite > best.bite)) best = { p: q, bite };
   }
   return best?.p ?? null;
 }
@@ -1226,6 +1230,10 @@ export function zenTick(state, dt) {
       z.userHas = true;
       z.userAt = state.drops;
       zenSpeed(state);
+      // (one still out of sight, up where it started a short way down or after a big clearance,
+      // comes straight to the top of the board: at the player's pace it would take an age)
+      const h = a.shape.rotations[a.rotIdx].length;
+      if (a.y < -h) a.y = -h;
       if (state.flock.length) settleFlock(state); // (the rest of the flock lands, out of their way)
     }
   }
