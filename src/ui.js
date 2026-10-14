@@ -16,6 +16,7 @@ import { level6Status, startGroup, scheduleFirstGroup } from "./level6.js";
 import { endGameStatus } from "./endgame.js";
 import { zenIgnoreInput, zenMovementChoices, zenStart } from "./zen.js";
 import { rarity } from "./rarity.js";
+import { createHome } from "./home.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -150,7 +151,7 @@ const bestScores = {
 function loadLastMode() {
   const m = store.get("extris.mode", CONFIG.defaultMode);
   if (m === "hard") return "extreme";
-  return CONFIG.modes[m] ? m : CONFIG.defaultMode;
+  return CONFIG.modes[m] && !CONFIG.modes[m].hidden ? m : CONFIG.defaultMode;
 }
 
 // ============================================================
@@ -187,6 +188,7 @@ export function bindUI({ state, renderer, achievements }) {
     for (const b of document.querySelectorAll(".skipIntros")) b.checked = on;
   };
 
+  let home = null; // (the home screen: below, src/home.js)
   let lastMode = loadLastMode();
   let newBest = false;
   let currentPanel = "loading";
@@ -205,7 +207,7 @@ export function bindUI({ state, renderer, achievements }) {
     overlay.classList.remove("peek");
     if (name !== "pause") resetLook();
     for (const [key, el] of Object.entries(panels)) el.hidden = key !== name;
-    if (name === "menu") renderMenu();
+    if (name === "menu") { renderMenu(); home?.enter(); }
     if (name === "achievements") renderAchievements();
     stopDemos();
     if (name === "howto") startHowToDemos();
@@ -222,7 +224,7 @@ export function bindUI({ state, renderer, achievements }) {
 
   // The menu, pause and game over panels always fit on the board: if there isn't room, they're
   // scaled down rather than scrolled. (How to play and the lists scroll as usual.)
-  const FIT_PANELS = new Set(["menu", "pause", "gameover", "intro"]);
+  const FIT_PANELS = new Set(["pause", "gameover", "intro"]); // (the menu is the home screen: it fits itself)
   function fitPanel(name = currentPanel) {
     const el = panels[name];
     if (!el || !FIT_PANELS.has(name)) return;
@@ -239,12 +241,13 @@ export function bindUI({ state, renderer, achievements }) {
   const overlayShowing = () => !!currentPanel;
 
   function renderMenu() {
-    $("btnEasy").classList.toggle("secondary", lastMode !== "easy");
-    $("btnNormal").classList.toggle("secondary", lastMode !== "normal");
-    $("btnExtreme").classList.toggle("secondary", lastMode !== "extreme");
-    $("btnGod").classList.toggle("secondary", lastMode !== "god");
-    $("btnZen").classList.toggle("secondary", lastMode !== "zen");
-    $("btnTurbo").classList.toggle("secondary", lastMode !== "turbo");
+    // (each mode's button says what it is, from CONFIG.modes; the last one played glows)
+    for (const b of document.querySelectorAll(".modeBtn")) {
+      const m = b.dataset.mode;
+      b.classList.toggle("last", m === lastMode);
+      const tag = b.querySelector(".modeTag");
+      if (tag) tag.textContent = CONFIG.modes[m]?.tagline ?? "";
+    }
     $("achCount").textContent = `${achievements.unlockedCount()}/${achievements.defs.length}`;
   }
 
@@ -300,6 +303,7 @@ export function bindUI({ state, renderer, achievements }) {
     lastMode = CONFIG.modes[mode] ? mode : CONFIG.defaultMode;
     store.set("extris.mode", lastMode);
     newBest = false;
+    state.backdrop = false;
     setWholeWindow(lastMode === "turbo" && turboWhole);
     startRun(state, lastMode);
     state.speed = savedSpeed(lastMode);
@@ -337,6 +341,19 @@ export function bindUI({ state, renderer, achievements }) {
     resetGame(state);
     showPanel("menu");
   }
+
+  /* ---------- the home screen (src/home.js) ---------- */
+
+  home = createHome({
+    state, boardCanvas: $("boardCanvas"),
+    setBoardSize, setWholeWindow,
+    restoreBoard: () => setBoardSize(usualBoard.cols, usualBoard.rows),
+    onPlay: (mode) => startGame(mode),
+    onShowMenu: () => showPanel("menu"),
+    menuShowing: () => currentPanel === "menu",
+    lastMode: () => lastMode,
+    hideOverlay: () => showPanel(null),
+  });
 
   function showGameOver() {
     newBest = bestScores.submit(state.mode, state.score);
@@ -431,6 +448,9 @@ export function bindUI({ state, renderer, achievements }) {
         }
         break;
       case "spawn":
+        // (the turbo zen behind the home screen, or filling in for it: nobody's playing, so
+        // nothing counts as seen, and there are no names to read)
+        if (state.backdrop) { if (CONFIG.modes[state.mode]?.names !== false) nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames, d.label); break; }
         if (agCfg && opening && !d.shape.powerup && state.pieceSel.dropIndex <= (agCfg.drops ?? 20) + 1) {
           opening.push(d.shape.id);
           if (opening.length >= (agCfg.drops ?? 20)) saveOpening();
@@ -873,12 +893,8 @@ export function bindUI({ state, renderer, achievements }) {
 
   /* ---------- buttons ---------- */
 
-  $("btnEasy").addEventListener("click", () => startGame("easy"));
-  $("btnNormal").addEventListener("click", () => startGame("normal"));
-  $("btnExtreme").addEventListener("click", () => startGame("extreme"));
-  $("btnGod").addEventListener("click", () => startGame("god"));
-  $("btnZen").addEventListener("click", () => startGame("zen"));
-  $("btnTurbo").addEventListener("click", () => startGame("turbo"));
+  // (from the home screen: it all bursts into pieces, a few words, and off it goes)
+  for (const b of document.querySelectorAll(".modeBtn")) b.addEventListener("click", () => home.play(b.dataset.mode, { from: b }));
   $("btnHowTo").addEventListener("click", () => { panelBack = "menu"; showPanel("howto"); });
   $("btnAchievements").addEventListener("click", () => { panelBack = "menu"; showPanel("achievements"); });
   $("btnResume").addEventListener("click", () => resumeGame());
@@ -1039,7 +1055,7 @@ export function bindUI({ state, renderer, achievements }) {
   const editable = (t) => t instanceof Element && t.closest("input, textarea, select");
   document.addEventListener("selectstart", (e) => { if (!editable(e.target)) e.preventDefault(); });
   document.addEventListener("contextmenu", (e) => { if (!editable(e.target)) e.preventDefault(); });
-  $("btnAgain").addEventListener("click", () => startGame(state.mode));
+  $("btnAgain").addEventListener("click", () => home.play(state.mode, { burst: false }));
   $("btnGameOverMenu").addEventListener("click", () => goToMenu());
   $("btnResetAch").addEventListener("click", () => {
     if (window.confirm("Reset all achievements and lifetime stats in this browser?")) {
@@ -1118,8 +1134,8 @@ export function bindUI({ state, renderer, achievements }) {
       return;
     }
     if (e.code === "Enter") {
-      if (currentPanel === "menu") { e.preventDefault(); startGame(); }
-      else if (currentPanel === "gameover") { e.preventDefault(); startGame(state.mode); }
+      if (currentPanel === "menu") { e.preventDefault(); home.play(lastMode); }
+      else if (currentPanel === "gameover") { e.preventDefault(); home.play(state.mode, { burst: false }); }
       else if (currentPanel === "intro") { e.preventDefault(); resumeGame(); }
       return;
     }
@@ -1288,7 +1304,7 @@ export function bindUI({ state, renderer, achievements }) {
   });
 
   return {
-    frame() { updateHUD(); },
+    frame(now) { updateHUD(); home.frame(now ?? performance.now()); },
     toast,
     showPanel,
     startGame,

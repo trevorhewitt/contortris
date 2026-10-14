@@ -1447,7 +1447,7 @@ export function addQuakeFromBlocks(state, blockCount) {
 
 // x, y in board cells (centre of the text).
 function addCallout(state, text, x, y, { big = false, color = null, durationMs = null } = {}) {
-  if (!CONFIG.fx.callouts.enabled) return;
+  if (!CONFIG.fx.callouts.enabled || CONFIG.modes[state.mode]?.callouts === false) return; // (the home screen's: no words)
   state.fx.callouts.push({ text, x, y, big, color, elapsedMs: 0, durationMs: durationMs ?? CONFIG.fx.callouts.durationMs });
 }
 

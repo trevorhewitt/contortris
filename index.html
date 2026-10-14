@@ -306,6 +306,120 @@
       margin: 6px 0 6px;
     }
 
+    /* ---------- the home screen (src/home.js) ---------- */
+    .homeLayer, .homeTop{
+      position: fixed; left: 0; top: 0; width: 100vw; height: 100dvh;
+      pointer-events: none; display: none; image-rendering: pixelated;
+    }
+    body.home .homeLayer{ display: block; }
+    .homeTop{ display: block; z-index: 50; }
+    .homeTop[hidden]{ display: none; }
+    .homeLayer, body.home .overlay, .app{ transition: opacity 900ms ease; }
+    body.homeFade .homeLayer, body.homeFade .overlay{ opacity: 0 !important; }
+    body.home .boardShell{ background: transparent; box-shadow: none; }
+    body.home #boardCanvas, body.home .nameLayer, body.home .floatPause, body.home .bottomBar, body.home #toasts{ visibility: hidden; }
+    body.home .overlay{ position: fixed; inset: 0; background: transparent; }
+    body.starting .app, body.starting .homeLayer{ opacity: 0; transition: none; }
+
+    body.home .overlay #panelMenu.panel{
+      box-sizing: border-box; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0;
+      padding: max(10px, env(safe-area-inset-top)) clamp(10px, 3vmin, 28px) max(10px, env(safe-area-inset-bottom));
+      background: none; border: 0; box-shadow: none; transform: none; overflow: hidden;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: clamp(8px, 2.4vmin, 24px);
+    }
+    body.home .overlay #panelMenu.panel[hidden]{ display: none; }
+    .homeLogoWrap{ perspective: 900px; animation: logoZoom 7s ease-in-out infinite; }
+    .homeLogo{
+      display: flex; justify-content: center; gap: 0.02em;
+      font-family: var(--font-display); font-size: clamp(34px, min(13.5vw, 15vh), 150px); line-height: 1.15;
+      animation: logoSpin 16s ease-in-out infinite;
+      transform-style: preserve-3d;
+    }
+    .homeLogo span{
+      display: inline-block;
+      color: hsl(var(--h), 100%, 62%);
+      text-shadow:
+        0 0.05em 0 hsl(var(--h), 85%, 40%),
+        0 0.10em 0 hsl(var(--h), 85%, 28%),
+        0 0.15em 0 rgba(0,0,0,0.9),
+        0 0 0.35em hsla(var(--h), 100%, 60%, 0.7);
+      animation: letterHop 2.6s ease-in-out infinite, letterHue 7s steps(21) infinite;
+      animation-delay: calc(var(--i) * -0.2s), calc(var(--i) * -0.6s);
+    }
+    @keyframes logoZoom{ 0%, 100%{ transform: scale(0.93) rotate(-2.5deg); } 50%{ transform: scale(1.07) rotate(2.5deg); } }
+    @keyframes logoSpin{ 0%, 80%{ transform: rotateY(0deg); } 90%{ transform: rotateY(180deg) scale(1.08); } 100%{ transform: rotateY(360deg); } }
+    @keyframes letterHop{ 0%, 100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-0.12em) rotate(-5deg); } }
+    @keyframes letterHue{ from{ filter: hue-rotate(0deg); } to{ filter: hue-rotate(360deg); } }
+
+    .homeModes{
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(8px, 1.8vmin, 18px); width: min(92vw, 880px);
+    }
+    @media (max-aspect-ratio: 5/6){ .homeModes{ grid-template-columns: repeat(2, minmax(0, 1fr)); width: min(94vw, 540px); } }
+    button.modeBtn{
+      position: relative; min-height: clamp(52px, 10vmin, 96px); padding: 0.8em 0.6em;
+      border: 0; color: #fff;
+      font-size: clamp(11px, min(2.2vw, 2.9vh), 20px); letter-spacing: 0.05em;
+      text-shadow: 0 2px 0 #000, 0 0 8px rgba(0,0,0,0.85);
+      background: #222; overflow: hidden; isolation: isolate;
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.9), 0 6px 0 rgba(0,0,0,0.55), 0 0 24px rgba(255,255,255,0.14);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5em;
+      transition: transform 140ms ease, box-shadow 140ms ease;
+    }
+    button.modeBtn::after{
+      content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 300%; z-index: -2; pointer-events: none;
+      background: linear-gradient(110deg, #ff4d6d, #ffb84d, #f9ff4d, #4dff88, #4dc3ff, #b44dff, #ff4d6d, #ffb84d, #f9ff4d, #4dff88, #4dc3ff, #b44dff, #ff4d6d);
+      animation: modeSlide 7s linear infinite; animation-delay: calc(var(--i) * -1.15s);
+      will-change: transform;
+    }
+    button.modeBtn::before{ content: ""; position: absolute; inset: 4px; z-index: -1; background: rgba(12,10,28,0.62); pointer-events: none; }
+    button.modeBtn > *{ position: relative; }
+    button.modeBtn:hover, button.modeBtn:focus-visible{
+      background: #222;
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.9), 0 9px 0 rgba(0,0,0,0.5), 0 0 34px rgba(255,255,255,0.4);
+    }
+    button.modeBtn:hover::before, button.modeBtn:focus-visible::before{ background: rgba(12,10,28,0.42); }
+    button.modeBtn:active{ transform: translateY(1px) scale(0.98); }
+    button.modeBtn.last{ box-shadow: 0 0 0 3px rgba(0,0,0,0.9), 0 6px 0 rgba(0,0,0,0.55), 0 0 26px rgba(255,240,150,0.55); }
+    .modeTag{
+      font-family: var(--font-body); font-size: clamp(9px, min(1.45vw, 2vh), 14px);
+      text-transform: none; letter-spacing: 0; line-height: 1.25; opacity: 0.92;
+    }
+    @keyframes modeSlide{ from{ transform: translateX(0); } to{ transform: translateX(-50%); } }
+    .homeRow{ margin: 0; }
+    body.home .overlay #panelMenu .skipBox{ margin: 0; padding: 6px 10px; background: rgba(8,8,16,0.72); box-shadow: 0 0 0 2px rgba(0,0,0,0.7); }
+    body.home .overlay #panelMenu #gameVersion{ margin: 0; padding: 3px 8px; background: rgba(8,8,16,0.6); color: rgba(245,245,255,0.6); }
+    @media (max-height: 460px){ .modeTag{ display: none; } button.modeBtn{ min-height: 40px; padding: 0.5em; } }
+
+    .startText{
+      position: fixed; inset: 0; z-index: 60; pointer-events: none;
+      display: flex; flex-wrap: wrap; align-content: center; justify-content: center;
+      gap: 0.25em 0.55em; padding: 6vmin; box-sizing: border-box; text-align: center;
+      font-family: var(--font-display); font-size: clamp(22px, min(7.5vw, 10vh), 92px); line-height: 1.3;
+      text-transform: uppercase;
+    }
+    .startText[hidden]{ display: none; }
+    .startPart{
+      display: inline-block; color: hsl(var(--hue), 100%, 66%);
+      text-shadow: 0 0.07em 0 hsl(var(--hue), 80%, 30%), 0 0.14em 0 #000, 0 0 0.4em hsla(var(--hue), 100%, 60%, 0.65);
+      animation: startPop 560ms cubic-bezier(.2, 1.5, .35, 1) both;
+    }
+    .startText.out .startPart{ animation: startOut 280ms ease-in both; animation-delay: 0ms !important; }
+    @keyframes startPop{ 0%{ transform: scale(3.2) rotate(-10deg); opacity: 0; } 100%{ transform: none; opacity: 1; } }
+    @keyframes startOut{ to{ transform: scale(0.3) rotate(8deg); opacity: 0; } }
+
+    .idlePlay{
+      position: fixed; z-index: 70; right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom));
+      min-height: 0; padding: 9px 13px; font-size: 10px; opacity: 0.55;
+    }
+    .idlePlay[hidden]{ display: none; }
+    .idlePlay:hover{ opacity: 0.95; }
+    @media (prefers-reduced-motion: reduce){
+      .homeLogoWrap, .homeLogo, .homeLogo span, button.modeBtn{ animation-duration: 60s; }
+    }
+
     .menuBtns{
       display: flex;
       flex-direction: column;
@@ -1018,6 +1132,8 @@
 </head>
 
 <body>
+  <!-- the home screen (src/home.js): turbo zen behind it, through the camera, and effects over it -->
+  <canvas id="homeBg" class="homeLayer" aria-hidden="true"></canvas>
   <div class="app">
     <div class="boardRegion">
       <div class="boardShell" id="boardShell">
@@ -1034,21 +1150,22 @@
             <div class="big">Loading…</div>
           </div>
 
-          <div class="msg panel" id="panelMenu" hidden>
-            <div class="big title">Extris</div>
-            <div class="small" id="gameVersion">version 202610141139</div>
-            <div class="menuBtns">
-              <button id="btnEasy" class="secondary">Easy mode</button>
-              <button id="btnNormal">Normal mode</button>
-              <button id="btnExtreme" class="secondary">Extreme mode</button>
-              <button id="btnGod" class="secondary">God mode</button>
-              <div class="zenRow"><button id="btnZen" class="secondary">Zen mode</button><button id="btnTurbo" class="secondary">Turbo zen</button></div>
-              <button id="btnHowTo" class="secondary">How to play</button>
+          <div class="msg panel homeMenu" id="panelMenu" hidden>
+            <div class="homeLogoWrap"><div class="homeLogo" id="homeLogo" role="img" aria-label="Extris"><span style="--i:0;--h:350">E</span><span style="--i:1;--h:35">X</span><span style="--i:2;--h:58">T</span><span style="--i:3;--h:140">R</span><span style="--i:4;--h:200">I</span><span style="--i:5;--h:275">S</span></div></div>
+            <div class="homeModes">
+              <button id="btnEasy" class="modeBtn" style="--i:0" data-mode="easy"><span class="modeName">Easy</span><span class="modeTag"></span></button>
+              <button id="btnNormal" class="modeBtn" style="--i:1" data-mode="normal"><span class="modeName">Normal</span><span class="modeTag"></span></button>
+              <button id="btnExtreme" class="modeBtn" style="--i:2" data-mode="extreme"><span class="modeName">Extreme</span><span class="modeTag"></span></button>
+              <button id="btnGod" class="modeBtn" style="--i:3" data-mode="god"><span class="modeName">God mode</span><span class="modeTag"></span></button>
+              <button id="btnZen" class="modeBtn" style="--i:4" data-mode="zen"><span class="modeName">Zen</span><span class="modeTag"></span></button>
+              <button id="btnTurbo" class="modeBtn" style="--i:5" data-mode="turbo"><span class="modeName">Turbo zen</span><span class="modeTag"></span></button>
             </div>
-            <div class="menuRow">
+            <div class="menuRow homeRow">
+              <button id="btnHowTo" class="secondary small">How to play</button>
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
             <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
+            <div class="small" id="gameVersion">version 202610141205</div>
           </div>
 
           <div class="msg panel" id="panelHowTo" hidden>
@@ -1072,7 +1189,7 @@
               <h3>Achievements</h3>
               <p>Silly things unlock silly achievements. Some are secret. See them all from the main menu.</p>
 
-              <p class="small menuFoot">[Extris version 202610141139 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610141205 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>
@@ -1209,6 +1326,11 @@
   </div>
 
   <div id="devPanel" class="devPanel" hidden></div>
+  <!-- (choosing a mode: everything bursts into pieces, and a few words to start it off) -->
+  <canvas id="homeBurst" class="homeTop" aria-hidden="true" hidden></canvas>
+  <div id="startText" class="startText" aria-live="polite" hidden></div>
+  <!-- (left alone, the home screen is plain turbo zen: this, or anything at all, brings it back) -->
+  <button id="idlePlay" class="idlePlay" hidden>&#9654; Play</button>
 
   <!-- Fit-to-viewport script: uses VisualViewport so the bottom bar never gets cut off.
        Also sizes the board to use ALL available space above the bottom bar. -->
@@ -1235,6 +1357,14 @@
 
       function fit(){
         const vp = viewportSize();
+        // (behind the home screen the board isn't seen as it is: src/home.js sizes it)
+        const hs = window.__homeShellPx;
+        if (hs) {
+          app.style.height = Math.floor(vp.h) + "px";
+          shell.style.width = hs.w + "px"; shell.style.height = hs.h + "px";
+          boardCanvas.style.width = hs.w + "px"; boardCanvas.style.height = hs.h + "px";
+          return;
+        }
         // Pin the app to the *visible* viewport: some mobile browsers (e.g. Firefox on
         // Android) report 100dvh taller than what's shown above their bottom toolbar.
         app.style.height = Math.floor(vp.h) + "px";

@@ -526,6 +526,9 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         // (on top of whatever's there; and now and then it leaves some behind for the next)
         this.target = Math.min(rows - 3, Math.max(this.target, stackHeight(state) + 5));
         if (state.rng() < 0.3) this.leave = int(state, 5, 8);
+        // (behind the home screen it leaves plenty: CONFIG.modes.home.keep)
+        const keep = CONFIG.modes[state.mode]?.keep;
+        if (keep) this.leave = int(state, keep[0], keep[1]);
       }
       let shape = this.phase === "fill" ? nextOne(state) : null;
       if (shape && !fitsUnder(state, shape, 2)) shape = only ? null : pick(state, smallPool(state)); // (nearly there: nothing too big)

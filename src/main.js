@@ -48,7 +48,8 @@ let last = performance.now();
 // minute after a while), so a timer moves the game on by however long it's really been.
 let hiddenTimer = null;
 document.addEventListener("visibilitychange", () => {
-  if (document.hidden && CONFIG.modes[state.mode]?.pauseWhenHidden === false) {
+  // (not the home screen's: it just waits)
+  if (document.hidden && CONFIG.modes[state.mode]?.pauseWhenHidden === false && !CONFIG.modes[state.mode]?.home) {
     let then = performance.now();
     hiddenTimer = setInterval(() => {
       const now = performance.now();
@@ -70,7 +71,7 @@ function tick(now) {
 
   updateGame(state, dt * timeScaleOf(state)); // (turbo zen runs faster)
   renderer.draw(state, now);
-  ui.frame();
+  ui.frame(now);
 
   requestAnimationFrame(tick);
 }
