@@ -17,7 +17,7 @@ import { LEVEL6, initLevel6, nextGroupPiece, maybeStartGroup, groupUnderWay } fr
 import { initEndGame, endGameOn, endGameLevelWeights } from "./endgame.js";
 import { isGodMode, godConfig, gravityColumns } from "./godmode.js";
 import { pickThread, threadWeight } from "./threads.js";
-import { warmth, lateness } from "./pacing.js";
+import { warmth, lateness, alwaysWarm } from "./pacing.js";
 
 const DEBUG_LINK = false; // verbose console logging for linked shapes
 
@@ -445,7 +445,7 @@ export function selectPiece(state) {
     const lateW = normaliseWeights({ ...CONFIG.assist.later.levelWeight });
     for (const k of LEVELS) levelW[k] = lerp(levelW[k] ?? 0, lateW[k] ?? 0, late);
   }
-  if (warm > 0) {
+  if (warm > 0 && !alwaysWarm(state)) { // (Zen keeps its own easy mix: CONFIG.zen.calm.pieceMix)
     const warmW = normaliseWeights({ ...CONFIG.assist.warmup.levelWeight });
     for (const k of LEVELS) levelW[k] = lerp(levelW[k] ?? 0, warmW[k] ?? 0, warm);
   }
@@ -578,7 +578,7 @@ function pickAlongThread(state, levelW, thread) {
    as it is: one that leaves no gaps under itself, or finishes a row, rather than one that
    leaves a gap nothing will fill. With no warm-up left it's just the usual pick.
 */
-function pickFitting(state, list, weightFn) {
+export function pickFitting(state, list, weightFn) {
   const cfg = CONFIG.assist.warmup ?? {};
   const p = warmth(state) * (cfg.strength ?? 2);
   const first = sampleByWeight(list, weightFn, state.rng);

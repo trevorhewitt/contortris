@@ -15,7 +15,7 @@
 import { CONFIG } from "../config.js";
 import { sampleByWeight } from "./util.js";
 import { godConfig, isGodMode } from "./godmode.js";
-import { lateness, warmth } from "./pacing.js";
+import { lateness, warmth, alwaysWarm } from "./pacing.js";
 import { setThreadWeight } from "./threads.js";
 
 export const LEVEL6 = 6;
@@ -251,7 +251,7 @@ export function maybeStartGroup(state) {
   if (stackRows(state) > (cfg.maxStackRows ?? 8)) return null;
   // (in the warm-up at the start of a game, hardly ever yet: CONFIG.assist.warmup.sets)
   const warm = warmth(state);
-  if (warm > 0 && state.rng() < warm * (1 - (CONFIG.assist.warmup?.sets ?? 0.1))) return null;
+  if (warm > 0 && !alwaysWarm(state) && state.rng() < warm * (1 - (CONFIG.assist.warmup?.sets ?? 0.1))) return null;
   const firstDue = l6.firstDueAt != null && !l6.seen.size && sel.dropIndex >= l6.firstDueAt;
   if (!firstDue) {
     if (sel.dropIndex - l6.lastEnd < (cfg.cooldownDrops ?? 30)) return null;

@@ -26,7 +26,7 @@
 
 import { CONFIG } from "../config.js";
 import { tryMove, tryRotate, zenCaption, timeScaleOf, settleFlock } from "./game.js";
-import { selectPiece, destroyerCells } from "./selection.js";
+import { selectPiece, destroyerCells, pickFitting } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
 import { expandGroup, roomNeeded, groupUnderWay, lastVersion, noteVersion } from "./level6.js";
@@ -292,7 +292,8 @@ const int = (state, a, b) => a + Math.floor(state.rng() * (b - a + 1));
 // A height in rows as it would be on the usual board (24 rows), on this one: as far from the top
 // (turbo zen can fill the whole window).
 const up = (n) => n + CONFIG.board.rows - 24;
-const pick = (state, list) => sampleByWeight(list, s => s.frequency ?? 1, state.rng);
+// (zen, the easy one: of what it could pick, one that fits the board as it is, mostly)
+const pick = (state, list) => (isCalm(state) ? pickFitting(state, list, s => s.frequency ?? 1) : sampleByWeight(list, s => s.frequency ?? 1, state.rng));
 const stackHeight = (state) => heightOf(occupancy(state.board), CONFIG.board.cols, CONFIG.board.rows);
 
 const regularPool = (state) => state.shapes.filter(s => !s.powerup && (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6);
@@ -1226,6 +1227,11 @@ export function zenTick(state, dt) {
   const z = state.zen;
   const a = state.active;
   z.clock += dt;
+  // (zen dozes off, or wakes up, there and then: the piece already falling goes at the new pace)
+  if (isCalm(state)) {
+    const d = dozing(state);
+    if (d !== !!z.dozing) { z.dozing = d; zenSpeed(state); }
+  }
   // the player pressed something: this piece is theirs (until the next one comes)
   if (state.lastInputAt !== z.inputAt) {
     z.inputAt = state.lastInputAt;
