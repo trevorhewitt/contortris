@@ -32,6 +32,7 @@ import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup } from "./powerups.js";
 import { expandGroup, roomNeeded, groupUnderWay, lastVersion, noteVersion } from "./level6.js";
 import { makeRng, sampleByWeight } from "./util.js";
+import { loadShapes } from "./shapes.js";
 import { colourFamily } from "./threads.js";
 
 const LEVEL6 = 6;
@@ -135,15 +136,18 @@ export function zenNext(state) {
   }
   // (the next blast of a demolition, picked for the board as it was: only if it still takes a
   // big bite of the board as it is now, or another would; or else that's enough of that, and
-  // what's left stays for the next movement to build on: CONFIG.zen.demolish)
-  const blast = z.queue[0];
-  if (blast?.blast != null && !blast.expect && !isCalm(state)) {
+  // what's left stays for the next movement to build on: CONFIG.zen.demolish. And the same for
+  // one that's only just been picked, if the movement had nothing waiting.)
+  for (let tries = 0; tries < 3; tries++) {
+    if (!z.queue.length) refill(state);
+    const blast = z.queue[0];
+    if (!(blast?.blast != null && !blast.expect && !isCalm(state))) break;
     const need = biteNeeded(state, blast.blast);
-    if (biteOf(state, blast.shape) < need) {
-      const p = blast.keep ? null : biggestBite(state, need);
-      if (p) z.queue[0] = { ...blast, shape: p };
-      else { z.queue = []; if (z.movement) z.movement.over = true; }
-    }
+    if (biteOf(state, blast.shape) >= need) break;
+    const p = blast.keep ? null : biggestBite(state, need);
+    if (p) { z.queue[0] = { ...blast, shape: p }; break; }
+    z.queue = [];
+    if (z.movement) z.movement.over = true;
   }
   if (!z.queue.length) refill(state);
   // in danger, and not on purpose: a big powerup first. The fills and plans go right up to the
@@ -2567,10 +2571,31 @@ function closeOff(holes, occ, top, cols, rows, list = null) {
 }
 const asFillers = (list) => list.map(f => ({ ...f, pace: CONFIG.zen.pace.filler }));
 
-// The tallest pieces: the whole height of the board, only for zen (tagged "zen").
-function zenKeys(state) {
+// The tallest pieces: the whole height of the board, only for zen (tagged "zen"). On a board of
+// another height (turbo zen filling the window), the same ones as tall as it is (stretchKey).
+export function zenKeys(state) {
   const rows = CONFIG.board.rows;
-  return (state.allShapes ?? state.shapes).filter(s => !s.powerup && s.tags?.includes("zen") && s.rotations[0].length === rows);
+  const all = (state.allShapes ?? state.shapes).filter(s => !s.powerup && s.tags?.includes("zen"));
+  const keys = all.filter(s => s.rotations[0].length === rows);
+  if (keys.length) return keys;
+  const made = (state.stretchedKeys ??= new Map());
+  if (!made.has(rows)) made.set(rows, all.map(s => stretchKey(s, rows)).filter(Boolean));
+  return made.get(rows);
+}
+// One of the tallest pieces, `rows` tall: the top and bottom quarter of it as they are, and the
+// middle of it repeated (or cut short) in between, a cell at a time: a piece of string exactly
+// as long as it needs to be.
+function stretchKey(s, rows) {
+  const mat = s.rotations[0], H = mat.length, k = s.pixelK ?? 1;
+  if (!Array.isArray(s.color) || s.color.length !== H * k || rows < 4) return null;
+  const cap = Math.min(Math.floor(H / 4), Math.floor((rows - 1) / 2)), mid = H - 2 * cap;
+  const cells = (from, n) => s.color.slice(from * k, (from + n) * k);
+  const color = [...cells(0, cap)], grid = mat.slice(0, cap);
+  for (let c = 0; c < rows - 2 * cap; c++) { color.push(...cells(cap + (c % mid), 1)); grid.push(mat[cap + (c % mid)]); }
+  color.push(...cells(H - cap, cap));
+  grid.push(...mat.slice(H - cap));
+  const raw = { id: `${s.id}_${rows}`, name: s.name, grid: grid.map(r => r.map(c => (c ? "X" : ".")).join("")), color, tags: s.tags, difficulty: s.difficulty, frequency: 0, rotation: s.rotationSpec ?? { mode: "any" } };
+  return loadShapes([raw]).shapes[0] ?? null;
 }
 
 // Where a slot `w` columns wide can go, with nothing in it yet (null if nowhere).

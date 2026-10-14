@@ -10,7 +10,7 @@ import { THREADS, SET_THREADS } from "../shapes/threads.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, updateGame, hardDropAndLock, markInput, tryMove, on } from "../src/game.js";
-import { zenStart, zenIgnoreInput, pluralName, planTiles, oopsName } from "../src/zen.js";
+import { zenStart, zenIgnoreInput, pluralName, planTiles, oopsName, zenKeys } from "../src/zen.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const { rows, cols } = CONFIG.board;
@@ -477,6 +477,28 @@ test("turbo zen opens with a piece that loves you, the first time since the page
   // (and the next game doesn't)
   startRun(state, "turbo");
   assert.notEqual(state.zen.movement?.name, "loved");
+});
+
+test("turbo zen on a board of another height: the tallest pieces as tall as it is, the ends as they were", () => {
+  const usual = { ...CONFIG.board };
+  try {
+    for (const h of [26, 37]) {
+      CONFIG.board.rows = h; CONFIG.board.cols = 17;
+      const state = createGameState(shapes, powerups, { rng: makeRng(3) });
+      const keys = zenKeys(state);
+      assert.equal(keys.length, 5, `${h}: ${keys.map(k => k.id)}`);
+      for (const k of keys) {
+        const base = shapes.find(s => k.id === `${s.id}_${h}`);
+        assert.ok(base, k.id);
+        assert.equal(k.rotations[0].length, h, k.id);
+        assert.ok(k.rotations[0].every(r => r.every(Boolean)), `${k.id}: solid`);
+        // (the top and the bottom of the picture as they were)
+        assert.deepEqual(k.cellPaints[0][0], base.cellPaints[0][0], `${k.id}: the top`);
+        assert.deepEqual(k.cellPaints[0][h - 1], base.cellPaints[0][23], `${k.id}: the bottom`);
+      }
+      assert.equal(zenKeys(state), keys, "(made once)");
+    }
+  } finally { Object.assign(CONFIG.board, usual); }
 });
 
 test("row clears have names all the way up to the whole board", () => {
