@@ -10,7 +10,7 @@ import { THREADS, SET_THREADS } from "../shapes/threads.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, updateGame, hardDropAndLock, markInput, tryMove, on } from "../src/game.js";
-import { zenStart, zenIgnoreInput, pluralName, planTiles, oopsName, zenKeys, zenCombos } from "../src/zen.js";
+import { zenStart, zenIgnoreInput, pluralName, planTiles, oopsName, zenKeys, zenCombos, planPile } from "../src/zen.js";
 import { COMBOS } from "../shapes/combos.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
@@ -319,6 +319,27 @@ test("turbo zen: an emotions chart that gets stranger on the way up, with the on
   stages.forEach((k, i) => assert.ok(k >= Math.max(0, ...stages.slice(0, i)) - 1, `in order: ${stages.join(" ")}`));
   assert.equal(stages[0], 0, "plain feelings first");
   assert.ok(Math.max(...stages) === c.stages.length - 1, `all the way up: ${stages.join(" ")}`);
+});
+
+test("turbo zen: a pile, poured in the middle or against a wall, grows outwards with its bottom rows going, then all of it", () => {
+  for (const from of ["middle", "left", "right"]) {
+    for (const seed of [2, 3]) {
+      const state = createGameState(shapes, powerups, { rng: makeRng(seed), groups: GROUPS, threads: { threads: THREADS, sets: SET_THREADS } });
+      startRun(state, "turbo");
+      for (const row of state.board) row.fill(null);
+      const res = planPile(state, from);
+      assert.ok(res, `${from}: a pile`);
+      assert.ok(res.items.cleared >= 15, `${from}: ${res.items.cleared} rows went`);
+      // (part way up, it's a pile: higher where it was poured than at the far wall)
+      const mid = res.items[Math.floor(res.items.length / 4)].expect;
+      const h = (x) => { for (let y = 0; y < rows; y++) if (mid[y * cols + x]) return rows - y; return 0; };
+      const at = from === "middle" ? cols >> 1 : from === "left" ? 0 : cols - 1, far = from === "right" ? 0 : cols - 1;
+      assert.ok(h(at) > h(far), `${from}: ${h(at)} where it's poured, ${h(far)} at the far wall`);
+      // (and at the end, hardly anything left)
+      const end = res.items[res.items.length - 1].expect;
+      assert.ok(end.reduce((a, b) => a + b, 0) <= cols * 3, `${from}: ${end.reduce((a, b) => a + b, 0)} blocks left`);
+    }
+  }
 });
 
 test("a board full of one thing has a name for it, now and then just its own", () => {

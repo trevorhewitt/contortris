@@ -57,10 +57,10 @@ const WEIGHTS = {
 const MOVEMENT_WEIGHTS = {
   zen: { natural: 5, rain: 1, family: 1.6, colours: 1, twos: 0.7 },
   turbo: { natural: 0.25, rain: 0.15, build: 0.5, giants: 0.3, column: 2.5, beds: 2, crack: 2, mess: 0.9, fall: 0.3, well: 0.3, chorus: 1.2,
-    mono: 5, combo: 4, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1, oops: 2.5, tiles: 2 },
+    mono: 5, combo: 4, pile: 2, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1, oops: 2.5, tiles: 2 },
 };
 // (the ones that need a low, tidy board to build on)
-const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "standing", "colour", "squares", "tiles"]);
+const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "standing", "colour", "squares", "tiles", "pile"]);
 // (the ones happy to carry on from whatever the last one left behind)
 const BLENDS = new Set(["build", "chorus", "mono", "small", "big", "waves", "expanders", "blackholes", "oops"]);
 
@@ -101,7 +101,7 @@ export function createZen(state) {
 // For the dev panel: every movement there is, by name, and the ways some of them can go.
 export function zenMovementChoices() {
   const ghosts = !(CONFIG.assist.powerups.disabledTypes ?? []).includes("phantom");
-  const ways = { crack: { end: Object.keys(CRACK_ENDS).filter(k => ghosts || !GHOSTLY.has(k)) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] }, combo: { id: COMBOS.map(c => c.id) }, expanders: { way: ["only", "among", "showcase"] }, colour: { kind: Object.keys(COLOUR_KINDS) } };
+  const ways = { crack: { end: Object.keys(CRACK_ENDS).filter(k => ghosts || !GHOSTLY.has(k)) }, tiles: { kind: ["floor", "bricks", "pinwheels", "waves", "lizards"] }, combo: { id: COMBOS.map(c => c.id) }, expanders: { way: ["only", "among", "showcase"] }, colour: { kind: Object.keys(COLOUR_KINDS) }, pile: { from: ["middle", "left", "right"] } };
   const out = [];
   for (const name of Object.keys(MOVEMENTS)) {
     if (["pacmen", "taps", "pacmenAndTaps", "settle", "sweep"].includes(name)) continue; // (they only come after others)
@@ -764,6 +764,11 @@ const MOVEMENTS = {
       repeats: c.stages ? 0.15 : size >= 9 ? 0.5 : 1, longest: c.stages ? 1 : size >= 9 ? 2 : null,
       maxPieces: Math.min(220, 0.95 * cols * rows / Math.max(1, size)) });
   },
+
+  // a pile, poured in the middle (or against one wall), growing outwards a few rows at a time,
+  // its bottom rows going as it reaches the walls; for a good while; then the rest filled in up
+  // to the top of it, so it all goes
+  pile: () => planned(null, (state) => { const from = state.zen.opts?.from; state.zen.opts = null; return planPile(state, from); }),
 
   // small things, lots of them, quickly
   small: (state) => {
@@ -1909,6 +1914,10 @@ export function planCrack(state, end = null) {
   // (a way with phantoms in it, asked for by name with none about: the nearest without)
   if (!ghost && GHOSTLY.has(end)) end = singles.length ? "down" : "powered";
   const H = int(state, up(18), rows - 1), top = rows - H;
+  // (the crack goes up in lengths of `seg` rows at a time, steeper the longer they are: a gap of
+  // one row now and then, more often two to four, to be sealed with sticks that long; the ghosts
+  // only ever go one row at a time)
+  const seg = GHOSTLY.has(end) ? 1 : sampleByWeight([[1, 0.8], [2, 1.2], [3, 1], [4, 0.8]], ([, w]) => w, rng)[0];
   // One gap a row (or two), wandering up from the floor but never into the end columns: a gap
   // against the wall would leave the cells over it with nothing to stand on, all the way up.
   // `moves(d)` lists the steps to try next, best first; the walk turns back at its edges (and
@@ -1943,13 +1952,13 @@ export function planCrack(state, end = null) {
     let ok = true;
     for (const line of kind.lines) {
       let prev = null;
-      for (let r = 0; r < H && ok; r++) {
-        const y = rows - 1 - r;
-        const step = line(r, prev, (x) => !occ[y * cols + x] && !holes[y * cols + x]);
+      for (let r = 0; r * seg < H && ok; r++) {
+        const ys = [];
+        for (let y = rows - 1 - r * seg; y > rows - 1 - (r + 1) * seg && y >= top; y--) ys.push(y);
+        const step = line(r, prev, (x) => ys.every(y => !occ[y * cols + x] && !holes[y * cols + x]));
         if (!step) { ok = false; break; } // (no way up through what's already there)
         const [x, d] = step;
-        holes[y * cols + x] = 1;
-        list.push({ x, y });
+        for (const y of ys) { holes[y * cols + x] = 1; list.push({ x, y }); }
         prev = { x, d };
       }
     }
@@ -1963,7 +1972,7 @@ export function planCrack(state, end = null) {
     let fillers = tile(work, need, fillerCandidates(state), rng, cols, rows, 3, holes);
     if (!fillers && tries >= 2) { work = occ.slice(); fillers = tileFlat(work, need, flatCandidates(state), rng, cols, rows); }
     if (!fillers) continue;
-    const res = crackEnd(state, end, list, { ghost, singles, top });
+    const res = crackEnd(state, end, list, { ghost, singles, top, seg });
     if (res.steps) {
       const items = toItems(occ, [...asFillers(fillers), ...res.steps], cols, rows);
       if (!items || items.cleared < new Set(list.map(g => g.y)).size) continue; // (every row of it goes)
@@ -1980,14 +1989,25 @@ export function planCrack(state, end = null) {
 
 // How the crack (gaps `list`) is sealed: { steps, caption } (planned pieces), or { extra, caption }
 // (powerups, put where they're meant to go), or { then } (the movement that does it).
-function crackEnd(state, end, list, { ghost, singles, top }) {
+function crackEnd(state, end, list, { ghost, singles, top, seg = 1 }) {
   const { cols, rows } = CONFIG.board;
   const rng = state.rng, pace = CONFIG.zen.pace.phantom;
   const ghostAt = (g) => ({ shape: ghost, rot: 0, mat: ghost.rotations[0], x: g.x, phantom: true, pace });
   const blockAt = (g) => { const s = singles[Math.floor(rng() * singles.length)]; return { shape: s, rot: 0, mat: s.rotations[0], x: g.x, pace }; };
   const byRow = [...new Set(list.map(g => g.y))].sort((a, b) => b - a); // (bottom up)
-  // (a block dropped in lands in the highest gap of its column: from the top, it's the top row's)
-  const down = () => ({ steps: [...list].sort((a, b) => a.y - b.y).map(blockAt), caption: "filled in from the top, with whatever was to hand" });
+  // (a block dropped in lands in the highest gap of its column: from the top, it's the top row's;
+  // a crack that goes up in lengths, a stick that long in each, from the top down, or else blocks
+  // one on another)
+  const down = () => {
+    if (seg === 1) return { steps: [...list].sort((a, b) => a.y - b.y).map(blockAt), caption: "filled in from the top, with whatever was to hand" };
+    const steps = [];
+    for (const r of crackRuns(list)) {
+      const st = stickOf(state, r.n);
+      if (st) steps.push({ shape: st.shape, rot: st.rot, mat: st.mat, x: r.x, pace });
+      else for (let i = 0; i < r.n; i++) steps.push(blockAt(r));
+    }
+    return { steps, caption: "sealed from the top, a length at a time" };
+  };
   if (end === "down") return down();
   if (end === "shaker") {
     // the bottom row, the top row, the next row up, the next row down...
@@ -2011,6 +2031,39 @@ function crackEnd(state, end, list, { ghost, singles, top }) {
   }
   if (!ghost) return singles.length ? down() : { then: "pacmen" };
   return { steps: sealOrder(list, g => -g.y).map(ghostAt), caption: "sealed from the bottom up" };
+}
+
+// The gaps of a crack as runs up and down: { x, y (the top of it), n }, the top one first.
+function crackRuns(gaps) {
+  const runs = [];
+  for (const g of [...gaps].sort((a, b) => a.x - b.x || a.y - b.y)) {
+    const last = runs[runs.length - 1];
+    if (last && last.x === g.x && last.y + last.n === g.y) last.n++;
+    else runs.push({ x: g.x, y: g.y, n: 1 });
+  }
+  return runs.sort((a, b) => a.y - b.y);
+}
+
+// A stick `n` blocks long standing on end (one of the ordinary pieces, in the turn that makes it
+// one), or null. (The shortest are the commonest; the longest might not be there at all.)
+const sticksCache = new WeakMap();
+function stickOf(state, n) {
+  let by = sticksCache.get(state.shapes);
+  if (!by) {
+    by = new Map();
+    for (const s of regularPool(state).filter(s => (s.difficulty ?? 1) <= 3)) {
+      for (let r = 0; r < reachableTurns(s); r++) {
+        const m = s.rotations[r];
+        if (m[0].length !== 1 || !m.every(row => row[0])) continue;
+        if (!by.has(m.length)) by.set(m.length, []);
+        by.get(m.length).push({ shape: s, rot: r, mat: m });
+        break;
+      }
+    }
+    sticksCache.set(state.shapes, by);
+  }
+  const list = by.get(n);
+  return list?.length ? list[Math.floor(state.rng() * list.length)] : null;
 }
 
 // The order the gaps are filled in: by `rank` (lowest first; the lower gap of two the same), but
@@ -2279,6 +2332,49 @@ function colourPattern(kind, { cols, rows, H, top, rng, enough }) {
     return { palette: pal, caption: "wide diagonal stripes", at: (x, y) => Math.floor(((back ? cols - 1 - x : x) + up(y)) / w) % pal.length };
   }
   return null;
+}
+
+// A pile: poured in the middle (or against the left or right wall: `from`), each stage a shell a
+// few rows thick under slopes that go down from a little over the top of it, so it grows
+// outwards, its bottom rows completing (and going) once it reaches the walls; then the rest
+// filled in, up to the top of it, so it all goes. Returns { items, caption } or null.
+export function planPile(state, from = null) {
+  const { cols, rows } = CONFIG.board;
+  const rng = state.rng;
+  const occ = occupancy(state.board);
+  if (!solid(occ, cols, rows) || heightOf(occ, cols, rows) > 2) return null;
+  from ??= sampleByWeight([["middle", 2], ["left", 1], ["right", 1]], ([, w]) => w, rng)[0];
+  const at = from === "middle" ? (cols - 1) / 2 : from === "left" ? 0 : cols - 1;
+  const slope = (0.8 + rng() * 0.7) * (from === "middle" ? 1 : 0.6), top = up(int(state, 15, 18));
+  const stages = int(state, 8, 13) + (cols > 20 ? 3 : 0), cands = fillerCandidates(state);
+  let work = occ.slice();
+  const steps = [];
+  const heightAt = (x) => rows - colTop(work, x, cols, rows);
+  for (let k = 0; k < stages; k++) {
+    const x0 = Math.round(at);
+    let crest = 0;
+    for (let x = Math.max(0, x0 - 1); x <= Math.min(cols - 1, x0 + 1); x++) crest = Math.max(crest, heightAt(x));
+    const peak = Math.min(top, crest + int(state, 3, 4));
+    const need = new Uint8Array(cols * rows);
+    let n = 0;
+    for (let x = 0; x < cols; x++) {
+      const T = Math.floor(peak - slope * Math.abs(x - at));
+      for (let y = rows - 1; y >= rows - T; y--) if (!work[y * cols + x]) { need[y * cols + x] = 1; n++; }
+    }
+    if (!n) continue;
+    const w = work.slice(), placed = tile(w, need, cands, rng, cols, rows);
+    if (!placed) { if (k < 3) return null; break; }
+    clearFull(w, cols, rows); // (the rows it completed go, and the next stage builds on what's left)
+    work = w;
+    steps.push(...asFillers(placed));
+  }
+  // ...and then the rest, up to the top of it
+  const h = heightOf(work, cols, rows), need = new Uint8Array(cols * rows);
+  for (let y = rows - h; y < rows; y++) for (let x = 0; x < cols; x++) if (!work[y * cols + x]) need[y * cols + x] = 1;
+  const rest = tile(work.slice(), need, cands, rng, cols, rows) ?? tileFlat(work.slice(), need, cands, rng, cols, rows);
+  if (rest) steps.push(...asFillers(rest));
+  const items = toItems(occ, steps, cols, rows, { mustClear: false });
+  return items && { items, caption: from === "middle" ? "a pile" : `a pile, from the ${from}` };
 }
 
 // Squares in a pattern across the board: a checkerboard, diagonal stripes or rings of colour,
