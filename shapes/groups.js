@@ -527,4 +527,15 @@ export const GROUPS = [
       } },
     ],
   },
+  {
+    id: "great_and_terrible",
+    name: "great and terrible things",
+    frequency: 1,
+    unique: true,
+    sequence: [
+      {pick: ["an_omen", "a_bad_sign", "omen_of_great_things", "prophecy_of_great_things"], count: [1, 2], unique: true},
+      {pick: ["great_and_terrible_things", "great_and_terrible_things_foretold", "great_and_terrible_things_all_at_once"], count: [1, 1]},
+      {pick: ["a_horrible_thing", "a_terrible_thing", "a_great_terrible_thing", "an_unspeakably_terrible_thing"], weights: [3, 3, 2, 1], count: [1, 2], unique: true},
+    ],
+  },
 ];

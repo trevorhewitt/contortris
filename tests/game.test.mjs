@@ -383,13 +383,14 @@ test("a piece's card says how rare it is, in words", async () => {
   const words = new Set(CONFIG.rarity.words.map(w => w[1]));
   const seen = new Set();
   for (const s of [...shapes, ...powerups]) {
-    if ((s.frequency ?? 1) <= 0 || s.difficulty === 6) continue;
+    if ((s.frequency ?? 1) <= 0 || s.difficulty === 6 || s.powerup?.setOnly) continue;
     const r = rarity(state, s);
     assert.ok(words.has(r.words), `${s.id}: ${r.words}`);
     seen.add(r.words);
   }
   assert.equal(seen.size, words.size, `all the words get used: ${[...seen]}`);
   assert.deepEqual(rarity(state, byId("everest")), { words: "only ever in a set", set: "Mt Everest" });
+  assert.deepEqual(rarity(state, powerups.find(p => p.id === "a_horrible_thing")), { words: "only ever in a set", set: "great and terrible things" }, "a powerup that only comes in its set");
   assert.equal(rarity(state, byId("last_straw")).words, "only ever after something else");
   assert.equal(rarity(state, byId("piece_of_string")).words, "only in zen mode");
 });

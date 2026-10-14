@@ -217,4 +217,5 @@ export const SET_THREADS = {
   sky_evening: ["surreal", "weather", "space"],
   sky_sunset: ["surreal", "weather"],
   sky_night: ["surreal", "weather", "space"],
+  great_and_terrible: ["holy", "death", "magic", "weather"],
 };

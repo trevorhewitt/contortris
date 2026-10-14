@@ -55,11 +55,18 @@ test("god mode: everything is open from the first piece, with no intro screens",
 });
 
 test("god mode: more big pieces (above all level 6 sets) and more powerups, and the wide gravitizers above all", () => {
+  // (the pieces it picks, one after another, for the same 3-row stack: what it picks, not how
+  // they'd play, so a good many of them, quickly)
   const count = (mode) => {
     let giants = 0, sets = 0, pus = 0, wide = 0, n = 0;
     for (const seed of [1, 2, 3, 4, 5, 6]) {
-      for (const s of play(mode, seed * 101, 150).served) {
+      const state = createGameState(shapes, powerups, { rng: makeRng(seed * 101), groups: GROUPS });
+      startRun(state, mode);
+      setStack(state, 3);
+      for (let i = 0; i < 300; i++) {
+        const s = selectPiece(state);
         n++;
+        if (s.powerup?.setOnly) continue; // (part of its set's story, not the powerups' mix)
         if (s.powerup) { pus++; if (gravityColumns(s) >= CONFIG.godMode.wideGravity.minCols) wide++; }
         else if (s.difficulty === 4 || s.difficulty === 5) giants++;
         else if (s.difficulty === 6) sets++;
@@ -76,7 +83,7 @@ test("god mode: more big pieces (above all level 6 sets) and more powerups, and 
   assert.ok(big(god) > big(normal) * 1.5, `big pieces ${big(god).toFixed(3)} vs ${big(normal).toFixed(3)}`);
   assert.ok(god.sets > god.giants, `level 6 ${god.sets.toFixed(3)}, giants ${god.giants.toFixed(3)}`);
   assert.ok(god.pus > normal.pus, `powerups ${god.pus.toFixed(3)} vs ${normal.pus.toFixed(3)}`);
-  // (a good deal more of them, though not so many that they're all there is: about 1.75×)
+  // (a good deal more of them, though not so many that they're all there is: about twice as many)
   assert.ok(god.wide > normal.wide * 1.4, `wide gravitizers ${god.wide.toFixed(3)} vs ${normal.wide.toFixed(3)}`);
 });
 
@@ -132,6 +139,8 @@ test("level 6: a set only starts if it has room", () => {
     const state = createGameState(shapes, powerups, { rng: makeRng(rows), groups: GROUPS });
     state.devLevel6 = "on";
     startRun(state, "normal");
+    // (every class of powerup met: a set with powerups in it can come)
+    for (const c of ["destroyer", "gravity", "expander", "combo"]) state.pieceSel.powerup.shownClasses.add(c);
     setStack(state, rows);
     const started = new Set();
     for (let i = 0; i < 400; i++) {
