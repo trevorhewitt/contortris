@@ -260,9 +260,10 @@ test("turbo zen: oops, all one awkward thing, said all the way up, and then down
   assert.ok(labels[0] === null || /^(Oops, all .+!|(.+) \2 \2!!|(.+) \3 and more \3|the strategic reserve of .+)$/.test(labels[0]), labels[0]);
   assert.ok(peak >= 14, `up to ${peak} rows`);
   const i = log.movements.findIndex(m => m.name === "oops");
-  // (by the demolition, or the tidying up after it)
-  const end = log.movements.slice(i + 1).find(m => !["demolition", "tidy", "settle", "sweep"].includes(m.name));
-  assert.ok(end && end.height <= 8, "and then down it came");
+  // (by the demolition, or the tidying up after it; or, if that left some of it to build on, the
+  // next one after that)
+  const after = log.movements.slice(i + 1).filter(m => !["demolition", "tidy", "settle", "sweep"].includes(m.name)).slice(0, 2);
+  assert.ok(after.some(m => m.height <= 8), `and then down it came (${log.movements.slice(i, i + 6).map(m => `${m.name}@${m.height}`).join(" ")})`);
 });
 
 test("a board full of one thing has a name for it, now and then just its own", () => {

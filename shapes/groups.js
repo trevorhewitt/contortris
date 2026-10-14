@@ -291,8 +291,9 @@ export const GROUPS = [
     versions: [
       ["tree_of_life", "tree_of_death"],
       ["tree_of_death", "tree_of_life"],
-      ["tree_of_life", {pick: ["tree_of_mild_inconvenience", "tree_of_knowing_keys"], count: 1}, "tree_of_death"],
-      [{pick: ["tree_of_life", "tree_of_death"], count: 1}, {pick: ["tree_of_mild_inconvenience", "tree_of_knowing_keys"], count: 1}],
+      ["tree_of_life", {pick: ["tree_of_reincarnation", "tree_of_purgatory"], count: 1}, "tree_of_death"],
+      ["tree_of_death", "tree_of_purgatory", "tree_of_reincarnation"],
+      [{pick: ["tree_of_life", "tree_of_death"], count: 1}, {pick: ["tree_of_reincarnation", "tree_of_purgatory"], count: 1}],
       [{pick: ["tree_of_life_winter", "tree_of_death_winter"], count: 2, unique: true}],
     ],
   },

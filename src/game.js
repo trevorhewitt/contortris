@@ -177,12 +177,19 @@ export function currentPool(state) {
 }
 
 // A piece as it actually arrives: remixes are rebuilt and scatters re-rolled every time, and
-// one that comes straight after itself goes by its `nameAgain` ("another raindrop").
+// one that comes straight after itself goes by its `nameAgain` ("another raindrop"). One with
+// other names (`names`) goes by one of them now and then; in a level 6 set, by the same one of
+// each all the way through the run (they're written to go together: the dog's, the museum's).
 function prepareShape(state, shape) {
   let out = rollScatter(remixShape(shape, state.allById, state.rng), state.rng);
   const recent = state.pieceSel?.recentShapeIds ?? [];
   if (out?.nameAgain && recent.length >= 2 && recent[recent.length - 2] === out.id && recent[recent.length - 1] === out.id) {
     out = { ...out, name: out.nameAgain };
+  } else if (out?.names?.length) {
+    const all = [out.name, ...out.names];
+    // (only what it's called: not the game's dice)
+    const i = (out.difficulty ?? 1) === LEVEL6 ? state.pieceSel?.level6?.nameIndex ?? 0 : Math.floor(Math.random() * all.length);
+    if (all[i % all.length] !== out.name) out = { ...out, name: all[i % all.length] };
   }
   return out;
 }

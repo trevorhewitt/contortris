@@ -187,7 +187,7 @@ export function zenNext(state) {
   // (after a big clearance, a breath before the next piece)
   const n = occ.reduce((a, b) => a + b, 0);
   const gone = z.blocks != null ? z.blocks - n : 0;
-  z.rest = gone >= 30 ? Math.min(CONFIG.zen.restMs, gone * 10) : 0;
+  z.rest = gone >= 30 && CONFIG.modes[state.mode]?.rest !== false ? Math.min(CONFIG.zen.restMs, gone * 10) : 0;
   z.blocks = n + blocks(item.shape);
   z.current = item;
   z.expect = item.expect ?? null;
@@ -1274,14 +1274,14 @@ export function zenTick(state, dt) {
 // falls instead: zenSpawned.)
 export function zenDramatic(state, info) {
   const z = state.zen, D = CONFIG.zen.dramatic;
-  if (!D || !z?.current?.dramatic || z.userHas || isCalm(state) || info.shape.powerup) return 0;
+  if (!D || CONFIG.modes[state.mode]?.dramatic === false || !z?.current?.dramatic || z.userHas || isCalm(state) || info.shape.powerup) return 0;
   const rows = CONFIG.board.rows; // (the numbers are for the usual board: as much of a bigger one)
   return state.board.filter(row => row.every(Boolean)).length >= D.minRows * Math.max(1, rows / 24) ? D.pauseMs * timeScaleOf(state) : 0;
 }
 // ...and the director's powerup, at (rot, x, y): would it take most of the board (minBlocks)?
 function bigMoment(state, shape, rot, x, y) {
   const z = state.zen, D = CONFIG.zen.dramatic, { cols, rows } = CONFIG.board;
-  if (!D || !z.current?.dramatic || isCalm(state)) return false;
+  if (!D || CONFIG.modes[state.mode]?.dramatic === false || !z.current?.dramatic || isCalm(state)) return false;
   const before = occupancy(state.board).reduce((a, b) => a + b, 0);
   const after = tryPowerup(state, shape, rot, x, y).occ.reduce((a, b) => a + b, 0);
   return before - after >= D.minBlocks * Math.max(1, cols * rows / 336);

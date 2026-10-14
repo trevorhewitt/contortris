@@ -240,6 +240,8 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
       shake: s.shake === true, // shakes the board when it lands, however small (a small boulder)
       // the name it goes by when it comes straight after itself ("another raindrop")
       nameAgain: typeof s.nameAgain === "string" && s.nameAgain.trim() ? s.nameAgain.trim() : null,
+      // other names it goes by now and then (src/game.js prepareShape)
+      names: Array.isArray(s.names) && s.names.length ? s.names.filter(n => typeof n === "string" && n.trim()).map(n => n.trim()) : null,
       // its last words, when the last of it is destroyed
       onDeath: typeof s.onDeath === "string" && s.onDeath.trim() ? s.onDeath.trim() : null,
       // in a level 6 set: this piece comes back later in the same run, as that piece

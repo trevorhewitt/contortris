@@ -26,9 +26,11 @@ export const CONFIG = {
     zen: { label: "Zen", tagline: "slow and easy: it plays itself, or you do", warmup: "always", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
     turbo: { label: "Turbo zen", tagline: "it plays itself, and doesn't stop", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2], captions: false },
     // (behind the home screen, CONFIG.home: turbo zen with no words in it at all, no names, no
-    // callouts, at an easier pace so you see the pieces fall; its demolitions leave `keep` rows or
-    // so, so the board is seldom bare; and it stops while the page is hidden. Never one to play.)
-    home: { label: "Home", hidden: true, powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 1, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, captions: false, callouts: false, names: false, home: true, keep: [6, 10] },
+    // callouts, at an easier pace so you see the pieces fall; never a pause, dramatic or for
+    // breath (dramatic, rest: false), so something's always coming down; its demolitions leave
+    // `keep` rows or so, so the board is seldom bare; and it stops while the page is hidden.
+    // Never one to play.)
+    home: { label: "Home", hidden: true, powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 1, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, captions: false, callouts: false, names: false, home: true, keep: [6, 10], dramatic: false, rest: false },
   },
   defaultMode: "normal",
 
@@ -267,8 +269,9 @@ export const CONFIG = {
     // newSetBoost times (load the page again to see them all again). Anything never seen in this
     // browser at all comes up unseenBoost times as often. (God mode.)
     newest: {
-      sets: ["sunshine", "great_and_terrible", "space", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
+      sets: ["sunshine", "trees", "great_and_terrible", "space", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
+        "box_of_eggs", "spare_allen_key", "bees_knees", "popcorn",
         "rubiks_cube_checkerboard", "rubiks_cube_one_turn", "rubiks_cube_solved", "rubiks_cube_restickered", "rubiks_cube_gave_up", "rubiks_cube", "tuning_fork",
         "spam_tin_opened", "beans_tin_on_its_side", "spaghetti_os_tin_upended", "lego_cube_2x2_red", "lego_cube_3x3", "lego_cube_4x4", "lego_slab_2x4", "lego_block_3x2", "lego_cube_2x2_blue",
         "paddling_swan", "candle_both_ends", "wandering_washing_machine", "unwanted_present", "unbothered_capybara", "exasperated_life_ring", "rubber_chicken", "storm_in_a_teacup",
@@ -290,9 +293,9 @@ export const CONFIG = {
         "caveman_in_ice", "piece_of_sky",
         "kilometerworm", "lightyearworm", "nebula",
         "umbrella_for_a_fish", "goldfish_bowl_moon", "anvil_of_feathers", "jar_of_fog", "fossilised_sandwich",
-        "sock_full_of_night", "piano_full_of_bees", "snowman_on_holiday",
+        "piano_full_of_bees", "snowman_on_holiday",
         "ladder_to_nowhere", "kite_in_a_storm", "flock_of_starlings", "trail_of_footprints", "portrait_of_a_potato", "moons_spare_tooth",
-        "hot_water_bottle_of_sea", "very_small_stonehenge", "long_red_ribbon",
+        "very_small_stonehenge", "long_red_ribbon",
       ],
     },
     novelty: { newBoost: 25, newSetBoost: 40, newUntilShown: 1, unseenBoost: 2.5, firstBoost: 1e6 },
@@ -469,6 +472,9 @@ export const CONFIG = {
       // Hard rule: the same piece never comes again within this many pieces (linked
       // "back to back" pieces like the fish are the only exception). 0 = off.
       noRepeatWithin: 5,
+      // Links that lead round and round (each tile to the others of its shape): after this many
+      // in a row of them, the link isn't followed.
+      linkRun: 4,
       // The big level 4 and 5 pieces are the most noticeable, so one already served this
       // game is much less likely to come again: its weight × repeatPenalty per time served
       // (it can still happen, just rarely, e.g. when every giant has had a turn).

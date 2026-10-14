@@ -461,6 +461,7 @@ export function startGroup(state, group, pieces = null) {
   noteVersion(state, group, l6.queue.version);
   l6.group = group.id;
   l6.lastGroup = group.id; // (a one-piece set is over as soon as it starts)
+  l6.nameIndex = Math.floor(Math.random() * 1e6); // (which of its pieces' other names, if they have them: game.js prepareShape)
   l6.starts = (l6.starts ?? 0) + 1;
   l6.seen.set(group.id, (l6.seen.get(group.id) ?? 0) + 1);
   const keep = Math.max(CONFIG.assist.level6?.rememberRecent ?? 2, CONFIG.assist.level6?.familyGap ?? 0);

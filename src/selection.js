@@ -302,6 +302,11 @@ function tryLinkedNextShape(state, prevShape, idToShape, debug = false) {
   // A linked giant also never comes back while it's still fresh (the pound of feathers and
   // the pound of steel follow each other, but not round and round). A sure link (probability
   // 1) is a chain: its giant may come straight after another giant (nothing, then everything).
+  // (links that lead round and round, like the tiles to each other: a few in a row at most)
+  const family = new Set([prevShape.id, ...ids]), recentIds = state.pieceSel?.recentShapeIds ?? [];
+  let run = 0;
+  for (let i = recentIds.length - 1; i >= 0 && family.has(recentIds[i]); i--) run++;
+  if (run >= (CONFIG.assist.variety?.linkRun ?? Infinity)) return null;
   const dangerOk = computeStackDanger01(state) <= (hardCfg(state.mode).hardMaxDanger ?? 0.32);
   const hardOk = endGameOn(state) || (!state.pieceSel?.lastWasHard && dangerOk);
   const chainOk = endGameOn(state) || dangerOk;
