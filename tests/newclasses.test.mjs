@@ -66,7 +66,10 @@ test("progression: classes open one at a time, starting with a simple one", () =
     const seen = [];
     const at = [];
     on(state, (t, d) => {
-      if (t !== "spawn" || !d.shape.powerup) return;
+      if (t !== "spawn") return;
+      // (introduced as soon as it shows as the next piece, or else when it comes)
+      if (d.nextNew) news.push(d.next.powerup.cls);
+      if (!d.shape.powerup) return;
       seen.push(d.shape.powerup.cls);
       at.push(state.pieceSel.dropIndex);
       if (d.isNew) news.push(d.shape.powerup.cls);
@@ -95,6 +98,11 @@ test("progression: classes open one at a time, starting with a simple one", () =
     // combos only once two classes are in
     const firstCombo = seen.indexOf("combo");
     if (firstCombo >= 0) assert.ok(new Set(seen.slice(0, firstCombo)).size >= 2, "combo before two classes");
+    // the gravitizers are always one of the first two, and the third class waits for the combos
+    // of the first two (CONFIG.assist.powerups.progression: early, combosBeforeThird)
+    const classes = news.filter(c => c !== "combo");
+    if (classes.length >= 2) assert.ok(classes.slice(0, 2).includes(prog.early), `${prog.early} in the first two: ${news.join(" > ")}`);
+    if (classes.length >= 3) assert.ok(news.indexOf("combo") >= 0 && news.indexOf("combo") < news.indexOf(classes[2]), `combos before the third class: ${news.join(" > ")}`);
     assert.ok(!seen.includes("blast") && !seen.includes("goo"), "switched-off classes never turn up");
   }
   assert.ok(firsts.size >= 2, "the first class varies between games");

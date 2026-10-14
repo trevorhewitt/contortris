@@ -519,6 +519,8 @@ export const CONFIG = {
       chancePerDrop: 0.07,      // after that: the chance a group starts on any given piece...
       cooldownDrops: 20,        // ...once this many pieces have passed since the last group...
       maxStackRows: 10,         // ...and only while the stack is this many rows tall or less
+      afterClass: "gravity",    // (where powerups come in one class at a time: not before the
+                                // gravitizers have been met, which tidy up after a set)
       // A group only starts if the board has room for all of it: its blocks spread over the
       // width × roomFactor (for the gaps they leave), with `headroom` rows to spare at the top.
       // (Three townhouses in a row need about 15 rows.)
@@ -564,6 +566,10 @@ export const CONFIG = {
         // the first class is picked at random from these (the simpler ones), so every
         // game starts differently
         firstClassPool: ["destroyer", "gravity", "expander"],
+        // one of the first two classes is always this one (if the first wasn't it, the second);
+        // then the combos of those two, and only then (combosBeforeThird) the third class, or
+        // after comboWaitDrops pieces anyway
+        early: "gravity", combosBeforeThird: true, comboWaitDrops: 90,
         newClassEvery: 6,          // after this many powerups, the next one opens a new class
         newClassAfterDrops: 32,    // ...or after this many drops since the last new class
         // intro screens interrupt the game: at least this many pieces between two of them

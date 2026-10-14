@@ -461,7 +461,7 @@ export function bindUI({ state, renderer, achievements }) {
         noteSeen(d.shape);
         nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames, d.label); // (turbo zen: no time to slide)
         renderer.drawNext(d.next, true, { glow: CONFIG.modes[state.mode]?.hints !== false });
-        if (d.isNew && !skipIntros()) showIntro(d.shape);
+        if (!skipIntros() && (d.isNew || d.nextNew)) showIntro(d.isNew ? d.shape : d.next, { next: !d.isNew });
         break;
       case "next":
         renderer.drawNext(d.next, true, { glow: CONFIG.modes[state.mode]?.hints !== false });
@@ -687,7 +687,8 @@ export function bindUI({ state, renderer, achievements }) {
 
   // Intro screen for a powerup class the player hasn't seen yet this game,
   // shown with the piece that just turned up as the example.
-  function showIntro(shape) {
+  // (`next`: it's the next piece, not this one: introduced before it comes)
+  function showIntro(shape, { next = false } = {}) {
     state.paused = true;
     state.softDropping = false;
     const pu = shape.powerup;
@@ -697,7 +698,7 @@ export function bindUI({ state, renderer, achievements }) {
     $("introKicker").textContent = "Shiny Piece!";
     $("introName").textContent = info.name;
     $("introName").className = `introName cls-${pu.cls}`;
-    $("introPiece").textContent = shape.name;
+    $("introPiece").textContent = next ? `up next: ${shape.name}` : shape.name;
     $("introClass").textContent = info.text;
     const cvs = $("introDemo");
     const demo = createDemo(cvs, shape, { cell: 22 });

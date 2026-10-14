@@ -799,9 +799,11 @@ export function stillUseful(state, shape) {
     }
     return out;
   };
-  // from the classes already met (no intro screens out of nowhere)...
+  // from the classes already met (no intro screens out of nowhere)... but the first of a class,
+  // introduced as the next piece, only ever for another of its class (the one it introduced)
   const met = (cls) => cls === shape.powerup.cls || ps.shownClasses.has(cls);
-  let twins = twinsFrom(p => met(p.powerup.cls) && (!p.powerup.parts || p.powerup.parts.every(part => met(part.cls))));
+  const awaited = !!ps.previewed?.has(shape.powerup.cls);
+  let twins = twinsFrom(p => (awaited ? p.powerup.cls === shape.powerup.cls : met(p.powerup.cls)) && (!p.powerup.parts || p.powerup.parts.every(part => met(part.cls))));
   // ...or, early on, when the one class in so far has nothing that would help (gravity on a
   // tidy board), the next class can open a little early, with one of its starters
   // (a useless powerup is worse than an intro a little sooner than usual: half the usual gap;
@@ -809,11 +811,11 @@ export function stillUseful(state, shape) {
   const prog = cfg.progression, introGap = (prog?.minDropsBetweenIntros ?? 0) / 2;
   const intro = !ps.shownClasses.has(shape.powerup.cls);
   let opens = false;
-  if (!twins.length && prog?.enabled && (intro || ps.lastIntroDrop == null || sel.dropIndex - ps.lastIntroDrop >= introGap)) {
+  if (!twins.length && !awaited && prog?.enabled && nextClassAllowed(state) && (intro || ps.lastIntroDrop == null || sel.dropIndex - ps.lastIntroDrop >= introGap)) {
     const starters = new Set(live.filter(p => p.powerup.starter).map(p => p.powerup.cls));
-    const first = ps.shownClasses.size ? null : prog.firstClassPool;
+    const first = ps.shownClasses.size ? null : prog.firstClassPool, must = mustOpen(ps);
     twins = twinsFrom(p => p.powerup.cls !== "combo" && !met(p.powerup.cls) && !p.powerup.bad
-      && (p.powerup.starter || !starters.has(p.powerup.cls)) && (!first || first.includes(p.powerup.cls)));
+      && (p.powerup.starter || !starters.has(p.powerup.cls)) && (!first || first.includes(p.powerup.cls)) && (!must || p.powerup.cls === must));
     opens = twins.length > 0;
   }
   if (!twins.length) return same;
@@ -887,7 +889,7 @@ function maybeSelectPowerup(state, danger01) {
     const due = !ps.classes.length
       || ps.sinceClass >= (prog.newClassEvery ?? 5)
       || sel.dropIndex - ps.classAtDrop >= (prog.newClassAfterDrops ?? Infinity);
-    if (due) unlockNextClass(state, candidates);
+    if (due && nextClassAllowed(state)) unlockNextClass(state, candidates);
     // (combos are let through here and checked below: they open on their own)
     candidates = candidates.filter(p => p.powerup.cls === "combo" || ps.classes.includes(p.powerup.cls));
   }
@@ -997,8 +999,9 @@ export function destroyerCells(shape) {
   return n;
 }
 
-// Open the next powerup class: the first is random from progression.firstClassPool,
-// after that any class not in yet (combos open on their own, see CONFIG...combos).
+// Open the next powerup class: the first is random from progression.firstClassPool, the second
+// progression.early if the first wasn't it, after that any class not in yet (combos open on
+// their own, see CONFIG...combos, and the third class waits for them: nextClassAllowed).
 function unlockNextClass(state, pool) {
   const prog = CONFIG.assist.powerups.progression;
   const ps = state.pieceSel.powerup;
@@ -1008,6 +1011,9 @@ function unlockNextClass(state, pool) {
     const simple = remaining.filter(t => (prog.firstClassPool ?? remaining).includes(t));
     if (simple.length) remaining = simple;
   }
+  // (one of the first two is always progression.early, the gravitizers)
+  const must = mustOpen(ps);
+  if (must) remaining = remaining.filter(t => t === must);
   // prefer a class that has something usable on the board right now
   const use = CONFIG.assist.powerups.usability ?? {};
   // the first piece of a new class must be usable: only open a class that has a usable
@@ -1021,6 +1027,23 @@ function unlockNextClass(state, pool) {
   ps.sinceClass = 0;
   ps.classAtDrop = state.pieceSel.dropIndex;
   return next;
+}
+
+// The class that has to open next, if any: one of the first two classes is always
+// progression.early (the gravitizers: after the first giants and sets, they're what helps).
+function mustOpen(ps) {
+  const early = CONFIG.assist.powerups.progression?.early;
+  const off = CONFIG.assist.powerups.disabledTypes ?? [];
+  const classes = ps.classes.filter(c => c !== "combo");
+  return early && !off.includes(early) && classes.length === 1 && !classes.includes(early) ? early : null;
+}
+// May another class open now? Not the third before the first combo has come (made of the
+// first two), unless it has been a long time (progression.comboWaitDrops).
+function nextClassAllowed(state) {
+  const prog = CONFIG.assist.powerups.progression, sel = state.pieceSel, ps = sel.powerup;
+  if (!prog?.combosBeforeThird || ps.shownClasses.has("combo")) return true;
+  if (ps.classes.filter(c => c !== "combo").length < 2) return true;
+  return sel.dropIndex - ps.classAtDrop >= (prog.comboWaitDrops ?? Infinity);
 }
 
 // Dev / testing: unlock every class and powerup right away.

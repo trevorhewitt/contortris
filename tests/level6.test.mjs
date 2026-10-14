@@ -85,18 +85,33 @@ test("level 6 is locked until the comeback: above row 10, then back down to row 
   assert.equal(level6Open(state), true, "dug back down: unlocked");
   assert.equal(unlocks, 1);
 
-  // the first group arrives within a few pieces, whole and in order, nothing in between
   // (once the warm-up at the start of a game is over: in it, the sets hardly ever start)
   state.pieceSel.dropIndex = Math.max(state.pieceSel.dropIndex, CONFIG.assist.warmup.goneBy);
   const served = [];
   on(state, (t, d) => { if (t === "spawn") served.push(d.shape); });
+  // not before the gravitizers have been met (CONFIG.assist.level6.afterClass)...
+  const ps = state.pieceSel.powerup, after = CONFIG.assist.level6.afterClass;
+  ps.classes = ps.classes.filter(c => c !== after); ps.shownClasses.delete(after);
+  ps.cooldown = 1e9; // (no powerups in the meantime, so they aren't met yet)
+  for (let i = 0; i < 12 && !state.gameOver; i++) { setStack(state, 2); drop(state); }
+  ps.cooldown = 0;
+  assert.ok(!served.some(s => s.difficulty === 6), `not before the ${after} class: ${served.map(s => s.id)}`);
+  // ...and then the first group arrives within a few pieces, whole and in order, nothing in between
+  ps.shownClasses.add(after);
+  served.length = 0;
   for (let i = 0; i < 25 && !state.gameOver; i++) { setStack(state, 2); drop(state); }
   const first = served.findIndex(s => s.difficulty === 6);
   assert.ok(first >= 0 && first <= CONFIG.assist.level6.firstAfter[1] + 2, `first level 6 piece at ${first}`);
-  let run = 0;
-  while (served[first + run]?.difficulty === 6) run++;
-  const ids = served.slice(first, first + run).map(s => s.id);
-  assert.ok(GROUPS.some(g => matchesGroup(g, ids)), `a whole group, in order: ${ids.join(" > ")}`);
+  // (the run of level 6 pieces, and any of the set's own pieces either side of it: a set of
+  // beans opens with an ordinary can of beans)
+  const whole = (g) => {
+    const members = new Set(JSON.stringify(g.versions ?? g.sequence).match(/[a-z0-9_]+/g));
+    let a = first, b = first;
+    while (a > 0 && members.has(served[a - 1].id)) a--;
+    while (b < served.length && (served[b].difficulty === 6 || members.has(served[b].id))) b++;
+    return served.slice(a, b).map(s => s.id);
+  };
+  assert.ok(GROUPS.some(g => matchesGroup(g, whole(g))), `a whole group, in order: ${served.slice(first, first + 8).map(s => s.id).join(" > ")}`);
 });
 
 test("easy mode never unlocks level 6; dev override forces it either way", () => {

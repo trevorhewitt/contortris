@@ -544,21 +544,32 @@ function spawnPiece(state) {
 
   const ok = isPhantomPowerup(shape.powerup) || !collides(state, state.active.x, state.active.y, getActiveMatrix(state));
   if (ok) {
-    // First powerup of a class in this game: the UI shows that class's intro screen.
-    const ps = state.pieceSel.powerup;
-    const type = shape.powerup?.cls;
-    const isNew = !!type && !ps.shownClasses.has(type);
-    if (type) {
-      ps.shown.add(shape.id);
-      ps.shownClasses.add(type);
-      if (!ps.classes.includes(type)) ps.classes.push(type); // e.g. picked in dev mode
-    }
+    // First powerup of a class in this game: the UI shows that class's intro screen, as soon as
+    // it shows as the next piece (so it's never seen before it's introduced), or else now.
+    const ps = state.pieceSel.powerup, isNew = introduce(state, shape);
+    if (shape.powerup) ps.previewed?.delete(shape.powerup.cls);
+    const nextNew = !isNew && !state.zen && introduce(state, state.next);
+    // (until it comes, a powerup introduced as the next piece is only ever swapped for another of
+    // its class: stillUseful)
+    if (nextNew) (ps.previewed ??= new Set()).add(state.next.powerup.cls);
     // (zen can say something else in place of the name: "Oops, all bagpipes!")
-    emit(state, "spawn", { shape, next: state.next, isNew, label: state.zen?.current?.label ?? null });
+    emit(state, "spawn", { shape, next: state.next, isNew, nextNew, label: state.zen?.current?.label ?? null });
     // (turbo zen: a powerup that's about to take most of the board waits up there a moment first)
     if (pauseFirst > 0) dramaticPause(state, pauseFirst, null);
   }
   return ok;
+}
+
+// A powerup has been seen: its class counts as met from now on. True if that's the first of
+// its class this game (time for its intro screen).
+function introduce(state, shape) {
+  const ps = state.pieceSel?.powerup, type = shape?.powerup?.cls;
+  if (!ps || !type) return false;
+  const isNew = !ps.shownClasses.has(type);
+  ps.shown.add(shape.id);
+  ps.shownClasses.add(type);
+  if (!ps.classes.includes(type)) ps.classes.push(type); // (e.g. picked in dev mode)
+  return isNew;
 }
 
 // A giant, or a level 6 set's piece, that couldn't go anywhere without sticking out over the top
