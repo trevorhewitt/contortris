@@ -163,7 +163,6 @@ export function bindUI({ state, renderer, achievements }) {
   const $ = (id) => document.getElementById(id);
 
   const scoreText = $("scoreText");
-  const linesText = $("linesText");
   const overlay = $("overlay");
   const toastsEl = $("toasts");
   const pauseBtn = $("pauseBtn");
@@ -459,11 +458,11 @@ export function bindUI({ state, renderer, achievements }) {
         if (state.level6Recent !== savedRecent) { savedRecent = state.level6Recent; store.setJSON(LEVEL6_RECENT_KEY, savedRecent); }
         noteSeen(d.shape);
         nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames, d.label); // (turbo zen: no time to slide)
-        renderer.drawNextSilhouette(d.next);
+        renderer.drawNext(d.next, true);
         if (d.isNew && !skipIntros()) showIntro(d.shape);
         break;
       case "next":
-        renderer.drawNextSilhouette(d.next);
+        renderer.drawNext(d.next, true);
         break;
       case "dramaticPause": // (turbo zen: in place of the piece's name while the board glows)
         if (d.on) nameLayer.setName("(dramatic pause)", "", "", !!CONFIG.modes[state.mode]?.flashNames);
@@ -477,24 +476,22 @@ export function bindUI({ state, renderer, achievements }) {
         saveOpening();
         saveSeen();
         nameLayer.clear();
-        renderer.drawNextSilhouette(null);
+        renderer.drawNext(null);
         // let the last achievement toasts show before the panel covers them
         setTimeout(showGameOver, 350);
         break;
       case "reset":
         nameLayer.clear();
-        renderer.drawNextSilhouette(null);
+        renderer.drawNext(null);
         break;
     }
   });
 
   /* ---------- HUD ---------- */
 
-  let hudScore = null, hudBlocks = null;
+  let hudScore = null;
   function updateHUD() {
     if (state.score !== hudScore) { hudScore = state.score; scoreText.textContent = String(state.score); }
-    const rb = String(state.blocksDestroyed);
-    if (rb !== hudBlocks) { hudBlocks = rb; linesText.textContent = rb; }
     if (devmode) updateDevPanel();
     pauseBtn.textContent = (state.running && !state.paused) ? "❚❚" : "▶";
 

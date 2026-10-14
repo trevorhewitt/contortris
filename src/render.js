@@ -450,18 +450,8 @@ export function createRenderer(boardCanvas, nextCanvas) {
     }).observe(boardCanvas);
   }
 
-  // --- next-piece canvas ---
-  const ndpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
-  const nextRect = nextCanvas.getBoundingClientRect();
-  const nextW = Math.max(1, Math.round(nextRect.width));
-  const nextH = Math.max(1, Math.round(nextRect.height));
-
-  nextCanvas.width = nextW * ndpr;
-  nextCanvas.height = nextH * ndpr;
-
+  // --- next-piece canvas (sized to fit wherever it is, each time it's drawn: drawNext) ---
   const nctx = nextCanvas.getContext("2d");
-  nctx.setTransform(1, 0, 0, 1, 0, 0);
-  nctx.scale(ndpr, ndpr);
 
   function makeCanvas(w, h) {
     const c = document.createElement("canvas");
@@ -1577,50 +1567,72 @@ export function createRenderer(boardCanvas, nextCanvas) {
     bctx.restore();
   }
 
-  function drawNextSilhouette(shape) {
-    const rect = nextCanvas.getBoundingClientRect();
-    const w = Math.max(1, Math.round(rect.width));
-    const h = Math.max(1, Math.round(rect.height));
-
-    nctx.clearRect(0, 0, w, h);
-    if (!shape) return;
-
-    const mat = shape.rotations[0];
-    const ph = mat.length;
-    const pw = mat[0].length;
-
-    const pad = 18;
-    const availW = Math.max(1, w - pad * 2);
-    const availH = Math.max(1, h - pad * 2);
-    const pcell = Math.max(ph > 16 ? 2 : 6, Math.floor(Math.min(availW / pw, availH / ph))); // (the tallest, zen's, shrink further)
-
-    const drawW = pw * pcell;
-    const drawH = ph * pcell;
-    const ox = Math.floor((w - drawW) / 2);
-    const oy = Math.floor((h - drawH) / 2);
-
-    nctx.save();
-    nctx.globalAlpha = 1;
-    if (shape.powerup) {
-      // Powerups get a rainbow silhouette so you can see one coming.
-      const grad = nctx.createLinearGradient(ox, oy, ox + drawW, oy + drawH);
-      ["#ff4d6d", "#ffb84d", "#f9ff4d", "#4dff88", "#4dc3ff", "#b44dff"].forEach((c, i, arr) =>
-        grad.addColorStop(i / (arr.length - 1), c));
-      nctx.fillStyle = grad;
-    } else {
-      nctx.fillStyle = "#a83deb";
+  // The next piece, in its own art, on a little patch of board with a glow of its colours
+  // behind it; a powerup's shell goes rainbow (index.html, .nextMiniShell.power).
+  let nextShape = null;
+  const nextGlow = new WeakMap();
+  function averageColour(shape) {
+    if (nextGlow.has(shape)) return nextGlow.get(shape);
+    let r = 0, g = 0, b = 0, n = 0;
+    const add = (c) => {
+      if (typeof c !== "string" || !isHexColour(c)) return;
+      const h = c.trim().replace("#", ""), f = h.length === 3 ? h.split("").map(x => x + x).join("") : h.slice(0, 6);
+      r += parseInt(f.slice(0, 2), 16); g += parseInt(f.slice(2, 4), 16); b += parseInt(f.slice(4, 6), 16); n++;
+    };
+    for (const row of shape.cellPaints?.[0] ?? []) for (const p of row) {
+      if (!p) continue;
+      if (typeof p === "string") add(p);
+      else for (const line of p.pixels ?? []) for (const c of line) add(c);
     }
-
-    nctx.beginPath();
-    for (let y = 0; y < ph; y++) {
-      for (let x = 0; x < pw; x++) {
-        if (!mat[y][x]) continue;
-        nctx.rect(ox + x * pcell, oy + y * pcell, pcell, pcell);
-      }
-    }
-    nctx.fill();
-    nctx.restore();
+    const out = n ? [r / n, g / n, b / n].map(Math.round) : [168, 61, 235];
+    nextGlow.set(shape, out);
+    return out;
   }
+  function drawNext(shape = nextShape, pop = false) {
+    if (pop && shape && shape !== nextShape) { nextCanvas.classList.remove("pop"); void nextCanvas.offsetWidth; nextCanvas.classList.add("pop"); }
+    nextShape = shape;
+    nextCanvas.parentElement?.classList.toggle("power", !!shape?.powerup);
+    const rect = nextCanvas.getBoundingClientRect(), dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+    const W = Math.max(1, Math.round(rect.width * dpr)), Hh = Math.max(1, Math.round(rect.height * dpr));
+    if (nextCanvas.width !== W || nextCanvas.height !== Hh) { nextCanvas.width = W; nextCanvas.height = Hh; }
+    nctx.setTransform(1, 0, 0, 1, 0, 0);
+    nctx.clearRect(0, 0, W, Hh);
+    if (!shape) return;
+    const mat = shape.rotations[0], ph = mat.length, pw = mat[0].length;
+    const pad = Math.round(3 * dpr);
+    let c = Math.floor(Math.min((W - pad * 2) / pw, (Hh - pad * 2) / ph, 22 * dpr));
+    // (whole pixels of its art where there's room for them)
+    const k = shape.cellPaints?.[0]?.flat().find(p => p && typeof p === "object")?.k ?? 1;
+    if (k > 1 && c >= k * 1.5) c = Math.floor(c / k) * k;
+    c = Math.max(1, c);
+    const dw = pw * c, dh = ph * c, ox = Math.floor((W - dw) / 2), oy = Math.floor((Hh - dh) / 2);
+    // a faint grid, lined up with the piece's cells, fading away from it
+    const cx = ox + dw / 2, cy = oy + dh / 2, rad = Math.max(dw, dh) * 0.8 + 6 * dpr;
+    nctx.fillStyle = "rgba(255,255,255,0.06)";
+    for (let x = ((ox % c) + c) % c; x < W; x += c) nctx.fillRect(x, 0, Math.max(1, Math.round(dpr / 2)), Hh);
+    for (let y = ((oy % c) + c) % c; y < Hh; y += c) nctx.fillRect(0, y, W, Math.max(1, Math.round(dpr / 2)));
+    const fade = nctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, Hh) * 0.55);
+    fade.addColorStop(0, "rgba(0,0,0,1)"); fade.addColorStop(1, "rgba(0,0,0,0)");
+    nctx.globalCompositeOperation = "destination-in";
+    nctx.fillStyle = fade;
+    nctx.fillRect(0, 0, W, Hh);
+    nctx.globalCompositeOperation = "source-over";
+    // the glow behind it
+    const [r, g, b] = averageColour(shape);
+    const glow = nctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
+    glow.addColorStop(0, `rgba(${r},${g},${b},0.42)`);
+    glow.addColorStop(1, `rgba(${r},${g},${b},0)`);
+    nctx.fillStyle = glow;
+    nctx.fillRect(0, 0, W, Hh);
+    // its shadow, then the piece
+    const drop = Math.max(1, Math.round(c * 0.12));
+    nctx.fillStyle = "rgba(0,0,0,0.55)";
+    for (let y = 0; y < ph; y++) for (let x = 0; x < pw; x++) if (mat[y][x]) nctx.fillRect(ox + x * c + drop, oy + y * c + drop, c, c);
+    for (let y = 0; y < ph; y++) for (let x = 0; x < pw; x++) {
+      if (mat[y][x]) drawBlockWithPaintStatic(nctx, ox + x * c, oy + y * c, c, getShapePaint(shape, 0, x, y), shape.style ?? {});
+    }
+  }
+  if (typeof ResizeObserver !== "undefined") new ResizeObserver(() => drawNext()).observe(nextCanvas);
 
   // The board is a different size now (CONFIG.board): everything drawn for the old one goes.
   function resize() {
@@ -1632,5 +1644,5 @@ export function createRenderer(boardCanvas, nextCanvas) {
     applyScale(computeScale());
   }
 
-  return { draw, drawNextSilhouette, resize };
+  return { draw, drawNext, resize };
 }
