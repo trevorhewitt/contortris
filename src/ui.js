@@ -202,6 +202,7 @@ export function bindUI({ state, renderer, achievements }) {
 
   function showPanel(name) {
     currentPanel = name;
+    home?.noteInput();
     overlay.classList.toggle("show", !!name);
     overlay.classList.toggle("intro", name === "intro"); // slides over the board, no fade
     // paused, the board stays in view (a small panel at the top: see "looking at the board")
@@ -351,8 +352,15 @@ export function bindUI({ state, renderer, achievements }) {
     setBoardSize, setWholeWindow,
     restoreBoard: () => setBoardSize(usualBoard.cols, usualBoard.rows),
     onPlay: (mode) => startGame(mode),
-    onShowMenu: () => showPanel("menu"),
+    // (back from idle: to the page it went idle from, the home screen behind it)
+    onShowMenu: (panel = "menu") => { showPanel("menu"); if (panel !== "menu" && panels[panel]) showPanel(panel); },
     menuShowing: () => currentPanel === "menu",
+    // Where it can go idle, and where it wakes up to: the home screen, the achievements from it,
+    // and the game over (to the home screen: that game's gone by then). Not How to play, nor
+    // anywhere a game is still going on (paused, an intro).
+    idleFrom: () => (currentPanel === "menu" ? "menu"
+      : currentPanel === "achievements" && panelBack === "menu" ? "achievements"
+      : currentPanel === "gameover" ? "menu" : null),
     lastMode: () => lastMode,
     hideOverlay: () => showPanel(null),
   });

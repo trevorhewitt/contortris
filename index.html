@@ -315,7 +315,7 @@
     .homeTop{ display: block; z-index: 50; }
     .homeTop[hidden]{ display: none; }
     .homeLayer, body.home .overlay, .app{ transition: opacity 900ms ease; }
-    body.homeFade .homeLayer, body.homeFade .overlay{ opacity: 0 !important; }
+    body.homeFade .homeLayer, body.homeFade .overlay, body.homeFade .app{ opacity: 0 !important; }
     body.home .boardShell{ background: transparent; box-shadow: none; }
     body.home #boardCanvas, body.home .nameLayer, body.home .floatPause, body.home .bottomBar, body.home #toasts{ visibility: hidden; }
     body.home .overlay{ position: fixed; inset: 0; background: transparent; }
@@ -1192,7 +1192,7 @@
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
             <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
-            <div class="small" id="gameVersion">version 202610142004</div>
+            <div class="small" id="gameVersion">version 202610160005</div>
           </div>
 
           <div class="msg panel" id="panelHowTo" hidden>
@@ -1210,7 +1210,7 @@
               <h3>Modes</h3>
               <div id="howtoModes"></div>
 
-              <p class="small menuFoot">[Extris version 202610142004 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610160005 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>

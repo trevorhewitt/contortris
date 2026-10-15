@@ -7,7 +7,8 @@
 // drift by, a different kind every so often. In front of it, the logo and the modes. Left alone a
 // while (CONFIG.home.idleMs), all of that fades away into plain turbo zen filling the window, with
 // a small button to play (a fresh one whenever the window changes size); any touch, click, key or
-// move of the mouse brings the home screen back. And choosing a mode: everything on the screen
+// move of the mouse brings the home screen back. (The same from the achievements, and from the
+// game over: anywhere but How to play, and anywhere a game is still going on.) And choosing a mode: everything on the screen
 // bursts into pieces and fades to dark, and the game comes up.
 //
 // The board behind the menu is the game's own (state, drawn by the renderer onto the board
@@ -36,7 +37,7 @@ export function coverScale(w, h, rot, cols, rows) {
   return Math.max((w * c + h * s) / cols, (w * s + h * c) / rows);
 }
 
-export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, setWholeWindow, onPlay, onShowMenu, menuShowing, lastMode, hideOverlay }) {
+export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, setWholeWindow, onPlay, onShowMenu, menuShowing, idleFrom = () => (menuShowing() ? "menu" : null), lastMode, hideOverlay }) {
   const $ = (id) => document.getElementById(id);
   // (the effects are drawn over the board on the same canvas: one layer for the browser to put
   // together with the menu, not two)
@@ -47,6 +48,8 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
 
   let phase = "off"; // off | home | idle | starting
   let idleAt = 0, warmLeft = 0, resizeTimer = null, last = performance.now(), guardUntil = 0;
+  // (idle from where (the home screen, or "off": the game over), and the page to wake up to)
+  let fadeFrom = "home", wakeTo = "menu";
   let saved = null; // (what the background mustn't change for the next real game)
   const view = { w: 0, h: 0, dpr: 1, fx: 1, burst: 1 };
 
@@ -400,7 +403,9 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   function noteInput() { idleAt = performance.now() + (H().idleMs ?? 30000); }
 
   function goIdle() {
-    if (phase !== "home") return;
+    if (phase !== "home" && phase !== "off") return;
+    fadeFrom = phase;
+    wakeTo = idleFrom() ?? "menu";
     phase = "fading";
     body.classList.add("homeFade");
     setTimeout(() => {
@@ -427,17 +432,19 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
 
   function leaveIdle() {
     if (phase !== "idle" && phase !== "fading") return;
-    if (phase === "fading") body.classList.remove("homeFade");
+    const fading = phase === "fading";
+    if (fading) body.classList.remove("homeFade");
     idleBtn.hidden = true;
-    if (phase === "idle") {
+    if (!fading) {
       resetGame(state);
       setWholeWindow(false);
     }
-    phase = phase === "fading" ? "home" : "off";
+    // (caught while it was still fading: back to just where it was)
+    phase = fading ? fadeFrom : "off";
     noteInput();
     // (the tap that woke it isn't also a tap on whatever button comes up under it)
     guardUntil = performance.now() + 500;
-    if (phase === "off") onShowMenu();
+    if (!fading) onShowMenu(wakeTo);
   }
 
   /* ---------- the way into a game ---------- */
@@ -582,7 +589,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       leaveIdle();
       return;
     }
-    if (phase === "home") noteInput();
+    if (phase === "home" || phase === "off") noteInput();
     if (phase === "starting" && e.type !== "pointermove" && performance.now() - startAt > 350) {
       e.preventDefault?.(); e.stopImmediatePropagation();
       finishStart(); // (a tap or a key: straight in)
@@ -606,7 +613,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   }, { capture: true });
   idleBtn.addEventListener("click", (e) => { e.preventDefault(); leaveIdle(); });
   // (back from another tab: the time away doesn't count as being left alone)
-  document.addEventListener("visibilitychange", () => { if (!document.hidden && phase === "home") noteInput(); });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && (phase === "home" || phase === "off")) noteInput(); });
   window.addEventListener("click", (e) => {
     if (performance.now() < guardUntil) { e.preventDefault(); e.stopImmediatePropagation(); }
   }, { capture: true });
@@ -623,7 +630,10 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       camera.draw();
       stepFx(dt, now);
       stepLogo(now);
-      if (phase === "home" && menuShowing() && now >= idleAt && !document.hidden) goIdle();
+      if (phase === "home" && now >= idleAt && !document.hidden && idleFrom()) goIdle();
+    } else if (phase === "off") {
+      // (the game over, left alone: no game going on behind it any more)
+      if (now >= idleAt && !document.hidden && idleFrom()) goIdle();
     } else if (phase === "starting") {
       if (bits.length) drawBurst(dt);
       if (now >= endAt) finishStart();
@@ -632,6 +642,8 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
 
   return {
     enter, play, frame, finish: finishStart,
+    // (a new page: the time spent on the last one doesn't count as being left alone on this one)
+    noteInput,
     active: () => phase === "home" || phase === "fading",
     phase: () => phase,
     // (for looking at in dev mode: what the camera can see, and where the action is)
