@@ -103,7 +103,6 @@ export const GROUPS = [
     versions: [
       ["townhouses", "schnauzers", "schnerzgerberz", "hergrr"],
       ["canal_houses", "candle_mouses", "kerndl_merzerz", "cherm_mrrz"],
-      ["royal_crescent", "royal_croissant", "rerl_crerssernt", "crrs_brf"],
     ],
   },
   {

@@ -408,13 +408,15 @@
     }
     button.modeBtn::before{ content: ""; position: absolute; inset: 4px; z-index: -1; background: rgba(12,10,28,0.62); pointer-events: none; }
     button.modeBtn > *{ position: relative; }
-    button.modeBtn:hover, button.modeBtn:focus-visible{
-      background: #222;
-      transform: translateY(-3px) scale(1.04);
-      box-shadow: 0 0 0 3px rgba(0,0,0,0.9), 0 9px 0 rgba(0,0,0,0.5), 0 0 34px rgba(255,255,255,0.4);
+    /* (every mode the same size, always: nothing grows or lifts on hover or focus, which a touch
+       screen leaves stuck on the last one tapped; a glow only, and the hover one only where
+       there's a real pointer) */
+    @media (hover: hover) and (pointer: fine){
+      button.modeBtn:hover{ background: #222; box-shadow: 0 0 0 3px rgba(0,0,0,0.9), 0 6px 0 rgba(0,0,0,0.55), 0 0 34px rgba(255,255,255,0.4); }
+      button.modeBtn:hover::before{ background: rgba(12,10,28,0.42); }
     }
-    button.modeBtn:hover::before, button.modeBtn:focus-visible::before{ background: rgba(12,10,28,0.42); }
-    button.modeBtn:active{ transform: translateY(1px) scale(0.98); }
+    button.modeBtn:focus-visible{ background: #222; box-shadow: 0 0 0 3px rgba(0,0,0,0.9), 0 6px 0 rgba(0,0,0,0.55), 0 0 0 6px rgba(123,247,255,0.55); }
+    button.modeBtn:active{ transform: none; }
     .modeTag{
       font-family: var(--font-body); font-size: clamp(9px, min(1.45vw, 2vh), 14px);
       text-transform: none; letter-spacing: 0; line-height: 1.25; opacity: 0.92;
@@ -1181,8 +1183,8 @@
           <div class="msg panel homeMenu" id="panelMenu" hidden>
             <div class="homeLogoWrap"><div class="homeLogo" id="homeLogo" role="img" aria-label="Extris"><span style="--i:0;--h:350"><b>E</b></span><span style="--i:1;--h:35"><b>X</b></span><span style="--i:2;--h:58"><b>T</b></span><span style="--i:3;--h:140"><b>R</b></span><span style="--i:4;--h:200"><b>I</b></span><span style="--i:5;--h:275"><b>S</b></span></div></div>
             <div class="homeModes">
-              <button id="btnNormal" class="modeBtn" style="--i:0" data-mode="normal"><span class="modeName">Classic</span><span class="modeTag"></span></button>
-              <button id="btnExtreme" class="modeBtn" style="--i:1" data-mode="extreme"><span class="modeName">Extreme</span><span class="modeTag"></span></button>
+              <button id="btnExtreme" class="modeBtn" style="--i:0" data-mode="extreme"><span class="modeName">Extreme</span><span class="modeTag"></span></button>
+              <button id="btnNormal" class="modeBtn" style="--i:1" data-mode="normal"><span class="modeName">Classic</span><span class="modeTag"></span></button>
               <button id="btnGod" class="modeBtn" style="--i:2" data-mode="god"><span class="modeName">God mode</span><span class="modeTag"></span></button>
               <button id="btnZen" class="modeBtn" style="--i:3" data-mode="zen"><span class="modeName">Zen</span><span class="modeTag"></span></button>
               <button id="btnTurbo" class="modeBtn" style="--i:4" data-mode="turbo"><span class="modeName">Turbo zen</span><span class="modeTag"></span></button>
@@ -1192,7 +1194,7 @@
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
             <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
-            <div class="small" id="gameVersion">version 202610160005</div>
+            <div class="small" id="gameVersion">version 202610160015</div>
           </div>
 
           <div class="msg panel" id="panelHowTo" hidden>
@@ -1210,7 +1212,7 @@
               <h3>Modes</h3>
               <div id="howtoModes"></div>
 
-              <p class="small menuFoot">[Extris version 202610160005 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610160015 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>

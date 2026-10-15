@@ -1336,7 +1336,7 @@ export const SHAPES = [
       },
     frequency: 1,
     nextShapeProbs: [
-        0.35
+        0.1
       ],
     nextShapes: [
         "seeyou2"
@@ -1362,7 +1362,7 @@ export const SHAPES = [
       },
     frequency: 1,
     nextShapeProbs: [
-        0.35
+        0.1
       ],
     nextShapes: [
         "seeyou3"
@@ -3864,7 +3864,7 @@ export const SHAPES = [
       },
     frequency: 1,
     nextShapeProbs: [
-        0.3
+        0.1
       ],
     nextShapes: [
         "mirror"
@@ -18912,7 +18912,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
     oops: {
         "many": "pyramid boxes",
@@ -20281,7 +20281,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
     oops: {
         "many": "goldfish bowls",
@@ -20416,7 +20416,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
     oops: {
         "many": "snowmen on holiday",
@@ -24433,7 +24433,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -24451,7 +24451,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -24468,7 +24468,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
     remix: {
         "mix": [
@@ -24490,7 +24490,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
     noShake: true,
     remix: {
@@ -27149,7 +27149,7 @@ export const SHAPES = [
   },
   {
     id: "earth_asia",
-    name: "the Earth (the Asia side)",
+    name: "the Earth",
     grid: [
         "...XXX...",
         ".XXXXXXX.",
