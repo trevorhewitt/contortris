@@ -154,9 +154,13 @@ test("level 6: a set only starts if it has room", () => {
         assert.ok((g.room || roomNeeded([s, ...l6.queue])) <= room, `${l6.lastGroup} started with ${room} rows of room`);
       }
     }
-    // (and the sets that do fit still come)
+    // (and the sets that do fit still come: one of its versions, for a set with versions,
+    // CONFIG.assist.level6.same)
+    const kindOf = new Map();
+    for (const list of CONFIG.assist.level6.same ?? []) for (const id of list) kindOf.set(id, list[0]);
+    const kind = (id) => kindOf.get(id) ?? id, came = new Set([...started].map(kind));
     const fit = groups.filter(g => (g.room || roomNeeded(expandGroup(g, makeRng(5)))) <= room - 1).map(g => g.id);
-    for (const id of fit) assert.ok(started.has(id), `${id} never came on a ${rows}-row stack (${[...started]})`);
+    for (const id of fit) assert.ok(came.has(kind(id)), `${id} never came on a ${rows}-row stack (${[...started]})`);
   }
 });
 

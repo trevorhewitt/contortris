@@ -6,7 +6,7 @@ import { CONFIG } from "../config.js";
 import { escapeHtml, store } from "./util.js";
 import { getDifficultyZone } from "./selection.js";
 import {
-  on, startRun, resetGame, tryMove, tryRotate, beginLockIfNeeded, markInput, setNextPiece, markBoardDirty, isPowerupEnabled, hardDropAndLock,
+  on, startRun, resetGame, tryMove, tryRotate, beginLockIfNeeded, markInput, setNextPiece, markBoardDirty, isPowerupEnabled, hardDropAndLock, introduced,
 } from "./game.js";
 import { makeShapePreviewCanvas, drawIcon } from "./render.js";
 import { createDemo, runDemos } from "./demo.js";
@@ -467,11 +467,11 @@ export function bindUI({ state, renderer, achievements }) {
         if (state.level6Recent !== savedRecent) { savedRecent = state.level6Recent; store.setJSON(LEVEL6_RECENT_KEY, savedRecent); }
         noteSeen(d.shape);
         nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames, d.label); // (turbo zen: no time to slide)
-        renderer.drawNext(d.next, true, { glow: CONFIG.modes[state.mode]?.hints !== false });
-        if (!skipIntros() && (d.isNew || d.nextNew)) showIntro(d.isNew ? d.shape : d.next, { next: !d.isNew });
+        renderer.drawNext(d.next, true, nextLook(d.next));
+        if (!skipIntros() && d.isNew) showIntro(d.shape);
         break;
       case "next":
-        renderer.drawNext(d.next, true, { glow: CONFIG.modes[state.mode]?.hints !== false });
+        renderer.drawNext(d.next, true, nextLook(d.next));
         break;
       case "dramaticPause": // (turbo zen: in place of the piece's name while the board glows)
         if (d.on) nameLayer.setName("(dramatic pause)", "", "", !!CONFIG.modes[state.mode]?.flashNames);
@@ -695,7 +695,11 @@ export function bindUI({ state, renderer, achievements }) {
   // Intro screen for a powerup class the player hasn't seen yet this game,
   // shown with the piece that just turned up as the example.
   // (`next`: it's the next piece, not this one: introduced before it comes)
-  function showIntro(shape, { next = false } = {}) {
+  // (the next piece: a glow in its colours, unless the mode gives no hints; and a powerup whose
+  // class hasn't been introduced yet looks like any other piece until its intro)
+  const nextLook = (next) => ({ glow: CONFIG.modes[state.mode]?.hints !== false, plain: !introduced(state, next) });
+
+  function showIntro(shape) {
     state.paused = true;
     state.softDropping = false;
     const pu = shape.powerup;
@@ -705,7 +709,7 @@ export function bindUI({ state, renderer, achievements }) {
     $("introKicker").textContent = "Shiny Piece!";
     $("introName").textContent = info.name;
     $("introName").className = `introName cls-${pu.cls}`;
-    $("introPiece").textContent = next ? `up next: ${shape.name}` : shape.name;
+    $("introPiece").textContent = shape.name;
     $("introClass").textContent = info.text;
     const cvs = $("introDemo");
     const demo = createDemo(cvs, shape, { cell: 22 });

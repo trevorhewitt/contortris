@@ -544,20 +544,27 @@ function spawnPiece(state) {
 
   const ok = isPhantomPowerup(shape.powerup) || !collides(state, state.active.x, state.active.y, getActiveMatrix(state));
   if (ok) {
-    // First powerup of a class in this game: the UI shows that class's intro screen, as soon as
-    // it shows as the next piece (so it's never seen before it's introduced), or else now.
+    // First powerup of a class in this game: the UI shows that class's intro screen now, just
+    // before it falls. (Until then the next-piece preview shows it as a plain piece: introduced,
+    // below, so it's never seen before its intro.)
     const ps = state.pieceSel.powerup, isNew = introduce(state, shape);
+    // (a powerup that will introduce its class, once it shows as the next piece, is only ever
+    // swapped for another of its class: stillUseful. So the classes still come in their order.)
     if (shape.powerup) ps.previewed?.delete(shape.powerup.cls);
-    const nextNew = !isNew && !state.zen && introduce(state, state.next);
-    // (until it comes, a powerup introduced as the next piece is only ever swapped for another of
-    // its class: stillUseful)
-    if (nextNew) (ps.previewed ??= new Set()).add(state.next.powerup.cls);
+    if (!state.zen && state.next && !introduced(state, state.next)) (ps.previewed ??= new Set()).add(state.next.powerup.cls);
     // (zen can say something else in place of the name: "Oops, all bagpipes!")
-    emit(state, "spawn", { shape, next: state.next, isNew, nextNew, label: state.zen?.current?.label ?? null });
+    emit(state, "spawn", { shape, next: state.next, isNew, label: state.zen?.current?.label ?? null });
     // (turbo zen: a powerup that's about to take most of the board waits up there a moment first)
     if (pauseFirst > 0) dramaticPause(state, pauseFirst, null);
   }
   return ok;
+}
+
+// Has this powerup's class been introduced yet in this game? (Before it has, the next-piece
+// preview shows it as a plain piece.)
+export function introduced(state, shape) {
+  const cls = shape?.powerup?.cls;
+  return !cls || !!state.zen || !!state.pieceSel?.powerup?.shownClasses?.has(cls);
 }
 
 // A powerup has been seen: its class counts as met from now on. True if that's the first of

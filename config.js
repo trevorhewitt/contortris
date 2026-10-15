@@ -309,7 +309,7 @@ export const CONFIG = {
     // Sets being shown off (for trying them out): they come round whenever they like, not waiting
     // for every other set to have had its turn (just never twice running), `weight` times as
     // likely. Empty it when they've been seen enough.
-    featured: { sets: ["townhouses"], weight: 10 },
+    featured: { sets: [], weight: 10 },
     // calm spells: after a level 6 set (afterSet), or `giants` giants within `within` pieces
     // (afterGiants), this many ordinary pieces: no giants, no sets
     calm: { afterSet: [8, 14], giants: 2, within: 8, afterGiants: [6, 10] },
@@ -537,6 +537,14 @@ export const CONFIG = {
       families: [["spam", "beans", "spaghetti_os"]],
       familyGap: 3,
       familyWeight: 0.08,
+      // Versions of one set (`same`: an emotions chart, ascending, very British or online) are one
+      // set as far as taking turns goes: once one of them has come, none of them comes again in
+      // that game until every other set has had its turn (nor first thing in the next game).
+      same: [
+        ["emotions", "emotions_ascent", "emotions_british", "emotions_online", "emotions_business"],
+        ["sky", "sky_evening", "sky_sunset", "sky_night"],
+        ["loch_ness", "loch_ness_wee"],
+      ],
     },
 
     // Powerup scheduler (Normal mode only). Runs before the regular level mix:

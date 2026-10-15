@@ -312,13 +312,16 @@ export function maybeStartGroup(state) {
   }
   // No set comes round again until every other one has had its turn this game, and the last
   // ones served (this game or the one before) wait if anything else can go.
+  // (versions of one set count as one: CONFIG.assist.level6.same)
   const live = state.groups.filter(g => groupPlayable(state, g));
   if (!live.length) return null;
-  const turns = (g) => l6.seen.get(g.id) ?? 0;
+  const kind = kindOf(cfg), kindTurns = new Map();
+  for (const [id, n] of l6.seen) kindTurns.set(kind(id), (kindTurns.get(kind(id)) ?? 0) + n);
+  const turns = (g) => kindTurns.get(kind(g.id)) ?? 0;
   const least = Math.min(...live.map(turns));
   let pool = live.filter(g => turns(g) === least);
-  const recent = (state.level6Recent ?? []).slice(0, cfg.rememberRecent ?? 2);
-  const fresh = pool.filter(g => !recent.includes(g.id));
+  const recent = (state.level6Recent ?? []).slice(0, cfg.rememberRecent ?? 2).map(kind);
+  const fresh = pool.filter(g => !recent.includes(kind(g.id)));
   if (fresh.length) pool = fresh;
   // (God mode: the sets being shown off come round whenever they like, just not twice running:
   // CONFIG.godMode.featured)
@@ -352,6 +355,14 @@ function openingSet(state) {
   const live = ids.map(id => state.groups.find(g => g.id === id && g.frequency > 0)).filter(Boolean);
   if (!live.length) return null;
   return live.find(g => !(l6.seenBefore?.get(g.id) ?? 0)) ?? live[Math.floor(state.rng() * live.length)];
+}
+
+// Which set a set is a version of (CONFIG.assist.level6.same), for taking turns: the first of
+// its versions, or itself.
+function kindOf(cfg) {
+  const of = new Map();
+  for (const list of cfg.same ?? []) for (const id of list) of.set(id, list[0]);
+  return (id) => of.get(id) ?? id;
 }
 
 // Sets of a kind (CONFIG.assist.level6.families: the tins): one soon after another is unlikely.

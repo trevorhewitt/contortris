@@ -67,8 +67,6 @@ test("progression: classes open one at a time, starting with a simple one", () =
     const at = [];
     on(state, (t, d) => {
       if (t !== "spawn") return;
-      // (introduced as soon as it shows as the next piece, or else when it comes)
-      if (d.nextNew) news.push(d.next.powerup.cls);
       if (!d.shape.powerup) return;
       seen.push(d.shape.powerup.cls);
       at.push(state.pieceSel.dropIndex);
@@ -234,4 +232,32 @@ test("powerup effects never rotate with the piece", () => {
   // by side (a row, not a column), centred on the piece the same way.
   const rowOf = (a) => new Set(a.cells.map(c => c.dy)).size === 1;
   for (const a of p.powerup.areaRotations) assert.ok(rowOf(a), JSON.stringify(a.cells));
+});
+
+test("a powerup's intro comes just before it falls, and until then the next-piece preview shows it as a plain piece", async () => {
+  const { introduced } = await import("../src/game.js");
+  const { shapes, powerups } = loadShapes(SHAPES);
+  for (const seed of [1, 2, 3, 4, 5]) {
+    const state = createGameState(shapes, powerups, { rng: makeRng(seed) });
+    const intros = [];
+    let plainBefore = 0;
+    on(state, (t, d) => {
+      if (t !== "spawn") return;
+      if (d.isNew) intros.push(d.shape.powerup.cls);
+      // (the next piece, shown in the preview: a class not yet introduced isn't given away)
+      if (d.next?.powerup && !state.pieceSel.powerup.shownClasses.has(d.next.powerup.cls)) {
+        assert.equal(introduced(state, d.next), false);
+        plainBefore++;
+      }
+    });
+    startRun(state, "normal");
+    for (let i = 0; i < 200; i++) {
+      hardDropAndLock(state);
+      for (let k = 0; k < 120 && state.effect; k++) updateGame(state, 16);
+      state.board = state.board.map(r => r.fill(null));
+      if (state.gameOver) break;
+    }
+    assert.ok(intros.length >= 2, `intros ${intros.join()}`);
+    assert.ok(plainBefore >= 1, "a new class's first powerup was shown plain in the preview first");
+  }
 });

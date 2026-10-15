@@ -802,7 +802,8 @@ export function stillUseful(state, shape) {
     return out;
   };
   // from the classes already met (no intro screens out of nowhere)... but the first of a class,
-  // introduced as the next piece, only ever for another of its class (the one it introduced)
+  // seen as the next piece (as a plain piece: its intro comes when it falls), only ever for
+  // another of its class
   const met = (cls) => cls === shape.powerup.cls || ps.shownClasses.has(cls);
   const awaited = !!ps.previewed?.has(shape.powerup.cls);
   let twins = twinsFrom(p => (awaited ? p.powerup.cls === shape.powerup.cls : met(p.powerup.cls)) && (!p.powerup.parts || p.powerup.parts.every(part => met(part.cls))));

@@ -1572,7 +1572,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   // its cells faintly marked, on a little patch of board; and a soft glow behind it in the colours
   // of its own art, as a hint of what's coming (not in a mode without hints: `glow: false`). A
   // powerup's shell goes rainbow too (index.html, .nextMiniShell.power).
-  let nextShape = null, nextGlowOn = true;
+  let nextShape = null, nextGlowOn = true, nextPlain = false;
   const nextGlow = new WeakMap();
   function averageColour(shape) {
     if (nextGlow.has(shape)) return nextGlow.get(shape);
@@ -1593,7 +1593,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   }
   // (the colours to fill it with: two ends of a gradient, or stripes)
   function silhouetteFill(shape) {
-    const pu = shape.powerup;
+    const pu = shape?.powerup;
     const cls = (t) => CONFIG.fx.powerup.classColours?.[classOf(t)];
     const ends = (pal) => [`hsl(${pal.hues[0]},${pal.sat ?? 100}%,${pal.light ?? 60}%)`, `hsl(${pal.hues[1]},${pal.sat ?? 100}%,${Math.max(30, (pal.light ?? 60) - 8)}%)`];
     if (!pu) return { ends: ["#c9d3ff", "#7a5cff"] };
@@ -1606,7 +1606,8 @@ export function createRenderer(boardCanvas, nextCanvas) {
     if (pop && shape && shape !== nextShape) { nextCanvas.classList.remove("pop"); void nextCanvas.offsetWidth; nextCanvas.classList.add("pop"); }
     nextShape = shape;
     if (opts && "glow" in opts) nextGlowOn = !!opts.glow;
-    nextCanvas.parentElement?.classList.toggle("power", !!shape?.powerup);
+    if (opts && "plain" in opts) nextPlain = !!opts.plain;
+    nextCanvas.parentElement?.classList.toggle("power", !!shape?.powerup && !nextPlain);
     const rect = nextCanvas.getBoundingClientRect(), dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
     const W = Math.max(1, Math.round(rect.width * dpr)), Hh = Math.max(1, Math.round(rect.height * dpr));
     if (nextCanvas.width !== W || nextCanvas.height !== Hh) { nextCanvas.width = W; nextCanvas.height = Hh; }
@@ -1645,7 +1646,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     nctx.fillStyle = "rgba(0,0,0,0.5)";
     for (let y = 0; y < ph; y++) for (let x = 0; x < pw; x++) if (mat[y][x]) nctx.fillRect(ox + x * c + drop, oy + y * c + drop, c, c);
     // the silhouette, filled
-    const f = silhouetteFill(shape);
+    const f = silhouetteFill(nextPlain ? null : shape);
     if (f.stripes) {
       // (diagonal stripes, each part's colour in turn, cut to the piece's outline)
       const off = document.createElement("canvas");

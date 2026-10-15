@@ -396,14 +396,19 @@ test("level 6: no set comes round again until every other one has, even into the
     }
     return order;
   };
-  const live = normaliseGroups(GROUPS, shapes).length;
+  // (versions of one set, an emotions chart and the very British one, count as one set:
+  // CONFIG.assist.level6.same)
+  const kindOf = new Map();
+  for (const list of CONFIG.assist.level6.same ?? []) for (const id of list) kindOf.set(id, list[0]);
+  const kind = (id) => kindOf.get(id) ?? id;
+  const live = new Set(normaliseGroups(GROUPS, shapes).filter(g => g.frequency > 0).map(g => kind(g.id))).size;
   const a = runGame();
   assert.ok(a.length >= live + 1, `groups in game 1: ${a.join()}`);
-  // the first `live` groups are all different, and no group follows itself
-  assert.equal(new Set(a.slice(0, live)).size, live, a.join());
-  for (let i = 1; i < a.length; i++) assert.notEqual(a[i], a[i - 1]);
+  // the first `live` sets are all different, versions and all, and no set follows itself
+  assert.equal(new Set(a.slice(0, live).map(kind)).size, live, a.join());
+  for (let i = 1; i < a.length; i++) assert.notEqual(kind(a[i]), kind(a[i - 1]));
   const b = runGame();
-  assert.notEqual(b[0], a[a.length - 1], "the next game doesn't open with the last set");
+  assert.notEqual(kind(b[0]), kind(a[a.length - 1]), "the next game doesn't open with the last set");
 });
 
 test("Noah's ark: the ark, 3-4 different pairs, one last creature, a few raindrops (or storm clouds), then forty days and forty nights of rain", () => {
