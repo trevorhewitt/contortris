@@ -21261,13 +21261,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "exhibit A: a bone",
-        "a bone the dog dug up",
-        "something under the patio",
-        "a large bone",
-        "a bone (some assembly required)",
-        "a promising find",
-        "a bone"
+        "a fossilised bone",
+        "a bone",
+        "an old bone",
+        "a dinosaur bone"
       ],
   },
   {
@@ -21287,13 +21284,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "exhibits B to D: more bone",
-        "the dog has dug up another",
-        "more of it, under the potatoes",
-        "a larger bone",
-        "part B",
-        "a very promising find",
-        "another bone"
+        "some more fossilised bones",
+        "some more bones",
+        "some more old bones",
+        "some more dinosaur bones"
       ],
   },
   {
@@ -21316,13 +21310,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "exhibits E to Q: a great deal of bone",
-        "the dog is not stopping",
-        "the potatoes may have to go",
-        "a suspicious number of bones",
-        "parts C to Q",
-        "a career-defining find",
-        "the rest of the bones"
+        "even more fossilised bones",
+        "a great many bones",
+        "yet more old bones",
+        "yet more dinosaur bones"
       ],
   },
   {
@@ -21343,13 +21334,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "and the centrepiece: a Tyrannosaurus rex",
-        "the dog was right: a Tyrannosaurus rex",
-        "under the patio, a Tyrannosaurus rex",
-        "oh. a Tyrannosaurus rex",
-        "instructions unclear: a Tyrannosaurus rex",
-        "a Tyrannosaurus rex, more or less",
-        "it was a Tyrannosaurus rex all along"
+        "and its skull: a Tyrannosaurus rex",
+        "and finally, its head: a Tyrannosaurus rex",
+        "and its head: a Tyrannosaurus rex",
+        "and its head: a Tyrannosaurus rex"
       ],
   },
   {
@@ -21369,13 +21357,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "exhibit A: a bone",
-        "a bone the dog dug up",
-        "something under the patio",
-        "a large bone",
-        "a bone (some assembly required)",
-        "a promising find",
-        "a bone"
+        "a fossilised bone",
+        "a bone",
+        "an old bone",
+        "a dinosaur bone"
       ],
   },
   {
@@ -21397,13 +21382,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "exhibits B to D: more bone",
-        "the dog has dug up another",
-        "more of it, under the potatoes",
-        "a larger bone",
-        "part B",
-        "a very promising find",
-        "another bone"
+        "some more fossilised bones",
+        "some more bones",
+        "some more old bones",
+        "some more dinosaur bones"
       ],
   },
   {
@@ -21422,13 +21404,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "exhibits E to Q: a great deal of bone",
-        "the dog is not stopping",
-        "the potatoes may have to go",
-        "a suspicious number of bones",
-        "parts C to Q",
-        "a career-defining find",
-        "the rest of the bones"
+        "even more fossilised bones",
+        "a great many bones",
+        "yet more old bones",
+        "yet more dinosaur bones"
       ],
   },
   {
@@ -21450,13 +21429,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "and the centrepiece: a Triceratops",
-        "the dog was right: a Triceratops",
-        "under the patio, a Triceratops",
-        "oh. a Triceratops",
-        "instructions unclear: a Triceratops",
-        "a Triceratops, more or less",
-        "it was a Triceratops all along"
+        "and its skull: a Triceratops",
+        "and finally, its head: a Triceratops",
+        "and its head: a Triceratops",
+        "and its head: a Triceratops"
       ],
   },
   {
@@ -21478,13 +21454,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "exhibit A: a bone",
-        "a bone the dog dug up",
-        "something under the patio",
-        "a large bone",
-        "a bone (some assembly required)",
-        "a promising find",
-        "a bone"
+        "a fossilised bone",
+        "a bone",
+        "an old bone",
+        "a dinosaur bone"
       ],
   },
   {
@@ -21504,13 +21477,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "exhibits B to D: more bone",
-        "the dog has dug up another",
-        "more of it, under the potatoes",
-        "a larger bone",
-        "part B",
-        "a very promising find",
-        "another bone"
+        "some more fossilised bones",
+        "some more bones",
+        "some more old bones",
+        "some more dinosaur bones"
       ],
   },
   {
@@ -21529,13 +21499,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "exhibits E to Q: a great deal of bone",
-        "the dog is not stopping",
-        "the potatoes may have to go",
-        "a suspicious number of bones",
-        "parts C to Q",
-        "a career-defining find",
-        "the rest of the bones"
+        "even more fossilised bones",
+        "a great many bones",
+        "yet more old bones",
+        "yet more dinosaur bones"
       ],
   },
   {
@@ -21554,13 +21521,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "and the centrepiece: a Stegosaurus",
-        "the dog was right: a Stegosaurus",
-        "under the patio, a Stegosaurus",
-        "oh. a Stegosaurus",
-        "instructions unclear: a Stegosaurus",
-        "a Stegosaurus, more or less",
-        "it was a Stegosaurus all along"
+        "and its skull: a Stegosaurus",
+        "and finally, its head: a Stegosaurus",
+        "and its head: a Stegosaurus",
+        "and its head: a Stegosaurus"
       ],
   },
   {
@@ -21583,13 +21547,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "exhibit A: a bone",
-        "a bone the dog dug up",
-        "something under the patio",
-        "a large bone",
-        "a bone (some assembly required)",
-        "a promising find",
-        "a bone"
+        "a fossilised bone",
+        "a bone",
+        "an old bone",
+        "a dinosaur bone"
       ],
   },
   {
@@ -21611,13 +21572,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "exhibits B to D: more bone",
-        "the dog has dug up another",
-        "more of it, under the potatoes",
-        "a larger bone",
-        "part B",
-        "a very promising find",
-        "another bone"
+        "some more fossilised bones",
+        "some more bones",
+        "some more old bones",
+        "some more dinosaur bones"
       ],
   },
   {
@@ -21639,13 +21597,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "exhibits E to Q: a great deal of bone",
-        "the dog is not stopping",
-        "the potatoes may have to go",
-        "a suspicious number of bones",
-        "parts C to Q",
-        "a career-defining find",
-        "the rest of the bones"
+        "even more fossilised bones",
+        "a great many bones",
+        "yet more old bones",
+        "yet more dinosaur bones"
       ],
   },
   {
@@ -21668,13 +21623,10 @@ export const SHAPES = [
     frequency: 1,
     claudeDraft: true,
     names: [
-        "and the centrepiece: a Brachiosaurus",
-        "the dog was right: a Brachiosaurus",
-        "under the patio, a Brachiosaurus",
-        "oh. a Brachiosaurus",
-        "instructions unclear: a Brachiosaurus",
-        "a Brachiosaurus, more or less",
-        "it was a Brachiosaurus all along"
+        "and its skull: a Brachiosaurus",
+        "and finally, its head: a Brachiosaurus",
+        "and its head: a Brachiosaurus",
+        "and its head: a Brachiosaurus"
       ],
   },
   {
@@ -24107,7 +24059,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
     noShake: true,
   },
@@ -24125,7 +24077,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -24140,7 +24092,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -24160,7 +24112,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
     noShake: true,
   },
@@ -24177,7 +24129,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -24192,7 +24144,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
     noShake: true,
   },
@@ -24208,7 +24160,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -24225,7 +24177,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
     noShake: true,
   },
@@ -24241,7 +24193,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     claudeDraft: true,
   },
   {
@@ -27719,7 +27671,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.45,
+    frequency: 0,
     claudeDraft: true,
     oops: {
         "many": "Rubik's cubes",

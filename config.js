@@ -279,7 +279,7 @@ export const CONFIG = {
         "stop_sign", "dynamite", "umbrella_for_a_fish", "seen_things", "storm_in_a_teacup",
         "microwave_popcorn", "fog_machine", "spreading_cloud", "sun_in_a_cloud",
         "box_of_eggs", "spare_allen_key", "bees_knees", "popcorn",
-        "rubiks_cube_checkerboard", "rubiks_cube", "tuning_fork",
+        "rubiks_cube", "tuning_fork",
         "spam_tin_opened", "beans_tin_on_its_side", "spaghetti_os_tin_upended", "lego_cube_2x2_red", "lego_cube_3x3", "lego_cube_4x4", "lego_slab_2x4", "lego_block_3x2", "lego_cube_2x2_blue",
         "paddling_swan", "candle_both_ends", "wandering_washing_machine", "unwanted_present", "unbothered_capybara", "exasperated_life_ring", "rubber_chicken", "storm_in_a_teacup",
         "sandbag_wall", "avalanche", "tipped_honey_jar", "slumped_beanbag", "unravelling_yarn", "patchwork_quilt", "spilled_paint", "mountain_of_post",

@@ -133,45 +133,14 @@ export const GROUPS = [
     id: "loch_ness",
     name: "the Loch Ness monster",
     frequency: 1,
-    sequence: [
-      { chain: {
-          start: {nessie_hump: 4, nessie_hump_far: 1.2, nessie_log: 1},
-          after: {
-            nessie_hump: {nessie_hump_2: 4, nessie_log: 1, nessie_hump_far: 1, nessie_hump_close: 1, nessie_head: 1.5, nessie_absence: 0.5},
-            nessie_hump_far: {nessie_hump_2: 2, nessie_hump_close: 1.5, nessie_head: 1, nessie_absence: 0.4},
-            nessie_log: {nessie_hump_2: 2, nessie_hump_close: 1, nessie_head: 1.2, nessie_absence: 0.5},
-            nessie_hump_2: {nessie_hump_3: 3, nessie_head: 2, nessie_absence: 0.7},
-            nessie_hump_3: {nessie_head: 3, nessie_absence: 1.2, nessie_photo: 0.5, nessie_boat: 0.3, nessie_sonar: 0.3},
-            nessie_hump_close: {nessie_head: 3, nessie_absence: 1.2, nessie_photo: 0.5, nessie_boat: 0.3, nessie_sonar: 0.3},
-            nessie_head: {nessie_photo: 4, nessie_boat: 1, nessie_sonar: 1, stop: 2.2},
-            nessie_absence: {nessie_photo: 3, nessie_boat: 1, nessie_sonar: 1.5, stop: 1},
-            nessie_boat: {nessie_photo: 1, stop: 3},
-            nessie_photo: {stop: 1},
-            nessie_sonar: {stop: 1},
-          },
-          min: 2, max: 6,
-      } },
-    ],
+    sequence: ["nessie_hump", "nessie_hump_2", "nessie_hump_3", "nessie_head", "nessie_photo"],
   },
   {
+    // the same, low resolution, cute and silly
     id: "loch_ness_wee",
     name: "a wee Loch Ness monster",
     frequency: 0.6,
-    sequence: [
-      { chain: {
-          start: {nessie_wee_hump: 3, nessie_wee_log: 1},
-          after: {
-            nessie_wee_hump: {nessie_wee_hump_2: 3, nessie_wee_log: 1, nessie_wee_head: 1.5, nessie_wee_absence: 0.6},
-            nessie_wee_log: {nessie_wee_hump_2: 2, nessie_wee_head: 1.5, nessie_wee_absence: 0.6},
-            nessie_wee_hump_2: {nessie_wee_head: 3, nessie_wee_absence: 1.2, nessie_wee_photo: 0.4, nessie_wee_boat: 0.4},
-            nessie_wee_head: {nessie_wee_photo: 3, nessie_wee_boat: 1, stop: 2},
-            nessie_wee_absence: {nessie_wee_photo: 2, nessie_wee_boat: 1, stop: 1},
-            nessie_wee_boat: {nessie_wee_photo: 1, stop: 3},
-            nessie_wee_photo: {stop: 1},
-          },
-          min: 2, max: 5,
-      } },
-    ],
+    sequence: ["nessie_wee_hump", "nessie_wee_hump_2", "nessie_wee_head", "nessie_wee_photo"],
   },
   {
     // one dinosaur's bones, then its head (which dinosaur? you'll see)
@@ -544,7 +513,8 @@ export const GROUPS = [
     sequence: [
       {pick: ["an_omen", "a_bad_sign", "omen_of_great_things", "prophecy_of_great_things"], count: [1, 2], unique: true},
       {pick: ["great_and_terrible_things", "great_and_terrible_things_foretold", "great_and_terrible_things_all_at_once"], count: [1, 1]},
-      {pick: ["a_horrible_thing", "a_terrible_thing", "a_great_terrible_thing", "an_unspeakably_terrible_thing"], weights: [3, 3, 2, 1], count: [1, 2], unique: true},
+      // (it ends with several of them going off)
+      {pick: ["a_horrible_thing", "a_terrible_thing", "a_great_terrible_thing", "an_unspeakably_terrible_thing"], weights: [3, 3, 2, 1], count: [3, 4], unique: true},
     ],
   },
 ];
