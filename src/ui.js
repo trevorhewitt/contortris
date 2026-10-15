@@ -173,7 +173,6 @@ export function bindUI({ state, renderer, achievements }) {
   const nameLayer = createNameLayer($("nameLayer"));
 
   const panels = {
-    loading: $("panelLoading"),
     menu: $("panelMenu"),
     howto: $("panelHowTo"),
     achievements: $("panelAchievements"),
@@ -193,7 +192,7 @@ export function bindUI({ state, renderer, achievements }) {
   let home = null; // (the home screen: below, src/home.js)
   let lastMode = loadLastMode();
   let newBest = false;
-  let currentPanel = "loading";
+  let currentPanel = null;
   let panelBack = "menu"; // where "Back" goes from How to play / Achievements
 
   const modeLabel = (mode) => CONFIG.modes[mode]?.label ?? mode;
@@ -1333,11 +1332,20 @@ export function bindUI({ state, renderer, achievements }) {
 
   /* ---------- boot ---------- */
 
-  showPanel("loading");
+  // The page opens on a small loading animation alone (index.html, body.booting). The home screen
+  // comes up behind it, and once the board behind the menu has had its quick start and the logo's
+  // font is in (or it has waited long enough), the loading animation fades away.
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      document.querySelector(".app")?.classList.add("ready");
       showPanel("menu");
+      const t0 = performance.now();
+      let fontIn = !document.fonts?.load;
+      document.fonts?.load?.("16px PressStart2P").then(() => { fontIn = true; }, () => { fontIn = true; });
+      const reveal = () => {
+        if ((fontIn && !home.warming()) || performance.now() - t0 > (CONFIG.home.bootMaxMs ?? 2500)) document.body.classList.remove("booting");
+        else requestAnimationFrame(reveal);
+      };
+      requestAnimationFrame(reveal);
     });
   });
 

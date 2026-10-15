@@ -17,6 +17,31 @@
     }
     input, textarea, select { -webkit-user-select: auto; user-select: auto; }
 
+    /* Opening the page: a small loading animation on its own until the home screen is ready behind
+       it (src/ui.js takes body.booting off), and then it fades away. Nothing else shows till then. */
+    body.booting .app, body.booting .homeLayer, body.booting .idlePlay{ visibility: hidden; }
+    .boot{
+      position: fixed; inset: 0; z-index: 200; display: grid; place-items: center;
+      background: #070714; transition: opacity 500ms ease, visibility 0s linear 500ms;
+    }
+    body:not(.booting) .boot{ opacity: 0; visibility: hidden; pointer-events: none; }
+    .bootIcon{ position: relative; width: 60px; height: 60px; }
+    .bootIcon i{
+      position: absolute; width: 20px; height: 20px; opacity: 0;
+      box-shadow: inset -3px -3px 0 rgba(0,0,0,0.35), inset 3px 3px 0 rgba(255,255,255,0.35), 0 0 14px var(--c);
+      background: var(--c); animation: bootDrop 2.4s cubic-bezier(.5,0,.6,1) infinite; animation-delay: var(--d);
+    }
+    /* (four blocks fall into place one after another, rest a moment, and go) */
+    @keyframes bootDrop{
+      0%{ opacity: 0; transform: translateY(-60px); }
+      10%{ opacity: 1; }
+      22%{ transform: translateY(0); }
+      26%{ transform: translateY(-4px); }
+      30%, 78%{ opacity: 1; transform: translateY(0); }
+      92%, 100%{ opacity: 0; transform: translateY(0) scale(0.6); }
+    }
+    @media (prefers-reduced-motion: reduce){ .bootIcon i{ animation: none; opacity: 1; } }
+
     @font-face{
       font-family: "PressStart2P";
       src: url("./fonts/PressStart2P-Regular.ttf") format("truetype");
@@ -1161,7 +1186,13 @@
   </style>
 </head>
 
-<body>
+<body class="booting">
+  <!-- opening the page: this on its own until the home screen is ready (src/ui.js, boot) -->
+  <div class="boot" id="boot" role="img" aria-label="Loading">
+    <div class="bootIcon">
+      <i style="left:0;top:40px;--c:#ff4d6d;--d:0s"></i><i style="left:20px;top:40px;--c:#ffb84d;--d:0.12s"></i><i style="left:40px;top:40px;--c:#4dc3ff;--d:0.24s"></i><i style="left:40px;top:20px;--c:#b44dff;--d:0.36s"></i>
+    </div>
+  </div>
   <!-- the home screen (src/home.js): turbo zen behind it, through the camera, and effects over it -->
   <canvas id="homeBg" class="homeLayer" aria-hidden="true"></canvas>
   <div class="app">
@@ -1176,10 +1207,6 @@
 
         <div id="overlay" class="overlay show">
           <div id="pieceCard" class="pieceCard" hidden></div>
-          <div class="msg panel" id="panelLoading">
-            <div class="big">Loading…</div>
-          </div>
-
           <div class="msg panel homeMenu" id="panelMenu" hidden>
             <div class="homeLogoWrap"><div class="homeLogo" id="homeLogo" role="img" aria-label="Extris"><span style="--i:0;--h:350"><b>E</b></span><span style="--i:1;--h:35"><b>X</b></span><span style="--i:2;--h:58"><b>T</b></span><span style="--i:3;--h:140"><b>R</b></span><span style="--i:4;--h:200"><b>I</b></span><span style="--i:5;--h:275"><b>S</b></span></div></div>
             <div class="homeModes">
@@ -1194,7 +1221,7 @@
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
             <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
-            <div class="small" id="gameVersion">version 202610160015</div>
+            <div class="small" id="gameVersion">version 202610160020</div>
           </div>
 
           <div class="msg panel" id="panelHowTo" hidden>
@@ -1212,7 +1239,7 @@
               <h3>Modes</h3>
               <div id="howtoModes"></div>
 
-              <p class="small menuFoot">[Extris version 202610160015 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610160020 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>

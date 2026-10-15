@@ -645,6 +645,8 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     // (a new page: the time spent on the last one doesn't count as being left alone on this one)
     noteInput,
     active: () => phase === "home" || phase === "fading",
+    // (still giving the board behind its quick start)
+    warming: () => phase === "home" && warmLeft > 0,
     phase: () => phase,
     // (for looking at in dev mode: what the camera can see, and where the action is)
     debug: () => ({ x: camera.x, y: camera.y, z: camera.z, ...camera.half(camera.z), action: actionBox(true), reach: actionBox(), shot: camera.shot, sees: (b) => camera.sees(b, 0) }),

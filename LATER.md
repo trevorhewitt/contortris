@@ -10,10 +10,8 @@ deferred is added at the bottom.)
   build up in size to a level 4, with a dramatic jump in size on the level 4, and the game moves
   on to a massive level 6 soonish after, if the player can clear enough of the board for it.
 
-## Home screen and loading
+## Home screen
 
-- **A new loading screen** that matches the home screen (the old one still shows for a moment
-  when the page opens).
 - **The logo:** faster animations, more of them, more often, overlapping, with no dead space
   between them. Particle effects concentrated around the logo, moving through a series of
   different (not computationally heavy) effects.
