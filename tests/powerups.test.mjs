@@ -259,3 +259,46 @@ test("a picture fill is drawn over the whole of the area: its edges as drawn, th
   assert.deepEqual(col(rows - 1), [C[3], C[3], C[3]], "the bottom on the floor");
   for (let y = 4; y < rows - 1; y++) assert.deepEqual(col(y), Array(3).fill(C[1 + ((y - 4) % 2)]), `the middle repeated (row ${y})`);
 });
+
+test("fill art: painted to fit what it fills, at any size; with cover the piece is part of it, with join no edge between them", async () => {
+  const { computeEffect, resolvePowerupArea } = await import("../src/powerups.js");
+  const make = (fill, consume) => loadShapes([{ id: "art_test", name: "a test", grid: ["XX"], color: "#884422", rotation: { mode: "any" },
+    powerup: { type: "expander", tier: 2, ...(consume ? { consume: true } : {}), area: { origin: [1, 0], grid: ["vvvv"] }, fill } }]).powerups[0].powerup;
+  const fire = (pu, cols = 10, rows = 12) => {
+    const board = Array.from({ length: rows }, () => Array(cols).fill(null));
+    const at = { rot: 0, x: 3, y: 2 }, placed = [{ x: 3, y: 2 }, { x: 4, y: 2 }];
+    for (const p of placed) board[p.y][p.x] = { paint: "#884422", pid: 1 };
+    const area = resolvePowerupArea(pu, 0, at.x, at.y, cols, rows);
+    const fx = computeEffect(board, pu, { area, placed, pid: 1, centre: { x: 4, y: 2.5 }, cols, rows, makeFill: () => ({ paint: pu.fillPaint, pid: 9 }), at });
+    return { board, fx };
+  };
+  const hex = /^#[0-9a-f]{6}$/;
+  for (const gen of ["noise", "strata", "streaks", "rays", "rings", "blob", "bubbles", "tiles", "gradient"]) {
+    const pu = make({ gen, k: 5, palette: ["#102030", "#405060", "#8090a0", "#d0e0f0"] });
+    assert.ok(pu.fillArt, `${gen}: fill art`);
+    const { fx } = fire(pu);
+    assert.ok(fx.filled.length >= 30, `${gen}: filled ${fx.filled.length}`);
+    for (const f of fx.filled) {
+      assert.equal(f.cell.paint.k, 5);
+      assert.ok(f.cell.paint.pixels.flat().every(c => hex.test(c)), `${gen}: every pixel a colour`);
+    }
+  }
+  // cover: the piece's own cells repainted as part of it (and the same seam), or, where the piece
+  // vanished, filled in
+  const kept = fire(make({ gen: "noise", k: 4, palette: ["#000000", "#ffffff"], cover: true }));
+  const seam = kept.fx.filled[0].cell.seam;
+  assert.ok(seam && kept.fx.filled.every(f => f.cell.seam === seam), "the fill shares one seam");
+  assert.equal(kept.board[2][3].pid, 1, "the piece is still the piece");
+  assert.equal(kept.board[2][3].seam, seam, "...and joined to its fill");
+  assert.equal(kept.board[2][3].paint.k, 4, "...painted as part of it");
+  const gone = fire(make({ gen: "noise", k: 4, palette: ["#000000", "#ffffff"], cover: true }, true));
+  assert.ok(gone.board[2][3] && gone.board[2][3].pid === 9, "a piece that vanished: its cells filled in");
+  // join without cover: the piece keeps its own look, with no edge between it and its fill
+  const joined = fire(make({ gen: "solid", palette: ["#336699"], join: true }));
+  assert.equal(joined.board[2][3].paint, "#884422");
+  assert.equal(joined.board[2][3].seam, joined.fx.filled[0].cell.seam);
+  // a hand-drawn texture runs on from cell to cell, lined up with the board
+  const tex = [["#ff0000", "#00ff00", "#0000ff", "#ffff00"]];
+  const t = fire(make({ gen: "texture", k: 1, texture: [tex[0], tex[0], tex[0], tex[0]], tk: 1, shade: false }));
+  for (const f of t.fx.filled) assert.equal(f.cell.paint, tex[0][f.x % 4], "the texture's own pixel, by where it is");
+});

@@ -1462,7 +1462,7 @@
       layers: state.layers.map(L => ({ id: L.id, name: L.name, visible: L.visible, noise: L.noise, opacity: L.opacity, data: L.data.slice() })),
       mask: state.mask.slice(),
       areaCells: { ...state.area.cells },
-      fill: { mode: state._fill.mode, solidHex: state._fill.solidHex, k: state._fill.k, data: state._fill.data.slice() },
+      fill: { mode: state._fill.mode, solidHex: state._fill.solidHex, k: state._fill.k, data: state._fill.data.slice(), keep: state._fill.keep },
       zones: state.zones.list.map(z => ({ ...z, cells: { ...z.cells } })),
       zoneActive: state.zones.active,
       parts: state.pu.parts.map(clonePart), partSel: state.pu.partSel,
@@ -1476,7 +1476,7 @@
     state.layers = s.layers.map(L => ({ ...L, data: L.data.slice() }));
     state.mask = s.mask.slice();
     state.area.cells = { ...s.areaCells };
-    state._fill.mode = s.fill.mode; state._fill.solidHex = s.fill.solidHex; state._fill.k = s.fill.k; state._fill.data = s.fill.data.slice();
+    state._fill.mode = s.fill.mode; state._fill.solidHex = s.fill.solidHex; state._fill.k = s.fill.k; state._fill.data = s.fill.data.slice(); if (s.fill.keep) state._fill.keep = s.fill.keep; else delete state._fill.keep;
     state.pu.parts = s.parts.map(clonePart);
     state.pu.partSel = clamp(s.partSel, 0, Math.max(0, state.pu.parts.length - 1));
     state.zones.list = s.zones.map(z => ({ ...z, cells: { ...z.cells } }));
@@ -3214,7 +3214,7 @@
     const fp = fillPart();
     el.fillBox.classList.toggle("hidden", !(PU_FILL_TYPES.includes(type) || fp));
     el.fillBoxTitle.textContent = (fp ? `Fill art · part ${state.pu.partSel + 1} (expander)` : type === "goo" ? "Goo fill art" : "Expander fill art")
-      + (state.fill.mode === "picture" ? " (a picture over the whole area, kept as in the file)" : "");
+      + (state.fill.mode === "picture" ? (state.fill.keep && !state.fill.keep.picture ? " (painted to fit: kept as in the file)" : " (a picture over the whole area, kept as in the file)") : "");
     const usesArea = puUsesArea();
     const tType = tgt ? tgt.type : type;
     el.puAreaBox.classList.toggle("hidden", !usesArea);
@@ -4078,7 +4078,7 @@
   el.fillCanvas.addEventListener("pointerdown", (evt) => {
     evt.preventDefault();
     blurFields();
-    if (state.fill.mode !== "pixel"){ toast(state.fill.mode === "picture" ? "This fill is a picture over the whole area (edit it in the file). Switch it to Pixel art to draw one block instead." : "Fill art is solid. Switch it to Pixel art to draw."); return; }
+    if (state.fill.mode !== "pixel"){ toast(state.fill.mode === "picture" ? "This fill is a picture or painted to fit (edit it in the file). Switch it to Pixel art to draw one block instead." : "Fill art is solid. Switch it to Pixel art to draw."); return; }
     const p = fillPixelFromEvent(evt);
     if (!p) return;
     let tool = state.fill.tool;
@@ -4539,12 +4539,15 @@
   }
   // A fill value from a file as fill-editor state (k: pixels per block for a solid fill)
   function fillStateFrom(fill, fallbackHex, P){
-    // a picture over the whole area ({ picture, k, slice }): kept as it is, and its first block
-    // shown; switching to Solid or Pixel art replaces it
-    if (isPlainObject(fill) && Array.isArray(fill.picture) && Array.isArray(fill.picture[0])){
+    // a picture over the whole area ({ picture, k, slice }) or fill art painted to fit ({ gen |
+    // layers, palette, ... }: src/fillart.js): kept as it is, with its first block (or its first
+    // colour) shown; switching to Solid or Pixel art replaces it
+    if (isPlainObject(fill) && ((Array.isArray(fill.picture) && Array.isArray(fill.picture[0])) || typeof fill.gen === "string" || Array.isArray(fill.layers))){
       const k = clamp(Math.round(Number(fill.k)) || 1, 1, 9);
-      const f = { mode: "picture", keep: clone(fill), k, data: new Uint32Array(k * k), solidHex: normHex(fill.picture[0][0]) || fallbackHex, tool: "draw" };
-      for (let y = 0; y < k; y++) for (let x = 0; x < k; x++) f.data[y * k + x] = argbFromHex(fill.picture[y] && fill.picture[y][x]);
+      const pic = Array.isArray(fill.picture) && Array.isArray(fill.picture[0]) ? fill.picture : null;
+      const first = pic ? pic[0][0] : (Array.isArray(fill.palette) ? fill.palette[Math.floor(fill.palette.length / 2)] : Array.isArray(fill.palettes?.[0]) ? fill.palettes[0][0] : null);
+      const f = { mode: "picture", keep: clone(fill), k, data: new Uint32Array(k * k), solidHex: normHex(first) || fallbackHex, tool: "draw" };
+      for (let y = 0; y < k; y++) for (let x = 0; x < k; x++) f.data[y * k + x] = argbFromHex(pic ? pic[y] && pic[y][x] : first);
       return f;
     }
     if (Array.isArray(fill) && Array.isArray(fill[0])){
@@ -4574,7 +4577,7 @@
       } else if (k === "collapse"){
         if (v === true && PU_COLLAPSE_TYPES.includes(type)) p.collapse = true; else keep(k);
       } else if (k === "fill"){
-        if (type === "expander" && (typeof v === "string" || (Array.isArray(v) && Array.isArray(v[0])))) p.fill = fillStateFrom(v, "#ffffff", P); else keep(k);
+        if (type === "expander" && (typeof v === "string" || (Array.isArray(v) && Array.isArray(v[0])) || isPlainObject(v))) p.fill = fillStateFrom(v, "#ffffff", P); else keep(k);
       }
     }
     if (q.fill === undefined || p.extras.fill !== undefined) p.fillUnset = fillSig(exportFill(p.fill));
@@ -4885,7 +4888,9 @@
       state.area.margin = clamp(Math.max(3, regionReach(state.area.cells), ...state.pu.parts.map(q => regionReach(q.cells))), 0, 30);
       // fill art
       const fill = combo ? undefined : pu.fill;
-      if (Array.isArray(fill) && Array.isArray(fill[0])){
+      if (isPlainObject(fill)){
+        state.fill = { ...state._fill, ...fillStateFrom(fill, state.colourHex, P), tool: state._fill.tool || "draw" };
+      } else if (Array.isArray(fill) && Array.isArray(fill[0])){
         const k = clamp(fill.length, 1, 9);
         state.fill = { ...state._fill, mode: "pixel", k, data: new Uint32Array(k * k), solidHex: normHex(fill[0][0]) || "#ffffff" };
         for (let y = 0; y < k; y++) for (let x = 0; x < k; x++) state.fill.data[y * k + x] = argbFromHex(fill[y] && fill[y][x]);
@@ -5988,9 +5993,9 @@
       shape: {
         kind: state.kind, name: state.name, id: state.id, difficulty: state.difficulty, frequency: state.frequency,
         rotationMode: state.rotationMode, rotationExtras: state.rotationExtras, links: state.links, extras: state.extras,
-        pu: { ...state.pu, parts: state.pu.parts.map(p => ({ ...p, fill: { mode: p.fill.mode, solidHex: p.fill.solidHex, k: p.fill.k, data: hex(p.fill.data) } })) },
+        pu: { ...state.pu, parts: state.pu.parts.map(p => ({ ...p, fill: { mode: p.fill.mode, solidHex: p.fill.solidHex, k: p.fill.k, data: hex(p.fill.data), keep: p.fill.keep } })) },
         areaCells: state.area.cells, areaMargin: state.area.margin, areaExtras: state.area.extras,
-        fill: { mode: state._fill.mode, solidHex: state._fill.solidHex, k: state._fill.k, data: hex(state._fill.data) },
+        fill: { mode: state._fill.mode, solidHex: state._fill.solidHex, k: state._fill.k, data: hex(state._fill.data), keep: state._fill.keep },
         tags: state.tags, noShake: state.noShake,
         zones: state.zones.list.map(z => ({ name: z.name, cells: z.cells, extras: z.extras })), zonesMargin: state.zones.margin,
       },
@@ -6061,7 +6066,7 @@
           const f = isPlainObject(q.fill) ? q.fill : {}, k = clamp(parseInt(f.k, 10) || 7, 1, 9);
           return newPart(String(q.type || "destroyer"), { ...q, uid: partSeq++, cells: isPlainObject(q.cells) ? { ...q.cells } : {}, areaOrig: undefined, orig: undefined,
             extras: isPlainObject(q.extras) ? q.extras : {}, areaExtras: isPlainObject(q.areaExtras) ? q.areaExtras : {},
-            fill: { mode: f.mode === "pixel" ? "pixel" : "solid", solidHex: normHex(f.solidHex) || "#ffffff", k, data: parseHexWords(f.data, k * k), tool: "draw" } });
+            fill: { mode: f.mode === "picture" && isPlainObject(f.keep) ? "picture" : f.mode === "pixel" ? "pixel" : "solid", ...(f.mode === "picture" && isPlainObject(f.keep) ? { keep: f.keep } : {}), solidHex: normHex(f.solidHex) || "#ffffff", k, data: parseHexWords(f.data, k * k), tool: "draw" } });
         });
         state.pu.partSel = clamp(parseInt(state.pu.partSel, 10) || 0, 0, Math.max(0, state.pu.parts.length - 1));
       }
@@ -6071,7 +6076,9 @@
       state.area.orig = undefined;
       if (s.fill){
         const k = clamp(parseInt(s.fill.k, 10) || 7, 1, 9);
-        state.fill = { ...state._fill, mode: s.fill.mode === "pixel" ? "pixel" : "solid", solidHex: normHex(s.fill.solidHex) || "#ffffff", k, data: parseHexWords(s.fill.data, k * k) };
+        const kept = s.fill.mode === "picture" && isPlainObject(s.fill.keep);
+        state.fill = { ...state._fill, mode: kept ? "picture" : s.fill.mode === "pixel" ? "pixel" : "solid", solidHex: normHex(s.fill.solidHex) || "#ffffff", k, data: parseHexWords(s.fill.data, k * k) };
+        if (kept) state.fill.keep = s.fill.keep; else delete state.fill.keep;
       }
       state.tags = Array.isArray(s.tags) ? s.tags.map(String) : [];
       state.zones.list = Array.isArray(s.zones)

@@ -6,6 +6,7 @@
 // Area format: see the doc comment at the top of shapes/powerup_shapes.js.
 
 import { valueNoise, makeRng } from "./util.js";
+import { paintFill } from "./fillart.js";
 import { CONFIG } from "../config.js";
 
 export const POWERUP_TYPES = ["destroyer", "gravity", "expander", "acid", "blast", "goo", "phantom", "combo"];
@@ -737,9 +738,12 @@ export function computeEffect(board, pu, ctx) {
       out.moves = applyGravity(board, area, cols, rows, pu.direction);
       break;
     case "expander": {
-      // (a picture fill: each cell its own block of the picture)
-      const box = pu.fillPicture && ctx.at && makeFill ? pictureBox(pu.areaRotations[ctx.at.rot] ?? pu.areaRotations[0], ctx.at, cols, rows) : null;
-      out.filled = applyExpand(board, area, cols, box ? (x, y) => ({ ...makeFill(x, y), paint: picturePaint(pu.fillPicture, box, x, y) }) : makeFill);
+      // (fill art: painted to fit what's actually filled, src/fillart.js; or a picture fill: each
+      // cell its own block of the picture)
+      const art = pu.fillArt && ctx.at && makeFill ? fillArtFor(board, pu, area, ctx) : null;
+      const box = !art && pu.fillPicture && ctx.at && makeFill ? pictureBox(pu.areaRotations[ctx.at.rot] ?? pu.areaRotations[0], ctx.at, cols, rows) : null;
+      out.filled = applyExpand(board, area, cols, art ? art.make : box ? (x, y) => ({ ...makeFill(x, y), paint: picturePaint(pu.fillPicture, box, x, y) }) : makeFill);
+      art?.after(out);
       break;
     }
     case "blast":
@@ -764,6 +768,41 @@ export function computeEffect(board, pu, ctx) {
       break;
   }
   return out;
+}
+
+// Fill art (src/fillart.js) for an Expanderz going off: the cells it will fill (the empty ones in
+// its area) painted all at once to fit, so its edges, its distance from the piece and so on are
+// what's really there. With `cover`, the piece's own cells are part of it (repainted, or filled
+// in where the piece vanished); with `join`, the piece and its fill share a seam (no edge drawn
+// between them: render.js).
+function fillArtFor(board, pu, area, ctx) {
+  const { cols, rows, makeFill, pid } = ctx, spec = pu.fillArt;
+  const targets = [];
+  for (const i of area.indices) { const x = i % cols, y = (i / cols) | 0; if (!board[y][x]) targets.push({ x, y }); }
+  const piece = (ctx.placed ?? []).filter(p => p.x >= 0 && p.y >= 0 && p.x < cols && p.y < rows);
+  let box = pictureBox(pu.areaRotations[ctx.at.rot] ?? pu.areaRotations[0], ctx.at, cols, rows);
+  if (spec.cover && piece.length) {
+    box ??= { x0: piece[0].x, x1: piece[0].x, y0: piece[0].y, y1: piece[0].y };
+    for (const p of piece) box = { x0: Math.min(box.x0, p.x), x1: Math.max(box.x1, p.x), y0: Math.min(box.y0, p.y), y1: Math.max(box.y1, p.y) };
+  }
+  // (only how it looks: not the game's dice)
+  const seed = 1 + Math.floor(Math.random() * 2147483646);
+  const paints = paintFill(spec, targets, { cols, rows, piece, seed, box });
+  const seam = spec.join ? `fill-${seed}` : null;
+  const own = (c) => c && (pid == null || c.pid === pid);
+  return {
+    make: (x, y) => ({ ...makeFill(x, y), paint: paints.get(y * cols + x) ?? pu.fillPaint, ...(seam ? { seam } : {}) }),
+    after(out) {
+      for (const p of piece) {
+        const c = board[p.y][p.x], paint = spec.cover ? paints.get(p.y * cols + p.x) : null;
+        if (paint && !c) {
+          const cell = { ...makeFill(p.x, p.y), paint, ...(seam ? { seam } : {}) };
+          board[p.y][p.x] = cell;
+          out.filled.push({ x: p.x, y: p.y, cell });
+        } else if (own(c) && (paint || seam)) board[p.y][p.x] = { ...c, ...(paint ? { paint } : {}), ...(seam ? { seam } : {}) };
+      }
+    },
+  };
 }
 
 // Fold a later part's results into `out`, chaining moves of the same block.

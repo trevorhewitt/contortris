@@ -4,6 +4,7 @@
 
 import { isHexColour } from "./util.js";
 import { normalisePowerup, areaRotationsFor } from "./powerups.js";
+import { normaliseFillArt, isFillArt } from "./fillart.js";
 
 // Splits the raw SHAPES array into regular blocks and powerups.
 export function loadShapes(rawShapes) {
@@ -197,15 +198,26 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
         // Effects never rotate: a rotated powerup keeps its rotation-0 area, in board
         // orientation, centred on the piece the same way.
         powerup.areaRotations = allowed.map(i => fixedArea(powerup.areaRotations[0], allRotations[0], allRotations[i]));
-        const fill = normaliseFillPaint(powerup.fill, style.baseColor);
+        // (the piece's own colours, for fill art made from them: palette "piece")
+        const own = () => {
+          const out = [];
+          for (const row of cellPaints[0] ?? []) for (const p of row) {
+            if (typeof p === "string") out.push(p);
+            else if (p?.pixels) for (const line of p.pixels) out.push(...line);
+          }
+          return out;
+        };
+        const fill = normaliseFillPaint(powerup.fill, style.baseColor, own);
         powerup.fillPaint = fill.paint;
         powerup.fillPicture = fill.picture ?? null;
+        powerup.fillArt = fill.art ?? null;
         powerup.fillStyle = { ...style, baseColor: fill.baseColor };
         for (const part of powerup.parts ?? []) {
           part.areaRotations = allowed.map(i => fixedArea(part.areaRotations[0], allRotations[0], allRotations[i]));
-          const pf = part.fill != null ? normaliseFillPaint(part.fill, style.baseColor) : fill;
+          const pf = part.fill != null ? normaliseFillPaint(part.fill, style.baseColor, own) : fill;
           part.fillPaint = pf.paint;
           part.fillPicture = pf.picture ?? null;
+          part.fillArt = pf.art ?? null;
           part.fillStyle = { ...style, baseColor: pf.baseColor };
         }
       }
@@ -338,9 +350,16 @@ function buildCellPaints(mat, grid, k, baseColor) {
   }));
 }
 
-// Expander fill art: "#hex" or a k×k grid of hex colours.
-function normaliseFillPaint(fill, fallback) {
+// Expander fill art: "#hex", a k×k grid of hex colours, a picture, or art painted to fit
+// (src/fillart.js: { gen | layers, palette, ... }). `own()`: the piece's own colours.
+function normaliseFillPaint(fill, fallback, own = () => []) {
   if (isHexColour(fill)) return { paint: fill.trim(), baseColor: fill.trim() };
+  if (isFillArt(fill)) {
+    const art = normaliseFillArt(fill, own());
+    const pal = art.palettes[0], mid = pal[Math.floor(pal.length / 2)];
+    const hex = "#" + mid.map(v => Math.round(v).toString(16).padStart(2, "0")).join("");
+    return { paint: art.swatch ?? hex, baseColor: hex, art };
+  }
   // a picture over the whole area: { picture: pixel grid, k: pixels per block, slice: { top,
   // bottom, left, right } (blocks kept at each edge; the rest repeats): src/powerups.js
   // picturePaint. Each of its blocks is a paint of its own.

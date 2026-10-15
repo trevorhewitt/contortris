@@ -88,6 +88,23 @@
  *                             blocks at each edge stay as drawn; the rest repeats to fit the box
  *                             (or is cut down the middle when the box is smaller), so a waterfall
  *                             keeps its top and its splash however far it falls
+ *     | { gen: "noise", k: 6, palette: ["#hex", ...], ... }   (or layers: [{ gen, ... }, ...])
+ *                             expander (or a combo's expander part): ART PAINTED TO FIT what it
+ *                             actually fills, at any size, the moment it fills it, a little
+ *                             different every time. It knows where each pixel is on the board,
+ *                             how far it is from the piece, and how far from the edge of the fill,
+ *                             so lava can glow by the vent and crust at its edges, rays can fan
+ *                             out from a sun, a marshmallow can be one round shaded blob. Painters:
+ *                             solid, noise, gradient, strata, streaks, rays, rings, blob (sphere |
+ *                             pillow), bubbles, tiles (running | stack | checker | basket | hex |
+ *                             scales | diamond), texture (a hand-drawn pattern spanning several
+ *                             cells that repeats across the board), picture (as above). Around them:
+ *                             shade (a bevel round the whole fill), edge (an outline), glow (near
+ *                             the piece), depth (darker further down), grain, vary (colours shifted
+ *                             at random each time), palettes (colourways, one picked each time),
+ *                             cover: true (the piece's own cells are part of it: repainted, or
+ *                             filled in where it vanished), join: true (no edge between the piece
+ *                             and its fill). Every setting is described at the top of src/fillart.js.
  *   consume: true,            optional: vanish when fired (default: yes, except expanders)
  *   collapse: false,          destroyer / acid: wiped wall-to-wall rows close up like a line clear
  *   scatter: { radius: 6, density: 0.6 },  destroyer only: instead of `area`, a random spray of
