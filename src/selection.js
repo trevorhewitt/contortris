@@ -429,7 +429,7 @@ export function selectPiece(state) {
   if (endGame) {
     const w = normaliseWeights(endGameLevelWeights(state, CONFIG.modes[state.mode]?.giants !== false));
     const lvl = sampleDiscrete(w, state.rng);
-    let pool = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) === lvl && (!s.once || !(sel.servedCounts.get(s.id) > 0)));
+    let pool = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) === lvl && (!s.once || !(sel.servedCounts.get(s.id) > 0)) && inGame(s));
     if (!pool.length) pool = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6);
     const shape = sampleByWeight(pool, s => (s.frequency ?? 1) * varietyMultiplier(sel, s), state.rng);
     commitSelectedShape(sel, shape);
@@ -532,7 +532,7 @@ export function selectPiece(state) {
   const chosenLevel = sampleDiscrete(levelW, state.rng);
 
   // Candidate shapes in that level (frequency>0; one that only ever comes once, if it hasn't yet).
-  const unspent = (s) => !s.once || !(sel.servedCounts.get(s.id) > 0);
+  const unspent = (s) => (!s.once || !(sel.servedCounts.get(s.id) > 0)) && inGame(s);
   let candidates = state.shapes.filter(s =>
     (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) === chosenLevel && unspent(s)
   );
@@ -557,6 +557,12 @@ export function selectPiece(state) {
   return chosenShape;
 }
 
+// Not one of the pieces only turbo zen builds with (CONFIG.assist.turboOnlyTags: the tiles).
+export function inGame(s) {
+  const tags = CONFIG.assist.turboOnlyTags;
+  return !tags?.length || !s.tags?.some(t => tags.includes(t));
+}
+
 // A piece from any level that has a share now (levelW), the thread's pieces far likelier.
 function pickAlongThread(state, levelW, thread) {
   const sel = state.pieceSel;
@@ -564,7 +570,7 @@ function pickAlongThread(state, levelW, thread) {
   for (const s of state.shapes) {
     const L = s.difficulty ?? 1;
     if ((s.frequency ?? 1) <= 0 || L === LEVEL6 || !(levelW[L] > 0)) continue;
-    if (s.once && sel.servedCounts.get(s.id) > 0) continue;
+    if ((s.once && sel.servedCounts.get(s.id) > 0) || !inGame(s)) continue;
     const w = (s.frequency ?? 1) * varietyMultiplier(sel, s);
     if (!(w > 0)) continue;
     if (!byLevel.has(L)) byLevel.set(L, { mass: 0, list: [] });

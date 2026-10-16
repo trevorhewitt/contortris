@@ -26,7 +26,7 @@
 
 import { CONFIG } from "../config.js";
 import { tryMove, tryRotate, zenCaption, timeScaleOf, settleFlock } from "./game.js";
-import { selectPiece, destroyerCells, pickFitting } from "./selection.js";
+import { selectPiece, destroyerCells, pickFitting, inGame } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
 import { expandGroup, roomNeeded, groupUnderWay, lastVersion, noteVersion, groupPlayable, playableRun, groupMembers } from "./level6.js";
@@ -297,8 +297,9 @@ const up = (n) => n + CONFIG.board.rows - 24;
 const pick = (state, list) => (isCalm(state) ? pickFitting(state, list, s => s.frequency ?? 1) : sampleByWeight(list, s => s.frequency ?? 1, state.rng));
 const stackHeight = (state) => heightOf(occupancy(state.board), CONFIG.board.cols, CONFIG.board.rows);
 
-// (one that only ever comes once: once since the page was loaded)
-const regularPool = (state) => state.shapes.filter(s => !s.powerup && (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6 && (!s.once || !(state.zenUses?.get(s.id) > 0)));
+// (one that only ever comes once: once since the page was loaded; and in Zen, not the pieces only
+// turbo zen builds with, the tiles: CONFIG.assist.turboOnlyTags)
+const regularPool = (state) => state.shapes.filter(s => !s.powerup && (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6 && (!s.once || !(state.zenUses?.get(s.id) > 0)) && (!isCalm(state) || inGame(s)));
 const smallPool = (state) => regularPool(state).filter(s => (s.difficulty ?? 1) <= 1 && blocks(s) <= 4);
 const giantPool = (state) => regularPool(state).filter(s => (s.difficulty ?? 1) >= 4);
 const powerupPool = (state) => state.powerups.filter(p => (p.frequency ?? 1) > 0);

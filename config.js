@@ -289,7 +289,6 @@ export const CONFIG = {
         "meteor_shower", "tidal_wave", "dragon_with_hay_fever", "giant_eraser", "hole_in_one",
         "horseshoe_magnet", "sarcastic_thumbs_up", "ice_skate", "hole_punch", "lightning_bolt_with_a_grudge", "lit_fuse", "magic_wand", "toadstool",
         "invader_squid_arcade", "invader_crab_neon", "invader_octopus_sticky_notes", "mystery_ship", "invader_squid_neon", "invader_crab_sticky_notes", "invader_octopus_arcade",
-        "tile_square_blue", "tile_big_green", "tile_l_terracotta", "tile_t_gold", "tile_s_blue", "tile_lizard_green",
         "a_bee", "two_bees", "bee_line", "queen_bee", "honeycomb", "bees_knees", "bee_bigger_bee", "bee_in_a_bonnet", "cloud_of_bees",
         "storm_cloud", "big_storm_cloud", "rumbling_storm_cloud", "space_invader_2", "space_invader_3", "space_invader_4",
         "happy_pills_2", "piece_of_sky_sunset", "piece_of_sky_night",
@@ -546,6 +545,10 @@ export const CONFIG = {
         ["loch_ness", "loch_ness_wee"],
       ],
     },
+
+    // Pieces with these tags never come in a game (Classic, Extreme, God mode, Zen): only turbo
+    // zen builds with them (its tiled floors and Lego walls). In a game, tiles come as Expanderz.
+    turboOnlyTags: ["tiles", "lego_tiles"],
 
     // Powerup scheduler (Normal mode only). Runs before the regular level mix:
     // once a powerup is "due", it replaces that drop's regular piece.

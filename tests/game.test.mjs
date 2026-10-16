@@ -509,3 +509,17 @@ test("a piece marked once only ever turns up once a game (a sock with no match)"
   }
   assert.equal(seen, 1, "once, and only once");
 });
+
+test("tiles never come in a game (only turbo zen builds with them)", async () => {
+  const { selectPiece } = await import("../src/selection.js");
+  const tagged = (s) => s.tags?.some(t => CONFIG.assist.turboOnlyTags.includes(t));
+  assert.ok(shapes.some(tagged), "there are tiles");
+  for (const mode of ["normal", "extreme", "god"]) {
+    const state = createGameState(shapes, powerups, { rng: makeRng(5) });
+    startRun(state, mode);
+    for (let i = 0; i < 600; i++) {
+      const s = selectPiece(state);
+      assert.ok(!tagged(s), `${mode}: ${s.id}`);
+    }
+  }
+});
