@@ -4820,7 +4820,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "mole",
@@ -7378,8 +7377,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.8,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "wall_filler",
@@ -7459,7 +7457,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "popcorn",
@@ -10834,7 +10831,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "sneeze",
@@ -11026,7 +11022,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "acid_candy",
@@ -12463,7 +12458,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
-    claudeDraft: true,
   },
   {
     id: "bowling_ball",
@@ -12968,7 +12962,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "lawn_sprinkler",
@@ -15320,7 +15313,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "ball_pit",
@@ -15433,7 +15425,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
-    claudeDraft: true,
   },
   {
     id: "lego_brick",
@@ -15607,7 +15598,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
   },
   {
     id: "foam_cousin",
@@ -15683,7 +15673,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
-    claudeDraft: true,
   },
   {
     id: "zeus_bolt",
@@ -23429,7 +23418,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
     tags: [
         "scripture"
       ],
@@ -23882,7 +23870,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "liquid_cat",
@@ -24797,7 +24784,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "shitting_cat",
@@ -24939,7 +24925,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "packing_peanuts",
@@ -25959,7 +25944,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.98,
-    claudeDraft: true,
   },
   {
     id: "stuffed_duvet",
@@ -117863,7 +117847,7 @@ export const SHAPES = [
   },
   {
     id: "tipper_truck",
-    name: "a tipper truck full of sand",
+    name: "a truck full of sand",
     grid: [
         "XXX",
         "XXX"
@@ -117955,7 +117939,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "bath_left_running",
@@ -118033,8 +118016,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.4,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "split_rice_sack",
@@ -119186,7 +119168,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "memory_foam_mattress",
@@ -122429,11 +122410,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
-    claudeDraft: true,
   },
   {
     id: "week_of_laundry",
-    name: "a week of laundry",
+    name: "a big pile of dirty laundry",
     grid: [
         "XX.",
         "XXX"
@@ -125519,11 +125499,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "thanksgiving_mash",
-    name: "an entire Thanksgiving of mashed potato",
+    name: "too much mashed potatoes",
     grid: [
         ".X.",
         "XXX"
@@ -125604,11 +125583,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "advancing_glacier",
-    name: "a glacier (advancing)",
+    name: "an advancing glacier",
     grid: [
         "X..",
         "XX.",
@@ -126782,7 +126760,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.25,
-    claudeDraft: true,
   },
   {
     id: "last_jigsaw_piece",
@@ -129867,8 +129844,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.8,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "paper_shredder",
@@ -131391,7 +131367,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
-    claudeDraft: true,
   },
   {
     id: "avalanche",
@@ -131472,7 +131447,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
   },
   {
     id: "tipped_honey_jar",
@@ -131558,7 +131532,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "slumped_beanbag",
@@ -132064,7 +132037,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "patchwork_quilt",
@@ -133721,7 +133693,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "mountain_of_post",
@@ -139601,7 +139572,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.45,
-    claudeDraft: true,
   },
   {
     id: "fog_machine",
@@ -139674,12 +139644,11 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.7,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "spreading_cloud",
-    name: "a cloud (spreading out)",
+    name: "a big fluffy cloud",
     grid: [
         "X"
       ],
@@ -139750,7 +139719,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
   },
   {
     id: "sun_in_a_cloud",
@@ -142589,8 +142557,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.7,
-    claudeDraft: true,
+    frequency: 0,
     tags: [
         "sinkhole"
       ],
@@ -143355,7 +143322,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
-    claudeDraft: true,
     tags: [
         "sinkhole"
       ],
@@ -143366,7 +143332,7 @@ export const SHAPES = [
     grid: [
         "XXXXX"
       ],
-    color: [["#625f6b","#5e596a","#5e596a","#43404a","#47444e","#47444e","#787383","#655f72","#655f72","#595463","#595463","#47444e","#403d49","#403d49","#4c4854","#6c677a","#7e7a8a","#4c4854","#47444e","#595463","#45414c","#615c6c","#615c6c","#45414c","#5e596a","#5e596a","#534e5c","#45414c","#74717e","#615c6c","#615c6c","#403d49","#595568","#5c4026","#5c4026","#5c4026","#5c4026","#5c4026","#5c4026","#3a3740"],["#504b5d","#5d576c","#5d576c","#4e495b","#3f3b49","#7e798c","#665f76","#665f76","#665f76","#565063","#3f3b49","#7e798c","#665f76","#665f76","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#4e495b","#3c3845","#7a7587","#615b70","#615b70","#514c5e","#3a3643","#3a3643","#6b4a2c","#e9e1cb","#e9e1cb","#e9e1cb","#e9e1cb","#6b4a2c","#666272"],["#504b5d","#5d576c","#5d576c","#4e495b","#454150","#3f3b49","#665f76","#665f76","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#777284","#5d576c","#6b4a2c","#e9e1cb","#9c9482","#9c9482","#e9e1cb","#6b4a2c","#504b5d"],["#504b5d","#5d576c","#4e495b","#454150","#6f6981","#868195","#2c2637","#2c2637","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c2637","#2c2637","#6b4a2c","#e9e1cb","#e9e1cb","#e9e1cb","#e9e1cb","#6b4a2c","#322e3a"],["#433f4e","#4e495b","#454150","#6f6981","#6f6981","#6f6981","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#6b4a2c","#6b4a2c","#8a6038","#8a6038","#6b4a2c","#6b4a2c","#36333f"],["#36333f","#454150","#868195","#6f6981","#6f6981","#6f6981","#837d97","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#a19cb0","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#837d97","#5d576c","#3a3643","#8a6038","#8a6038","#665f76","#665f76","#585265"],["#36333f","#454150","#454150","#6f6981","#6f6981","#6f6981","#6f6981","#837d97","#837d97","#837d97","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#837d97","#837d97","#837d97","#3a3643","#3a3643","#3f3b49","#8a6038","#8a6038","#665f76","#665f76","#585265"],["#2f2c36","#736f80","#736f80","#3b3845","#3b3845","#504c5d","#504c5d","#504c5d","#736f80","#5f5a6f","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#504b5d","#504b5d","#322e3a","#696574","#696574","#403b49","#775330","#775330","#403b49","#585265","#4b4657"]],
+    color: [["#625f6b","#5e596a","#5e596a","#43404a","#47444e","#47444e","#787383","#655f72","#655f72","#595463","#595463","#47444e","#403d49","#403d49","#4c4854","#6c677a","#7e7a8a","#4c4854","#47444e","#595463","#45414c","#615c6c","#615c6c","#45414c","#5e596a","#5e596a","#534e5c","#45414c","#74717e","#615c6c","#615c6c","#403d49","#595568","#665f76","#777284","#43404a","#43404a","#43404a","#43404a","#665f76"],["#504b5d","#5d576c","#5d576c","#4e495b","#3f3b49","#7e798c","#665f76","#665f76","#665f76","#565063","#3f3b49","#7e798c","#665f76","#665f76","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#4e495b","#3c3845","#7a7587","#615b70","#615b70","#514c5e","#3a3643","#3a3643","#665f76","#777284","#43404a","#43404a","#43404a","#43404a","#665f76"],["#504b5d","#5d576c","#5d576c","#4e495b","#454150","#3f3b49","#665f76","#665f76","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#3f394d","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#2c2637","#777284","#36333f","#36333f","#777284","#777284","#665f76","#665f76","#665f76","#777284"],["#504b5d","#5d576c","#4e495b","#454150","#6f6981","#868195","#2c2637","#2c2637","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c263d","#2c2637","#2c2637","#36333f","#665f76","#777284","#777284","#777284","#504c5d","#504c5d"],["#433f4e","#4e495b","#454150","#6f6981","#6f6981","#6f6981","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#262136","#36333f","#36333f","#36333f","#36333f","#504c5d","#36333f","#665f76"],["#36333f","#454150","#868195","#6f6981","#6f6981","#6f6981","#837d97","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#a19cb0","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#211c2f","#837d97","#36333f","#3a3643","#665f76","#36333f","#504c5d","#504c5d","#36333f"],["#36333f","#454150","#454150","#6f6981","#6f6981","#6f6981","#6f6981","#837d97","#837d97","#837d97","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#1f1a2c","#837d97","#837d97","#837d97","#3a3643","#3a3643","#3f3b49","#665f76","#665f76","#665f76","#665f76","#36333f"],["#2f2c36","#736f80","#736f80","#3b3845","#3b3845","#504c5d","#504c5d","#504c5d","#736f80","#5f5a6f","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#716c82","#504b5d","#504b5d","#322e3a","#696574","#696574","#403b49","#504c5d","#504c5d","#504c5d","#504c5d","#4b4657"]],
     powerup: {
         "type": "combo",
         "tier": 2,
@@ -143638,7 +143604,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
     tags: [
         "sinkhole"
       ],
@@ -144408,8 +144373,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
-    claudeDraft: true,
+    frequency: 0,
     tags: [
         "sinkhole"
       ],
@@ -153828,7 +153792,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     tags: [
         "sinkhole"
       ],
@@ -158492,7 +158455,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
-    claudeDraft: true,
     tags: [
         "sinkhole"
       ],
@@ -159947,8 +159909,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.4,
-    claudeDraft: true,
+    frequency: 0,
     tags: [
         "sinkhole"
       ],
@@ -160433,8 +160394,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.35,
-    claudeDraft: true,
+    frequency: 0,
     tags: [
         "sinkhole"
       ],
@@ -161300,7 +161260,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
-    claudeDraft: true,
     tags: [
         "sinkhole"
       ],
@@ -161829,7 +161788,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     tags: [
         "sinkhole"
       ],
@@ -161917,8 +161875,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.3,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "squat_volcano",
@@ -219296,7 +219253,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-  }
+  },
 ];
 
 // ------------------------------------------------------------------
