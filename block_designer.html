@@ -762,6 +762,7 @@
           <label><input id="previewStack" type="checkbox" checked> Sample stack</label>
           <label><input id="previewZones" type="checkbox" checked> Zones</label>
           <label><input id="previewBig" type="checkbox" checked> 2×</label>
+          <label title="How it looks once it has gone off, as the game paints it: the fill's art at full strength, the piece repainted where it's part of its fill (cover), what it destroys gone, and no rainbow or grid over any of it"><input id="previewAfter" type="checkbox"> After it goes off</label>
           <button id="previewCentre" class="small">Centre</button>
         </div>
         <div class="hint" style="margin-top:4px;">18px cells, 14×12 board. Click to move the piece.</div>
@@ -1413,7 +1414,7 @@
     draftKey: "",                  // the current piece's draft key: "id:<id>" (from the file) or "new:<…>" (not saved yet)
     centreTab: "art",
     list: { kind: "all", page: 0, pageSize: 20, filter: "", cursor: null },
-    previewPos: null, previewStack: true, previewZones: true, previewModel: null,
+    previewPos: null, previewStack: true, previewZones: true, previewAfter: false, previewModel: null,
     lastBuild: null,
   };
   // The fill editor edits the selected combo part's fill when that part is an expander, else the
@@ -4336,6 +4337,7 @@
     ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
     const m = state.previewModel;
     if (!m) return;
+    if (state.previewAfter && m.powerup){ drawAfterPreview(ctx, m, C); return; }
     const pos = previewPos(m);
     const occupied = new Set();
     // sample stack
@@ -4449,6 +4451,59 @@
     for (let y = 0; y <= H; y += C){ ctx.moveTo(0, y + 0.5); ctx.lineTo(W, y + 0.5); }
     ctx.stroke(); ctx.restore();
   }
+  // The in-game preview once it has gone off (the "After it goes off" tickbox): the sample stack
+  // with whatever it destroys gone, the cells it fills in its fill's art at full strength (as the
+  // game paints it: src/fillart.js), the piece repainted where it's part of its fill (cover) or gone
+  // if it vanishes, and nothing drawn over the art (no rainbow, no grid). Gravity is left out (the
+  // blocks it moves stay where they were).
+  function drawAfterPreview(ctx, m, C){
+    const pos = previewPos(m);
+    const inBoard = (c) => c.x >= 0 && c.y >= 0 && c.x < GAME.cols && c.y < GAME.rows;
+    const pu = m.powerup, type = pu.type;
+    const stack = new Set();
+    if (state.previewStack){
+      for (let y = GAME.rows - 4; y < GAME.rows; y++) for (let x = 0; x < GAME.cols; x++)
+        if (hash01(x, y, 7, 99) >= 0.28 + (y - (GAME.rows - 4)) * 0.05) stack.add(areaKey(x, y));
+    }
+    const pieceCells = m.blocks.map(b => ({ x: pos.x + b.x, y: pos.y + b.y, b })).filter(inBoard);
+    const pieceKeys = new Set(pieceCells.map(c => areaKey(c.x, c.y)));
+    for (const k of pieceKeys) stack.delete(k);
+    const areaOf = (cells, touch) => affectedCells([...(cells || []), ...(touch || [])].map(c => ({ x: c.x + pos.x, y: c.y + pos.y, ch: c.ch })), 0, 0, GAME.cols, GAME.rows);
+    // (its parts in firing order, fill last; one part if it's not a combo)
+    const parts = m.parts ? m.parts.slice().sort((a, b) => COMBO_PART_TYPES.indexOf(a.type) - COMBO_PART_TYPES.indexOf(b.type))
+      : [{ type, cells: m.area, touch: m.touch, fill: pu.fill }];
+    const consumed = pu.consume == null ? (PU_DEFAULT_CONSUME[type] ?? true) : pu.consume === true;
+    const art = new Map(); // cell -> paint
+    let joined = false;
+    for (const part of parts){
+      const aff = areaOf(part.cells, part.touch);
+      if (part.type === "destroyer" || part.type === "acid" || part.type === "blast"){ for (const k of aff) stack.delete(k); continue; }
+      if (part.type !== "expander" || part.fill == null) continue;
+      const targets = [...aff].filter(k => !stack.has(k) && !pieceKeys.has(k) && !art.has(k)).map(k => { const [x, y] = parseKey(k); return { x, y }; });
+      const paints = artPaintsFor(part.fill, targets, pieceCells.map(c => ({ x: c.x, y: c.y })));
+      if (paints){ for (const [k, p] of paints) art.set(k, p); joined = true; }
+      else for (const c of targets) art.set(areaKey(c.x, c.y), part.fill); // (a colour, or one block over and over)
+    }
+    // the stack that's left
+    for (const k of stack){
+      const [x, y] = parseKey(k);
+      ctx.fillStyle = STACK_COLOURS[Math.floor(hash01(x, y, 3, 5) * STACK_COLOURS.length)];
+      ctx.fillRect(x * C, y * C, C, C);
+      ctx.strokeStyle = "rgba(0,0,0,0.55)"; ctx.lineWidth = 0.5; ctx.strokeRect(x * C, y * C, C - 0.5, C - 0.5);
+    }
+    // the piece: repainted if it's part of its fill, gone if it vanishes, as it was if not
+    for (const c of pieceCells){
+      const k = areaKey(c.x, c.y);
+      if (art.has(k)) continue;
+      if (!consumed) drawModelBlock(ctx, c.x * C, c.y * C, C, m, c.b, !joined);
+    }
+    // what it filled (and the piece, where it's part of it)
+    for (const [k, paint] of art){
+      const [x, y] = parseKey(k);
+      if (typeof paint === "string" || (paint && paint.pixels)) drawArtCell(ctx, x * C, y * C, C, paint);
+      else drawFillBlock(ctx, x * C, y * C, C, paint);
+    }
+  }
   // Goo preview: drop the piece straight down, then flood down/sideways through empty cells and take
   // the lowest ones (deepest rows first, nearest the piece first) — a hint, not the game's exact flow.
   function gooGuess(m, pos, free){
@@ -4483,6 +4538,14 @@
   el.previewCentre.addEventListener("click", () => { state.previewPos = null; scheduleRender(); });
   el.previewStack.addEventListener("change", () => { state.previewStack = el.previewStack.checked; scheduleRender(); });
   el.previewZones.addEventListener("change", () => { state.previewZones = el.previewZones.checked; scheduleRender(); });
+  // (remembered in this browser, so it stays on from one piece to the next, and after a reload)
+  const PREVIEW_AFTER_KEY = "blockDesigner.previewAfter";
+  try { state.previewAfter = localStorage.getItem(PREVIEW_AFTER_KEY) === "1"; el.previewAfter.checked = state.previewAfter; } catch {}
+  el.previewAfter.addEventListener("change", () => {
+    state.previewAfter = el.previewAfter.checked;
+    try { localStorage.setItem(PREVIEW_AFTER_KEY, state.previewAfter ? "1" : "0"); } catch {}
+    scheduleRender();
+  });
   function syncPreviewScale(){
     const s = el.previewBig.checked ? 2 : 1;
     el.gameCanvas.style.width = (GAME.cols * GAME.cell * s) + "px";
