@@ -4288,6 +4288,43 @@
   // In-game preview (18px cells on a 14×12 black board)
   // ============================================================
   const gctx = el.gameCanvas.getContext("2d");
+
+  // Fill art painted to fit (src/fillart.js: { gen | layers, ... }) and pictures over the whole
+  // area: the preview paints them over the cells they'd fill, as the game does (loaded when it can
+  // be; until then, and for anything else, one block over and over as before)
+  let fillArtLib = null;
+  import("./src/fillart.js").then(m => { fillArtLib = m; scheduleRender(); }).catch(() => {});
+  const artSpecs = new WeakMap(), artPaints = new WeakMap();
+  function artSpecOf(fill){
+    if (!fillArtLib || !isPlainObject(fill)) return null;
+    if (artSpecs.has(fill)) return artSpecs.get(fill);
+    let raw = fill;
+    // (a picture over the whole area: as a picture layer)
+    if (!fillArtLib.isFillArt(fill) && Array.isArray(fill.picture)) raw = { layers: [{ gen: "picture", picture: fill.picture, k: fill.k, slice: fill.slice }], k: fill.k, shade: false };
+    let spec = null;
+    try { spec = fillArtLib.isFillArt(raw) ? fillArtLib.normaliseFillArt(raw, []) : null; } catch (e){ spec = null; }
+    artSpecs.set(fill, spec);
+    return spec;
+  }
+  // the cells' paints (Map "x,y" -> paint), the same for as long as nothing changes
+  function artPaintsFor(fill, cells, piece){
+    const spec = artSpecOf(fill);
+    if (!spec || !cells.length) return null;
+    const key = cells.map(c => c.x + "," + c.y).join(";") + "|" + piece.map(c => c.x + "," + c.y).join(";");
+    const had = artPaints.get(fill);
+    if (had && had.key === key) return had.paints;
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const c of cells){ x0 = Math.min(x0, c.x); x1 = Math.max(x1, c.x); y0 = Math.min(y0, c.y); y1 = Math.max(y1, c.y); }
+    const byIndex = fillArtLib.paintFill(spec, cells, { cols: GAME.cols, rows: GAME.rows, piece, seed: 7, box: { x0, x1, y0, y1 } });
+    const paints = new Map();
+    for (const [i, paint] of byIndex) paints.set(areaKey(i % GAME.cols, Math.floor(i / GAME.cols)), paint);
+    artPaints.set(fill, { key, paints });
+    return paints;
+  }
+  function drawArtCell(ctx, px, py, size, paint){
+    if (typeof paint === "string") drawFillBlock(ctx, px, py, size, paint);
+    else if (paint && paint.pixels) drawFillBlock(ctx, px, py, size, paint.pixels);
+  }
   const STACK_COLOURS = ["#3c4252", "#4a3f52", "#52473c", "#3c5247", "#46464e"];
   function previewPos(m){
     if (state.previewPos) return state.previewPos;
@@ -4336,9 +4373,13 @@
       const aff = affectedCells(cells, 0, 0, GAME.cols, GAME.rows);
       const dir = m.powerup.direction || "down";
       const cx = pos.x + m.w / 2, cy = pos.y + m.h / 2;
+      const pieceCells = m.blocks.map(b => ({ x: pos.x + b.x, y: pos.y + b.y })).filter(c => c.x >= 0 && c.y >= 0 && c.x < GAME.cols && c.y < GAME.rows);
+      const art = type === "expander" ? artPaintsFor(m.powerup.fill, [...aff].filter(k => !occupied.has(k)).map(k => { const [x, y] = parseKey(k); return { x, y }; }), pieceCells) : null;
       for (const k of aff){
         const [x, y] = parseKey(k);
-        if (type === "expander" && m.powerup.fill != null && !occupied.has(k)){
+        if (art && art.has(k)){
+          ctx.save(); ctx.globalAlpha = 0.85; drawArtCell(ctx, x * C, y * C, C, art.get(k)); ctx.restore();
+        } else if (type === "expander" && m.powerup.fill != null && !occupied.has(k)){
           ctx.save(); ctx.globalAlpha = 0.35; drawFillBlock(ctx, x * C, y * C, C, m.powerup.fill); ctx.restore();
         }
         drawRainbowCell(ctx, x * C, y * C, C, x, y, rainbowType(type), type === "blast" ? outward(x + 0.5 - cx, y + 0.5 - cy) : dir, t);
@@ -4352,9 +4393,13 @@
         const cells = [...part.cells, ...part.touch].map(c => ({ x: c.x + pos.x, y: c.y + pos.y, ch: c.ch }));
         const aff = affectedCells(cells, 0, 0, GAME.cols, GAME.rows);
         const col = partColour(part.type);
+        const pieceCells = m.blocks.map(b => ({ x: pos.x + b.x, y: pos.y + b.y })).filter(c => c.x >= 0 && c.y >= 0 && c.x < GAME.cols && c.y < GAME.rows);
+        const art = part.type === "expander" ? artPaintsFor(part.fill, [...aff].filter(k => !occupied.has(k)).map(k => { const [x, y] = parseKey(k); return { x, y }; }), pieceCells) : null;
         for (const k of aff){
           const [x, y] = parseKey(k);
-          if (part.type === "expander" && part.fill != null && !occupied.has(k)){
+          if (art && art.has(k)){
+            ctx.save(); ctx.globalAlpha = 0.85; drawArtCell(ctx, x * C, y * C, C, art.get(k)); ctx.restore();
+          } else if (part.type === "expander" && part.fill != null && !occupied.has(k)){
             ctx.save(); ctx.globalAlpha = 0.3; drawFillBlock(ctx, x * C, y * C, C, part.fill); ctx.restore();
           }
           drawRainbowCell(ctx, x * C, y * C, C, x, y, rainbowType(part.type), part.type === "blast" ? outward(x + 0.5 - cx, y + 0.5 - cy) : part.direction, t, col);
