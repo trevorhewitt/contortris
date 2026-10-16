@@ -148,7 +148,11 @@ function matchSequenceAt(sequence, ids, at) {
     if (st.chain) return { members: new Set([...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))]), lo: 1, hi: st.chain.max ?? 4 };
     // (now and then one of them over and over, as itself or its echo)
     if (st.repeat) return { members: new Set([...st.repeat, ...st.repeat.map(id => shapes.find(s => s.id === id)?.echo).filter(Boolean)]), lo: 0, hi: [].concat(st.times).at(-1) };
-    const [lo, hi] = Array.isArray(st.count) ? st.count : [st.count ?? 1, st.count ?? 1];
+    let [lo, hi] = Array.isArray(st.count) ? st.count : [st.count ?? 1, st.count ?? 1];
+    // (banished pieces are left out of a pick, as the game does: a unique pick of two with one
+    // banished is one)
+    const live = st.pick.filter(id => shapes.some(s => s.id === id && (s.frequency ?? 1) > 0));
+    if (st.unique && live.length) { lo = Math.min(lo, live.length); hi = Math.min(hi, live.length); }
     // (a step that only happens now and then, or of powerups that can't come yet: maybe none)
     const optional = st.chance != null || st.pick.every(id => !shapes.some(s => s.id === id));
     return { members: new Set(st.pick), lo: optional ? 0 : lo, hi };
@@ -527,6 +531,8 @@ test("the emotions chart's other endings: very British (a nice cup of tea), onli
       assert.equal(new Set(ids).size, ids.length, `${id}: no card twice: ${ids.join()}`);
       ends.set(ids.at(-1), (ends.get(ids.at(-1)) ?? 0) + 1);
     }
+    // (unless the usual ending has been banished: then never on it)
+    if (!((shapes.find(s => s.id === usual)?.frequency ?? 1) > 0)) { assert.ok(!ends.has(usual), `${id}: never on the banished ${usual}`); continue; }
     assert.ok((ends.get(usual) ?? 0) > 200 * 0.7, `${id}: ends on ${usual} ${ends.get(usual)} of 200`);
     assert.ok((ends.get(now) ?? 0) > 0, `${id}: and now and then on ${now}`);
   }
@@ -583,7 +589,9 @@ test("existence: a thing at each stage, from the physical to the end of everythi
     for (const id of ids) { seen.add(concept(id)); if (!versions.has(concept(id))) versions.set(concept(id), new Set()); versions.get(concept(id)).add(id); }
   }
   assert.equal(seen.size, stages.flat().length, `every one turns up: ${[...seen]}`);
-  for (const [c, v] of versions) assert.ok(v.size >= 2, `${c} in more than one version`);
+  // (every version that isn't banished turns up)
+  const liveVersions = (c) => shapes.filter(s => s.id.startsWith("existence_") && concept(s.id) === c && (s.frequency ?? 1) > 0 && s.difficulty === 6).length;
+  for (const [c, v] of versions) assert.ok(v.size >= Math.min(2, liveVersions(c)), `${c} in ${v.size} versions of ${liveVersions(c)}`);
   assert.ok(sometimes > 120 && sometimes < 280, `questions or doubt in ${sometimes} of 400`);
 });
 

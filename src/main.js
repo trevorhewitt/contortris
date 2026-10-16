@@ -12,9 +12,29 @@ import { createGameState, on, updateGame, hardDropAndLock, setNextPiece, timeSca
 import { createRenderer } from "./render.js";
 import { createAchievements } from "./achievements.js";
 import { bindUI } from "./ui.js";
+import { store } from "./util.js";
 
 const { shapes, powerups } = loadShapes(RAW_SHAPES);
 const state = createGameState(shapes, powerups, { groups: GROUPS, threads: { threads: THREADS, sets: SET_THREADS } });
+
+// What turbo zen has shown, remembered from one visit to the next, fading each visit
+// (CONFIG.zen.memory), so a visit doesn't open with the same few pieces as the last one did.
+// (state.zenUses: this visit; state.zenPast: the ones before. src/zen.js counts both.)
+{
+  const M = CONFIG.zen.memory;
+  state.zenUses = new Map();
+  if (M) {
+    const saved = store.getJSON(M.key, null);
+    state.zenPast = new Map(Array.isArray(saved) ? saved.filter(e => Array.isArray(e) && typeof e[1] === "number").map(([k, n]) => [k, n * M.fade]).filter(([, n]) => n >= 0.05) : []);
+    const save = () => {
+      const all = new Map(state.zenPast);
+      for (const [k, n] of state.zenUses) all.set(k, (all.get(k) ?? 0) + n);
+      store.set(M.key, JSON.stringify([...all].map(([k, n]) => [k, Math.round(n * 100) / 100])));
+    };
+    setInterval(save, M.saveMs ?? 20000);
+    addEventListener("pagehide", save);
+  }
+}
 
 // the page layout sizes the board from these (index.html fit script)
 document.documentElement.style.setProperty("--cols", String(CONFIG.board.cols));

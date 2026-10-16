@@ -100,6 +100,9 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     other = createGameState(state.allShapes, state.allPowerups);
     other.groups = state.groups;
     other.threads = state.threads;
+    // (and what's been shown, so the two boards don't show the same things: src/main.js)
+    other.zenUses = (state.zenUses ??= new Map());
+    other.zenPast = state.zenPast;
     other.backdrop = true;
     startRun(other, "home");
     onOther = false;

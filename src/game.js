@@ -1797,6 +1797,7 @@ export function zenCaption(state, text, name = text, { quiet = false, row = null
   // (a mode can do without the words: turbo zen, CONFIG.modes.turbo.captions)
   if (text && CONFIG.modes[state.mode]?.captions !== false) addCallout(state, text, CONFIG.board.cols / 2, row ?? z.captionRow ?? 3, { color: z.captionColour, durationMs: z.captionMs });
   if (!quiet) emit(state, "zenMovement", { name, caption: text });
+  else emit(state, "zenAside", { name, caption: text }); // (a bed or a patch on the way up)
 }
 
 export function updateGame(state, dt) {

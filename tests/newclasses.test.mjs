@@ -57,6 +57,9 @@ test("phantom lands in the deepest gap it fits", () => {
   assert.equal(phantomLandingY(b, 0, [[true]]), 0);
 });
 
+// Is there a combo (not banished) made of only these two classes?
+const pairHasCombo = (powerups, a, b) => powerups.some(p => p.powerup.type === "combo" && (p.frequency ?? 1) > 0 && (p.powerup.parts ?? []).every(e => e.type === a || e.type === b));
+
 test("progression: classes open one at a time, starting with a simple one", () => {
   const { shapes, powerups } = loadShapes(SHAPES);
   const firsts = new Set();
@@ -100,7 +103,9 @@ test("progression: classes open one at a time, starting with a simple one", () =
     // of the first two (CONFIG.assist.powerups.progression: early, combosBeforeThird)
     const classes = news.filter(c => c !== "combo");
     if (classes.length >= 2) assert.ok(classes.slice(0, 2).includes(prog.early), `${prog.early} in the first two: ${news.join(" > ")}`);
-    if (classes.length >= 3) assert.ok(news.indexOf("combo") >= 0 && news.indexOf("combo") < news.indexOf(classes[2]), `combos before the third class: ${news.join(" > ")}`);
+    // (where there's a combo of just those two, that is: none is left of the Expanderz and the
+    // gravitizers, say, if they're all banished)
+    if (classes.length >= 3 && pairHasCombo(powerups, classes[0], classes[1])) assert.ok(news.indexOf("combo") >= 0 && news.indexOf("combo") < news.indexOf(classes[2]), `combos before the third class: ${news.join(" > ")}`);
     assert.ok(!seen.includes("blast") && !seen.includes("goo"), "switched-off classes never turn up");
   }
   assert.ok(firsts.size >= 2, "the first class varies between games");
@@ -166,6 +171,7 @@ test("phantoms rotate inside the stack, but never move up", () => {
   const state = createGameState(shapes, powerups, { rng: makeRng(3) });
   startRun(state, "normal");
   const worm = powerups.find(p => p.id === "ghost_worm");
+  if (!worm) return; // (the phantoms are out of the game for now)
   assert.ok(worm.rotations.length > 1, "ghost_worm has rotations");
   const R = state.board.length, C = state.board[0].length;
   // the lower half full, with a 4x4 cavity at the bottom: the worm fits there either way round
@@ -216,6 +222,9 @@ test("combos actually turn up, and soon after two classes are in", () => {
       hardDropAndLock(state);
       for (let j = 0; j < 200 && state.effect; j++) updateGame(state, 16);
     }
+    // (only the games whose first two classes have a combo of their own: pairHasCombo)
+    const [a, b] = state.pieceSel.powerup.classes.filter(c => c !== "combo");
+    if (b && !pairHasCombo(powerups, a, b)) continue;
     games++;
     if (first != null && first <= 100) withCombo++;
   }

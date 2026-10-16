@@ -254,6 +254,8 @@ const HOUSEKEEPING = new Set(["tidy", "settle", "sweep", "demolition"]);
 function begin(state, name) {
   const z = state.zen;
   if (z.after === name) { z.after = null; z.waited = 0; z.asked = null; }
+  // (a cast of its own: castFor; the housekeeping keeps the one before)
+  if (!HOUSEKEEPING.has(name)) z.cast = castFor(state);
   z.movement = MOVEMENTS[name](state);
   z.movement.name = name;
   z.movement.careful = z.simRng() < (CONFIG.zen.pace.carefulChance ?? 1); // (slows down near the top)
@@ -314,7 +316,8 @@ const int = (state, a, b) => a + Math.floor(state.rng() * (b - a + 1));
 // (turbo zen can fill the whole window).
 const up = (n) => n + CONFIG.board.rows - 24;
 // (zen, the easy one: of what it could pick, one that fits the board as it is, mostly)
-const pick = (state, list) => (isCalm(state) ? pickFitting(state, list, s => s.frequency ?? 1) : sampleByWeight(list, s => s.frequency ?? 1, state.rng));
+// (turbo zen: the ones it has shown less, here or on an earlier visit, the likelier: fresh)
+const pick = (state, list) => (isCalm(state) ? pickFitting(state, list, s => s.frequency ?? 1) : sampleByWeight(list, s => (s.frequency ?? 1) * fresh(state, s), state.rng));
 const stackHeight = (state) => heightOf(occupancy(state.board), CONFIG.board.cols, CONFIG.board.rows);
 
 // (one that only ever comes once: once since the page was loaded; and in Zen, not the pieces only
@@ -426,7 +429,7 @@ function fromPalette(state, pal, pool, headroom = 4) {
   const P = CONFIG.zen.palette ?? {};
   const odd = !pal || state.rng() < (P.odd ?? 0);
   const list = (odd ? pool : pal.pieces).filter(s => fitsUnder(state, s, headroom));
-  if (!list.length) return pickFresh(state, smallPool(state));
+  if (!list.length) return smallFill(state);
   return odd ? pickFresh(state, list) : sampleByWeight(list, s => pal.share.get(s) ?? 1, state.rng);
 }
 // The mood for doing things in batches (the same piece a few times running, to read its name):
@@ -444,10 +447,9 @@ function sameness(state) {
 function stray(state, chance = CONFIG.zen.strays?.chance ?? 0) {
   const S = CONFIG.zen.strays;
   if (!S || isCalm(state) || state.rng() >= chance) return null;
-  const uses = state.zenUses ?? new Map();
-  const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= (S.maxDifficulty ?? 5) && fitsUnder(state, s, S.headroom ?? 4));
+  const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= (S.maxDifficulty ?? 5) && !isTile(s) && fitsUnder(state, s, S.headroom ?? 4));
   if (!pool.length) return null;
-  return sampleByWeight(pool, s => 1 / (1 + (uses.get(s.id) ?? 0)) ** (S.power ?? 1.5), state.rng);
+  return sampleByWeight(pool, s => 1 / (1 + seen(state, s.id)) ** (S.power ?? 1.5), state.rng);
 }
 const noteUse = (state, shape) => {
   const u = (state.zenUses ??= new Map());
@@ -457,15 +459,66 @@ const noteUse = (state, shape) => {
 };
 // A kind kept apart (CONFIG.zen.apart) that came too recently to come again yet?
 const keptApart = (state, shape) => (shape.tags ?? []).some(t => { const a = CONFIG.zen.apart?.[t]; return a && state.drops - (state.zenTagAt?.[t] ?? -Infinity) < a.drops; });
-// How fresh a piece is (turbo zen): 1 if it hasn't come up since the page was loaded, less the
-// more it has (to the power `power`), so whatever the director picks from, it spreads itself
-// over all of it. (Zen as it comes: always 1.)
-const fresh = (state, s, power = CONFIG.zen.strays?.freshness ?? 0.5) => (isCalm(state) ? 1 : 1 / (1 + (state.zenUses?.get(s.id) ?? 0)) ** power);
+// How many times turbo zen has shown something (a piece by id, or "family:..."): since the page
+// was loaded (state.zenUses), and on earlier visits, fading (state.zenPast: main.js keeps it,
+// CONFIG.zen.memory), so a visit doesn't start where the last one did.
+const seen = (state, key) => (state.zenUses?.get(key) ?? 0) + (state.zenPast?.get(key) ?? 0);
+// How fresh a piece is (turbo zen): 1 if it hasn't come up, less the more it has (to the power
+// `power`), so whatever the director picks from, it spreads itself over all of it. (Zen as it
+// comes: always 1.)
+const fresh = (state, s, power = CONFIG.zen.strays?.freshness ?? 0.5) => (isCalm(state) ? 1 : 1 / (1 + seen(state, s.id)) ** power);
 const pickFresh = (state, list) => sampleByWeight(list, s => (s.frequency ?? 1) * fresh(state, s), state.rng);
 
 function giantPiece(state) {
   const g = giantPool(state).filter(s => fitsUnder(state, s, 4));
   return g.length ? pick(state, g) : buildPiece(state);
+}
+
+// Something small, when nothing bigger will do (nearly at the top): one of the movement's own
+// cast if one of them is small, or else any small thing but the tiles, the least shown the
+// likeliest.
+function smallFill(state) {
+  const small = smallPool(state), lead = state.zen?.cast?.lead;
+  const own = lead ? small.filter(s => lead.has(s.id)) : [];
+  if (own.length) return pickFresh(state, own);
+  const list = small.filter(s => !isTile(s));
+  return pickFresh(state, list.length ? list : small);
+}
+
+/* =========================
+   Casts: what each movement is made of (turbo zen)
+   =========================
+   Each movement has its own cast, chosen as it begins, so no two look alike: a select few kinds
+   of piece that go together (a palette: a colour, a theme, a shape), a broad mix of a dozen or
+   so (the ones least shown the likeliest), or anything at all. The planners build with the cast
+   first, as far as it goes; of the rest of the pieces, only some of the bigger ones are there to
+   fill in round them, a different handful each time; and now and then a one-off or two, built
+   in once wherever it happens to fit (CONFIG.zen.cast). A bed or a patch on the way up (planNest)
+   is made of the same.
+*/
+function castFor(state) {
+  const C = CONFIG.zen.cast;
+  if (!C || isCalm(state)) return null;
+  const rng = state.rng;
+  const pool = plannable(state, 3).filter(s => !isTile(s) && candidates([s], 5, 5, 9).length);
+  const kind = sampleByWeight([["few", C.few ?? 1], ["mix", C.mix ?? 1], ["any", C.any ?? 0]], ([, w]) => w, rng)[0];
+  let lead = [];
+  if (kind === "few") lead = palettePick(state, pool)?.pieces ?? [];
+  if (kind === "mix" || (kind === "few" && !lead.length)) {
+    const left = pool.slice(), [lo, hi] = C.mixKinds ?? [8, 20];
+    for (let n = int(state, lo, hi); n > 0 && left.length; n--) { const one = pickFresh(state, left); lead.push(one); left.splice(left.indexOf(one), 1); }
+  }
+  const leadIds = new Set(lead.map(s => s.id));
+  // (of the rest, the small ones always, to finish off with; of the bigger ones only some)
+  const keep = new Set(plannable(state, 3).filter(s => blocks(s) <= 3 || leadIds.has(s.id) || rng() < (C.keep ?? 1)).map(s => s.id));
+  // (and the one-offs: the least shown the likeliest, any size, not tiles)
+  const oneOffs = [], strays = regularPool(state).filter(s => (s.difficulty ?? 1) <= (CONFIG.zen.strays?.maxDifficulty ?? 5) && !isTile(s) && !leadIds.has(s.id));
+  for (let n = sampleByWeight((C.oneOffs ?? [1]).map((w, i) => ({ i, w })), c => c.w, rng).i; n > 0 && strays.length; n--) {
+    const one = sampleByWeight(strays, s => 1 / (1 + seen(state, s.id)) ** (CONFIG.zen.strays?.power ?? 1.5), rng);
+    oneOffs.push(one);
+    strays.splice(strays.indexOf(one), 1);
+  }
+  return { kind, few: kind === "few" && lead.length > 0, lead: leadIds, keep, oneOffs };
 }
 
 // Bringing the board down only goes on while it's spectacular (turbo zen): after the first big
@@ -611,7 +664,7 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         return;
       }
       let shape = this.phase === "fill" && !again.last ? nextOne(state) : null;
-      if (shape && !fitsUnder(state, shape, 2)) shape = only ? null : pick(state, smallPool(state)); // (nearly there: nothing too big)
+      if (shape && !fitsUnder(state, shape, 2)) shape = only ? null : smallFill(state); // (nearly there: nothing too big)
       if (this.phase === "fill" && (!shape || (!again.last && stackHeight(state) >= this.target) || this.pieces >= maxPieces)) {
         this.phase = "blast";
         this.pace = 1;
@@ -811,7 +864,7 @@ const MOVEMENTS = {
     const fam = pickFamily(state);
     return fillThenBlast(fam.caption, (st) => {
       const fits = fam.pieces.filter(s => fitsUnder(st, s, 4));
-      return fits.length ? pickFresh(st, fits) : pickFresh(st, smallPool(st));
+      return fits.length ? pickFresh(st, fits) : smallFill(st);
     }, { target: up(int(state, 18, 21)), pace: 0.75, streaks: 0.3, loose: true, strays: (CONFIG.zen.strays?.chance ?? 0) / 2 });
   },
 
@@ -1165,7 +1218,11 @@ function pickFamily(state, { calm = false } = {}) {
     const pieces = [...ids].map(byId).filter(s => s && !s.powerup && (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6);
     if (pieces.length >= 8) add(`a lot of ${name}`, `a little ${name}`, pieces, 1);
   }
-  return fams.length ? sampleByWeight(fams, f => f.w, state.rng) : { caption: "small things", pieces: smallPool(state) };
+  if (!fams.length) return { caption: "small things", pieces: smallPool(state) };
+  // (the families shown less, here or on an earlier visit, the likelier)
+  const fam = sampleByWeight(fams, f => f.w / (calm ? 1 : 1 + seen(state, `family:${f.caption}`)), state.rng);
+  if (!calm) { const u = (state.zenUses ??= new Map()), k = `family:${fam.caption}`; u.set(k, (u.get(k) ?? 0) + 1); }
+  return fam;
 }
 
 // One after another of `ids` (in turn), each put wherever it does the most good, until the board
@@ -1190,7 +1247,7 @@ function awkwardOne(state) {
     const m = s.rotations[0], n = blocks(s), h = m.length, w = m[0].length;
     return [2, 3, 4].includes(s.difficulty ?? 1) && !s.remix && n >= 5 && n <= 22 && w <= 7 && h <= 7 && n / (w * h) <= 0.78;
   });
-  return list.length ? sampleByWeight(list, s => { const m = s.rotations[0]; return 1.2 - blocks(s) / (m.length * m[0].length); }, state.rng) : null;
+  return list.length ? sampleByWeight(list, s => { const m = s.rotations[0]; return (1.2 - blocks(s) / (m.length * m[0].length)) * fresh(state, s, 1); }, state.rng) : null;
 }
 
 // A piece's name for lots of them: "a bagpipe" is "bagpipes", "a sock full of night" "socks full
@@ -1818,10 +1875,17 @@ function nestCandidates(state, maxW, maxH) {
       if (bottom.some(b => b < 0)) return;
       const cells = mat.flat().filter(Boolean).length;
       const odd = new Set(bottom).size; // (the more uneven its underside, the better a bed shows it off)
-      const w8 = (lvl === LEVEL6 ? 0.5 : big ? 1.4 : 0.7 + (1 - cells / (w * h))) * (0.6 + 0.2 * odd) * fresh(state, s, 1);
+      const w8 = (lvl === LEVEL6 ? 0.5 : big ? 1.4 : 0.7 + (1 - cells / (w * h))) * (0.6 + 0.2 * odd) * fresh(state, s, 1.5);
       out.push({ shape: s, rot, mat, w, h, bottom, w8 });
     });
   }
+  return byName(out, "w8");
+}
+// (pieces that go by the same name, the space invaders say, as likely together as one would be)
+function byName(out, key) {
+  const ids = new Map();
+  for (const c of out) (ids.get(c.shape.name) ?? ids.set(c.shape.name, new Set()).get(c.shape.name)).add(c.shape.id);
+  for (const c of out) c[key] /= ids.get(c.shape.name).size;
   return out;
 }
 
@@ -2551,6 +2615,14 @@ export function planSquares(state) {
   const byCol = new Map();
   for (const p of pieces) { const c = colourOf(p); if (c && c !== "black") { if (!byCol.has(c)) byCol.set(c, []); byCol.get(c).push(p); } }
   for (const [c, list] of byCol) if (list.every(isTile)) byCol.delete(c); // (a colour of only tiles: not one to use)
+  // (and of each colour, one or two of them this time, the least shown the likelier: not every
+  // square of that colour every time)
+  for (const [c, list] of byCol) {
+    const left = list.filter(p => !isTile(p)), some = [];
+    for (let n = int(state, 1, 2); n > 0 && left.length; n--) { const one = pickFresh(state, left); some.push(one); left.splice(left.indexOf(one), 1); }
+    if (rng() < 0.3) some.push(...list.filter(isTile).slice(0, 1));
+    byCol.set(c, some);
+  }
   const palette = [...byCol.keys()];
   if (palette.length < 3) return null;
   for (let i = palette.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [palette[i], palette[j]] = [palette[j], palette[i]]; }
@@ -2620,7 +2692,8 @@ export function planTiles(state, kind = null, { any = false } = {}) {
   const glazes = (pattern) => tileSet(state, pattern, any);
   const ones = glazes(["X"]);
   // (the little tiles finish the edges, and make a floor of them; the grout's gone)
-  const half = ones.filter(o => /half/.test(o.shape.id)).length ? ones.filter(o => /half/.test(o.shape.id)) : ones;
+  // (in a glaze of their own each time: fillGaps finishes the edges in the first it finds)
+  const half = shuffle(ones.filter(o => /half/.test(o.shape.id)).length ? ones.filter(o => /half/.test(o.shape.id)) : ones, rng);
   const little = ones.filter(o => !/half/.test(o.shape.id));
   const strips = tileSet(state, ["X", "X", "X"], false).filter(o => /strip/.test(o.shape.id));
   if (!half.length) return null;
@@ -3039,15 +3112,24 @@ function plannable(state, maxDifficulty) {
 }
 
 function fillerCandidates(state) {
-  const all = candidates(plannable(state, 3), 5, 5, 9);
-  for (const c of all) c.fresh = fresh(state, c.shape);
+  // (the movement's cast first, as often as they fit if it's a select few; then the rest of
+  // what it keeps to fill in round them: castFor)
+  const cast = state.zen?.cast;
+  const pool = plannable(state, 3).filter(s => !cast || cast.keep.has(s.id));
+  const all = candidates(pool, 5, 5, 9);
+  for (const c of all) {
+    c.fresh = fresh(state, c.shape);
+    if (cast?.lead.has(c.shape.id)) { c.lead = true; if (cast.few) c.cap = 99; }
+  }
   return [...strayCandidates(state), ...all];
 }
 // ...and now and then (turbo zen: CONFIG.zen.strays.planChance), a few of the pieces it hardly
 // uses (the least used the likeliest), any shape, each to go in once wherever it happens to fit,
 // for the rest to fill in round.
 function strayCandidates(state) {
-  const S = CONFIG.zen.strays;
+  const S = CONFIG.zen.strays, cast = state.zen?.cast;
+  // (a movement with a cast has its own one-offs)
+  if (cast) return cast.oneOffs.flatMap(one => candidates([one], 8, 8, 30).map(c => ({ ...c, stray: true })));
   if (!S || isCalm(state) || state.rng() >= (S.planChance ?? 0)) return [];
   const uses = state.zenUses ?? new Map(), out = [];
   const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= (S.maxDifficulty ?? 5) && !s.tags?.includes("tiles"));
@@ -3087,11 +3169,12 @@ function awkwardCandidates(state, maxW) {
       const fill = cells.length / (w * h);
       const bottom = [...Array(w).keys()].map(i => { for (let j = h - 1; j >= 0; j--) if (mat[j][i]) return j; return -1; });
       const heights = new Set(bottom).size + new Set([...Array(w).keys()].map(i => mat.findIndex(r => r[i]))).size;
-      const awk = (0.3 + (1 - fill) * 2 + heights * 0.15) * ((s.difficulty ?? 1) >= 4 ? 1.5 : 1) * (s.id === "great_wall" ? 4 : 1);
+      // (the ones shown less, here or on an earlier visit, the likelier: not the same few every time)
+      const awk = (0.3 + (1 - fill) * 2 + heights * 0.15) * ((s.difficulty ?? 1) >= 4 ? 1.5 : 1) * (s.id === "great_wall" ? 4 : 1) * fresh(state, s, 1.5);
       out.push({ shape: s, rot, mat, w, h, cells, bottom, awk });
     });
   }
-  return out;
+  return byName(out, "awk");
 }
 
 // Every distinct turn of each piece, with the cell the planner lines it up by: the leftmost
@@ -3129,7 +3212,8 @@ function candidates(shapes, maxW, maxH, maxCells) {
 // it gives up after `budget` steps and the plan tries again another way.)
 function tile(occ, need, cands, rng, cols, rows, maxUses = 3, holes = null, budget = 1200 * Math.max(1, cols * rows / 336)) {
   // (any strays first, each once, now and then where they fit: strayCandidates)
-  const order = [...cands.filter(c => c.stray), ...cands.filter(c => !c.stray).map(c => ({ c, k: c.cells.length + rng() * 4 + (c.fresh ?? 0) * 3 })).sort((a, b) => b.k - a.k).map(o => o.c)];
+  // (then the movement's own cast, `lead`, and then the rest: the bigger first)
+  const order = [...cands.filter(c => c.stray), ...cands.filter(c => !c.stray).map(c => ({ c, k: (c.lead ? 100 : 0) + c.cells.length + rng() * 4 + (c.fresh ?? 0) * 3 })).sort((a, b) => b.k - a.k).map(o => o.c)];
   const strayHere = CONFIG.zen.strays?.perAnchor ?? 0;
   const ids = new Map(), plan = [];
   const sid = order.map(c => { if (!ids.has(c.shape.id)) ids.set(c.shape.id, ids.size); return ids.get(c.shape.id); });
@@ -3185,7 +3269,7 @@ function tile(occ, need, cands, rng, cols, rows, maxUses = 3, holes = null, budg
     // (a second pass for pieces already used enough)
     while (top.pass < 2 && !found) {
       for (; top.ci < order.length && !found; top.ci++) {
-        const c = order[top.ci], used = uses[sid[top.ci]] >= maxUses;
+        const c = order[top.ci], used = uses[sid[top.ci]] >= (c.cap ?? maxUses);
         if (c.stray && (top.pass === 1 || uses[sid[top.ci]] >= 1 || !(top.strayOk ??= rng() < strayHere))) continue;
         if (used !== (top.pass === 1)) continue;
         const x0 = ax - c.ax, y0 = ay - c.ay;

@@ -399,6 +399,7 @@ test("a powerup the piece before it left with nothing to do is swapped for one o
   const outline = (m) => m.map(r => r.map(c => (c ? 1 : 0)).join("")).join("/");
   // a tidy board: four full-but-one rows, no gaps for a phantom to sink into
   const tidy = (state) => { for (let y = ROWS - 4; y < ROWS; y++) for (let x = 0; x < COLS - 1; x++) state.board[y][x] = filler(); };
+  if (!byId("friendly_ghost")) return; // (the phantoms are out of the game for now: nothing it can leave useless)
   {
     const { state } = newGame("god", 4);
     tidy(state);

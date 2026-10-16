@@ -673,3 +673,26 @@ test("oops-all names: plain plurals, a short form for the ones said over and ove
   assert.equal(shortPlural("a maraca, shaking with excitement"), "maracas");
   assert.equal(oopsName(state, "a mysterious flask of goo", "thrice"), "flasks flasks flasks!!");
 });
+
+test("turbo zen: each movement has a cast of its own, so no two look alike, and the beds are for all sorts", () => {
+  const { state } = zen(4, "turbo");
+  const mvs = [];
+  let cur = null;
+  const beds = [];
+  on(state, (t, d) => {
+    if (t === "zenMovement") { cur = { name: d.name, ids: new Set() }; mvs.push(cur); }
+    if ((t === "zenMovement" || t === "zenAside") && /^a bed for/.test(d.caption ?? "")) beds.push(d.caption);
+    if (t === "lock" && cur && !d.shape.powerup) cur.ids.add(d.shape.id);
+  });
+  run(state, null, 45 * 60000);
+  // (how much of one movement's pieces another of the same kind shares, on average)
+  const jac = (a, b) => { let i = 0; for (const x of a) if (b.has(x)) i++; return i / (a.size + b.size - i); };
+  let sum = 0, n = 0;
+  for (const kind of ["column", "crack", "beds", "pile", "mess", "fall", "well", "standing"]) {
+    const list = mvs.filter(m => m.name === kind && m.ids.size >= 6);
+    for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) { sum += jac(list[i].ids, list[j].ids); n++; }
+  }
+  assert.ok(n >= 4, `${n} pairs`);
+  assert.ok(sum / n < 0.12, `planned movements share ${(sum / n * 100).toFixed(0)}% of their pieces`);
+  assert.ok(beds.length >= 6 && new Set(beds).size >= beds.length * 0.6, `beds: ${beds.join(" | ")}`);
+});

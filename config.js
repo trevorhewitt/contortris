@@ -239,7 +239,17 @@ export const CONFIG = {
     // least), patches of tiles, and Expanderz filling what they can of the gaps (grows): how
     // likely none, one, two or three of them (beds; patches; grows), above `belowTop` rows from
     // the top and with `headroom` rows over them.
-    extras: { beds: [0.3, 0.4, 0.22, 0.08], patches: [0.4, 0.4, 0.2], grows: [0.45, 0.35, 0.2], belowTop: 6, headroom: 4, minCols: 0, minBlocks: 6 },
+    extras: { beds: [0.3, 0.4, 0.22, 0.08], patches: [0.72, 0.23, 0.05], grows: [0.45, 0.35, 0.2], belowTop: 6, headroom: 4, minCols: 0, minBlocks: 6 },
+    // Each movement (turbo zen) has a cast of its own, chosen as it begins (src/zen.js castFor):
+    // how likely a select few kinds that go together (few: a palette), a broad mix (mix: between
+    // mixKinds[0] and mixKinds[1] kinds, the least shown the likeliest), or anything (any). Of the
+    // rest of the pieces, the bigger ones are there to fill in round them only `keep` of the
+    // time, a different handful each movement; and oneOffs: how likely none, one, two or three
+    // one-off pieces, the least shown the likeliest, each built in once wherever it fits.
+    cast: { few: 1, mix: 1.1, any: 0.35, mixKinds: [8, 20], keep: 0.3, oneOffs: [0.25, 0.35, 0.28, 0.12] },
+    // What turbo zen has shown is remembered from one visit to the next (src/main.js), fading to
+    // `fade` of itself each visit, so a visit doesn't open with the same few pieces as the last.
+    memory: { key: "extris.turboShown", fade: 0.5, saveMs: 20000 },
     // Now and then (chance, each piece of a fill; half that in a board of one family; never in
     // "Oops, all..."), something else altogether: one of the pieces turbo zen hardly uses, up to
     // maxDifficulty, the less it has been used since the page was loaded the likelier (to the
@@ -247,8 +257,9 @@ export const CONFIG = {
     // perPlan of them, each going in once, wherever it fits, at perAnchor of the places it might.
     // (Turbo zen.)
     // freshness: whatever it picks from (palettes, families, the planners' pieces), the ones that
-    // have come up less since the page was loaded are likelier, to this power.
-    strays: { chance: 0.1, maxDifficulty: 5, power: 1.5, headroom: 4, planChance: 0.5, perPlan: 3, perAnchor: 0.25, freshness: 0.5 },
+    // have come up less (since the page was loaded, and on earlier visits: memory) are likelier,
+    // to this power.
+    strays: { chance: 0.1, maxDifficulty: 5, power: 1.5, headroom: 4, planChance: 0.5, perPlan: 3, perAnchor: 0.25, freshness: 1 },
     // Guests in a tiling (turbo zen): how likely none, one, two, or a few (up to `most`) strange
     // pieces (up to maxSize wide and tall) built into the pattern where they fall. (Never none: a
     // pattern of tiles and nothing else is a dull one; nor are the squares or a fill's palette
