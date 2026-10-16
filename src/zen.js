@@ -1,13 +1,15 @@
 // ============================================================
 // ZEN MODE — the game plays itself, and never ends (no DOM)
 // ============================================================
-// Zen is for playing, slowly. Each piece comes down at an easy pace, and the computer turns it
-// and moves it over to where it would put it, a step at a time; it's in the computer's hands
-// until the player touches it, and then it's theirs (the game never moves it back) until the
-// next piece. Left alone a while, it carries on by itself, a little quicker. It keeps the board
-// low and tidy and never builds anything up; now and then a little run of something (a few
-// bees, a red patch, the same piece twice), and when the player leaves it high or full of gaps,
-// a little help (CONFIG.zen.calm).
+// Zen is for playing, slowly. Each piece comes down at an easy pace, already turned and over
+// the place the computer would put it; it's in the computer's hands until the player touches
+// it, and then it's theirs (the game never moves it back) until the next piece. Left alone a
+// while, it carries on by itself, a little quicker. It plays like a person would: it keeps the
+// board low, never builds anything up and never slides a piece in under an overhang, and now and
+// then it leaves a hole, which it gets back to by clearing the rows above it (as it does the
+// player's); so it looks like someone playing, and the player can often do better. Now and then
+// a little run of something (a few bees, a red patch, the same piece twice), and when the player
+// leaves it high or full of gaps, a little help (CONFIG.zen.calm).
 //
 // Turbo zen is for watching. Each piece arrives already turned and over the place it's going,
 // and falls quickly into it, sliding in under an overhang at the bottom if it has to. The
@@ -25,7 +27,7 @@
 // matches the plan, the director says "never mind" and tidies up.
 
 import { CONFIG } from "../config.js";
-import { tryMove, tryRotate, zenCaption, timeScaleOf, settleFlock } from "./game.js";
+import { tryMove, zenCaption, timeScaleOf, settleFlock } from "./game.js";
 import { selectPiece, destroyerCells, pickFitting, inGame } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
@@ -43,8 +45,11 @@ const LEVEL6 = 6;
 //   holey: build up evenly, leaving gaps (for the gravitizers to sort out)
 //   grow:  (for expanders) the more blocks the better, nothing cleared
 // headroom: rows it keeps clear at the top (CONFIG.zen.headroom if not given)
+//   calm:  (zen) the usual, and the blocks over a hole count against it, so it clears the rows
+//          above a hole to get back down to it
 const WEIGHTS = {
   clear: { height: -0.51, lines: 0.76, holes: -0.36, bump: -0.18 },
+  calm: { height: -0.51, lines: 0.76, holes: -0.36, bump: -0.18, cover: -0.3 },
   build: { height: -0.1, lines: -0.6, holes: -0.9, bump: -0.22, headroom: 3 },
   holey: { height: -0.2, lines: -1.6, holes: 0.35, bump: -0.32, headroom: 4 },
   grow: { height: 0.08, lines: -2, holes: -0.4, bump: -0.15, headroom: 3 },
@@ -624,10 +629,40 @@ function waves(state) {
 // The gaps under blocks on the board.
 function gaps(state) {
   const { cols, rows } = CONFIG.board;
-  const occ = occupancy(state.board);
+  return holesOf(occupancy(state.board), cols, rows);
+}
+function holesOf(occ, cols, rows) {
   let n = 0;
   for (let x = 0; x < cols; x++) for (let y = 0, seen = false; y < rows; y++) { if (occ[y * cols + x]) seen = true; else if (seen) n++; }
   return n;
+}
+
+// Zen, now and then, puts a piece where a person might have, leaving a hole or two
+// (CONFIG.zen.calm.slips): of the places nearly as good as the best, the best of those that
+// leave a hole, and never one that stands taller than the best would; only while the board is
+// low and has few holes in it already. It gets back down to them by clearing the rows above
+// them (WEIGHTS.calm), and the player can often do better. { rot, x } or null.
+function slipFor(state, shape, maxTurns) {
+  const S = CONFIG.zen.calm.slips, z = state.zen, { cols, rows } = CONFIG.board;
+  if (!S || shape.powerup || shape.difficulty === LEVEL6 || blocks(shape) < 3 || z.simRng() >= S.chance) return null;
+  const occ = occupancy(state.board), holes = holesOf(occ, cols, rows);
+  if (holes >= S.most || heightOf(occ, cols, rows) > rows * S.height) return null;
+  const all = [];
+  for (let r = 0; r < Math.min(maxTurns, reachableTurns(shape)); r++) {
+    const mat = shape.rotations[r], w = mat[0].length;
+    for (let x = 0; x + w <= cols; x++) {
+      const y = dropY(occ, mat, x, cols, rows);
+      if (y == null || y < 0) continue;
+      const o = occ.slice(), lines = placeAndClear(o, mat, x, y, cols, rows);
+      all.push({ rot: r, x, s: score(o, lines, WEIGHTS.calm, cols, rows), h: heightOf(o, cols, rows), made: holesOf(o, cols, rows) - holes });
+    }
+  }
+  if (!all.length) return null;
+  const best = all.reduce((a, b) => (b.s > a.s ? b : a));
+  const slips = all.filter(c => c.made >= 1 && c.made <= S.holes && c.h <= best.h && c.s >= best.s - S.within);
+  if (!slips.length) return null;
+  const c = slips.reduce((a, b) => (b.s > a.s ? b : a));
+  return { rot: c.rot, x: c.x, slide: null, slip: true };
 }
 
 // The gravitizer (or phantom, while there are any) of a handful that would close the most gaps.
@@ -1216,18 +1251,14 @@ export function zenSpawned(state) {
   if (state.lastInputAt !== z.inputAt) { z.userAt = state.drops; z.inputClock = z.clock; }
   z.inputAt = state.lastInputAt;
   z.target = targetFor(state);
-  z.glideMs = 0;
   const t = z.target;
   if (t) {
     const mat = a.shape.rotations[t.rot];
     if (mat && t.x >= 0 && t.x + mat[0].length <= CONFIG.board.cols) {
-      if (isCalm(state)) t.glide = true;
-      else {
-        a.rotIdx = t.rot;
-        a.x = t.x;
-        a.y = -mat.length;
-        a.unkickedX = null;
-      }
+      a.rotIdx = t.rot;
+      a.x = t.x;
+      a.y = -mat.length;
+      a.unkickedX = null;
     }
   }
   z.pace = paceFor(state, z.current, a.shape);
@@ -1385,7 +1416,7 @@ export function zenLockMs(state) {
   if (!autopilot(state)) return null;
   const t = state.zen.target;
   // (nor before the rest of a flock has landed: it clears their rows with its own)
-  if ((t?.slide && !t.slid) || (t?.glide && !t.glided) || state.flock.length) return Infinity;
+  if ((t?.slide && !t.slid) || state.flock.length) return Infinity;
   return isCalm(state) && !dozing(state) ? null : CONFIG.zen.lockMs * state.zen.pace;
 }
 
@@ -1427,17 +1458,6 @@ export function zenTick(state, dt) {
     }
   }
   if (!a || state.effect || z.userHas || a !== z.piece) return;
-  // zen: turned and moved over to its place, a step at a time (and if it can't get there, it
-  // lands where it is)
-  const g = z.target;
-  if (g?.glide && !g.glided) {
-    const every = CONFIG.zen.calm.glideMs * (dozing(state) ? 0.5 : 1);
-    for (z.glideMs += dt; z.glideMs >= every && !g.glided; z.glideMs -= every) {
-      if (a.rotIdx !== g.rot) { if (!tryRotate(state)) g.glided = true; }
-      else if (a.x !== g.x) { if (!tryMove(state, Math.sign(g.x - a.x), 0)) g.glided = true; }
-      if (a.rotIdx === g.rot && a.x === g.x) g.glided = true;
-    }
-  }
   // down at the right depth: slide in under the overhang (or, if it came to rest anywhere
   // else, never mind the slide)
   const t = z.target;
@@ -1476,6 +1496,9 @@ function targetFor(state) {
   const z = state.zen, a = state.active;
   const item = z.current;
   if (item?.target && item.shape.id === a.shape.id) return { ...item.target };
+  // (zen, now and then: where a person might have put it, leaving a hole)
+  const slip = isCalm(state) ? slipFor(state, a.shape, item?.turns ?? 4) : null;
+  if (slip) return slip;
   // (with the next piece in mind, if it's known: the moon goes where the earth can stand beside it)
   const best = bestPlacement(state, a.shape, item?.weights ?? WEIGHTS.clear, item?.turns ?? 4, z.queue[0]?.shape ?? null);
   return best ? { rot: best.rot, x: best.x, slide: best.slide ?? null } : null;
@@ -1488,6 +1511,9 @@ function targetFor(state) {
 const LOOK_AHEAD = 10;
 export function bestPlacement(state, shape, weights = WEIGHTS.clear, maxTurns = 4, next = null) {
   const { cols, rows } = CONFIG.board;
+  // (zen plays as a person would: never in under an overhang, and it digs down to its holes)
+  const calm = isCalm(state);
+  if (calm && weights === WEIGHTS.clear) weights = WEIGHTS.calm;
   const occ0 = occupancy(state.board);
   const pu = shape.powerup;
   const phantom = pu && isPhantomPowerup(pu);
@@ -1519,7 +1545,7 @@ export function bestPlacement(state, shape, weights = WEIGHTS.clear, maxTurns = 
       const y = phantom ? phantomLandingY(state.board, x, mat) : dropY(occ0, mat, x, cols, rows);
       if (y == null) continue;
       consider(r, x, y);
-      if (pu) continue;
+      if (pu || calm) continue;
       // ...and slid along at the bottom, in under anything that overhangs
       for (const dir of [-1, 1]) {
         for (let xs = x + dir; xs >= 0 && xs + w <= cols && fitsAt(occ0, mat, xs, y, cols, rows); xs += dir) {
@@ -3265,12 +3291,12 @@ function clearFull(occ, cols, rows) {
 
 // (w.well: a column to keep clear, all the way down)
 function score(occ, lines, w, cols, rows) {
-  let agg = 0, holes = 0, bump = 0, maxH = 0, prev = -1, inWell = 0;
+  let agg = 0, holes = 0, bump = 0, maxH = 0, prev = -1, inWell = 0, cover = 0;
   for (let x = 0; x < cols; x++) {
-    let h = 0;
+    let h = 0, above = 0;
     for (let y = 0; y < rows; y++) {
-      if (occ[y * cols + x]) { if (!h) h = rows - y; }
-      else if (h) holes++;
+      if (occ[y * cols + x]) { if (!h) h = rows - y; above++; }
+      else if (h) { holes++; cover += above; above = 0; } // (the blocks over a hole, once each)
     }
     if (x === w.well) { inWell = h; continue; }
     agg += h;
@@ -3279,5 +3305,5 @@ function score(occ, lines, w, cols, rows) {
     prev = h;
   }
   const over = Math.max(0, Math.max(maxH, inWell) - (rows - (w.headroom ?? CONFIG.zen.headroom)));
-  return w.height * agg + w.lines * lines + w.holes * holes + w.bump * bump - 4 * over * over - 3 * inWell;
+  return w.height * agg + w.lines * lines + w.holes * holes + w.bump * bump + (w.cover ?? 0) * cover - 4 * over * over - 3 * inWell;
 }

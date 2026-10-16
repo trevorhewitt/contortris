@@ -60,27 +60,46 @@ test("zen: slow and easy — it plays itself, keeps the board low, and never end
   assert.ok(["family", "colours", "twos", "rain"].filter(k => kinds.has(k)).length >= 3, `${[...kinds]}`);
 });
 
-test("zen: each piece comes in as usual, and is turned and moved over to its place a step at a time", () => {
+test("zen: each piece comes in already turned and over its place, as a person would play it (never in under an overhang), now and then leaving a hole", () => {
   const { state } = zen(2);
-  let checked = 0, moved = 0, piece = null, want = null, path = [];
+  let checked = 0, slips = 0, piece = null, want = null;
+  const holes = () => { let n = 0; for (let x = 0; x < cols; x++) for (let y = 0, seen = false; y < rows; y++) { if (state.board[y][x]) seen = true; else if (seen) n++; } return n; };
+  let before = 0, slipHoles = 0;
   on(state, (t) => {
     if (t === "spawn") {
       const a = state.active;
-      piece = a; want = state.zen.target; path = [];
-      if (!want?.glide) return;
-      assert.equal(a.rotIdx, 0, `${a.shape.id} comes in unturned`);
+      piece = a; want = state.zen.target; before = holes();
+      if (!want) return;
+      assert.equal(a.rotIdx, want.rot, `${a.shape.id} comes in turned`);
+      assert.equal(a.x, want.x, `${a.shape.id} comes in over its place`);
+      assert.ok(!want.slide, `${a.shape.id}: never slid in under an overhang`);
       checked++;
+      if (want.slip) slips++;
     }
-    if (t === "lock" && want?.glide) {
-      assert.equal(piece.rotIdx, want.rot, `${piece.shape.id} turned`);
-      assert.ok(piece.x === want.x || piece.x === want.slide?.to, `${piece.shape.id} over its place`);
-      // (one column at a time, never jumping)
-      for (let i = 1; i < path.length; i++) assert.ok(Math.abs(path[i] - path[i - 1]) <= 2, `${piece.shape.id}: ${path}`);
-      if (new Set(path).size > 1) moved++;
-    }
+    if (t === "lock" && want?.slip && piece.x === want.x && holes() > before) slipHoles++;
   });
-  run(state, null, 3 * 60000, () => { if (piece && state.active === piece && path[path.length - 1] !== piece.x) path.push(piece.x); });
-  assert.ok(checked > 30 && moved > 15, `${checked} pieces, ${moved} moved over`);
+  run(state, null, 6 * 60000, () => {
+    // (and it stays where it came in: nothing moves it over on the way down)
+    if (piece && state.active === piece && want && !state.zen.userHas) assert.ok(piece.x === want.x && piece.rotIdx === want.rot, piece.shape.id);
+  });
+  assert.ok(checked > 60, `${checked} pieces`);
+  assert.ok(slips >= 2 && slipHoles >= 1, `${slips} slips, ${slipHoles} of them left a hole`);
+});
+
+test("zen: it gets back down to a hole by clearing the rows above it", () => {
+  const { state } = zen(5);
+  run(state, null, 2000);
+  // a hole, buried under two rows with a gap in each
+  for (const row of state.board) row.fill(null);
+  const b = state.board, at = 4;
+  for (let y = rows - 3; y < rows; y++) for (let x = 0; x < cols; x++) b[y][x] = { pid: 900 + y };
+  b[rows - 1][at] = null;                                   // the hole
+  b[rows - 2][cols - 1] = null; b[rows - 3][cols - 2] = null; // (the gaps in the rows over it)
+  const buried = () => b[rows - 1][at] === null && [rows - 2, rows - 3].some(y => b[y][at]);
+  assert.ok(buried());
+  let freed = false;
+  for (let t = 0; t < 4 * 60000 && !freed; t += 32) { updateGame(state, 32); freed = !buried(); }
+  assert.ok(freed, "the rows over the hole cleared, or the hole filled, within four minutes");
 });
 
 test("zen: left alone it dozes off and carries on a little quicker, and a touch wakes it", () => {

@@ -128,18 +128,22 @@ export const CONFIG = {
   // unless the player takes it over, and it never ends.
   zen: {
     // Zen itself is for playing: slow and easy, and it can't be lost. Each piece comes down at an
-    // easy pace (dropMs a row), and the computer turns it and moves it over to where it would put
-    // it, a step every glideMs; touch it and it's yours. Leave it alone for idleMs and it carries
-    // on by itself a little quicker (idleDropMs a row) until it's touched again. It keeps the
-    // board low and never builds anything up, with now and then a little run of something; and
+    // easy pace (dropMs a row), already turned and over the place the computer would put it;
+    // touch it and it's yours. Leave it alone for idleMs and it carries on by itself a little
+    // quicker (idleDropMs a row) until it's touched again. It plays as a person would: it keeps
+    // the board low and never builds anything up, never slides a piece in under an overhang, and
+    // now and then (slips: chance a piece) leaves a hole or two (at most `holes`) with a piece
+    // nearly as good as its best (within that much of it), while the board's below `height` of
+    // the way up with fewer than `most` holes; it gets back down to holes, its own and the
+    // player's, by clearing the rows above them. Now and then a little run of something; and
     // when the player leaves it high (helpHeight of the board) or full of gaps (helpGaps), a
     // helpful powerup, at most one every helpEvery pieces, and never one that brings down more
-    // than helpRows rows at once. dangerRows: built this close to the
-    // top, a big powerup. The rest (hard, level6, powerups, pieceMix) replace the same numbers in
-    // CONFIG.assist, as God mode's do: fewer giants and sets than God mode, later on, and mostly
-    // the easier pieces.
+    // than helpRows rows at once. dangerRows: built this close to the top, a big powerup. The
+    // rest (hard, level6, powerups, pieceMix) replace the same numbers in CONFIG.assist, as God
+    // mode's do: fewer giants and sets than God mode, later on, and mostly the easier pieces.
     calm: {
-      dropMs: 700, glideMs: 110, idleMs: 20000, idleDropMs: 170,
+      dropMs: 700, idleMs: 20000, idleDropMs: 170,
+      slips: { chance: 0.12, holes: 2, within: 3, height: 0.4, most: 3 },
       helpHeight: 0.45, helpGaps: 12, helpEvery: 8, helpRows: 12, dangerRows: 7,
       hard: { minDropIndex: 12, firstGiantBetween: [18, 36], softWindowStart: 18, rechargePerDrop: 0.004, cooldownDrops: 30, hardMaxDanger: 0.25 },
       level6: { firstAfter: [25, 45], cooldownDrops: 50, chancePerDrop: 0.04 },

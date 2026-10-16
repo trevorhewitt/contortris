@@ -20,7 +20,7 @@ const MODES = {
   normal: { levels: [1, 1, 2], powerupEvery: [4, 6], puKind: "helpful", moveMs: 110, fallMs: 70 },
   extreme: { levels: [2, 3, 3, 4], powerupEvery: null, moveMs: 80, fallMs: 50 },
   god: { levels: [3, 4, 5], powerupEvery: [1, 2], puKind: "big", moveMs: 90, fallMs: 60 },
-  zen: { levels: [0, 1, 1], powerupEvery: [7, 10], puKind: "helpful", moveMs: 200, fallMs: 150, glide: true },
+  zen: { levels: [0, 1, 1], powerupEvery: [7, 10], puKind: "helpful", moveMs: 0, fallMs: 150 },
   turbo: { levels: [1, 2, 2, 3], powerupEvery: null, moveMs: 0, fallMs: 14, buildTo: ROWS - 3, puKind: "big" },
 };
 
@@ -163,13 +163,13 @@ export function createModeDemo(canvas, mode, { shapes, powerups, cell = 12, seed
       return;
     }
     if (cur.phase === "move") {
-      // turned, then over a column at a time (Zen glides there, slowly)
+      // turned, then over a column at a time (Zen and turbo zen: already there as it comes)
       if (now - cur.t < cfg.moveMs) return;
       cur.t = now;
       if (cur.rot !== cur.place.r) cur.rot = cur.place.r;
       else if (cur.x !== cur.place.x) cur.x += Math.sign(cur.place.x - cur.x);
       else cur.phase = "fall";
-      if (!cfg.glide && cur.phase === "move" && cur.rot === cur.place.r && cur.x === cur.place.x) cur.phase = "fall";
+      if (cur.phase === "move" && cur.rot === cur.place.r && cur.x === cur.place.x) cur.phase = "fall";
       if (cur.y < -1) cur.y++; // (it comes into view as it goes)
       return;
     }
