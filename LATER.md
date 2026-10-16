@@ -28,7 +28,15 @@ deferred is added at the bottom.)
   - underwear (sometimes with the socks): tighty-whities, boxers, boxer briefs
   - presents
 - **Expanderz in more turbo zen sequences.** Some of this is in (a crack flooded by one
-  Expanderz, fills that grow, three ways of filling with Expanderz); still to do: more new
-  sequences that combine Expanderz with the others, a "canvas" sequence for the mineshaft
-  pieces (one drops on a messy board, the board under it becomes solid ground, and the shaft is
-  filled in with long pieces), and sequences for the rain clouds.
+  Expanderz, fills that grow, three ways of filling with Expanderz; the new Expanderz turn up in
+  all of these by themselves); still to do: more new sequences that combine Expanderz with the
+  others, a "canvas" sequence for the mineshaft pieces (one drops on a messy board, the board
+  under it becomes solid ground, and the shaft is filled in with long pieces), and sequences for
+  the rain clouds.
+
+## The block designer
+
+- **Editing painted fills.** The designer keeps the new painted fills (and picture fills) when a
+  piece is saved, and its in-game preview paints them as the game does, but they're edited in
+  shapes/main_shapes.js (every setting is described at the top of src/fillart.js), not in the
+  designer itself.
