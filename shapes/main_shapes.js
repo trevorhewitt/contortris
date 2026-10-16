@@ -122588,7 +122588,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
-    claudeDraft: true,
   },
   {
     id: "big_waterfall",
@@ -125420,8 +125419,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "spilled_milk",
@@ -125471,7 +125469,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
-    claudeDraft: true,
   },
   {
     id: "inner_light",
@@ -125522,7 +125519,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "burst_of_sunshine",
@@ -125575,11 +125571,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
-    claudeDraft: true,
   },
   {
     id: "inflating_bouncy_castle",
-    name: "a bouncy castle",
+    name: "a bouncy castle!",
     grid: [
         "XX",
         "XX"
@@ -129342,7 +129337,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.35,
-    claudeDraft: true,
   },
   {
     id: "microwaved_marshmallow",
@@ -129404,11 +129398,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
-    claudeDraft: true,
   },
   {
     id: "incoming_tide",
-    name: "the tide coming in",
+    name: "tide's coming in",
     grid: [
         "XXX"
       ],
@@ -129479,11 +129472,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.25,
-    claudeDraft: true,
   },
   {
     id: "bathroom_tiles",
-    name: "a box of bathroom tiles",
+    name: "bathroom tiles",
     grid: [
         "XX",
         "XX"
@@ -129554,11 +129546,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
   },
   {
     id: "herringbone_floor",
-    name: "a herringbone floor",
+    name: "aged parquet wood flooring",
     grid: [
         "XX",
         "XX"
@@ -133913,7 +133904,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.45,
-    claudeDraft: true,
   },
   {
     id: "hexagonal_tiles",
@@ -136290,11 +136280,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
   },
   {
     id: "fish_scale_tiles",
-    name: "fish-scale tiles",
+    name: "fish scales",
     grid: [
         "XX",
         "XX"
@@ -140627,11 +140616,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.45,
-    claudeDraft: true,
   },
   {
     id: "moroccan_mosaic",
-    name: "a Moroccan mosaic",
+    name: "a gorgeous mosaic",
     grid: [
         "XX",
         "XX"
@@ -144927,7 +144915,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "terrazzo_slab",
@@ -145090,8 +145077,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.6,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "tessellating_lizards",
@@ -147797,7 +147783,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "chequered_marble",
@@ -149560,7 +149545,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.2,
-    claudeDraft: true,
   },
   {
     id: "lego_few_bricks",
@@ -154396,7 +154380,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
   },
   {
     id: "lego_heap",
@@ -159203,7 +159186,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "lego_tub",
@@ -163999,7 +163981,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "lego_bucket",
@@ -168804,6 +168785,5 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
 ];
