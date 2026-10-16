@@ -1094,35 +1094,49 @@ function awkwardOne(state) {
 // of night", "a cactus that wants a hug" "cacti that want a hug", "Big Ben" "Big Bens".
 // What the name says, all the way up, for a board full of one awkward thing: now its own name,
 // now one of these (CONFIG.zen.oopsNames: weights).
+// (the formats that say it over and over use the short form: "gnomes gnomes gnomes!!")
 const OOPS = {
   plain: () => null,
-  oops: (one, many) => `Oops, all ${many}!`,
-  // (a short name three times; a long one, its plural: "gnomes gnomes gnomes!!")
-  thrice: (one, many, own) => { const w = !own && one.split(/\s+/).length <= 2 ? one : many; return `${w} ${w} ${w}!!`; },
-  more: (one, many) => `${many} ${many} and more ${many}`,
-  reserve: (one, many) => `the strategic reserve of ${many}`,
+  oops: (many) => `Oops, all ${many}!`,
+  thrice: (many, short) => `${short} ${short} ${short}!!`,
+  more: (many, short) => `${short} ${short} and more ${short}`,
+  reserve: (many) => `the strategic reserve of ${many}`,
 };
-// `what`: the piece (or just its name). A piece with lines of its own (its `oops`: shapes/
-// main_shapes.js) says one of them as often as not (CONFIG.zen.oopsOwnLines), and its own short
-// plural goes into the rest.
+// `what`: the piece (or just its name). A piece's own plural and short form (its `oops`: { many,
+// short }: shapes/main_shapes.js) are used where it has them; or else they're worked out from
+// its name (pluralName, shortPlural).
 export function oopsName(state, what, kind = null) {
   const shape = what && typeof what === "object" ? what : null, name = shape ? shape.name : String(what ?? "");
   const own = shape?.oops ?? null;
-  if (!kind && own?.lines?.length && state.rng() < (CONFIG.zen.oopsOwnLines ?? 0.55)) return own.lines[Math.floor(state.rng() * own.lines.length)];
   const w = CONFIG.zen.oopsNames ?? { oops: 1 };
   kind ??= sampleByWeight(Object.keys(OOPS).filter(k => w[k] > 0), k => w[k], state.rng);
-  const one = name.trim().replace(/^(?:just |only )?(?:a|an|the|some|one|another)\s+/i, "");
-  return OOPS[kind](one, own?.many ?? pluralName(name), !!own?.many);
+  const many = own?.many ?? pluralName(name);
+  return OOPS[kind](many, own?.short ?? (many.split(/\s+/).length <= 2 ? many : shortPlural(name)));
+}
+
+// Just the thing itself, more than one of it: "a mysterious flask of goo" "flasks".
+export function shortPlural(name) {
+  const head = pluralName(name).replace(/,.*$/, "").match(/^(.*?)(?:\s+(?:full of|made of|of|with|on|in|for|from|that|who|which|under|over|without|at|by|to|and|holding|wearing|inside|called)\s.*)?$/i)?.[1] ?? name;
+  const words = head.split(/\s+/);
+  // (the thing, not what's been done to it: "Santas stuck" is "Santas")
+  let k = words.length - 1;
+  while (k > 0 && /^(stuck|lost|left|gone|trapped|frozen|\w+ed|\w+ing)$/i.test(words[k])) k--;
+  return words[k];
 }
 
 export function pluralName(name) {
-  const s = name.trim().replace(/^(?:just |only )?(?:a|an|the|some|one|another)\s+/i, "");
+  // (a name that goes on after a full stop: only the first part; and a list, "beans, beans and
+  // beans", as it is)
+  let s = name.trim().replace(/^(?:just |only )?(?:a|an|the|some|one|another)\s+/i, "").replace(/\.\s.*$/, "").replace(/[.!]+$/, "");
+  if (/,\s.*\sand\s/.test(s)) return s;
   const m = s.match(/^(.*?)(\s+(?:full of|made of|of|with|on|in|for|from|that|who|which|under|over|without|at|by|to|and|holding|wearing|inside|called)\s.*|,\s+\w+ing\b.*|\s+\(.*)$/i);
   let head = m ? m[1] : s, tail = m ? m[2] : "";
   const words = head.split(/\s+/);
   // (the thing itself, not what's been done to it: Santas stuck in a chimney)
   const k = words.length > 1 && /^(stuck|lost|left|gone|trapped|frozen|\w+ed)$/i.test(words[words.length - 1]) ? words.length - 2 : words.length - 1;
-  words[k] = pluralWord(words[k]);
+  // (its punctuation kept where it was: "a smooth, smooth saxophone")
+  const [, word, punct] = words[k].match(/^(.*?)([,;:]*)$/);
+  words[k] = pluralWord(word) + punct;
   // (and what they do, for more than one: "that want", "who don't")
   tail = tail.replace(/^(\s+(?:that|who|which)\s+)(\w+)('t)?/i, (all, lead, verb, nt) => {
     const v = verb.toLowerCase();

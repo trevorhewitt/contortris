@@ -347,7 +347,7 @@ test("a board full of one thing has a name for it, now and then just its own", (
   const said = (kind) => oopsName(state, "a bagpipe", kind);
   assert.equal(said("plain"), null);
   assert.equal(said("oops"), "Oops, all bagpipes!");
-  assert.equal(said("thrice"), "bagpipe bagpipe bagpipe!!");
+  assert.equal(said("thrice"), "bagpipes bagpipes bagpipes!!"); // (as "gnomes gnomes gnomes!")
   assert.equal(said("more"), "bagpipes bagpipes and more bagpipes");
   assert.equal(said("reserve"), "the strategic reserve of bagpipes");
   const kinds = new Set(Array.from({ length: 200 }, () => String(oopsName(state, "a bagpipe"))));
@@ -559,4 +559,24 @@ test("row clears have names all the way up to the whole board", () => {
   for (let n = 2; n <= rows; n++) assert.ok(names[n], `no name for ${n}`);
   assert.equal(new Set(Object.values(names)).size, Object.keys(names).length);
   assert.match(names[rows], /^quattuorvigintuple/);
+});
+
+test("oops-all names: plain plurals, a short form for the ones said over and over, no lines of their own", async () => {
+  const { oopsName, pluralName, shortPlural } = await import("../src/zen.js");
+  const { SHAPES } = await import("../shapes/main_shapes.js");
+  const { makeRng } = await import("../src/util.js");
+  assert.ok(SHAPES.every(s => !s.oops?.lines), "no lines of their own");
+  const gnome = SHAPES.find(s => s.id === "garden_gnome");
+  const state = { rng: makeRng(3) };
+  assert.equal(oopsName(state, gnome, "oops"), "Oops, all garden gnomes!");
+  assert.equal(oopsName(state, gnome, "thrice"), "gnomes gnomes gnomes!!");
+  assert.equal(oopsName(state, gnome, "more"), "gnomes gnomes and more gnomes");
+  assert.equal(oopsName(state, gnome, "reserve"), "the strategic reserve of garden gnomes");
+  // worked out from the name, where a piece has nothing of its own
+  assert.equal(pluralName("a beans, beans and beans"), "beans, beans and beans");
+  assert.equal(pluralName("a microscope. it has a few questions about you."), "microscopes");
+  assert.equal(pluralName("a smooth, smooth saxophone"), "smooth, smooth saxophones");
+  assert.equal(shortPlural("Santa stuck in a chimney"), "Santas");
+  assert.equal(shortPlural("a maraca, shaking with excitement"), "maracas");
+  assert.equal(oopsName(state, "a mysterious flask of goo", "thrice"), "flasks flasks flasks!!");
 });
