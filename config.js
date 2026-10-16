@@ -277,6 +277,7 @@ export const CONFIG = {
     newest: {
       sets: ["sunshine", "trees", "great_and_terrible", "space", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
+        "bathroom_tiles", "herringbone_floor", "hexagonal_tiles", "fish_scale_tiles", "moroccan_mosaic", "terrazzo_slab", "tessellating_lizards", "chequered_marble", "lego_few_bricks", "lego_heap", "lego_tub", "lego_bucket",
         "mentos_in_cola", "squat_volcano", "big_waterfall", "spilled_milk", "inner_light", "burst_of_sunshine", "inflating_bouncy_castle", "swelling_sponge", "microwaved_marshmallow", "incoming_tide",
         "road_sinkhole", "big_green_pipe", "bottomless_hole", "deep_end", "narrow_mineshaft", "mineshaft", "lift_shaft", "straight_quarry", "crevasse", "canyon",
         "sphinx", "extris", "present_big", "present_wide", "present_tall", "present_long", "present_small", "dinosaur_footprints", "bigfoot_footprints",
