@@ -504,7 +504,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -523,7 +522,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -547,7 +545,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -565,7 +562,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -584,7 +580,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -605,7 +600,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     seam: "bea_ns",
     tags: [
         "food"
@@ -626,7 +620,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     seam: "bea_ns",
     tags: [
         "food"
@@ -646,7 +639,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -667,7 +659,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -687,7 +678,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -706,7 +696,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -725,7 +714,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -743,7 +731,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nameAgain: "another bean",
     noShake: true,
     tags: [
@@ -764,7 +751,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -785,7 +771,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nextShapeProbs: [
         0.35
       ],
@@ -1478,7 +1463,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
     oops: {
         "many": "pizza"
       },
@@ -1500,7 +1484,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
     oops: {
         "many": "traffic cones"
       },
@@ -1538,7 +1521,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
     oops: {
         "many": "catloaves"
       },
@@ -1579,7 +1561,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
     nextShapeProbs: [
         0.1
       ],
@@ -1624,7 +1605,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
     oops: {
         "many": "disguises"
       },
@@ -1676,7 +1656,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
     oops: {
         "many": "rubber chickens"
       },
@@ -1724,7 +1703,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "floppy disks"
       },
@@ -1843,7 +1821,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "trophies"
       },
@@ -1886,7 +1863,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "smooth saxophones",
         "short": "saxophones"
@@ -1926,7 +1902,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "big heavy dumbbells",
         "short": "dumbbells"
@@ -2013,7 +1988,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "baguettes"
       },
@@ -2058,7 +2032,7 @@ export const SHAPES = [
   },
   {
     id: "pea_pod",
-    name: "a pea pod",
+    name: "two peas in a pod",
     grid: [
         "XXX"
       ],
@@ -2068,7 +2042,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nextShapeProbs: [
         0.3
       ],
@@ -2125,7 +2098,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "candy canes"
       },
@@ -2164,7 +2136,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "owls"
       },
@@ -2266,7 +2237,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "frogs on lily pads",
         "short": "frogs"
@@ -2304,7 +2274,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "sugar cubes"
       },
@@ -2357,7 +2326,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nextShapeProbs: [
         0.25
       ],
@@ -2809,7 +2777,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "model railways"
       },
@@ -3150,8 +3117,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
     oops: {
         "many": "sausage dogs"
       },
@@ -3175,7 +3141,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
   },
   {
     id: "mormon",
@@ -4196,7 +4161,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
     nextShapeProbs: [
         0.15,
         0.1
@@ -4344,7 +4308,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
     nextShapeProbs: [
         0.25,
         0.15
@@ -4424,7 +4387,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
     oops: {
         "many": "rubber ducks"
       },
@@ -4495,7 +4457,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
     oops: {
         "many": "Tuesdays"
       },
@@ -4521,7 +4482,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "leaning towers"
       },
@@ -4548,7 +4508,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "Easter Island heads"
       },
@@ -4572,7 +4531,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "Stonehenges"
       },
@@ -4606,7 +4564,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nextShapeProbs: [
         0.3
       ],
@@ -4633,7 +4590,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
   },
   {
     id: "infectious_sand",
@@ -4694,7 +4650,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "large_black_hole",
@@ -4760,7 +4715,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
   },
   {
     id: "katana",
@@ -4768,7 +4722,7 @@ export const SHAPES = [
     grid: [
         "XXXXX"
       ],
-    color: [["#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#c97f1e","#c97f1e","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633"],["#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#feae34","#c97f1e","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633"],["#c97f1e","#feae34","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#feae34","#c97f1e","#feae34","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#ffffff","#ffffff","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#ffffff","#ffffff"],["#c97f1e","#feae34","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#feae34","#c97f1e","#feae34","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#ffffff","#a22633","#a22633"],["#c97f1e","#feae34","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#feae34","#c97f1e","#c97f1e","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#a22633","#a22633","#a22633"],["#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#feae34","#c97f1e","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633"],["#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#c97f1e","#c97f1e","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633","#a22633"]],
+    color: [["#c97f1e","#feae34","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#c97f1e","#c97f1e","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4"],["#c97f1e","#feae34","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#feae34","#c97f1e","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4"],["#c97f1e","#feae34","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#feae34","#c97f1e","#feae34","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#ffffff","#ffffff","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#ffffff","#ffffff"],["#c97f1e","#feae34","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#feae34","#c97f1e","#feae34","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#c0cbdc","#ffffff","#c0cbdc","#c0cbdc","#ffffff","#ffffff","#8b9bb4"],["#c97f1e","#feae34","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#feae34","#c97f1e","#c97f1e","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#8b9bb4"],["#c97f1e","#feae34","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#feae34","#c97f1e","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#8b9bb4","#8b9bb4"],["#c97f1e","#feae34","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#181425","#ead4aa","#181425","#c97f1e","#c97f1e","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4"]],
     powerup: {
         "type": "destroyer",
         "tier": 3,
@@ -4792,7 +4746,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
-    claudeDraft: true,
   },
   {
     id: "expanding_foam",
@@ -5030,8 +4983,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.9,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "tax_audit",
@@ -5040,7 +4992,7 @@ export const SHAPES = [
         "X",
         "X"
       ],
-    color: [["#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#c0cbdc","#3e8948"],["#f4f1ea","#124e89","#124e89","#124e89","#124e89","#f4f1ea","#c0cbdc"],["#f4f1ea","#124e89","#feae34","#feae34","#124e89","#f4f1ea","#f4f1ea"],["#f4f1ea","#124e89","#124e89","#124e89","#124e89","#f4f1ea","#f4f1ea"],["#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea"],["#f4f1ea","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#f4f1ea","#f4f1ea"],["#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea"],["#f4f1ea","#f4f1ea","#f4f1ea","#e43b44","#f4f1ea","#f4f1ea","#f4f1ea"],["#f4f1ea","#f4f1ea","#e43b44","#e43b44","#e43b44","#e43b44","#f4f1ea"],["#f4f1ea","#e43b44","#f4f1ea","#e43b44","#f4f1ea","#f4f1ea","#f4f1ea"],["#f4f1ea","#f4f1ea","#e43b44","#e43b44","#e43b44","#f4f1ea","#f4f1ea"],["#f4f1ea","#f4f1ea","#f4f1ea","#e43b44","#f4f1ea","#e43b44","#f4f1ea"],["#f4f1ea","#e43b44","#e43b44","#e43b44","#e43b44","#f4f1ea","#f4f1ea"],["#f4f1ea","#f4f1ea","#f4f1ea","#e43b44","#f4f1ea","#f4f1ea","#f4f1ea"]],
+    color: [["#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#c0cbdc","#c0cbdc"],["#f4f1ea","#124e89","#124e89","#124e89","#124e89","#124e89","#c0cbdc"],["#f4f1ea","#124e89","#feae34","#feae34","#feae34","#124e89","#f4f1ea"],["#f4f1ea","#124e89","#124e89","#124e89","#124e89","#124e89","#f4f1ea"],["#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea"],["#f4f1ea","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#8b9bb4","#f4f1ea"],["#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea","#f4f1ea"],["#f4f1ea","#f4f1ea","#f4f1ea","#e43b44","#f4f1ea","#f4f1ea","#f4f1ea"],["#f4f1ea","#f4f1ea","#e43b44","#e43b44","#e43b44","#e43b44","#f4f1ea"],["#f4f1ea","#e43b44","#f4f1ea","#e43b44","#f4f1ea","#f4f1ea","#f4f1ea"],["#f4f1ea","#f4f1ea","#e43b44","#e43b44","#e43b44","#f4f1ea","#f4f1ea"],["#f4f1ea","#f4f1ea","#f4f1ea","#e43b44","#f4f1ea","#e43b44","#f4f1ea"],["#f4f1ea","#e43b44","#e43b44","#e43b44","#e43b44","#f4f1ea","#f4f1ea"],["#f4f1ea","#f4f1ea","#f4f1ea","#e43b44","#f4f1ea","#f4f1ea","#f4f1ea"]],
     powerup: {
         "type": "destroyer",
         "tier": 3,
@@ -5061,8 +5013,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "dynamite",
@@ -5096,7 +5047,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
-    claudeDraft: true,
   },
   {
     id: "heavy_book",
@@ -5133,7 +5083,7 @@ export const SHAPES = [
     grid: [
         "X"
       ],
-    color: [["#57b9f0","#ffffff","#57b9f0","#733e39","#3e8948","#63c74d","#57b9f0"],["#57b9f0","#ffffff","#57b9f0","#733e39","#63c74d","#57b9f0","#57b9f0"],["#57b9f0","#e43b44","#e43b44","#733e39","#e43b44","#e43b44","#57b9f0"],["#e43b44","#ffd0d0","#f6757a","#e43b44","#e43b44","#e43b44","#a22633"],["#e43b44","#f6757a","#e43b44","#e43b44","#e43b44","#e43b44","#a22633"],["#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#a22633","#a22633"],["#57b9f0","#a22633","#e43b44","#e43b44","#a22633","#a22633","#57b9f0"]],
+    color: [["#5a161a","#a22633","#a22633","#733e39","#3e8948","#63c74d","#5a161a"],["#a22633","#ffffff","#e43b44","#733e39","#63c74d","#e43b44","#a22633"],["#a22633","#e43b44","#e43b44","#733e39","#e43b44","#e43b44","#a22633"],["#a22633","#ffd0d0","#f6757a","#e43b44","#e43b44","#e43b44","#a22633"],["#a22633","#f6757a","#e43b44","#e43b44","#e43b44","#e43b44","#a22633"],["#a22633","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#a22633"],["#5a161a","#a22633","#e43b44","#e43b44","#a22633","#a22633","#5a161a"]],
     powerup: {
         "type": "gravity",
         "direction": "down",
@@ -5155,7 +5105,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "earthquake",
@@ -10042,7 +9991,7 @@ export const SHAPES = [
     grid: [
         "X"
       ],
-    color: [["#fee761","#e43b44","#fee761","#3e2731","#3e2731","#3e2731","#3e2731"],["#feae34","#feae34","#feae34","#3e2731","#3e2731","#3e2731","#3e2731"],["#f77622","#181425","#f77622","#3e2731","#3e2731","#3e2731","#3e2731"],["#e4a672","#f77622","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#3e2731"],["#3e2731","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a"],["#e4a672","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a"],["#3e2731","#3e2731","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#3e2731"]],
+    color: [["#fee761","#e43b44","#fee761","#e43b44","#fee761","#e43b44","#fee761"],["#feae34","#feae34","#feae34","#feae34","#feae34","#feae34","#feae34"],["#f77622","#181425","#f77622","#f77622","#f77622","#181425","#f77622"],["#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#f4e6c0"],["#cdb07a","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a"],["#cdb07a","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a"],["#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#f4e6c0","#cdb07a","#f4e6c0"]],
     powerup: {
         "type": "destroyer",
         "tier": 2,
@@ -10062,7 +10011,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "lava_lamp",
@@ -11156,7 +11104,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "phasing_cat",
@@ -11175,7 +11122,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "ghost_worm",
@@ -11196,7 +11142,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "forgotten_memories",
@@ -11263,7 +11208,7 @@ export const SHAPES = [
     grid: [
         "XX"
       ],
-    color: [["#193c3e","#193c3e","#193c3e","#193c3e","#193c3e","#193c3e","#193c3e","#193c3e","#193c3e","#68386c","#193c3e","#68386c","#193c3e","#193c3e"],["#193c3e","#0f2426","#193c3e","#193c3e","#193c3e","#193c3e","#193c3e","#193c3e","#193c3e","#e43b44","#e43b44","#e43b44","#e43b44","#193c3e"],["#193c3e","#0f2426","#a8e86a","#63c74d","#193c3e","#a8e86a","#63c74d","#193c3e","#a8e86a","#e43b44","#fee761","#e43b44","#fee761","#e43b44"],["#a8e86a","#a8e86a","#63c74d","#63c74d","#a8e86a","#63c74d","#63c74d","#a8e86a","#63c74d","#e43b44","#181425","#e43b44","#181425","#e43b44"],["#63c74d","#63c74d","#63c74d","#a8e86a","#63c74d","#63c74d","#a8e86a","#63c74d","#63c74d","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44"],["#193c3e","#63c74d","#a8e86a","#63c74d","#193c3e","#63c74d","#a8e86a","#63c74d","#193c3e","#e43b44","#e43b44","#181425","#e43b44","#193c3e"],["#193c3e","#b55088","#193c3e","#b55088","#193c3e","#b55088","#193c3e","#b55088","#193c3e","#b55088","#0f2426","#193c3e","#b55088","#193c3e"]],
+    color: [["#63c74d","#a8e86a","#a8e86a","#63c74d","#63c74d","#a8e86a","#a8e86a","#63c74d","#63c74d","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44"],["#63c74d","#a8e86a","#a8e86a","#63c74d","#63c74d","#a8e86a","#a8e86a","#63c74d","#63c74d","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44"],["#63c74d","#a8e86a","#a8e86a","#63c74d","#63c74d","#a8e86a","#a8e86a","#63c74d","#63c74d","#e43b44","#fee761","#e43b44","#fee761","#e43b44"],["#63c74d","#a8e86a","#a8e86a","#63c74d","#63c74d","#a8e86a","#a8e86a","#63c74d","#63c74d","#e43b44","#181425","#e43b44","#181425","#e43b44"],["#63c74d","#a8e86a","#a8e86a","#63c74d","#63c74d","#a8e86a","#a8e86a","#63c74d","#63c74d","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44"],["#63c74d","#a8e86a","#a8e86a","#63c74d","#63c74d","#a8e86a","#a8e86a","#63c74d","#63c74d","#e43b44","#e43b44","#181425","#e43b44","#e43b44"],["#193c3e","#b55088","#193c3e","#b55088","#193c3e","#b55088","#193c3e","#b55088","#193c3e","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44"]],
     powerup: {
         "type": "destroyer",
         "tier": 1,
@@ -11286,7 +11231,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
     nextShapeProbs: [
         0.3
       ],
@@ -11300,7 +11244,7 @@ export const SHAPES = [
     grid: [
         "XX"
       ],
-    color: [["#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44"],["#262b44","#262b44","#ffe3f0","#ffe3f0","#ffe3f0","#ffe3f0","#ffe3f0","#ffe3f0","#ffe3f0","#ffe3f0","#0099db","#0099db","#262b44","#262b44"],["#262b44","#ffe3f0","#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#124e89","#0099db","#0099db","#0099db","#262b44"],["#ffe3f0","#ff9ec4","#ff9ec4","#3e2731","#ff9ec4","#ff9ec4","#3e2731","#ff9ec4","#0099db","#124e89","#0099db","#0099db","#124e89","#262b44"],["#ffe3f0","#ff9ec4","#ff9ec4","#ff9ec4","#3e2731","#3e2731","#ff9ec4","#ff9ec4","#0099db","#124e89","#0099db","#0099db","#124e89","#262b44"],["#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#124e89","#124e89","#124e89","#124e89","#262b44","#262b44"],["#262b44","#ffd0e0","#262b44","#262b44","#ffd0e0","#262b44","#262b44","#262b44","#ffd0e0","#262b44","#262b44","#ffd0e0","#262b44","#262b44"]],
+    color: [["#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#0099db","#0099db"],["#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#0099db","#0099db"],["#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#0099db","#0099db"]],
     powerup: {
         "type": "destroyer",
         "tier": 1,
@@ -11324,7 +11268,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "wrecking_ball",
@@ -11359,8 +11302,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.7,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "anvil",
@@ -11419,7 +11361,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "dropped_lasagne",
@@ -11709,7 +11650,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
   },
   {
     id: "heavy_news",
@@ -11738,7 +11678,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
   },
   {
     id: "rolling_pin",
@@ -11767,7 +11706,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
   },
   {
     id: "steamroller",
@@ -11797,11 +11735,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
   },
   {
     id: "blue_whale",
-    name: "a blue whale, having a lie down",
+    name: "a blue whale",
     grid: [
         "XXXX",
         "XXX."
@@ -11827,7 +11764,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
   },
   {
     id: "grand_piano",
@@ -11856,8 +11792,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.6,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "ton_of_bricks",
@@ -15594,8 +15529,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "erupting_volcano",
@@ -17699,7 +17633,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
-    claudeDraft: true,
   },
   {
     id: "swelling_sponge",
@@ -20258,7 +20191,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "autumn_leaves",
@@ -22172,7 +22104,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "self_raising_cake",
@@ -23289,7 +23220,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "bricklayer",
@@ -23759,7 +23689,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "spectral_moth",
@@ -25368,7 +25297,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
-    claudeDraft: true,
   },
   {
     id: "existential_horror",
@@ -25399,7 +25327,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.12,
-    claudeDraft: true,
     tags: [
         "surreal"
       ],
@@ -25443,7 +25370,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.12,
-    claudeDraft: true,
     tags: [
         "surreal"
       ],
@@ -25479,7 +25405,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.12,
-    claudeDraft: true,
     tags: [
         "surreal"
       ],
@@ -25501,7 +25426,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nextShapeProbs: [
         0.5
       ],
@@ -25526,7 +25450,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "pipes"
       },
@@ -25547,7 +25470,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "bowler hats"
       },
@@ -25587,7 +25509,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "lobster telephones"
       },
@@ -25618,7 +25539,7 @@ export const SHAPES = [
   },
   {
     id: "dali_elephant",
-    name: "a long-legged elephant",
+    name: "a very tall elephant",
     grid: [
         ".X..",
         "XXXX",
@@ -25633,7 +25554,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "long-legged elephants",
         "short": "elephants"
@@ -25656,7 +25576,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nextShapeProbs: [
         0.3
       ],
@@ -25709,7 +25628,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -25728,7 +25646,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -25748,7 +25665,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     remix: {
         "scramble": "spam"
@@ -25769,7 +25685,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -25787,7 +25702,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -25811,7 +25725,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "maps",
@@ -25827,7 +25740,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -25844,7 +25756,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -25865,7 +25776,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -25884,7 +25794,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -25903,7 +25812,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     seam: "sp_am",
     tags: [
         "food"
@@ -25923,7 +25831,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     seam: "sp_am",
     tags: [
         "food"
@@ -25943,7 +25850,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -25960,7 +25866,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
   },
   {
     id: "babel_lower",
@@ -25978,7 +25883,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "landmark"
       ],
@@ -25998,7 +25902,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "babel_top",
@@ -26016,7 +25919,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "babel_lush_lower",
@@ -26034,7 +25936,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "landmark"
       ],
@@ -26054,7 +25955,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "babel_lush_top",
@@ -26072,7 +25972,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "babel_unfinished_lower",
@@ -26090,7 +25989,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "landmark"
       ],
@@ -26110,7 +26008,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "babel_unfinished_top",
@@ -26128,7 +26025,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "babel_ruin_lower",
@@ -26146,7 +26042,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "landmark"
       ],
@@ -26166,7 +26061,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "babel_ruin_top",
@@ -26184,7 +26078,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "nothing",
@@ -26192,13 +26085,12 @@ export const SHAPES = [
     grid: [
         "X"
       ],
-    color: [["#22222d","#22222d","#22222d","#22222d","#22222d","#22222d","#22222d"],["#22222d","#1b1b25","#1b1b25","#1b1b25","#1b1b25","#1b1b25","#22222d"],["#22222d","#1b1b25","#1b1b25","#1b1b25","#262633","#1b1b25","#22222d"],["#22222d","#1b1b25","#1b1b25","#1b1b25","#1b1b25","#1b1b25","#22222d"],["#22222d","#1b1b25","#1b1b25","#1b1b25","#1b1b25","#1b1b25","#22222d"],["#22222d","#1b1b25","#20202a","#1b1b25","#1b1b25","#1b1b25","#22222d"],["#22222d","#22222d","#22222d","#22222d","#22222d","#22222d","#22222d"]],
+    color: [["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"],["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#1b1b25","#bdbdbd","#bdbdbd"],["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"],["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"],["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"],["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"],["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"]],
     difficulty: 4,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nextShapeProbs: [
         1
       ],
@@ -26214,20 +26106,19 @@ export const SHAPES = [
     id: "everything",
     name: "everything",
     grid: [
-        "..X....XX....X",
-        "..X.XX.XX..X.X",
-        "XXXXXXXXXXXXXX",
-        ".XXXXXXXXXXXXX",
-        ".XXXXXXXXXXXXX",
-        ".XX.XXXXX.XXX."
+        ".X....XX....X",
+        ".X.XX.XX..X.X",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XX.XXXXX.XXX."
       ],
-    color: [["","","","","","","","","","","#b29b66","#ceb577","#ceb577","#ceb577","#957c46","","","","","","","","","","","","","","","","","","","","","#9b7638","#bb954b","#bb954b","#bb954b","#bb954b","#bb954b","#bb954b","#bb954b","#bb954b","#9b7638","","","","","","","","","","","","","","","","","","","","","#95845d","#c7b68b","#c7b68b","#c7b68b","#95845d"],["","","","","","","","","","","#ceb577","#5a361c","#5a361c","#f0d28a","#28387a","","","","","","","","","","","","","","","","","","","","","#b58941","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#b58941","","","","","","","","","","","","","","","","","","","","","#c7b68b","#a42f2f","#a42f2f","#a42f2f","#c7b68b"],["","","","","","","","","","","#ceb577","#84532c","#6a4022","#f0d28a","#28387a","","","","","","","","","","","","","","","","","","","","","#b58941","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#b58941","","","","","","","","","","","","","","","","","","","","","#c7b68b","#a42f2f","#e7d4a2","#e7d4a2","#c7b68b"],["","","","","","","","","","","#8a5932","#84532c","#4e2f19","#33478e","#28387a","","","","","","","","","","","","","","","","","","","","","#b58941","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#b58941","","","","","","","","","","","","","","","","","","","","","#9b4848","#c4483b","#a42f2f","#a42f2f","#843028"],["","","","","","","","","","","#8a5932","#84532c","#4e2f19","#33478e","#28387a","","","","","","","","","","","","","","","","","","","","","#b58941","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#b58941","","","","","","","","","","","","","","","","","","","","","#b25a51","#a42f2f","#a42f2f","#c4483b","#6e2020"],["","","","","","","","","","","#8a5932","#84532c","#4e2f19","#a68e47","#9e843e","","","","","","#ac5b5b","#c86a6a","#c86a6a","#c86a6a","#c86a6a","#c86a6a","#c86a6a","#c86a6a","#c86a6a","#ac5b5b","","","","","","#703d1e","#9a5a2c","#824723","#9a5a2c","#824723","#9a5a2c","#824723","#9a5a2c","#824723","#844d26","","","","","","","","","","","#bd4e4e","#db5b5b","#db5b5b","#db5b5b","#bd4e4e","","","","","","#c7b793","#e2cc98","#e2cc98","#e2cc98","#978966"],["","","","","","","","","","","#8a5932","#84532c","#4e2f19","#33478e","#28387a","","","","","","#872b2b","#9d3232","#9d3232","#9d3232","#b2b2b2","#b2b2b2","#9d3232","#9d3232","#9d3232","#872b2b","","","","","","#8c6d47","#a37f53","#a37f53","#2b7b74","#2b7b74","#205e59","#205e59","#a37f53","#a37f53","#8c6d47","","","","","","","","","","","#c13e3e","#f6f3d8","#b9b69c","#f6f3d8","#c13e3e","","","","","","#48587d","#2f4479","#2f4479","#2f4479","#202e51"],["","","","","","","","","","","#8a5932","#84532c","#4e2f19","#33478e","#28387a","","","","","","#948045","#ac9550","#ac9550","#ac9550","#ac9550","#ac9550","#ac9550","#ac9550","#ac9550","#948045","","","","","","#ac7f4c","#946e41","#2b7b74","#9ee0d8","#3aa69d","#2b7f78","#2b7f78","#205e59","#946e41","#956b3b","","","","","","","","","","","#c13e3e","#b9b69c","#f6f3d8","#b9b69c","#c13e3e","","","","","","#c7b793","#e2cc98","#e2cc98","#e2cc98","#978966"],["","","","","","","","","","","#8a5932","#84532c","#4e2f19","#33478e","#28387a","","","","","","#917725","#a98a2b","#a98a2b","#2a4e97","#2a4e97","#a98a2b","#a98a2b","#a98a2b","#a98a2b","#917725","","","","","","#ac7f4c","#946e41","#2b7b74","#9ee0d8","#3aa69d","#2b7f78","#2b7f78","#205e59","#946e41","#956b3b","","","","","","","","","","","#c13e3e","#f6f3d8","#b9b69c","#f6f3d8","#c13e3e","","","","","","#9b4848","#a42f2f","#c4483b","#a42f2f","#6e2020"],["","","","","","","","","","","#654225","#623d21","#4e2f19","#33478e","#1e295a","","","","","","#455b89","#506a9f","#506a9f","#506a9f","#506a9f","#506a9f","#506a9f","#506a9f","#506a9f","#455b89","","","","","","#ac7f4c","#946e41","#2b7b74","#3aa69d","#3aa69d","#2b7f78","#2b7f78","#205e59","#946e41","#956b3b","","","","","","","","","","","#c13e3e","#b9b69c","#f6f3d8","#b9b69c","#c13e3e","","","","","","#bc9b54","#d3a33f","#d3a33f","#d3a33f","#8e6d2a"],["#686f79","#79818c","#a7bccf","#a7bccf","#a7bccf","#a7bccf","#dbdbdb","#a7bccf","#a7bccf","#d48ea6","#90a2b2","#90a2b2","#90a2b2","#bdbdbd","#90a2b2","#a7bccf","#a7bccf","#a7bccf","#a7bccf","#a7bccf","#bdbdbd","#90a2b2","#90959d","#90959d","#90959d","#90959d","#90959d","#2a4e97","#2a4e97","#2a4e97","#5f4d37","#52412e","#52412e","#ac7f4c","#ac7f4c","#c89458","#c89458","#946e41","#2b7b74","#2b7b74","#205e59","#205e59","#946e41","#c89458","#ad7c45","#956b3b","#956b3b","#52412e","#52412e","#52412e","#40507c","#34446b","#c0c3c9","#c0c3c9","#27324f","#a63535","#f6f3d8","#b9b69c","#f6f3d8","#e04848","#5f4d37","#52412e","#5f4d37","#52412e","#52412e","#cf695e","#a42f2f","#a42f2f","#c4483b","#6e2020"],["#d27b98","#ffffff","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#ffffff","#b3d2ee","#b3d2ee","#f48fb1","#b3d2ee","#c79358","#a8743e","#a8743e","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#c3cad4","#6f7884","#a9b1bc","#6f7884","#90959d","#528a5f","#528a5f","#528a5f","#75c588","#75c588","#528a5f","#946e41","#c89458","#c89458","#c89458","#c89458","#946e41","#ab956e","#ab956e","#946e41","#c89458","#c89458","#ad7c45","#ad7c45","#ad7c45","#5f4c35","#4a5d90","#3d4f7c","#3d4f7c","#3d4f7c","#dfe3ea","#dfe3ea","#2d3a5c","#a63535","#a63535","#a63535","#a63535","#e04848","#5f4c35","#6e5a40","#5f4c35","#5f4c35","#5f4c35","#b45454","#a42f2f","#c4483b","#a42f2f","#6e2020"],["#9ab5cd","#b3d2ee","#f48fb1","#ffffff","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#ffffff","#b3d2ee","#b3d2ee","#a8743e","#a8743e","#a8743e","#a8743e","#ffffff","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#c3cad4","#6f7884","#a9b1bc","#6f7884","#90959d","#2c7a3f","#3fae5a","#3fae5a","#3fae5a","#ffffff","#ffffff","#62e07e","#c89458","#c89458","#c89458","#c89458","#c89458","#e7c995","#e7c995","#c89458","#c89458","#c89458","#ad7c45","#ad7c45","#805c33","#2d3a5c","#3d4f7c","#7d8fbf","#7d8fbf","#b4bac4","#b4bac4","#b4bac4","#7d8fbf","#5c6a8d","#a63535","#8e2929","#232d49","#5f4c35","#6e5a40","#5f4c35","#6e5a40","#5f4c35","#6e5a40","#e7d5ab","#e2cc98","#e2cc98","#e2cc98","#978966"],["#79818c","#b3d2ee","#b3d2ee","#b3d2ee","#f48fb1","#ffffff","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#ffffff","#b3d2ee","#b3d2ee","#f48fb1","#b3d2ee","#b3d2ee","#b3d2ee","#ffffff","#b3d2ee","#b3d2ee","#c3cad4","#c3cad4","#c3cad4","#c3cad4","#2c5a36","#ff7ad9","#6e5a40","#5f4c35","#5f4c35","#6e5a40","#5f4c35","#2c5a36","#c89458","#c89458","#c89458","#c89458","#c89458","#e7c995","#e7c995","#f1ece0","#f1ece0","#f1ece0","#f1ece0","#f1ece0","#805c33","#2d3a5c","#b4bac4","#b4bac4","#b4bac4","#7d8fbf","#28345a","#7d8fbf","#b4bac4","#b4bac4","#f0f0f4","#93959e","#232d49","#6e5a40","#5f4c35","#f4f4f6","#f4f4f6","#cfd2dc","#999ba3","#3e4b6b","#2f4479","#2f4479","#2f4479","#202e51"],["#686f79","#79818c","#79818c","#79818c","#79818c","#c3cad4","#c3cad4","#8d96a3","#686f79","#686f79","#686f79","#90959d","#c3cad4","#8d96a3","#8d96a3","#686f79","#686f79","#686f79","#90959d","#90959d","#686f79","#ff5050","#8d96a3","#8d96a3","#8d96a3","#2c5a36","#8d96a3","#2c5a36","#5f4c35","#6e5a40","#6e5a40","#5f4c35","#2c5a36","#c89458","#2c5a36","#c89458","#c89458","#c89458","#c89458","#e7c995","#e7c995","#f1ece0","#9aa0aa","#9aa0aa","#9aa0aa","#f1ece0","#805c33","#37456b","#3d4f7c","#3d4f7c","#7d8fbf","#7d8fbf","#28345a","#7d8fbf","#7d8fbf","#2d3a5c","#b2b2b5","#93959e","#232d49","#6e5a40","#5f4c35","#ff8fbf","#ff8fbf","#cfd2dc","#999ba3","#ab9e7f","#e2cc98","#e2cc98","#e2cc98","#978966"],["","","","","","#5f4d37","#5f4c35","#5f4c35","#767a82","#767a82","#767a82","#767a82","#5f4c35","#6e5a40","#5f4c35","#a7aaaf","#a7aaaf","#a7aaaf","#a7aaaf","#a7aaaf","#a7aaaf","#2c5a36","#ffd23f","#5f4c35","#59b0ff","#6e5a40","#5f4c35","#5f4c35","#2c5a36","#6e5a40","#6e5a40","#59b0ff","#5f4c35","#c89458","#c89458","#c89458","#c89458","#c89458","#c89458","#e7c995","#e7c995","#f1ece0","#9aa0aa","#9aa0aa","#f1ece0","#f1ece0","#805c33","#202947","#3d4f7c","#3d4f7c","#4a5d90","#7d8fbf","#28345a","#7d8fbf","#3d4f7c","#37456b","#b2b2b5","#93959e","#232d49","#5f4c35","#6e5a40","#f4f4f6","#f4f4f6","#cfd2dc","#999ba3","#853e3e","#c4483b","#a42f2f","#a42f2f","#843028"],["","","","","","#52412e","#6e5a40","#5f4c35","#a4a9b4","#5f4c35","#5f4c35","#a4a9b4","#6e5a40","#5f4c35","#5f4c35","#f4f4f4","#f4f4f4","#f4f4f4","#f4f4f4","#f4f4f4","#f4f4f4","#2c5a36","#2c5a36","#5f4c35","#2c5a36","#5f4c35","#6e5a40","#5f4c35","#ff5050","#2c5a36","#ffd23f","#2c5a36","#6e5a40","#c89458","#c89458","#c89458","#c89458","#c89458","#c89458","#e7c995","#e7c995","#f1ece0","#f1ece0","#f1ece0","#f1ece0","#f1ece0","#805c33","#202947","#4a5d90","#3d4f7c","#3d4f7c","#3d4f7c","#28345a","#4a5d90","#3d4f7c","#2d3a5c","#b2b2b5","#93959e","#b5b5b6","#f4f4f6","#f4f4f6","#ff8fbf","#ff8fbf","#cfd2dc","#999ba3","#a28549","#d3a33f","#d3a33f","#d3a33f","#8e6d2a"],["","","","","","#52412e","#5f4c35","#6e5a40","#5f4c35","#8a8f9a","#8a8f9a","#6e5a40","#6e5a40","#5f4c35","#5f4c35","#c9ced6","#f4f4f4","#a7adb8","#a7adb8","#f4f4f4","#8a909b","#5f4c35","#6e5a40","#2c5a36","#5f4c35","#62e07e","#5f4c35","#6e5a40","#2c5a36","#5f4c35","#3d3d48","#3d3d48","#2d2d35","#946e41","#ff7ad9","#c89458","#c89458","#c89458","#c89458","#e7c995","#e7c995","#c89458","#c89458","#c89458","#ad7c45","#ad7c45","#805c33","#202947","#3d4f7c","#3d4f7c","#3d4f7c","#4a5d90","#28345a","#3d4f7c","#3d4f7c","#2d3a5c","#b2b2b5","#93959e","#b5b5b6","#f4f4f6","#f4f4f6","#f4f4f6","#f4f4f6","#cfd2dc","#999ba3","#853e3e","#a42f2f","#c4483b","#a42f2f","#6e2020"],["","","","","","#52412e","#6e5a40","#5f4c35","#6e5a40","#8a8f9a","#8a8f9a","#5f4c35","#5f4c35","#6e5a40","#6e5a40","#3a7bd5","#f4f4f4","#3a7bd5","#3a7bd5","#2c5ca0","#214476","#5f4c35","#6e5a40","#6e5a40","#2c5a36","#2c5a36","#2c5a36","#2c5a36","#3d3d48","#3d3d48","#3d3d48","#3d3d48","#3d3d48","#2d2d35","#2d2d35","#946e41","#c89458","#c89458","#c89458","#e7c995","#e7c995","#c89458","#c89458","#c89458","#ad7c45","#805c33","#805c33","#202947","#3d4f7c","#4a5d90","#2d3a5c","#ac9569","#1e2643","#e8c98e","#4a5d90","#2d3a5c","#b2b2b5","#93959e","#b5b5b6","#f4f4f6","#f4f4f6","#ff8fbf","#ff8fbf","#cfd2dc","#999ba3","#853e3e","#c4483b","#a42f2f","#a42f2f","#843028"],["","","","","","#5f4d37","#5f4c35","#5f4c35","#ff6b5e","#e2433c","#e2433c","#e2433c","#6c7480","#6e5a40","#6e5a40","#3a7bd5","#3a7bd5","#3a7bd5","#3a7bd5","#214476","#a7aaaf","#e2e6ec","#e2e6ec","#e2e6ec","#e2e6ec","#e2e6ec","#5f4c35","#3d3d48","#3d3d48","#d4d9e1","#d4d9e1","#aeb6c2","#d4d9e1","#d4d9e1","#3d3d48","#2d2d35","#946e41","#c89458","#c89458","#e7c995","#e7c995","#c89458","#c89458","#c89458","#805c33","#b6b6b8","#b6b6b8","#b6b6b8","#2d3a5c","#2d3a5c","#b6b6b8","#b6b6b8","#b6b6b8","#2d3a5c","#3d4f7c","#3d4f7c","#232d49","#232d49","#b5b5b6","#f4f4f6","#f4f4f6","#f4f4f6","#f4f4f6","#cfd2dc","#999ba3","#ab9e7f","#e2cc98","#e2cc98","#e2cc98","#978966"],["","","","","","#5f4d37","#5f4c35","#5f4c35","#ff6b5e","#f4cfa6","#f4cfa6","#e2433c","#a4acb7","#5f4c35","#5f4c35","#3a7bd5","#3a7bd5","#3a7bd5","#3a7bd5","#214476","#bd822b","#ffb03a","#ffb03a","#ffb03a","#ffb03a","#bd822b","#2d2d35","#3d3d48","#d4d9e1","#aeb6c2","#5c6370","#aeb6c2","#5c6370","#aeb6c2","#d4d9e1","#3d3d48","#2d2d35","#5f4c35","#5f4c35","#5f4c35","#6e5a40","#5f4c35","#5f4c35","#5f4c35","#b6b6b8","#f6f6f8","#f6f6f8","#f6f6f8","#90939b","#90939b","#f6f6f8","#f6f6f8","#f6f6f8","#b6b6b8","#2d3a5c","#4a5d90","#2f3d63","#232d49","#72767e","#72767e","#72767e","#72767e","#72767e","#72767e","#72767e","#3e4b6b","#2f4479","#2f4479","#2f4479","#202e51"],["","","","","","#52412e","#6e5a40","#6e5a40","#ff6b5e","#f4cfa6","#f4cfa6","#e2433c","#6c7480","#5f4c35","#5f4c35","#3a7bd5","#3a7bd5","#3a7bd5","#3a7bd5","#214476","#95989e","#ffb03a","#a7adb8","#a7adb8","#ffb03a","#666b73","#2d2d35","#d4d9e1","#aeb6c2","#5c6370","#aeb6c2","#aeb6c2","#aeb6c2","#5c6370","#aeb6c2","#d4d9e1","#3d3d48","#5f4c35","#5f4c35","#9aa0aa","#9aa0aa","#9aa0aa","#72767e","#26262f","#f6f6f8","#f6f6f8","#f6f6f8","#f6f6f8","#34343f","#34343f","#f6f6f8","#f6f6f8","#f6f6f8","#f6f6f8","#26262f","#2d3a5c","#2f3d63","#232d49","#bd4678","#bd4678","#72767e","#72767e","#72767e","#bd4678","#bd4678","#ab9e7f","#e2cc98","#e2cc98","#e2cc98","#978966"],["","","","","","#52412e","#6e5a40","#6e5a40","#ff6b5e","#f4cfa6","#f4cfa6","#e2433c","#a4acb7","#5f4c35","#6e5a40","#3a7bd5","#3a7bd5","#3a7bd5","#3a7bd5","#214476","#2f8143","#ffb03a","#3fae5a","#3fae5a","#236032","#2d2d35","#3d3d48","#d4d9e1","#5c6370","#aeb6c2","#5c6370","#eef1f5","#5c6370","#aeb6c2","#5c6370","#d4d9e1","#3d3d48","#2d2d35","#6e5a40","#72767e","#5f4c35","#5f4c35","#6e5a40","#34343f","#f6f6f8","#f6f6f8","#f6f6f8","#34343f","#34343f","#34343f","#34343f","#f6f6f8","#f6f6f8","#f6f6f8","#26262f","#2d3a5c","#2f3d63","#232d49","#9a2f5d","#d0407e","#5f4c35","#5f4c35","#6e5a40","#d0407e","#ff8a1e","#cf695e","#a42f2f","#a42f2f","#c4483b","#6e2020"],["","","","","","#5f4d37","#5f4c35","#5f4c35","#ff6b5e","#e2433c","#e2433c","#e2433c","#6c7480","#6e5a40","#5f4c35","#c9ced6","#c9ced6","#a7adb8","#a7adb8","#666b73","#2f8143","#3fae5a","#3fae5a","#3fae5a","#236032","#2d2d35","#3d3d48","#aeb6c2","#aeb6c2","#aeb6c2","#eef1f5","#eef1f5","#eef1f5","#aeb6c2","#aeb6c2","#aeb6c2","#2d2d35","#ac413a","#e8584f","#ac413a","#e8584f","#e8584f","#ac413a","#b6b6b8","#f6f6f8","#f6f6f8","#f6f6f8","#f6f6f8","#34343f","#34343f","#b6b6b8","#b6b6b8","#b6b6b8","#b6b6b8","#b6b6b8","#2d3a5c","#232d49","#232d49","#232d49","#5f4c35","#ff8a1e","#ff8a1e","#5f4c35","#6e5a40","#ff8a1e","#dbb462","#d3a33f","#d3a33f","#d3a33f","#8e6d2a"],["","","","","","#52412e","#5f4c35","#5f4c35","#ff6b5e","#c9d3dc","#c9d3dc","#e2433c","#a4acb7","#5f4c35","#6e5a40","#adb1b8","#adb1b8","#90959e","#90959e","#585c63","#2f8143","#3fae5a","#3fae5a","#3fae5a","#236032","#2d2d35","#3d3d48","#d4d9e1","#5c6370","#aeb6c2","#5c6370","#eef1f5","#5c6370","#aeb6c2","#5c6370","#d4d9e1","#2d2d35","#972725","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#972725","#90939b","#d4d4d5","#d4d4d5","#d4d4d5","#d4d4d5","#9d9d9e","#a07c4d","#a07c4d","#a07c4d","#a07c4d","#a07c4d","#a07c4d","#a78f66","#a78f66","#ffd08a","#ff8a1e","#d8a868","#d8a868","#ff8a1e","#ff8a1e","#a07c4d","#723535","#a93e33","#8d2828","#8d2828","#712922"],["","","","","","#5f4d37","#5f4c35","#e2433c","#ff6b5e","#e2433c","#e2433c","#e2433c","#e2433c","#6c7480","#52412e","","","","","","#36964d","#3fae5a","#3fae5a","#3fae5a","#2f8244","#236032","#2d2d35","#d4d9e1","#aeb6c2","#5c6370","#aeb6c2","#aeb6c2","#aeb6c2","#5c6370","#aeb6c2","#d4d9e1","#2d2d35","#972725","#cc3532","#cc3532","#cc3532","#d6dae2","#cc3532","#cc3532","#822220","","","","","","#a67845","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#e2c18a","#e2c18a","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#a67845","","","","",""],["","","","","","#52412e","#666672","#666672","#666672","#666672","#666672","#666672","#666672","#666672","#5f4d37","","","","","","#36964d","#3fae5a","#3fae5a","#3fae5a","#2f8244","#236032","#2d2d35","#3d3d48","#d4d9e1","#aeb6c2","#5c6370","#aeb6c2","#5c6370","#aeb6c2","#d4d9e1","#3d3d48","#2d2d35","#731c1b","#9c2624","#9c2624","#9c2624","#d6dae2","#9c2624","#9c2624","#86211f","","","","","","#a67845","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#e2c18a","#e2c18a","#c18c50","#c18c50","#6a4422","#c18c50","#c18c50","#c18c50","#a67845","","","","",""],["","","","","","#585862","#666672","#ff6b5e","#ff6b5e","#ff6b5e","#ff6b5e","#ff6b5e","#ff6b5e","#666672","#585862","","","","","","#36964d","#3fae5a","#3fae5a","#3fae5a","#2f8244","#2f8244","#5f4c35","#3d3d48","#3d3d48","#d4d9e1","#d4d9e1","#aeb6c2","#d4d9e1","#d4d9e1","#3d3d48","#3d3d48","#5f4c35","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#af2e2b","","","","","","#a67845","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#e2c18a","#e2c18a","#c18c50","#c18c50","#6a4422","#6a4422","#c18c50","#c18c50","#a67845","","","","",""],["","","","","","#404049","#666672","#666672","#666672","#666672","#666672","#666672","#666672","#666672","#404049","","","","","","#adb1b8","#c9ced6","#a7adb8","#a7adb8","#8a909b","#8a909b","#5f4c35","#5f4c35","#3d3d48","#3d3d48","#3d3d48","#3d3d48","#3d3d48","#3d3d48","#3d3d48","#5f4c35","#6e5a40","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#af2e2b","","","","","","#a67845","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#e2c18a","#e2c18a","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#a67845","","","","",""],["","","","","","#232329","#28282f","#5f4d37","#52412e","#5f4d37","#52412e","#5f4d37","#52412e","#28282f","#232329","","","","","","#95989e","#adb1b8","#90959e","#90959e","#777c85","#777c85","#52412e","#5f4d37","#52412e","#5f4d37","#34343e","#34343e","#34343e","#52412e","#5f4d37","#5f4d37","#52412e","#af2e2b","#af2e2b","#af2e2b","#af2e2b","#af2e2b","#af2e2b","#af2e2b","#972725","","","","","","#8f683b","#a67845","#a67845","#a67845","#a67845","#a67845","#c2a677","#c2a677","#a67845","#a67845","#a67845","#a67845","#a67845","#a67845","#8f683b","","","","",""]],
+    color: [["","","","","","#b29b66","#ceb577","#ceb577","#ceb577","#957c46","","","","","","","","","","","","","","","","","","","","","#9b7638","#bb954b","#bb954b","#bb954b","#bb954b","#bb954b","#bb954b","#bb954b","#bb954b","#9b7638","","","","","","","","","","","","","","","","","","","","","#95845d","#c7b68b","#c7b68b","#c7b68b","#95845d"],["","","","","","#ceb577","#5a361c","#5a361c","#f0d28a","#28387a","","","","","","","","","","","","","","","","","","","","","#b58941","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#b58941","","","","","","","","","","","","","","","","","","","","","#c7b68b","#a42f2f","#a42f2f","#a42f2f","#c7b68b"],["","","","","","#ceb577","#84532c","#6a4022","#f0d28a","#28387a","","","","","","","","","","","","","","","","","","","","","#b58941","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#b58941","","","","","","","","","","","","","","","","","","","","","#c7b68b","#a42f2f","#e7d4a2","#e7d4a2","#c7b68b"],["","","","","","#8a5932","#84532c","#4e2f19","#33478e","#28387a","","","","","","","","","","","","","","","","","","","","","#b58941","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#b58941","","","","","","","","","","","","","","","","","","","","","#9b4848","#c4483b","#a42f2f","#a42f2f","#843028"],["","","","","","#8a5932","#84532c","#4e2f19","#33478e","#28387a","","","","","","","","","","","","","","","","","","","","","#b58941","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#e4bd68","#f6da8e","#f6da8e","#b58941","","","","","","","","","","","","","","","","","","","","","#b25a51","#a42f2f","#a42f2f","#c4483b","#6e2020"],["","","","","","#8a5932","#84532c","#4e2f19","#a68e47","#9e843e","","","","","","#ac5b5b","#c86a6a","#c86a6a","#c86a6a","#c86a6a","#c86a6a","#c86a6a","#c86a6a","#c86a6a","#ac5b5b","","","","","","#703d1e","#9a5a2c","#824723","#9a5a2c","#824723","#9a5a2c","#824723","#9a5a2c","#824723","#844d26","","","","","","","","","","","#bd4e4e","#db5b5b","#db5b5b","#db5b5b","#bd4e4e","","","","","","#c7b793","#e2cc98","#e2cc98","#e2cc98","#978966"],["","","","","","#8a5932","#84532c","#4e2f19","#33478e","#28387a","","","","","","#872b2b","#9d3232","#9d3232","#9d3232","#b2b2b2","#b2b2b2","#9d3232","#9d3232","#9d3232","#872b2b","","","","","","#8c6d47","#a37f53","#a37f53","#2b7b74","#2b7b74","#205e59","#205e59","#a37f53","#a37f53","#8c6d47","","","","","","","","","","","#c13e3e","#f6f3d8","#b9b69c","#f6f3d8","#c13e3e","","","","","","#48587d","#2f4479","#2f4479","#2f4479","#202e51"],["","","","","","#8a5932","#84532c","#4e2f19","#33478e","#28387a","","","","","","#948045","#ac9550","#ac9550","#ac9550","#ac9550","#ac9550","#ac9550","#ac9550","#ac9550","#948045","","","","","","#ac7f4c","#946e41","#2b7b74","#9ee0d8","#3aa69d","#2b7f78","#2b7f78","#205e59","#946e41","#956b3b","","","","","","","","","","","#c13e3e","#b9b69c","#f6f3d8","#b9b69c","#c13e3e","","","","","","#c7b793","#e2cc98","#e2cc98","#e2cc98","#978966"],["","","","","","#8a5932","#84532c","#4e2f19","#33478e","#28387a","","","","","","#917725","#a98a2b","#a98a2b","#2a4e97","#2a4e97","#a98a2b","#a98a2b","#a98a2b","#a98a2b","#917725","","","","","","#ac7f4c","#946e41","#2b7b74","#9ee0d8","#3aa69d","#2b7f78","#2b7f78","#205e59","#946e41","#956b3b","","","","","","","","","","","#c13e3e","#f6f3d8","#b9b69c","#f6f3d8","#c13e3e","","","","","","#9b4848","#a42f2f","#c4483b","#a42f2f","#6e2020"],["","","","","","#654225","#623d21","#4e2f19","#33478e","#1e295a","","","","","","#455b89","#506a9f","#506a9f","#506a9f","#506a9f","#506a9f","#506a9f","#506a9f","#506a9f","#455b89","","","","","","#ac7f4c","#946e41","#2b7b74","#3aa69d","#3aa69d","#2b7f78","#2b7f78","#205e59","#946e41","#956b3b","","","","","","","","","","","#c13e3e","#b9b69c","#f6f3d8","#b9b69c","#c13e3e","","","","","","#bc9b54","#d3a33f","#d3a33f","#d3a33f","#8e6d2a"],["#a7bccf","#dbdbdb","#a7bccf","#a7bccf","#d48ea6","#90a2b2","#90a2b2","#90a2b2","#bdbdbd","#90a2b2","#a7bccf","#a7bccf","#a7bccf","#a7bccf","#a7bccf","#bdbdbd","#90a2b2","#90959d","#90959d","#90959d","#90959d","#90959d","#2a4e97","#2a4e97","#2a4e97","#5f4d37","#52412e","#52412e","#ac7f4c","#ac7f4c","#c89458","#c89458","#946e41","#2b7b74","#2b7b74","#205e59","#205e59","#946e41","#c89458","#ad7c45","#956b3b","#956b3b","#52412e","#52412e","#52412e","#40507c","#34446b","#c0c3c9","#c0c3c9","#27324f","#a63535","#f6f3d8","#b9b69c","#f6f3d8","#e04848","#5f4d37","#52412e","#5f4d37","#52412e","#52412e","#cf695e","#a42f2f","#a42f2f","#c4483b","#6e2020"],["#b3d2ee","#b3d2ee","#b3d2ee","#ffffff","#b3d2ee","#b3d2ee","#f48fb1","#b3d2ee","#c79358","#a8743e","#a8743e","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#c3cad4","#6f7884","#a9b1bc","#6f7884","#90959d","#528a5f","#528a5f","#528a5f","#75c588","#75c588","#528a5f","#946e41","#c89458","#c89458","#c89458","#c89458","#946e41","#ab956e","#ab956e","#946e41","#c89458","#c89458","#ad7c45","#ad7c45","#ad7c45","#5f4c35","#4a5d90","#3d4f7c","#3d4f7c","#3d4f7c","#dfe3ea","#dfe3ea","#2d3a5c","#a63535","#a63535","#a63535","#a63535","#e04848","#5f4c35","#6e5a40","#5f4c35","#5f4c35","#5f4c35","#b45454","#a42f2f","#c4483b","#a42f2f","#6e2020"],["#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#ffffff","#b3d2ee","#b3d2ee","#a8743e","#a8743e","#a8743e","#a8743e","#ffffff","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#c3cad4","#6f7884","#a9b1bc","#6f7884","#90959d","#2c7a3f","#3fae5a","#3fae5a","#3fae5a","#ffffff","#ffffff","#62e07e","#c89458","#c89458","#c89458","#c89458","#c89458","#e7c995","#e7c995","#c89458","#c89458","#c89458","#ad7c45","#ad7c45","#805c33","#2d3a5c","#3d4f7c","#7d8fbf","#7d8fbf","#b4bac4","#b4bac4","#b4bac4","#7d8fbf","#5c6a8d","#a63535","#8e2929","#232d49","#5f4c35","#6e5a40","#5f4c35","#6e5a40","#5f4c35","#6e5a40","#e7d5ab","#e2cc98","#e2cc98","#e2cc98","#978966"],["#ffffff","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#b3d2ee","#ffffff","#b3d2ee","#b3d2ee","#f48fb1","#b3d2ee","#b3d2ee","#b3d2ee","#ffffff","#b3d2ee","#b3d2ee","#c3cad4","#c3cad4","#c3cad4","#c3cad4","#2c5a36","#ff7ad9","#6e5a40","#5f4c35","#5f4c35","#6e5a40","#5f4c35","#2c5a36","#c89458","#c89458","#c89458","#c89458","#c89458","#e7c995","#e7c995","#f1ece0","#f1ece0","#f1ece0","#f1ece0","#f1ece0","#805c33","#2d3a5c","#b4bac4","#b4bac4","#b4bac4","#7d8fbf","#28345a","#7d8fbf","#b4bac4","#b4bac4","#f0f0f4","#93959e","#232d49","#6e5a40","#5f4c35","#f4f4f6","#f4f4f6","#cfd2dc","#999ba3","#3e4b6b","#2f4479","#2f4479","#2f4479","#202e51"],["#c3cad4","#c3cad4","#8d96a3","#686f79","#686f79","#686f79","#90959d","#c3cad4","#8d96a3","#8d96a3","#686f79","#686f79","#686f79","#90959d","#90959d","#686f79","#ff5050","#8d96a3","#8d96a3","#8d96a3","#2c5a36","#8d96a3","#2c5a36","#5f4c35","#6e5a40","#6e5a40","#5f4c35","#2c5a36","#c89458","#2c5a36","#c89458","#c89458","#c89458","#c89458","#e7c995","#e7c995","#f1ece0","#9aa0aa","#9aa0aa","#9aa0aa","#f1ece0","#805c33","#37456b","#3d4f7c","#3d4f7c","#7d8fbf","#7d8fbf","#28345a","#7d8fbf","#7d8fbf","#2d3a5c","#b2b2b5","#93959e","#232d49","#6e5a40","#5f4c35","#ff8fbf","#ff8fbf","#cfd2dc","#999ba3","#ab9e7f","#e2cc98","#e2cc98","#e2cc98","#978966"],["#5f4d37","#5f4c35","#5f4c35","#767a82","#767a82","#767a82","#767a82","#5f4c35","#6e5a40","#5f4c35","#a7aaaf","#a7aaaf","#a7aaaf","#a7aaaf","#a7aaaf","#a7aaaf","#2c5a36","#ffd23f","#5f4c35","#59b0ff","#6e5a40","#5f4c35","#5f4c35","#2c5a36","#6e5a40","#6e5a40","#59b0ff","#5f4c35","#c89458","#c89458","#c89458","#c89458","#c89458","#c89458","#e7c995","#e7c995","#f1ece0","#9aa0aa","#9aa0aa","#f1ece0","#f1ece0","#805c33","#202947","#3d4f7c","#3d4f7c","#4a5d90","#7d8fbf","#28345a","#7d8fbf","#3d4f7c","#37456b","#b2b2b5","#93959e","#232d49","#5f4c35","#6e5a40","#f4f4f6","#f4f4f6","#cfd2dc","#999ba3","#853e3e","#c4483b","#a42f2f","#a42f2f","#843028"],["#52412e","#6e5a40","#5f4c35","#a4a9b4","#5f4c35","#5f4c35","#a4a9b4","#6e5a40","#5f4c35","#5f4c35","#f4f4f4","#f4f4f4","#f4f4f4","#f4f4f4","#f4f4f4","#f4f4f4","#2c5a36","#2c5a36","#5f4c35","#2c5a36","#5f4c35","#6e5a40","#5f4c35","#ff5050","#2c5a36","#ffd23f","#2c5a36","#6e5a40","#c89458","#c89458","#c89458","#c89458","#c89458","#c89458","#e7c995","#e7c995","#f1ece0","#f1ece0","#f1ece0","#f1ece0","#f1ece0","#805c33","#202947","#4a5d90","#3d4f7c","#3d4f7c","#3d4f7c","#28345a","#4a5d90","#3d4f7c","#2d3a5c","#b2b2b5","#93959e","#b5b5b6","#f4f4f6","#f4f4f6","#ff8fbf","#ff8fbf","#cfd2dc","#999ba3","#a28549","#d3a33f","#d3a33f","#d3a33f","#8e6d2a"],["#52412e","#5f4c35","#6e5a40","#5f4c35","#8a8f9a","#8a8f9a","#6e5a40","#6e5a40","#5f4c35","#5f4c35","#c9ced6","#f4f4f4","#a7adb8","#a7adb8","#f4f4f4","#8a909b","#5f4c35","#6e5a40","#2c5a36","#5f4c35","#62e07e","#5f4c35","#6e5a40","#2c5a36","#5f4c35","#3d3d48","#3d3d48","#2d2d35","#946e41","#ff7ad9","#c89458","#c89458","#c89458","#c89458","#e7c995","#e7c995","#c89458","#c89458","#c89458","#ad7c45","#ad7c45","#805c33","#202947","#3d4f7c","#3d4f7c","#3d4f7c","#4a5d90","#28345a","#3d4f7c","#3d4f7c","#2d3a5c","#b2b2b5","#93959e","#b5b5b6","#f4f4f6","#f4f4f6","#f4f4f6","#f4f4f6","#cfd2dc","#999ba3","#853e3e","#a42f2f","#c4483b","#a42f2f","#6e2020"],["#52412e","#6e5a40","#5f4c35","#6e5a40","#8a8f9a","#8a8f9a","#5f4c35","#5f4c35","#6e5a40","#6e5a40","#3a7bd5","#f4f4f4","#3a7bd5","#3a7bd5","#2c5ca0","#214476","#5f4c35","#6e5a40","#6e5a40","#2c5a36","#2c5a36","#2c5a36","#2c5a36","#3d3d48","#3d3d48","#3d3d48","#3d3d48","#3d3d48","#2d2d35","#2d2d35","#946e41","#c89458","#c89458","#c89458","#e7c995","#e7c995","#c89458","#c89458","#c89458","#ad7c45","#805c33","#805c33","#202947","#3d4f7c","#4a5d90","#2d3a5c","#ac9569","#1e2643","#e8c98e","#4a5d90","#2d3a5c","#b2b2b5","#93959e","#b5b5b6","#f4f4f6","#f4f4f6","#ff8fbf","#ff8fbf","#cfd2dc","#999ba3","#853e3e","#c4483b","#a42f2f","#a42f2f","#843028"],["#5f4d37","#5f4c35","#5f4c35","#ff6b5e","#e2433c","#e2433c","#e2433c","#6c7480","#6e5a40","#6e5a40","#3a7bd5","#3a7bd5","#3a7bd5","#3a7bd5","#214476","#a7aaaf","#e2e6ec","#e2e6ec","#e2e6ec","#e2e6ec","#e2e6ec","#5f4c35","#3d3d48","#3d3d48","#d4d9e1","#d4d9e1","#aeb6c2","#d4d9e1","#d4d9e1","#3d3d48","#2d2d35","#946e41","#c89458","#c89458","#e7c995","#e7c995","#c89458","#c89458","#c89458","#805c33","#b6b6b8","#b6b6b8","#b6b6b8","#2d3a5c","#2d3a5c","#b6b6b8","#b6b6b8","#b6b6b8","#2d3a5c","#3d4f7c","#3d4f7c","#232d49","#232d49","#b5b5b6","#f4f4f6","#f4f4f6","#f4f4f6","#f4f4f6","#cfd2dc","#999ba3","#ab9e7f","#e2cc98","#e2cc98","#e2cc98","#978966"],["#5f4d37","#5f4c35","#5f4c35","#ff6b5e","#f4cfa6","#f4cfa6","#e2433c","#a4acb7","#5f4c35","#5f4c35","#3a7bd5","#3a7bd5","#3a7bd5","#3a7bd5","#214476","#bd822b","#ffb03a","#ffb03a","#ffb03a","#ffb03a","#bd822b","#2d2d35","#3d3d48","#d4d9e1","#aeb6c2","#5c6370","#aeb6c2","#5c6370","#aeb6c2","#d4d9e1","#3d3d48","#2d2d35","#5f4c35","#5f4c35","#5f4c35","#6e5a40","#5f4c35","#5f4c35","#5f4c35","#b6b6b8","#f6f6f8","#f6f6f8","#f6f6f8","#90939b","#90939b","#f6f6f8","#f6f6f8","#f6f6f8","#b6b6b8","#2d3a5c","#4a5d90","#2f3d63","#232d49","#72767e","#72767e","#72767e","#72767e","#72767e","#72767e","#72767e","#3e4b6b","#2f4479","#2f4479","#2f4479","#202e51"],["#52412e","#6e5a40","#6e5a40","#ff6b5e","#f4cfa6","#f4cfa6","#e2433c","#6c7480","#5f4c35","#5f4c35","#3a7bd5","#3a7bd5","#3a7bd5","#3a7bd5","#214476","#95989e","#ffb03a","#a7adb8","#a7adb8","#ffb03a","#666b73","#2d2d35","#d4d9e1","#aeb6c2","#5c6370","#aeb6c2","#aeb6c2","#aeb6c2","#5c6370","#aeb6c2","#d4d9e1","#3d3d48","#5f4c35","#5f4c35","#9aa0aa","#9aa0aa","#9aa0aa","#72767e","#26262f","#f6f6f8","#f6f6f8","#f6f6f8","#f6f6f8","#34343f","#34343f","#f6f6f8","#f6f6f8","#f6f6f8","#f6f6f8","#26262f","#2d3a5c","#2f3d63","#232d49","#bd4678","#bd4678","#72767e","#72767e","#72767e","#bd4678","#bd4678","#ab9e7f","#e2cc98","#e2cc98","#e2cc98","#978966"],["#52412e","#6e5a40","#6e5a40","#ff6b5e","#f4cfa6","#f4cfa6","#e2433c","#a4acb7","#5f4c35","#6e5a40","#3a7bd5","#3a7bd5","#3a7bd5","#3a7bd5","#214476","#2f8143","#ffb03a","#3fae5a","#3fae5a","#236032","#2d2d35","#3d3d48","#d4d9e1","#5c6370","#aeb6c2","#5c6370","#eef1f5","#5c6370","#aeb6c2","#5c6370","#d4d9e1","#3d3d48","#2d2d35","#6e5a40","#72767e","#5f4c35","#5f4c35","#6e5a40","#34343f","#f6f6f8","#f6f6f8","#f6f6f8","#34343f","#34343f","#34343f","#34343f","#f6f6f8","#f6f6f8","#f6f6f8","#26262f","#2d3a5c","#2f3d63","#232d49","#9a2f5d","#d0407e","#5f4c35","#5f4c35","#6e5a40","#d0407e","#ff8a1e","#cf695e","#a42f2f","#a42f2f","#c4483b","#6e2020"],["#5f4d37","#5f4c35","#5f4c35","#ff6b5e","#e2433c","#e2433c","#e2433c","#6c7480","#6e5a40","#5f4c35","#c9ced6","#c9ced6","#a7adb8","#a7adb8","#666b73","#2f8143","#3fae5a","#3fae5a","#3fae5a","#236032","#2d2d35","#3d3d48","#aeb6c2","#aeb6c2","#aeb6c2","#eef1f5","#eef1f5","#eef1f5","#aeb6c2","#aeb6c2","#aeb6c2","#2d2d35","#ac413a","#e8584f","#ac413a","#e8584f","#e8584f","#ac413a","#b6b6b8","#f6f6f8","#f6f6f8","#f6f6f8","#f6f6f8","#34343f","#34343f","#b6b6b8","#b6b6b8","#b6b6b8","#b6b6b8","#b6b6b8","#2d3a5c","#232d49","#232d49","#232d49","#5f4c35","#ff8a1e","#ff8a1e","#5f4c35","#6e5a40","#ff8a1e","#dbb462","#d3a33f","#d3a33f","#d3a33f","#8e6d2a"],["#52412e","#5f4c35","#5f4c35","#ff6b5e","#c9d3dc","#c9d3dc","#e2433c","#a4acb7","#5f4c35","#6e5a40","#adb1b8","#adb1b8","#90959e","#90959e","#585c63","#2f8143","#3fae5a","#3fae5a","#3fae5a","#236032","#2d2d35","#3d3d48","#d4d9e1","#5c6370","#aeb6c2","#5c6370","#eef1f5","#5c6370","#aeb6c2","#5c6370","#d4d9e1","#2d2d35","#972725","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#972725","#90939b","#d4d4d5","#d4d4d5","#d4d4d5","#d4d4d5","#9d9d9e","#a07c4d","#a07c4d","#a07c4d","#a07c4d","#a07c4d","#a07c4d","#a78f66","#a78f66","#ffd08a","#ff8a1e","#d8a868","#d8a868","#ff8a1e","#ff8a1e","#a07c4d","#723535","#a93e33","#8d2828","#8d2828","#712922"],["#5f4d37","#5f4c35","#e2433c","#ff6b5e","#e2433c","#e2433c","#e2433c","#e2433c","#6c7480","#52412e","","","","","","#36964d","#3fae5a","#3fae5a","#3fae5a","#2f8244","#236032","#2d2d35","#d4d9e1","#aeb6c2","#5c6370","#aeb6c2","#aeb6c2","#aeb6c2","#5c6370","#aeb6c2","#d4d9e1","#2d2d35","#972725","#cc3532","#cc3532","#cc3532","#d6dae2","#cc3532","#cc3532","#822220","","","","","","#a67845","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#e2c18a","#e2c18a","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#a67845","","","","",""],["#52412e","#666672","#666672","#666672","#666672","#666672","#666672","#666672","#666672","#5f4d37","","","","","","#36964d","#3fae5a","#3fae5a","#3fae5a","#2f8244","#236032","#2d2d35","#3d3d48","#d4d9e1","#aeb6c2","#5c6370","#aeb6c2","#5c6370","#aeb6c2","#d4d9e1","#3d3d48","#2d2d35","#731c1b","#9c2624","#9c2624","#9c2624","#d6dae2","#9c2624","#9c2624","#86211f","","","","","","#a67845","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#e2c18a","#e2c18a","#c18c50","#c18c50","#6a4422","#c18c50","#c18c50","#c18c50","#a67845","","","","",""],["#585862","#666672","#ff6b5e","#ff6b5e","#ff6b5e","#ff6b5e","#ff6b5e","#ff6b5e","#666672","#585862","","","","","","#36964d","#3fae5a","#3fae5a","#3fae5a","#2f8244","#2f8244","#5f4c35","#3d3d48","#3d3d48","#d4d9e1","#d4d9e1","#aeb6c2","#d4d9e1","#d4d9e1","#3d3d48","#3d3d48","#5f4c35","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#af2e2b","","","","","","#a67845","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#e2c18a","#e2c18a","#c18c50","#c18c50","#6a4422","#6a4422","#c18c50","#c18c50","#a67845","","","","",""],["#404049","#666672","#666672","#666672","#666672","#666672","#666672","#666672","#666672","#404049","","","","","","#adb1b8","#c9ced6","#a7adb8","#a7adb8","#8a909b","#8a909b","#5f4c35","#5f4c35","#3d3d48","#3d3d48","#3d3d48","#3d3d48","#3d3d48","#3d3d48","#3d3d48","#5f4c35","#6e5a40","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#cc3532","#af2e2b","","","","","","#a67845","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#e2c18a","#e2c18a","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#c18c50","#a67845","","","","",""],["#232329","#28282f","#5f4d37","#52412e","#5f4d37","#52412e","#5f4d37","#52412e","#28282f","#232329","","","","","","#95989e","#adb1b8","#90959e","#90959e","#777c85","#777c85","#52412e","#5f4d37","#52412e","#5f4d37","#34343e","#34343e","#34343e","#52412e","#5f4d37","#5f4d37","#52412e","#af2e2b","#af2e2b","#af2e2b","#af2e2b","#af2e2b","#af2e2b","#af2e2b","#972725","","","","","","#8f683b","#a67845","#a67845","#a67845","#a67845","#a67845","#c2a677","#c2a677","#a67845","#a67845","#a67845","#a67845","#a67845","#a67845","#8f683b","","","","",""]],
     difficulty: 4,
     rotation: {
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
   },
   {
     id: "townhouses",
@@ -26245,7 +26136,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "schnauzers",
@@ -26263,7 +26153,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "schnerzgerberz",
@@ -26280,7 +26169,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     remix: {
         "mix": [
           "townhouses",
@@ -26302,7 +26190,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     remix: {
         "mix": [
@@ -26331,7 +26218,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "landmark"
       ],
@@ -26357,7 +26243,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -26375,7 +26260,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -26393,7 +26277,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -26415,7 +26298,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "earth",
@@ -26437,7 +26319,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "asteroid_belt",
@@ -26455,7 +26336,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "shooting_star",
@@ -26469,7 +26349,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "constellation",
@@ -26486,7 +26365,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -26506,7 +26384,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "nebula",
@@ -26525,7 +26402,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "the_universe",
@@ -26566,14 +26442,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "tree_of_death",
     name: "the tree of death",
     grid: [
-        "X..X.XX",
-        "X.XX.XX",
+        "X..X...",
+        "X.XX.X.",
         "XX.X.X.",
         "XX.XXXX",
         ".XXX.X.",
@@ -26583,13 +26458,12 @@ export const SHAPES = [
         "...XX..",
         ".XXXX.."
       ],
-    color: [["#2c2228","#847278","#847278","#c6b8b8","#c6b8b8","","","","","","","","","","","#52434a","#6a5960","#a08e92","#847278","#c6b8b8","","","","","","#6a5960","#847278","#c6b8b8","#646aa6","#646aa6","#646aa6","#c6b8b8","#c6b8b8","#847278","#6a5960"],["#52434a","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","","","","","","#6a5960","#847278","#a08e92","#c6b8b8","#c6b8b8","","","","","","#847278","#847278","#646aa6","#221c34","#221c34","#221c34","#646aa6","#c6b8b8","#c6b8b8","#a08e92"],["#52434a","#847278","#6a5960","#c6b8b8","#c6b8b8","","","","","","","","","","","#2c2228","#a08e92","#a08e92","#c6b8b8","#c6b8b8","","","","","","#a49ebc","#a49ebc","#221c34","#f2ecd8","#221c34","#221c34","#221c34","#646aa6","#c6b8b8","#a08e92"],["#52434a","#847278","#a08e92","#847278","#c6b8b8","","","","","","","","","","","#6a5960","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","#6a5960","#52434a","#221c34","#221c34","#221c34","#221c34","#221c34","#221c34","#646aa6","#c6b8b8"],["#6a5960","#847278","#847278","#c6b8b8","#847278","","","","","","","","","","","#3e3138","#6a5960","#6a5960","#a08e92","#c6b8b8","","","","","","#52434a","#847278","#221c34","#221c34","#646aa6","#221c34","#221c34","#221c34","#221c34","#646aa6"],["#2c2228","#a08e92","#a08e92","#c6b8b8","#c6b8b8","","","","","","#6a5960","#52434a","#52434a","#6a5960","#2c2228","#6a5960","#52434a","#52434a","#52434a","#a08e92","","","","","","#6a5960","#847278","#a08e92","#221c34","#221c34","#646aa6","#221c34","#221c34","#221c34","#646aa6"],["#52434a","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","#847278","#847278","#a08e92","#52434a","#847278","#847278","#847278","#a08e92","#a08e92","#52434a","","","","","","#2c2228","#a08e92","#a08e92","#c6b8b8","#221c34","#221c34","#221c34","#221c34","#221c34","#646aa6"],["#52434a","#847278","#a08e92","#847278","#c6b8b8","","","","","","#a08e92","#c6b8b8","#6a5960","#c6b8b8","#a08e92","#a08e92","#c6b8b8","#6a5960","#a08e92","#52434a","","","","","","#6a5960","#52434a","#c6b8b8","#a08e92","#a08e92","#221c34","#221c34","#221c34","#646aa6","#a08e92"],["#a08e92","#a08e92","#a08e92","#a08e92","#847278","","","","","","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","#847278","#847278","#847278","#847278","#847278","#d8a020","#847278","#d8a020","#847278","#847278"],["#52434a","#a08e92","#a08e92","#c6b8b8","#c6b8b8","","","","","","#3e3138","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#a08e92","","","","","","#52434a","#52434a","#52434a","#52434a","#52434a","#52434a","#52434a","#52434a","#52434a","#52434a"],["#847278","#6a5960","#c6b8b8","#a08e92","#c6b8b8","#a08e92","#52434a","#52434a","#2c2228","#6a5960","","","","","","#52434a","#6a5960","#847278","#6a5960","#c6b8b8","","","","","","#6a5960","#6a5960","#a08e92","#c6b8b8","#c6b8b8","","","","",""],["#847278","#a08e92","#6a5960","#c6b8b8","#52434a","#52434a","#6a5960","#847278","#52434a","#847278","","","","","","#847278","#847278","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","#52434a","#3e3138","#c6b8b8","#c6b8b8","#c6b8b8","","","","",""],["#c6b8b8","#a08e92","#a08e92","#847278","#6a5960","#6a5960","#847278","#6a5960","#c6b8b8","#c6b8b8","","","","","","#3e3138","#a08e92","#a08e92","#c6b8b8","#c6b8b8","","","","","","#52434a","#847278","#6a5960","#c6b8b8","#c6b8b8","","","","",""],["#c6b8b8","#c6b8b8","#c6b8b8","#a08e92","#a08e92","#52434a","#847278","#a08e92","#847278","#c6b8b8","","","","","","#6a5960","#847278","#6a5960","#c6b8b8","#a08e92","","","","","","#52434a","#6a5960","#a08e92","#847278","#c6b8b8","","","","",""],["#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#a08e92","#6a5960","#847278","#a08e92","#c6b8b8","#847278","","","","","","#52434a","#847278","#a08e92","#847278","#c6b8b8","","","","","","#6a5960","#6a5960","#a08e92","#a08e92","#a08e92","","","","",""],["#b8ae94","#f2ecd8","#5a4a3a","#f2ecd8","#b8ae94","#2c2228","#a08e92","#a08e92","#c6b8b8","#c6b8b8","","","","","","#6a5960","#847278","#a08e92","#c6b8b8","#6a5960","#6a5960","#52434a","#52434a","#52434a","#2c2228","#2c2228","#3e3138","#52434a","#52434a","#3e3138","#6a5960","#52434a","#52434a","#52434a","#6a5960"],["#f2ecd8","#f2ecd8","#f2ecd8","#f2ecd8","#f2ecd8","#6a5960","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","#2c2228","#847278","#a08e92","#c6b8b8","#a08e92","#847278","#847278","#847278","#3e3138","#847278","#52434a","#6a5960","#847278","#52434a","#a08e92","#847278","#847278","#847278","#52434a","#847278"],["#f2ecd8","#2a2030","#f2ecd8","#2a2030","#f2ecd8","#6a5960","#847278","#6a5960","#c6b8b8","#c6b8b8","","","","","","#52434a","#52434a","#c6b8b8","#c6b8b8","#a08e92","#a08e92","#a08e92","#6a5960","#c6b8b8","#847278","#52434a","#847278","#6a5960","#c6b8b8","#a08e92","#a08e92","#c6b8b8","#6a5960","#c6b8b8","#c6b8b8"],["#f2ecd8","#f2ecd8","#7a6e64","#f2ecd8","#f2ecd8","#52434a","#6a5960","#847278","#c6b8b8","#c6b8b8","","","","","","#52434a","#847278","#6a5960","#c6b8b8","#a08e92","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#a08e92","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#c6b8b8"],["#b8ae94","#8a8070","#f2ecd8","#8a8070","#b8ae94","#a08e92","#52434a","#6a5960","#c6b8b8","#6a5960","","","","","","#52434a","#6a5960","#a08e92","#847278","#a08e92","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#6a5960","#c6b8b8","#c6b8b8","#c6b8b8","#a08e92","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8"],["","","","","","#3e3138","#847278","#847278","#a08e92","#a08e92","#52434a","#52434a","#52434a","#6a5960","#3e3138","#3e3138","#3e3138","#3e3138","#3e3138","#847278","","","","","","#b8ae94","#f2ecd8","#5a4a3a","#f2ecd8","#b8ae94","","","","",""],["","","","","","#6a5960","#52434a","#c6b8b8","#c6b8b8","#847278","#847278","#847278","#a08e92","#52434a","#847278","#847278","#847278","#a08e92","#847278","#3e3138","","","","","","#f2ecd8","#f2ecd8","#f2ecd8","#f2ecd8","#f2ecd8","","","","",""],["","","","","","#6a5960","#847278","#6a5960","#a08e92","#c6b8b8","#a08e92","#c6b8b8","#6a5960","#a08e92","#c6b8b8","#a08e92","#c6b8b8","#847278","#c6b8b8","#c6b8b8","","","","","","#f2ecd8","#2a2030","#f2ecd8","#2a2030","#f2ecd8","","","","",""],["","","","","","#6a5960","#847278","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#a08e92","","","","","","#f2ecd8","#f2ecd8","#7a6e64","#f2ecd8","#f2ecd8","","","","",""],["","","","","","#52434a","#6a5960","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#a08e92","#a08e92","#a08e92","#c6b8b8","","","","","","#b8ae94","#8a8070","#f2ecd8","#8a8070","#b8ae94","","","","",""],["","","","","","","","","","","","","","","","#2c2228","#52434a","#c6b8b8","#c6b8b8","#a08e92","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#6a5960","#6a5960","#52434a","#a08e92","#c6b8b8","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#52434a","#847278","#a08e92","#847278","#c6b8b8","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#6a5960","#847278","#a08e92","#c6b8b8","#6a5960","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#2c2228","#a08e92","#a08e92","#c6b8b8","#c6b8b8","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#6a5960","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","#52434a","#6a5960","#c6b8b8","#c6b8b8","#a08e92","","","","","","","","","",""],["","","","","","","","","","","","","","","","#6a5960","#847278","#6a5960","#c6b8b8","#847278","#847278","#a08e92","#847278","#c6b8b8","#a08e92","","","","","","","","","",""],["","","","","","","","","","","","","","","","#6a5960","#847278","#a08e92","#a08e92","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#6a5960","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#6a5960","#a08e92","#c6b8b8","#a08e92","","","","","","","","","",""],["","","","","","","","","","","","","","","","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#847278","#847278","#c6b8b8","#a08e92","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","","","#52434a","#847278","#6a5960","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","","","#52434a","#847278","#a08e92","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","","","#6a5960","#847278","#a08e92","#847278","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","","","#2c2228","#a08e92","#a08e92","#c6b8b8","#847278","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","","","#52434a","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","#2c2228","#847278","#847278","#6a5960","#52434a","#52434a","#847278","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","#847278","#847278","#847278","#847278","#847278","#2c2228","#847278","#847278","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","#847278","#a08e92","#a08e92","#a08e92","#6a5960","#a08e92","#a08e92","#c6b8b8","#847278","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","#2c2228","#a08e92","#a08e92","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","#52434a","#3e3138","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#847278","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","#b8ae94","#f2ecd8","#f2ecd8","#f2ecd8","#b8ae94","#3e3138","#52434a","#52434a","#6a5960","#2c2228","#52434a","#847278","#6a5960","#c6b8b8","#c6b8b8","#2c2228","#3e3138","#3e3138","#3e3138","#2c2228","","","","","","","","","",""],["","","","","","#f2ecd8","#f2ecd8","#f2ecd8","#f2ecd8","#f2ecd8","#6a5960","#6a5960","#a08e92","#3e3138","#52434a","#52434a","#847278","#a08e92","#847278","#c6b8b8","#6a5960","#847278","#6a5960","#52434a","#847278","","","","","","","","","",""],["","","","","","#f2ecd8","#2a2030","#f2ecd8","#2a2030","#f2ecd8","#a08e92","#a08e92","#6a5960","#a08e92","#847278","#6a5960","#847278","#a08e92","#c6b8b8","#847278","#847278","#a08e92","#6a5960","#c6b8b8","#a08e92","","","","","","","","","",""],["","","","","","#f2ecd8","#f2ecd8","#7a6e64","#f2ecd8","#f2ecd8","#a08e92","#847278","#c6b8b8","#c6b8b8","#a08e92","#2c2228","#a08e92","#a08e92","#c6b8b8","#c6b8b8","#a08e92","#847278","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","#b8ae94","#8a8070","#8a8070","#8a8070","#b8ae94","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#a08e92","#52434a","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","#6a5960","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","","","","",""]],
+    color: [["#2c2228","#847278","#847278","#c6b8b8","#c6b8b8","","","","","","","","","","","#52434a","#6a5960","#a08e92","#847278","#c6b8b8","","","","","","","","","","","","","","",""],["#52434a","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","","","","","","#6a5960","#847278","#a08e92","#c6b8b8","#c6b8b8","","","","","","","","","","","","","","",""],["#52434a","#847278","#6a5960","#c6b8b8","#c6b8b8","","","","","","","","","","","#2c2228","#a08e92","#a08e92","#c6b8b8","#c6b8b8","","","","","","","","","","","","","","",""],["#52434a","#847278","#a08e92","#847278","#c6b8b8","","","","","","","","","","","#6a5960","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","","","","","","","","","",""],["#6a5960","#847278","#847278","#c6b8b8","#847278","","","","","","","","","","","#3e3138","#6a5960","#6a5960","#a08e92","#c6b8b8","","","","","","","","","","","","","","",""],["#2c2228","#a08e92","#a08e92","#c6b8b8","#c6b8b8","","","","","","#6a5960","#52434a","#52434a","#6a5960","#2c2228","#6a5960","#52434a","#52434a","#52434a","#a08e92","","","","","","#6a5960","#847278","#a08e92","#221c34","#221c34","","","","",""],["#52434a","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","#847278","#847278","#a08e92","#52434a","#847278","#847278","#847278","#a08e92","#a08e92","#52434a","","","","","","#2c2228","#a08e92","#a08e92","#c6b8b8","#221c34","","","","",""],["#52434a","#847278","#a08e92","#847278","#c6b8b8","","","","","","#a08e92","#c6b8b8","#6a5960","#c6b8b8","#a08e92","#a08e92","#c6b8b8","#6a5960","#a08e92","#52434a","","","","","","#6a5960","#52434a","#c6b8b8","#a08e92","#a08e92","","","","",""],["#a08e92","#a08e92","#a08e92","#a08e92","#847278","","","","","","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","#847278","#847278","#847278","#847278","#847278","","","","",""],["#52434a","#a08e92","#a08e92","#c6b8b8","#c6b8b8","","","","","","#3e3138","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#a08e92","","","","","","#52434a","#52434a","#52434a","#52434a","#52434a","","","","",""],["#847278","#6a5960","#c6b8b8","#a08e92","#c6b8b8","#a08e92","#52434a","#52434a","#2c2228","#6a5960","","","","","","#52434a","#6a5960","#847278","#6a5960","#c6b8b8","","","","","","#6a5960","#6a5960","#a08e92","#c6b8b8","#c6b8b8","","","","",""],["#847278","#a08e92","#6a5960","#c6b8b8","#52434a","#52434a","#6a5960","#847278","#52434a","#847278","","","","","","#847278","#847278","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","#52434a","#3e3138","#c6b8b8","#c6b8b8","#c6b8b8","","","","",""],["#c6b8b8","#a08e92","#a08e92","#847278","#6a5960","#6a5960","#847278","#6a5960","#c6b8b8","#c6b8b8","","","","","","#3e3138","#a08e92","#a08e92","#c6b8b8","#c6b8b8","","","","","","#52434a","#847278","#6a5960","#c6b8b8","#c6b8b8","","","","",""],["#c6b8b8","#c6b8b8","#c6b8b8","#a08e92","#a08e92","#52434a","#847278","#a08e92","#847278","#c6b8b8","","","","","","#6a5960","#847278","#6a5960","#c6b8b8","#a08e92","","","","","","#52434a","#6a5960","#a08e92","#847278","#c6b8b8","","","","",""],["#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#a08e92","#6a5960","#847278","#a08e92","#c6b8b8","#847278","","","","","","#52434a","#847278","#a08e92","#847278","#c6b8b8","","","","","","#6a5960","#6a5960","#a08e92","#a08e92","#a08e92","","","","",""],["#b8ae94","#f2ecd8","#5a4a3a","#f2ecd8","#b8ae94","#2c2228","#a08e92","#a08e92","#c6b8b8","#c6b8b8","","","","","","#6a5960","#847278","#a08e92","#c6b8b8","#6a5960","#6a5960","#52434a","#52434a","#52434a","#2c2228","#2c2228","#3e3138","#52434a","#52434a","#3e3138","#6a5960","#52434a","#52434a","#52434a","#6a5960"],["#f2ecd8","#f2ecd8","#f2ecd8","#f2ecd8","#f2ecd8","#6a5960","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","#2c2228","#847278","#a08e92","#c6b8b8","#a08e92","#847278","#847278","#847278","#3e3138","#847278","#52434a","#6a5960","#847278","#52434a","#a08e92","#847278","#847278","#847278","#52434a","#847278"],["#f2ecd8","#2a2030","#f2ecd8","#2a2030","#f2ecd8","#6a5960","#847278","#6a5960","#c6b8b8","#c6b8b8","","","","","","#52434a","#52434a","#c6b8b8","#c6b8b8","#a08e92","#a08e92","#a08e92","#6a5960","#c6b8b8","#847278","#52434a","#847278","#6a5960","#c6b8b8","#a08e92","#a08e92","#c6b8b8","#6a5960","#c6b8b8","#c6b8b8"],["#f2ecd8","#f2ecd8","#7a6e64","#f2ecd8","#f2ecd8","#52434a","#6a5960","#847278","#c6b8b8","#c6b8b8","","","","","","#52434a","#847278","#6a5960","#c6b8b8","#a08e92","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#a08e92","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#c6b8b8"],["#b8ae94","#8a8070","#f2ecd8","#8a8070","#b8ae94","#a08e92","#52434a","#6a5960","#c6b8b8","#6a5960","","","","","","#52434a","#6a5960","#a08e92","#847278","#a08e92","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#6a5960","#c6b8b8","#c6b8b8","#c6b8b8","#a08e92","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8"],["","","","","","#3e3138","#847278","#847278","#a08e92","#a08e92","#52434a","#52434a","#52434a","#6a5960","#3e3138","#3e3138","#3e3138","#3e3138","#3e3138","#847278","","","","","","#b8ae94","#f2ecd8","#5a4a3a","#f2ecd8","#b8ae94","","","","",""],["","","","","","#6a5960","#52434a","#c6b8b8","#c6b8b8","#847278","#847278","#847278","#a08e92","#52434a","#847278","#847278","#847278","#a08e92","#847278","#3e3138","","","","","","#f2ecd8","#f2ecd8","#f2ecd8","#f2ecd8","#f2ecd8","","","","",""],["","","","","","#6a5960","#847278","#6a5960","#a08e92","#c6b8b8","#a08e92","#c6b8b8","#6a5960","#a08e92","#c6b8b8","#a08e92","#c6b8b8","#847278","#c6b8b8","#c6b8b8","","","","","","#f2ecd8","#2a2030","#f2ecd8","#2a2030","#f2ecd8","","","","",""],["","","","","","#6a5960","#847278","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#a08e92","","","","","","#f2ecd8","#f2ecd8","#7a6e64","#f2ecd8","#f2ecd8","","","","",""],["","","","","","#52434a","#6a5960","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#a08e92","#a08e92","#a08e92","#c6b8b8","","","","","","#b8ae94","#8a8070","#f2ecd8","#8a8070","#b8ae94","","","","",""],["","","","","","","","","","","","","","","","#2c2228","#52434a","#c6b8b8","#c6b8b8","#a08e92","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#6a5960","#6a5960","#52434a","#a08e92","#c6b8b8","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#52434a","#847278","#a08e92","#847278","#c6b8b8","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#6a5960","#847278","#a08e92","#c6b8b8","#6a5960","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#2c2228","#a08e92","#a08e92","#c6b8b8","#c6b8b8","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#6a5960","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","#52434a","#6a5960","#c6b8b8","#c6b8b8","#a08e92","","","","","","","","","",""],["","","","","","","","","","","","","","","","#6a5960","#847278","#6a5960","#c6b8b8","#847278","#847278","#a08e92","#847278","#c6b8b8","#a08e92","","","","","","","","","",""],["","","","","","","","","","","","","","","","#6a5960","#847278","#a08e92","#a08e92","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#6a5960","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#6a5960","#a08e92","#c6b8b8","#a08e92","","","","","","","","","",""],["","","","","","","","","","","","","","","","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","#847278","#847278","#c6b8b8","#a08e92","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","","","#52434a","#847278","#6a5960","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","","","#52434a","#847278","#a08e92","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","","","#6a5960","#847278","#a08e92","#847278","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","","","#2c2228","#a08e92","#a08e92","#c6b8b8","#847278","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","","","#52434a","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","#2c2228","#847278","#847278","#6a5960","#52434a","#52434a","#847278","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","#847278","#847278","#847278","#847278","#847278","#2c2228","#847278","#847278","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","#847278","#a08e92","#a08e92","#a08e92","#6a5960","#a08e92","#a08e92","#c6b8b8","#847278","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","#2c2228","#a08e92","#a08e92","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#c6b8b8","","","","","","","","","",""],["","","","","","","","","","","","","","","","#52434a","#3e3138","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#847278","#847278","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","#b8ae94","#f2ecd8","#f2ecd8","#f2ecd8","#b8ae94","#3e3138","#52434a","#52434a","#6a5960","#2c2228","#52434a","#847278","#6a5960","#c6b8b8","#c6b8b8","#2c2228","#3e3138","#3e3138","#3e3138","#2c2228","","","","","","","","","",""],["","","","","","#f2ecd8","#f2ecd8","#f2ecd8","#f2ecd8","#f2ecd8","#6a5960","#6a5960","#a08e92","#3e3138","#52434a","#52434a","#847278","#a08e92","#847278","#c6b8b8","#6a5960","#847278","#6a5960","#52434a","#847278","","","","","","","","","",""],["","","","","","#f2ecd8","#2a2030","#f2ecd8","#2a2030","#f2ecd8","#a08e92","#a08e92","#6a5960","#a08e92","#847278","#6a5960","#847278","#a08e92","#c6b8b8","#847278","#847278","#a08e92","#6a5960","#c6b8b8","#a08e92","","","","","","","","","",""],["","","","","","#f2ecd8","#f2ecd8","#7a6e64","#f2ecd8","#f2ecd8","#a08e92","#847278","#c6b8b8","#c6b8b8","#a08e92","#2c2228","#a08e92","#a08e92","#c6b8b8","#c6b8b8","#a08e92","#847278","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","","","","",""],["","","","","","#b8ae94","#8a8070","#8a8070","#8a8070","#b8ae94","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","#a08e92","#52434a","#52434a","#c6b8b8","#c6b8b8","#c6b8b8","#6a5960","#c6b8b8","#c6b8b8","#c6b8b8","#c6b8b8","","","","","","","","","",""]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_happiness",
@@ -26606,7 +26480,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_sadness",
@@ -26623,7 +26496,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_anger",
@@ -26640,7 +26512,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_deja_vu",
@@ -26657,7 +26528,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     echo: "emotion_deja_vu_2",
   },
   {
@@ -26669,13 +26539,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#2c2740","#2c2740","#2c2740","#2c2740","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#2c2740","#2c2740","#4f4868","#4f4868","#4f4868","#4f4868","#2c2740","#2c2740","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#2c2740","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#2c2740","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#2c2740","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#ffffff","#4f4868","#4f4868","#4f4868","#ffffff","#4f4868","#4f4868","#2c2740","#f8f0d8","#f8f0d8","#3d7fd6","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#2c2740","#f8f0d8","#3d7fd6","#d4ecff","#3d7fd6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#4f4868","#2c2740","#f8f0d8","#f8f0d8","#3d7fd6","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#2c2740","#4f4868","#4f4868","#4f4868","#4f4868","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#2c2740","#2c2740","#4f4868","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3b2420","#f8f0d8","#3d7fd6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#4f4868","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#d4ecff","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#4f4868","#3b2420","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#3b2420","#ffd23c","#3b2420","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffffff","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#3b2420","#ffd23c","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#4f4868","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#3b2420","#ffd23c","#3b2420","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#4f4868","#3b2420","#eda42b","#3b2420","#ffd23c","#3b2420","#ffd23c","#3b2420","#eda42b","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#4f4868","#4f4868","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#4f4868","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#3b2420","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2c2740","#4f4868","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#d7d0bc","#d7d0bc","#d7d0bc","#d7d0bc","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#d7d0bc","#d7d0bc","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#d7d0bc","#d7d0bc","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#d7d0bc","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#d7d0bc","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#d7d0bc","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#ffffff","#f8f0d8","#f8f0d8","#f8f0d8","#ffffff","#f8f0d8","#f8f0d8","#d7d0bc","#f8f0d8","#f8f0d8","#3d7fd6","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#d7d0bc","#f8f0d8","#3d7fd6","#d4ecff","#3d7fd6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#d7d0bc","#f8f0d8","#f8f0d8","#3d7fd6","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#d7d0bc","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#d7d0bc","#d7d0bc","#f8f0d8","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3b2420","#f8f0d8","#3d7fd6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#d4ecff","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#3b2420","#ffd23c","#3b2420","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffffff","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#3b2420","#ffd23c","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#3b2420","#ffd23c","#3b2420","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#f8f0d8","#3b2420","#eda42b","#3b2420","#ffd23c","#3b2420","#ffd23c","#3b2420","#eda42b","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#3b2420","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d7d0bc","#f8f0d8","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_ear_itch",
@@ -26692,7 +26561,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_oven",
@@ -26708,8 +26576,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_nostalgia",
@@ -26726,11 +26593,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_cold_pillow",
-    name: "the joy of the cold side of the pillow",
+    name: "feeling the cold side of the pillow",
     grid: [
         "XXX",
         "XXX",
@@ -26743,11 +26609,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_vending_machine",
-    name: "mild betrayal by a vending machine",
+    name: "betrayal by a vending machine",
     grid: [
         "XXX",
         "XXX",
@@ -26760,7 +26625,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_missing_step",
@@ -26776,8 +26640,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_screen_film",
@@ -26794,7 +26657,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_preemptive_embarrassment",
@@ -26805,13 +26667,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3d7fd6","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3d7fd6","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#d4ecff","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#d4ecff","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#f8f0d8","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#f8f0d8","#3b2420","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#eda42b","#3b2420","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#3b2420","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff8fa8","#ff8fa8","#ff8fa8","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#ff8fa8","#ff8fa8","#ff8fa8","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff8fa8","#ff8fa8","#ff8fa8","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#ff8fa8","#ff8fa8","#ff8fa8","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3d7fd6","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3d7fd6","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#d4ecff","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#d4ecff","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#eda42b","#3b2420","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff8fa8","#ff8fa8","#ff8fa8","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#ff8fa8","#ff8fa8","#ff8fa8","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff8fa8","#ff8fa8","#ff8fa8","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#ff8fa8","#ff8fa8","#ff8fa8","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_umbrella",
@@ -26827,8 +26688,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_mother_earth",
@@ -26845,7 +26705,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_enlightenment",
@@ -26861,8 +26720,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_solving_some_things",
@@ -26878,8 +26736,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_singularity",
@@ -26895,12 +26752,11 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_ai_human_singularity",
-    name: "AI-human consciousness singularity",
+    name: "robot-human singularity",
     grid: [
         "XXX",
         "XXX",
@@ -26913,7 +26769,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_heat_death",
@@ -26930,7 +26785,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_one_with_the_board",
@@ -26947,7 +26801,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_void_looking_back",
@@ -26958,13 +26811,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#100c22","#100c22","#100c22","#100c22","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#1c1740","#1c1740","#1c1740","#100c22","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#100c22","#1c1740","#1c1740","#1c1740","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#1c1740","#1c1740","#100c22","#8f8a99","#c3bfcc","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#100c22","#1c1740","#1c1740","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#1c1740","#1c1740","#100c22","#d9b44a","#d9b44a","#d9b44a","#d9b44a","#d9b44a","#d9b44a","#100c22","#1c1740","#1c1740","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1c1740","#1c1740","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#1c1740","#1c1740","#1c1740","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1c1740","#1c1740","#1c1740","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#1c1740","#1c1740","#1c1740","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1c1740","#1c1740","#1c1740","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#1c1740","#1c1740","#1c1740","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1c1740","#1c1740","#1c1740","#100c22","#ffffff","#100c22","#100c22","#100c22","#100c22","#ffffff","#100c22","#1c1740","#1c1740","#1c1740","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#1c1740","#1c1740","#ffffff","#100c22","#ffffff","#100c22","#100c22","#ffffff","#100c22","#ffffff","#1c1740","#1c1740","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#1c1740","#1c1740","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#1c1740","#1c1740","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#1c1740","#ff8fa8","#ff8fa8","#100c22","#b9b0e6","#100c22","#100c22","#b9b0e6","#100c22","#ff8fa8","#ff8fa8","#1c1740","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#100c22","#b9b0e6","#b9b0e6","#100c22","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#100c22","#100c22","#100c22","#100c22","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#1c1740","#1c1740","#1c1740","#100c22","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#100c22","#1c1740","#1c1740","#1c1740","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#1c1740","#1c1740","#100c22","#8f8a99","#c3bfcc","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#100c22","#1c1740","#1c1740","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#1c1740","#1c1740","#100c22","#d9b44a","#d9b44a","#d9b44a","#d9b44a","#d9b44a","#d9b44a","#100c22","#1c1740","#1c1740","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1c1740","#1c1740","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#8f8a99","#1c1740","#1c1740","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1c1740","#1c1740","#1c1740","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#1c1740","#1c1740","#1c1740","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1c1740","#1c1740","#1c1740","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#1c1740","#1c1740","#1c1740","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1c1740","#1c1740","#1c1740","#100c22","#ffffff","#100c22","#100c22","#100c22","#100c22","#ffffff","#100c22","#1c1740","#1c1740","#1c1740","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#1c1740","#1c1740","#ffffff","#100c22","#ffffff","#100c22","#100c22","#ffffff","#100c22","#ffffff","#1c1740","#1c1740","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#1c1740","#1c1740","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#100c22","#1c1740","#1c1740","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#1c1740","#ff8fa8","#ff8fa8","#100c22","#b9b0e6","#100c22","#100c22","#b9b0e6","#100c22","#ff8fa8","#ff8fa8","#1c1740","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#100c22","#b9b0e6","#b9b0e6","#100c22","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2e2762","#2e2762","#2e2762","#2e2762","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#1c1740","#2e2762","#2e2762","#2e2762","#2e2762","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_higher_frequency",
@@ -26980,8 +26832,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_forglavedness",
@@ -26998,7 +26849,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_plorch",
@@ -27015,7 +26865,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_glumpf",
@@ -27032,7 +26881,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_wibberance",
@@ -27049,7 +26897,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_snerk",
@@ -27066,7 +26913,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_sprongle",
@@ -27083,7 +26929,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_halvering",
@@ -27100,7 +26945,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "iceberg_tip",
@@ -27117,7 +26961,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nextShapeProbs: [
         1
       ],
@@ -27150,7 +26993,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
     seam: "iceberg",
   },
   {
@@ -27167,7 +27009,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "nessie_hump_2",
@@ -27183,7 +27024,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "nessie_hump_3",
@@ -27198,7 +27038,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "nessie_head",
@@ -27218,7 +27057,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "nessie_photo",
@@ -27232,7 +27070,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -27252,7 +27089,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_giraffes",
@@ -27268,7 +27104,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_elephants",
@@ -27283,7 +27118,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_penguins",
@@ -27297,7 +27131,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_snails",
@@ -27311,7 +27144,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_crocodiles",
@@ -27325,7 +27157,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "forty_days_of_rain",
@@ -27342,7 +27173,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -29663,7 +29493,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
     nameAgain: "another storm cloud",
     oops: {
         "many": "storm clouds"
@@ -31846,7 +31675,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     nameAgain: "another big storm cloud",
     oops: {
         "many": "big storm clouds"
@@ -44152,7 +43980,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     nameAgain: "another rumbling storm cloud",
     noShake: true,
     oops: {
@@ -45199,7 +45026,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     tags: [
         "weather"
       ],
@@ -60734,14 +60560,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
     tags: [
         "weather"
       ],
   },
   {
     id: "crying_cloud",
-    name: "a cloud having a little cry",
+    name: "sad crying cloud",
     grid: [
         "XX",
         "XX"
@@ -69603,7 +69428,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
     tags: [
         "weather"
       ],
@@ -75770,7 +75594,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
-    claudeDraft: true,
     tags: [
         "weather"
       ],
@@ -75791,7 +75614,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "forty_days_of_rain_3",
@@ -75808,7 +75630,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_zebras",
@@ -75823,7 +75644,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_lions",
@@ -75838,7 +75658,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_kangaroos",
@@ -75854,7 +75673,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_flamingos",
@@ -75869,8 +75687,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "two_hippos",
@@ -75885,7 +75702,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_pandas",
@@ -75900,7 +75716,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_owls",
@@ -75916,7 +75731,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_frogs",
@@ -75931,7 +75745,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_tortoises",
@@ -75945,7 +75758,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_sheep",
@@ -75960,7 +75772,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_hedgehogs",
@@ -75974,7 +75785,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_octopuses",
@@ -75990,7 +75800,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "two_fish",
@@ -76005,7 +75814,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "just_one_unicorn",
@@ -76021,7 +75829,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "just_one_dinosaur",
@@ -76037,7 +75844,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "just_one_dodo",
@@ -76053,7 +75859,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "just_one_mammoth",
@@ -76069,7 +75874,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "just_one_griffin",
@@ -76085,7 +75889,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "dragons_both_dudes",
@@ -76099,8 +75902,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "raindrop",
@@ -76114,7 +75916,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
-    claudeDraft: true,
     nameAgain: "another raindrop",
     nextShapeProbs: [
         0.25,
@@ -76142,7 +75943,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.25,
-    claudeDraft: true,
     nameAgain: "another big raindrop",
     noShake: true,
     oops: {
@@ -76161,7 +75961,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.25,
-    claudeDraft: true,
     nameAgain: "a bit more drizzle",
     noShake: true,
     oops: {
@@ -76234,8 +76033,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "existence_universe_2",
@@ -76252,7 +76050,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_universe_3",
@@ -76269,7 +76066,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_multiverse_1",
@@ -76290,8 +76086,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "existence_multiverse_2",
@@ -76313,7 +76108,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_multiverse_3",
@@ -76334,8 +76128,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "existence_concept_1",
@@ -76353,7 +76146,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_concept_2",
@@ -76371,7 +76163,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_concept_3",
@@ -76389,7 +76180,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_consciousness_1",
@@ -76408,7 +76198,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_consciousness_2",
@@ -76427,7 +76216,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_consciousness_3",
@@ -76446,7 +76234,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_doubt_1",
@@ -76463,7 +76250,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_doubt_2",
@@ -76480,7 +76266,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_doubt_3",
@@ -76496,8 +76281,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "existence_terror_1",
@@ -76515,8 +76299,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "existence_terror_2",
@@ -76534,8 +76317,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "existence_terror_3",
@@ -76548,13 +76330,12 @@ export const SHAPES = [
         "XXXXXXXX",
         "X.XX.XX."
       ],
-    color: [["","","","","","","","","","","","","","","","","","","","","","","","","","","","#98a6b5","#aabdd1","#abbdd2","#b2c2d3","#c2ccd6","#ccd2d8","#ced3d9","#c5ced7","#8da0b3","","","","","","","","","","","","","","","","","","","","","","","","","","","","#869bb2","#b4c3d3","#bdc9d5","#abbdd2","#8dabcc","#7a9fc8","#7a9fc8","#7a9fc8","#6989ac"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#c0cbd6","#fdfeff","#e9f2fb","#c9def4","#c4daf3","#c2d9f3","#c1d9f3","#b8d3f1","#8ba9cb","","","","","","","","","","","","","","","","","","","","","","","","","","","","#8baacb","#bbd5f1","#c4dbf3","#f0ecf1","#abcbee","#9bc1eb","#90bae9","#90bae9","#7ca0c8"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#b2c2d3","#f5f9fd","#e1ecf9","#bed7f2","#aecdef","#a4c6ed","#9ec3eb","#93bce9","#7ea2c8","","","","","","","","","","","","","","","","","","","","","","","","","","","","#7ea2c8","#93bce9","#e4dfe8","#93bce9","#93bce9","#93bce9","#93bce9","#93bce9","#7ea2c8"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#b0c0d3","#e0ecf9","#cbdef4","#a3c6ec","#95bdea","#95bdea","#95bdea","#95bdea","#80a3c9","","","","","","","","","","","","","","","","","","","","","","","","","","","","#80a3c9","#f1edf2","#f1edf2","#95bdea","#95bdea","#95bdea","#95bdea","#95bdea","#80a3c9"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#aebfd2","#cee1f5","#b7d2f0","#98bfea","#98bfea","#98bfea","#98bfea","#98bfea","#83a4c9","","","","","","","","","","","","","","","","","","","","","","","","","","","","#c2bec7","#e2dee7","#98bfea","#98bfea","#98bfea","#98bfea","#98bfea","#98bfea","#83a4c9"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#85a6ca","#9bc1ea","#9bc1ea","#9bc1ea","#9bc1ea","#9bc1ea","#9bc1ea","#9bc1ea","#85a6ca","","","","","","","","","","","","","","","","","","","","","","","","","","","","#cfcbcf","#f0ecf1","#9bc1ea","#9bc1ea","#9bc1ea","#9bc1ea","#9bc1ea","#9cc1eb","#a2b8d0"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#87a7ca","#9dc2eb","#9dc2eb","#9dc2eb","#9dc2eb","#aeccee","#a7c8ed","#9dc2eb","#87a7ca","","","","","","","","","","","","","","","","","","","","","","","","","","","","#cfcbcf","#9dc2eb","#9dc2eb","#9dc2eb","#9dc2eb","#9dc2eb","#9dc2eb","#a9c9ed","#a4b9d0"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#8aa8ca","#a0c4eb","#a0c4eb","#a9c9ed","#bad4f1","#c6dcf3","#bdd6f1","#a2c5ec","#8aa8ca","","","","","","","","","","","","","","","","","","","","","","","","","","","","#cdc9ce","#a0c4eb","#a0c4eb","#a0c4eb","#a0c4eb","#a0c4eb","#a0c4eb","#b4d0ef","#b8c5d4"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#8caacb","#a3c5ec","#a3c5ec","#c2d9f2","#cfe1f5","#d7e6f7","#cee0f5","#b7d2f0","#8caacb","","","","","","","","","","","","","","","","","","","","","","","","","","","","#8caacb","#a3c5ec","#a3c5ec","#a3c5ec","#a3c5ec","#a3c5ec","#a3c5ec","#a4c6ec","#abbdd1"],["","","","","","","","","","","","","","","","","","","#7a93af","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#a5c7ec","#a5c7ec","#a5c7ec","#a5c7ec","#aeccee","#b2cfef","#aacaed","#a5c7ec","#8eabcb","","","","","","","","","","#7a93af","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#93aecc","#abbdd1","#a1acb7","","","","","","","","","","#8eabcb","#a5c7ec","#a5c7ec","#a5c7ec","#a5c7ec","#a5c7ec","#a5c7ec","#a5c7ec","#8eabcb"],["","","","","","","","","","","","","","","","","","","#90accc","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#aac9ed","#97b0cd","","","","","","","","","","#90accc","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#bfd7f2","#b9c5d4","","","","","","","","","","#90accc","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#90accc"],["","","","","","","","","","","","","","","","","","","#93aecc","#abcaed","#abcaed","#abcaed","#abcaed","#bcd5f1","#c9ddf4","#cbdef4","#d0e1f5","#d8e7f7","#deeaf8","#d9e7f7","#ccdff4","#c7dcf3","#c7dcf3","#c4daf2","#bbd4f1","#a2b7cf","","","","","","","","","","#93aecc","#abcaed","#abcaed","#abcaed","#abcaed","#abcaed","#abcaed","#bcd5f1","#b8c5d4","","","","","","","","","","#9bb3ce","#accbed","#abcaed","#abcaed","#abcaed","#abcaed","#b3cfef","#c1d8f2","#afbfd2"],["","","","","","","","","","","","","","","","","","","#95afcc","#adcbee","#adcbee","#adcbee","#c4daf2","#d0e1f5","#d3e3f6","#dce9f8","#edf4fb","#eff5fc","#eaf2fa","#eff5fc","#f1f6fc","#dae7f7","#c1d8f2","#c1d8f2","#c1d8f2","#a1b7cf","","","","","","","","","","#95afcc","#adcbee","#adcbee","#adcbee","#adcbee","#adcbee","#adcbee","#c2d9f2","#bbc7d4","","","","","","","","","","#95afcc","#adcbee","#adcbee","#adcbee","#adcbee","#b4d0ef","#c6dbf3","#cfe1f5","#b6c4d3"],["","","","","","","","","","","","","","","","","","","#a3b8cf","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#bed6f1","#cee0f4","#c4daf2","#bcd4f1","#cfe0f5","#e5eff9","#eaf2fb","#eef4fb","#e8f0fa","#deeaf8","#d5e4f6","#bed6f1","#97b0cd","","","","","","","","","","#97b0cd","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#afabbb","","","","","","","","","","#97b0cd","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#97b0cd"],["","","","","","","","","","","","","","","","","","","#a2b7cf","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b5d0ef","#b3cfee","#b3cfee","#b3cfee","#c4d9f2","#cbdef4","#d1e2f5","#deeaf8","#eaf2fb","#e7f0fa","#d8e6f6","#a3b7cf","","","","","","","","","","#9ab2cd","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#cfcade","#c9c4c9","","","","","","","","","","#9ab2cd","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#9ab2cd"],["","","","","","","","","","","","","","","","","","","#9cb3cd","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#bfd6f1","#d2e2f5","#deeaf8","#e6effa","#e0ecf8","#cfe0f5","#9db3ce","","","","","","","","","","#9cb3cd","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#c9c3d7","#f1edf0","#cfcbce","","","","","","","","","","#9cb3cd","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#9cb3cd"],["","","","","","","","","","","","","","","","","","","#9eb4ce","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#c5daf2","#dfeaf8","#d4e4f5","#b8d2ef","#9eb4ce","","","","","","","","","","#9eb4ce","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#cec8de","#c4bfce","#c4bfce","#a8a4b1","","","","","","","","","","#9eb4ce","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#a2b7cf"],["","","","","","","","","","","","","","","","","","","#a1b6ce","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#c7dbf2","#d6e5f6","#d0e1f5","#bfd6f1","#a1b6ce","","","","","","","","","","#a1b6ce","#bbd3f0","#bbd3f0","#bbd3f0","#c7c1d7","#eae4e8","#eae4e8","#eae4e8","#c9c4c8","","","","","","","","","","#a1b6ce","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#a1b6ce"],["","","","","","","","","","#8c9db1","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#bfd5f0","#c4d9f1","#c5d9f2","#c5d9f2","#c0d6f0","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#c5d9f1","#c2d7f1","#bdd4f0","#bdd4f0","#a3b7ce","#a3b7ce","#a5b8cf","#b7c4d3","#c9cfd7","#c8cfd7","#bcc7d4","#b5c2d2","#b3c1d2","#ccdef3","#c6daf2","#c6daf2","#c0bad0","#f2edef","#f2edef","#f2edef","#f2edef","#f2edef","#d0ccce","#d0ccce","#d0ccce","#d0ccce","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#a3b7ce"],["","","","","","","","","","#c6cdd6","#d7e4f5","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c9daf1","#dae6f6","#e7eff9","#dae6f6","#c8daf1","#cbdcf2","#d1e0f4","#c1d5f0","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c5d8f1","#dde8f6","#eaf1fa","#edf3fa","#edf3fb","#e4edf8","#dfe9f7","#dde8f6","#d7e4f5","#c8c1da","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#a5b7ce"],["","","","","","","","","","#d2d5d9","#e2ebf7","#c5d7f0","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c5d6ef","#d2e0f3","#dbe6f5","#e5edf8","#eaf1f9","#e2ebf7","#d3e1f3","#cfdef2","#cddcf2","#c6d7f0","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c6d7f0","#e3ecf8","#ffffff","#ffffff","#f8fafd","#e9f0f9","#e2ebf7","#dfe9f7","#c1bbd3","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#a7b7cd"],["","","","","","","","","","#bec6d3","#d5e1f3","#c6d6ef","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#cbd9f0","#dfe8f6","#e1e9f6","#dce6f5","#dde6f5","#d8e3f4","#cfdcf1","#cad9f0","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#cad9f0","#d1def2","#d5e1f3","#dde7f5","#e1e9f6","#e0e9f6","#dbe5f5","#d8e3f4","#d3e0f2","#bab3cc","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#aab8cd"],["","","","","","","","","","#c5cad4","#f0f4fb","#f2f5fb","#e9eff8","#dce5f4","#d1ddf1","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c9d7ee","#ccd9ef","#cbd8ef","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#d6e0f2","#d8e2f3","#d5dff2","#cedaf0","#c8d6ee","#c8d6ee","#c8d6ee","#b2abc4","#b2abc4","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#acb8cd"],["","","","","","","","","","#c2c8d3","#e7edf7","#f6f8fc","#f8fafd","#f2f5fb","#e6ecf7","#d4def1","#ccd7ee","#cbd6ee","#cbd6ee","#ccd7ee","#cdd8ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd7ee","#cdd8ee","#d4def1","#d9e1f2","#d6dff1","#d0daef","#d0dbef","#d5def1","#d4def1","#d2dcf0","#cbd6ee","#cbd6ee","#cbd6ee","#beb7d2","#beb7d2","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#aeb8cc"],["","","","","","","","","","#c8cbd4","#eef2f9","#fcfcfe","#fefeff","#ebeef8","#d3dcef","#cdd7ed","#cdd7ed","#ced7ed","#dce3f2","#e1e7f4","#dee4f3","#d0d9ee","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#d3dcef","#dde4f3","#e5eaf6","#e3e9f5","#dce3f3","#d5ddf0","#d3dbef","#d1d9ee","#cfd8ee","#cdd7ed","#cdd7ed","#b7b0cb","#b7b0cb","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#b1b9cc"],["","","","","","","","","","#d4d5d8","#f6f8fc","#f5f6fb","#f1f3fa","#dee3f2","#d0d7ed","#d4dbee","#dae0f0","#d6ddef","#d4dbee","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d1d8ed","#d9dff0","#e0e5f3","#e0e5f3","#dde3f2","#dfe4f2","#e1e6f3","#dadff0","#d0d7ed","#d0d7ed","#d0d7ed","#d2d9ed","#b0a9c4","#b0a9c4","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d6ddef","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#b3b9cc"],["","","","","","","","","","#cdcfd5","#e5e8f4","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ed","#d6dbee","#d5daed","#d6dbee","#d3d8ed","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#dfe3f2","#e0e4f2","#e2e5f3","#a9a2bc","#a9a2bc","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d4d9ed","#dadeef","#d5daed","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#b5bacb"],["#a9aab3","#c6c7d1","#cacbd3","#d2d3d7","#d3d3d7","#c7c9d2","#c3c5d0","#c4c6d1","#c5c7d1","#e6e8f4","#e1e3f1","#dcdeef","#d7d9ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d9dbed","#dfe1f0","#e0e3f1","#dbdeee","#d5d8ec","#d8dbed","#dbdeef","#dddfef","#dfe1f0","#dadcee","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d9dcee","#dcdeef","#b8b1ce","#b8b1ce","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#b7bacb"],["#babaca","#dbdbed","#e5e5f2","#ecedf6","#ededf6","#e8e9f4","#e9eaf4","#f0f1f8","#f3f3f9","#f1f1f8","#ebebf5","#e1e1f0","#d9daec","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#dfe0ef","#e9e9f4","#ebebf5","#ececf5","#ebebf5","#e4e5f2","#dedeee","#dfdfef","#e3e4f1","#e5e6f2","#e6e6f2","#e4e5f2","#e0e0ef","#d9d9ec","#d8d9eb","#b2abc8","#b2abc8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#babaca"],["#bcbbca","#dbd9eb","#dbd9eb","#dbdaeb","#dddbec","#e0dfee","#e5e4f1","#efeef6","#f1f0f7","#e6e5f1","#dddbec","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#e2e1ef","#eae9f3","#ecebf4","#e9e8f3","#e5e3f0","#e2e1ef","#e1e0ee","#e2e1ef","#e7e6f2","#e5e4f1","#e0deee","#e2e1ef","#e5e4f1","#e3e1ef","#aca5c2","#aca5c2","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#bcbbca"],["#bebbca","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#e0ddec","#e7e4f0","#e8e5f1","#e0ddec","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#e8e6f1","#efeef6","#f2f1f7","#eeecf5","#e6e3f0","#e0ddec","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#a69ebb","#a69ebb","#ede7e7","#ede7e7","#f0c8a8","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dedaeb","#dfdcec","#dedaeb","#dddaea","#bebbca"],["#c1bbc9","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e9e4f0","#f0edf5","#f3f1f7","#efecf4","#e9e5f0","#e4dfed","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#a098b4","#a098b4","#f5f1ef","#f5f1ef","#3a3450","#3a3450","#3a3450","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e1dceb","#e3ddec","#e0daea","#e0daea","#e0daea","#e1dbea","#e9e4f0","#eeebf3","#eae5f0","#e4dfed","#e1dbeb","#e0daea","#e0daea","#c1bbc9"],["#c3bcc9","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3dbea","#e8e1ed","#eae4ef","#ebe5f0","#ece7f1","#ebe5f0","#e6dfec","#e3daea","#e3daea","#e3daea","#b4accb","#b4accb","#b4accb","#928ca5","#928ca5","#928ca5","#3a3450","#5a5272","#3a3450","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#e8e2ee","#e8e1ee","#e6dfec","#e3daea","#e3daea","#e4dceb","#e6deec","#eae4ef","#ebe5f0","#e9e3ee","#e9e3ef","#ede7f1","#f3eff6","#faf9fb","#fefefe","#fbf9fc","#f4f1f7","#ede8f1","#e6dfec","#e3daea","#c3bcc9"],["#c5bcc8","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e6dcea","#e8dfeb","#e8deeb","#ebe3ee","#efe9f2","#efe9f1","#ebe3ee","#e5dbe9","#e5dbe9","#afa7c6","#afa7c6","#afa7c6","#a199af","#a199af","#a199af","#a199af","#3a3450","#a199af","#3a3450","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#eee7f1","#ede5ef","#ebe3ee","#e7deeb","#e6dcea","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e7ddeb","#ebe3ee","#ede6f0","#f2ecf4","#f3eef5","#f2edf4","#f4eff5","#f2edf4","#eae1ed","#e5dbe9","#e5dbe9","#c5bcc8"],["#c8bdc8","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e9ddea","#ece2ed","#eee5ef","#ece2ed","#e9ddea","#ece1ec","#efe7f0","#efe6ef","#ebe0ec","#e8dbe9","#aaa2c1","#aaa2c1","#aaa2c1","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#3a3450","#e0d8db","#3a3450","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#f4eef4","#f2ebf3","#f2ebf3","#f2ebf3","#f1eaf2","#eee5ef","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#eadfeb","#efe6f0","#eee4ee","#ebe0ec","#ece1ec","#ebe0ec","#e8dce9","#e8dbe9","#e8dbe9","#c8bdc8"],["#cbbfc9","#ecdfea","#ebdce9","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ecdeea","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#eee1ec","#f3e9f1","#f2e9f1","#f1e7ef","#f2e9f1","#f4ecf3","#f4ecf2","#f2e8f0","#a69ebc","#a69ebc","#a69ebc","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#ecdfea","#ecdfea","#eddfea","#ede0eb","#efe3ed","#eee2ec","#ebdde9","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#efe3ed","#f3eaf2","#f2e8f0","#f0e5ee","#f3e9f1","#f4ecf3","#f2e8f0","#eee1ec","#ebdce8","#cabdc8"],["#d6d2d5","#f5ecf2","#f1e5ed","#eddde8","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#f0e2eb","#f3e9f0","#f9f3f7","#fbf7fa","#f7eff4","#f0e3ec","#ecdce7","#ecdce7","#eddde8","#f2e6ee","#f2e7ee","#f1e5ed","#f1e5ed","#f0e3ec","#f0e2eb","#a199b7","#a199b7","#a199b7","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#efe1eb","#eedee9","#ecdce7","#efe0ea","#f1e5ed","#f3e8ef","#f5ecf2","#f5edf3","#f5ecf2","#f6eff4","#f8f1f6","#f7eff4","#f5ecf2","#f4eaf1","#f1e5ed","#ecdce7","#cbbdc6"],["#d5ced2","#f4eaef","#f1e3ea","#eddce5","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#f2e5ec","#f7eff3","#f9f4f7","#faf5f7","#f7eff3","#f3e7ed","#eddce5","#eddbe4","#efdfe7","#f3e7ed","#f3e6ed","#f2e5ec","#f2e4eb","#f1e3ea","#9d95b2","#9d95b2","#9d95b2","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eedde5","#eedde6","#eedde6","#f0e1e9","#f3e6ed","#f2e6ec","#f2e6ed","#f4e9ef","#f5ebf0","#f7eff3","#f9f3f6","#f7eef3","#f3e7ed","#efe0e8","#eddbe4","#eddbe4","#ccbcc4"],["#d1c6cb","#efdfe5","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eedde4","#f2e3e9","#f3e7ec","#f3e5ea","#f2e4e9","#f0e0e6","#efdee5","#f0dfe6","#efdfe5","#f1e1e7","#f1e2e7","#eddbe2","#eddbe2","#eddbe2","#b3abcb","#b3abcb","#b3abcb","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#f0dfe6","#f1e3e8","#f4e8ed","#f7eff2","#f9f2f4","#f7eef2","#f3e6eb","#eddbe2","#eddbe2","#eddbe2","#ccbcc2"],["#d2c8cb","#f4e7ea","#f3e4e8","#f0dfe4","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedae0","#efdde2","#efdce1","#eedae0","#f0dee3","#f0dee3","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#afa7c7","#afa7c7","#afa7c7","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#cdbcc0"],["#d4cacb","#f7edee","#faf3f4","#fefcfc","#fdfbfb","#fbf5f6","#f8eff1","#f6eaec","#f5e9eb","#f6eaec","#f5e8ea","#f0dcdf","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#aca4c3","#aca4c3","#aca4c3","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#cdbbbe"],["#d4c9ca","#f9f1f2","#fcf7f8","#fdfafa","#fcf7f7","#f9f0f1","#f6ebec","#f7eced","#f7eced","#f4e5e6","#f1dedf","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#a8a0be","#a8a0be","#a8a0be","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#cebbbc"],["#d5cdcc","#fdf9f9","#fefcfc","#fbf5f5","#f9f0f0","#f7ecec","#f5e6e6","#f4e5e4","#f4e4e4","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#a59dba","#a59dba","#a59dba","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#cebaba"],["#d8d1d1","#fcf8f8","#fcf8f8","#fbf4f4","#faf1f0","#f9efee","#f7eae8","#f5e5e3","#f4e2e1","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#a199b6","#a199b6","#a199b6","#a199b6","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#cfbab8"],["#dbdbdb","#fefefd","#fbf5f4","#f9edec","#f7e9e7","#f6e5e3","#f5e3e0","#f5e2df","#f4e2df","#d1bebb","#cfbab6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#f1d7d3","#9d95b2","#9d95b2","#9d95b2","#9d95b2","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#d3d0cd","#d3d0cd","#d3d0cd","#d3d0cd","#d3d0cd","#d3d0cd","#d3d0cd","#d3d0cd","#d3d0cd","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#b29f9c"],["#dad9d8","#fefcfb","#fbf4f3","#f8ece9","#f7e7e3","#f4dfdb","#f3ddd8","#f5e3de","#d4c5c1","","","","","","","","","","#9b94af","#b4accc","#b4accc","#b4accc","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#79748a","","","","","","","","","","#cfb9b4","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#cfb9b4","","","","","","","","",""],["#d0b8b2","#f3dbd4","#f5dfd9","#f6e3de","#f6e3de","#f5dfd9","#f5dfd9","#f6e4df","#d4c6c1","","","","","","","","","","#9891ac","#b1a9c8","#b1a9c8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#827d91","","","","","","","","","","#d0b8b1","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#d0b8b1","","","","","","","","",""],["#d0b8af","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#d0b8af","","","","","","","","","","#958fa9","#aea6c5","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#8c8597","","","","","","","","","","#d0b8af","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#d0b8af","","","","","","","","",""],["#d1b7ad","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#d1b7ad","","","","","","","","","","#938ca6","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#bfb9bc","","","","","","","","","","#d1b7ad","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d6ca","#f4d8ce","#f5dbd1","#f4d9cf","#f3d5c9","#f3d5c9","#d1b7ad","","","","","","","","",""],["#d1b7ab","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#d1b7ab","","","","","","","","","","#c4bec0","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#c4bec0","","","","","","","","","","#d1b7ab","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f6dcd1","#f7e0d6","#f6dcd1","#f4d7ca","#f4d4c7","#f4d4c7","#d1b7ab","","","","","","","","",""],["#d2b6a9","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#d2b6a9","","","","","","","","","","#c8c3c4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#c8c3c4","","","","","","","","","","#d2b6a9","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#d2b6a9","","","","","","","","",""],["#d2b6a7","#f5d5c5","#f6d8c9","#f6dacc","#f6d9ca","#f5d6c6","#f5d4c2","#f5d3c2","#d2b6a7","","","","","","","","","","#cdc8c8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#cdc8c8","","","","","","","","","","#d2b6a7","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#d2b6a7","","","","","","","","",""],["#d5c1b6","#f8e1d4","#f8e0d3","#f7daca","#f5d4c1","#f5d3c0","#f5d3c0","#f5d3c0","#d3b5a5","","","","","","","","","","#d1cecc","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#d1cecc","","","","","","","","","","#d3b5a5","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#d3b5a5","","","","","","","","",""],["#b8a79d","#d7c4ba","#d6c4b9","#d6c4b9","#d5bfb1","#d4b6a4","#d3b5a3","#d3b5a3","#b69c8c","","","","","","","","","","#b8b5b3","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#b8b5b3","","","","","","","","","","#b69c8c","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#b69c8c","","","","","","","","",""]],
+    color: [["","","","","","","","","","","","","","","","","","","","","","","","","","","","#98a6b5","#aabdd1","#abbdd2","#b2c2d3","#c2ccd6","#ccd2d8","#ced3d9","#c5ced7","#8da0b3","","","","","","","","","","","","","","","","","","","","","","","","","","","","#869bb2","#b4c3d3","#bdc9d5","#abbdd2","#8dabcc","#7a9fc8","#7a9fc8","#7a9fc8","#6989ac"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#c0cbd6","#fdfeff","#e9f2fb","#c9def4","#c4daf3","#c2d9f3","#c1d9f3","#b8d3f1","#8ba9cb","","","","","","","","","","","","","","","","","","","","","","","","","","","","#8baacb","#bbd5f1","#c4dbf3","#f0ecf1","#abcbee","#9bc1eb","#90bae9","#90bae9","#7ca0c8"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#b2c2d3","#f5f9fd","#e1ecf9","#bed7f2","#aecdef","#a4c6ed","#9ec3eb","#93bce9","#7ea2c8","","","","","","","","","","","","","","","","","","","","","","","","","","","","#7ea2c8","#93bce9","#e4dfe8","#93bce9","#93bce9","#93bce9","#93bce9","#93bce9","#7ea2c8"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#b0c0d3","#e0ecf9","#cbdef4","#a3c6ec","#95bdea","#95bdea","#95bdea","#95bdea","#80a3c9","","","","","","","","","","","","","","","","","","","","","","","","","","","","#80a3c9","#f1edf2","#f1edf2","#95bdea","#95bdea","#95bdea","#95bdea","#95bdea","#80a3c9"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#aebfd2","#cee1f5","#b7d2f0","#98bfea","#98bfea","#98bfea","#98bfea","#98bfea","#83a4c9","","","","","","","","","","","","","","","","","","","","","","","","","","","","#c2bec7","#e2dee7","#98bfea","#98bfea","#98bfea","#98bfea","#98bfea","#98bfea","#83a4c9"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#85a6ca","#9bc1ea","#9bc1ea","#9bc1ea","#9bc1ea","#9bc1ea","#9bc1ea","#9bc1ea","#85a6ca","","","","","","","","","","","","","","","","","","","","","","","","","","","","#cfcbcf","#f0ecf1","#9bc1ea","#9bc1ea","#9bc1ea","#9bc1ea","#9bc1ea","#9cc1eb","#a2b8d0"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#87a7ca","#9dc2eb","#9dc2eb","#9dc2eb","#9dc2eb","#aeccee","#a7c8ed","#9dc2eb","#87a7ca","","","","","","","","","","","","","","","","","","","","","","","","","","","","#cfcbcf","#9dc2eb","#9dc2eb","#9dc2eb","#9dc2eb","#9dc2eb","#9dc2eb","#a9c9ed","#a4b9d0"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#8aa8ca","#a0c4eb","#a0c4eb","#a9c9ed","#bad4f1","#c6dcf3","#bdd6f1","#a2c5ec","#8aa8ca","","","","","","","","","","","","","","","","","","","","","","","","","","","","#cdc9ce","#a0c4eb","#a0c4eb","#a0c4eb","#a0c4eb","#a0c4eb","#a0c4eb","#b4d0ef","#b8c5d4"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#8caacb","#a3c5ec","#a3c5ec","#c2d9f2","#cfe1f5","#d7e6f7","#cee0f5","#b7d2f0","#8caacb","","","","","","","","","","","","","","","","","","","","","","","","","","","","#8caacb","#a3c5ec","#a3c5ec","#a3c5ec","#a3c5ec","#a3c5ec","#a3c5ec","#a4c6ec","#abbdd1"],["","","","","","","","","","","","","","","","","","","#7a93af","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#a5c7ec","#a5c7ec","#a5c7ec","#a5c7ec","#aeccee","#b2cfef","#aacaed","#a5c7ec","#8eabcb","","","","","","","","","","#7a93af","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#8eabcb","#93aecc","#abbdd1","#a1acb7","","","","","","","","","","#8eabcb","#a5c7ec","#a5c7ec","#a5c7ec","#a5c7ec","#a5c7ec","#a5c7ec","#a5c7ec","#8eabcb"],["","","","","","","","","","","","","","","","","","","#90accc","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#aac9ed","#97b0cd","","","","","","","","","","#90accc","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#bfd7f2","#b9c5d4","","","","","","","","","","#90accc","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#a8c8ed","#90accc"],["","","","","","","","","","","","","","","","","","","#93aecc","#abcaed","#abcaed","#abcaed","#abcaed","#bcd5f1","#c9ddf4","#cbdef4","#d0e1f5","#d8e7f7","#deeaf8","#d9e7f7","#ccdff4","#c7dcf3","#c7dcf3","#c4daf2","#bbd4f1","#a2b7cf","","","","","","","","","","#93aecc","#abcaed","#abcaed","#abcaed","#abcaed","#abcaed","#abcaed","#bcd5f1","#b8c5d4","","","","","","","","","","#9bb3ce","#accbed","#abcaed","#abcaed","#abcaed","#abcaed","#b3cfef","#c1d8f2","#afbfd2"],["","","","","","","","","","","","","","","","","","","#95afcc","#adcbee","#adcbee","#adcbee","#c4daf2","#d0e1f5","#d3e3f6","#dce9f8","#edf4fb","#eff5fc","#eaf2fa","#eff5fc","#f1f6fc","#dae7f7","#c1d8f2","#c1d8f2","#c1d8f2","#a1b7cf","","","","","","","","","","#95afcc","#adcbee","#adcbee","#adcbee","#adcbee","#adcbee","#adcbee","#c2d9f2","#bbc7d4","","","","","","","","","","#95afcc","#adcbee","#adcbee","#adcbee","#adcbee","#b4d0ef","#c6dbf3","#cfe1f5","#b6c4d3"],["","","","","","","","","","","","","","","","","","","#a3b8cf","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#bed6f1","#cee0f4","#c4daf2","#bcd4f1","#cfe0f5","#e5eff9","#eaf2fb","#eef4fb","#e8f0fa","#deeaf8","#d5e4f6","#bed6f1","#97b0cd","","","","","","","","","","#97b0cd","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#afabbb","","","","","","","","","","#97b0cd","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#b0cdee","#97b0cd"],["","","","","","","","","","","","","","","","","","","#a2b7cf","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b5d0ef","#b3cfee","#b3cfee","#b3cfee","#c4d9f2","#cbdef4","#d1e2f5","#deeaf8","#eaf2fb","#e7f0fa","#d8e6f6","#a3b7cf","","","","","","","","","","#9ab2cd","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#cfcade","#c9c4c9","","","","","","","","","","#9ab2cd","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#b3cfee","#9ab2cd"],["","","","","","","","","","","","","","","","","","","#9cb3cd","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#bfd6f1","#d2e2f5","#deeaf8","#e6effa","#e0ecf8","#cfe0f5","#9db3ce","","","","","","","","","","#9cb3cd","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#c9c3d7","#f1edf0","#cfcbce","","","","","","","","","","#9cb3cd","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#b5d0ef","#9cb3cd"],["","","","","","","","","","","","","","","","","","","#9eb4ce","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#c5daf2","#dfeaf8","#d4e4f5","#b8d2ef","#9eb4ce","","","","","","","","","","#9eb4ce","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#cec8de","#c4bfce","#c4bfce","#a8a4b1","","","","","","","","","","#9eb4ce","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#b8d2ef","#a2b7cf"],["","","","","","","","","","","","","","","","","","","#a1b6ce","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#c7dbf2","#d6e5f6","#d0e1f5","#bfd6f1","#a1b6ce","","","","","","","","","","#a1b6ce","#bbd3f0","#bbd3f0","#bbd3f0","#c7c1d7","#eae4e8","#eae4e8","#eae4e8","#c9c4c8","","","","","","","","","","#a1b6ce","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#bbd3f0","#a1b6ce"],["","","","","","","","","","#8c9db1","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#bfd5f0","#c4d9f1","#c5d9f2","#c5d9f2","#c0d6f0","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#c5d9f1","#c2d7f1","#bdd4f0","#bdd4f0","#a3b7ce","#a3b7ce","#a5b8cf","#b7c4d3","#c9cfd7","#c8cfd7","#bcc7d4","#b5c2d2","#b3c1d2","#ccdef3","#c6daf2","#c6daf2","#c0bad0","#f2edef","#f2edef","#f2edef","#f2edef","#f2edef","#d0ccce","#d0ccce","#d0ccce","#d0ccce","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#a3b7ce","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#bdd4f0","#a3b7ce"],["","","","","","","","","","#c6cdd6","#d7e4f5","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c9daf1","#dae6f6","#e7eff9","#dae6f6","#c8daf1","#cbdcf2","#d1e0f4","#c1d5f0","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c5d8f1","#dde8f6","#eaf1fa","#edf3fa","#edf3fb","#e4edf8","#dfe9f7","#dde8f6","#d7e4f5","#c8c1da","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#b8b3c4","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#c0d5ef","#a5b7ce"],["","","","","","","","","","#d2d5d9","#e2ebf7","#c5d7f0","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c5d6ef","#d2e0f3","#dbe6f5","#e5edf8","#eaf1f9","#e2ebf7","#d3e1f3","#cfdef2","#cddcf2","#c6d7f0","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c6d7f0","#e3ecf8","#ffffff","#ffffff","#f8fafd","#e9f0f9","#e2ebf7","#dfe9f7","#c1bbd3","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#e6dfe4","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#c3d5ef","#a7b7cd"],["","","","","","","","","","#bec6d3","#d5e1f3","#c6d6ef","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#cbd9f0","#dfe8f6","#e1e9f6","#dce6f5","#dde6f5","#d8e3f4","#cfdcf1","#cad9f0","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#cad9f0","#d1def2","#d5e1f3","#dde7f5","#e1e9f6","#e0e9f6","#dbe5f5","#d8e3f4","#d3e0f2","#bab3cc","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#ede8ea","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#c5d6ee","#aab8cd"],["","","","","","","","","","#c5cad4","#f0f4fb","#f2f5fb","#e9eff8","#dce5f4","#d1ddf1","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c9d7ee","#ccd9ef","#cbd8ef","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#d6e0f2","#d8e2f3","#d5dff2","#cedaf0","#c8d6ee","#c8d6ee","#c8d6ee","#b2abc4","#b2abc4","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#f6f2f2","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#c8d6ee","#acb8cd"],["","","","","","","","","","#c2c8d3","#e7edf7","#f6f8fc","#f8fafd","#f2f5fb","#e6ecf7","#d4def1","#ccd7ee","#cbd6ee","#cbd6ee","#ccd7ee","#cdd8ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd7ee","#cdd8ee","#d4def1","#d9e1f2","#d6dff1","#d0daef","#d0dbef","#d5def1","#d4def1","#d2dcf0","#cbd6ee","#cbd6ee","#cbd6ee","#beb7d2","#beb7d2","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#b0aabd","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#cbd6ee","#aeb8cc"],["","","","","","","","","","#c8cbd4","#eef2f9","#fcfcfe","#fefeff","#ebeef8","#d3dcef","#cdd7ed","#cdd7ed","#ced7ed","#dce3f2","#e1e7f4","#dee4f3","#d0d9ee","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#d3dcef","#dde4f3","#e5eaf6","#e3e9f5","#dce3f3","#d5ddf0","#d3dbef","#d1d9ee","#cfd8ee","#cdd7ed","#cdd7ed","#b7b0cb","#b7b0cb","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#e4dde1","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#cdd7ed","#b1b9cc"],["","","","","","","","","","#d4d5d8","#f6f8fc","#f5f6fb","#f1f3fa","#dee3f2","#d0d7ed","#d4dbee","#dae0f0","#d6ddef","#d4dbee","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d1d8ed","#d9dff0","#e0e5f3","#e0e5f3","#dde3f2","#dfe4f2","#e1e6f3","#dadff0","#d0d7ed","#d0d7ed","#d0d7ed","#d2d9ed","#b0a9c4","#b0a9c4","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#ece7e8","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d6ddef","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#d0d7ed","#b3b9cc"],["","","","","","","","","","#cdcfd5","#e5e8f4","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ed","#d6dbee","#d5daed","#d6dbee","#d3d8ed","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#dfe3f2","#e0e4f2","#e2e5f3","#a9a2bc","#a9a2bc","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#d4d9ed","#dadeef","#d5daed","#d3d8ec","#d3d8ec","#d3d8ec","#d3d8ec","#b5bacb"],["#a9aab3","#c6c7d1","#cacbd3","#d2d3d7","#d3d3d7","#c7c9d2","#c3c5d0","#c4c6d1","#c5c7d1","#e6e8f4","#e1e3f1","#dcdeef","#d7d9ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d9dbed","#dfe1f0","#e0e3f1","#dbdeee","#d5d8ec","#d8dbed","#dbdeef","#dddfef","#dfe1f0","#dadcee","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d9dcee","#dcdeef","#b8b1ce","#b8b1ce","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#9f98af","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#d5d8ec","#b7bacb"],["#babaca","#dbdbed","#e5e5f2","#ecedf6","#ededf6","#e8e9f4","#e9eaf4","#f0f1f8","#f3f3f9","#f1f1f8","#ebebf5","#e1e1f0","#d9daec","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#dfe0ef","#e9e9f4","#ebebf5","#ececf5","#ebebf5","#e4e5f2","#dedeee","#dfdfef","#e3e4f1","#e5e6f2","#e6e6f2","#e4e5f2","#e0e0ef","#d9d9ec","#d8d9eb","#b2abc8","#b2abc8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#ada5b8","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#d8d9eb","#babaca"],["#bcbbca","#dbd9eb","#dbd9eb","#dbdaeb","#dddbec","#e0dfee","#e5e4f1","#efeef6","#f1f0f7","#e6e5f1","#dddbec","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#e2e1ef","#eae9f3","#ecebf4","#e9e8f3","#e5e3f0","#e2e1ef","#e1e0ee","#e2e1ef","#e7e6f2","#e5e4f1","#e0deee","#e2e1ef","#e5e4f1","#e3e1ef","#aca5c2","#aca5c2","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#e5dee0","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#dbd9eb","#bcbbca"],["#bebbca","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#e0ddec","#e7e4f0","#e8e5f1","#e0ddec","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#e8e6f1","#efeef6","#f2f1f7","#eeecf5","#e6e3f0","#e0ddec","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#a69ebb","#a69ebb","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#ede7e7","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dddaea","#dedaeb","#dfdcec","#dedaeb","#dddaea","#bebbca"],["#c1bbc9","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e9e4f0","#f0edf5","#f3f1f7","#efecf4","#e9e5f0","#e4dfed","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#a098b4","#a098b4","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e0daea","#e1dceb","#e3ddec","#e0daea","#e0daea","#e0daea","#e1dbea","#e9e4f0","#eeebf3","#eae5f0","#e4dfed","#e1dbeb","#e0daea","#e0daea","#c1bbc9"],["#c3bcc9","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3daea","#e3dbea","#e8e1ed","#eae4ef","#ebe5f0","#ece7f1","#ebe5f0","#e6dfec","#e3daea","#e3daea","#e3daea","#b4accb","#b4accb","#b4accb","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#928ca5","#e8e2ee","#e8e1ee","#e6dfec","#e3daea","#e3daea","#e4dceb","#e6deec","#eae4ef","#ebe5f0","#e9e3ee","#e9e3ef","#ede7f1","#f3eff6","#faf9fb","#fefefe","#fbf9fc","#f4f1f7","#ede8f1","#e6dfec","#e3daea","#c3bcc9"],["#c5bcc8","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e6dcea","#e8dfeb","#e8deeb","#ebe3ee","#efe9f2","#efe9f1","#ebe3ee","#e5dbe9","#e5dbe9","#afa7c6","#afa7c6","#afa7c6","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#a199af","#eee7f1","#ede5ef","#ebe3ee","#e7deeb","#e6dcea","#e5dbe9","#e5dbe9","#e5dbe9","#e5dbe9","#e7ddeb","#ebe3ee","#ede6f0","#f2ecf4","#f3eef5","#f2edf4","#f4eff5","#f2edf4","#eae1ed","#e5dbe9","#e5dbe9","#c5bcc8"],["#c8bdc8","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e9ddea","#ece2ed","#eee5ef","#ece2ed","#e9ddea","#ece1ec","#efe7f0","#efe6ef","#ebe0ec","#e8dbe9","#aaa2c1","#aaa2c1","#aaa2c1","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#e0d8db","#f4eef4","#f2ebf3","#f2ebf3","#f2ebf3","#f1eaf2","#eee5ef","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#e8dbe9","#eadfeb","#efe6f0","#eee4ee","#ebe0ec","#ece1ec","#ebe0ec","#e8dce9","#e8dbe9","#e8dbe9","#c8bdc8"],["#cbbfc9","#ecdfea","#ebdce9","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ecdeea","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#eee1ec","#f3e9f1","#f2e9f1","#f1e7ef","#f2e9f1","#f4ecf3","#f4ecf2","#f2e8f0","#a69ebc","#a69ebc","#a69ebc","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#e7e1e2","#ecdfea","#ecdfea","#eddfea","#ede0eb","#efe3ed","#eee2ec","#ebdde9","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#ebdce8","#efe3ed","#f3eaf2","#f2e8f0","#f0e5ee","#f3e9f1","#f4ecf3","#f2e8f0","#eee1ec","#ebdce8","#cabdc8"],["#d6d2d5","#f5ecf2","#f1e5ed","#eddde8","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#f0e2eb","#f3e9f0","#f9f3f7","#fbf7fa","#f7eff4","#f0e3ec","#ecdce7","#ecdce7","#eddde8","#f2e6ee","#f2e7ee","#f1e5ed","#f1e5ed","#f0e3ec","#f0e2eb","#a199b7","#a199b7","#a199b7","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#eee9e9","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#ecdce7","#efe1eb","#eedee9","#ecdce7","#efe0ea","#f1e5ed","#f3e8ef","#f5ecf2","#f5edf3","#f5ecf2","#f6eff4","#f8f1f6","#f7eff4","#f5ecf2","#f4eaf1","#f1e5ed","#ecdce7","#cbbdc6"],["#d5ced2","#f4eaef","#f1e3ea","#eddce5","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#f2e5ec","#f7eff3","#f9f4f7","#faf5f7","#f7eff3","#f3e7ed","#eddce5","#eddbe4","#efdfe7","#f3e7ed","#f3e6ed","#f2e5ec","#f2e4eb","#f1e3ea","#9d95b2","#9d95b2","#9d95b2","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#f6f2ef","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eddbe4","#eedde5","#eedde6","#eedde6","#f0e1e9","#f3e6ed","#f2e6ec","#f2e6ed","#f4e9ef","#f5ebf0","#f7eff3","#f9f3f6","#f7eef3","#f3e7ed","#efe0e8","#eddbe4","#eddbe4","#ccbcc4"],["#d1c6cb","#efdfe5","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eedde4","#f2e3e9","#f3e7ec","#f3e5ea","#f2e4e9","#f0e0e6","#efdee5","#f0dfe6","#efdfe5","#f1e1e7","#f1e2e7","#eddbe2","#eddbe2","#eddbe2","#b3abcb","#b3abcb","#b3abcb","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#8f89a2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#eddbe2","#f0dfe6","#f1e3e8","#f4e8ed","#f7eff2","#f9f2f4","#f7eef2","#f3e6eb","#eddbe2","#eddbe2","#eddbe2","#ccbcc2"],["#d2c8cb","#f4e7ea","#f3e4e8","#f0dfe4","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedae0","#efdde2","#efdce1","#eedae0","#f0dee3","#f0dee3","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#afa7c7","#afa7c7","#afa7c7","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#9c95ac","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#eedadf","#cdbcc0"],["#d4cacb","#f7edee","#faf3f4","#fefcfc","#fdfbfb","#fbf5f6","#f8eff1","#f6eaec","#f5e9eb","#f6eaec","#f5e8ea","#f0dcdf","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#aca4c3","#aca4c3","#aca4c3","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#ddd5d9","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#eedadd","#cdbbbe"],["#d4c9ca","#f9f1f2","#fcf7f8","#fdfafa","#fcf7f7","#f9f0f1","#f6ebec","#f7eced","#f7eced","#f4e5e6","#f1dedf","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#a8a0be","#a8a0be","#a8a0be","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#e3dcde","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#efd9db","#cebbbc"],["#d5cdcc","#fdf9f9","#fefcfc","#fbf5f5","#f9f0f0","#f7ecec","#f5e6e6","#f4e5e4","#f4e4e4","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#a59dba","#a59dba","#a59dba","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#f0d8d8","#cebaba"],["#d8d1d1","#fcf8f8","#fcf8f8","#fbf4f4","#faf1f0","#f9efee","#f7eae8","#f5e5e3","#f4e2e1","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#a199b6","#a199b6","#a199b6","#a199b6","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#efeae9","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#f0d8d6","#cfbab8"],["#dbdbdb","#fefefd","#fbf5f4","#f9edec","#f7e9e7","#f6e5e3","#f5e3e0","#f5e2df","#f4e2df","#d1bebb","#cfbab6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#f1d7d3","#9d95b2","#9d95b2","#9d95b2","#9d95b2","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#f5f1ef","#d3d0cd","#d3d0cd","#d3d0cd","#d3d0cd","#d3d0cd","#d3d0cd","#d3d0cd","#d3d0cd","#d3d0cd","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#f1d7d3","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#cfb9b6","#b29f9c"],["#dad9d8","#fefcfb","#fbf4f3","#f8ece9","#f7e7e3","#f4dfdb","#f3ddd8","#f5e3de","#d4c5c1","","","","","","","","","","#9b94af","#b4accc","#b4accc","#b4accc","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#8d87a1","#79748a","","","","","","","","","","#cfb9b4","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#f1d7d1","#cfb9b4","","","","","","","","",""],["#d0b8b2","#f3dbd4","#f5dfd9","#f6e3de","#f6e3de","#f5dfd9","#f5dfd9","#f6e4df","#d4c6c1","","","","","","","","","","#9891ac","#b1a9c8","#b1a9c8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#9891a8","#827d91","","","","","","","","","","#d0b8b1","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#f2d6ce","#d0b8b1","","","","","","","","",""],["#d0b8af","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#d0b8af","","","","","","","","","","#958fa9","#aea6c5","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#a39bb0","#8c8597","","","","","","","","","","#d0b8af","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#f2d6cc","#d0b8af","","","","","","","","",""],["#d1b7ad","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#d1b7ad","","","","","","","","","","#938ca6","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#dfd7da","#bfb9bc","","","","","","","","","","#d1b7ad","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d5c9","#f3d6ca","#f4d8ce","#f5dbd1","#f4d9cf","#f3d5c9","#f3d5c9","#d1b7ad","","","","","","","","",""],["#d1b7ab","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#d1b7ab","","","","","","","","","","#c4bec0","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#e4dddf","#c4bec0","","","","","","","","","","#d1b7ab","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f4d4c7","#f6dcd1","#f7e0d6","#f6dcd1","#f4d7ca","#f4d4c7","#f4d4c7","#d1b7ab","","","","","","","","",""],["#d2b6a9","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#d2b6a9","","","","","","","","","","#c8c3c4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#e9e3e4","#c8c3c4","","","","","","","","","","#d2b6a9","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#f4d4c5","#d2b6a9","","","","","","","","",""],["#d2b6a7","#f5d5c5","#f6d8c9","#f6dacc","#f6d9ca","#f5d6c6","#f5d4c2","#f5d3c2","#d2b6a7","","","","","","","","","","#cdc8c8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#eee9e8","#cdc8c8","","","","","","","","","","#d2b6a7","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#f5d3c2","#d2b6a7","","","","","","","","",""],["#d5c1b6","#f8e1d4","#f8e0d3","#f7daca","#f5d4c1","#f5d3c0","#f5d3c0","#f5d3c0","#d3b5a5","","","","","","","","","","#d1cecc","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#f3efed","#d1cecc","","","","","","","","","","#d3b5a5","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#f5d3c0","#d3b5a5","","","","","","","","",""],["#b8a79d","#d7c4ba","#d6c4b9","#d6c4b9","#d5bfb1","#d4b6a4","#d3b5a3","#d3b5a3","#b69c8c","","","","","","","","","","#b8b5b3","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#d6d3d0","#b8b5b3","","","","","","","","","","#b69c8c","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#d3b5a3","#b69c8c","","","","","","","","",""]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_reality_a",
@@ -76574,7 +76355,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_reality_b",
@@ -76593,8 +76373,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "existence_observable_a",
@@ -76613,7 +76392,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_observable_b",
@@ -76630,7 +76408,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_time_a",
@@ -76648,7 +76425,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_time_b",
@@ -76665,7 +76441,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_abstract_a",
@@ -76682,7 +76457,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_abstract_b",
@@ -76701,7 +76475,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_soul_a",
@@ -76715,7 +76488,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_soul_b",
@@ -76730,7 +76502,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_universe_4",
@@ -76751,7 +76522,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_multiverse_4",
@@ -76769,7 +76539,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_concept_4",
@@ -76787,7 +76556,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_consciousness_4",
@@ -76807,7 +76575,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "portrait_claude",
@@ -76874,7 +76641,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
     noShake: true,
     seam: "sky",
     tags: [
@@ -76888,13 +76654,12 @@ export const SHAPES = [
     grid: [
         "XX"
       ],
-    color: [["#7e2c1f","#a33a27","#dc6a4c","#f0916e","#f0916e","#f0916e","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#a33a27","#7e2c1f"],["#a33a27","#c24f37","#f0916e","#ffb593","#ffb593","#f0916e","#f0916e","#f0916e","#f0916e","#f0916e","#f0916e","#f0916e","#f0916e","#f0916e","#f0916e","#f0916e","#c24f37","#a33a27"],["#c24f37","#f0916e","#f9a891","#d05a4a","#f9a891","#f9a891","#f9a891","#f9a891","#fde6c8","#fde6c8","#f9a891","#f9a891","#d05a4a","#f9a891","#f9a891","#f9a891","#d9734f","#c24f37"],["#c24f37","#f0916e","#fde6c8","#f9a891","#f9a891","#f9a891","#f9a891","#fde6c8","#fde6c8","#fde6c8","#fde6c8","#f9a891","#f9a891","#f9a891","#f9a891","#fde6c8","#d9734f","#c24f37"],["#c24f37","#f0916e","#fde6c8","#fde6c8","#f9a891","#f9a891","#fde6c8","#fde6c8","#f9a891","#f9a891","#fde6c8","#fde6c8","#f9a891","#f9a891","#fde6c8","#fde6c8","#d9734f","#c24f37"],["#c24f37","#d9734f","#ef917a","#f7d6b4","#f7d6b4","#f7d6b4","#f7d6b4","#ef917a","#a8487a","#ef917a","#ef917a","#f7d6b4","#f7d6b4","#f7d6b4","#f7d6b4","#ef917a","#d9734f","#c24f37"],["#c24f37","#d9734f","#ef917a","#ef917a","#f7d6b4","#f7d6b4","#ef917a","#ef917a","#ef917a","#d05a4a","#ef917a","#ef917a","#f7d6b4","#f7d6b4","#ef917a","#ef917a","#d9734f","#c24f37"],["#a33a27","#c24f37","#d9734f","#d9734f","#d9734f","#d9734f","#d9734f","#d9734f","#d9734f","#d9734f","#d9734f","#d9734f","#d9734f","#d9734f","#d9734f","#d9734f","#c24f37","#a33a27"],["#7e2c1f","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#7e2c1f"]],
+    color: [["#7e2c1f","#a33a27","#d05a4a","#f0916e","#f0916e","#f0916e","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#dc6a4c","#a33a27","#7e2c1f"],["#a33a27","#fde6c8","#f0916e","#f9a891","#fde6c8","#fde6c8","#d05a4a","#f9a891","#fde6c8","#fde6c8","#f0916e","#f0916e","#fde6c8","#fde6c8","#f0916e","#f0916e","#fde6c8","#a33a27"],["#c24f37","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#d05a4a","#fde6c8","#f9a891","#fde6c8","#d9734f","#c24f37"],["#c24f37","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#d9734f","#c24f37"],["#c24f37","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#f9a891","#fde6c8","#d9734f","#c24f37"],["#c24f37","#f7d6b4","#f9a891","#f7d6b4","#f9a891","#f7d6b4","#f9a891","#f7d6b4","#a8487a","#f7d6b4","#f9a891","#f7d6b4","#f9a891","#f7d6b4","#ef917a","#f7d6b4","#d9734f","#c24f37"],["#c24f37","#f7d6b4","#ef917a","#f7d6b4","#d9734f","#f7d6b4","#d9734f","#f7d6b4","#ef917a","#f7d6b4","#ef917a","#f7d6b4","#ef917a","#f7d6b4","#ef917a","#f7d6b4","#a8487a","#c24f37"],["#a33a27","#f7d6b4","#f7d6b4","#d9734f","#d9734f","#f7d6b4","#f7d6b4","#d9734f","#d9734f","#f7d6b4","#f7d6b4","#d9734f","#d9734f","#f7d6b4","#f7d6b4","#c24f37","#c24f37","#a33a27"],["#7e2c1f","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#a33a27","#7e2c1f"]],
     difficulty: 1,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "mitochondria"
       },
@@ -76919,7 +76684,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "Santas stuck in chimneys",
         "short": "Santas"
@@ -76937,7 +76701,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
-    claudeDraft: true,
     nextShapeProbs: [
         0.35
       ],
@@ -76964,7 +76727,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
   },
   {
     id: "smoke_stack",
@@ -76985,7 +76747,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "smoke stacks"
       },
@@ -77004,7 +76765,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nextShapeProbs: [
         0.2,
         0.2
@@ -77034,7 +76794,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nextShapeProbs: [
         0.4
       ],
@@ -77060,7 +76819,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "dictionaries"
       },
@@ -77080,7 +76838,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "frozen cavemen"
       },
@@ -77098,7 +76855,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nextShapeProbs: [
         0.2
       ],
@@ -77124,7 +76880,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "tuning forks"
       },
@@ -77145,7 +76900,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "gingerbread men"
       },
@@ -77160,7 +76914,7 @@ export const SHAPES = [
         "XXXXXXXXX",
         "XXXXXXXXX"
       ],
-    color: [["#1f4f3a","#1f4f3a","#1f4f3a","#63c74d","#63c74d","#2b6a40","#1f4f3a","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#2b6a40","#1f4f3a","#63c74d","#63c74d","#63c74d","#63c74d","#2b6a40","#1f4f3a","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#2b6a40","#1f4f3a","#63c74d","#63c74d","#63c74d","#63c74d","#2b6a40","#1f4f3a","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#2b6a40","#1f4f3a","#63c74d","#63c74d","#63c74d","#63c74d","#2b6a40","#7e1d2c","#b42a38","#b42a38","#b55088","#b42a38","#b42a38","#b42a38","#b42a38","#b55088","#b42a38","#b42a38","#7e1d2c"],["#1f4f3a","#2b6a40","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#2b6a40","#e6f7a6","#e6f7a6","#e6f7a6","#bfe86a","#bfe86a","#2b6a40","#d4f59a","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#2b6a40","#e6f7a6","#e6f7a6","#e6f7a6","#bfe86a","#bfe86a","#2b6a40","#d4f59a","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#2b6a40","#e6f7a6","#e6f7a6","#e6f7a6","#bfe86a","#bfe86a","#2b6a40","#d4f59a","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#b42a38","#e43b44","#ff6b74","#68386c","#e43b44","#e43b44","#e43b44","#e43b44","#68386c","#e43b44","#b42a38","#7e1d2c"],["#2b6a40","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#63c74d","#e6f7a6","#e6f7a6","#e6f7a6","#bfe86a","#bfe86a","#86cc4a","#d4f59a","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#63c74d","#e6f7a6","#e6f7a6","#e6f7a6","#bfe86a","#bfe86a","#86cc4a","#d4f59a","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#63c74d","#e6f7a6","#e6f7a6","#e6f7a6","#bfe86a","#bfe86a","#86cc4a","#d4f59a","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#63c74d","#b42a38","#e43b44","#ff6b74","#f2686f","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#b42a38"],["#a8e86a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#e43b44","#f2686f","#2a1d30","#2a1d30","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#2a1d30","#b42a38"],["#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#86cc4a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#86cc4a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#86cc4a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#e43b44","#e43b44","#fee761","#2a1d30","#2a1d30","#e43b44","#e43b44","#e43b44","#2a1d30","#2a1d30","#fee761","#b42a38"],["#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#3e8948","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#86cc4a","#4f9442","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#3e8948","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#86cc4a","#4f9442","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#3e8948","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#86cc4a","#4f9442","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#3e8948","#e43b44","#e43b44","#fee761","#fee761","#181425","#181425","#e43b44","#fee761","#fee761","#181425","#181425","#b42a38"],["#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#4f9442","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#4f9442","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#4f9442","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#b42a38","#e43b44","#fee761","#fee761","#181425","#181425","#e43b44","#fee761","#fee761","#181425","#181425","#b42a38"],["#63c74d","#63c74d","#63c74d","#d8f08a","#3e8948","#2b6a40","#86cc4a","#86cc4a","#86cc4a","#d8f08a","#4f9442","#2b6a40","#63c74d","#63c74d","#63c74d","#d8f08a","#3e8948","#2b6a40","#86cc4a","#86cc4a","#86cc4a","#d8f08a","#4f9442","#2b6a40","#63c74d","#63c74d","#63c74d","#d8f08a","#3e8948","#2b6a40","#86cc4a","#86cc4a","#86cc4a","#d8f08a","#4f9442","#2b6a40","#63c74d","#63c74d","#63c74d","#d8f08a","#3e8948","#2b6a40","#b42a38","#e43b44","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#e43b44","#b42a38"],["#3e8948","#3e8948","#3e8948","#3e8948","#2b6a40","#2b6a40","#4f9442","#4f9442","#4f9442","#4f9442","#2b6a40","#2b6a40","#3e8948","#3e8948","#3e8948","#3e8948","#2b6a40","#2b6a40","#4f9442","#4f9442","#4f9442","#4f9442","#2b6a40","#2b6a40","#3e8948","#3e8948","#3e8948","#3e8948","#2b6a40","#2b6a40","#4f9442","#4f9442","#4f9442","#4f9442","#2b6a40","#2b6a40","#3e8948","#3e8948","#3e8948","#3e8948","#2b6a40","#2b6a40","#b42a38","#3a1018","#ffffff","#ffffff","#3a1018","#3a1018","#ffffff","#ffffff","#3a1018","#ffffff","#3a1018","#7e1d2c"],["#2b6a40","#3e8948","#3e8948","#2b6a40","#2b6a40","#1f4f3a","#1f4f3a","#4f9442","#4f9442","#2b6a40","#2b6a40","#1f4f3a","#1f4f3a","#3e8948","#3e8948","#2b6a40","#2b6a40","#1f4f3a","#1f4f3a","#4f9442","#4f9442","#2b6a40","#2b6a40","#1f4f3a","#1f4f3a","#3e8948","#3e8948","#2b6a40","#2b6a40","#1f4f3a","#1f4f3a","#4f9442","#4f9442","#2b6a40","#2b6a40","#1f4f3a","#1f4f3a","#3e8948","#3e8948","#2b6a40","#2b6a40","#1f4f3a","#7e1d2c","#3a1018","#ffffff","#3a1018","#3a1018","#ff9aa2","#ff9aa2","#ff9aa2","#3a1018","#3a1018","#8fd14f","#5aa83a"],["#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#7e1d2c","#3a1018","#3a1018","#ffffff","#ffffff","#3a1018","#ffffff","#ffffff","#8fd14f","#c8f07a","#8fd14f","#7e1d2c"],["#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#7e1d2c","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#7e1d2c","#7e1d2c","#1f4f3a"]],
+    color: [["#1f4f3a","#1f4f3a","#1f4f3a","#63c74d","#63c74d","#2b6a40","#1f4f3a","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#2b6a40","#1f4f3a","#63c74d","#63c74d","#63c74d","#63c74d","#2b6a40","#1f4f3a","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#2b6a40","#1f4f3a","#63c74d","#63c74d","#63c74d","#63c74d","#2b6a40","#1f4f3a","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#2b6a40","#1f4f3a","#63c74d","#63c74d","#63c74d","#63c74d","#2b6a40","#7e1d2c","#b42a38","#b42a38","#b55088","#b42a38","#b42a38","#b42a38","#b42a38","#b55088","#b42a38","#b42a38","#7e1d2c"],["#1f4f3a","#2b6a40","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#2b6a40","#e6f7a6","#e6f7a6","#e6f7a6","#bfe86a","#bfe86a","#2b6a40","#d4f59a","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#2b6a40","#e6f7a6","#e6f7a6","#e6f7a6","#bfe86a","#bfe86a","#2b6a40","#d4f59a","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#2b6a40","#e6f7a6","#e6f7a6","#e6f7a6","#bfe86a","#bfe86a","#2b6a40","#d4f59a","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#b42a38","#e43b44","#ff6b74","#68386c","#e43b44","#e43b44","#e43b44","#e43b44","#68386c","#e43b44","#b42a38","#7e1d2c"],["#2b6a40","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#63c74d","#e6f7a6","#e6f7a6","#e6f7a6","#bfe86a","#bfe86a","#86cc4a","#d4f59a","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#63c74d","#e6f7a6","#e6f7a6","#e6f7a6","#bfe86a","#bfe86a","#86cc4a","#d4f59a","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#63c74d","#e6f7a6","#e6f7a6","#e6f7a6","#bfe86a","#bfe86a","#86cc4a","#d4f59a","#d4f59a","#d4f59a","#a8e86a","#a8e86a","#63c74d","#b42a38","#e43b44","#ff6b74","#f2686f","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#b42a38"],["#a8e86a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#e43b44","#f2686f","#2a1d30","#2a1d30","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#e43b44","#2a1d30","#b42a38"],["#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#86cc4a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#86cc4a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#bfe86a","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#86cc4a","#a8e86a","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#e43b44","#e43b44","#fee761","#2a1d30","#2a1d30","#e43b44","#e43b44","#e43b44","#2a1d30","#2a1d30","#fee761","#b42a38"],["#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#3e8948","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#86cc4a","#4f9442","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#3e8948","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#86cc4a","#4f9442","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#3e8948","#bfe86a","#bfe86a","#bfe86a","#86cc4a","#86cc4a","#4f9442","#a8e86a","#a8e86a","#a8e86a","#63c74d","#63c74d","#3e8948","#e43b44","#e43b44","#fee761","#fee761","#181425","#181425","#e43b44","#fee761","#fee761","#181425","#181425","#b42a38"],["#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#4f9442","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#4f9442","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#86cc4a","#4f9442","#63c74d","#63c74d","#63c74d","#63c74d","#63c74d","#3e8948","#b42a38","#e43b44","#fee761","#fee761","#181425","#181425","#e43b44","#fee761","#fee761","#181425","#181425","#b42a38"],["#63c74d","#63c74d","#63c74d","#d8f08a","#3e8948","#2b6a40","#86cc4a","#86cc4a","#86cc4a","#d8f08a","#4f9442","#2b6a40","#63c74d","#63c74d","#63c74d","#d8f08a","#3e8948","#2b6a40","#86cc4a","#86cc4a","#86cc4a","#d8f08a","#4f9442","#2b6a40","#63c74d","#63c74d","#63c74d","#d8f08a","#3e8948","#2b6a40","#86cc4a","#86cc4a","#86cc4a","#d8f08a","#4f9442","#2b6a40","#63c74d","#63c74d","#63c74d","#d8f08a","#3e8948","#2b6a40","#b42a38","#e43b44","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#e43b44","#b42a38"],["#3e8948","#3e8948","#3e8948","#3e8948","#2b6a40","#2b6a40","#4f9442","#4f9442","#4f9442","#4f9442","#2b6a40","#2b6a40","#3e8948","#3e8948","#3e8948","#3e8948","#2b6a40","#2b6a40","#4f9442","#4f9442","#4f9442","#4f9442","#2b6a40","#2b6a40","#3e8948","#3e8948","#3e8948","#3e8948","#2b6a40","#2b6a40","#4f9442","#4f9442","#4f9442","#4f9442","#2b6a40","#2b6a40","#3e8948","#3e8948","#3e8948","#3e8948","#2b6a40","#2b6a40","#b42a38","#3a1018","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#3a1018","#b42a38"],["#2b6a40","#3e8948","#3e8948","#2b6a40","#2b6a40","#1f4f3a","#1f4f3a","#4f9442","#4f9442","#2b6a40","#2b6a40","#1f4f3a","#1f4f3a","#3e8948","#3e8948","#2b6a40","#2b6a40","#1f4f3a","#1f4f3a","#4f9442","#4f9442","#2b6a40","#2b6a40","#1f4f3a","#1f4f3a","#3e8948","#3e8948","#2b6a40","#2b6a40","#1f4f3a","#1f4f3a","#4f9442","#4f9442","#2b6a40","#2b6a40","#1f4f3a","#1f4f3a","#3e8948","#3e8948","#2b6a40","#2b6a40","#1f4f3a","#7e1d2c","#3a1018","#ffffff","#ffffff","#ffffff","#ff9aa2","#ff9aa2","#ff9aa2","#ffffff","#ffffff","#3a1018","#b42a38"],["#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#1f4f3a","#2b6a40","#b55088","#b55088","#1f4f3a","#1f4f3a","#7e1d2c","#3a1018","#3a1018","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#3a1018","#b42a38"],["#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#1f4f3a","#7a3a6c","#7a3a6c","#1f4f3a","#1f4f3a","#1f4f3a","#7e1d2c","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#3a1018","#7e1d2c","#1f4f3a"]],
     powerup: {
         "type": "destroyer",
         "tier": 3,
@@ -77188,7 +76942,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
   },
   {
     id: "sunshine",
@@ -77207,7 +76960,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "weather"
       ],
@@ -77227,7 +76979,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "weather"
       ],
@@ -77249,7 +77000,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "weather"
       ],
@@ -77271,7 +77021,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nameAgain: "another happy little cloud",
     tags: [
         "weather"
@@ -77293,7 +77042,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "bugs"
       ],
@@ -77307,13 +77055,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#a39c90","#a39c90","#a39c90","#a39c90","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#ffd23c","#3b2420","#ffd23c","#3b2420","#fff1a6","#3b2420","#3fb8ff","#ffe066","#3b2420","#ffd23c","#3b2420","#ffd23c","#3b2420","#eda42b","#3b2420","#f8f0d8"],["#f8f0d8","#3b2420","#ffd23c","#3b2420","#ffd23c","#3b2420","#ffd23c","#3b2420","#ffe066","#ffe066","#3b2420","#ffd23c","#3b2420","#ffd23c","#3b2420","#eda42b","#3b2420","#f8f0d8"],["#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3fb8ff","#ffe066","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8"],["#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffe066","#5fd05a","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffd23c","#ffd23c","#3b2420","#ffb3cf","#ffe066","#ffe066","#ffb3cf","#3b2420","#eda42b","#eda42b","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffb3cf","#3b2420","#3b5288","#3b2420","#ffb3cf","#ffb3cf","#b06bff","#ffe066","#ffb3cf","#ffb3cf","#3b2420","#3b5288","#3b2420","#ffb3cf","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffb3cf","#3b2420","#3b5288","#3b2420","#ffe066","#3b2420","#3b2420","#3b2420","#3b2420","#ffe066","#3b2420","#3b5288","#3b2420","#3fb8ff","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5fd05a","#3b2420","#3b5288","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3b2420","#3b5288","#3b2420","#ffb3cf","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffe066","#ffe066","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#ffe066","#ffe066","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d4ecff","#ffe066","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#ffe066","#d4ecff","#a39c90","#f8f0d8"],["#f8f0d8","#3d7fd6","#ffe066","#3b2420","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffb3cf","#3d7fd6","#f8f0d8"],["#f8f0d8","#a39c90","#ffb3cf","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#ff8fa8","#ffb3cf","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffb3cf","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#5fd05a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffe066","#3b2420","#3b2420","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#3b2420","#3b2420","#ffe066","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b06bff","#ffe066","#3b2420","#8a2b26","#8a2b26","#8a2b26","#8a2b26","#8a2b26","#8a2b26","#8a2b26","#8a2b26","#3b2420","#ffe066","#ffe066","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffe066","#ffb3cf","#3b2420","#3b2420","#8a2b26","#ff7d7d","#ff7d7d","#ff7d7d","#ff7d7d","#8a2b26","#3b2420","#3b2420","#ffb3cf","#ffe066","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffb3cf","#ffb3cf","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#ffb3cf","#ffb3cf","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffb3cf","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#3b2420","#3b2420","#3b2420","#3b2420","#7e98cf","#4f6aa6","#3b5288","#3b2420","#3fb8ff","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5fd05a","#5fd05a","#ffe066","#ffe066","#ffe066","#ffe066","#3fb8ff","#3d7fd6","#3b2420","#ffb3cf","#ffb3cf","#3d7fd6","#b06bff","#eda42b","#a39c90","#f8f0d8"],["#f8f0d8","#b06bff","#ffb3cf","#ffe066","#3b2420","#ffe066","#3b2420","#ffe066","#ffb3cf","#ffe066","#ffe066","#b06bff","#ffb3cf","#ffb3cf","#5fd05a","#eda42b","#a39c90","#f8f0d8"],["#f8f0d8","#b06bff","#b06bff","#ffe066","#ffb3cf","#ffe066","#ffe066","#ffe066","#ffb3cf","#ffe066","#ffe066","#5fd05a","#ffe066","#ffe066","#3b2420","#eda42b","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffd23c","#ffe066","#ffe066","#ffe066","#5fd05a","#ffe066","#ffe066","#5fd05a","#ffe066","#ffe066","#3b2420","#ffe066","#5fd05a","#eda42b","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffb3cf","#5fd05a","#b06bff","#3b2420","#ffb3cf","#ffb3cf","#ffe066","#3d7fd6","#3d7fd6","#ffe066","#ffe066","#ffe066","#ffe066","#3d7fd6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffe066","#ffe066","#ffe066","#ffb3cf","#ffb3cf","#b06bff","#ffe066","#ffb3cf","#ffb3cf","#ffe066","#ffe066","#ffe066","#ffb3cf","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffb3cf","#ffe066","#ffe066","#ffe066","#ffe066","#3b2420","#3b2420","#3b2420","#3b2420","#ffe066","#ffd23c","#3b2420","#5fd05a","#3fb8ff","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5fd05a","#ffe066","#ffe066","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3b2420","#ffe066","#3d7fd6","#ffb3cf","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffe066","#ffe066","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffe066","#ffe066","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d4ecff","#ffe066","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#ffe066","#d4ecff","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffe066","#3b2420","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffb3cf","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffb3cf","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#ffb3cf","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffb3cf","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#5fd05a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffe066","#3b2420","#3b2420","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#3b2420","#3b2420","#ffe066","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b06bff","#ffe066","#3b2420","#8a2b26","#8a2b26","#8a2b26","#8a2b26","#8a2b26","#8a2b26","#8a2b26","#8a2b26","#3b2420","#ffe066","#ffe066","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffe066","#ffb3cf","#3b2420","#3b2420","#8a2b26","#ff7d7d","#ff7d7d","#ff7d7d","#ff7d7d","#8a2b26","#3b2420","#3b2420","#ffb3cf","#ffe066","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffb3cf","#ffb3cf","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#ffb3cf","#ffb3cf","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffb3cf","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#3b2420","#3b2420","#3b2420","#3b2420","#7e98cf","#4f6aa6","#3b5288","#3b2420","#3fb8ff","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_existential_dread",
@@ -77330,7 +77077,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_nails_chalkboard",
@@ -77346,8 +77092,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_gut_terror",
@@ -77364,7 +77109,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_deja_vu_2",
@@ -77375,13 +77119,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#463f55","#a39c90","#463f55","#a39c90","#a39c90","#a39c90","#a39c90","#463f55","#a39c90","#463f55","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#463f55","#f8f0d8","#f8f0d8","#463f55","#463f55","#463f55","#f8f0d8","#463f55","#f8f0d8","#f8f0d8","#463f55","#463f55","#463f55","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#463f55","#f8f0d8","#f8f0d8","#f8f0d8","#463f55","#ffe14a","#463f55","#463f55","#f8f0d8","#f8f0d8","#f8f0d8","#463f55","#ffe14a","#463f55","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#463f55","#463f55","#463f55","#463f55","#463f55","#463f55","#f8f0d8","#463f55","#463f55","#463f55","#463f55","#463f55","#463f55","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#463f55","#463f55","#463f55","#463f55","#463f55","#f8f0d8","#f8f0d8","#463f55","#463f55","#463f55","#463f55","#463f55","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#463f55","#f8f0d8","#463f55","#f8f0d8","#463f55","#f8f0d8","#f8f0d8","#463f55","#f8f0d8","#463f55","#f8f0d8","#463f55","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffffff","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#eda42b","#eda42b","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#463f55","#a39c90","#463f55","#a39c90","#a39c90","#a39c90","#a39c90","#463f55","#a39c90","#463f55","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#463f55","#f8f0d8","#f8f0d8","#463f55","#463f55","#463f55","#f8f0d8","#463f55","#f8f0d8","#f8f0d8","#463f55","#463f55","#463f55","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#463f55","#f8f0d8","#f8f0d8","#f8f0d8","#463f55","#ffe14a","#463f55","#463f55","#f8f0d8","#f8f0d8","#f8f0d8","#463f55","#ffe14a","#463f55","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#463f55","#463f55","#463f55","#463f55","#463f55","#463f55","#f8f0d8","#463f55","#463f55","#463f55","#463f55","#463f55","#463f55","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#463f55","#463f55","#463f55","#463f55","#463f55","#f8f0d8","#f8f0d8","#463f55","#463f55","#463f55","#463f55","#463f55","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#463f55","#f8f0d8","#463f55","#f8f0d8","#463f55","#f8f0d8","#f8f0d8","#463f55","#f8f0d8","#463f55","#f8f0d8","#463f55","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#b48a5a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffffff","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#3b2420","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#eda42b","#eda42b","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_memory_loss",
@@ -77392,13 +77135,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff9fb0","#ff9fb0","#ff9fb0","#ff9fb0","#4a7fd0","#3b2420","#f8f0d8","#ffd23c","#ffd23c","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff9fb0","#ff9fb0","#ff9fb0","#ff9fb0","#4a7fd0","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#e7a5b2","#f8f0d8","#e7a5b2","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#f8f0d8","#e7a5b2","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#e7a5b2","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#eda42b","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#eda42b","#eda42b","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#eda42b","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff9fb0","#ff9fb0","#ff9fb0","#ff9fb0","#4a7fd0","#3b2420","#eda42b","#ffd23c","#ffd23c","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff9fb0","#ff9fb0","#ff9fb0","#ff9fb0","#4a7fd0","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#eda42b","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#eda42b","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#eda42b","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#eda42b","#eda42b","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     echo: "emotion_memory_loss_2",
   },
   {
@@ -77410,13 +77152,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#a39c90","#3b2420","#a39c90","#3b2420","#a39c90","#3b2420","#a39c90","#3b2420","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#f8f0d8","#3b2420","#f8f0d8","#3b2420","#f8f0d8","#3b2420","#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#e8322a","#e8322a","#e8322a","#e8322a","#e8322a","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#ffd23c","#eda42b","#3b2420","#e8322a","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#3b2420","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#4f6aa6","#3b5288","#3b2420","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#3b2420","#4f6aa6","#3b5288","#3b2420","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#eda42b","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#4f6aa6","#3b5288","#3b2420","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#3b2420","#4f6aa6","#3b5288","#3b2420","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#4f6aa6","#3b5288","#3b2420","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#3b5288","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#a39c90","#3b2420","#a39c90","#3b2420","#a39c90","#3b2420","#a39c90","#3b2420","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#f8f0d8","#3b2420","#f8f0d8","#3b2420","#f8f0d8","#3b2420","#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#eda42b","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#3b5288","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_spooky_coincidence",
@@ -77427,13 +77168,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#3b2420","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#3b2420","#e8443a","#3b2420","#3b2420","#3b2420","#e8443a","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#ffffff","#3b2420","#e8443a","#e8443a","#e8443a","#3b2420","#ffffff","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#3b2420","#e8443a","#e8443a","#ffffff","#e8443a","#e8443a","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffffff","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#3b2420","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#f8f0d8","#3b2420","#3b2420","#3b2420","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#3b2420","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#e8443a","#3b2420","#3b2420","#3b2420","#e8443a","#3b2420","#ffd23c","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#e8443a","#e8443a","#e8443a","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#e8443a","#e8443a","#ffffff","#e8443a","#e8443a","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffd23c","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#3b2420","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffffff","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#3b2420","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#eda42b","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#eda42b","#eda42b","#ffd23c","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     echo: "emotion_spooky_coincidence_2",
   },
   {
@@ -77451,7 +77191,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_fear",
@@ -77468,7 +77207,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_surprise",
@@ -77485,7 +77223,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_boredom",
@@ -77502,7 +77239,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_calm",
@@ -77513,13 +77249,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#3b2420","#d9dee8","#d9dee8","#d9dee8","#d9dee8","#d9dee8","#d9dee8","#d9dee8","#d9dee8","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ff8fa8","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#ff8fa8","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#c4e8f6","#c4e8f6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#3b2420","#3b2420","#7fc4e6","#7fc4e6","#7fc4e6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#3b2420","#ffd23c","#3b2420","#3b2420","#7fc4e6","#7fc4e6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#ff9a3c","#ff9a3c","#ffd23c","#ffd23c","#3b2420","#7fc4e6","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#7fc4e6","#7fc4e6","#c4e8f6","#c4e8f6","#7fc4e6","#7fc4e6","#7fc4e6","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#3b2420","#3b2420","#3b2420","#3b2420","#7fc4e6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#7fc4e6","#c4e8f6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#c4e8f6","#7fc4e6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ff8fa8","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#ff8fa8","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#c4e8f6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#c4e8f6","#c4e8f6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#3b2420","#3b2420","#7fc4e6","#7fc4e6","#7fc4e6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#3b2420","#ffd23c","#3b2420","#3b2420","#7fc4e6","#7fc4e6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#ff9a3c","#ff9a3c","#ffd23c","#ffd23c","#3b2420","#7fc4e6","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#7fc4e6","#7fc4e6","#c4e8f6","#c4e8f6","#7fc4e6","#7fc4e6","#7fc4e6","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#3b2420","#3b2420","#3b2420","#3b2420","#7fc4e6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7fc4e6","#7fc4e6","#c4e8f6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#7fc4e6","#c4e8f6","#7fc4e6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_jealousy",
@@ -77536,7 +77271,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_inner_emptiness",
@@ -77553,7 +77287,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_playing_extris",
@@ -77564,13 +77297,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2b2f5e","#2b2f5e","#2b2f5e","#3c4482","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3c4482","#2b2f5e","#2b2f5e","#2b2f5e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2b2f5e","#3c4482","#3b2420","#3b2420","#fff1a6","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3c4482","#2b2f5e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3c4482","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3c4482","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3c4482","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3c4482","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffffff","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#ffffff","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffffff","#22285a","#22285a","#22285a","#ffffff","#ffd23c","#ffd23c","#ffffff","#22285a","#22285a","#22285a","#ffffff","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffffff","#22285a","#ffa53c","#22285a","#ffffff","#ffd23c","#ffd23c","#ffffff","#22285a","#ffa53c","#22285a","#ffffff","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffffff","#22285a","#ffa53c","#ffa53c","#ffffff","#ffd23c","#ffd23c","#ffffff","#22285a","#ffa53c","#ffa53c","#ffffff","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffffff","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#ffffff","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#eda42b","#eda42b","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#eda42b","#ffd23c","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3c4482","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#3c4482","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3c4482","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff7d7d","#ff7d7d","#3b2420","#eda42b","#eda42b","#3b2420","#3c4482","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2b2f5e","#3c4482","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3c4482","#2b2f5e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2b2f5e","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#3b5288","#3b2420","#2b2f5e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#2b2f5e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2b2f5e","#2b2f5e","#2b2f5e","#3c4482","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3c4482","#2b2f5e","#2b2f5e","#2b2f5e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2b2f5e","#3c4482","#3b2420","#3b2420","#fff1a6","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3c4482","#2b2f5e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3c4482","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3c4482","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3c4482","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3c4482","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffffff","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#ffffff","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffffff","#22285a","#22285a","#22285a","#ffffff","#ffd23c","#ffd23c","#ffffff","#22285a","#22285a","#22285a","#ffffff","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffffff","#22285a","#22285a","#22285a","#ffffff","#ffd23c","#ffd23c","#ffffff","#22285a","#22285a","#22285a","#ffffff","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffffff","#22285a","#22285a","#22285a","#ffffff","#ffd23c","#ffd23c","#ffffff","#22285a","#22285a","#22285a","#ffffff","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffffff","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#ffffff","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#eda42b","#eda42b","#ffd23c","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3c4482","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#3c4482","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3c4482","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#3c4482","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2b2f5e","#3c4482","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3c4482","#2b2f5e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2b2f5e","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#3b5288","#3b2420","#2b2f5e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_winning_extris",
@@ -77586,8 +77318,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_urge_to_rotate",
@@ -77603,12 +77334,11 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_long_piece",
-    name: "the certainty that the long piece is never coming",
+    name: "waiting for the right piece",
     grid: [
         "XXX",
         "XXX",
@@ -77621,11 +77351,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_being_a_piece",
-    name: "realising you are a piece in a game",
+    name: "realising you are a just a piece in a game",
     grid: [
         "XXX",
         "XXX",
@@ -77638,7 +77367,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_row_grief",
@@ -77654,8 +77382,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_fear_of_ceiling",
@@ -77672,7 +77399,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "bull",
@@ -77689,7 +77415,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
     nextShapeProbs: [
         1
       ],
@@ -77720,7 +77445,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
     tags: [
         "home"
       ],
@@ -77758,7 +77482,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nextShapeProbs: [
         0.7
       ],
@@ -77787,7 +77510,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
   },
   {
     id: "mouse",
@@ -77801,7 +77523,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nextShapeProbs: [
         0.5
       ],
@@ -77831,7 +77552,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
   },
   {
     id: "elephant_in_the_room",
@@ -77848,8 +77568,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
     oops: {
         "many": "elephants in the room"
       },
@@ -77871,7 +77590,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "giant rubber ducks"
       },
@@ -77892,7 +77610,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "dinosaur fossils"
       },
@@ -77937,7 +77654,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "hot air balloons"
       },
@@ -77962,7 +77678,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "lighthouses"
       },
@@ -77981,8 +77696,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
     oops: {
         "many": "double-deckers"
       },
@@ -78004,7 +77718,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "weather",
@@ -78024,7 +77737,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     nextShapeProbs: [
         0.3
       ],
@@ -78059,7 +77771,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
     noShake: true,
     seam: "sky_sunset",
     tags: [
@@ -78084,7 +77795,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "weather",
@@ -78104,7 +77814,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     nextShapeProbs: [
         0.3
       ],
@@ -78139,7 +77848,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
     noShake: true,
     seam: "sky_night",
     tags: [
@@ -78164,7 +77872,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "weather",
@@ -78183,7 +77890,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     nextShapeProbs: [
         0.12,
         0.12,
@@ -78215,7 +77921,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     nextShapeProbs: [
         0.12,
         0.12,
@@ -78246,7 +77951,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     nextShapeProbs: [
         0.12,
         0.12,
@@ -78267,7 +77971,7 @@ export const SHAPES = [
   },
   {
     id: "dandelion_clock",
-    name: "a dandelion clock",
+    name: "a dandelion puff",
     grid: [
         "X",
         "X"
@@ -78278,7 +77982,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     nextShapeProbs: [
         0.12,
         0.12,
@@ -78310,7 +78013,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     nextShapeProbs: [
         0.12,
         0.12,
@@ -78341,7 +78043,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     nextShapeProbs: [
         0.12,
         0.12,
@@ -78374,7 +78075,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     nextShapeProbs: [
         0.12,
         0.12,
@@ -78406,7 +78106,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     nextShapeProbs: [
         0.12,
         0.12,
@@ -78466,7 +78165,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.15,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08
       ],
@@ -78489,8 +78187,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.15,
-    claudeDraft: true,
+    frequency: 0,
     nextShapeProbs: [
         0.08
       ],
@@ -78513,8 +78210,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.15,
-    claudeDraft: true,
+    frequency: 0,
     oops: {
         "many": "cracked pots"
       },
@@ -78553,8 +78249,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.15,
-    claudeDraft: true,
+    frequency: 0,
     oops: {
         "many": "rusty trowels"
       },
@@ -78573,7 +78268,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.15,
-    claudeDraft: true,
     oops: {
         "many": "bird baths"
       },
@@ -78590,8 +78284,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.15,
-    claudeDraft: true,
+    frequency: 0,
     nextShapeProbs: [
         0.08
       ],
@@ -78623,7 +78316,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
     nextShapeProbs: [
         0.2
       ],
@@ -78647,7 +78339,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -78664,7 +78355,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "Rubik's cubes"
       },
@@ -78694,7 +78384,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "Mondrians"
       },
@@ -78719,8 +78408,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
     oops: {
         "many": "QR codes"
       },
@@ -78742,7 +78430,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.35,
-    claudeDraft: true,
     oops: {
         "many": "space invaders"
       },
@@ -78782,7 +78469,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "stuck pixels"
       },
@@ -78801,7 +78487,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "watermelon slices"
       },
@@ -78825,7 +78510,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "stop signs"
       },
@@ -78844,7 +78528,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "duplo bricks"
       },
@@ -78863,7 +78546,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "swiss cheese"
       },
@@ -78888,7 +78570,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "ladders to nowhere"
       },
@@ -78908,8 +78589,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
     oops: {
         "many": "kites in a storm",
         "short": "kites"
@@ -78928,8 +78608,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
     noShake: true,
     oops: {
         "many": "starlings"
@@ -78950,7 +78629,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     oops: {
         "many": "trails of footprints",
@@ -78971,7 +78649,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "potato portraits"
       },
@@ -79056,7 +78733,7 @@ export const SHAPES = [
   },
   {
     id: "long_red_ribbon",
-    name: "a long red ribbon, blowing away",
+    name: "a long red ribbon, flowing in the wind",
     grid: [
         ".XXX...",
         "XX.X.XX",
@@ -79068,7 +78745,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "long red ribbons",
         "short": "ribbons"
@@ -79087,14 +78763,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "storms in teacups"
       },
   },
   {
     id: "umbrella_for_a_fish",
-    name: "an umbrella for a fish",
+    name: "fish umbrella",
     grid: [
         "XXX",
         "XX."
@@ -79105,7 +78780,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "fish umbrellas"
       },
@@ -79141,8 +78815,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
     oops: {
         "many": "feather anvils"
       },
@@ -79160,7 +78833,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "jars of fog"
       },
@@ -79178,7 +78850,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "fossilised sandwiches"
       },
@@ -79215,8 +78886,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
     noShake: true,
     oops: {
         "many": "pianos full of bees",
@@ -79497,7 +79167,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.25,
-    claudeDraft: true,
     oops: {
         "many": "space invaders"
       },
@@ -79521,8 +79190,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.25,
-    claudeDraft: true,
+    frequency: 0,
     oops: {
         "many": "space invaders"
       },
@@ -79546,8 +79214,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.25,
-    claudeDraft: true,
+    frequency: 0,
     oops: {
         "many": "space invaders"
       },
@@ -79574,7 +79241,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.15,
-    claudeDraft: true,
     noShake: false,
     oops: {
         "many": "space invaders"
@@ -79602,7 +79268,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.15,
-    claudeDraft: true,
     noShake: false,
     oops: {
         "many": "space invaders"
@@ -79630,7 +79295,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.15,
-    claudeDraft: true,
     noShake: false,
     oops: {
         "many": "space invaders"
@@ -79658,7 +79322,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.15,
-    claudeDraft: true,
     noShake: false,
     oops: {
         "many": "space invaders"
@@ -79686,7 +79349,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.15,
-    claudeDraft: true,
     noShake: false,
     oops: {
         "many": "space invaders"
@@ -79714,7 +79376,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.15,
-    claudeDraft: true,
     noShake: false,
     oops: {
         "many": "space invaders"
@@ -79741,8 +79402,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.15,
-    claudeDraft: true,
+    frequency: 0,
     noShake: false,
     oops: {
         "many": "space invaders"
@@ -79769,8 +79429,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.15,
-    claudeDraft: true,
+    frequency: 0,
     noShake: false,
     oops: {
         "many": "space invaders"
@@ -79797,8 +79456,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.15,
-    claudeDraft: true,
+    frequency: 0,
     noShake: false,
     oops: {
         "many": "space invaders"
@@ -79824,7 +79482,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.1,
-    claudeDraft: true,
     oops: {
         "many": "mystery ships"
       },
@@ -79868,7 +79525,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
-    claudeDraft: true,
     nextShapeProbs: [
         0.2
       ],
@@ -79903,7 +79559,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -79921,7 +79576,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -79939,7 +79593,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -79955,7 +79608,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "nessie_wee_hump_2",
@@ -79970,7 +79622,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "nessie_wee_head",
@@ -79987,7 +79638,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "nessie_wee_photo",
@@ -80001,7 +79651,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -80018,7 +79667,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "a fossilised bone",
         "a bone",
@@ -80041,7 +79689,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "some more fossilised bones",
         "some more bones",
@@ -80067,7 +79714,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "even more fossilised bones",
         "a great many bones",
@@ -80077,7 +79723,7 @@ export const SHAPES = [
   },
   {
     id: "bones_trex_head",
-    name: "and its head: a Tyrannosaurus rex",
+    name: "a Tyrannosaurus rex skull",
     grid: [
         "XXXX.....",
         "XXXXXXXX.",
@@ -80091,7 +79737,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "and its skull: a Tyrannosaurus rex",
         "and finally, its head: a Tyrannosaurus rex",
@@ -80114,7 +79759,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "a fossilised bone",
         "a bone",
@@ -80139,7 +79783,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "some more fossilised bones",
         "some more bones",
@@ -80161,7 +79804,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "even more fossilised bones",
         "a great many bones",
@@ -80171,7 +79813,7 @@ export const SHAPES = [
   },
   {
     id: "bones_tri_head",
-    name: "and its head: a Triceratops",
+    name: "and its head. It's a Triceratops!",
     grid: [
         "X......X.",
         "XXX...XX.",
@@ -80186,7 +79828,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "and its skull: a Triceratops",
         "and finally, its head: a Triceratops",
@@ -80211,7 +79852,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "a fossilised bone",
         "a bone",
@@ -80234,7 +79874,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "some more fossilised bones",
         "some more bones",
@@ -80256,7 +79895,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "even more fossilised bones",
         "a great many bones",
@@ -80266,7 +79904,7 @@ export const SHAPES = [
   },
   {
     id: "bones_stego_head",
-    name: "and its head: a Stegosaurus",
+    name: "a Stegosaurus head bone",
     grid: [
         "XX..",
         "XXXX",
@@ -80278,7 +79916,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "and its skull: a Stegosaurus",
         "and finally, its head: a Stegosaurus",
@@ -80304,7 +79941,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "a fossilised bone",
         "a bone",
@@ -80329,7 +79965,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "some more fossilised bones",
         "some more bones",
@@ -80354,7 +79989,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "even more fossilised bones",
         "a great many bones",
@@ -80364,7 +79998,7 @@ export const SHAPES = [
   },
   {
     id: "bones_brachio_head",
-    name: "and its head: a Brachiosaurus",
+    name: "a Brachiosaurus head bones",
     grid: [
         "....XX.",
         "....XXX",
@@ -80380,7 +80014,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     names: [
         "and its skull: a Brachiosaurus",
         "and finally, its head: a Brachiosaurus",
@@ -80400,7 +80033,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
     oops: {
         "many": "bees"
       },
@@ -80421,7 +80053,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
-    claudeDraft: true,
     noShake: true,
     oops: {
         "many": "pairs of bees"
@@ -80442,7 +80073,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "bee-lines"
       },
@@ -80466,7 +80096,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "queen bees"
       },
@@ -80488,7 +80117,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "honeycombs"
       },
@@ -80511,7 +80139,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "bees' knees"
       },
@@ -80532,7 +80159,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.25,
-    claudeDraft: true,
     oops: {
         "many": "bees carrying bees"
       },
@@ -80576,7 +80202,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.2,
-    claudeDraft: true,
     noShake: true,
     oops: {
         "many": "clouds of bees",
@@ -80605,7 +80230,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_knowledge_b",
@@ -80626,7 +80250,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_ignorance_a",
@@ -80645,8 +80268,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "existence_ignorance_b",
@@ -80665,7 +80287,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_questions_a",
@@ -80686,7 +80307,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_questions_b",
@@ -80705,7 +80325,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_life_a",
@@ -80724,7 +80343,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_life_b",
@@ -80744,7 +80362,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_choices_a",
@@ -80764,8 +80381,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "existence_choices_b",
@@ -80783,7 +80399,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_wisdom_a",
@@ -80803,7 +80418,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_wisdom_b",
@@ -80824,7 +80438,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_death_a",
@@ -80842,7 +80455,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_death_b",
@@ -80859,7 +80471,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_void_a",
@@ -80878,7 +80489,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_void_b",
@@ -80890,13 +80500,12 @@ export const SHAPES = [
         "XXXXXXXX.",
         ".XXXXX..."
       ],
-    color: [["","","","","","","","","","","","","","","","","","","#aaa8a6","#c0bfbc","#c1bfbc","#c1bfbd","#c2c0bd","#c2c1be","#c3c1bf","#c3c2bf","#c4c2bf","#c4c2c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c2c0","#c4c2c0","#c4c2bf","#c4c2bf","#adaba9","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c0bebb","#e6e4e0","#e6e4e0","#e6e4e1","#e7e5e1","#e7e5e1","#e7e5e2","#e8e6e2","#e9e7e3","#eae8e4","#ebe9e5","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#c4c3c0","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c4c3c0","#eceae6","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#eceae6","#c4c3c0","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c4c3c0","#eceae6","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#edebe7","#edebe7","#edebe7","#eceae6","#eceae6","#ebe9e6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#eeece8","#eeece8","#eeece8","#edebe7","#eceae6","#eae8e4","#e9e7e3","#e8e6e2","#e8e6e2","#e6e4e0","#c0bebb","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c5c3c0","#eceae6","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#edebe7","#eceae6","#ebe9e5","#eae8e4","#e9e7e3","#e9e7e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#ebe9e5","#ebe9e5","#ebe9e5","#ebe9e5","#eae9e5","#eae8e4","#e9e7e3","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e6e4e1","#c0bebb","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c5c3c0","#eceae7","#eeece8","#eeece8","#edebe7","#edebe7","#eceae6","#eceae6","#eceae6","#ebe9e5","#eae8e4","#e9e7e3","#e9e7e3","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#eae8e4","#ebe9e5","#ebe9e5","#eceae6","#ebe9e5","#e9e7e3","#c2c0bd","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c0bebc","#e7e5e1","#e9e7e3","#e9e7e3","#eae8e4","#eae8e4","#eae8e4","#ebe9e5","#ebe9e5","#eae8e5","#eae8e4","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e8e4","#ebe9e5","#ebe9e5","#ebe9e6","#ebe9e5","#eae8e4","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e4","#eae8e4","#ebe9e5","#eceae6","#ebe9e6","#c4c2c0","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c4c2bf","#eceae6","#edebe7","#edebe7","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#edebe7","#eceae6","#eae8e5","#e9e8e4","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#eae8e4","#eceae6","#eeece8","#efede9","#efede9","#efede9","#efede9","#efede9","#efede9","#efede9","#edebe8","#c5c4c1","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c6c4c1","#eeece8","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#efede9","#eeece8","#edebe7","#ebe9e5","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#ebe9e5","#edebe7","#eeece8","#efede9","#efede9","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#eeece8","#c6c4c1","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#abaaa7","#c2c0be","#c3c1be","#c3c2bf","#c4c2c0","#c4c3c0","#c5c3c0","#c5c3c0","#c5c3c0","#e8e6e3","#eeece9","#efede9","#efede9","#efede9","#efede9","#efede9","#efeeea","#efeeea","#efede9","#efede9","#eeece8","#eeece8","#edece8","#eeece8","#eeece8","#efede9","#efede9","#efede9","#efede9","#efede9","#efede9","#efede9","#efede9","#efeeea","#f0eeea","#f0eeea","#f1efeb","#f1efeb","#f1efeb","#f1efeb","#f1efeb","#f1efeb","#f1efeb","#f0eeea","#eae8e4","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c1","#c5c4c1","#c5c3c1","#c5c3c1","#aeadaa","","","","","","","","",""],["","","","","","","","","","#c3c1be","#ebe9e6","#ebe9e6","#eceae6","#eceae6","#eceae7","#eceae7","#eceae7","#eceae7","#eeece8","#eeede9","#efede9","#efede9","#efedea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#efeeea","#efede9","#efede9","#eeede9","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#edebe8","#edebe7","#edebe7","#eceae6","#eceae6","#eceae6","#eceae6","#ecebe7","#eeece8","#efede9","#f0efeb","#f1efec","#f2f0ec","#f2f0ec","#f1efeb","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#c6c5c2","","","","","","","","",""],["","","","","","","","","","#c6c5c2","#f0eeea","#f2f0ed","#f2f0ed","#f2f0ec","#f0efeb","#eeece9","#edebe7","#edebe7","#edebe7","#edebe7","#edebe8","#eeece9","#efedea","#f0eeeb","#f1efec","#f2f0ec","#f2f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f2f1ed","#f0efeb","#eeece9","#edece8","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edece8","#edece8","#edebe8","#edebe7","#edebe7","#edebe7","#edebe8","#efede9","#f1efeb","#f2f0ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f1efeb","#c7c5c3","","","","","","","","",""],["","","","","","","","","","#c5c4c1","#efedea","#f1efeb","#f0efeb","#f0eeea","#efedea","#efedea","#efede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#efedea","#f0efeb","#f2f0ed","#f3f1ee","#f4f2ee","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ee","#f4f2ee","#f3f2ee","#f3f2ee","#f3f1ee","#f3f2ee","#f1f0ec","#c7c6c3","","","","","","","","",""],["","","","","","","","","","#c8c6c4","#f2f1ed","#f4f3ef","#f4f2ef","#f4f2ef","#f4f2ef","#f5f3f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f3f0","#f5f3f0","#f4f3ef","#f4f3ef","#f5f3ef","#f5f3f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f4f3ef","#f4f2ef","#f3f1ee","#f2f0ed","#f1f0ec","#f1efec","#f1efec","#f1f0ec","#f0eeeb","#c6c5c2","","","","","","","","",""],["","","","","","","","","","#c9c7c5","#f4f3ef","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f1","#f6f4f1","#f5f4f0","#f4f3ef","#f4f2ef","#f3f2ee","#f3f1ee","#f3f1ee","#f3f2ee","#f3f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f3ef","#f4f3ef","#f4f3f0","#f4f3ef","#f4f3ef","#f4f2ef","#f4f3ef","#f5f3f0","#f5f4f0","#f6f4f1","#f6f5f1","#f6f5f1","#f6f5f1","#f6f5f1","#f6f5f1","#f6f5f1","#f5f4f0","#f4f3ef","#f3f1ee","#f1f0ed","#f1efec","#f0efec","#f0efec","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#eeece9","#c4c2c0","","","","","","","","",""],["","","","","","","","","","#c9c8c6","#f5f4f1","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f7f6f3","#f7f5f2","#f5f4f1","#f4f3f0","#f3f2ef","#f2f1ee","#f2f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f2f0ed","#f2f1ee","#f2f1ee","#f3f1ee","#f2f1ee","#f2f1ee","#f2f1ed","#f2f1ee","#f3f1ee","#f3f2ef","#f4f3ef","#f5f3f0","#f5f4f1","#f6f5f2","#f7f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f7f6f2","#f5f4f1","#f4f3ef","#f3f2ee","#f2f1ee","#f2f0ed","#f2f0ed","#f2f0ed","#f2f1ed","#f2f1ee","#f3f2ef","#f4f3ef","#f4f3f0","#f5f4f0","#f3f1ee","#c8c6c4","","","","","","","","",""],["","","","","","","","","","#c8c7c4","#f4f3f0","#f7f6f2","#f7f6f2","#f7f6f2","#f7f5f2","#f7f5f2","#f7f5f2","#f7f5f2","#f7f5f2","#f7f5f2","#f7f6f2","#f7f6f3","#f7f6f3","#f8f7f3","#f8f7f3","#f8f7f3","#f8f7f3","#f8f7f3","#f8f7f4","#f8f7f4","#f8f7f4","#f8f7f3","#f7f6f3","#f7f6f2","#f6f5f2","#f6f4f1","#f6f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f0","#f5f3f0","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f4f3f0","#f4f3ef","#f3f2ef","#f4f3ef","#f5f3f0","#f6f4f1","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f1","#f6f4f1","#f6f5f1","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f5f4f1","#f5f4f0","#f4f3f0","#f4f2ef","#f3f2ef","#f3f2ee","#f3f1ee","#f0efec","#c5c4c1","","","","","","","","",""],["","","","","","","","","","#cac9c7","#f7f6f3","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#f9f8f5","#f9f8f5","#f8f7f4","#ae7843","#f8f6f3","#f8f7f4","#f9f8f5","#f9f8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#f9f8f5","#f8f7f3","#f6f5f2","#f5f3f0","#f4f3f0","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f1f0ed","#c5c4c2","","","","","","","","",""],["#b1b0ae","#c9c8c6","#cac8c6","#cac9c7","#cbc9c7","#cbc9c7","#cbc9c7","#cbcac7","#cbcac7","#f1efed","#f9f8f5","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#8c5932","#ae7843","#ae7843","#ae7843","#ae7843","#7a4b2a","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#f9f8f5","#f9f8f4","#f8f7f4","#f7f6f3","#f6f5f2","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f4f3f0","#f4f3f0","#f4f3f0","#f4f3f0","#f4f3f0","#f5f3f0","#f5f4f1","#f6f5f2","#f7f6f3","#f9f8f5","#f9f8f5","#f9f8f5","#f8f7f4","#efeeeb","#cac9c6","#cac9c6","#cac9c7","#cac9c7","#cac9c7","#cac9c7","#cbc9c7","#cbc9c7","#b3b2b0"],["#c6c5c3","#f2f1ee","#f2f1ee","#f2f1ee","#f2f1ee","#f2f1ee","#f3f2ef","#f4f3f0","#f5f4f1","#f7f6f3","#f9f8f5","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#8c5932","#8c5932","#8c5932","#8c5932","#8c5932","#7a4b2a","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#faf9f6","#faf9f6","#f9f8f5","#f8f7f4","#f8f7f4","#f7f6f3","#f7f6f3","#f7f6f3","#f8f7f4","#f9f8f5","#f9f8f5","#faf9f6","#faf9f6","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#faf9f6","#f8f7f4","#f8f7f4","#f8f7f4","#f8f7f4","#f8f7f4","#f8f7f4","#f8f7f4","#f8f7f4","#cbcac8"],["#cbcac8","#f8f7f4","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#6a4126","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#7a4b2a","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#faf9f6","#faf9f6","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#f7f6f3","#c9c8c6"],["#c6c5c3","#f2f1ee","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f6f5f2","#f6f5f2","#f7f6f3","#f8f7f4","#f9f8f5","#faf9f6","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#faf9f6","#faf9f6","#f9f8f5","#f8f7f4","#f7f6f3","#f7f6f3","#f6f6f2","#f6f5f2","#ae7843","#f6f5f2","#f7f6f3","#f8f7f4","#f9f8f5","#7a4b2a","#faf9f6","#faf9f6","#fbf9f6","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#faf9f6","#f8f7f4","#f7f6f3","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f2f1ee","#c6c5c3"],["#cbcac7","#f8f7f4","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#faf9f6","#faf9f6","#faf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#faf9f6","#faf9f6","#f9f8f5","#f9f8f4","#f8f7f4","#f8f7f4","#f8f7f4","#f9f8f5","#f9f8f5","#f9f8f5","#8c5932","#ae7843","#ae7843","#ae7843","#ae7843","#7a4b2a","#f9f8f5","#f9f8f5","#f9f8f5","#faf9f6","#faf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#faf9f6","#f8f7f4","#f7f6f3","#f6f5f2","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f6f5f2","#f7f6f3","#f6f4f2","#cac9c6"],["#cbc9c7","#f7f6f3","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#f9f8f5","#f8f7f4","#f7f6f3","#f7f6f3","#f7f6f3","#6a4126","#f7f6f3","#f8f7f4","#f9f8f5","#faf9f6","#7a4b2a","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#f7f6f3","#cbc9c7"],["#cac9c7","#f6f5f2","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f8f7f4","#f7f6f3","#f5f4f1","#f3f2ef","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f4f2ef","#f5f4f1","#f7f6f3","#f9f7f4","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#6a4126","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#7a4b2a","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f4","#f9f8f4","#f9f8f4","#f9f8f4","#f9f7f4","#f8f7f4","#f7f6f2","#f5f4f1","#f4f3ef","#f3f2ef","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f0efec","#c5c4c2"],["#c9c8c6","#f5f4f1","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f7f6f3","#f6f5f2","#f5f3f0","#f3f2ef","#f2f1ee","#f2f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f2f1ed","#f3f1ee","#f4f2ef","#f4f2f0","#f5f3f0","#c48e56","#f5f3f0","#f4f3f0","#f4f2f0","#f4f2ef","#7a4b2a","#f4f3f0","#f5f4f1","#f6f5f2","#f7f5f2","#f7f6f2","#f6f5f2","#f5f4f1","#f4f3f0","#f3f2ee","#f2f1ee","#f2f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f2f1ee","#f3f2ef","#f4f3ef","#f5f3f0","#f6f4f1","#f6f5f2","#f7f6f2","#f7f6f3","#f7f6f3","#f7f6f3","#f7f6f3","#f7f6f3","#f7f6f3","#f8f6f3","#f8f6f3","#f7f5f2","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#c9c8c6"],["#c9c7c5","#f4f2ef","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f5f4f0","#f4f3f0","#f4f3f0","#f5f3f0","#f5f3f0","#f5f4f0","#f5f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f5f4f1","#f4f3f0","#f3f2ee","#c48e56","#c48e56","#c48e56","#c48e56","#c48e56","#c48e56","#c48e56","#64401f","#f0eeeb","#f0eeeb","#f0eeeb","#f0eeeb","#f0eeeb","#f0eeeb","#f0eeeb","#f0efec","#f1f0ed","#f2f0ed","#f2f1ee","#f3f1ee","#f3f1ee","#f3f1ee","#f3f1ee","#f3f1ee","#f2f1ee","#f2f1ed","#f2f1ed","#f2f1ee","#f3f1ee","#f3f2ef","#f4f3ef","#f5f4f0","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f5f4f0","#edece9","#c9c7c5","#c9c7c5","#c9c7c5","#c9c7c5","#c9c7c5","#c9c7c5","#c9c7c5","#c9c7c5","#b1b0ae"],["#c7c6c3","#f1efec","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f1ee","#f3f1ee","#f3f1ee","#f3f1ee","#f3f2ee","#f3f2ee","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f1ee","#f2f1ed","#f1f0ed","#f0efec","#efeeeb","#efedea","#efedea","#efeeea","#f0efeb","#f1f0ec","#f2f1ed","#875531","#d9aa70","#d9aa70","#d9aa70","#d9aa70","#d9aa70","#d9aa70","#d9aa70","#64401f","#64401f","#efeeea","#eeedea","#eeede9","#eeede9","#eeede9","#eeece9","#eeece9","#eeede9","#eeede9","#eeedea","#efedea","#efedea","#efedea","#efeeeb","#f0efeb","#f1f0ec","#f2f1ed","#f3f1ee","#f3f1ee","#f3f1ee","#f3f1ee","#f3f2ee","#f4f2ef","#f4f3ef","#f4f3ef","#f4f3ef","#f4f3ef","#f4f3ef","#f2f0ed","#c8c6c4","","","","","","","","",""],["#c7c5c3","#f0eeeb","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f0ed","#f1f0ec","#f0efeb","#efedea","#edece8","#ecebe7","#ecebe7","#ecebe7","#ecebe7","#ecebe7","#ecebe7","#ecebe7","#ecebe8","#edebe8","#eeece9","#efedea","#efeeea","#f0efeb","#f1efec","#f1f0ec","#f2f0ed","#f2f0ed","#764a2b","#875531","#875531","#875531","#875531","#875531","#64401f","#64401f","#7a4b2a","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f0eeeb","#c7c5c3","","","","","","","","",""],["#c6c4c2","#eeede9","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#efeeea","#eeece9","#edebe8","#edebe7","#eceae7","#ebeae6","#764a2b","#ebe9e6","#ebeae6","#4f321e","#ebeae6","#ebeae6","#825230","#eceae6","#7a4b2a","#edebe8","#eeece8","#eeece9","#efedea","#efeeea","#f0eeea","#f0eeeb","#f0eeeb","#f0eeeb","#f0eeeb","#f0eeeb","#f0efeb","#f0efeb","#f0efeb","#f0eeeb","#f0eeeb","#efedea","#eeece8","#ecebe7","#eceae7","#ebeae6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#eceae7","#edebe8","#eceae7","#c4c3c0","","","","","","","","",""],["#c5c3c1","#edebe7","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeece9","#eeece9","#eeece8","#edece8","#edebe8","#eceae7","#ebe9e6","#eae8e5","#eae8e4","#e9e7e4","#764a2b","#e9e7e3","#e9e7e3","#4f321e","#e9e7e3","#e9e7e3","#825230","#e9e7e4","#7a4b2a","#e9e8e4","#e9e8e4","#e9e8e4","#eae8e4","#eae8e5","#eae9e5","#ebe9e6","#ebeae6","#eceae7","#ecebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe8","#edebe8","#ecebe7","#eceae6","#ebe9e6","#ebe9e6","#ebe9e5","#eae8e5","#e9e7e4","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e7e5e2","#c0bebc","","","","","","","","",""],["#c4c2c0","#ebe9e6","#edebe7","#edebe7","#eceae7","#eceae6","#eae9e5","#eae8e4","#e9e7e4","#e9e7e4","#eae8e5","#eceae6","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#eceae7","#eceae6","#ebe9e6","#ebe9e5","#eae9e5","#eae8e5","#ebe9e5","#ebe9e5","#ebe9e6","#764a2b","#ebe9e6","#ebe9e6","#4f321e","#ebe9e6","#eceae6","#825230","#eceae7","#7a4b2a","#edebe7","#edebe7","#edebe7","#edebe7","#eceae7","#eceae7","#ebe9e6","#eae8e5","#e9e8e4","#e9e7e4","#eae8e4","#eae8e5","#ebe9e5","#ebe9e5","#eae8e4","#e8e7e3","#e7e6e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e5e3e0","#bfbebb","","","","","","","","",""],["#c3c2bf","#e9e7e4","#eae8e4","#e8e6e3","#e7e5e2","#e7e5e1","#e7e5e2","#e8e6e2","#e8e6e3","#e9e7e3","#e9e7e4","#eae8e4","#eae8e5","#ebe9e5","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e5","#ebe9e5","#ebe9e5","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#764a2b","#dcdad7","#dcdad7","#4f321e","#dcdad7","#dcdad6","#825230","#dcdad6","#7a4b2a","#dcdad6","#dcdad6","#e3e2de","#ebe9e5","#eae8e5","#e9e7e3","#e8e6e2","#e7e5e1","#e6e4e1","#e7e5e1","#e8e6e2","#e9e7e3","#e9e7e4","#e9e8e4","#e9e7e4","#e9e7e3","#e8e6e2","#e7e5e2","#e6e4e1","#e6e4e0","#e6e4e0","#e5e4e0","#e5e4e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e6e4e0","#e6e4e1","#e6e4e1","#c1bfbd","","","","","","","","",""],["#c3c1be","#e8e6e3","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#e9e7e4","#764a2b","#dad8d5","#dad8d5","#dad8d5","#dad8d5","#dad8d5","#825230","#dad8d4","#7a4b2a","#dad8d4","#dad8d4","#e2e0dc","#e2e0dc","#e9e7e3","#e9e7e4","#e9e7e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#e8e6e3","#c3c1be","","","","","","","","",""],["#c2c0be","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e8e6e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e8e6e3","#e7e5e2","#e6e4e1","#e5e3e0","#e4e2df","#e3e1de","#dcdad7","#dcdad7","#d4d2d0","#d4d2d0","#d4d2d0","#825230","#d4d2d0","#d4d2d0","#d5d3d0","#d4d2d0","#d4d2d0","#dcdad7","#dcdad7","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e4e2de","#e4e2de","#e3e1de","#e3e1de","#e4e2df","#e5e3e0","#e6e4e1","#e7e5e1","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#c2c0be","","","","","","","","",""],["#aba9a7","#c1c0bd","#c1c0bd","#c1c0bd","#c1c0bd","#c1c0bd","#c1c0bd","#c1c0bd","#c1c0bd","#e3e1de","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e6e4e1","#e5e3e0","#e3e1de","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e1dfdc","#dddbd9","#bdbbb9","#bdbbb9","#bdbbb9","#bdbbb9","#bdbbb9","#bdbbb9","#bdbbb9","#bdbbb9","#bdbcb9","#bebcba","#bebdba","#bfbdbb","#c0bebc","#c0bfbc","#c1bfbd","#c1bfbd","#c1c0bd","#aba9a7","","","","","","","","",""],["","","","","","","","","","#c1bfbd","#e5e3e0","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e6e4e1","#e6e4e1","#e6e4e1","#e6e4e1","#e6e4e1","#e5e3e0","#e5e3e0","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e3e1de","#e2e0dd","#e2e0dd","#e1dfdc","#e1dfdc","#e1dfdc","#e1dfdc","#e0dedb","#bcbab8","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#bebcba","#e2e0dd","#e4e2df","#e5e3df","#e5e3e0","#e5e3e0","#e6e4e0","#e6e4e1","#e6e4e1","#e6e4e1","#e5e3e0","#e5e3e0","#e4e2df","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e4e2df","#e4e2df","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e4e2df","#e3e1de","#e2e0dd","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#dfdedb","#bcbbb8","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#bdbbb9","#e0dedc","#e2e0dd","#e3e1de","#e3e1de","#e4e2df","#e4e2df","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e4e2df","#e3e1de","#e2e1de","#e1dfdc","#e0dedb","#dfddda","#dfddda","#dfddda","#dedcd9","#bbbab8","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#bfbebc","#e3e1de","#e3e1df","#e3e1de","#e3e1de","#e2e0de","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e1dfdc","#e0dedb","#dfddda","#dfddda","#dfddda","#e0dedb","#e1dfdc","#e3e1de","#e3e1df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e3e1de","#e2e0dd","#e0dedc","#e0dedb","#dfddda","#dfddda","#dedcd9","#bbb9b7","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#c0bebc","#e3e1de","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e2e0dd","#bebdba","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#bebcba","#e1dfdc","#e2e0de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e2e0de","#bfbebc","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#bfbebb","#e2e0dd","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e2e0de","#e2e0dd","#e0dedc","#dfdedb","#dfddda","#dedcd9","#dedcd9","#dddcd9","#dddbd9","#dddcd9","#dedcd9","#dedcd9","#dedcd9","#dedcd9","#dedcda","#dfddda","#dfddda","#dfdddb","#dfdddb","#dfdddb","#dfddda","#dfddda","#dedcd9","#dddbd9","#dddbd9","#dddbd9","#dddbd9","#dddbd9","#dddbd8","#bab9b7","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#bfbdbb","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e1dfdc","#e0dedc","#e0dedb","#dfdddb","#dfddda","#deddda","#dedcd9","#dedcd9","#bcbab8","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#a9a7a6","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bebcba","#bebcba","#bebdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#a9a7a6","","","","","","","","","","","","","","","","","","","","","","","","","","",""]],
+    color: [["","","","","","","","","","","","","","","","","","","#aaa8a6","#c0bfbc","#c1bfbc","#c1bfbd","#c2c0bd","#c2c1be","#c3c1bf","#c3c2bf","#c4c2bf","#c4c2c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c3c0","#c4c2c0","#c4c2c0","#c4c2bf","#c4c2bf","#adaba9","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c0bebb","#e6e4e0","#e6e4e0","#e6e4e1","#e7e5e1","#e7e5e1","#e7e5e2","#e8e6e2","#e9e7e3","#eae8e4","#ebe9e5","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#c4c3c0","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c4c3c0","#eceae6","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#eceae6","#c4c3c0","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c4c3c0","#eceae6","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#edebe7","#edebe7","#edebe7","#eceae6","#eceae6","#ebe9e6","#eceae6","#eceae6","#eceae6","#eceae6","#eceae6","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#eeece8","#eeece8","#eeece8","#edebe7","#eceae6","#eae8e4","#e9e7e3","#e8e6e2","#e8e6e2","#e6e4e0","#c0bebb","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c5c3c0","#eceae6","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#edebe7","#eceae6","#ebe9e5","#eae8e4","#e9e7e3","#e9e7e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#ebe9e5","#ebe9e5","#ebe9e5","#ebe9e5","#eae9e5","#eae8e4","#e9e7e3","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e6e4e1","#c0bebb","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c5c3c0","#eceae7","#eeece8","#eeece8","#edebe7","#edebe7","#eceae6","#eceae6","#eceae6","#ebe9e5","#eae8e4","#e9e7e3","#e9e7e3","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e6e2","#e8e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#eae8e4","#ebe9e5","#ebe9e5","#eceae6","#ebe9e5","#e9e7e3","#c2c0bd","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c0bebc","#e7e5e1","#e9e7e3","#e9e7e3","#eae8e4","#eae8e4","#eae8e4","#ebe9e5","#ebe9e5","#eae8e5","#eae8e4","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e8e4","#ebe9e5","#ebe9e5","#ebe9e6","#ebe9e5","#eae8e4","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e4","#eae8e4","#ebe9e5","#eceae6","#ebe9e6","#c4c2c0","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c4c2bf","#eceae6","#edebe7","#edebe7","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#edebe7","#eceae6","#eae8e5","#e9e8e4","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#eae8e4","#eceae6","#eeece8","#efede9","#efede9","#efede9","#efede9","#efede9","#efede9","#efede9","#edebe8","#c5c4c1","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","","","","#c6c4c1","#eeece8","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#efede9","#eeece8","#edebe7","#ebe9e5","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#ebe9e5","#edebe7","#eeece8","#efede9","#efede9","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#eeece8","#c6c4c1","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#abaaa7","#c2c0be","#c3c1be","#c3c2bf","#c4c2c0","#c4c3c0","#c5c3c0","#c5c3c0","#c5c3c0","#e8e6e3","#eeece9","#efede9","#efede9","#efede9","#efede9","#efede9","#efeeea","#efeeea","#efede9","#efede9","#eeece8","#eeece8","#edece8","#eeece8","#eeece8","#efede9","#efede9","#efede9","#efede9","#efede9","#efede9","#efede9","#efede9","#efeeea","#f0eeea","#f0eeea","#f1efeb","#f1efeb","#f1efeb","#f1efeb","#f1efeb","#f1efeb","#f1efeb","#f0eeea","#eae8e4","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c2","#c6c4c1","#c5c4c1","#c5c3c1","#c5c3c1","#aeadaa","","","","","","","","",""],["","","","","","","","","","#c3c1be","#ebe9e6","#ebe9e6","#eceae6","#eceae6","#eceae7","#eceae7","#eceae7","#eceae7","#eeece8","#eeede9","#efede9","#efede9","#efedea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#efeeea","#efede9","#efede9","#eeede9","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#eeece8","#edebe8","#edebe7","#edebe7","#eceae6","#eceae6","#eceae6","#eceae6","#ecebe7","#eeece8","#efede9","#f0efeb","#f1efec","#f2f0ec","#f2f0ec","#f1efeb","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#f0eeea","#c6c5c2","","","","","","","","",""],["","","","","","","","","","#c6c5c2","#f0eeea","#f2f0ed","#f2f0ed","#f2f0ec","#f0efeb","#eeece9","#edebe7","#edebe7","#edebe7","#edebe7","#edebe8","#eeece9","#efedea","#f0eeeb","#f1efec","#f2f0ec","#f2f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f2f1ed","#f0efeb","#eeece9","#edece8","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edece8","#edece8","#edebe8","#edebe7","#edebe7","#edebe7","#edebe8","#efede9","#f1efeb","#f2f0ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f3f1ed","#f1efeb","#c7c5c3","","","","","","","","",""],["","","","","","","","","","#c5c4c1","#efedea","#f1efeb","#f0efeb","#f0eeea","#efedea","#efedea","#efede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#efedea","#f0efeb","#f2f0ed","#f3f1ee","#f4f2ee","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ee","#f4f2ee","#f3f2ee","#f3f2ee","#f3f1ee","#f3f2ee","#f1f0ec","#c7c6c3","","","","","","","","",""],["","","","","","","","","","#c8c6c4","#f2f1ed","#f4f3ef","#f4f2ef","#f4f2ef","#f4f2ef","#f5f3f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f3f0","#f5f3f0","#f4f3ef","#f4f3ef","#f5f3ef","#f5f3f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f5f4f0","#f4f3ef","#f4f2ef","#f3f1ee","#f2f0ed","#f1f0ec","#f1efec","#f1efec","#f1f0ec","#f0eeeb","#c6c5c2","","","","","","","","",""],["","","","","","","","","","#c9c7c5","#f4f3ef","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f1","#f6f4f1","#f5f4f0","#f4f3ef","#f4f2ef","#f3f2ee","#f3f1ee","#f3f1ee","#f3f2ee","#f3f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f3ef","#f4f3ef","#f4f3f0","#f4f3ef","#f4f3ef","#f4f2ef","#f4f3ef","#f5f3f0","#f5f4f0","#f6f4f1","#f6f5f1","#f6f5f1","#f6f5f1","#f6f5f1","#f6f5f1","#f6f5f1","#f5f4f0","#f4f3ef","#f3f1ee","#f1f0ed","#f1efec","#f0efec","#f0efec","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#eeece9","#c4c2c0","","","","","","","","",""],["","","","","","","","","","#c9c8c6","#f5f4f1","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f7f6f3","#f7f5f2","#f5f4f1","#f4f3f0","#f3f2ef","#f2f1ee","#f2f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f2f0ed","#f2f1ee","#f2f1ee","#f3f1ee","#f2f1ee","#f2f1ee","#f2f1ed","#f2f1ee","#f3f1ee","#f3f2ef","#f4f3ef","#f5f3f0","#f5f4f1","#f6f5f2","#f7f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f7f6f2","#f5f4f1","#f4f3ef","#f3f2ee","#f2f1ee","#f2f0ed","#f2f0ed","#f2f0ed","#f2f1ed","#f2f1ee","#f3f2ef","#f4f3ef","#f4f3f0","#f5f4f0","#f3f1ee","#c8c6c4","","","","","","","","",""],["","","","","","","","","","#c8c7c4","#f4f3f0","#f7f6f2","#f7f6f2","#f7f6f2","#f7f5f2","#f7f5f2","#f7f5f2","#f7f5f2","#f7f5f2","#f7f5f2","#f7f6f2","#f7f6f3","#f7f6f3","#f8f7f3","#f8f7f3","#f8f7f3","#f8f7f3","#f8f7f3","#f8f7f4","#f8f7f4","#f8f7f4","#f8f7f3","#f7f6f3","#f7f6f2","#f6f5f2","#f6f4f1","#f6f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f0","#f5f3f0","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f4f3f0","#f4f3ef","#f3f2ef","#f4f3ef","#f5f3f0","#f6f4f1","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f1","#f6f4f1","#f6f5f1","#f6f5f2","#f6f5f2","#f6f5f2","#f6f5f2","#f5f4f1","#f5f4f0","#f4f3f0","#f4f2ef","#f3f2ef","#f3f2ee","#f3f1ee","#f0efec","#c5c4c1","","","","","","","","",""],["","","","","","","","","","#cac9c7","#f7f6f3","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#f9f8f5","#f9f8f5","#f8f7f4","#ae7843","#f8f6f3","#f8f7f4","#f9f8f5","#f9f8f5","#faf8f5","#ae7843","#faf8f5","#faf8f5","#faf8f5","#faf8f5","#f9f8f5","#f8f7f3","#f6f5f2","#f5f3f0","#f4f3f0","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f3f2ef","#f1f0ed","#c5c4c2","","","","","","","","",""],["#b1b0ae","#c9c8c6","#cac8c6","#cac9c7","#cbc9c7","#cbc9c7","#cbc9c7","#cbcac7","#cbcac7","#f1efed","#f9f8f5","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#8c5932","#ae7843","#ae7843","#ae7843","#ae7843","#7a4b2a","#825230","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#f9f8f5","#f9f8f4","#f8f7f4","#f7f6f3","#f6f5f2","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f4f3f0","#f4f3f0","#f4f3f0","#f4f3f0","#f4f3f0","#f5f3f0","#f5f4f1","#f6f5f2","#f7f6f3","#f9f8f5","#f9f8f5","#f9f8f5","#f8f7f4","#efeeeb","#cac9c6","#cac9c6","#cac9c7","#cac9c7","#cac9c7","#cac9c7","#cbc9c7","#cbc9c7","#b3b2b0"],["#c6c5c3","#f2f1ee","#f2f1ee","#f2f1ee","#f2f1ee","#f2f1ee","#f3f2ef","#f4f3f0","#f5f4f1","#f7f6f3","#f9f8f5","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#8c5932","#8c5932","#8c5932","#8c5932","#8c5932","#8c5932","#825230","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#faf9f6","#faf9f6","#f9f8f5","#f8f7f4","#f8f7f4","#f7f6f3","#f7f6f3","#f7f6f3","#f8f7f4","#f9f8f5","#f9f8f5","#faf9f6","#faf9f6","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#faf9f6","#f8f7f4","#f8f7f4","#f8f7f4","#f8f7f4","#f8f7f4","#f8f7f4","#f8f7f4","#f8f7f4","#cbcac8"],["#cbcac8","#f8f7f4","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#6a4126","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#825230","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#faf9f6","#faf9f6","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#f7f6f3","#c9c8c6"],["#c6c5c3","#f2f1ee","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f6f5f2","#f6f5f2","#f7f6f3","#f8f7f4","#f9f8f5","#faf9f6","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#faf9f6","#faf9f6","#f9f8f5","#f8f7f4","#f7f6f3","#f7f6f3","#f6f6f2","#f6f5f2","#ae7843","#f6f5f2","#f7f6f3","#f8f7f4","#f9f8f5","#fbfaf7","#825230","#faf9f6","#fbf9f6","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#fbfaf7","#faf9f6","#f8f7f4","#f7f6f3","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f2f1ee","#c6c5c3"],["#cbcac7","#f8f7f4","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#faf9f6","#faf9f6","#faf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#faf9f6","#faf9f6","#f9f8f5","#f9f8f4","#f8f7f4","#f8f7f4","#f8f7f4","#f9f8f5","#f9f8f5","#f9f8f5","#8c5932","#ae7843","#ae7843","#ae7843","#ae7843","#ae7843","#825230","#f9f8f5","#f9f8f5","#faf9f6","#faf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#fbf9f6","#faf9f6","#f8f7f4","#f7f6f3","#f6f5f2","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f6f5f2","#f7f6f3","#f6f4f2","#cac9c6"],["#cbc9c7","#f7f6f3","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#f9f8f5","#f8f7f4","#f7f6f3","#f7f6f3","#f7f6f3","#6a4126","#f7f6f3","#f8f7f4","#f9f8f5","#faf9f6","#fbfaf7","#825230","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#faf9f6","#f7f6f3","#cbc9c7"],["#cac9c7","#f6f5f2","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f8f7f4","#f7f6f3","#f5f4f1","#f3f2ef","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f4f2ef","#f5f4f1","#f7f6f3","#f9f7f4","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#6a4126","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#fbfaf7","#825230","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f5","#f9f8f4","#f9f8f4","#f9f8f4","#f9f8f4","#f9f7f4","#f8f7f4","#f7f6f2","#f5f4f1","#f4f3ef","#f3f2ef","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f0efec","#c5c4c2"],["#c9c8c6","#f5f4f1","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f8f6f3","#f7f6f3","#f6f5f2","#f5f3f0","#f3f2ef","#f2f1ee","#f2f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f2f1ed","#f3f1ee","#f4f2ef","#f4f2f0","#f5f3f0","#6a4126","#f5f3f0","#f4f3f0","#f4f2f0","#f4f2ef","#fbfaf7","#825230","#f5f4f1","#f6f5f2","#f7f5f2","#f7f6f2","#f6f5f2","#f5f4f1","#f4f3f0","#f3f2ee","#f2f1ee","#f2f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f1f0ed","#f2f1ee","#f3f2ef","#f4f3ef","#f5f3f0","#f6f4f1","#f6f5f2","#f7f6f2","#f7f6f3","#f7f6f3","#f7f6f3","#f7f6f3","#f7f6f3","#f7f6f3","#f8f6f3","#f8f6f3","#f7f5f2","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#f5f4f1","#c9c8c6"],["#c9c7c5","#f4f2ef","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f5f4f0","#f4f3f0","#f4f3f0","#f5f3f0","#f5f3f0","#f5f4f0","#f5f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f5f4f1","#f4f3f0","#f3f2ee","#6a4126","#c48e56","#c48e56","#c48e56","#c48e56","#c48e56","#c48e56","#64401f","#f0eeeb","#f0eeeb","#f0eeeb","#f0eeeb","#f0eeeb","#f0eeeb","#f0eeeb","#f0efec","#f1f0ed","#f2f0ed","#f2f1ee","#f3f1ee","#f3f1ee","#f3f1ee","#f3f1ee","#f3f1ee","#f2f1ee","#f2f1ed","#f2f1ed","#f2f1ee","#f3f1ee","#f3f2ef","#f4f3ef","#f5f4f0","#f6f4f1","#f6f4f1","#f6f4f1","#f6f4f1","#f5f4f0","#edece9","#c9c7c5","#c9c7c5","#c9c7c5","#c9c7c5","#c9c7c5","#c9c7c5","#c9c7c5","#c9c7c5","#b1b0ae"],["#c7c6c3","#f1efec","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f1ee","#f3f1ee","#f3f1ee","#f3f1ee","#f3f2ee","#f3f2ee","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f4f2ef","#f3f2ee","#f3f2ee","#f3f2ee","#f3f2ee","#f3f1ee","#f2f1ed","#f1f0ed","#f0efec","#efeeeb","#efedea","#efedea","#efeeea","#f0efeb","#f1f0ec","#f2f1ed","#f4f2ef","#6a4126","#d9aa70","#d9aa70","#d9aa70","#d9aa70","#d9aa70","#d9aa70","#64401f","#825230","#efeeea","#eeedea","#eeede9","#eeede9","#eeede9","#eeece9","#eeece9","#eeede9","#eeede9","#eeedea","#efedea","#efedea","#efedea","#efeeeb","#f0efeb","#f1f0ec","#f2f1ed","#f3f1ee","#f3f1ee","#f3f1ee","#f3f1ee","#f3f2ee","#f4f2ef","#f4f3ef","#f4f3ef","#f4f3ef","#f4f3ef","#f4f3ef","#f2f0ed","#c8c6c4","","","","","","","","",""],["#c7c5c3","#f0eeeb","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f0ed","#f1f0ec","#f0efeb","#efedea","#edece8","#ecebe7","#ecebe7","#ecebe7","#ecebe7","#ecebe7","#ecebe7","#ecebe7","#ecebe8","#edebe8","#eeece9","#efedea","#efeeea","#f0efeb","#f1efec","#f1f0ec","#f2f0ed","#f2f0ed","#e9e7e3","#875531","#875531","#875531","#875531","#875531","#64401f","#64401f","#edebe7","#825230","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f2f1ed","#f0eeeb","#c7c5c3","","","","","","","","",""],["#c6c4c2","#eeede9","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#f0efeb","#efeeea","#eeece9","#edebe8","#edebe7","#eceae7","#ebeae6","#e9e7e3","#875531","#ebeae6","#4f321e","#ebeae6","#ebeae6","#eceae6","#825230","#edebe7","#825230","#eeece8","#eeece9","#efedea","#efeeea","#f0eeea","#f0eeeb","#f0eeeb","#f0eeeb","#f0eeeb","#f0eeeb","#f0efeb","#f0efeb","#f0efeb","#f0eeeb","#f0eeeb","#efedea","#eeece8","#ecebe7","#eceae7","#ebeae6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#eceae7","#edebe8","#eceae7","#c4c3c0","","","","","","","","",""],["#c5c3c1","#edebe7","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeede9","#eeece9","#eeece9","#eeece8","#edece8","#edebe8","#eceae7","#ebe9e6","#eae8e5","#eae8e4","#e9e7e4","#e9e7e3","#875531","#e9e7e3","#4f321e","#e9e7e3","#e9e7e3","#eceae6","#825230","#edebe7","#825230","#e9e8e4","#e9e8e4","#eae8e4","#eae8e5","#eae9e5","#ebe9e6","#ebeae6","#eceae7","#ecebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe8","#edebe8","#ecebe7","#eceae6","#ebe9e6","#ebe9e6","#ebe9e5","#eae8e5","#e9e7e4","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e7e5e2","#c0bebc","","","","","","","","",""],["#c4c2c0","#ebe9e6","#edebe7","#edebe7","#eceae7","#eceae6","#eae9e5","#eae8e4","#e9e7e4","#e9e7e4","#eae8e5","#eceae6","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#edebe7","#eceae7","#eceae6","#ebe9e6","#ebe9e5","#eae9e5","#eae8e5","#ebe9e5","#ebe9e5","#ebe9e6","#e9e7e3","#875531","#e9e7e3","#4f321e","#ebe9e6","#eceae6","#eceae6","#825230","#edebe7","#825230","#edebe7","#edebe7","#edebe7","#eceae7","#eceae7","#ebe9e6","#eae8e5","#e9e8e4","#e9e7e4","#eae8e4","#eae8e5","#ebe9e5","#ebe9e5","#eae8e4","#e8e7e3","#e7e6e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e5e3e0","#bfbebb","","","","","","","","",""],["#c3c2bf","#e9e7e4","#eae8e4","#e8e6e3","#e7e5e2","#e7e5e1","#e7e5e2","#e8e6e2","#e8e6e3","#e9e7e3","#e9e7e4","#eae8e4","#eae8e5","#ebe9e5","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e5","#ebe9e5","#ebe9e5","#ebe9e6","#ebe9e6","#ebe9e6","#ebe9e6","#e9e7e3","#875531","#dcdad7","#4f321e","#dcdad7","#dcdad6","#dad8d5","#825230","#dad8d4","#825230","#dcdad6","#e3e2de","#ebe9e5","#eae8e5","#e9e7e3","#e8e6e2","#e7e5e1","#e6e4e1","#e7e5e1","#e8e6e2","#e9e7e3","#e9e7e4","#e9e8e4","#e9e7e4","#e9e7e3","#e8e6e2","#e7e5e2","#e6e4e1","#e6e4e0","#e6e4e0","#e5e4e0","#e5e4e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e6e4e0","#e6e4e1","#e6e4e1","#c1bfbd","","","","","","","","",""],["#c3c1be","#e8e6e3","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#e9e7e4","#e9e7e3","#875531","#dad8d5","#dad8d5","#dad8d5","#dad8d5","#dad8d5","#825230","#dad8d4","#dad8d4","#dad8d4","#e2e0dc","#e2e0dc","#e9e7e3","#e9e7e4","#e9e7e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#eae8e4","#e8e6e3","#c3c1be","","","","","","","","",""],["#c2c0be","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e8e6e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e9e7e3","#e8e6e3","#e7e5e2","#e6e4e1","#e5e3e0","#e4e2df","#e9e7e3","#dcdad7","#dcdad7","#d4d2d0","#d4d2d0","#d4d2d0","#d4d2d0","#825230","#d4d2d0","#d5d3d0","#d4d2d0","#d4d2d0","#dcdad7","#dcdad7","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e4e2de","#e4e2de","#e3e1de","#e3e1de","#e4e2df","#e5e3e0","#e6e4e1","#e7e5e1","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#c2c0be","","","","","","","","",""],["#aba9a7","#c1c0bd","#c1c0bd","#c1c0bd","#c1c0bd","#c1c0bd","#c1c0bd","#c1c0bd","#c1c0bd","#e3e1de","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e7e5e2","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e6e4e1","#e5e3e0","#e3e1de","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e1dfdc","#dddbd9","#bdbbb9","#bdbbb9","#bdbbb9","#bdbbb9","#bdbbb9","#bdbbb9","#bdbbb9","#bdbbb9","#bdbcb9","#bebcba","#bebdba","#bfbdbb","#c0bebc","#c0bfbc","#c1bfbd","#c1bfbd","#c1c0bd","#aba9a7","","","","","","","","",""],["","","","","","","","","","#c1bfbd","#e5e3e0","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e7e5e1","#e6e4e1","#e6e4e1","#e6e4e1","#e6e4e1","#e6e4e1","#e5e3e0","#e5e3e0","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e3e1de","#e2e0dd","#e2e0dd","#e1dfdc","#e1dfdc","#e1dfdc","#e1dfdc","#e0dedb","#bcbab8","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#bebcba","#e2e0dd","#e4e2df","#e5e3df","#e5e3e0","#e5e3e0","#e6e4e0","#e6e4e1","#e6e4e1","#e6e4e1","#e5e3e0","#e5e3e0","#e4e2df","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e4e2df","#e4e2df","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e4e2df","#e3e1de","#e2e0dd","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#e0dedb","#dfdedb","#bcbbb8","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#bdbbb9","#e0dedc","#e2e0dd","#e3e1de","#e3e1de","#e4e2df","#e4e2df","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e5e3e0","#e4e2df","#e3e1de","#e2e1de","#e1dfdc","#e0dedb","#dfddda","#dfddda","#dfddda","#dedcd9","#bbbab8","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#bfbebc","#e3e1de","#e3e1df","#e3e1de","#e3e1de","#e2e0de","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e1dfdc","#e0dedb","#dfddda","#dfddda","#dfddda","#e0dedb","#e1dfdc","#e3e1de","#e3e1df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e3e1de","#e2e0dd","#e0dedc","#e0dedb","#dfddda","#dfddda","#dedcd9","#bbb9b7","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#c0bebc","#e3e1de","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e4e2df","#e2e0dd","#bebdba","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#bebcba","#e1dfdc","#e2e0de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e2e0de","#bfbebc","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#bfbebb","#e2e0dd","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e3e1de","#e2e0de","#e2e0dd","#e0dedc","#dfdedb","#dfddda","#dedcd9","#dedcd9","#dddcd9","#dddbd9","#dddcd9","#dedcd9","#dedcd9","#dedcd9","#dedcd9","#dedcda","#dfddda","#dfddda","#dfdddb","#dfdddb","#dfdddb","#dfddda","#dfddda","#dedcd9","#dddbd9","#dddbd9","#dddbd9","#dddbd9","#dddbd9","#dddbd8","#bab9b7","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#bfbdbb","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e2e0dd","#e1dfdc","#e0dedc","#e0dedb","#dfdddb","#dfddda","#deddda","#dedcd9","#dedcd9","#bcbab8","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["","","","","","","","","","#a9a7a6","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bebcba","#bebcba","#bebdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#bfbdbb","#a9a7a6","","","","","","","","","","","","","","","","","","","","","","","","","","",""]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_nothingness_a",
@@ -80910,7 +80519,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "existence_nothingness_b",
@@ -80926,7 +80534,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "tile_square_blue",
@@ -80940,7 +80547,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.13,
         0.08,
@@ -80972,7 +80578,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.13,
@@ -81004,7 +80609,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.08,
@@ -81036,7 +80640,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.08,
@@ -81069,7 +80672,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.13,
         0.08,
@@ -81102,7 +80704,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.13,
@@ -81135,7 +80736,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.08,
@@ -81168,7 +80768,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.08,
@@ -81201,7 +80800,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.13,
         0.08,
@@ -81234,7 +80832,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.13,
@@ -81267,7 +80864,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.08,
@@ -81300,7 +80896,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.08,
@@ -81333,7 +80928,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.13,
         0.08,
@@ -81366,7 +80960,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.13,
@@ -81399,7 +80992,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.08,
@@ -81432,7 +81024,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.08,
@@ -81465,7 +81056,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.13,
         0.08,
@@ -81498,7 +81088,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.13,
@@ -81531,7 +81120,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.08,
@@ -81564,7 +81152,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.08,
@@ -81599,7 +81186,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.13,
         0.08,
@@ -81634,7 +81220,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.13,
@@ -81669,7 +81254,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.08,
@@ -81704,7 +81288,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.05,
-    claudeDraft: true,
     nextShapeProbs: [
         0.08,
         0.08,
@@ -81799,7 +81382,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
   },
   {
     id: "tidal_wave",
@@ -81839,7 +81421,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
   },
   {
     id: "dragon_with_hay_fever",
@@ -81849,7 +81430,7 @@ export const SHAPES = [
         "XXX",
         ".X."
       ],
-    color: [["#846b41","#c1b085","#1a4c20","#27662a","#27662a","#27662a","#27662a","#1a4c20","#16411b","","","","","","","","","","#16411b","#1a4c20","#27662a","#27662a","#27662a","#27662a","#1a4c20","#c1b085","#846b41"],["#388632","#b8955a","#e6d29e","#1f5a26","#2e7a32","#2e7a32","#2e7a32","#1f5a26","#1a4c20","","","","","","","","","","#1a4c20","#1f5a26","#2e7a32","#2e7a32","#2e7a32","#1f5a26","#e6d29e","#b8955a","#388632"],["#388632","#43a03c","#b8955a","#e6d29e","#fbf3dc","#2e7a32","#2e7a32","#1f5a26","#1a4c20","","","","","","","","","","#1a4c20","#1f5a26","#2e7a32","#2e7a32","#fbf3dc","#e6d29e","#b8955a","#43a03c","#388632"],["#388632","#43a03c","#43a03c","#b8955a","#e6d29e","#fbf3dc","#2e7a32","#2e7a32","#1a4c20","","","","","","","","","","#1a4c20","#2e7a32","#2e7a32","#fbf3dc","#e6d29e","#b8955a","#43a03c","#43a03c","#388632"],["#388632","#43a03c","#43a03c","#43a03c","#b8955a","#e6d29e","#fbf3dc","#2e7a32","#1a4c20","","","","","","","","","","#1a4c20","#2e7a32","#fbf3dc","#e6d29e","#b8955a","#43a03c","#43a03c","#43a03c","#388632"],["#388632","#43a03c","#43a03c","#43a03c","#b8955a","#e6d29e","#e6d29e","#2e7a32","#1a4c20","","","","","","","","","","#1a4c20","#2e7a32","#e6d29e","#e6d29e","#b8955a","#43a03c","#ffffff","#43a03c","#388632"],["#56a342","#66c24e","#43a03c","#43a03c","#43a03c","#b8955a","#e6d29e","#fbf3dc","#27662a","","","","","","","","","","#27662a","#fbf3dc","#e6d29e","#b8955a","#43a03c","#ffffff","#ffc23a","#ffffff","#56a342"],["#56a342","#66c24e","#66c24e","#66c24e","#43a03c","#b8955a","#e6d29e","#e6d29e","#27662a","","","","","","","","","","#27662a","#e6d29e","#e6d29e","#b8955a","#43a03c","#66c24e","#ffffff","#66c24e","#56a342"],["#56a342","#66c24e","#66c24e","#66c24e","#66c24e","#b8955a","#e6d29e","#e6d29e","#d3ccb9","","","","","","","","","","#d3ccb9","#e6d29e","#e6d29e","#b8955a","#66c24e","#66c24e","#66c24e","#66c24e","#56a342"],["#27662a","#43a03c","#66c24e","#43a03c","#2e7a32","#fbf3dc","#e6d29e","#e6d29e","#b8955a","#27662a","#388632","#56a342","#388632","#85bc5e","#388632","#56a342","#388632","#27662a","#b8955a","#e6d29e","#e6d29e","#fbf3dc","#2e7a32","#43a03c","#66c24e","#43a03c","#27662a"],["#388632","#2e7a32","#1f5a26","#1f5a26","#1f5a26","#1f5a26","#2e7a32","#43a03c","#43a03c","#2e7a32","#43a03c","#2e7a32","#43a03c","#66c24e","#43a03c","#2e7a32","#43a03c","#2e7a32","#43a03c","#43a03c","#2e7a32","#1f5a26","#1f5a26","#1f5a26","#1f5a26","#2e7a32","#388632"],["#27662a","#9ee070","#66c24e","#66c24e","#66c24e","#66c24e","#9ee070","#2e7a32","#2e7a32","#43a03c","#2e7a32","#43a03c","#66c24e","#9ee070","#66c24e","#43a03c","#2e7a32","#43a03c","#2e7a32","#2e7a32","#9ee070","#66c24e","#66c24e","#66c24e","#66c24e","#9ee070","#27662a"],["#d66777","#ffdc3e","#ffdc3e","#ffffff","#4a1e0a","#ffdc3e","#ffdc3e","#ff7b8e","#43a03c","#2e7a32","#43a03c","#66c24e","#43a03c","#9ee070","#43a03c","#66c24e","#43a03c","#2e7a32","#43a03c","#ff7b8e","#ffdc3e","#ffdc3e","#ffffff","#4a1e0a","#ffdc3e","#ffdc3e","#d66777"],["#d66777","#ffdc3e","#ffdc3e","#ffdc3e","#4a1e0a","#ffdc3e","#ffdc3e","#ff7b8e","#2e7a32","#43a03c","#2e7a32","#43a03c","#66c24e","#9ee070","#66c24e","#43a03c","#2e7a32","#43a03c","#2e7a32","#ff7b8e","#ffdc3e","#ffdc3e","#ffdc3e","#4a1e0a","#ffdc3e","#ffdc3e","#d66777"],["#b53b59","#f39a1e","#f39a1e","#f39a1e","#4a1e0a","#f39a1e","#f39a1e","#d8466a","#43a03c","#2e7a32","#43a03c","#66c24e","#c9da72","#e3ec98","#c9da72","#66c24e","#43a03c","#2e7a32","#43a03c","#d8466a","#f39a1e","#f39a1e","#4a1e0a","#f39a1e","#f39a1e","#f39a1e","#b53b59"],["#71b2d6","#d8466a","#d8466a","#d8466a","#d8466a","#d8466a","#d8466a","#43a03c","#2e7a32","#43a03c","#2e7a32","#c9da72","#e3ec98","#e3ec98","#e3ec98","#c9da72","#2e7a32","#43a03c","#2e7a32","#43a03c","#d8466a","#d8466a","#d8466a","#d8466a","#d8466a","#d8466a","#71b2d6"],["#71b2d6","#86d4ff","#2e7a32","#43a03c","#43a03c","#2e7a32","#43a03c","#43a03c","#43a03c","#2e7a32","#43a03c","#c9da72","#e3ec98","#e3ec98","#e3ec98","#c9da72","#43a03c","#2e7a32","#43a03c","#43a03c","#43a03c","#2e7a32","#43a03c","#43a03c","#2e7a32","#86d4ff","#71b2d6"],["#215824","#388632","#27662a","#388632","#27662a","#388632","#27662a","#388632","#27662a","#2e7a32","#c9da72","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#c9da72","#2e7a32","#27662a","#388632","#27662a","#388632","#27662a","#388632","#27662a","#388632","#215824"],["","","","","","","","","","#718a34","#c9da72","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#c9da72","#718a34","","","","","","","","",""],["","","","","","","","","","#718a34","#c9da72","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#c9da72","#718a34","","","","","","","","",""],["","","","","","","","","","#718a34","#c9da72","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#c9da72","#718a34","","","","","","","","",""],["","","","","","","","","","#718a34","#a6c052","#a6c052","#c9da72","#e3ec98","#c9da72","#a6c052","#a6c052","#718a34","","","","","","","","",""],["","","","","","","","","","#718a34","#3a5222","#3a5222","#c9da72","#e3ec98","#c9da72","#3a5222","#3a5222","#718a34","","","","","","","","",""],["","","","","","","","","","#c33c25","#ff9a2e","#ffe14a","#c9da72","#a6c052","#c9da72","#ffe14a","#ff9a2e","#c33c25","","","","","","","","",""],["","","","","","","","","","#c33c25","#ff9a2e","#fff4b8","#ffe14a","#a6c052","#ffe14a","#fff4b8","#ff9a2e","#c33c25","","","","","","","","",""],["","","","","","","","","","#c33c25","#ff9a2e","#ffe14a","#fff4b8","#fff4b8","#fff4b8","#ffe14a","#ff9a2e","#c33c25","","","","","","","","",""],["","","","","","","","","","#821e1b","#c33c25","#d68127","#d6bd3e","#d6bd3e","#d6bd3e","#d68127","#c33c25","#821e1b","","","","","","","","",""]],
+    color: [["#846b41","#c1b085","#1a4c20","#27662a","#27662a","#27662a","#27662a","#1a4c20","#16411b","","","","","","","","","","#16411b","#1a4c20","#27662a","#27662a","#27662a","#27662a","#1a4c20","#c1b085","#846b41"],["#388632","#b8955a","#e6d29e","#1f5a26","#2e7a32","#2e7a32","#2e7a32","#1f5a26","#1a4c20","","","","","","","","","","#1a4c20","#1f5a26","#2e7a32","#2e7a32","#2e7a32","#1f5a26","#e6d29e","#b8955a","#388632"],["#388632","#43a03c","#b8955a","#e6d29e","#fbf3dc","#2e7a32","#2e7a32","#1f5a26","#1a4c20","","","","","","","","","","#1a4c20","#1f5a26","#2e7a32","#2e7a32","#fbf3dc","#e6d29e","#b8955a","#43a03c","#388632"],["#388632","#43a03c","#43a03c","#b8955a","#e6d29e","#fbf3dc","#2e7a32","#2e7a32","#1a4c20","","","","","","","","","","#1a4c20","#2e7a32","#2e7a32","#fbf3dc","#e6d29e","#b8955a","#43a03c","#43a03c","#388632"],["#388632","#43a03c","#43a03c","#43a03c","#b8955a","#e6d29e","#fbf3dc","#2e7a32","#1a4c20","","","","","","","","","","#1a4c20","#2e7a32","#fbf3dc","#e6d29e","#b8955a","#43a03c","#43a03c","#43a03c","#388632"],["#388632","#43a03c","#43a03c","#43a03c","#b8955a","#e6d29e","#e6d29e","#2e7a32","#1a4c20","","","","","","","","","","#1a4c20","#2e7a32","#e6d29e","#e6d29e","#b8955a","#43a03c","#ffffff","#43a03c","#388632"],["#56a342","#66c24e","#43a03c","#43a03c","#43a03c","#b8955a","#e6d29e","#fbf3dc","#27662a","","","","","","","","","","#27662a","#fbf3dc","#e6d29e","#b8955a","#43a03c","#ffffff","#ffc23a","#ffffff","#56a342"],["#56a342","#66c24e","#66c24e","#66c24e","#43a03c","#b8955a","#e6d29e","#e6d29e","#27662a","","","","","","","","","","#27662a","#e6d29e","#e6d29e","#b8955a","#43a03c","#66c24e","#ffffff","#66c24e","#56a342"],["#56a342","#66c24e","#66c24e","#66c24e","#66c24e","#b8955a","#e6d29e","#e6d29e","#d3ccb9","","","","","","","","","","#d3ccb9","#e6d29e","#e6d29e","#b8955a","#66c24e","#66c24e","#66c24e","#66c24e","#56a342"],["#27662a","#43a03c","#66c24e","#43a03c","#2e7a32","#fbf3dc","#e6d29e","#e6d29e","#b8955a","#27662a","#388632","#56a342","#388632","#85bc5e","#388632","#56a342","#388632","#27662a","#b8955a","#e6d29e","#e6d29e","#fbf3dc","#2e7a32","#43a03c","#66c24e","#43a03c","#27662a"],["#388632","#2e7a32","#1f5a26","#1f5a26","#1f5a26","#1f5a26","#2e7a32","#43a03c","#43a03c","#2e7a32","#43a03c","#2e7a32","#43a03c","#66c24e","#43a03c","#2e7a32","#43a03c","#2e7a32","#43a03c","#43a03c","#2e7a32","#1f5a26","#1f5a26","#1f5a26","#1f5a26","#2e7a32","#388632"],["#27662a","#9ee070","#66c24e","#66c24e","#66c24e","#66c24e","#9ee070","#2e7a32","#2e7a32","#43a03c","#2e7a32","#43a03c","#66c24e","#9ee070","#66c24e","#43a03c","#2e7a32","#43a03c","#2e7a32","#2e7a32","#9ee070","#66c24e","#66c24e","#66c24e","#66c24e","#9ee070","#27662a"],["#d66777","#ffdc3e","#ffdc3e","#ffffff","#4a1e0a","#ffdc3e","#ffdc3e","#ff7b8e","#43a03c","#2e7a32","#43a03c","#66c24e","#43a03c","#9ee070","#43a03c","#66c24e","#43a03c","#2e7a32","#43a03c","#ff7b8e","#ffdc3e","#ffdc3e","#ffffff","#4a1e0a","#ffdc3e","#ffdc3e","#d66777"],["#d66777","#ffdc3e","#ffdc3e","#ffdc3e","#4a1e0a","#ffdc3e","#ffdc3e","#ff7b8e","#2e7a32","#43a03c","#2e7a32","#43a03c","#66c24e","#9ee070","#66c24e","#43a03c","#2e7a32","#43a03c","#2e7a32","#ff7b8e","#ffdc3e","#ffdc3e","#ffdc3e","#4a1e0a","#ffdc3e","#ffdc3e","#d66777"],["#b53b59","#f39a1e","#f39a1e","#f39a1e","#4a1e0a","#f39a1e","#f39a1e","#d8466a","#43a03c","#2e7a32","#43a03c","#66c24e","#c9da72","#e3ec98","#c9da72","#66c24e","#43a03c","#2e7a32","#43a03c","#d8466a","#f39a1e","#f39a1e","#f39a1e","#4a1e0a","#f39a1e","#f39a1e","#b53b59"],["#71b2d6","#d8466a","#d8466a","#d8466a","#d8466a","#d8466a","#d8466a","#43a03c","#2e7a32","#43a03c","#2e7a32","#c9da72","#e3ec98","#e3ec98","#e3ec98","#c9da72","#2e7a32","#43a03c","#2e7a32","#43a03c","#d8466a","#d8466a","#d8466a","#d8466a","#d8466a","#d8466a","#71b2d6"],["#71b2d6","#86d4ff","#2e7a32","#43a03c","#43a03c","#2e7a32","#43a03c","#43a03c","#43a03c","#2e7a32","#43a03c","#c9da72","#e3ec98","#e3ec98","#e3ec98","#c9da72","#43a03c","#2e7a32","#43a03c","#43a03c","#43a03c","#2e7a32","#43a03c","#43a03c","#2e7a32","#86d4ff","#71b2d6"],["#215824","#388632","#27662a","#388632","#27662a","#388632","#27662a","#388632","#27662a","#2e7a32","#c9da72","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#c9da72","#2e7a32","#27662a","#388632","#27662a","#388632","#27662a","#388632","#27662a","#388632","#215824"],["","","","","","","","","","#718a34","#c9da72","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#c9da72","#718a34","","","","","","","","",""],["","","","","","","","","","#718a34","#c9da72","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#e3ec98","#c9da72","#718a34","","","","","","","","",""],["","","","","","","","","","#718a34","#a6c052","#a6c052","#a6c052","#e3ec98","#a6c052","#a6c052","#a6c052","#718a34","","","","","","","","",""],["","","","","","","","","","#718a34","#3a5222","#3a5222","#a6c052","#e3ec98","#a6c052","#3a5222","#3a5222","#718a34","","","","","","","","",""],["","","","","","","","","","#718a34","#3a5222","#3a5222","#a6c052","#e3ec98","#a6c052","#3a5222","#3a5222","#718a34","","","","","","","","",""],["","","","","","","","","","#c33c25","#ff9a2e","#ffe14a","#c9da72","#a6c052","#c9da72","#ffe14a","#ff9a2e","#c33c25","","","","","","","","",""],["","","","","","","","","","#c33c25","#ff9a2e","#fff4b8","#ffe14a","#a6c052","#ffe14a","#fff4b8","#ff9a2e","#c33c25","","","","","","","","",""],["","","","","","","","","","#c33c25","#ff9a2e","#ffe14a","#fff4b8","#fff4b8","#fff4b8","#ffe14a","#ff9a2e","#c33c25","","","","","","","","",""],["","","","","","","","","","#821e1b","#c33c25","#d68127","#d6bd3e","#d6bd3e","#d6bd3e","#d68127","#c33c25","#821e1b","","","","","","","","",""]],
     powerup: {
         "type": "destroyer",
         "tier": 3,
@@ -81886,7 +81467,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
   },
   {
     id: "giant_eraser",
@@ -81895,7 +81475,7 @@ export const SHAPES = [
         ".XXX",
         "XXX."
       ],
-    color: [["","","","","","#bb9aa4","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#bb9aa4"],["","","","","","#d79bae","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#d79bae"],["","","","","","#d27796","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#d27796"],["","","","","","#d27796","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#e2709a","#c26084"],["","","","","","#d27796","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#e2709a","#c26084","#c26084","#ad4d73","#ad4d73","#954363"],["#b87b90","#d68fa7","#d68fa7","#d68fa7","#d27796","#f48aae","#a8406e","#f48aae","#a8406e","#a8406e","#f48aae","#a8406e","#a8406e","#f48aae","#d27796","","","","",""],["#957e8a","#f9a6c2","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#d27796","","","","",""],["#957e8a","#ad93a0","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#e2709a","#c26084","","","","",""],["#73616c","#ad93a0","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#c26084","","","","",""],["#63545d","#73616c","#957e8a","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#954363","","","","",""]],
+    color: [["","","","","","#bb9aa4","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#dab3bf","#bb9aa4"],["","","","","","#d79bae","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#fab4ca","#d79bae"],["","","","","","#d27796","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#954363"],["","","","","","#d27796","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#954363","#954363"],["","","","","","#d27796","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#e2709a","#c26084","#c26084","#954363","#954363","#954363"],["#73616c","#73616c","#73616c","#d68fa7","#d27796","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#954363","","","","",""],["#73616c","#f9a6c2","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#d27796","","","","",""],["#957e8a","#ad93a0","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#f48aae","#e2709a","#c26084","","","","",""],["#73616c","#ad93a0","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#e2709a","#954363","#954363","","","","",""],["#63545d","#73616c","#957e8a","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#ad4d73","#954363","#954363","#954363","","","","",""]],
     powerup: {
         "type": "destroyer",
         "tier": 3,
@@ -81924,7 +81504,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
   },
   {
     id: "hole_in_one",
@@ -81968,7 +81547,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
   },
   {
     id: "horseshoe_magnet",
@@ -82004,7 +81582,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "sarcastic_thumbs_up",
@@ -82013,7 +81590,7 @@ export const SHAPES = [
         "X.",
         "XX"
       ],
-    color: [["#f5b92e","#f5b92e","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#d9952a","#b8771f","","","","","","","",""],["#f5b92e","#ffe88a","#fff1cf","#fff1cf","#fff1cf","#fff1cf","#ffd34d","#b8771f","","","","","","","",""],["#d9952a","#ffe88a","#fff1cf","#fff1cf","#fff1cf","#fff1cf","#ffd34d","#d9952a","","","","","","","",""],["#ffe88a","#ffd34d","#e9c98f","#e9c98f","#e9c98f","#e9c98f","#ffd34d","#d9952a","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#d9952a","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#d9952a","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#d9952a","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#c27f22","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#c27f22","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#d9952a"],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#c27f22","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#b8771f"],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#d9952a","#b8771f"],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#c27f22","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#f5b92e","#b8771f"],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#c27f22","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#b8771f"],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#d9952a","#b8771f","#b8771f"],["#f5b92e","#f5b92e","#ffd34d","#ffd34d","#c27f22","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#b8771f","#b8771f"],["#d9952a","#d9952a","#f5b92e","#f5b92e","#c27f22","#d9952a","#d9952a","#d9952a","#d9952a","#d9952a","#d9952a","#d9952a","#d9952a","#d9952a","#b8771f","#b8771f"]],
+    color: [["#f5b92e","#f5b92e","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#d9952a","#b8771f","","","","","","","",""],["#f5b92e","#ffe88a","#fff1cf","#fff1cf","#fff1cf","#fff1cf","#ffd34d","#a06e27","","","","","","","",""],["#d9952a","#ffe88a","#fff1cf","#fff1cf","#fff1cf","#fff1cf","#ffd34d","#a06e27","","","","","","","",""],["#ffe88a","#ffd34d","#e9c98f","#e9c98f","#e9c98f","#e9c98f","#ffd34d","#a06e27","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#a06e27","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#a06e27","#a06e27","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#a06e27","#a06e27","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#a06e27","#a06e27","","","","","","","",""],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#a06e27","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#d9952a"],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#a06e27","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#b8771f"],["#ffe88a","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#a06e27","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#d9952a","#a06e27"],["#a06e27","#ffd34d","#ffd34d","#ffd34d","#a06e27","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#ffe88a","#f5b92e","#a06e27"],["#a06e27","#ffd34d","#ffd34d","#ffd34d","#a06e27","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#a06e27"],["#a06e27","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#c27f22","#c27f22","#c27f22","#c27f22","#c27f22","#a06e27","#a06e27","#a06e27","#a06e27","#a06e27","#a06e27"],["#a06e27","#f5b92e","#ffd34d","#ffd34d","#a06e27","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#ffd34d","#f5b92e","#b8771f","#a06e27"],["#a06e27","#a06e27","#f5b92e","#f5b92e","#a06e27","#d9952a","#d9952a","#d9952a","#d9952a","#d9952a","#d9952a","#d9952a","#a06e27","#a06e27","#a06e27","#a06e27"]],
     powerup: {
         "type": "destroyer",
         "tier": 1,
@@ -82038,17 +81615,16 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "ice_skate",
-    name: "an ice skate",
+    name: "an razor-sharp ice skate",
     grid: [
         "..X",
         "XXX"
       ],
-    color: [["","","","","","","","","","","","","","","","","","","#e8e3da","#efe8db","#efe8db","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#93b4e3"],["","","","","","","","","","","","","","","","","","","#e8e3da","#efe8db","#d6ccbb","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#93b4e3","#93b4e3"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#c9d1dd","#7d8698","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#cfc6b8","#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#e8e3da","#cfc6b8"],["#cfc6b8","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#7a4a29","#7a4a29","#7a4a29","#7a4a29","#7a4a29","#5c361d"],["#6e4325","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#5c361d","#5c361d","#5c361d","#5c361d","#5c361d","#5c361d"],["#93a0b2","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#7c899d"],["#93a0b2","#5f6b80","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#5f6b80"],["#5f6b80","#93a0b2","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#5f6b80","#5f6b80"]],
+    color: [["","","","","","","","","","","","","","","","","","","#e8e3da","#efe8db","#efe8db","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#93b4e3"],["","","","","","","","","","","","","","","","","","","#e8e3da","#efe8db","#d6ccbb","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#93b4e3","#93b4e3"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#c9d1dd","#7d8698","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#cfc6b8","#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#e8e3da","#cfc6b8"],["#cfc6b8","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#7a4a29","#7a4a29","#7a4a29","#7a4a29","#7a4a29","#5c361d"],["#6e4325","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#5c361d","#5c361d","#5c361d","#5c361d","#5c361d","#5c361d"],["#262c36","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#262c36"],["#262c36","#5f6b80","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#262c36"],["#262c36","#262c36","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#262c36","#262c36"]],
     powerup: {
         "type": "destroyer",
         "tier": 2,
@@ -82073,7 +81649,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "hole_punch",
@@ -82107,17 +81682,16 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "lightning_bolt_with_a_grudge",
-    name: "a lightning bolt with a grudge",
+    name: "a bolt of lightiningi",
     grid: [
         "XX.",
         ".XX"
       ],
-    color: [["#a8a68d","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#d1ceaf","#a8a68d","","","","","","",""],["#d18215","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#6e2c06","#6e2c06","#ffe33a","#ffe33a","#ffe33a","#6e2c06","#6e2c06","","","","","","",""],["#d18215","#ff9f1a","#ff9f1a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#6e2c06","#6e2c06","#6e2c06","#ffe33a","#6e2c06","#6e2c06","#6e2c06","","","","","","",""],["#d18215","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#6e2c06","#ffe33a","#6e2c06","#ffe33a","#d1ba30","","","","","","",""],["#d18215","#fff4b0","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ffffff","#ffffff","#2e1103","#ffe33a","#ffffff","#ffffff","#2e1103","","","","","","",""],["#d18215","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ffffff","#ffffff","#2e1103","#ffe33a","#ffffff","#ffffff","#2e1103","","","","","","",""],["#a86911","#d18215","#d18215","#d18215","#d18215","#d18215","#d18215","#ff9f1a","#ff9f1a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d1ba30","","","","","","",""],["","","","","","","","#d1ba30","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#fffbd6","#fffbd6","#d1ceaf","#d1ceaf","#d18215","#d18215","#d18215","#d18215","#a86911"],["","","","","","","","#d1ba30","#6e2c06","#6e2c06","#6e2c06","#6e2c06","#6e2c06","#ffe33a","#ffe33a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#d18215"],["","","","","","","","#d1ba30","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ff9f1a","#fff4b0","#ff9f1a","#d18215"],["","","","","","","","#d1a419","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ff9f1a","#ff9f1a","#d18215"],["","","","","","","","#d1a419","#ffc81f","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d18215"],["","","","","","","","#d1a419","#ffc81f","#ffc81f","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d1ba30"],["","","","","","","","#a88414","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#a88414"]],
+    color: [["#d18215","#d18215","#d18215","#d18215","#d18215","#d18215","#d18215","#d18215","#d18215","#d18215","#d18215","#d18215","#d18215","#d18215","","","","","","",""],["#d18215","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d18215","","","","","","",""],["#d18215","#ff9f1a","#ff9f1a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d18215","","","","","","",""],["#d18215","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d1ba30","","","","","","",""],["#d18215","#fff4b0","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ffffff","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d1ba30","","","","","","",""],["#d18215","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ffffff","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d1ba30","","","","","","",""],["#a86911","#d18215","#d18215","#d18215","#d18215","#d18215","#d18215","#ff9f1a","#ff9f1a","#ffffff","#ffe33a","#ffe33a","#ffe33a","#ffe33a","","","","","","",""],["","","","","","","","#d1ba30","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d18215","#d18215","#d18215","#d18215","#d18215","#d18215","#a86911"],["","","","","","","","#d1ba30","#ffe33a","#ffe33a","#ffe33a","#ffffff","#ffe33a","#ffe33a","#ffe33a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#ff9f1a","#d18215"],["","","","","","","","#d1ba30","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffffff","#ffffff","#ffe33a","#ffe33a","#ffe33a","#ff9f1a","#fff4b0","#ff9f1a","#d18215"],["","","","","","","","#d1a419","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffffff","#ffe33a","#ffe33a","#ffe33a","#ff9f1a","#ff9f1a","#d18215"],["","","","","","","","#d1a419","#ffc81f","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d18215"],["","","","","","","","#d1a419","#ffc81f","#ffc81f","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#ffe33a","#d1ba30"],["","","","","","","","#a88414","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#d1a419","#a88414"]],
     powerup: {
         "type": "destroyer",
         "tier": 1,
@@ -82140,7 +81714,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "lit_fuse",
@@ -82178,7 +81751,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "magic_wand",
@@ -82213,7 +81785,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "toadstool",
@@ -82251,7 +81822,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "spaghetti_os",
@@ -82268,7 +81838,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
     nameAgain: "another can of Spaghetti-Os",
     oops: {
         "many": "Spaghetti-Os"
@@ -82292,7 +81861,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -82312,7 +81880,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -82320,20 +81887,19 @@ export const SHAPES = [
   },
   {
     id: "spaghetti_0s",
-    name: "Spaghetti-0s",
+    name: "Spaghetti-Nulls",
     grid: [
         "XXX",
         "XXX",
         "XXX",
         "XXX"
       ],
-    color: [["#5d6372","#5d6372","#838a99","#838a99","#aab1bd","#aab1bd","#eef1f5","#eef1f5","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#838a99","#838a99","#838a99","#838a99","#5d6372","#5d6372","#5d6372"],["#aab1bd","#aab1bd","#cdd3dc","#cdd3dc","#eef1f5","#eef1f5","#ffffff","#ffffff","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#aab1bd","#aab1bd","#aab1bd"],["#5d6372","#5d6372","#838a99","#838a99","#aab1bd","#aab1bd","#eef1f5","#eef1f5","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#838a99","#838a99","#838a99","#838a99","#5d6372","#5d6372","#5d6372"],["#3e4350","#3e4350","#3e4350","#3e4350","#5d6372","#5d6372","#aab1bd","#aab1bd","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350"],["#d27f1f","#d27f1f","#efa53a","#efa53a","#fcc75e","#fcc75e","#ffe39a","#ffe39a","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#efa53a","#efa53a","#efa53a","#efa53a","#d27f1f","#d27f1f","#d27f1f"],["#83190f","#83190f","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b","#a92314","#a92314","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#e8c47e","#f8e2a8","#cc321b","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#f8e2a8","#cc321b","#cc321b","#cc321b","#f8e2a8","#a92314","#e8c47e","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#e8c47e","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#f8e2a8","#cc321b","#cc321b","#f8e2a8","#f8e2a8","#e8c47e","#e8c47e","#e8c47e","#a92314","#e8c47e","#83190f","#83190f"],["#83190f","#83190f","#a92314","#e8c47e","#cc321b","#f8e2a8","#fff3d2","#fff3d2","#cc321b","#f8e2a8","#f8e2a8","#cc321b","#f8e2a8","#f8e2a8","#f8e2a8","#cc321b","#f8e2a8","#a92314","#e8c47e","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#f8e2a8","#f8e2a8","#e44b27","#fff3d2","#cc321b","#f8e2a8","#f8e2a8","#f8e2a8","#f8e2a8","#f8e2a8","#cc321b","#f8e2a8","#f8e2a8","#a92314","#e8c47e","#a92314","#e8c47e","#83190f","#83190f","#83190f"],["#83190f","#83190f","#e8c47e","#e8c47e","#cc321b","#f8e2a8","#fff3d2","#e44b27","#83190f","#83190f","#cc321b","#cc321b","#f8e2a8","#cc321b","#f8e2a8","#cc321b","#f8e2a8","#e8c47e","#a92314","#e8c47e","#e8c47e","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#cc321b","#f8e2a8","#e44b27","#a92314","#ffe39a","#fcc75e","#83190f","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b","#a92314","#a92314","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#cc321b","#cc321b","#a92314","#ffe39a","#fcc75e","#fcc75e","#fcc75e","#83190f","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b","#a92314","#a92314","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#cc321b","#83190f","#ffe39a","#fcc75e","#efa53a","#efa53a","#efa53a","#efa53a","#83190f","#cc321b","#cc321b","#cc321b","#cc321b","#a92314","#a92314","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#cc321b","#83190f","#ffe39a","#d27f1f","#83190f","#83190f","#fcc75e","#efa53a","#83190f","#cc321b","#cc321b","#cc321b","#cc321b","#a92314","#a92314","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#83190f","#fcc75e","#fcc75e","#a92314","#83190f","#fcc75e","#83190f","#efa53a","#efa53a","#83190f","#cc321b","#cc321b","#cc321b","#f8e2a8","#f8e2a8","#f8e2a8","#5e1210","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#83190f","#fcc75e","#efa53a","#a92314","#83190f","#fcc75e","#83190f","#fcc75e","#efa53a","#83190f","#cc321b","#cc321b","#fff3d2","#f8e2a8","#5e1210","#5e1210","#5e1210","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#83190f","#fcc75e","#efa53a","#a92314","#83190f","#fcc75e","#83190f","#fcc75e","#d27f1f","#83190f","#cc321b","#cc321b","#83190f","#f8e2a8","#f8e2a8","#f8e2a8","#5e1210","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#83190f","#efa53a","#fcc75e","#a92314","#fcc75e","#83190f","#83190f","#fcc75e","#d27f1f","#83190f","#cc321b","#cc321b","#cc321b","#5e1210","#5e1210","#f8e2a8","#f8e2a8","#5e1210","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#cc321b","#83190f","#fcc75e","#fcc75e","#fcc75e","#83190f","#ffe39a","#efa53a","#83190f","#83190f","#cc321b","#cc321b","#fff3d2","#f8e2a8","#f8e2a8","#5e1210","#5e1210","#5e1210","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#cc321b","#83190f","#fcc75e","#ffe39a","#fcc75e","#fcc75e","#fcc75e","#d27f1f","#83190f","#cc321b","#cc321b","#cc321b","#83190f","#5e1210","#5e1210","#5e1210","#a92314","#83190f","#83190f","#83190f"],["#e8c47e","#e8c47e","#e8c47e","#a92314","#cc321b","#cc321b","#a92314","#efa53a","#efa53a","#efa53a","#d27f1f","#83190f","#83190f","#f8e2a8","#f8e2a8","#cc321b","#cc321b","#a92314","#e8c47e","#e8c47e","#e8c47e","#83190f","#83190f","#83190f"],["#98240b","#98240b","#be3512","#e8c47e","#f8e2a8","#f8e2a8","#ec6624","#a92314","#d27f1f","#d27f1f","#83190f","#83190f","#d84a19","#d84a19","#d84a19","#f8e2a8","#f8e2a8","#e8c47e","#be3512","#be3512","#be3512","#e8c47e","#e8c47e","#e8c47e"],["#98240b","#98240b","#ffb852","#be3512","#d84a19","#d84a19","#ec6624","#ec6624","#83190f","#83190f","#83190f","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#be3512","#be3512","#be3512","#ffb852","#98240b","#98240b","#98240b"],["#98240b","#ffb852","#701807","#e8822e","#d84a19","#d84a19","#ec6624","#ec6624","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#be3512","#be3512","#ffb852","#701807","#e8822e","#98240b","#98240b"],["#98240b","#f79c3c","#701807","#e8822e","#d84a19","#d84a19","#ec6624","#ec6624","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#be3512","#be3512","#f79c3c","#701807","#e8822e","#98240b","#98240b"],["#98240b","#f79c3c","#701807","#cc6222","#d84a19","#d84a19","#ec6624","#ec6624","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#be3512","#be3512","#f79c3c","#701807","#cc6222","#98240b","#98240b"],["#d27f1f","#d27f1f","#cc6222","#efa53a","#fcc75e","#fcc75e","#ffe39a","#ffe39a","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#efa53a","#efa53a","#efa53a","#cc6222","#d27f1f","#d27f1f","#d27f1f"],["#3e4350","#3e4350","#3e4350","#3e4350","#5d6372","#5d6372","#aab1bd","#aab1bd","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350"],["#838a99","#838a99","#aab1bd","#aab1bd","#cdd3dc","#cdd3dc","#ffffff","#ffffff","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#838a99","#838a99","#838a99"],["#3e4350","#3e4350","#5d6372","#5d6372","#838a99","#838a99","#cdd3dc","#cdd3dc","#838a99","#838a99","#838a99","#838a99","#838a99","#838a99","#838a99","#838a99","#838a99","#5d6372","#5d6372","#5d6372","#5d6372","#3e4350","#3e4350","#3e4350"],["#5d6372","#5d6372","#838a99","#838a99","#aab1bd","#aab1bd","#eef1f5","#eef1f5","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#838a99","#838a99","#838a99","#838a99","#5d6372","#5d6372","#5d6372"]],
+    color: [["#5d6372","#5d6372","#838a99","#838a99","#aab1bd","#aab1bd","#eef1f5","#eef1f5","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#838a99","#838a99","#838a99","#838a99","#5d6372","#5d6372","#5d6372"],["#aab1bd","#aab1bd","#cdd3dc","#cdd3dc","#eef1f5","#eef1f5","#ffffff","#ffffff","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#aab1bd","#aab1bd","#aab1bd"],["#5d6372","#5d6372","#838a99","#838a99","#aab1bd","#aab1bd","#eef1f5","#eef1f5","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#838a99","#838a99","#838a99","#838a99","#5d6372","#5d6372","#5d6372"],["#3e4350","#3e4350","#3e4350","#3e4350","#5d6372","#5d6372","#aab1bd","#aab1bd","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350"],["#d27f1f","#d27f1f","#efa53a","#efa53a","#fcc75e","#fcc75e","#ffe39a","#ffe39a","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#efa53a","#efa53a","#efa53a","#efa53a","#d27f1f","#d27f1f","#d27f1f"],["#83190f","#83190f","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b","#a92314","#a92314","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#e8c47e","#f8e2a8","#cc321b","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#f8e2a8","#cc321b","#cc321b","#cc321b","#f8e2a8","#a92314","#e8c47e","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#e8c47e","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#f8e2a8","#cc321b","#cc321b","#f8e2a8","#f8e2a8","#e8c47e","#e8c47e","#e8c47e","#a92314","#e8c47e","#83190f","#83190f"],["#83190f","#83190f","#a92314","#e8c47e","#cc321b","#f8e2a8","#fff3d2","#fff3d2","#cc321b","#f8e2a8","#f8e2a8","#cc321b","#f8e2a8","#f8e2a8","#f8e2a8","#cc321b","#f8e2a8","#a92314","#e8c47e","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#f8e2a8","#f8e2a8","#e44b27","#fff3d2","#cc321b","#f8e2a8","#f8e2a8","#f8e2a8","#f8e2a8","#f8e2a8","#cc321b","#f8e2a8","#f8e2a8","#a92314","#e8c47e","#a92314","#e8c47e","#83190f","#83190f","#83190f"],["#83190f","#83190f","#e8c47e","#e8c47e","#cc321b","#f8e2a8","#fff3d2","#e44b27","#83190f","#83190f","#cc321b","#cc321b","#f8e2a8","#cc321b","#f8e2a8","#cc321b","#f8e2a8","#e8c47e","#a92314","#e8c47e","#e8c47e","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#cc321b","#f8e2a8","#e44b27","#a92314","#ffe39a","#fcc75e","#83190f","#cc321b","#83190f","#83190f","#cc321b","#cc321b","#cc321b","#a92314","#a92314","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#cc321b","#cc321b","#a92314","#ffe39a","#fcc75e","#fcc75e","#fcc75e","#83190f","#83190f","#fcc75e","#83190f","#cc321b","#cc321b","#a92314","#a92314","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#cc321b","#83190f","#ffe39a","#fcc75e","#efa53a","#efa53a","#efa53a","#83190f","#ffe39a","#fcc75e","#83190f","#cc321b","#cc321b","#a92314","#a92314","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#cc321b","#83190f","#ffe39a","#d27f1f","#a92314","#a92314","#83190f","#fcc75e","#ffe39a","#83190f","#cc321b","#cc321b","#cc321b","#a92314","#a92314","#a92314","#a92314","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#83190f","#fcc75e","#fcc75e","#a92314","#a92314","#83190f","#ffe39a","#d27f1f","#83190f","#83190f","#cc321b","#cc321b","#cc321b","#f8e2a8","#f8e2a8","#f8e2a8","#5e1210","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#83190f","#fcc75e","#efa53a","#a92314","#83190f","#ffe39a","#d27f1f","#83190f","#efa53a","#83190f","#cc321b","#cc321b","#fff3d2","#f8e2a8","#5e1210","#5e1210","#5e1210","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#83190f","#fcc75e","#efa53a","#a92314","#83190f","#fcc75e","#83190f","#fcc75e","#d27f1f","#83190f","#cc321b","#cc321b","#83190f","#f8e2a8","#f8e2a8","#f8e2a8","#5e1210","#83190f","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#83190f","#efa53a","#fcc75e","#83190f","#fcc75e","#d27f1f","#83190f","#fcc75e","#d27f1f","#83190f","#cc321b","#cc321b","#cc321b","#5e1210","#5e1210","#f8e2a8","#f8e2a8","#5e1210","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#83190f","#efa53a","#83190f","#fcc75e","#d27f1f","#83190f","#ffe39a","#efa53a","#83190f","#83190f","#cc321b","#cc321b","#fff3d2","#f8e2a8","#f8e2a8","#5e1210","#5e1210","#5e1210","#83190f","#83190f"],["#83190f","#83190f","#a92314","#a92314","#cc321b","#83190f","#fcc75e","#d27f1f","#83190f","#fcc75e","#fcc75e","#d27f1f","#83190f","#cc321b","#cc321b","#cc321b","#83190f","#5e1210","#5e1210","#5e1210","#a92314","#83190f","#83190f","#83190f"],["#e8c47e","#e8c47e","#e8c47e","#a92314","#83190f","#83190f","#fcc75e","#83190f","#efa53a","#efa53a","#d27f1f","#83190f","#83190f","#f8e2a8","#f8e2a8","#cc321b","#cc321b","#a92314","#e8c47e","#e8c47e","#e8c47e","#83190f","#83190f","#83190f"],["#98240b","#98240b","#be3512","#e8c47e","#83190f","#fcc75e","#d27f1f","#83190f","#d27f1f","#d27f1f","#83190f","#83190f","#d84a19","#d84a19","#d84a19","#f8e2a8","#f8e2a8","#e8c47e","#be3512","#be3512","#be3512","#e8c47e","#e8c47e","#e8c47e"],["#98240b","#98240b","#ffb852","#be3512","#d84a19","#83190f","#83190f","#ec6624","#83190f","#83190f","#83190f","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#be3512","#be3512","#be3512","#ffb852","#98240b","#98240b","#98240b"],["#98240b","#ffb852","#701807","#e8822e","#d84a19","#d84a19","#ec6624","#ec6624","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#be3512","#be3512","#ffb852","#701807","#e8822e","#98240b","#98240b"],["#98240b","#f79c3c","#701807","#e8822e","#d84a19","#d84a19","#ec6624","#ec6624","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#be3512","#be3512","#f79c3c","#701807","#e8822e","#98240b","#98240b"],["#98240b","#f79c3c","#701807","#cc6222","#d84a19","#d84a19","#ec6624","#ec6624","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19","#be3512","#be3512","#f79c3c","#701807","#cc6222","#98240b","#98240b"],["#d27f1f","#d27f1f","#cc6222","#efa53a","#fcc75e","#fcc75e","#ffe39a","#ffe39a","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#efa53a","#efa53a","#efa53a","#cc6222","#d27f1f","#d27f1f","#d27f1f"],["#3e4350","#3e4350","#3e4350","#3e4350","#5d6372","#5d6372","#aab1bd","#aab1bd","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350"],["#838a99","#838a99","#aab1bd","#aab1bd","#cdd3dc","#cdd3dc","#ffffff","#ffffff","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#838a99","#838a99","#838a99"],["#3e4350","#3e4350","#5d6372","#5d6372","#838a99","#838a99","#cdd3dc","#cdd3dc","#838a99","#838a99","#838a99","#838a99","#838a99","#838a99","#838a99","#838a99","#838a99","#5d6372","#5d6372","#5d6372","#5d6372","#3e4350","#3e4350","#3e4350"],["#5d6372","#5d6372","#838a99","#838a99","#aab1bd","#aab1bd","#eef1f5","#eef1f5","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#838a99","#838a99","#838a99","#838a99","#5d6372","#5d6372","#5d6372"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -82358,14 +81924,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
   },
   {
     id: "mini_spaghetti_os",
-    name: "mini Spaghetti-Os",
+    name: "teeny weeny Spaghetti-Os",
     grid: [
         "XXX"
       ],
@@ -82375,7 +81940,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -82383,20 +81947,19 @@ export const SHAPES = [
   },
   {
     id: "spaghetti_os_left_half",
-    name: "Spaghetti-",
+    name: "Spaghett",
     grid: [
         "XX",
         "XX",
         "XX",
         "XX"
       ],
-    color: [["#5d6372","#5d6372","#838a99","#838a99","#838a99","#aab1bd","#aab1bd","#cdd3dc","#eef1f5","#eef1f5","#cdd3dc","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd"],["#aab1bd","#aab1bd","#cdd3dc","#cdd3dc","#cdd3dc","#eef1f5","#eef1f5","#ffffff","#ffffff","#ffffff","#ffffff","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#eef1f5"],["#5d6372","#5d6372","#838a99","#838a99","#838a99","#aab1bd","#aab1bd","#cdd3dc","#eef1f5","#eef1f5","#cdd3dc","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd"],["#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#5d6372","#5d6372","#838a99","#aab1bd","#aab1bd","#838a99","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372"],["#d27f1f","#d27f1f","#efa53a","#efa53a","#efa53a","#fcc75e","#fcc75e","#ffe39a","#ffe39a","#ffe39a","#ffe39a","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e"],["#83190f","#83190f","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#83190f","#83190f","#e8c47e","#e8c47e","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#83190f","#e8c47e","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#83190f","#83190f","#e8c47e","#a92314","#a92314","#f8e2a8","#f8e2a8","#e44b27","#e44b27","#e44b27","#fff3d2","#f8e2a8","#cc321b","#cc321b","#f8e2a8","#f8e2a8"],["#83190f","#83190f","#a92314","#e8c47e","#a92314","#f8e2a8","#cc321b","#fff3d2","#e44b27","#fff3d2","#e44b27","#f8e2a8","#cc321b","#f8e2a8","#cc321b","#f8e2a8"],["#83190f","#e8c47e","#e8c47e","#a92314","#a92314","#f8e2a8","#f8e2a8","#e44b27","#e44b27","#e44b27","#fff3d2","#f8e2a8","#cc321b","#cc321b","#f8e2a8","#83190f"],["#83190f","#83190f","#a92314","#a92314","#a92314","#f8e2a8","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#f8e2a8","#f8e2a8","#83190f"],["#83190f","#83190f","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#83190f"],["#83190f","#e8c47e","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#83190f"],["#83190f","#e8c47e","#a92314","#a92314","#a92314","#cc321b","#f8e2a8","#e44b27","#e44b27","#fff3d2","#e44b27","#cc321b","#f8e2a8","#cc321b","#cc321b","#cc321b"],["#83190f","#e8c47e","#e8c47e","#a92314","#a92314","#f8e2a8","#cc321b","#fff3d2","#e44b27","#fff3d2","#fff3d2","#cc321b","#f8e2a8","#f8e2a8","#cc321b","#f8e2a8"],["#83190f","#e8c47e","#a92314","#e8c47e","#a92314","#f8e2a8","#f8e2a8","#e44b27","#e44b27","#fff3d2","#e44b27","#cc321b","#f8e2a8","#cc321b","#cc321b","#f8e2a8"],["#83190f","#e8c47e","#a92314","#e8c47e","#a92314","#cc321b","#f8e2a8","#fff3d2","#e44b27","#fff3d2","#fff3d2","#cc321b","#f8e2a8","#f8e2a8","#cc321b","#f8e2a8"],["#83190f","#83190f","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#83190f","#83190f","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#83190f","#83190f","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#e8c47e","#e8c47e","#e8c47e","#a92314","#a92314","#cc321b","#f8e2a8","#fff3d2","#fff3d2","#e44b27","#e44b27","#cc321b","#f8e2a8","#f8e2a8","#f8e2a8","#cc321b"],["#98240b","#98240b","#be3512","#e8c47e","#e8c47e","#f8e2a8","#d84a19","#ec6624","#ec6624","#fff3d2","#fff3d2","#f8e2a8","#d84a19","#d84a19","#d84a19","#f8e2a8"],["#98240b","#98240b","#be3512","#ffb852","#f79c3c","#d84a19","#d84a19","#ec6624","#ec6624","#fff0c8","#ffd486","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19"],["#98240b","#98240b","#ffb852","#701807","#701807","#f79c3c","#d84a19","#ec6624","#fff0c8","#be3512","#be3512","#f79c3c","#d84a19","#d84a19","#d84a19","#d84a19"],["#98240b","#98240b","#f79c3c","#701807","#701807","#e8822e","#d84a19","#ec6624","#ffd486","#be3512","#be3512","#e8822e","#d84a19","#d84a19","#d84a19","#d84a19"],["#98240b","#98240b","#be3512","#e8822e","#cc6222","#d84a19","#d84a19","#ec6624","#ec6624","#ffb852","#f79c3c","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19"],["#d27f1f","#d27f1f","#efa53a","#efa53a","#efa53a","#fcc75e","#fcc75e","#ffe39a","#ffe39a","#ffe39a","#ffe39a","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e"],["#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#5d6372","#5d6372","#838a99","#aab1bd","#aab1bd","#838a99","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372"],["#838a99","#838a99","#aab1bd","#aab1bd","#aab1bd","#cdd3dc","#cdd3dc","#eef1f5","#ffffff","#ffffff","#eef1f5","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc"],["#3e4350","#3e4350","#5d6372","#5d6372","#5d6372","#838a99","#838a99","#aab1bd","#cdd3dc","#cdd3dc","#aab1bd","#838a99","#838a99","#838a99","#838a99","#838a99"],["#5d6372","#5d6372","#838a99","#838a99","#838a99","#aab1bd","#aab1bd","#cdd3dc","#eef1f5","#eef1f5","#cdd3dc","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd"]],
+    color: [["#5d6372","#5d6372","#838a99","#838a99","#838a99","#aab1bd","#aab1bd","#cdd3dc","#eef1f5","#eef1f5","#cdd3dc","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd"],["#aab1bd","#aab1bd","#cdd3dc","#cdd3dc","#cdd3dc","#eef1f5","#eef1f5","#ffffff","#ffffff","#ffffff","#ffffff","#eef1f5","#eef1f5","#eef1f5","#eef1f5","#eef1f5"],["#5d6372","#5d6372","#838a99","#838a99","#838a99","#aab1bd","#aab1bd","#cdd3dc","#eef1f5","#eef1f5","#cdd3dc","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd"],["#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#5d6372","#5d6372","#838a99","#aab1bd","#aab1bd","#838a99","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372"],["#d27f1f","#d27f1f","#efa53a","#efa53a","#efa53a","#fcc75e","#fcc75e","#ffe39a","#ffe39a","#ffe39a","#ffe39a","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e"],["#83190f","#83190f","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#83190f","#83190f","#e8c47e","#e8c47e","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#83190f","#e8c47e","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#83190f","#83190f","#e8c47e","#a92314","#a92314","#f8e2a8","#f8e2a8","#e44b27","#e44b27","#e44b27","#fff3d2","#f8e2a8","#cc321b","#cc321b","#f8e2a8","#f8e2a8"],["#83190f","#83190f","#a92314","#e8c47e","#a92314","#f8e2a8","#cc321b","#fff3d2","#e44b27","#fff3d2","#e44b27","#f8e2a8","#cc321b","#f8e2a8","#cc321b","#f8e2a8"],["#83190f","#e8c47e","#e8c47e","#a92314","#a92314","#f8e2a8","#f8e2a8","#e44b27","#e44b27","#e44b27","#fff3d2","#f8e2a8","#cc321b","#cc321b","#f8e2a8","#cc321b"],["#83190f","#83190f","#a92314","#a92314","#a92314","#f8e2a8","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#f8e2a8","#f8e2a8","#cc321b"],["#83190f","#83190f","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#83190f","#e8c47e","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#83190f","#e8c47e","#a92314","#a92314","#a92314","#cc321b","#f8e2a8","#e44b27","#e44b27","#fff3d2","#e44b27","#cc321b","#f8e2a8","#cc321b","#cc321b","#cc321b"],["#83190f","#e8c47e","#e8c47e","#a92314","#a92314","#f8e2a8","#cc321b","#fff3d2","#e44b27","#fff3d2","#fff3d2","#cc321b","#f8e2a8","#f8e2a8","#cc321b","#cc321b"],["#83190f","#e8c47e","#a92314","#e8c47e","#a92314","#f8e2a8","#f8e2a8","#e44b27","#e44b27","#fff3d2","#e44b27","#cc321b","#f8e2a8","#cc321b","#cc321b","#cc321b"],["#83190f","#e8c47e","#a92314","#e8c47e","#a92314","#cc321b","#f8e2a8","#fff3d2","#e44b27","#fff3d2","#fff3d2","#cc321b","#f8e2a8","#f8e2a8","#cc321b","#cc321b"],["#83190f","#83190f","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#83190f","#83190f","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#83190f","#83190f","#a92314","#a92314","#a92314","#cc321b","#cc321b","#e44b27","#e44b27","#e44b27","#e44b27","#cc321b","#cc321b","#cc321b","#cc321b","#cc321b"],["#e8c47e","#e8c47e","#e8c47e","#a92314","#a92314","#cc321b","#f8e2a8","#fff3d2","#fff3d2","#e44b27","#e44b27","#cc321b","#f8e2a8","#f8e2a8","#f8e2a8","#cc321b"],["#98240b","#98240b","#be3512","#e8c47e","#e8c47e","#f8e2a8","#d84a19","#ec6624","#ec6624","#fff3d2","#fff3d2","#f8e2a8","#d84a19","#d84a19","#d84a19","#f8e2a8"],["#98240b","#98240b","#be3512","#ffb852","#f79c3c","#d84a19","#d84a19","#ec6624","#ec6624","#fff0c8","#ffd486","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19"],["#98240b","#98240b","#ffb852","#701807","#701807","#f79c3c","#d84a19","#ec6624","#fff0c8","#be3512","#be3512","#f79c3c","#d84a19","#d84a19","#d84a19","#d84a19"],["#98240b","#98240b","#f79c3c","#701807","#701807","#e8822e","#d84a19","#ec6624","#ffd486","#be3512","#be3512","#e8822e","#d84a19","#d84a19","#d84a19","#d84a19"],["#98240b","#98240b","#be3512","#e8822e","#cc6222","#d84a19","#d84a19","#ec6624","#ec6624","#ffb852","#f79c3c","#d84a19","#d84a19","#d84a19","#d84a19","#d84a19"],["#d27f1f","#d27f1f","#efa53a","#efa53a","#efa53a","#fcc75e","#fcc75e","#ffe39a","#ffe39a","#ffe39a","#ffe39a","#fcc75e","#fcc75e","#fcc75e","#fcc75e","#fcc75e"],["#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#5d6372","#5d6372","#838a99","#aab1bd","#aab1bd","#838a99","#5d6372","#5d6372","#5d6372","#5d6372","#5d6372"],["#838a99","#838a99","#aab1bd","#aab1bd","#aab1bd","#cdd3dc","#cdd3dc","#eef1f5","#ffffff","#ffffff","#eef1f5","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc"],["#3e4350","#3e4350","#5d6372","#5d6372","#5d6372","#838a99","#838a99","#aab1bd","#cdd3dc","#cdd3dc","#aab1bd","#838a99","#838a99","#838a99","#838a99","#838a99"],["#5d6372","#5d6372","#838a99","#838a99","#838a99","#aab1bd","#aab1bd","#cdd3dc","#eef1f5","#eef1f5","#cdd3dc","#aab1bd","#aab1bd","#aab1bd","#aab1bd","#aab1bd"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     seam: "spaghetti_os_halves",
     tags: [
@@ -82418,7 +81981,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     seam: "spaghetti_os_halves",
     tags: [
@@ -82439,7 +82001,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "food"
       ],
@@ -82459,7 +82020,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -82480,7 +82040,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -82488,7 +82047,7 @@ export const SHAPES = [
   },
   {
     id: "blob_of_spaghetti_os",
-    name: "a blob of Spaghetti-Os",
+    name: "a small blob of Spaghetti-Os",
     grid: [
         ".XX.",
         ".XX.",
@@ -82501,7 +82060,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -82519,7 +82077,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nameAgain: "another Spaghetti-O",
     noShake: true,
     tags: [
@@ -82528,7 +82085,7 @@ export const SHAPES = [
   },
   {
     id: "ring_of_spaghetti_os",
-    name: "a ring of Spaghetti-Os",
+    name: "an \"O\" made of Spaghetti-Os",
     grid: [
         "XXX",
         "X.X",
@@ -82540,7 +82097,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -82563,7 +82119,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     nameAgain: "another giant spaghetti-o",
     tags: [
         "food"
@@ -82571,7 +82126,7 @@ export const SHAPES = [
   },
   {
     id: "spill_of_spaghetti_os",
-    name: "a spill of Spaghetti-Os",
+    name: "Spaghetti-O sludge",
     grid: [
         "..XXXX....",
         "XXXXXXXXX.",
@@ -82583,7 +82138,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     tags: [
         "food"
@@ -82603,7 +82157,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "pulsar",
@@ -82621,7 +82174,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "supernova",
@@ -82640,7 +82192,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "wormhole",
@@ -82658,7 +82209,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -82677,7 +82227,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "nessie_hump_far",
@@ -82876,7 +82425,7 @@ export const SHAPES = [
   },
   {
     id: "tree_of_life_winter",
-    name: "the tree of life, in winter",
+    name: "the tree of life",
     grid: [
         ".XX.XX.",
         "XXXXXXX",
@@ -82895,7 +82444,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "tree_of_death_winter",
@@ -82917,8 +82465,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "canal_houses",
@@ -82936,7 +82483,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "candle_mouses",
@@ -82954,7 +82500,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "kerndl_merzerz",
@@ -82971,7 +82516,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     remix: {
         "mix": [
           "canal_houses",
@@ -82993,7 +82537,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     noShake: true,
     remix: {
         "mix": [
@@ -83100,7 +82643,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "blue_moon",
@@ -83118,7 +82660,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "mars",
@@ -83138,7 +82679,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "saturn",
@@ -83156,7 +82696,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "voyager_1",
@@ -83191,7 +82730,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_quick_sync",
@@ -83207,8 +82745,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_circling_back",
@@ -83224,8 +82761,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_per_my_last_email",
@@ -83241,8 +82777,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_quarterly_growth",
@@ -83259,7 +82794,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_pivot",
@@ -83275,8 +82809,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_disruption",
@@ -83293,7 +82826,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_thought_leadership",
@@ -83309,8 +82841,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_stonks",
@@ -83321,34 +82852,32 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#8ee27c","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#2fae45","#2fae45","#2fae45","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#2fae45","#2fae45","#2fae45","#2fae45","#2fae45","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#2fae45","#2fae45","#2fae45","#2fae45","#2fae45","#2fae45","#2fae45","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#1d7a31","#1d7a31","#1d7a31","#2fae45","#1d7a31","#1d7a31","#1d7a31","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#8ee27c","#2fae45","#1d7a31","#b4d1e7","#b4d1e7","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#8ee27c","#2fae45","#1d7a31","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#8ee27c","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#8ee27c","#2fae45","#1d7a31","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#8ee27c","#2fae45","#8ee27c","#d3e7f4","#d3e7f4","#d3e7f4","#8ee27c","#2fae45","#2fae45","#1d7a31","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b4d1e7","#8ee27c","#1d7a31","#2fae45","#8ee27c","#b4d1e7","#8ee27c","#2fae45","#1d7a31","#b4d1e7","#1d7a31","#b4d1e7","#b4d1e7","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#8ee27c","#1d7a31","#d3e7f4","#1d7a31","#3b2420","#3b2420","#3b2420","#3b2420","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2fae45","#1d7a31","#3b2420","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#3b2420","#3b2420","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d7a31","#d3e7f4","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b4d1e7","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#b4d1e7","#b4d1e7","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#3b2420","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#eda42b","#3b2420","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#3b2420","#ffd23c","#ffffff","#3b2420","#ffd23c","#ffd23c","#ffffff","#3b2420","#eda42b","#3b2420","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b4d1e7","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#eda42b","#3b2420","#b4d1e7","#b4d1e7","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#414a66","#626d90","#ffffff","#e0483a","#e0483a","#ffffff","#626d90","#414a66","#2c3349","#3b2420","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#414a66","#414a66","#626d90","#dfe3ec","#ffffff","#e0483a","#e0483a","#ffffff","#dfe3ec","#626d90","#2c3349","#3b2420","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#414a66","#414a66","#414a66","#626d90","#dfe3ec","#e0483a","#962c24","#dfe3ec","#626d90","#414a66","#2c3349","#3b2420","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#414a66","#626d90","#414a66","#414a66","#626d90","#e0483a","#962c24","#626d90","#414a66","#626d90","#2c3349","#3b2420","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#8ee27c","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#2fae45","#2fae45","#2fae45","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#2fae45","#2fae45","#2fae45","#2fae45","#2fae45","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#2fae45","#2fae45","#2fae45","#2fae45","#2fae45","#2fae45","#2fae45","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#1d7a31","#1d7a31","#1d7a31","#2fae45","#1d7a31","#1d7a31","#1d7a31","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#8ee27c","#2fae45","#1d7a31","#b4d1e7","#b4d1e7","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#8ee27c","#2fae45","#1d7a31","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#8ee27c","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#8ee27c","#2fae45","#1d7a31","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#8ee27c","#2fae45","#8ee27c","#d3e7f4","#d3e7f4","#d3e7f4","#8ee27c","#2fae45","#2fae45","#1d7a31","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b4d1e7","#8ee27c","#1d7a31","#2fae45","#8ee27c","#b4d1e7","#8ee27c","#2fae45","#1d7a31","#b4d1e7","#1d7a31","#b4d1e7","#b4d1e7","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#8ee27c","#1d7a31","#d3e7f4","#1d7a31","#3b2420","#3b2420","#3b2420","#3b2420","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#2fae45","#1d7a31","#3b2420","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#3b2420","#3b2420","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d7a31","#d3e7f4","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b4d1e7","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#b4d1e7","#b4d1e7","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#3b2420","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#eda42b","#3b2420","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#3b2420","#ffd23c","#ffffff","#3b2420","#ffd23c","#ffd23c","#ffffff","#3b2420","#eda42b","#3b2420","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b4d1e7","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#eda42b","#3b2420","#b4d1e7","#b4d1e7","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#414a66","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#626d90","#2c3349","#3b2420","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#414a66","#414a66","#414a66","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#626d90","#414a66","#2c3349","#3b2420","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#414a66","#626d90","#414a66","#414a66","#626d90","#e0483a","#962c24","#626d90","#414a66","#626d90","#2c3349","#3b2420","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_not_stonks",
-    name: "not stonks",
+    name: "bad stonks",
     grid: [
         "XXX",
         "XXX",
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ff9a8a","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#ff9a8a","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#e0483a","#ff9a8a","#b4d1e7","#b4d1e7","#b4d1e7","#ff9a8a","#e0483a","#ff9a8a","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#962c24","#e0483a","#ff9a8a","#b4d1e7","#ff9a8a","#e0483a","#962c24","#e0483a","#ff9a8a","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#962c24","#e0483a","#ff9a8a","#e0483a","#962c24","#d3e7f4","#962c24","#e0483a","#ff9a8a","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#962c24","#e0483a","#962c24","#d3e7f4","#d3e7f4","#b4d1e7","#962c24","#e0483a","#e0483a","#e0483a","#e0483a","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b4d1e7","#b4d1e7","#b4d1e7","#962c24","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#962c24","#ff9a8a","#e0483a","#962c24","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#3b2420","#3b2420","#3b2420","#3b2420","#b4d1e7","#d3e7f4","#d3e7f4","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#3b2420","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#3b2420","#3b2420","#d3e7f4","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#d3e7f4","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#ff9a8a","#e0483a","#962c24","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffffff","#3b2420","#ffd23c","#ffd23c","#ffffff","#3b2420","#ffd23c","#eda42b","#3b2420","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#eda42b","#3b2420","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3d7fd6","#3b2420","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#d4ecff","#3b2420","#ff9a8a","#e0483a","#962c24","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#3b2420","#eda42b","#ffd23c","#3b2420","#ffd23c","#3b2420","#eda42b","#3b2420","#d3e7f4","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#414a66","#626d90","#ffffff","#e0483a","#e0483a","#ffffff","#626d90","#2c3349","#3b2420","#e0483a","#e0483a","#e0483a","#e0483a","#e0483a","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#414a66","#626d90","#dfe3ec","#ffffff","#e0483a","#e0483a","#ffffff","#dfe3ec","#626d90","#2c3349","#3b2420","#e0483a","#e0483a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#414a66","#414a66","#626d90","#dfe3ec","#e0483a","#962c24","#dfe3ec","#626d90","#414a66","#3b2420","#e0483a","#e0483a","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#e0483a","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ff9a8a","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#ff9a8a","#b4d1e7","#d3e7f4","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#e0483a","#ff9a8a","#b4d1e7","#b4d1e7","#b4d1e7","#ff9a8a","#e0483a","#ff9a8a","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#962c24","#e0483a","#ff9a8a","#b4d1e7","#ff9a8a","#e0483a","#962c24","#e0483a","#ff9a8a","#d3e7f4","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#962c24","#e0483a","#ff9a8a","#e0483a","#962c24","#d3e7f4","#962c24","#e0483a","#ff9a8a","#d3e7f4","#b4d1e7","#d3e7f4","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#962c24","#e0483a","#962c24","#d3e7f4","#d3e7f4","#b4d1e7","#962c24","#e0483a","#e0483a","#e0483a","#e0483a","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b4d1e7","#b4d1e7","#b4d1e7","#962c24","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#b4d1e7","#962c24","#ff9a8a","#e0483a","#962c24","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#d3e7f4","#d3e7f4","#3b2420","#3b2420","#3b2420","#3b2420","#b4d1e7","#d3e7f4","#d3e7f4","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#3b2420","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#3b2420","#3b2420","#d3e7f4","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#d3e7f4","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#ff9a8a","#e0483a","#962c24","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffffff","#3b2420","#ffd23c","#ffd23c","#ffffff","#3b2420","#ffd23c","#eda42b","#3b2420","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#eda42b","#3b2420","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#ff9a8a","#e0483a","#962c24","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#d3e7f4","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#d3e7f4","#ff9a8a","#e0483a","#962c24","#d3e7f4","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#414a66","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#2c3349","#3b2420","#e0483a","#e0483a","#e0483a","#e0483a","#e0483a","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#414a66","#626d90","#dfe3ec","#ffffff","#e0483a","#e0483a","#ffffff","#dfe3ec","#626d90","#2c3349","#3b2420","#e0483a","#e0483a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#414a66","#414a66","#626d90","#dfe3ec","#e0483a","#962c24","#dfe3ec","#626d90","#414a66","#3b2420","#e0483a","#e0483a","#b4d1e7","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#e0483a","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_mustnt_grumble",
-    name: "mustn't grumble",
+    name: "trying to avoid complaining when you really want to complain",
     grid: [
         "XXX",
         "XXX",
@@ -83361,7 +82890,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_queueing",
@@ -83372,13 +82900,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f6e7a6","#f6e7a6","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#b8a796","#b8a796","#f8f0d8","#b4c0dc","#b4c0dc","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#b8a796","#f6e7a6","#f6e7a6","#b8a796","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#b8a796","#ecd590","#ecd590","#b8a796","#f8f0d8","#f8f0d8","#7d6a5e","#7d6a5e","#7d6a5e","#7d6a5e","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#b8a796","#b8a796","#f8f0d8","#f8f0d8","#7d6a5e","#fbe07a","#fbe07a","#fbe07a","#fbe07a","#7d6a5e","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#b8a796","#b4c0dc","#b4c0dc","#b8a796","#f8f0d8","#7d6a5e","#fbe07a","#fbe07a","#fbe07a","#fbe07a","#7d6a5e","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#7d6a5e","#f2c46a","#fbe07a","#fbe07a","#f2c46a","#7d6a5e","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#f8f0d8","#7d6a5e","#7d6a5e","#7d6a5e","#7d6a5e","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#8496c4","#8496c4","#8496c4","#8496c4","#7d6a5e","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#8496c4","#7d6a5e","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#3b2420","#fff1a6","#ffffff","#3b2420","#ffd23c","#ffd23c","#ffffff","#3b2420","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#3b2420","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#ffd96a","#ffd96a","#f8f0d8","#f8f0d8","#3b2420","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd96a","#ffd96a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#c9962e","#c9962e","#c23a4a","#c23a4a","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#c23a4a","#c23a4a","#c9962e","#c9962e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#c9962e","#c23a4a","#c23a4a","#c23a4a","#c23a4a","#eda42b","#3b2420","#c23a4a","#c23a4a","#c23a4a","#c23a4a","#c9962e","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#c9962e","#f8f0d8","#f8f0d8","#c23a4a","#c23a4a","#c23a4a","#c23a4a","#c23a4a","#c23a4a","#eda42b","#3b2420","#c9962e","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#c9962e","#f8f0d8","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#4f6aa6","#c9962e","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#c9962e","#c9962e","#c9962e","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#c9962e","#c9962e","#c9962e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#b8a796","#f6e7a6","#f6e7a6","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#b8a796","#b8a796","#b8a796","#b4c0dc","#b4c0dc","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#b8a796","#f6e7a6","#f6e7a6","#b8a796","#b4c0dc","#b4c0dc","#7d6a5e","#7d6a5e","#7d6a5e","#7d6a5e","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#b8a796","#ecd590","#ecd590","#b8a796","#b4c0dc","#7d6a5e","#fbe07a","#fbe07a","#fbe07a","#fbe07a","#7d6a5e","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#b8a796","#b8a796","#f8f0d8","#b4c0dc","#7d6a5e","#fbe07a","#fbe07a","#fbe07a","#fbe07a","#7d6a5e","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#b8a796","#b4c0dc","#b4c0dc","#b8a796","#f8f0d8","#7d6a5e","#7d6a5e","#fbe07a","#7d6a5e","#fbe07a","#7d6a5e","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#7d6a5e","#7d6a5e","#7d6a5e","#7d6a5e","#f8f0d8","#7d6a5e","#f2c46a","#fbe07a","#fbe07a","#f2c46a","#7d6a5e","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#7d6a5e","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#7d6a5e","#f8f0d8","#7d6a5e","#7d6a5e","#7d6a5e","#7d6a5e","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7d6a5e","#ffd23c","#7d6a5e","#ffd23c","#ffd23c","#7d6a5e","#ffd23c","#7d6a5e","#8496c4","#8496c4","#8496c4","#8496c4","#7d6a5e","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7d6a5e","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#8496c4","#7d6a5e","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7d6a5e","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#7d6a5e","#7d6a5e","#7d6a5e","#7d6a5e","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7d6a5e","#8496c4","#8496c4","#8496c4","#3b2420","#fff1a6","#ffffff","#3b2420","#ffd23c","#ffd23c","#ffffff","#3b2420","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7d6a5e","#8496c4","#8496c4","#8496c4","#3b2420","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7d6a5e","#8496c4","#8496c4","#8496c4","#3b2420","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7d6a5e","#8496c4","#8496c4","#8496c4","#3b2420","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7d6a5e","#8496c4","#8496c4","#8496c4","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7d6a5e","#8496c4","#8496c4","#8496c4","#8496c4","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7d6a5e","#8496c4","#8496c4","#3b2420","#3b2420","#4f6aa6","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#4f6aa6","#3b2420","#3b2420","#f8f0d8"],["#f8f0d8","#a39c90","#7d6a5e","#8496c4","#8496c4","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b2420","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b2420","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_bagging_area",
@@ -83394,8 +82921,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_quietly_seething",
@@ -83406,30 +82932,28 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#eceef3","#b7bdc9","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#b7bdc9","#eceef3","#a39c90","#f8f0d8"],["#f8f0d8","#eceef3","#eceef3","#eceef3","#b7bdc9","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#b7bdc9","#eceef3","#eceef3","#eceef3","#f8f0d8"],["#f8f0d8","#a39c90","#b7bdc9","#eceef3","#eceef3","#b7bdc9","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#b7bdc9","#eceef3","#eceef3","#b7bdc9","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#b7bdc9","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#b7bdc9","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#fff1a6","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#fff1a6","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#fff1a6","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffd23c","#ff7a4f","#ff7a4f","#ffd23c","#ffd23c","#ff7a4f","#ff7a4f","#ffd23c","#ffd23c","#ff7a4f","#d8502f","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#d8502f","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff8fa8","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff8fa8","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff7a4f","#3b2420","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#3b2420","#d8502f","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff7a4f","#ff7a4f","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#ff7a4f","#d8502f","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#d8502f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#d8502f","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#d8502f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#d8502f","#d8502f","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#d8502f","#d8502f","#d8502f","#d8502f","#d8502f","#d8502f","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#eceef3","#b7bdc9","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#b7bdc9","#eceef3","#a39c90","#f8f0d8"],["#f8f0d8","#eceef3","#eceef3","#eceef3","#b7bdc9","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#b7bdc9","#eceef3","#eceef3","#eceef3","#f8f0d8"],["#f8f0d8","#a39c90","#b7bdc9","#eceef3","#eceef3","#b7bdc9","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#b7bdc9","#eceef3","#eceef3","#b7bdc9","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#b7bdc9","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#b7bdc9","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#fff1a6","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#fff1a6","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#fff1a6","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#d8502f","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff8fa8","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff8fa8","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff7a4f","#3b2420","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#3b2420","#d8502f","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff7a4f","#ff7a4f","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#ff7a4f","#d8502f","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#d8502f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#d8502f","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#d8502f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#ff7a4f","#d8502f","#d8502f","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#d8502f","#d8502f","#d8502f","#d8502f","#d8502f","#d8502f","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_last_biscuit",
-    name: "the last biscuit",
+    name: "noticing that there's only one biscuit lefti",
     grid: [
         "XXX",
         "XXX",
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#fff1a6","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#fff1a6","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#fff1a6","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#3d7fd6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#d4ecff","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#5d8fc8","#b8d4ef","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#b8d4ef","#5d8fc8","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5d8fc8","#b8d4ef","#ffffff","#ffffff","#ffffff","#f0c578","#d9a050","#d9a050","#f0c578","#ffffff","#ffffff","#ffffff","#b8d4ef","#5d8fc8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5d8fc8","#b8d4ef","#ffffff","#ffffff","#f0c578","#d9a050","#a8702e","#d9a050","#d9a050","#f0c578","#ffffff","#ffffff","#b8d4ef","#5d8fc8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#5d8fc8","#b8d4ef","#ffffff","#ffffff","#f0c578","#d9a050","#d9a050","#f0c578","#ffffff","#ffffff","#b8d4ef","#5d8fc8","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#fff1a6","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#3d7fd6","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#3d7fd6","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffffff","#ffffff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#ffffff","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#eda42b","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#252c3c","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#5d8fc8","#252c3c","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#252c3c","#5d8fc8","#b8d4ef","#ffffff","#ffffff","#3b2420","#3b2420","#3b2420","#3b2420","#ffffff","#ffffff","#b8d4ef","#5d8fc8","#252c3c","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5d8fc8","#b8d4ef","#ffffff","#ffffff","#3b2420","#f0c578","#d9a050","#d9a050","#f0c578","#3b2420","#ffffff","#ffffff","#b8d4ef","#5d8fc8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5d8fc8","#b8d4ef","#ffffff","#3b2420","#f0c578","#d9a050","#a8702e","#d9a050","#d9a050","#f0c578","#3b2420","#ffffff","#b8d4ef","#5d8fc8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#252c3c","#5d8fc8","#b8d4ef","#ffffff","#3b2420","#f0c578","#d9a050","#d9a050","#f0c578","#3b2420","#ffffff","#b8d4ef","#5d8fc8","#252c3c","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#252c3c","#4f6aa6","#5d8fc8","#5d8fc8","#5d8fc8","#3b2420","#3b2420","#3b2420","#3b2420","#5d8fc8","#5d8fc8","#5d8fc8","#3b5288","#252c3c","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_sorry",
@@ -83440,13 +82964,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3f5a52","#3f5a52","#3f5a52","#3f5a52","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3f5a52","#fff6c8","#fff6c8","#fff6c8","#fff6c8","#3f5a52","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3f5a52","#ffe27a","#ffe27a","#ffe27a","#ffe27a","#3f5a52","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3f5a52","#3f5a52","#3f5a52","#3f5a52","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3f5a52","#3f5a52","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#ffe27a","#5d7d72","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffe27a","#3f5a52","#ffe27a","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3f5a52","#5d7d72","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#fff1a6","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#3f5a52","#5d7d72","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffffff","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#3b2420","#eda42b","#3b2420","#5d7d72","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#eda42b","#3b2420","#5d7d72","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#3d7fd6","#5d7d72","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#d4ecff","#5d7d72","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#3f5a52","#5d7d72","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#3f5a52","#5d7d72","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#3f5a52","#5d7d72","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#3b2420","#5d7d72","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#fff1a6","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#ffffff","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffffff","#3b2420","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#fff1a6","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#3d7fd6","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#d4ecff","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#eda42b","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#4f6aa6","#3b5288","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_cup_of_tea",
@@ -83462,8 +82985,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_buffering",
@@ -83474,13 +82996,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#6b5a50","#6b5a50","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#6b5a50","#6b5a50","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#cdc5b6","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#cdc5b6","#cdc5b6","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#8f8277","#8f8277","#f8f0d8","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#6b5a50","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#8f8277","#8f8277","#3b2420","#fff1a6","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffffff","#ffffff","#eda42b","#3b2420","#f8f0d8","#6b5a50","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#b3a99c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#b3a99c","#b3a99c","#f8f0d8","#3b2420","#eda42b","#ffd23c","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#b3a99c","#b3a99c","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#b3a99c","#b3a99c","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#cdc5b6","#cdc5b6","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b5288","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#3b5288","#b4aea2","#b4aea2","#b4aea2","#b4aea2","#b4aea2","#b4aea2"],["#f8f0d8","#a39c90","#3b2420","#3b5288","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#3b5288","#b4aea2","#dcd8cf","#dcd8cf","#cdc8be","#cdc8be","#cdc8be"],["#f8f0d8","#a39c90","#3b2420","#3b5288","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#3b5288","#b4aea2","#dcd8cf","#cdc8be","#cdc8be","#cdc8be","#cdc8be"],["#f8f0d8","#a39c90","#3b2420","#3b5288","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#3b5288","#b4aea2","#cdc8be","#cdc8be","#cdc8be","#cdc8be","#cdc8be"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#b4aea2","#cdc8be","#cdc8be","#cdc8be","#cdc8be","#cdc8be"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#b4aea2","#cdc8be","#cdc8be","#cdc8be","#cdc8be","#cdc8be"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#f8f0d8","#3b2420","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#f8f0d8","#3b2420","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#fff1a6","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffffff","#ffffff","#eda42b","#3b2420","#f8f0d8","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#3b2420","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#ffd23c","#eda42b","#3b2420","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#f8f0d8","#3b2420","#eda42b","#ffd23c","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#f8f0d8","#3b2420","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#f8f0d8","#3b2420","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#cdc5b6","#cdc5b6","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#f8f0d8","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#3b2420","#f8f0d8","#f8f0d8","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#4f6aa6","#4f6aa6","#3b5288","#3b2420","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b5288","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#3b5288","#3b5288","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b5288","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#3b5288","#3b5288","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b5288","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#3b5288","#3b5288","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b5288","#3b5288","#4f6aa6","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#3b5288","#3b5288","#3b5288","#3b2420","#f8f0d8","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_unread_notifications",
@@ -83496,12 +83017,11 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_low_battery",
-    name: "low battery",
+    name: "having low battery",
     grid: [
         "XXX",
         "XXX",
@@ -83514,7 +83034,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_someone_typing",
@@ -83530,8 +83049,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "emotion_not_a_robot",
@@ -83548,7 +83066,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_off_and_on_again",
@@ -83559,13 +83076,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#323a55","#323a55","#323a55","#7f9cd6","#7f9cd6","#7f9cd6","#7f9cd6","#323a55","#323a55","#323a55","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#7f9cd6","#7f9cd6","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#7f9cd6","#7f9cd6","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7f9cd6","#cfe3ff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#cfe3ff","#7f9cd6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#cfe3ff","#ffd23c","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#ffd23c","#cfe3ff","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7f9cd6","#cfe3ff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#cfe3ff","#7f9cd6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#7f9cd6","#7f9cd6","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#7f9cd6","#7f9cd6","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#323a55","#323a55","#323a55","#7f9cd6","#7f9cd6","#7f9cd6","#7f9cd6","#323a55","#323a55","#323a55","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#272e44","#272e44","#272e44","#ffffff","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#272e44","#ffffff","#272e44","#ffffff","#272e44","#ffffff","#272e44","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#ffffff","#272e44","#272e44","#ffffff","#272e44","#272e44","#ffffff","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#ffffff","#272e44","#272e44","#272e44","#272e44","#272e44","#ffffff","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#ffffff","#272e44","#272e44","#272e44","#272e44","#272e44","#ffffff","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#272e44","#ffffff","#272e44","#272e44","#272e44","#ffffff","#272e44","#272e44","#272e44","#3ddc6a","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#ffffff","#ffffff","#ffffff","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#323a55","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#323a55","#323a55","#323a55","#7f9cd6","#7f9cd6","#7f9cd6","#7f9cd6","#323a55","#323a55","#323a55","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#7f9cd6","#7f9cd6","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#7f9cd6","#7f9cd6","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7f9cd6","#cfe3ff","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#cfe3ff","#7f9cd6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#cfe3ff","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#cfe3ff","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#7f9cd6","#cfe3ff","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#3b2420","#cfe3ff","#7f9cd6","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#7f9cd6","#7f9cd6","#cfe3ff","#ffd23c","#3b2420","#ffd23c","#3b2420","#ffd23c","#cfe3ff","#cfe3ff","#7f9cd6","#7f9cd6","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#323a55","#7f9cd6","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#cfe3ff","#7f9cd6","#323a55","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#323a55","#7f9cd6","#7f9cd6","#7f9cd6","#ffd23c","#7f9cd6","#7f9cd6","#7f9cd6","#323a55","#323a55","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#323a55","#ffd23c","#323a55","#ffd23c","#323a55","#ffd23c","#323a55","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#ffd23c","#1d2233","#272e44","#ffd23c","#272e44","#1d2233","#ffd23c","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#ffd23c","#1d2233","#272e44","#1d2233","#272e44","#272e44","#ffd23c","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#ffd23c","#272e44","#272e44","#272e44","#272e44","#272e44","#ffd23c","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#323a55","#ffd23c","#272e44","#272e44","#272e44","#ffd23c","#1d2233","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#272e44","#272e44","#272e44","#323a55","#ffd23c","#ffd23c","#ffd23c","#1d2233","#272e44","#272e44","#272e44","#272e44","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#1d2233","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "emotion_touching_grass",
@@ -83576,13 +83092,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#fff3a0","#ffd84a","#ffd84a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#3b2420","#3b2420","#3b2420","#3b2420","#cdeefa","#cdeefa","#fff3a0","#ffd84a","#ffd84a","#ffd84a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#cdeefa","#cdeefa","#3b2420","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd84a","#ffd84a","#ffd84a","#ffd84a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a9dcf5","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#a9dcf5","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3d7fd6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#d4ecff","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#3b2420","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#3b2420","#eda42b","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#a9dcf5","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#3b2420","#eda42b","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#eda42b","#eda42b","#3b2420","#3b2420","#3b2420","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#a9dcf5","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#3b2420","#4f6aa6","#4f6aa6","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#a9dcf5","#a9dcf5","#a9dcf5","#3b2420","#3b2420","#3b2420","#3b2420","#a9dcf5","#a9dcf5","#3b2420","#4f6aa6","#4f6aa6","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#3b2420","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#8ee06e","#4f6aa6","#4f6aa6","#4f6aa6","#8ee06e","#4f6aa6","#8ee06e","#4f6aa6","#4f6aa6","#3b2420","#ffd23c","#ffd23c","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#8ee06e","#5cbf4a","#8ee06e","#5cbf4a","#f8f0d8","#8ee06e","#5cbf4a","#8ee06e","#5cbf4a","#8ee06e","#3b2420","#ffd23c","#ffd23c","#8ee06e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5cbf4a","#5cbf4a","#5cbf4a","#8ee06e","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#3b2420","#3b2420","#8ee06e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
+    color: [["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#a9dcf5","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#cdeefa","#cdeefa","#cdeefa","#cdeefa","#3b2420","#3b2420","#3b2420","#3b2420","#cdeefa","#cdeefa","#a9dcf5","#a9dcf5","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#cdeefa","#cdeefa","#3b2420","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#3b2420","#3b2420","#a9dcf5","#a9dcf5","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#3b2420","#fff1a6","#fff1a6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a9dcf5","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#3b2420","#3b2420","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#3b2420","#3b2420","#3b2420","#a9dcf5","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#ffd23c","#ffd23c","#3b2420","#3b2420","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#3d7fd6","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#d4ecff","#ff8fa8","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ff8fa8","#3b2420","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#ffd23c","#eda42b","#3b2420","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#3b2420","#eda42b","#ffd23c","#3b2420","#3b2420","#3b2420","#3b2420","#ffd23c","#eda42b","#3b2420","#a9dcf5","#a9dcf5","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#3b2420","#eda42b","#ffd23c","#ffd23c","#3b2420","#3b2420","#ffd23c","#eda42b","#eda42b","#3b2420","#3b2420","#3b2420","#a9dcf5","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#a9dcf5","#3b2420","#3b2420","#eda42b","#eda42b","#eda42b","#eda42b","#3b2420","#3b2420","#3b2420","#4f6aa6","#4f6aa6","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#a9dcf5","#a9dcf5","#a9dcf5","#3b2420","#3b2420","#3b2420","#3b2420","#a9dcf5","#a9dcf5","#3b2420","#4f6aa6","#4f6aa6","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a9dcf5","#3b2420","#4f6aa6","#4f6aa6","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#7e98cf","#3b2420","#4f6aa6","#3b5288","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#3b2420","#8ee06e","#4f6aa6","#4f6aa6","#4f6aa6","#8ee06e","#4f6aa6","#8ee06e","#4f6aa6","#4f6aa6","#3b2420","#ffd23c","#ffd23c","#3b2420","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#8ee06e","#5cbf4a","#8ee06e","#5cbf4a","#5cbf4a","#8ee06e","#5cbf4a","#8ee06e","#5cbf4a","#8ee06e","#3b2420","#ffd23c","#ffd23c","#8ee06e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5cbf4a","#5cbf4a","#5cbf4a","#8ee06e","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#3b2420","#3b2420","#8ee06e","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#3a8f3a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#5cbf4a","#a39c90","#f8f0d8"],["#f8f0d8","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#a39c90","#f8f0d8"],["#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8","#f8f0d8"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "tipper_truck",
@@ -96590,8 +96105,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.5,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "medium_black_hole",
@@ -96627,7 +96141,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "small_asteroid",
@@ -96666,7 +96179,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
-    claudeDraft: true,
   },
   {
     id: "tablecloth_trick",
@@ -96695,8 +96207,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.7,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "an_omen",
@@ -96706,13 +96217,12 @@ export const SHAPES = [
         "XXX",
         "XXX"
       ],
-    color: [["#3e4360","#464b68","#464b68","#464b68","#5e6696","#5e6696","#464b68","#464b68","#3e4360","","","","","","","","","","","","","","","","","",""],["#464b68","#464b68","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#464b68","#3e4360","","","","","","","","","","","","","","","","","",""],["#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#3e4360","","","","","","","","","","","","","","","","","",""],["#464b68","#464b68","#7c7c8e","#7c7c8e","#7c7c8e","#ffffff","#464b68","#353950","#3e4360","","","","","","","","","","","","","","","","","",""],["#464b68","#7c7c8e","#3a3a47","#3a3a47","#3a3a47","#09090d","#09090d","#353950","#3e4360","","","","","","","","","","","","","","","","","",""],["#7c7c8e","#3a3a47","#3a3a47","#3a3a47","#3a3a47","#353950","#353950","#353950","#3e4360","","","","","","","","","","","","","","","","","",""],["#393d55","#1e1e26","#1e1e26","#1e1e26","#353950","#353950","#353950","#353950","#383d58","","","","","","","","","","","","","","","","","",""],["#3e4360","#1e1e26","#1e1e26","#353950","#353950","#353950","#353950","#272a3a","#383d58","","","","","","","","","","","","","","","","","",""],["#3e4360","#353950","#353950","#353950","#353950","#353950","#353950","#272a3a","#383d58","","","","","","","","","","","","","","","","","",""],["#464b68","#464b68","#464b68","#353950","#353950","#353950","#353950","#353950","#272a3a","#383d58","#383d58","#3e4360","#3e4360","#3e4360","#3e4360","#3e4360","#3e4360","#3e4360","#383d58","#383d58","#383d58","#383d58","#383d58","#383d58","#383d58","#383d58","#383d58"],["#464b68","#5e6696","#464b68","#464b68","#353950","#353950","#353950","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#353950","#353950","#353950","#272a3a","#272a3a","#272a3a","#1c1e2b","#1c1e2b","#383d58"],["#464b68","#5e6696","#5e6696","#464b68","#353950","#353950","#353950","#353950","#464b68","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#464b68","#464b68","#353950","#353950","#272a3a","#272a3a","#383d58"],["#464b68","#464b68","#5e6696","#464b68","#353950","#353950","#353950","#353950","#464b68","#464b68","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#5e6696","#5e6696","#464b68","#464b68","#353950","#272a3a","#383d58"],["#464b68","#464b68","#464b68","#464b68","#353950","#353950","#353950","#353950","#353950","#464b68","#3f4157","#353950","#353950","#353950","#353950","#3f4157","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#5e6696","#464b68","#353950","#3e4360"],["#353950","#464b68","#464b68","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#464b68","#3f4157","#3f4157","#353950","#353950","#353950","#3f4157","#3f4157","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#5e6696","#3e4360"],["#353950","#353950","#464b68","#353950","#353950","#353950","#353950","#353950","#272a3a","#353950","#353950","#353950","#464b68","#3f4157","#3f4157","#353950","#353950","#353950","#3f4157","#3f4157","#353950","#353950","#353950","#272a3a","#272a3a","#272a3a","#383d58"],["#3e4360","#353950","#353950","#353950","#353950","#353950","#353950","#272a3a","#272a3a","#272a3a","#353950","#353950","#353950","#353950","#464b68","#3f4157","#3f4157","#3f4157","#353950","#353950","#353950","#3f4157","#3f4157","#3f4157","#1c1e2b","#1c1e2b","#383d58"],["#3e4360","#272a3a","#272a3a","#353950","#353950","#353950","#272a3a","#272a3a","#272a3a","#272a3a","#272a3a","#272a3a","#272a3a","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#1c1e2b","#1c1e2b","#1c1e2b","#383d58"],["#b9b4a7","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#24242c","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#24242c","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#b9b4a7"],["#7a766d","#b9b4a7","#b9b4a7","#b9b4a7","#d6d1c4","#d6d1c4","#24242c","#24242c","#24242c","#d6d1c4","#d6d1c4","#24242c","#24242c","#24242c","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#b9b4a7","#d6d1c4","#b9b4a7","#9b968a"],["#a9b47a","#8e9a64","#b9b4a7","#b9b4a7","#b9b4a7","#24242c","#d6d1c4","#d6d1c4","#d6d1c4","#24242c","#24242c","#d6d1c4","#d6d1c4","#d6d1c4","#24242c","#24242c","#a9b47a","#8e9a64","#b9b4a7","#5d5a53","#d6d1c4","#d6d1c4","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#7a766d"],["#8e9a64","#8e9a64","#9b968a","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#8e9a64","#a9b47a","#d6d1c4","#5d5a53","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#9b968a","#7a766d"],["#5d5a53","#9b968a","#9b968a","#9b968a","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#8e9a64","#a9b47a","#b9b4a7","#b9b4a7","#a9b47a","#8e9a64","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#5d5a53","#b9b4a7","#b9b4a7","#b9b4a7","#a9b47a","#8e9a64","#7a766d"],["#5d5a53","#5d5a53","#7a766d","#9b968a","#9b968a","#b9b4a7","#9b968a","#9b968a","#b9b4a7","#b9b4a7","#a9b47a","#8e9a64","#b9b4a7","#9b968a","#8e9a64","#8e9a64","#9b968a","#b9b4a7","#b9b4a7","#9b968a","#5d5a53","#9b968a","#9b968a","#9b968a","#a9b47a","#a9b47a","#5d5a53"],["#5d5a53","#5d5a53","#5d5a53","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#5d5a53","#9b968a","#9b968a","#5d5a53","#5d5a53","#5d5a53"],["#5d5a53","#5d5a53","#5d5a53","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#5d5a53","#5d5a53","#5d5a53"],["#8e9a64","#8e9a64","#5d5a53","#7a766d","#7a766d","#7a766d","#8e9a64","#8e9a64","#9b968a","#7a766d","#9b968a","#9b968a","#7a766d","#7a766d","#7a766d","#9b968a","#7a766d","#9b968a","#9b968a","#7a766d","#9b968a","#9b968a","#9b968a","#7a766d","#8e9a64","#8e9a64","#8e9a64"]],
+    color: [["#1c1e2b","#1c1e2b","#1c1e2b","#464b68","#5e6696","#5e6696","#1c1e2b","#1c1e2b","#1c1e2b","","","","","","","","","","","","","","","","","",""],["#1c1e2b","#464b68","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#464b68","#1c1e2b","","","","","","","","","","","","","","","","","",""],["#1c1e2b","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#1c1e2b","","","","","","","","","","","","","","","","","",""],["#464b68","#464b68","#7c7c8e","#7c7c8e","#7c7c8e","#ffffff","#464b68","#353950","#1c1e2b","","","","","","","","","","","","","","","","","",""],["#464b68","#7c7c8e","#3a3a47","#3a3a47","#3a3a47","#09090d","#09090d","#353950","#1c1e2b","","","","","","","","","","","","","","","","","",""],["#7c7c8e","#3a3a47","#3a3a47","#3a3a47","#3a3a47","#353950","#353950","#353950","#3e4360","","","","","","","","","","","","","","","","","",""],["#393d55","#1e1e26","#1e1e26","#1e1e26","#353950","#353950","#353950","#353950","#383d58","","","","","","","","","","","","","","","","","",""],["#3e4360","#1e1e26","#1e1e26","#353950","#353950","#353950","#353950","#272a3a","#383d58","","","","","","","","","","","","","","","","","",""],["#3e4360","#353950","#353950","#353950","#353950","#353950","#353950","#272a3a","#383d58","","","","","","","","","","","","","","","","","",""],["#464b68","#464b68","#464b68","#353950","#353950","#353950","#353950","#353950","#272a3a","#383d58","#383d58","#3e4360","#3e4360","#3e4360","#3e4360","#3e4360","#3e4360","#3e4360","#383d58","#383d58","#1c1e2b","#1c1e2b","#1c1e2b","#1c1e2b","#1c1e2b","#1c1e2b","#1c1e2b"],["#464b68","#5e6696","#464b68","#464b68","#353950","#353950","#353950","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#464b68","#353950","#353950","#353950","#272a3a","#272a3a","#272a3a","#1c1e2b","#1c1e2b","#1c1e2b"],["#464b68","#5e6696","#5e6696","#464b68","#353950","#353950","#353950","#353950","#464b68","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#5e6696","#464b68","#464b68","#353950","#353950","#272a3a","#272a3a","#1c1e2b"],["#464b68","#464b68","#5e6696","#464b68","#353950","#353950","#353950","#353950","#464b68","#464b68","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#5e6696","#5e6696","#464b68","#464b68","#353950","#272a3a","#1c1e2b"],["#464b68","#464b68","#464b68","#464b68","#353950","#353950","#353950","#353950","#353950","#464b68","#3f4157","#353950","#353950","#353950","#353950","#3f4157","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#5e6696","#464b68","#353950","#1c1e2b"],["#1c1e2b","#464b68","#464b68","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#464b68","#3f4157","#3f4157","#353950","#353950","#353950","#3f4157","#3f4157","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#5e6696","#1c1e2b"],["#1c1e2b","#353950","#464b68","#353950","#353950","#353950","#353950","#353950","#272a3a","#353950","#353950","#353950","#464b68","#3f4157","#3f4157","#353950","#353950","#353950","#3f4157","#3f4157","#353950","#353950","#353950","#272a3a","#272a3a","#272a3a","#1c1e2b"],["#1c1e2b","#1c1e2b","#353950","#353950","#353950","#353950","#353950","#272a3a","#272a3a","#272a3a","#353950","#353950","#353950","#353950","#464b68","#3f4157","#3f4157","#3f4157","#353950","#353950","#353950","#3f4157","#3f4157","#3f4157","#1c1e2b","#1c1e2b","#1c1e2b"],["#1c1e2b","#1c1e2b","#1c1e2b","#353950","#353950","#353950","#272a3a","#272a3a","#272a3a","#272a3a","#272a3a","#272a3a","#272a3a","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#353950","#1c1e2b","#1c1e2b","#1c1e2b","#1c1e2b"],["#b9b4a7","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#24242c","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#24242c","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#b9b4a7"],["#7a766d","#b9b4a7","#b9b4a7","#b9b4a7","#d6d1c4","#d6d1c4","#24242c","#24242c","#24242c","#d6d1c4","#d6d1c4","#24242c","#24242c","#24242c","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#d6d1c4","#b9b4a7","#d6d1c4","#b9b4a7","#9b968a"],["#a9b47a","#8e9a64","#b9b4a7","#b9b4a7","#b9b4a7","#24242c","#d6d1c4","#d6d1c4","#d6d1c4","#24242c","#24242c","#d6d1c4","#d6d1c4","#d6d1c4","#24242c","#24242c","#a9b47a","#8e9a64","#b9b4a7","#5d5a53","#d6d1c4","#d6d1c4","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#7a766d"],["#8e9a64","#8e9a64","#9b968a","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#8e9a64","#a9b47a","#d6d1c4","#5d5a53","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#9b968a","#7a766d"],["#5d5a53","#9b968a","#9b968a","#9b968a","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#8e9a64","#a9b47a","#b9b4a7","#b9b4a7","#a9b47a","#8e9a64","#b9b4a7","#b9b4a7","#b9b4a7","#b9b4a7","#5d5a53","#b9b4a7","#b9b4a7","#b9b4a7","#a9b47a","#8e9a64","#7a766d"],["#5d5a53","#5d5a53","#7a766d","#9b968a","#9b968a","#b9b4a7","#9b968a","#9b968a","#b9b4a7","#b9b4a7","#a9b47a","#8e9a64","#b9b4a7","#9b968a","#8e9a64","#8e9a64","#9b968a","#b9b4a7","#b9b4a7","#9b968a","#5d5a53","#9b968a","#9b968a","#9b968a","#a9b47a","#a9b47a","#5d5a53"],["#5d5a53","#5d5a53","#5d5a53","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#5d5a53","#9b968a","#9b968a","#5d5a53","#5d5a53","#5d5a53"],["#5d5a53","#5d5a53","#5d5a53","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#9b968a","#5d5a53","#5d5a53","#5d5a53"],["#8e9a64","#8e9a64","#5d5a53","#7a766d","#7a766d","#7a766d","#8e9a64","#8e9a64","#9b968a","#7a766d","#9b968a","#9b968a","#7a766d","#7a766d","#7a766d","#9b968a","#7a766d","#9b968a","#9b968a","#7a766d","#9b968a","#9b968a","#9b968a","#7a766d","#8e9a64","#8e9a64","#8e9a64"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "a_bad_sign",
@@ -96722,13 +96232,12 @@ export const SHAPES = [
         "XXX",
         ".X."
       ],
-    color: [["#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29"],["#134a29","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#8a5a2a","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#2a8b4f","#c9d4c6","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#c9d4c6","#2a8b4f","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#2a8b4f","#2a8b4f","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#2a8b4f","#2a8b4f","#2a8b4f","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#2a8b4f","#f2f1e8","#2a8b4f","#f2f1e8","#f2f1e8","#2a8b4f","#f2f1e8","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#f2f1e8","#f2f1e8","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#f2f1e8","#227d45","#227d45","#f2f1e8","#f2f1e8","#227d45","#227d45","#f2f1e8","#227d45","#227d45","#227d45","#227d45","#227d45","#f2f1e8","#f2f1e8","#227d45","#227d45","#227d45","#227d45","#227d45","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#227d45","#f2f1e8","#227d45","#f2f1e8","#f2f1e8","#227d45","#f2f1e8","#227d45","#227d45","#227d45","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#227d45","#227d45","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#227d45","#227d45","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#227d45","#227d45","#227d45","#227d45","#227d45","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#227d45","#227d45","#227d45","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#227d45","#227d45","#227d45","#227d45","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#227d45","#c9d4c6","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#f2f1e8","#f2f1e8","#227d45","#227d45","#227d45","#227d45","#227d45","#8a5a2a","#134a29"],["#134a29","#f2f1e8","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#8a5a2a","#8a5a2a","#134a29"],["#134a29","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#134a29"],["#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29"],["","","","","","","","","#5d636b","#3b3f45","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#3b3f45","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#5d636b","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#5d636b","#5d636b","","","","","","","",""]],
+    color: [["#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29"],["#134a29","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#8a5a2a","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#2a8b4f","#c9d4c6","#f2f1e8","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#2a8b4f","#2a8b4f","#f2f1e8","#f2f1e8","#f2f1e8","#2a8b4f","#2a8b4f","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#2a8b4f","#f2f1e8","#2a8b4f","#f2f1e8","#2a8b4f","#2a8b4f","#f2f1e8","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#f2f1e8","#2a8b4f","#f2f1e8","#2a8b4f","#2a8b4f","#f2f1e8","#2a8b4f","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#2a8b4f","#f2f1e8","#2a8b4f","#f2f1e8","#2a8b4f","#2a8b4f","#f2f1e8","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#f2f1e8","#2a8b4f","#f2f1e8","#2a8b4f","#2a8b4f","#f2f1e8","#2a8b4f","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#2a8b4f","#f2f1e8","#2a8b4f","#f2f1e8","#2a8b4f","#2a8b4f","#f2f1e8","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#2a8b4f","#f2f1e8","#2a8b4f","#f2f1e8","#2a8b4f","#2a8b4f","#f2f1e8","#2a8b4f","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#2a8b4f","#f2f1e8","#f2f1e8","#f2f1e8","#2a8b4f","#2a8b4f","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#2a8b4f","#f2f1e8","#2a8b4f","#2a8b4f","#f2f1e8","#2a8b4f","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#227d45","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#227d45","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#227d45","#f2f1e8","#227d45","#227d45","#f2f1e8","#227d45","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#227d45","#f2f1e8","#2a8b4f","#227d45","#f2f1e8","#227d45","#f2f1e8","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#f2f1e8","#227d45","#f2f1e8","#227d45","#227d45","#f2f1e8","#227d45","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#227d45","#f2f1e8","#227d45","#227d45","#f2f1e8","#227d45","#f2f1e8","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#f2f1e8","#227d45","#f2f1e8","#227d45","#227d45","#f2f1e8","#227d45","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#227d45","#f2f1e8","#227d45","#227d45","#f2f1e8","#227d45","#f2f1e8","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#f2f1e8","#227d45","#f2f1e8","#227d45","#227d45","#f2f1e8","#227d45","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#227d45","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#227d45","#f2f1e8","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#f2f1e8","#227d45","#f2f1e8","#f2f1e8","#f2f1e8","#227d45","#227d45","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#227d45","#f2f1e8","#134a29"],["#134a29","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#f2f1e8","#134a29"],["#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29","#134a29"],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""],["","","","","","","","","#5d636b","#8b919a","#8b919a","#c4c9cf","#c4c9cf","#8b919a","#8b919a","#5d636b","","","","","","","",""]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "omen_of_great_things",
@@ -96744,7 +96253,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "prophecy_of_great_things",
@@ -96760,7 +96268,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "a_red_sky_in_the_morning",
@@ -96775,7 +96282,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "an_eclipse",
@@ -96791,7 +96297,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "a_howling_dog",
@@ -96806,8 +96311,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "a_broken_clock",
@@ -96823,7 +96327,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "great_and_terrible_things",
@@ -96845,7 +96348,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "great_and_terrible_things_foretold",
@@ -96867,7 +96369,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "great_and_terrible_things_all_at_once",
@@ -96889,7 +96390,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "a_horrible_thing",
@@ -96924,7 +96424,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "a_terrible_thing",
@@ -96962,7 +96461,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "a_great_terrible_thing",
@@ -97002,7 +96500,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "an_unspeakably_terrible_thing",
@@ -97043,7 +96540,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "a_no_good_very_very_bad_thing",
@@ -97081,7 +96577,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "a_thing_whos_been_a_very_bad_boy",
@@ -97116,7 +96611,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "bad_thing_very_bad_thing",
@@ -97156,7 +96650,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "a_thing_that_knows_what_it_did",
@@ -97197,7 +96690,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "a_thing_that_should_be_ashamed_of_itself",
@@ -97235,7 +96727,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "sandbag_wall",
@@ -98355,8 +97846,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.9,
-    claudeDraft: true,
+    frequency: 0,
   },
   {
     id: "unravelling_yarn",
@@ -100355,7 +99845,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
-    claudeDraft: true,
   },
   {
     id: "spilled_paint",
@@ -100446,7 +99935,7 @@ export const SHAPES = [
   },
   {
     id: "mountain_of_post",
-    name: "a mountain of unopened post",
+    name: "a mountain of unopened letters",
     grid: [
         ".X.",
         "XX.",
@@ -102357,23 +101846,21 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "paddling_swan",
-    name: "a swan, paddling furiously underneath",
+    name: "a very elegant swan",
     grid: [
         "XX.",
         ".X.",
         "XXX"
       ],
-    color: [["#abaeb8","#d6d8dd","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#d6d8dd","#c1c4cf","#d6d8dd","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#d6d8dd","#abaeb8","","","","","","","",""],["#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#d6d8dd","#eef0f6","#eef0f6","#26222e","#26222e","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#e67c19","#ff8a1c","#ff8a1c","#26222e","#26222e","#ffffff","#26222e","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#e67c19","#ff8a1c","#ff8a1c","#ff8a1c","#26222e","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#b4bacb","#d6dae6","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#c35a0d","#d9640e","#d9640e","#d9640e","#eef0f6","#eef0f6","#ffffff","#ffffff","#ffffff","#d6dae6","#b4bacb","#b4bacb","#eef0f6","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#c1c4cf","#eef0f6","#eef0f6","#eef0f6","#eef0f6","#eef0f6","#eef0f6","#ffffff","#d6dae6","#b4bacb","#b4bacb","#eef0f6","#ffffff","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#abaeb8","#c1c4cf","#c1c4cf","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#b4bacb","#b4bacb","#eef0f6","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#c1c4cf","","","","","","","",""],["","","","","","","","","#c1c4cf","#eef0f6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6d8dd","","","","","","","",""],["","","","","","","","","#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#e6e6e6","","","","","","","",""],["#abaeb8","#d6d8dd","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#d6d8dd","#c1c4cf","#a2a7b7","#cccccc"],["#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#ffffff","#e6e6e6"],["#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#b4bacb","#e6e6e6"],["#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#d6dae6","#d6d8dd"],["#c1c4cf","#eef0f6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#d6dae6","#d6dae6","#eef0f6","#d6d8dd"],["#c1c4cf","#eef0f6","#eef0f6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#d6dae6","#d6dae6","#eef0f6","#eef0f6","#eef0f6","#c1c4cf"],["#a2a7b7","#d6dae6","#eef0f6","#eef0f6","#eef0f6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#eef0f6","#eef0f6","#eef0f6","#d6dae6","#d6dae6","#a2a7b7"],["#777d8e","#a2a7b7","#c1c4cf","#c1c4cf","#c1c4cf","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#c1c4cf","#c1c4cf","#c1c4cf","#a2a7b7","#a2a7b7","#777d8e"]],
+    color: [["#abaeb8","#d6d8dd","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#d6d8dd","#c1c4cf","#d6d8dd","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#d6d8dd","#abaeb8","","","","","","","",""],["#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#d6d8dd","#eef0f6","#eef0f6","#26222e","#26222e","#ffffff","#26222e","#26222e","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#e67c19","#ff8a1c","#ff8a1c","#26222e","#26222e","#ffffff","#26222e","#26222e","#26222e","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#e67c19","#ff8a1c","#ff8a1c","#ff8a1c","#26222e","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#b4bacb","#d6dae6","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#c35a0d","#d9640e","#d9640e","#d9640e","#eef0f6","#eef0f6","#ffffff","#ffffff","#ffffff","#d6dae6","#b4bacb","#b4bacb","#eef0f6","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#c1c4cf","#eef0f6","#eef0f6","#eef0f6","#eef0f6","#eef0f6","#eef0f6","#ffffff","#d6dae6","#b4bacb","#b4bacb","#eef0f6","#ffffff","#ffffff","#ffffff","#c1c4cf","","","","","","","",""],["#abaeb8","#c1c4cf","#c1c4cf","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#b4bacb","#b4bacb","#eef0f6","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#a2a7b7","","","","","","","",""],["","","","","","","","","#a2a7b7","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#c1c4cf","","","","","","","",""],["","","","","","","","","#c1c4cf","#eef0f6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6d8dd","","","","","","","",""],["","","","","","","","","#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#e6e6e6","","","","","","","",""],["#abaeb8","#d6d8dd","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#e6e6e6","#e6e6e6","#e6e6e6","#e6e6e6","#d6d8dd","#c1c4cf","#a2a7b7","#cccccc"],["#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#ffffff","#e6e6e6"],["#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#b4bacb","#e6e6e6"],["#d6d8dd","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#d6dae6","#d6d8dd"],["#c1c4cf","#eef0f6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#d6dae6","#d6dae6","#eef0f6","#d6d8dd"],["#c1c4cf","#eef0f6","#eef0f6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#ffffff","#d6dae6","#d6dae6","#ffffff","#ffffff","#d6dae6","#d6dae6","#eef0f6","#eef0f6","#eef0f6","#c1c4cf"],["#a2a7b7","#d6dae6","#eef0f6","#eef0f6","#eef0f6","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#eef0f6","#eef0f6","#eef0f6","#eef0f6","#d6dae6","#d6dae6","#a2a7b7"],["#777d8e","#a2a7b7","#c1c4cf","#c1c4cf","#c1c4cf","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#d6d8dd","#c1c4cf","#c1c4cf","#c1c4cf","#a2a7b7","#a2a7b7","#777d8e"]],
     difficulty: 2,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "swans"
       },
@@ -102396,7 +101883,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "candles"
       },
@@ -102414,7 +101900,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "washing machines"
       },
@@ -102432,7 +101917,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "presents, just for you"
       },
@@ -102442,7 +101926,7 @@ export const SHAPES = [
   },
   {
     id: "unbothered_capybara",
-    name: "a capybara who is fine with all of this",
+    name: "a capybara",
     grid: [
         "XXXXX",
         "XXXX.",
@@ -102454,7 +101938,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.15,
-    claudeDraft: true,
     oops: {
         "many": "capybaras"
       },
@@ -102473,7 +101956,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.15,
-    claudeDraft: true,
     oops: {
         "many": "life rings"
       },
@@ -102499,7 +101981,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "space"
       ],
@@ -102523,7 +102004,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "space"
       ],
@@ -102545,8 +102025,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
-    claudeDraft: true,
+    frequency: 0,
     tags: [
         "space"
       ],
@@ -102566,14 +102045,13 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "space"
       ],
   },
   {
     id: "earth_americas",
-    name: "the Earth (the Americas side)",
+    name: "the Earth",
     grid: [
         "...XXX...",
         ".XXXXXXX.",
@@ -102591,7 +102069,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "space"
       ],
@@ -102616,7 +102093,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "space"
       ],
@@ -102640,7 +102116,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "space"
       ],
@@ -102661,7 +102136,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "space"
       ],
@@ -102685,7 +102159,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "space"
       ],
@@ -102711,7 +102184,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "space"
       ],
@@ -102796,11 +102268,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.35,
-    claudeDraft: true,
   },
   {
     id: "beans_tin_on_its_side",
-    name: "a tin of beans on its side",
+    name: "spilled beans",
     grid: [
         "XXX"
       ],
@@ -104225,11 +103696,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.35,
-    claudeDraft: true,
   },
   {
     id: "spaghetti_os_tin_upended",
-    name: "a tin of spaghetti-os, upended",
+    name: "spilled spaghetti-os",
     grid: [
         "X",
         "X"
@@ -105661,11 +105131,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.35,
-    claudeDraft: true,
   },
   {
     id: "exploding_spam",
-    name: "exploding spam",
+    name: "spam© brand dynomite",
     grid: [
         "XX"
       ],
@@ -105698,7 +105167,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
   },
   {
     id: "nuclear_beans",
@@ -105741,7 +105209,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
   },
   {
     id: "radioactive_spaghetti_os",
@@ -105750,7 +105217,7 @@ export const SHAPES = [
         "X",
         "X"
       ],
-    color: [["#666c77","#b4bac2","#d1d4d8","#e0e0e0","#d1d4d8","#b4bac2","#b4bac2","#969ca6","#666c77"],["#737987","#aab1bd","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#aab1bd","#aab1bd","#737987"],["#373b46","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#373b46"],["#b9701b","#efa53a","#fcc75e","#efa53a","#d27f1f","#efa53a","#fcc75e","#efa53a","#b9701b"],["#73160d","#a92314","#a92314","#b0c030","#b0c030","#b0c030","#a92314","#a92314","#73160d"],["#73160d","#a92314","#b0c030","#54ff3a","#54ff3a","#54ff3a","#b0c030","#a92314","#73160d"],["#73160d","#b0c030","#54ff3a","#c6ff8a","#f0ffd8","#54ff3a","#22c42a","#b0c030","#73160d"],["#73160d","#54ff3a","#c6ff8a","#83190f","#83190f","#83190f","#54ff3a","#22c42a","#73160d"],["#73160d","#54ff3a","#54ff3a","#83190f","#83190f","#83190f","#22c42a","#0f7a1c","#73160d"],["#73160d","#54ff3a","#22c42a","#83190f","#83190f","#83190f","#22c42a","#0f7a1c","#73160d"],["#73160d","#b0c030","#22c42a","#22c42a","#0f7a1c","#0f7a1c","#0f7a1c","#b0c030","#73160d"],["#73160d","#a92314","#b0c030","#0f7a1c","#22c42a","#0f7a1c","#b0c030","#a92314","#73160d"],["#73160d","#a92314","#f8e2a8","#b0c030","#22c42a","#b0c030","#a92314","#f8e2a8","#73160d"],["#73160d","#f8e2a8","#f8e2a8","#a92314","#0f7a1c","#a92314","#f8e2a8","#f8e2a8","#73160d"],["#b9701b","#efa53a","#fcc75e","#efa53a","#d27f1f","#efa53a","#fcc75e","#efa53a","#b9701b"],["#373b46","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#373b46"],["#737987","#aab1bd","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#aab1bd","#aab1bd","#737987"],["#666c77","#b4bac2","#969ca6","#d1d4d8","#b4bac2","#b4bac2","#969ca6","#969ca6","#666c77"]],
+    color: [["#666c77","#b4bac2","#d1d4d8","#e0e0e0","#d1d4d8","#b4bac2","#b4bac2","#969ca6","#666c77"],["#737987","#aab1bd","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#aab1bd","#aab1bd","#737987"],["#373b46","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#373b46"],["#b9701b","#efa53a","#fcc75e","#efa53a","#d27f1f","#efa53a","#fcc75e","#efa53a","#b9701b"],["#73160d","#a92314","#a92314","#b0c030","#b0c030","#b0c030","#a92314","#a92314","#73160d"],["#73160d","#a92314","#b0c030","#54ff3a","#54ff3a","#54ff3a","#b0c030","#a92314","#73160d"],["#73160d","#b0c030","#54ff3a","#c6ff8a","#f0ffd8","#54ff3a","#22c42a","#b0c030","#73160d"],["#73160d","#54ff3a","#c6ff8a","#83190f","#83190f","#83190f","#54ff3a","#22c42a","#73160d"],["#73160d","#54ff3a","#54ff3a","#83190f","#83190f","#83190f","#22c42a","#0f7a1c","#73160d"],["#73160d","#54ff3a","#22c42a","#83190f","#83190f","#83190f","#22c42a","#0f7a1c","#73160d"],["#73160d","#b0c030","#22c42a","#22c42a","#0f7a1c","#0f7a1c","#0f7a1c","#b0c030","#73160d"],["#73160d","#a92314","#b0c030","#0f7a1c","#22c42a","#0f7a1c","#b0c030","#a92314","#73160d"],["#73160d","#a92314","#a92314","#b0c030","#22c42a","#b0c030","#a92314","#a92314","#73160d"],["#73160d","#a92314","#a92314","#a92314","#0f7a1c","#a92314","#a92314","#a92314","#73160d"],["#b9701b","#efa53a","#fcc75e","#efa53a","#d27f1f","#efa53a","#fcc75e","#efa53a","#b9701b"],["#373b46","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#3e4350","#373b46"],["#737987","#aab1bd","#cdd3dc","#cdd3dc","#cdd3dc","#cdd3dc","#aab1bd","#aab1bd","#737987"],["#666c77","#b4bac2","#969ca6","#d1d4d8","#b4bac2","#b4bac2","#969ca6","#969ca6","#666c77"]],
     powerup: {
         "type": "destroyer",
         "tier": 2,
@@ -105781,15 +105248,14 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
   },
   {
     id: "very_heavy_spam",
-    name: "a very heavy tin of spam",
+    name: "a pressurised slice of spam",
     grid: [
         "XX"
       ],
-    color: [["#7c5a23","#b89540","#b89540","#b89540","#b89540","#b89540","#3a3d48","#545866","#545866","#545866","#545866","#545866","#545866","#3a3d48","#b89540","#b89540","#b89540","#7c5a23"],["#b89540","#dcc070","#dcc070","#dcc070","#dcc070","#dcc070","#545866","#c8cbd6","#e8e8f0","#545866","#e8e8f0","#e8e8f0","#c8cbd6","#3a3d48","#dcc070","#dcc070","#dcc070","#b89540"],["#95762c","#b89540","#b89540","#b89540","#b89540","#b89540","#545866","#545866","#e8e8f0","#545866","#545866","#e8e8f0","#545866","#3a3d48","#b89540","#b89540","#b89540","#95762c"],["#6d4f1f","#b89540","#dcc070","#dcc070","#b89540","#b89540","#3a3d48","#3a3d48","#e8e8f0","#3a3d48","#3a3d48","#e8e8f0","#3a3d48","#3a3d48","#b89540","#b89540","#b89540","#6d4f1f"],["#1b417b","#0a1a5c","#0a1a5c","#0a1a5c","#0a1a5c","#0a1a5c","#0a1a5c","#0a1a5c","#0a1a5c","#0a1a5c","#0a1a5c","#0a1a5c","#0a1a5c","#0a1a5c","#0a1a5c","#0a1a5c","#0a1a5c","#1b417b"],["#1b417b","#0a1a5c","#e2be08","#e2be08","#0a1a5c","#e2be08","#e2be08","#0a1a5c","#0a1a5c","#e2be08","#0a1a5c","#0a1a5c","#e2be08","#e2be08","#0a1a5c","#e2be08","#e2be08","#1b417b"],["#1b417b","#0a1a5c","#e2be08","#0a1a5c","#0a1a5c","#e2be08","#e2be08","#0a1a5c","#e2be08","#e2be08","#e2be08","#0a1a5c","#e2be08","#0a1a5c","#e2be08","#0a1a5c","#e2be08","#1b417b"],["#1b417b","#e2be08","#e2be08","#0a1a5c","#0a1a5c","#e2be08","#0a1a5c","#0a1a5c","#e2be08","#0a1a5c","#e2be08","#0a1a5c","#e2be08","#0a1a5c","#0a1a5c","#0a1a5c","#e2be08","#1b417b"],["#61461b","#95762c","#95762c","#95762c","#95762c","#95762c","#95762c","#95762c","#95762c","#95762c","#95762c","#95762c","#95762c","#95762c","#95762c","#95762c","#95762c","#61461b"]],
+    color: [["#ead1cb","#f1d4cc","#eccbcb","#f9e3df","#f3d5d0","#f8dad2","#f8e5e2","#efcfcd","#eec3bd","#e9ccc4","#f7dcd8","#f3e0dc","#f1dcd6","#eecfc6","#f7e3da","#f3dfd8","#f7e3dc","#edc5bb"],["#a08b87","#e5beb5","#deb8af","#efcfcb","#f5d9d3","#f2d8d6","#e8cfcd","#eed4cf","#f5d5cf","#edd3cd","#f1d4d1","#f5e1dd","#f4d6c9","#f1d8cf","#f3ddd6","#ecccc8","#f2dad8","#f4e3dd"],["#957e78","#f1d1c8","#f5dace","#f3d3cf","#efd4cb","#f5dbd6","#f7e3dd","#eccbc7","#f6e8e5","#efddd8","#f2dad6","#f4d4cd","#eddcd7","#f9ded8","#ebcfc8","#f2d4d1","#f2dfdd","#f3d9d0"],["#a38380","#ab8f8b","#e1aca4","#d79a95","#edc1be","#eec6bf","#ecd4ce","#efd3cf","#f5dedb","#f2e0dc","#f7dfd5","#eed9d0","#ecc7c6","#eed2ce","#f1d2cf","#f9eae3","#f2d4d1","#e6c3bb"],["#aa8c89","#a28380","#e4b9b2","#f7cec8","#e7b6ab","#e4b0ad","#dfbdb5","#edcac6","#ddada5","#eed1cd","#f0dcd6","#dfb2b1","#eecece","#edcbc6","#e5b8b1","#ecc2b9","#eac1b9","#ae9591"],["#ad948f","#a9918b","#9b857e","#eabcb6","#e8bab1","#ebb3ae","#efc1b9","#eec4bf","#e8b7b3","#f1d2cd","#ae756c","#ebcdc3","#e5aa9f","#e6c7c1","#e1c7bf","#e1beb8","#e7b8b1","#ab908c"],["#a68c86","#a98f8a","#cb998f","#e8bab3","#f3d7cd","#a88d89","#eec9c2","#e7c6be","#dcaba1","#efc8c2","#eec2ba","#e8b9b2","#e8bcb7","#f1c0bd","#cd8987","#e4d2c7","#e3b4af","#aa928c"],["#a08077","#9f7e7b","#8f6f6b","#9d847d","#dfb2ac","#eddad4","#efded7","#f5d6d0","#eecfc6","#ebc3bd","#f3c7bf","#f3c6b9","#f5d0c7","#ecbab6","#ebc0b9","#f3ded9","#9a7f79","#aa9992"],["#a68988","#9f7d7d","#966b65","#a18580","#957b74","#99736f","#a28b88","#aa9992","#a08a81","#a6908b","#a18883","#a68983","#aa948e","#b19894","#a18d88","#ae9591","#b1988c","#b49f97"]],
     powerup: {
         "type": "gravity",
         "tier": 2,
@@ -105813,11 +105279,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
   },
   {
     id: "tonne_of_beans",
-    name: "a tonne of beans",
+    name: "a ton of condensed beans",
     grid: [
         "X",
         "X"
@@ -105850,11 +105315,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
   },
   {
     id: "settled_spaghetti_os",
-    name: "a tin of spaghetti-os (contents may settle)",
+    name: "pure, concentrated speghetti-os",
     grid: [
         "X",
         "X"
@@ -105883,7 +105347,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
   },
   {
     id: "lego_cube_2x2_red",
@@ -105898,7 +105361,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "Lego cubes"
       },
@@ -105919,7 +105381,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "Lego cubes"
       },
@@ -105941,7 +105402,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "Lego cubes"
       },
@@ -105964,7 +105424,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "big Lego cubes"
       },
@@ -105985,7 +105444,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "Lego slabs"
       },
@@ -106007,7 +105465,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "Lego blocks"
       },
@@ -106126,7 +105583,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "flowerbed",
@@ -106143,7 +105599,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "basket_of_kittens",
@@ -106162,7 +105617,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     tags: [
         "animal"
       ],
@@ -106184,11 +105638,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "box_of_eggs",
-    name: "a box of six eggs",
+    name: "a carton of eggs",
     grid: [
         "XX",
         "XX",
@@ -106200,7 +105653,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "egg boxes"
       },
@@ -106222,7 +105674,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
     oops: {
         "many": "spare allen keys"
       },
@@ -106248,7 +105699,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "tree_of_purgatory",
@@ -106265,13 +105715,12 @@ export const SHAPES = [
         "XXXXXXX",
         "XXXXXXX"
       ],
-    color: [["","","","","","","","","","","#a4a8a1","#9ea59d","#b9bdb6","#9ea59d","#9ea59d","#858b84","#858b84","#72695c","#887f70","#72695c","#b9bdb6","#9ea59d","#b9bdb6","#9ea59d","#a4a8a1","","","","","","","","","",""],["","","","","","","","","","","#b9bdb6","#979e96","#b4bbb2","#979e96","#b4bbb2","#979e96","#979e96","#979e96","#979e96","#979e96","#b4bbb2","#979e96","#d2d7cf","#b4bbb2","#b9bdb6","","","","","","","","","",""],["","","","","","","","","","","#9ea59d","#979e96","#b4bbb2","#979e96","#979e96","#979e96","#7b827b","#979e96","#979e96","#979e96","#b4bbb2","#979e96","#d2d7cf","#b4bbb2","#9ea59d","","","","","","","","","",""],["","","","","","","","","","","#9ea59d","#7b827b","#979e96","#7b827b","#979e96","#7b827b","#7b827b","#7b827b","#979e96","#979e96","#b4bbb2","#979e96","#b4bbb2","#979e96","#9ea59d","","","","","","","","","",""],["","","","","","","","","","","#9ea59d","#7b827b","#979e96","#7b827b","#979e96","#7b827b","#d2d7cf","#7b827b","#7b827b","#7b827b","#827768","#7b827b","#b4bbb2","#979e96","#858b84","","","","","","","","","",""],["","","","","","#606560","#6c726c","#6c726c","#858b84","#858b84","#979e96","#7b827b","#827768","#626862","#7b827b","#b4bbb2","#d2d7cf","#b4bbb2","#7b827b","#7b827b","#979e96","#7b827b","#979e96","#7b827b","#979e96","#6c726c","#6c726c","#6c726c","#6c726c","#8c928b","","","","",""],["","","","","","#9ea59d","#d2d7cf","#7b827b","#7b827b","#7b827b","#979e96","#626862","#7b827b","#6a6f6b","#b7bcb9","#a6aaac","#babcc2","#adafb7","#d3d4da","#9ea0a6","#d3d5d8","#8d9190","#a5aaa5","#808781","#827768","#7b827b","#d2d7cf","#b4bbb2","#d2d7cf","#858b84","","","","",""],["","","","","","#9ea59d","#d2d7cf","#b4bbb2","#7b827b","#7b827b","#7b827b","#b4bbb2","#9b907f","#b4bbb2","#b4bbb2","#9ca29d","#babfbb","#a5aaa8","#d7dad6","#a5aba6","#b9c0b9","#b4bbb2","#7b827b","#9b907f","#7b827b","#b4bbb2","#d2d7cf","#b4bbb2","#d2d7cf","#858b84","","","","",""],["","","","","","#8f867b","#b5bbb4","#b4bbb2","#7b827b","#626862","#b4bbb2","#b4bbb2","#b4bbb2","#b4bbb2","#979e96","#979e96","#979e96","#979e96","#b4bbb2","#979e96","#b4bbb2","#b4bbb2","#d2d7cf","#626862","#b4bbb2","#b4bbb2","#b4bbb2","#979e96","#b5bbb4","#767b78","","","","",""],["","","","","","#9a9d9e","#b7bcbb","#9ca29e","#d2d7cf","#979e96","#b4bbb2","#b4bbb2","#979e96","#979e96","#979e96","#7b827b","#979e96","#7b827b","#b4bbb2","#979e96","#b4bbb2","#b4bbb2","#b4bbb2","#b4bbb2","#b4bbb2","#979e96","#b5bbb6","#a1a6a5","#c0c4c4","#909396","","","","",""],["#9b9d9f","#a6a8ac","#a5a7ab","#9c9ea4","#a6a7ae","#a5a6b1","#acafb6","#a5a9ac","#b6bbb8","#979e96","#b4bbb2","#979e96","#979e96","#979e96","#524d48","#7b827b","#979e96","#7b827b","#979e96","#7b827b","#524d48","#979e96","#b4bbb2","#b4bbb2","#9a9f9b","#9da2a3","#babcc2","#a4a6b0","#bdbec6","#b1b3bb","#9c9ea4","#9d9ea5","#a6a7ad","#a3a5aa","#838589"],["#8f9295","#94989c","#929699","#94989b","#90939a","#9698a1","#b0b2bc","#a6a0a6","#b9bcbf","#696564","#6e6863","#67615b","#524d48","#524d48","#67615b","#67615b","#7b827b","#626862","#979e96","#67615b","#67615b","#524d48","#5f5a58","#827d7f","#949099","#a29fa8","#babcc3","#a6a8ad","#afb2b4","#898c8e","#93979a","#979b9f","#94969f","#a4a5b0","#878892"],["#737975","#686d6a","#686d69","#808682","#838987","#898d8f","#a1a4aa","#a5a6b1","#a7a3ab","#878387","#6c6767","#5b5653","#7b827b","#524d48","#524d48","#524d48","#7b827b","#626862","#979e96","#524d48","#5f5a58","#868182","#b6b8bd","#aeabaf","#a3a0a4","#8a8687","#837e7c","#898f8a","#838984","#6b706c","#6b706c","#6f7472","#878c8c","#8f9297","#85878f"],["#6c726c","#b4bbb2","#d2d7cf","#626862","#626862","#6a6f6c","#8a8f8e","#898589","#9f9ca4","#b0b2b9","#8b878b","#919695","#726d6a","#6d6763","#524d48","#524d48","#d2d7cf","#686d6a","#838886","#746f73","#89858e","#aaa7af","#adaaac","#b3b7b5","#6a6663","#6a706a","#524d48","#524d48","#7b827b","#626862","#b4bbb2","#626862","#7f8680","#868c8a","#818588"],["#9ea59d","#b4bbb2","#d2d7cf","#626862","#626862","#626862","#818882","#7f7a77","#b7bbba","#a5a6ad","#a9a6ae","#91939c","#7e8186","#6b676a","#777273","#777274","#6c686c","#b1b4b8","#8c8992","#96939f","#a4a0a7","#817d80","#898e8b","#7b827b","#67615b","#9b907f","#7b827b","#67615b","#7b827b","#b4bbb2","#b4bbb2","#b4bbb2","#626862","#626862","#646866"],["#9ea59d","#979e96","#b4bbb2","#979e96","#d2d7cf","#979e96","#524d48","#595550","#8e9390","#837f82","#9a969d","#9c9da9","#94919c","#908d97","#98949d","#908d97","#94919d","#c8c9d0","#98959c","#817d80","#797471","#524d48","#524d48","#7b827b","#524d48","#524d48","#d2d7cf","#524d48","#524d48","#b4bbb2","#979e96","#979e96","#d2d7cf","#626862","#565c56"],["#858b84","#979e96","#b4bbb2","#979e96","#b4bbb2","#979e96","#67615b","#b4bbb2","#7b827b","#746f6d","#7f8285","#b9bcc1","#97939c","#c6c8ce","#9d99a1","#a29ea5","#a19d9f","#c4c8c5","#7b7672","#524d48","#524d48","#b4bbb2","#67615b","#626862","#626862","#67615b","#b4bbb2","#b4bbb2","#67615b","#979e96","#979e96","#979e96","#d2d7cf","#b4bbb2","#b9bdb6"],["#858b84","#7b827b","#979e96","#979e96","#b4bbb2","#524d48","#524d48","#b4bbb2","#626862","#524d48","#b3b9b3","#9ba09e","#6d696a","#a8acab","#bcc1bf","#6e6a68","#625e5a","#979e96","#524d48","#67615b","#979e96","#979e96","#524d48","#626862","#d2d7cf","#524d48","#b4bbb2","#b4bbb2","#524d48","#524d48","#7b827b","#7b827b","#b4bbb2","#979e96","#9ea59d"],["#8e938e","#848a84","#979e96","#7b827b","#b4bbb2","#67615b","#979e96","#b4bbb2","#67615b","#524d48","#979e96","#979e96","#524d48","#979e96","#979e96","#524d48","#524d48","#67615b","#524d48","#524d48","#979e96","#979e96","#524d48","#b4bbb2","#b5bbb4","#615c59","#76716e","#a2a8a2","#9fa59f","#67615b","#7b827b","#7b827b","#b4bbb2","#979e96","#9ea59d"],["#929696","#858889","#a2a7a4","#9e9385","#979e96","#524d48","#979e96","#979e96","#524d48","#b4bbb2","#858b84","#6c726c","#5b5550","#6c726c","#858b84","#626862","#524d48","#524d48","#67615b","#979e96","#6c726c","#858b84","#625d5c","#8e9291","#a2a5a7","#a2a5a8","#8d898e","#b1b4b6","#b2b6b4","#6e6a6a","#5f5a57","#7b827b","#979e96","#7b827b","#858b84"],["#91939d","#9798a2","#999ca1","#797d7e","#5c5754","#626862","#7b827b","#979e96","#524d48","#858b84","","","","","","#565c56","#948c83","#7c756e","#7c756e","#5b5550","","","","","","#9d9ea5","#a29fa8","#b2b3bb","#a3a5af","#9c9fa6","#7c777a","#6b706e","#979e96","#7b827b","#858b84"],["#787981","#8e8f9b","#999aa6","#868890","#7f7a7b","#6b706d","#7b827b","#524d48","#67615b","#858b84","","","","","","#827b73","#948c83","#7c756e","#736e6b","#6e6a6c","","","","","","#7d8082","#948f93","#87838b","#a3a4ae","#90919d","#827f8a","#7b7e82","#828885","#827768","#6c726c"],["#666a6a","#9fa3a7","#b0b2bb","#96939f","#89868e","#828687","#858b87","#524d48","#7b827b","#6c726c","","","","","","#827b73","#9a938e","#928c8e","#a19da3","#bbb9c8","","","","","","#616562","#878c89","#686464","#818588","#91939c","#96939e","#99959e","#93979b","#747976","#6c726c"],["#b8bcb6","#a0a6a2","#bec2c2","#a19da3","#c0bbbc","#9d9fa5","#878a8b","#797371","#808782","#6c726c","","","","","","#898486","#9f9ba3","#a6a2ad","#a09ca3","#bbb9c8","","","","","","#565c56","#626862","#67615b","#6d726f","#a59c95","#c3c6c9","#a29ea7","#b8babd","#959898","#808481"],["#9ea59d","#7b827b","#bac0b9","#7f7b7a","#ced1d2","#babbbe","#aeb0b4","#787478","#7e8183","#5c6060","","","","","","#928d8b","#918b8a","#89837f","#6e6863","#bbb9c8","","","","","","#4c514c","#9ea59d","#48443f","#b9bdb6","#888e88","#bbc0bd","#8d898e","#d2d4d7","#b0b2b5","#8c8f8f"],["#9ea59d","#7b827b","#524d48","#b9c0b9","#a6aba9","","","","","","","","","","","#8d8781","#837c76","#7c756e","#67615b","#bbb9c8","","","","","","","","","","","#888f88","#8f9492","#969195","#c7c8cf","#a5a6af"],["#858b84","#7b827b","#67615b","#979e96","#878c88","","","","","","","","","","","#827b73","#948c83","#7c756e","#67615b","#bbb9c8","","","","","","","","","","","#858b84","#818782","#676262","#b8bcbe","#9b9ea4"],["#858b84","#524d48","#524d48","#979e96","#858b84","","","","","","","","","","","#827b73","#948c83","#7c756e","#67615b","#a9a7bb","","","","","","","","","","","#6c726c","#626862","#524d48","#726c6a","#898e8d"],["#858b84","#67615b","#7b827b","#7b827b","#6c726c","","","","","","","","","","","#827b73","#948c83","#7c756e","#67615b","#48443f","","","","","","","","","","","#6c726c","#626862","#979e96","#524d48","#858b84"],["#606560","#48443f","#6c726c","#6c726c","#606560","","","","","","","","","","","#9796ab","#948c83","#7c756e","#7f7873","#635e5c","","","","","","","","","","","#606560","#565c56","#6c726c","#48443f","#606560"],["","","","","","","","","","","","","","","","#514d56","#4a4650","#4a4650","#4a4650","#413e46","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#333038","#3a3640","#ff6a40","#ff6a40","#333038","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#333038","#3a3640","#3a3640","#3a3640","#28252d","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#bbb9c8","#a6a09f","#938d8c","#918b89","#6c6868","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#8f8a88","#a19a97","#888280","#87817f","#64605f","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#8c8681","#9d9691","#857f7c","#736e6b","#555150","","","","","","","","","","","#9694a5","#d76d61","#d76d61","#c23c34","#868597"],["","","","","","","","","","","","","","","","#8e8888","#a29b9c","#928d8f","#858084","#a9a7bb","","","","","","","","","","","#d76d61","#f47c6e","#dc443b","#dc443b","#8f2824"],["","","","","","","","","","","","","","","","#8a8588","#908b90","#918c93","#8f8b92","#737076","","","","","","","","","","","#c23c34","#dc443b","#dc443b","#dc443b","#8f2824"],["","","","","","","","","","","","","","","","#8e8990","#98949e","#a5a1ab","#9d99a4","#938f96","","","","","","","","","","","#8f2824","#2a2228","#2a2228","#2a2228","#8f2824"],["","","","","","","","","","","","","","","","#9e9aa5","#bcb9c3","#bdbac4","#b7b4bf","#9e9ca5","","","","","","","","","","","#a9a7bb","#f6f1e6","#f6f1e6","#5c5c68","#6d6d79"],["#a5a4b1","#bbb9c8","#ccc2b7","#bbb9c8","#bbb9c8","#bbb9c8","#bbb9c8","#a9a7bb","#a9a7bb","#a9a7bb","#ccc2b7","#a9a7bb","#a9a7bb","#bbb9c8","#ccc2b7","#e6e5ef","#e6e5ef","#e6e5ef","#e6e5ef","#e6e5ef","#bbb9c8","#bbb9c8","#a9a7bb","#a9a7bb","#9796ab","#9796ab","#ccc2b7","#9796ab","#a9a7bb","#a9a7bb","#d4d2e3","#d8d2c4","#d4d2e3","#5c5c68","#51515c"],["#bbb9c8","#56604f","#56604f","#434b3e","#c0bed4","#acaac2","#e8dcd0","#acaac2","#acaac2","#55565e","#55565e","#43444b","#d4d2e3","#5e5064","#5e5064","#4a3f50","#e6e5ef","#e6e5ef","#e6e5ef","#d4d2e3","#d4d2e3","#c0bed4","#e8dcd0","#c0bed4","#c0bed4","#4b5066","#4b5066","#3b3f52","#d4d2e3","#e6e5ef","#e6e5ef","#e6e5ef","#d4d2e3","#5c5c68","#6d6d79"],["#cacad2","#56604f","#56604f","#434b3e","#acaac2","#4b5066","#4b5066","#3b3f52","#acaac2","#55565e","#55565e","#43444b","#d4d2e3","#5e5064","#5e5064","#4a3f50","#d4d2e3","#c0bed4","#c0bed4","#c0bed4","#acaac2","#56604f","#56604f","#434b3e","#d4d2e3","#4b5066","#4b5066","#3b3f52","#e6e5ef","#e6e5ef","#e6e5ef","#e6e5ef","#d4d2e3","#5c5c68","#51515c"],["#bbb9c8","#d4d2e3","#56604f","#c0bed4","#c0bed4","#4b5066","#4b5066","#3b3f52","#d4d2e3","#d4d2e3","#55565e","#d4d2e3","#d4d2e3","#d4d2e3","#5e5064","#c0bed4","#acaac2","#acaac2","#acaac2","#acaac2","#acaac2","#56604f","#56604f","#f6f1e6","#d4d2e3","#d4d2e3","#4b5066","#e6e5ef","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#c0bed4","#5c5c68","#6d6d79"],["#a9a7bb","#56604f","#c0bed4","#434b3e","#c0bed4","#d4d2e3","#4b5066","#e6e5ef","#e6e5ef","#55565e","#e6e5ef","#43444b","#e6e5ef","#5e5064","#d4d2e3","#4a3f50","#acaac2","#acaac2","#acaac2","#acaac2","#c0bed4","#c0bed4","#56604f","#d4d2e3","#d4d2e3","#4b5066","#d4d2e3","#3b3f52","#c0bed4","#c0bed4","#acaac2","#acaac2","#acaac2","#5c5c68","#51515c"],["#9796ab","#7d8183","#acaac2","#7b7f82","#c0bed4","#898a9e","#d4d2e3","#888a99","#e6e5ef","#e6e5ef","#e6e5ef","#d4d2e3","#d4d2e3","#8a8296","#c0bed4","#7f788b","#c0bed4","#c0bed4","#d4d2e3","#d4d2e3","#d4d2e3","#979c97","#e6e5ef","#8c908e","#d4d2e3","#898a9e","#d4d2e3","#77788c","#acaac2","#acaac2","#acaac2","#acaac2","#acaac2","#5c5c68","#6d6d79"],["#9796ab","#acaac2","#c0bed4","#c0bed4","#d4d2e3","#898a9e","#d4d2e3","#808193","#d4d2e3","#c0bed4","#c0bed4","#c0bed4","#acaac2","#acaac2","#acaac2","#c0bed4","#c0bed4","#d4d2e3","#d4d2e3","#e6e5ef","#e6e5ef","#979c97","#e6e5ef","#8c908e","#d4d2e3","#d4d2e3","#c0bed4","#c0bed4","#c0bed4","#c0bed4","#c0bed4","#c0bed4","#c0bed4","#5c5c68","#51515c"],["#bbb9c8","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#c0bed4","#c0bed4","#acaac2","#acaac2","#acaac2","#acaac2","#acaac2","#acaac2","#c0bed4","#c0bed4","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#c0bed4","#c0bed4","#c0bed4","#c0bed4","#c0bed4","#d4d2e3","#d4d2e3","#e6e5ef","#e6e5ef","#5c5c68","#6d6d79"],["#cacad2","#e6e5ef","#e6e5ef","#e6e5ef","#e6e5ef","#d4d2e3","#d4d2e3","#c0bed4","#c0bed4","#acaac2","#acaac2","#acaac2","#c0bed4","#c0bed4","#c0bed4","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#c0bed4","#c0bed4","#acaac2","#acaac2","#acaac2","#acaac2","#acaac2","#c0bed4","#c0bed4","#d4d2e3","#d4d2e3","#e6e5ef","#e6e5ef","#5c5c68","#51515c"],["#b3b3ba","#cacad2","#cacad2","#bbb9c8","#bbb9c8","#bbb9c8","#a9a7bb","#a9a7bb","#a9a7bb","#a9a7bb","#bbb9c8","#bbb9c8","#bbb9c8","#cacad2","#cacad2","#cacad2","#cacad2","#bbb9c8","#bbb9c8","#a9a7bb","#a9a7bb","#9796ab","#9796ab","#9796ab","#9796ab","#9796ab","#a9a7bb","#a9a7bb","#bbb9c8","#bbb9c8","#bbb9c8","#bbb9c8","#bbb9c8","#bbb9c8","#9694a5"]],
+    color: [["","","","","","","","","","","#a4a8a1","#9ea59d","#b9bdb6","#9ea59d","#9ea59d","#858b84","#858b84","#72695c","#887f70","#72695c","#b9bdb6","#9ea59d","#b9bdb6","#9ea59d","#a4a8a1","","","","","","","","","",""],["","","","","","","","","","","#b9bdb6","#979e96","#b4bbb2","#979e96","#b4bbb2","#979e96","#979e96","#979e96","#979e96","#979e96","#b4bbb2","#979e96","#d2d7cf","#b4bbb2","#b9bdb6","","","","","","","","","",""],["","","","","","","","","","","#9ea59d","#979e96","#b4bbb2","#979e96","#979e96","#979e96","#7b827b","#979e96","#979e96","#979e96","#b4bbb2","#979e96","#d2d7cf","#b4bbb2","#9ea59d","","","","","","","","","",""],["","","","","","","","","","","#9ea59d","#7b827b","#979e96","#7b827b","#979e96","#7b827b","#7b827b","#7b827b","#979e96","#979e96","#b4bbb2","#979e96","#b4bbb2","#979e96","#9ea59d","","","","","","","","","",""],["","","","","","","","","","","#9ea59d","#7b827b","#979e96","#7b827b","#979e96","#7b827b","#d2d7cf","#7b827b","#7b827b","#7b827b","#827768","#7b827b","#b4bbb2","#979e96","#858b84","","","","","","","","","",""],["","","","","","#606560","#6c726c","#6c726c","#858b84","#858b84","#979e96","#7b827b","#827768","#626862","#7b827b","#b4bbb2","#d2d7cf","#b4bbb2","#7b827b","#7b827b","#979e96","#7b827b","#979e96","#7b827b","#979e96","#6c726c","#6c726c","#6c726c","#6c726c","#8c928b","","","","",""],["","","","","","#9ea59d","#d2d7cf","#7b827b","#7b827b","#7b827b","#979e96","#626862","#7b827b","#6a6f6b","#b7bcb9","#a6aaac","#babcc2","#adafb7","#d3d4da","#9ea0a6","#d3d5d8","#8d9190","#a5aaa5","#808781","#827768","#7b827b","#d2d7cf","#b4bbb2","#d2d7cf","#858b84","","","","",""],["","","","","","#9ea59d","#d2d7cf","#b4bbb2","#7b827b","#7b827b","#7b827b","#b4bbb2","#9b907f","#b4bbb2","#b4bbb2","#9ca29d","#babfbb","#a5aaa8","#d7dad6","#a5aba6","#b9c0b9","#b4bbb2","#7b827b","#9b907f","#7b827b","#b4bbb2","#d2d7cf","#b4bbb2","#d2d7cf","#858b84","","","","",""],["","","","","","#8f867b","#b5bbb4","#b4bbb2","#7b827b","#626862","#b4bbb2","#b4bbb2","#b4bbb2","#b4bbb2","#979e96","#979e96","#979e96","#979e96","#b4bbb2","#979e96","#b4bbb2","#b4bbb2","#d2d7cf","#626862","#b4bbb2","#b4bbb2","#b4bbb2","#979e96","#b5bbb4","#767b78","","","","",""],["","","","","","#9a9d9e","#b7bcbb","#9ca29e","#d2d7cf","#979e96","#b4bbb2","#b4bbb2","#979e96","#979e96","#979e96","#7b827b","#979e96","#7b827b","#b4bbb2","#979e96","#b4bbb2","#b4bbb2","#b4bbb2","#b4bbb2","#b4bbb2","#979e96","#b5bbb6","#a1a6a5","#c0c4c4","#909396","","","","",""],["#9b9d9f","#a6a8ac","#a5a7ab","#9c9ea4","#a6a7ae","#a5a6b1","#acafb6","#a5a9ac","#b6bbb8","#979e96","#b4bbb2","#979e96","#979e96","#979e96","#524d48","#7b827b","#979e96","#7b827b","#979e96","#7b827b","#524d48","#979e96","#b4bbb2","#b4bbb2","#9a9f9b","#9da2a3","#babcc2","#a4a6b0","#bdbec6","#b1b3bb","#9c9ea4","#9d9ea5","#a6a7ad","#a3a5aa","#838589"],["#8f9295","#94989c","#929699","#94989b","#90939a","#9698a1","#b0b2bc","#a6a0a6","#b9bcbf","#696564","#6e6863","#67615b","#524d48","#524d48","#67615b","#67615b","#7b827b","#626862","#979e96","#67615b","#67615b","#524d48","#5f5a58","#827d7f","#949099","#a29fa8","#babcc3","#a6a8ad","#afb2b4","#898c8e","#93979a","#979b9f","#94969f","#a4a5b0","#878892"],["#737975","#686d6a","#686d69","#808682","#838987","#898d8f","#a1a4aa","#a5a6b1","#a7a3ab","#878387","#6c6767","#5b5653","#7b827b","#524d48","#524d48","#524d48","#7b827b","#626862","#979e96","#524d48","#5f5a58","#868182","#b6b8bd","#aeabaf","#a3a0a4","#8a8687","#837e7c","#898f8a","#838984","#6b706c","#6b706c","#6f7472","#878c8c","#8f9297","#85878f"],["#6c726c","#b4bbb2","#d2d7cf","#626862","#626862","#6a6f6c","#8a8f8e","#898589","#9f9ca4","#b0b2b9","#8b878b","#919695","#726d6a","#6d6763","#524d48","#524d48","#d2d7cf","#686d6a","#838886","#746f73","#89858e","#aaa7af","#adaaac","#b3b7b5","#6a6663","#6a706a","#524d48","#524d48","#7b827b","#626862","#b4bbb2","#626862","#7f8680","#868c8a","#818588"],["#9ea59d","#b4bbb2","#d2d7cf","#626862","#626862","#626862","#818882","#7f7a77","#b7bbba","#a5a6ad","#a9a6ae","#91939c","#7e8186","#6b676a","#777273","#777274","#6c686c","#b1b4b8","#8c8992","#96939f","#a4a0a7","#817d80","#898e8b","#7b827b","#67615b","#9b907f","#7b827b","#67615b","#7b827b","#b4bbb2","#b4bbb2","#b4bbb2","#626862","#626862","#646866"],["#9ea59d","#979e96","#b4bbb2","#979e96","#d2d7cf","#979e96","#524d48","#595550","#8e9390","#837f82","#9a969d","#9c9da9","#94919c","#908d97","#98949d","#908d97","#94919d","#c8c9d0","#98959c","#817d80","#797471","#524d48","#524d48","#7b827b","#524d48","#524d48","#d2d7cf","#524d48","#524d48","#b4bbb2","#979e96","#979e96","#d2d7cf","#626862","#565c56"],["#858b84","#979e96","#b4bbb2","#979e96","#b4bbb2","#979e96","#67615b","#b4bbb2","#7b827b","#746f6d","#7f8285","#b9bcc1","#97939c","#c6c8ce","#9d99a1","#a29ea5","#a19d9f","#c4c8c5","#7b7672","#524d48","#524d48","#b4bbb2","#67615b","#626862","#626862","#67615b","#b4bbb2","#b4bbb2","#67615b","#979e96","#979e96","#979e96","#d2d7cf","#b4bbb2","#b9bdb6"],["#858b84","#7b827b","#979e96","#979e96","#b4bbb2","#524d48","#524d48","#b4bbb2","#626862","#524d48","#b3b9b3","#9ba09e","#6d696a","#a8acab","#bcc1bf","#6e6a68","#625e5a","#979e96","#524d48","#67615b","#979e96","#979e96","#524d48","#626862","#d2d7cf","#524d48","#b4bbb2","#b4bbb2","#524d48","#524d48","#7b827b","#7b827b","#b4bbb2","#979e96","#9ea59d"],["#8e938e","#848a84","#979e96","#7b827b","#b4bbb2","#67615b","#979e96","#b4bbb2","#67615b","#524d48","#979e96","#979e96","#524d48","#979e96","#979e96","#524d48","#524d48","#67615b","#524d48","#524d48","#979e96","#979e96","#524d48","#b4bbb2","#b5bbb4","#615c59","#76716e","#a2a8a2","#9fa59f","#67615b","#7b827b","#7b827b","#b4bbb2","#979e96","#9ea59d"],["#929696","#858889","#a2a7a4","#9e9385","#979e96","#524d48","#979e96","#979e96","#524d48","#b4bbb2","#858b84","#6c726c","#5b5550","#6c726c","#858b84","#626862","#524d48","#524d48","#67615b","#979e96","#6c726c","#858b84","#625d5c","#8e9291","#a2a5a7","#a2a5a8","#8d898e","#b1b4b6","#b2b6b4","#6e6a6a","#5f5a57","#7b827b","#979e96","#7b827b","#858b84"],["#91939d","#9798a2","#999ca1","#797d7e","#5c5754","#626862","#7b827b","#979e96","#524d48","#858b84","","","","","","#565c56","#948c83","#7c756e","#7c756e","#5b5550","","","","","","#9d9ea5","#a29fa8","#b2b3bb","#a3a5af","#9c9fa6","#7c777a","#6b706e","#979e96","#7b827b","#858b84"],["#787981","#8e8f9b","#999aa6","#868890","#7f7a7b","#6b706d","#7b827b","#524d48","#67615b","#858b84","","","","","","#827b73","#948c83","#7c756e","#736e6b","#6e6a6c","","","","","","#7d8082","#948f93","#87838b","#a3a4ae","#90919d","#827f8a","#7b7e82","#828885","#827768","#6c726c"],["#666a6a","#9fa3a7","#b0b2bb","#96939f","#89868e","#828687","#858b87","#524d48","#7b827b","#6c726c","","","","","","#827b73","#9a938e","#928c8e","#a19da3","#bbb9c8","","","","","","#616562","#878c89","#686464","#818588","#91939c","#96939e","#99959e","#93979b","#747976","#6c726c"],["#b8bcb6","#a0a6a2","#bec2c2","#a19da3","#c0bbbc","#9d9fa5","#878a8b","#797371","#808782","#6c726c","","","","","","#898486","#9f9ba3","#a6a2ad","#a09ca3","#bbb9c8","","","","","","#565c56","#626862","#67615b","#6d726f","#a59c95","#c3c6c9","#a29ea7","#b8babd","#959898","#808481"],["#9ea59d","#7b827b","#bac0b9","#7f7b7a","#ced1d2","#babbbe","#aeb0b4","#787478","#7e8183","#5c6060","","","","","","#928d8b","#918b8a","#89837f","#6e6863","#bbb9c8","","","","","","#4c514c","#9ea59d","#48443f","#b9bdb6","#888e88","#bbc0bd","#8d898e","#d2d4d7","#b0b2b5","#8c8f8f"],["#9ea59d","#7b827b","#524d48","#b9c0b9","#a6aba9","","","","","","","","","","","#8d8781","#837c76","#7c756e","#67615b","#bbb9c8","","","","","","","","","","","#888f88","#8f9492","#969195","#c7c8cf","#a5a6af"],["#858b84","#7b827b","#67615b","#979e96","#878c88","","","","","","","","","","","#827b73","#948c83","#7c756e","#67615b","#bbb9c8","","","","","","","","","","","#858b84","#818782","#676262","#b8bcbe","#9b9ea4"],["#858b84","#524d48","#524d48","#979e96","#858b84","","","","","","","","","","","#827b73","#948c83","#7c756e","#67615b","#a9a7bb","","","","","","","","","","","#6c726c","#626862","#524d48","#726c6a","#898e8d"],["#858b84","#67615b","#7b827b","#7b827b","#6c726c","","","","","","","","","","","#827b73","#948c83","#7c756e","#67615b","#48443f","","","","","","","","","","","#6c726c","#626862","#979e96","#524d48","#858b84"],["#606560","#48443f","#6c726c","#6c726c","#606560","","","","","","","","","","","#948c83","#948c83","#7c756e","#948c83","#635e5c","","","","","","","","","","","#606560","#565c56","#6c726c","#48443f","#606560"],["","","","","","","","","","","","","","","","#948c83","#948c83","#948c83","#948c83","#948c83","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#948c83","#948c83","#948c83","#948c83","#948c83","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#333038","#948c83","#948c83","#948c83","#948c83","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#bbb9c8","#948c83","#938d8c","#948c83","#6c6868","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#8f8a88","#a19a97","#888280","#87817f","#64605f","","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","","","#8c8681","#9d9691","#857f7c","#736e6b","#555150","","","","","","","","","","","#9796ab","#9796ab","#e6e5ef","#5c5c68","#5c5c68"],["","","","","","","","","","","","","","","","#8e8888","#a29b9c","#928d8f","#858084","#a9a7bb","","","","","","","","","","","#9796ab","#9796ab","#e6e5ef","#5c5c68","#5c5c68"],["","","","","","","","","","","","","","","","#8a8588","#908b90","#918c93","#8f8b92","#737076","","","","","","","","","","","#9796ab","#e6e5ef","#acaac2","#5c5c68","#5c5c68"],["","","","","","","","","","","","","","","","#8e8990","#98949e","#a5a1ab","#9d99a4","#938f96","","","","","","","","","","","#acaac2","#acaac2","#e6e5ef","#5c5c68","#5c5c68"],["","","","","","","","","","","","","","","","#9e9aa5","#bcb9c3","#bdbac4","#b7b4bf","#9e9ca5","","","","","","","","","","","#acaac2","#f6f1e6","#f6f1e6","#5c5c68","#6d6d79"],["#a5a4b1","#bbb9c8","#ccc2b7","#bbb9c8","#bbb9c8","#bbb9c8","#bbb9c8","#a9a7bb","#a9a7bb","#a9a7bb","#ccc2b7","#a9a7bb","#a9a7bb","#bbb9c8","#ccc2b7","#e6e5ef","#e6e5ef","#e6e5ef","#e6e5ef","#e6e5ef","#bbb9c8","#bbb9c8","#a9a7bb","#a9a7bb","#9796ab","#9796ab","#ccc2b7","#9796ab","#a9a7bb","#a9a7bb","#d4d2e3","#d8d2c4","#d4d2e3","#5c5c68","#51515c"],["#bbb9c8","#56604f","#56604f","#434b3e","#c0bed4","#acaac2","#e8dcd0","#acaac2","#acaac2","#55565e","#55565e","#43444b","#d4d2e3","#5e5064","#5e5064","#4a3f50","#e6e5ef","#e6e5ef","#e6e5ef","#d4d2e3","#d4d2e3","#c0bed4","#e8dcd0","#c0bed4","#c0bed4","#4b5066","#4b5066","#3b3f52","#d4d2e3","#e6e5ef","#e6e5ef","#e6e5ef","#d4d2e3","#5c5c68","#6d6d79"],["#cacad2","#56604f","#56604f","#434b3e","#acaac2","#4b5066","#4b5066","#3b3f52","#acaac2","#55565e","#55565e","#43444b","#d4d2e3","#5e5064","#5e5064","#4a3f50","#d4d2e3","#c0bed4","#c0bed4","#c0bed4","#acaac2","#56604f","#56604f","#434b3e","#d4d2e3","#4b5066","#4b5066","#3b3f52","#e6e5ef","#e6e5ef","#e6e5ef","#acaac2","#d4d2e3","#5c5c68","#51515c"],["#bbb9c8","#d4d2e3","#56604f","#c0bed4","#c0bed4","#4b5066","#4b5066","#3b3f52","#d4d2e3","#d4d2e3","#55565e","#d4d2e3","#d4d2e3","#d4d2e3","#5e5064","#c0bed4","#acaac2","#acaac2","#acaac2","#acaac2","#acaac2","#56604f","#56604f","#f6f1e6","#d4d2e3","#d4d2e3","#4b5066","#e6e5ef","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#c0bed4","#5c5c68","#6d6d79"],["#a9a7bb","#56604f","#c0bed4","#434b3e","#c0bed4","#d4d2e3","#4b5066","#e6e5ef","#e6e5ef","#55565e","#e6e5ef","#43444b","#e6e5ef","#5e5064","#d4d2e3","#4a3f50","#acaac2","#acaac2","#acaac2","#acaac2","#c0bed4","#c0bed4","#56604f","#d4d2e3","#d4d2e3","#4b5066","#d4d2e3","#3b3f52","#c0bed4","#c0bed4","#acaac2","#acaac2","#acaac2","#5c5c68","#51515c"],["#9796ab","#7d8183","#acaac2","#7b7f82","#c0bed4","#898a9e","#d4d2e3","#888a99","#e6e5ef","#e6e5ef","#e6e5ef","#d4d2e3","#d4d2e3","#8a8296","#c0bed4","#7f788b","#c0bed4","#c0bed4","#d4d2e3","#d4d2e3","#d4d2e3","#979c97","#e6e5ef","#8c908e","#d4d2e3","#898a9e","#d4d2e3","#77788c","#acaac2","#acaac2","#acaac2","#acaac2","#acaac2","#5c5c68","#6d6d79"],["#9796ab","#acaac2","#c0bed4","#c0bed4","#d4d2e3","#898a9e","#d4d2e3","#808193","#d4d2e3","#c0bed4","#c0bed4","#c0bed4","#acaac2","#acaac2","#acaac2","#c0bed4","#c0bed4","#d4d2e3","#d4d2e3","#e6e5ef","#e6e5ef","#979c97","#e6e5ef","#8c908e","#d4d2e3","#d4d2e3","#c0bed4","#c0bed4","#c0bed4","#c0bed4","#c0bed4","#c0bed4","#c0bed4","#5c5c68","#51515c"],["#bbb9c8","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#c0bed4","#c0bed4","#acaac2","#acaac2","#acaac2","#acaac2","#acaac2","#acaac2","#c0bed4","#c0bed4","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#c0bed4","#c0bed4","#c0bed4","#c0bed4","#c0bed4","#d4d2e3","#d4d2e3","#e6e5ef","#e6e5ef","#5c5c68","#6d6d79"],["#cacad2","#e6e5ef","#e6e5ef","#e6e5ef","#e6e5ef","#d4d2e3","#d4d2e3","#c0bed4","#c0bed4","#acaac2","#acaac2","#acaac2","#c0bed4","#c0bed4","#c0bed4","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#d4d2e3","#c0bed4","#c0bed4","#acaac2","#acaac2","#acaac2","#acaac2","#acaac2","#c0bed4","#c0bed4","#d4d2e3","#d4d2e3","#e6e5ef","#e6e5ef","#5c5c68","#51515c"],["#b3b3ba","#cacad2","#cacad2","#bbb9c8","#bbb9c8","#bbb9c8","#a9a7bb","#a9a7bb","#a9a7bb","#a9a7bb","#bbb9c8","#bbb9c8","#bbb9c8","#cacad2","#cacad2","#cacad2","#cacad2","#bbb9c8","#bbb9c8","#a9a7bb","#a9a7bb","#9796ab","#9796ab","#9796ab","#9796ab","#9796ab","#a9a7bb","#a9a7bb","#bbb9c8","#bbb9c8","#bbb9c8","#bbb9c8","#bbb9c8","#bbb9c8","#9694a5"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
-    claudeDraft: true,
   },
   {
     id: "microwave_popcorn",
@@ -107883,7 +107332,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    claudeDraft: true,
   },
   {
     id: "extris",
@@ -107897,11 +107345,10 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
   },
   {
     id: "dinosaur_footprints",
-    name: "a trail of dinosaur footprints",
+    name: "dinosaur footprints",
     grid: [
         "XX....XX",
         "XX.XX.XX",
@@ -107913,12 +107360,11 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
     noShake: true,
   },
   {
     id: "bigfoot_footprints",
-    name: "a trail of Bigfoot's footprints",
+    name: "Bigfoot's footprints",
     grid: [
         "X..",
         "X..",
@@ -107935,7 +107381,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
-    claudeDraft: true,
     noShake: true,
   },
   {
@@ -107950,7 +107395,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "presents, just for you"
       },
@@ -107970,7 +107414,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "presents, just for you"
       },
@@ -107992,7 +107435,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "presents, just for you"
       },
@@ -108013,7 +107455,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "presents, just for you"
       },
@@ -108035,7 +107476,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.3,
-    claudeDraft: true,
     oops: {
         "many": "presents, just for you"
       },
@@ -108060,7 +107500,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
-    claudeDraft: true,
     nextShapeProbs: [
         0.65
       ],
@@ -108084,7 +107523,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.25,
-    claudeDraft: true,
     seam: "sphinx",
   },
   {
