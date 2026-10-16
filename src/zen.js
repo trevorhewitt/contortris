@@ -31,7 +31,7 @@ import { tryMove, zenCaption, timeScaleOf, settleFlock } from "./game.js";
 import { selectPiece, destroyerCells, pickFitting, inGame } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
-import { expandGroup, roomNeeded, groupUnderWay, lastVersion, noteVersion, groupPlayable, playableRun, groupMembers } from "./level6.js";
+import { expandGroup, roomNeeded, groupUnderWay, lastVersion, noteVersion, groupPlayable, playableRun, groupMembers, versionShare } from "./level6.js";
 import { makeRng, sampleByWeight, valueNoise } from "./util.js";
 import { loadShapes } from "./shapes.js";
 import { colourFamily } from "./threads.js";
@@ -64,6 +64,11 @@ const MOVEMENT_WEIGHTS = {
   turbo: { natural: 0.25, rain: 0.15, build: 0.5, giants: 0.3, column: 2.5, beds: 2, crack: 2, mess: 0.9, fall: 0.3, well: 0.3, chorus: 1.2,
     mono: 5, combo: 4, pile: 2.5, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 3.5, blackholes: 1, expanders: 1, oops: 2.5, tiles: 1.2 },
 };
+// (behind the home screen, broad mixes of pieces above all: CONFIG.home.movements)
+function movementWeights(state) {
+  const base = MOVEMENT_WEIGHTS[zenSet(state)], m = CONFIG.modes[state.mode]?.home ? CONFIG.home?.movements : null;
+  return m ? Object.fromEntries(Object.entries(base).map(([k, w]) => [k, w * (m[k] ?? 1)])) : base;
+}
 // (the ones that need a low, tidy board to build on)
 const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "standing", "colour", "squares", "tiles", "pile"]);
 // (the ones happy to carry on from whatever the last one left behind)
@@ -269,13 +274,13 @@ function pickMovement(state) {
   // (a fill that handed over part way up: another that carries on on top of it)
   if (z.handOver) {
     z.handOver = false;
-    const on = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => BLENDS.has(k) && k !== z.last && k !== z.lastShow);
+    const on = Object.entries(movementWeights(state)).filter(([k]) => BLENDS.has(k) && k !== z.last && k !== z.lastShow);
     if (on.length) return sampleByWeight(on, ([, w]) => w, state.rng)[0];
   }
   // (zen: never building anything up, so no waiting for a tidy board)
   if (isCalm(state)) return sampleByWeight(Object.entries(MOVEMENT_WEIGHTS.zen).filter(([k]) => k !== z.last && k !== z.lastShow), ([, w]) => w, state.rng)[0];
   if (!z.after) {
-    let options = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => k !== z.last && k !== z.lastShow);
+    let options = Object.entries(movementWeights(state)).filter(([k]) => k !== z.last && k !== z.lastShow);
     // left high: carry on building on what's there (only near the top, a quick tidy first)
     if (h > up(9)) {
       if (h > CONFIG.board.rows - 8) return "tidy";
@@ -298,7 +303,7 @@ function pickMovement(state) {
       return pickMovement(state);
     }
     if ((z.waited = (z.waited ?? 0) + 1) > 3) z.after = null;
-    const blends = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => BLENDS.has(k) && k !== z.last && k !== z.lastShow);
+    const blends = Object.entries(movementWeights(state)).filter(([k]) => BLENDS.has(k) && k !== z.last && k !== z.lastShow);
     return sampleByWeight(blends, ([, w]) => w, state.rng)[0];
   }
   return z.after;
@@ -319,6 +324,8 @@ const smallPool = (state) => regularPool(state).filter(s => (s.difficulty ?? 1) 
 const giantPool = (state) => regularPool(state).filter(s => (s.difficulty ?? 1) >= 4);
 const powerupPool = (state) => state.powerups.filter(p => (p.frequency ?? 1) > 0 && !keptApart(state, p));
 const blocks = (s) => s.rotations[0].reduce((n, r) => n + r.filter(Boolean).length, 0);
+// (the tiles and the Lego bricks turbo zen builds patterns with: never a pattern of only them)
+const isTile = (s) => !!s?.tags?.some(t => t === "tiles" || t === "lego_tiles");
 
 // The game's own choice of piece (links, sets, powerups and all), passing over any that would
 // stand too tall on the stack as it is (Big Ben only stands upright). A set always carries on.
@@ -366,10 +373,11 @@ function shapeCaption(s) {
   return "things of a certain shape";
 }
 export function palettePick(state, pool) {
-  const P = CONFIG.zen.palette;
-  if (!P || isCalm(state) || pool.length < 3 || state.rng() < (P.none ?? 0)) return null;
+  const P = CONFIG.zen.palette, home = CONFIG.modes[state.mode]?.home ? CONFIG.home ?? {} : {};
+  if (!P || isCalm(state) || pool.length < 3 || state.rng() < (home.paletteNone ?? P.none ?? 0)) return null;
   const rng = state.rng, groups = [];
-  const add = (caption, list, w, kind = "theme") => { if (list.length >= 2 && w > 0) groups.push({ caption, list, w, kind }); };
+  // (a palette of only tiles won't do: CONFIG.zen.tileGuests)
+  const add = (caption, list, w, kind = "theme") => { if (list.length >= 2 && w > 0 && list.some(s => !isTile(s))) groups.push({ caption, list, w, kind }); };
   const byColour = new Map(), byShape = new Map();
   for (const s of pool) {
     const c = colourOf(s);
@@ -396,9 +404,20 @@ export function palettePick(state, pool) {
   if (!groups.length) return null;
   const g = sampleByWeight(groups, x => x.w, rng);
   // how many kinds: mostly two to five, now and then up to fifteen
-  const want = sampleByWeight((P.kinds ?? [1]).map((w, i) => ({ n: i + 2, w })), x => x.w, rng).n;
+  const want = sampleByWeight((home.paletteKinds ?? P.kinds ?? [1]).map((w, i) => ({ n: i + 2, w })), x => x.w, rng).n;
   const left = g.list.slice(), pieces = [];
   while (pieces.length < want && left.length) { const one = pickFresh(state, left); pieces.push(one); left.splice(left.indexOf(one), 1); }
+  // (tiles no more than half of it: the rest other things, from the palette, or from the pool)
+  const others = [left.filter(s => !isTile(s)), pool.filter(s => !isTile(s) && !pieces.includes(s))];
+  for (let i = pieces.length - 1; i >= 0 && pieces.filter(isTile).length * 2 > pieces.length; i--) {
+    if (!isTile(pieces[i])) continue;
+    const from = others.find(l => l.length);
+    if (!from) { pieces.splice(i, 1); continue; }
+    const one = pickFresh(state, from);
+    pieces[i] = one;
+    for (const l of others) { const k = l.indexOf(one); if (k >= 0) l.splice(k, 1); }
+  }
+  if (!pieces.length) return null;
   return { pieces, share: new Map(pieces.map(p => [p, 0.4 + 1.2 * rng()])), caption: g.caption, kind: g.kind, pool };
 }
 // A piece from a fill's palette that still fits (or something small); now and then something
@@ -582,7 +601,8 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         // (one that takes some of it, not most: a middling destroyer or a gravitizer)
         const some = this.blasts < this.relay.blasts && bestPowerup(state, powerupPool(state).filter(p => !p.powerup.bad && (p.powerup.type === "gravity" || (["destroyer", "acid"].includes(p.powerup.type) && destroyerCells(p) <= 24))), CONFIG.zen.powerupChoices, WEIGHTS.clear, Math.round(rows / 5));
         if (some) {
-          state.zen.queue.push({ shape: some, weights: WEIGHTS.clear, blast: this.blasts });
+          // (not a demolition's blast: one that takes a bite this size, and no bigger, as it is)
+          state.zen.queue.push({ shape: some, weights: WEIGHTS.clear, relay: true });
           this.blasts++;
           return;
         }
@@ -874,8 +894,9 @@ const MOVEMENTS = {
       const { rows } = CONFIG.board;
       const room = rows - (CONFIG.zen.level6?.headroom ?? 7) - stackHeight(state);
       const sets = (state.groups ?? []).filter(g => groupPlayable(state, g));
+      const share = versionShare(sets); // (the emotions charts, all together, as likely as any other set)
       for (let i = 0; i < 4 && sets.length; i++) {
-        const g = sampleByWeight(sets, g => g.frequency, state.rng);
+        const g = sampleByWeight(sets, g => g.frequency * share(g), state.rng);
         const pieces = playableRun(state, expandGroup(g, state.rng, state.pieceSel?.level6?.variants, lastVersion(state, g)));
         if ((g.room || roomNeeded(pieces)) <= room) {
           noteVersion(state, g, pieces.version);
@@ -2524,14 +2545,12 @@ export function planSquares(state) {
   if (!solid(occ, cols, rows) || heightOf(occ, cols, rows) > 2) return null;
   // (now and then little ones, 1 x 1, on a big board: a mosaic, coming down in showers)
   const sq = cols >= (CONFIG.zen.flock?.minCols ?? 22) && rng() < (CONFIG.zen.mosaicChance ?? 0) ? 1 : 2;
-  let pieces = plannable(state, 3).filter(s => { const m = s.rotations[0]; return m.length === sq && m[0].length === sq && m.flat().every(Boolean); });
-  // (the big tiles, if there are enough colours of them)
-  const glaze = glazeOf;
-  const tiles = pieces.filter(s => s.tags?.includes("tiles") && !/half|strip/.test(s.id)); // (not the grout)
-  const useTiles = new Set(tiles.map(glaze)).size >= 3;
-  if (useTiles) pieces = tiles;
+  // (the tiles among them, but never only tiles: CONFIG.zen.tileGuests)
+  const pieces = plannable(state, 3).filter(s => { const m = s.rotations[0]; return m.length === sq && m[0].length === sq && m.flat().every(Boolean); });
+  if (!pieces.some(s => !isTile(s))) return null;
   const byCol = new Map();
-  for (const p of pieces) { const c = useTiles ? glaze(p) : colourOf(p); if (c && c !== "black") { if (!byCol.has(c)) byCol.set(c, []); byCol.get(c).push(p); } }
+  for (const p of pieces) { const c = colourOf(p); if (c && c !== "black") { if (!byCol.has(c)) byCol.set(c, []); byCol.get(c).push(p); } }
+  for (const [c, list] of byCol) if (list.every(isTile)) byCol.delete(c); // (a colour of only tiles: not one to use)
   const palette = [...byCol.keys()];
   if (palette.length < 3) return null;
   for (let i = palette.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [palette[i], palette[j]] = [palette[j], palette[i]]; }
@@ -2600,7 +2619,7 @@ export function planTiles(state, kind = null, { any = false } = {}) {
   const bottom = rows - 1 - base; // (the pattern's lowest row)
   const glazes = (pattern) => tileSet(state, pattern, any);
   const ones = glazes(["X"]);
-  // (the half tiles are for the edges; the little tiles for a floor of them)
+  // (the little tiles finish the edges, and make a floor of them; the grout's gone)
   const half = ones.filter(o => /half/.test(o.shape.id)).length ? ones.filter(o => /half/.test(o.shape.id)) : ones;
   const little = ones.filter(o => !/half/.test(o.shape.id));
   const strips = tileSet(state, ["X", "X", "X"], false).filter(o => /strip/.test(o.shape.id));
@@ -2616,7 +2635,7 @@ export function planTiles(state, kind = null, { any = false } = {}) {
       return { caption: "a tiled floor", out };
     },
     // L-shaped tiles, two to a panel (2 wide, 3 tall: one turned over the other), the panels in
-    // rows, every other row a step along like brickwork; grout at the ends
+    // rows, every other row a step along like brickwork; little tiles at the ends
     bricks: () => {
       const L = shuffle(groupByColour(glazes(["XX", ".X"]), glazes(["X.", "XX"])), rng);
       if (!L.length) return null;
@@ -2648,7 +2667,7 @@ export function planTiles(state, kind = null, { any = false } = {}) {
       return fillGaps(out, "waves", half, bottom, strips);
     },
     // tessellating lizards, never turned, each in the next one's lap (offsets 2 along and 1 up,
-    // and 4 up), in glazes so no two side by side are the same; grout round the edges
+    // and 4 up), in glazes so no two side by side are the same; little tiles round the edges
     lizards: () => {
       const Z = shuffle(groupByColour(glazes([".X..", "XXX.", ".XXX", "..X."])), rng);
       if (!Z.length) return null;
@@ -2715,7 +2734,7 @@ export function planTiles(state, kind = null, { any = false } = {}) {
   };
   // the tiles of every shape and glaze mixed, freeform, wherever they fit
   kinds.freeform = () => {
-    const pool = (state.allShapes ?? state.shapes).filter(s => !s.powerup && !s.remix && s.tags?.includes("tiles"));
+    const pool = (state.allShapes ?? state.shapes).filter(s => !s.powerup && !s.remix && s.tags?.includes("tiles") && (s.frequency ?? 1) > 0);
     const cands = candidates(pool, 5, 5, 9);
     if (cands.length < 6) return null;
     const need = new Uint8Array(cols * rows);
@@ -2737,22 +2756,23 @@ export function planTiles(state, kind = null, { any = false } = {}) {
       if (!o) { steps.length = 0; break; }
       steps.push({ shape: o.shape, rot: o.rot, mat: o.shape.rotations[o.rot], x: p.x, y: p.y, pace: 0.6 });
     }
-    // (now and then a guest or two built into it; never in the Lego)
-    const guests = steps.length && !res.lego ? withGuests(state, steps, half) : null;
-    const order = steps.length && dropOrder(guests?.steps ?? steps, cols);
+    // (and some guests built into it, always: never a pattern of tiles and nothing else)
+    const guests = steps.length ? withGuests(state, steps, half) : null;
+    if (!guests) continue;
+    const order = dropOrder(guests.steps, cols);
     if (!order) continue;
     if (key) order.push({ shape: key, rot: 0, mat: key.rotations[0], x: cols - 1, key: true });
     const items = toItems(occ, [...asFillers(level), ...order], cols, rows, { mustClear: !!key });
-    if (items) return { items, caption: guests ? guestCaption(res.caption, guests.names) : res.caption };
+    if (items) return { items, caption: guestCaption(res.caption, guests.names) };
   }
   return null;
 }
 
-// Guests in a tiling (turbo zen): now and then one strange piece or two, or now and then a few,
-// built into the pattern where they happen to fall (CONFIG.zen.tileGuests: how likely none, one,
-// two, or a few, up to `most`). The tiles in a guest's way come out, and the cells they leave
-// round it are grouted with little tiles. `steps`: the pattern's pieces; returns { steps, names }
-// (the pattern with its guests) or null.
+// Guests in a tiling (turbo zen): one strange piece or two, or often a few, built into the
+// pattern where they happen to fall (CONFIG.zen.tileGuests: how likely one, two, or a few, up to
+// `most`). The tiles in a guest's way come out, and the cells they leave round it are filled with
+// little tiles. `steps`: the pattern's pieces; returns { steps, names } (the pattern with its
+// guests) or null.
 function withGuests(state, steps, half) {
   const G = CONFIG.zen.tileGuests, rng = state.rng, { cols } = CONFIG.board;
   if (!G || isCalm(state) || !half.length) return null;
@@ -2766,7 +2786,7 @@ function withGuests(state, steps, half) {
   const ys = [...at.keys()].map(c => Math.floor(c / cols));
   const top = Math.min(...ys), bottom = Math.max(...ys);
   const cands = nestCandidates(state, Math.min(G.maxSize ?? 8, cols - 3), Math.min(G.maxSize ?? 8, bottom - top + 1))
-    .filter(c => !c.shape.tags?.includes("tiles") && (c.shape.difficulty ?? 1) !== LEVEL6);
+    .filter(c => !isTile(c.shape) && (c.shape.difficulty ?? 1) !== LEVEL6);
   if (!cands.length) return null;
   const grout = groupByColour(half)[0];
   let cur = steps, gone = new Set(), near = new Set();
@@ -2831,9 +2851,9 @@ function dropOrder(ps, cols) {
   return out.length === ps.length ? out : null;
 }
 
-// A pattern's left-over cells (anything in its rows, from `bottom` up, not covered) in grout:
-// strips of it (`strips`, 1 x 3, standing up) where three free cells are one over another, and
-// half tiles for the rest; but for the last column (so nothing clears on the way up). Returns
+// A pattern's left-over cells (anything in its rows, from `bottom` up, not covered) in little
+// tiles (`half`; or strips, 1 x 3, standing up, where three free cells are one over another, if
+// there are any `strips`); but for the last column (so nothing clears on the way up). Returns
 // { caption, out }, or null if the pattern fills a row.
 function fillGaps(out, caption, half, bottom, strips = []) {
   const { cols, rows } = CONFIG.board;
@@ -2874,8 +2894,8 @@ function tileSet(state, pattern, any, tag = "tiles") {
   for (let k = 0; k < 4; k++) { want.add(m.map(r => r.map(c => (c ? "X" : ".")).join("")).join("/")); m = m[0].map((_, i) => m.map(r => r[i]).reverse()); }
   const out = [];
   for (const s of (state.allShapes ?? state.shapes)) {
-    if (s.powerup || s.remix || (s.difficulty ?? 1) === LEVEL6) continue;
-    if (!(s.tags?.includes(tag) || (any && (s.frequency ?? 1) > 0))) continue;
+    if (s.powerup || s.remix || (s.difficulty ?? 1) === LEVEL6 || !((s.frequency ?? 1) > 0)) continue;
+    if (!s.tags?.includes(tag) && !any) continue;
     const turns = reachableTurns(s), seen = new Set();
     for (let r = 0; r < turns; r++) {
       const key = s.rotations[r].map(row => row.map(c => (c ? "X" : ".")).join("")).join("/");

@@ -61,6 +61,13 @@ export const CONFIG = {
     fxEvery: [14000, 22000], logoEvery: 2600,
     idleMs: 30000,
     burstMs: 600, fadeMs: 240,
+    // Turbo zen behind it goes for broad mixes of pieces (src/zen.js): each movement this many
+    // times as likely as in turbo zen (those of one thing, or a few, a good deal less), a fill
+    // with no palette (anything goes) paletteNone of the time, and a palette more kinds
+    // (paletteKinds: the weights for 2, 3, 4, ... up to 15 of them).
+    movements: { mono: 0.2, oops: 0.2, combo: 0.3, tiles: 0.1, squares: 0.25, colour: 0.35, chorus: 0.5, natural: 4, build: 4, mess: 2, small: 1.5, big: 1.5, beds: 1.3, column: 1.2 },
+    paletteNone: 0.6,
+    paletteKinds: [0.02, 0.04, 0.06, 0.08, 0.1, 0.1, 0.1, 0.1, 0.09, 0.08, 0.07, 0.06, 0.05, 0.05],
   },
 
   timing: {
@@ -161,7 +168,7 @@ export const CONFIG = {
     pieceMs: 650,        // (but each takes this long at least, however short the way down: it starts further up, out of sight)
     restMs: 900,         // after a big clearance, a breath before the next piece
     maxStepsPerFrame: 3, // (so a fast fall stays fast in turbo zen)
-    dropMs: 650,         // how fast a piece falls once the player has taken it over (turbo zen)
+    dropMs: 300,         // how fast a piece falls once the player has taken it over (turbo zen: still quick, times its pace)
     // The pace (times fallMs, lockMs and pieceMs): small things, repeats and the pieces that build
     // up the board come down faster; the pieces that bring it all down take their time. And from
     // low (an empty board) to high (a full one), it eases off a little as it nears the top.
@@ -243,8 +250,10 @@ export const CONFIG = {
     // have come up less since the page was loaded are likelier, to this power.
     strays: { chance: 0.1, maxDifficulty: 5, power: 1.5, headroom: 4, planChance: 0.5, perPlan: 3, perAnchor: 0.25, freshness: 0.5 },
     // Guests in a tiling (turbo zen): how likely none, one, two, or a few (up to `most`) strange
-    // pieces (up to maxSize wide and tall) built into the pattern where they fall.
-    tileGuests: { counts: [0.45, 0.3, 0.15, 0.1], most: 5, maxSize: 8 },
+    // pieces (up to maxSize wide and tall) built into the pattern where they fall. (Never none: a
+    // pattern of tiles and nothing else is a dull one; nor are the squares or a fill's palette
+    // ever only tiles.)
+    tileGuests: { counts: [0, 0.15, 0.3, 0.55], most: 7, maxSize: 8 },
     // What turbo zen opens with, the first time since the page was loaded (a movement by name,
     // and how it goes), e.g. { turbo: { movement: "crack", opts: { end: "up" } } }: nothing, for now.
     opening: {},
@@ -383,6 +392,11 @@ export const CONFIG = {
     // "classic"  = the original look.
     // While debugging (press D), V toggles between them.
     cellStyle: "enhanced",
+    // The next piece's silhouette (src/render.js drawNext): a powerup's colours go once round
+    // every periodMs (a combo's, comboPeriodMs), a loop of them loopPieces times as long as the
+    // piece across it; and it glows glowCells of a cell out, in its own colours (an ordinary piece
+    // in `glow`).
+    next: { periodMs: 2400, comboPeriodMs: 3600, loopPieces: 2.2, glowCells: 0.55, glowAlpha: 0.85, glow: "rgba(150,135,255,0.8)" },
 
     cellPx: 18,
     maxScale: 3, // max backing-store pixels per board pixel (crispness vs cost)
@@ -565,9 +579,13 @@ export const CONFIG = {
       roomFactor: 1.25,
       headroom: 3,
       // No set comes round again until every other one has had its turn this game, and the last
-      // `rememberRecent` sets served (also in the previous game, in this browser) wait if any
-      // other set can go.
+      // `rememberRecent` sets served (also in the previous game, in this browser), or if more
+      // the last restShare of all the others, wait if any other set can go: so once they've all
+      // come, the next round of them starts with the ones that came early in the last (none
+      // comes again until most of the others have been since), and the next game with ones the
+      // last didn't end with.
       rememberRecent: 2,
+      restShare: 0.75,
       // Sets of a kind (`families`: the tins): one soon after another is unlikely. A set with one
       // of its family among the last `familyGap` sets served (this game or the one before) is
       // only `familyWeight` times as likely as it would be.
@@ -576,7 +594,8 @@ export const CONFIG = {
       familyWeight: 0.08,
       // Versions of one set (`same`: an emotions chart, ascending, very British or online) are one
       // set as far as taking turns goes: once one of them has come, none of them comes again in
-      // that game until every other set has had its turn (nor first thing in the next game).
+      // that game until every other set has had its turn (nor first thing in the next game). And
+      // they share one set's chance: all together, no likelier than any other set.
       same: [
         ["emotions", "emotions_ascent", "emotions_british", "emotions_online", "emotions_business"],
         ["sky", "sky_evening", "sky_sunset", "sky_night"],

@@ -320,7 +320,9 @@ export function maybeStartGroup(state) {
   const turns = (g) => kindTurns.get(kind(g.id)) ?? 0;
   const least = Math.min(...live.map(turns));
   let pool = live.filter(g => turns(g) === least);
-  const recent = (state.level6Recent ?? []).slice(0, cfg.rememberRecent ?? 2).map(kind);
+  const kinds = new Set(live.map(g => kind(g.id))).size;
+  const wait = Math.max(cfg.rememberRecent ?? 2, Math.ceil((cfg.restShare ?? 0) * (kinds - 1)));
+  const recent = [...new Set((state.level6Recent ?? []).map(kind))].slice(0, wait);
   const fresh = pool.filter(g => !recent.includes(kind(g.id)));
   if (fresh.length) pool = fresh;
   // (God mode: the sets being shown off come round whenever they like, just not twice running:
@@ -333,9 +335,10 @@ export function maybeStartGroup(state) {
   if (opening) pool = [opening];
   // ...and only one whose whole run fits on the board (a set can't be cleared until it's down)
   const room = state.board.length - (cfg.headroom ?? 3) - stackRows(state);
+  const share = versionShare(live);
   while (pool.length) {
     const shown = (g) => (featured.sets?.includes(g.id) ? featured.weight ?? 1 : 1);
-    const group = sampleByWeight(pool, g => g.frequency * setNovelty(state, g) * setThreadWeight(state, sel.currentThread, g) * familyWeight(state, g, cfg) * shown(g), state.rng);
+    const group = sampleByWeight(pool, g => g.frequency * share(g) * setNovelty(state, g) * setThreadWeight(state, sel.currentThread, g) * familyWeight(state, g, cfg) * shown(g), state.rng);
     const pieces = playableRun(state, expandGroup(group, state.rng, l6.variants, lastVersion(state, group)));
     // (not if its first piece mustn't come straight after the last one: a small piece of the sky)
     if (pieces[0]?.notAfter?.includes(sel.lastShapeId)) { pool = pool.filter(g => g !== group); continue; }
@@ -363,6 +366,14 @@ function kindOf(cfg) {
   const of = new Map();
   for (const list of cfg.same ?? []) for (const id of list) of.set(id, list[0]);
   return (id) => of.get(id) ?? id;
+}
+
+// Versions of one set (CONFIG.assist.level6.same: the emotions charts) share one set's chance:
+// all together, no likelier than any one set on its own. (A weight to multiply by, for each.)
+export function versionShare(groups) {
+  const kind = kindOf(CONFIG.assist.level6 ?? {}), total = new Map();
+  for (const g of groups) total.set(kind(g.id), (total.get(kind(g.id)) ?? 0) + (g.frequency ?? 1));
+  return (g) => 1 / Math.max(1, total.get(kind(g.id)) ?? 1);
 }
 
 // Sets of a kind (CONFIG.assist.level6.families: the tins): one soon after another is unlikely.
@@ -491,7 +502,7 @@ export function startGroup(state, group, pieces = null) {
   l6.nameIndex = Math.floor(Math.random() * 1e6); // (which of its pieces' other names, if they have them: game.js prepareShape)
   l6.starts = (l6.starts ?? 0) + 1;
   l6.seen.set(group.id, (l6.seen.get(group.id) ?? 0) + 1);
-  const keep = Math.max(CONFIG.assist.level6?.rememberRecent ?? 2, CONFIG.assist.level6?.familyGap ?? 0);
+  const keep = Math.max(CONFIG.assist.level6?.rememberRecent ?? 2, CONFIG.assist.level6?.familyGap ?? 0, (CONFIG.assist.level6?.restShare ?? 0) > 0 ? state.groups?.length ?? 0 : 0);
   state.level6Recent = [group.id, ...(state.level6Recent ?? []).filter(id => id !== group.id)].slice(0, keep);
   return nextGroupPiece(state);
 }

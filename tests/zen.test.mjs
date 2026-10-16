@@ -10,7 +10,7 @@ import { THREADS, SET_THREADS } from "../shapes/threads.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, updateGame, hardDropAndLock, markInput, tryMove, on } from "../src/game.js";
-import { zenStart, zenIgnoreInput, pluralName, planTiles, oopsName, zenKeys, zenCombos, planPile } from "../src/zen.js";
+import { zenStart, zenIgnoreInput, pluralName, planTiles, oopsName, zenKeys, zenCombos, planPile, planSquares, palettePick } from "../src/zen.js";
 import { COMBOS } from "../shapes/combos.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
@@ -451,6 +451,33 @@ test("turbo zen: tiles in patterns, built up and then all brought down at once",
   const i = log.movements.findIndex(m => m.name === "tiles");
   assert.ok(i >= 0 && log.movements[i + 1], `never finished: ${log.movements.map(m => m.name)}`);
   assert.ok(log.clears.some(n => n >= 18), `${log.clears}`);
+});
+
+test("turbo zen: never a pattern of tiles and nothing else (nor squares, nor a palette), and no grout", () => {
+  const isTile = (s) => !!s.tags?.some(t => t === "tiles" || t === "lego_tiles");
+  let plans = 0, squares = 0, palettes = 0;
+  for (const kind of ["floor", "bricks", "pinwheels", "waves", "lizards", "lego", "freeform"]) for (const seed of [3, 4, 5]) {
+    const { state } = zen(seed, "turbo");
+    state.active = null;
+    const res = planTiles(state, kind);
+    if (!res) continue;
+    plans++;
+    assert.ok(res.items.some(it => !it.key && !isTile(it.shape)), `${kind}: only tiles`);
+    assert.ok(!res.items.some(it => /^tile_(half|strip)$/.test(it.shape.id)), `${kind}: grout`);
+  }
+  for (const seed of [1, 2, 3, 4, 5, 6]) {
+    const { state } = zen(seed, "turbo");
+    state.active = null;
+    const res = planSquares(state);
+    if (res) { squares++; assert.ok(res.items.some(it => !it.key && !isTile(it.shape)), `squares of only tiles: ${res.caption}`); }
+    for (let i = 0; i < 40; i++) {
+      const pal = palettePick(state, state.shapes.filter(s => !s.powerup && (s.difficulty ?? 1) <= 3 && (s.frequency ?? 1) > 0));
+      if (!pal) continue;
+      palettes++;
+      assert.ok(pal.pieces.filter(isTile).length * 2 <= pal.pieces.length, `a palette mostly tiles: ${pal.pieces.map(p => p.id)}`);
+    }
+  }
+  assert.ok(plans >= 15 && squares >= 3 && palettes >= 100, `${plans} tilings, ${squares} squares, ${palettes} palettes`);
 });
 
 test("turbo zen: now and then a strange piece or two is built into a tiling, the tiles round it grouted", () => {

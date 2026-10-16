@@ -81735,7 +81735,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.02,
+    frequency: 0,
     claudeDraft: true,
     oops: {
         "many": "half tiles"
@@ -81757,7 +81757,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.02,
+    frequency: 0,
     claudeDraft: true,
     oops: {
         "many": "strips of grout"

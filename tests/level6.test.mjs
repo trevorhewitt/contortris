@@ -643,3 +643,30 @@ test("the tins: after spam, beans or spaghetti-os, the other two are unlikely fo
   // (and the game remembers enough sets for it)
   assert.ok(Math.max(CONFIG.assist.level6.rememberRecent, CONFIG.assist.level6.familyGap) >= 3);
 });
+
+test("a set doesn't come round again until most of the others have been since (the emotions charts: all their versions as one)", () => {
+  const cfg = CONFIG.assist.level6;
+  const kindOf = (id) => (cfg.same.find(l => l.includes(id)) ?? [id])[0];
+  const kinds = new Set(GROUPS.filter(g => (g.frequency ?? 1) > 0).map(g => kindOf(g.id))).size;
+  const need = Math.ceil(cfg.restShare * (kinds - 1));
+  let emotions = 0, sets = 0, fewest = Infinity;
+  for (const seed of [1, 2, 3]) {
+    const state = createGameState(shapes, powerups, { rng: makeRng(seed * 31), groups: GROUPS });
+    state.level6Recent = [];
+    const served = [];
+    let starts = 0;
+    on(state, (t) => { const l6 = state.pieceSel.level6; if (t === "spawn" && (l6.starts ?? 0) !== starts) { starts = l6.starts; served.push(kindOf(l6.lastGroup)); } });
+    startRun(state, "god");
+    for (let i = 0; i < 320 && !state.gameOver; i++) {
+      hardDropAndLock(state);
+      for (let k = 0; k < 400 && (state.effect || state.hold); k++) updateGame(state, 16);
+      const R = state.board.length; state.board = state.board.map((r, y) => (y < R - 3 ? r.fill(null) : r)); // (low, so sets keep coming)
+    }
+    served.forEach((k, i) => { const j = served.indexOf(k, i + 1); if (j > 0) fewest = Math.min(fewest, j - i - 1); });
+    sets += served.length; emotions += served.filter(k => k === "emotions").length;
+  }
+  console.log(`${sets} sets, ${emotions} emotions charts; fewest between two of a kind ${fewest} (of ${kinds} kinds)`);
+  assert.ok(sets >= 40, `${sets} sets`);
+  assert.ok(fewest >= need, `two of a kind with only ${fewest} others between them`);
+  assert.ok(emotions / sets < 0.1, `emotions ${emotions} of ${sets}`);
+});
