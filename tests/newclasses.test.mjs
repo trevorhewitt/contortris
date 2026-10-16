@@ -229,9 +229,11 @@ test("powerup effects never rotate with the piece", () => {
   const p = powerups[0];
   assert.ok(p.rotations.length > 1);
   // rotation 0: the three cells under a 3x1 piece. Rotation 1 (1x3 upright): still three cells side
-  // by side (a row, not a column), centred on the piece the same way.
-  const rowOf = (a) => new Set(a.cells.map(c => c.dy)).size === 1;
-  for (const a of p.powerup.areaRotations) assert.ok(rowOf(a), JSON.stringify(a.cells));
+  // by side (a row, not a column), centred on the piece the same way (and where it lay before it
+  // turned goes with them: a row too).
+  const rowsOf = (a, own) => new Set(a.cells.filter(c => !!c.own === own).map(c => c.dy)).size;
+  for (const a of p.powerup.areaRotations) assert.ok(rowsOf(a, false) === 1 && rowsOf(a, true) <= 1, JSON.stringify(a.cells));
+  assert.equal(p.powerup.areaRotations[1].cells.filter(c => c.own).length, 2, "the two cells beside it where it lay");
 });
 
 test("a powerup's intro comes just before it falls, and until then the next-piece preview shows it as a plain piece", async () => {

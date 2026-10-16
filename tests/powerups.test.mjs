@@ -302,3 +302,32 @@ test("fill art: painted to fit what it fills, at any size; with cover the piece 
   const t = fire(make({ gen: "texture", k: 1, texture: [tex[0], tex[0], tex[0], tex[0]], tk: 1, shade: false }));
   for (const f of t.fx.filled) assert.equal(f.cell.paint, tex[0][f.x % 4], "the texture's own pixel, by where it is");
 });
+
+test("where a powerup was before it turned goes with its area: no blank there, and nothing filled in out on its own", async () => {
+  const { computeEffect, resolvePowerupArea } = await import("../src/powerups.js");
+  const load = (grid, powerup) => loadShapes([{ id: "own_test", name: "a test", grid, color: "#884422", rotation: { mode: "any" }, powerup }]).powerups[0].powerup;
+  const own = (a) => a.cells.filter(c => c.own).map(c => `${c.dx},${c.dy}`);
+  // two blocks side by side, filling a ring round themselves
+  const pu = load(["XX"], { type: "expander", tier: 2, area: { origin: [1, 1], grid: ["####", "#..#", "####"] } });
+  assert.deepEqual(own(pu.areaRotations[0]), [], "as drawn, the way it comes");
+  const cols = 8, rows = 8, board = Array.from({ length: rows }, () => Array(cols).fill(null));
+  // turned upright at (3, 2): where its left block was, (2, 2), is filled in with the rest
+  const placed = [{ x: 3, y: 2 }, { x: 3, y: 3 }];
+  for (const p of placed) board[p.y][p.x] = { pid: 1 };
+  const area = resolvePowerupArea(pu, 1, 3, 2, cols, rows);
+  computeEffect(board, pu, { area, placed, pid: 1, centre: { x: 3, y: 2.5 }, cols, rows, makeFill: () => ({ pid: 9 }) });
+  assert.equal(board[2][2]?.pid, 9, "no blank where it was");
+  assert.equal(board[2][3]?.pid, 1, "the piece itself stays");
+  // a tube filling down either side of its lower end: laid flat, the cell above where it lay isn't filled
+  const tube = load(["X", "X"], { type: "expander", tier: 2, area: { origin: [1, 0], grid: ["...", "v.v", ".v."] } });
+  for (const a of tube.areaRotations) assert.deepEqual(own(a), [], "nothing on its own above it");
+  // a combo: each to the nearest part (here the ring it destroys, not the fill under it)
+  const combo = load(["XX"], { type: "combo", tier: 3, parts: [
+    { type: "destroyer", area: { origin: [1, 1], grid: ["####", "#..#", "####"] } },
+    { type: "expander", area: { origin: [1, 0], grid: ["....", "....", "....", "vvvv"] } },
+  ] });
+  const [ring, fill] = combo.parts;
+  assert.deepEqual(own(ring.areaRotations[1]), ["-1,0"]);
+  assert.deepEqual(own(fill.areaRotations[1]), []);
+  assert.deepEqual(own(combo.areaRotations[1]), ["-1,0"], "and the combo's whole area");
+});

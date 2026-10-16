@@ -304,6 +304,53 @@ export function resolvePowerupArea(pu, rot, px, py, cols, rows) {
   return area;
 }
 
+// Where a turned piece was before it turned (its rotation-0 cells, centred on it as its area is)
+// goes with its area in turn `k` (`mat0`: its rotation-0 matrix, `mat`: this turn's), so turning
+// it never leaves a blank, or a block standing, where it was. Each cell goes to the nearest part
+// of a combo. One that destroys or drops takes them all; a fill takes only those it would
+// otherwise leave as a hole (its area, or the piece if it stays, on both sides of the cell or on
+// three), so nothing is ever filled in out on its own above the piece. Scatter sprays are left alone.
+export function withOwnCells(pu, k, mat0, mat) {
+  if (!pu || pu.scatter) return;
+  const all = (pu.parts?.length ? pu.parts : [pu]).filter(p => p.areaRotations?.[k] && ["destroyer", "acid", "gravity", "expander"].includes(p.type));
+  if (!all.length) return;
+  const sx = Math.floor((mat[0].length - mat0[0].length) / 2), sy = Math.floor((mat.length - mat0.length) / 2);
+  const isPiece = (x, y) => !!mat[y]?.[x];
+  const inArea = (a, x, y) => a.cells.some(c => c.dx === x && c.dy === y) || a.rows.includes(y) || a.cols.includes(x) || (a.downs ?? []).some(c => c.dx === x && c.dy <= y);
+  const solid = (x, y) => (!pu.consume && isPiece(x, y)) || all.some(p => inArea(p.areaRotations[k], x, y));
+  let left = [];
+  mat0.forEach((row, y) => row.forEach((on, x) => {
+    const cx = x + sx, cy = y + sy;
+    if (on && !isPiece(cx, cy) && !all.some(p => inArea(p.areaRotations[k], cx, cy))) left.push({ x: cx, y: cy });
+  }));
+  // (a few passes: one cell taken in can close in the next)
+  for (let pass = 0; pass < 3 && left.length; pass++) {
+    left = left.filter(({ x, y }) => {
+      let best = null, bestD = Infinity;
+      for (const p of all) { const d = areaDistance(p.areaRotations[k], x, y); if (d < bestD) { bestD = d; best = p; } }
+      if (!best) return false;
+      if (best.type === "expander") {
+        const l = solid(x - 1, y), r = solid(x + 1, y), u = solid(x, y - 1), d = solid(x, y + 1);
+        if (!((l && r) || (u && d) || l + r + u + d >= 3)) return true;
+      }
+      // (`own`: not part of the area as drawn, so a picture over it sits where it did)
+      best.areaRotations[k].cells.push({ dx: x, dy: y, own: true });
+      if (best !== pu) pu.areaRotations[k].cells.push({ dx: x, dy: y, own: true }); // (a combo's whole area too)
+      return false;
+    });
+  }
+}
+
+// How far the cell (x, y) is from an area as drawn (0: in it)
+function areaDistance(a, x, y) {
+  let d = Infinity;
+  for (const c of a.cells) if (!c.own) d = Math.min(d, Math.hypot(c.dx - x, c.dy - y));
+  for (const r of a.rows) d = Math.min(d, Math.abs(r - y));
+  for (const k of a.cols) d = Math.min(d, Math.abs(k - x));
+  for (const c of a.downs ?? []) d = Math.min(d, Math.hypot(c.dx - x, Math.max(0, c.dy - y)));
+  return d;
+}
+
 // Cells within `reach` (Manhattan) steps of the piece's blocks, not the blocks themselves.
 export function touchArea(mat, reach = 1) {
   const H = mat.length, W = mat[0].length;
@@ -444,7 +491,7 @@ export function applyExpand(board, area, cols, makeCell) {
 export function pictureBox(areaRot, at, cols, rows) {
   let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
   const take = (x, y) => { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; };
-  for (const { dx, dy } of areaRot.cells) take(at.x + dx, at.y + dy);
+  for (const { dx, dy, own } of areaRot.cells) if (!own) take(at.x + dx, at.y + dy);
   for (const { dx, dy } of areaRot.downs ?? []) { take(at.x + dx, at.y + dy); take(at.x + dx, rows - 1); }
   for (const dy of areaRot.rows) { take(0, at.y + dy); take(cols - 1, at.y + dy); }
   for (const dx of areaRot.cols) { take(at.x + dx, 0); take(at.x + dx, rows - 1); }

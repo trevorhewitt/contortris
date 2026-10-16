@@ -3,7 +3,7 @@
 // ============================================================
 
 import { isHexColour } from "./util.js";
-import { normalisePowerup, areaRotationsFor } from "./powerups.js";
+import { normalisePowerup, areaRotationsFor, withOwnCells } from "./powerups.js";
 import { normaliseFillArt, isFillArt } from "./fillart.js";
 
 // Splits the raw SHAPES array into regular blocks and powerups.
@@ -220,6 +220,8 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
           part.fillArt = pf.art ?? null;
           part.fillStyle = { ...style, baseColor: pf.baseColor };
         }
+        // (and where the piece was before it turned goes with it: no blank, or block left standing)
+        allowed.forEach((i, k) => withOwnCells(powerup, k, allRotations[0], allRotations[i]));
       }
     }
 
@@ -313,7 +315,7 @@ function fixedArea(base, mat0, mat) {
   const sx = Math.floor((mat[0].length - mat0[0].length) / 2);
   const sy = Math.floor((mat.length - mat0.length) / 2);
   return {
-    cells: base.cells.map(({ dx, dy }) => ({ dx: dx + sx, dy: dy + sy })),
+    cells: base.cells.map(c => ({ ...c, dx: c.dx + sx, dy: c.dy + sy })),
     rows: base.rows.map(dy => dy + sy),
     cols: base.cols.map(dx => dx + sx),
     downs: (base.downs ?? []).map(({ dx, dy }) => ({ dx: dx + sx, dy: dy + sy })),

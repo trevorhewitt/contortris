@@ -172,11 +172,15 @@ export function zenNext(state) {
     z.queue.unshift({ shape: bigPowerup(state), weights: WEIGHTS.clear, emergency: true });
     zenCaption(state, "steady", "steady");
   } else if (isCalm(state) && !z.queue[0].shape.powerup && needsHelp(state, occ)) {
-    // zen: left high or full of gaps, a little help (now and then)
-    const g = gaps(state);
-    z.queue.unshift({ shape: g > 6 ? consolidator(state) : bestPowerup(state), weights: WEIGHTS.clear });
+    // zen: left high or full of gaps, a little help (now and then): never one that brings the
+    // whole board down at once (CONFIG.zen.calm.helpRows)
+    const g = gaps(state), most = CONFIG.zen.calm.helpRows ?? 12;
+    const help = g > 6 ? consolidator(state, most) : bestPowerup(state, powerupPool(state), CONFIG.zen.powerupChoices, WEIGHTS.clear, most);
     z.helpedAt = state.drops;
-    zenCaption(state, "a little help", "help");
+    if (help) {
+      z.queue.unshift({ shape: help, weights: WEIGHTS.clear });
+      zenCaption(state, "a little help", "help");
+    }
   }
   let item = z.queue.shift();
   // (a big piece picked a turn or two ago, for the board as it was then, that won't go in now:
@@ -627,9 +631,9 @@ function gaps(state) {
 }
 
 // The gravitizer (or phantom, while there are any) of a handful that would close the most gaps.
-function consolidator(state) {
+function consolidator(state, maxLines = Infinity) {
   const pool = powerupPool(state).filter(p => ["gravity", "phantom"].includes(p.powerup.type) && !p.powerup.bad);
-  return bestPowerup(state, pool.length ? pool : powerupPool(state));
+  return bestPowerup(state, pool.length ? pool : powerupPool(state), CONFIG.zen.powerupChoices, WEIGHTS.clear, maxLines);
 }
 
 // A planned movement: the whole run of pieces is worked out at the start (plan(state) returns
@@ -1163,7 +1167,9 @@ function pluralWord(w) {
 }
 
 // The powerup (of a handful, at random) that would do the most good on this board.
-function bestPowerup(state, pool = powerupPool(state), tries = CONFIG.zen.powerupChoices, weights = WEIGHTS.clear) {
+// (`maxLines`: only one that brings down at most this many rows at once where it would go, or
+// null if none of those it weighed up would)
+function bestPowerup(state, pool = powerupPool(state), tries = CONFIG.zen.powerupChoices, weights = WEIGHTS.clear, maxLines = Infinity) {
   if (!pool.length) return pick(state, smallPool(state));
   let best = null;
   for (let i = 0; i < tries; i++) {
@@ -1172,9 +1178,10 @@ function bestPowerup(state, pool = powerupPool(state), tries = CONFIG.zen.poweru
     const rare = CONFIG.godMode?.rarer?.[p.id];
     if (rare != null && pool.length > 1 && z01(state) >= rare) continue;
     const place = bestPlacement(state, p, weights, 2);
+    if (place && place.lines > maxLines) continue;
     if (place && (!best || place.s > best.s)) best = { p, s: place.s };
   }
-  return best?.p ?? pool[0];
+  return best?.p ?? (maxLines < Infinity ? null : pool[0]);
 }
 
 // On the way up a fill: one of the Expanderz (the bigger ones likelier) put where it fills the
@@ -1501,7 +1508,7 @@ export function bestPlacement(state, shape, weights = WEIGHTS.clear, maxTurns = 
     const inWell = !pu && intoWell(mat, x, weights) ? 12 : 0;
     const base = score(occ, lines, weights, cols, rows);
     const extra = bonus - over - inWell + z01(state) * 0.01 - (slide ? 0.05 : 0);
-    const c = { rot: r, x: slide ? slide.from : x, y, s: base + extra, slide: slide ? { at: slide.at, to: x } : null };
+    const c = { rot: r, x: slide ? slide.from : x, y, s: base + extra, slide: slide ? { at: slide.at, to: x } : null, lines };
     if (!best || c.s > best.s) best = c;
     if (ahead && !over) ahead.push({ c, at: x, base, extra });
   };
