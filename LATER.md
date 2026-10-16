@@ -40,3 +40,10 @@ deferred is added at the bottom.)
   piece is saved, and its in-game preview paints them as the game does, but they're edited in
   shapes/main_shapes.js (every setting is described at the top of src/fillart.js), not in the
   designer itself.
+
+## Housekeeping
+
+- **A smaller shapes file.** The painted fills' hand-drawn textures write one colour per line,
+  so shapes/main_shapes.js is now about 120,000 lines (7.5 MB). Writing each list of colours on
+  one line (in the block designer's save and in the scripts) would cut it to about a third. Left
+  as it is for now, so the shapes branch merges cleanly; it's a one-time reformat of the file.
