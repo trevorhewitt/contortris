@@ -278,6 +278,11 @@ export const CONFIG = {
     newest: {
       sets: ["sunshine", "trees", "great_and_terrible", "space", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
+        "storm_cloud", "big_storm_cloud", "rumbling_storm_cloud", "monsoon", "cats_and_dogs_cloud",
+        "crying_cloud", "silver_lining_cloud", "expanding_foam", "leaky_tap", "wall_filler", "sourdough",
+        "dropped_lasagne", "lost_marbles", "pancake_stack", "ball_pit", "cotton_candy", "foam_cousin",
+        "new_testament", "bubble_bath", "liquid_cat", "shitting_cat", "packing_peanuts", "snow_drift",
+        "autumn_leaves", "cement_mixer", "jelly_mould", "ghost_lantern", "wizard_all_trades",
         "bathroom_tiles", "herringbone_floor", "hexagonal_tiles", "fish_scale_tiles", "moroccan_mosaic", "terrazzo_slab", "tessellating_lizards", "chequered_marble", "lego_few_bricks", "lego_heap", "lego_tub", "lego_bucket",
         "mentos_in_cola", "squat_volcano", "big_waterfall", "spilled_milk", "inner_light", "burst_of_sunshine", "inflating_bouncy_castle", "swelling_sponge", "microwaved_marshmallow", "incoming_tide",
         "road_sinkhole", "big_green_pipe", "bottomless_hole", "deep_end", "narrow_mineshaft", "mineshaft", "lift_shaft", "straight_quarry", "crevasse", "canyon",
@@ -296,7 +301,7 @@ export const CONFIG = {
         "horseshoe_magnet", "sarcastic_thumbs_up", "ice_skate", "hole_punch", "lightning_bolt_with_a_grudge", "lit_fuse", "magic_wand", "toadstool",
         "invader_squid_arcade", "invader_crab_neon", "invader_octopus_sticky_notes", "mystery_ship", "invader_squid_neon", "invader_crab_sticky_notes", "invader_octopus_arcade",
         "a_bee", "two_bees", "bee_line", "queen_bee", "honeycomb", "bees_knees", "bee_bigger_bee", "bee_in_a_bonnet", "cloud_of_bees",
-        "storm_cloud", "big_storm_cloud", "rumbling_storm_cloud", "space_invader_2", "space_invader_3", "space_invader_4",
+        "space_invader_2", "space_invader_3", "space_invader_4",
         "happy_pills_2", "piece_of_sky_sunset", "piece_of_sky_night",
         "bull", "camel", "mouse", "elephant_in_the_room", "giant_rubber_duck", "dinosaur_fossil",
         "big_hot_air_balloon", "lighthouse", "double_decker",

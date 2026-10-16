@@ -388,6 +388,9 @@ test("level 6: no set comes round again until every other one has, even into the
     on(state, (t, d) => { if (t === "spawn" && d.shape.difficulty === 6 && state.pieceSel.level6.group && state.pieceSel.level6.queue.length >= 0) seq.push(d.shape.id); });
     startRun(state, "normal");
     state.devLevel6 = "on";
+    // (every powerup class met from the start, so every set can come: a set with Dissolverz in
+    // it waits for them, and which class comes first is down to the dice)
+    for (const c of ["destroyer", "gravity", "expander", "combo"]) state.pieceSel.powerup.shownClasses.add(c);
     const order = [];
     for (let i = 0; i < 1200 && !state.gameOver; i++) {
       const l6 = state.pieceSel.level6, n0 = l6.starts ?? 0;
@@ -412,7 +415,8 @@ test("level 6: no set comes round again until every other one has, even into the
 });
 
 test("Noah's ark: the ark, 3-4 different pairs, one last creature, a few raindrops (or storm clouds), then forty days and forty nights of rain", () => {
-  const g = normaliseGroups(GROUPS, shapes).find(g => g.id === "noahs_ark");
+  // (the storm clouds are Expanderz: the groups are made from every piece, as in the game)
+  const g = normaliseGroups(GROUPS, [...shapes, ...powerups]).find(g => g.id === "noahs_ark");
   const last = new Set(["just_one_unicorn", "just_one_dinosaur", "just_one_dodo", "just_one_mammoth", "just_one_griffin", "dragons_both_dudes"]);
   const drops = new Set(["raindrop", "big_raindrop", "drizzle"]), storms = new Set(["storm_cloud", "big_storm_cloud", "rumbling_storm_cloud"]);
   const rng = makeRng(9);
