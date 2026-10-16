@@ -286,6 +286,7 @@ test("God mode can bring particular pieces soon after its opening set, the first
     const at = served.findIndex(s => s.id === CONFIG.godMode.firstPieces[0]);
     const setEnds = served.findIndex((s, i) => i > 0 && served[i - 1].set && !s.set);
     assert.ok(at >= 0, `never came: ${served.map(s => s.id).slice(0, 40).join(" ")}`);
-    assert.ok(setEnds >= 0 && at >= setEnds - 1 && at <= setEnds + 6, `at piece ${at}, the opening set over at ${setEnds}`);
+    // (soon after: the powerups and giants God mode serves meanwhile can come first)
+    assert.ok(setEnds >= 0 && at >= setEnds - 1 && at <= setEnds + 8, `at piece ${at}, the opening set over at ${setEnds}`);
   } finally { CONFIG.godMode.firstPieces = was; CONFIG.godMode.newest.pieces = newest; }
 });

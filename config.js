@@ -260,7 +260,7 @@ export const CONFIG = {
       bad: { minDrop: 0 },
     },
     // gravitizers that collapse at least `minCols` columns are this many times likelier
-    wideGravity: { minCols: 6, weight: 4.5 },
+    wideGravity: { minCols: 6, weight: 5.2 },
     // ...and these are this much as likely as they would be (the large black hole takes
     // everything: it's better for being rarer). Zen's director goes by the same numbers.
     rarer: { large_black_hole: 0.3, tidal_wave: 0.45 },
@@ -277,6 +277,7 @@ export const CONFIG = {
     newest: {
       sets: ["sunshine", "trees", "great_and_terrible", "space", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
+        "road_sinkhole", "big_green_pipe", "bottomless_hole", "deep_end", "narrow_mineshaft", "mineshaft", "lift_shaft", "straight_quarry", "crevasse", "canyon",
         "sphinx", "extris", "present_big", "present_wide", "present_tall", "present_long", "present_small", "dinosaur_footprints", "bigfoot_footprints",
         "stop_sign", "dynamite", "umbrella_for_a_fish", "seen_things", "storm_in_a_teacup",
         "microwave_popcorn", "fog_machine", "spreading_cloud", "sun_in_a_cloud",
