@@ -185,8 +185,10 @@ export const CONFIG = {
     // Turbo zen on a big board (at least minCols wide): now and then (chance) the next few pieces
     // come down together, each in columns of its own (margin columns apart), up to one for every
     // colsEach columns (at most `most` at once), up to `stagger` rows apart as they start. They
-    // all land before any rows clear.
-    flock: { minCols: 22, colsEach: 12, most: 4, chance: 0.6, margin: 1, headroom: 3, stagger: 5,
+    // all land before any rows clear. A powerup (powerups: how often, in a run of pieces, not a
+    // plan) brings a few along too, and they're still coming down while it goes off, landing on
+    // the board it leaves (the effect: about effectMs).
+    flock: { minCols: 22, colsEach: 12, most: 4, chance: 0.6, margin: 1, headroom: 3, stagger: 5, powerups: 0.6, effectMs: 600,
       tiny: { most: 12, colsEach: 3, chance: 0.85 } }, // (pieces of one or two blocks: a shower of them)
     mosaicChance: 0.45,    // (on a big board) the squares now and then 1 x 1, a mosaic
     // Turbo zen's fills are a few kinds of piece that go together (src/zen.js palettePick): how

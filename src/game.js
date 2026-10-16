@@ -677,8 +677,9 @@ function placePiece(state, piece) {
 // Locks the active piece into the board. Returns info about the placement.
 function lockPiece(state) {
   const { shape, rotIdx } = state.active;
-  // (turbo zen: anything still falling with it lands first; its rows clear with this one's)
-  if (state.flock.length) settleFlock(state);
+  // (turbo zen: anything still falling with it lands first; its rows clear with this one's. But
+  // what a powerup brought along carries on coming down while it goes off: updateGame)
+  if (state.flock.length && !shape.powerup) settleFlock(state);
   const { pid, placed, lockedAboveTop } = placePiece(state, state.active);
 
   state.lastLockedShape = shape;
@@ -1754,6 +1755,8 @@ function afterLock(state, lockInfo) {
 }
 
 function finishTurn(state, alsoRows = null) {
+  // (any a powerup brought along that haven't landed yet land now, before the rows go)
+  if (state.flock.length) settleFlock(state);
   clearFullLines(state, alsoRows);
 
   let ok = spawnPiece(state);
@@ -1812,7 +1815,9 @@ export function updateGame(state, dt) {
   }
 
   if (state.effect) {
-    updatePowerupEffect(state, dt);
+    // (turbo zen: the pieces a powerup brought along are still coming down while it goes off)
+    if (state.flock.length) updateFlock(state, dt);
+    if (state.effect) updatePowerupEffect(state, dt);
     return;
   }
   if (state.flock.length) updateFlock(state, dt);

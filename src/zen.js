@@ -1329,13 +1329,18 @@ export function zenSpawned(state) {
    them), which comes to the same as one after the other, so a plan still works out as planned
    (and it's checked: if it wouldn't, they come one at a time). In a run of pieces, the next few
    of the run; in a plan, any further on that are clear of everything they'd jump ahead of.
-   Never a powerup or a level 6 piece, and nothing jumps ahead of a powerup.
+   Never a powerup or a level 6 piece among them, and nothing jumps ahead of a powerup; but a
+   powerup in a run of pieces (now and then: CONFIG.zen.flock.powerups) brings a few along,
+   further up, so they're still coming down while it goes off, and they land on what it leaves.
 */
 function formFlock(state, land) {
   const z = state.zen, F = CONFIG.zen.flock, a = state.active, t = z.target;
   const { cols, rows } = CONFIG.board;
   state.flock = [];
-  if (!F || isCalm(state) || z.userHas || a.shape.powerup || t?.slide || land == null || cols < F.minCols) return;
+  if (!F || isCalm(state) || z.userHas || t?.slide || land == null || cols < F.minCols) return;
+  // (a powerup: only in a run of pieces, not a plan, nor a big moment, nor one that falls through)
+  const pu = a.shape.powerup;
+  if (pu && (z.expect || z.pauseFirst || z.current?.key || z.current?.dramatic || z.current?.emergency || isPhantomPowerup(pu) || z.simRng() >= (F.powerups ?? 0))) return;
   // (the tiniest pieces come down in a shower: lots of them at once)
   const tiny = F.tiny && blocks(a.shape) <= 2 ? F.tiny : null;
   const room = Math.min(tiny?.most ?? F.most, Math.floor(cols / (tiny?.colsEach ?? F.colsEach))) - 1;
@@ -1406,9 +1411,11 @@ function formFlock(state, land) {
   // starts further up too
   const far = Math.max(land - a.y, ...members.map(f => f.land + f.shape.rotations[f.rotIdx].length));
   a.y = Math.min(a.y, land - far);
+  // (with a powerup, they come down while it goes off: as much further up as that takes)
+  const later = pu ? Math.round((F.effectMs ?? 600) / Math.max(1, state.dropMs)) : 0;
   for (const f of members) {
     f.dropMs = state.dropMs;
-    f.y = f.land - far - Math.floor(z.simRng() * (F.stagger ?? 0));
+    f.y = f.land - far - later - Math.floor(z.simRng() * (F.stagger ?? 0));
     f.accum = 0;
     z.blocks = (z.blocks ?? 0) + blocks(f.shape);
   }
@@ -1451,8 +1458,9 @@ export function zenSteps(state) {
 export function zenLockMs(state) {
   if (!autopilot(state)) return null;
   const t = state.zen.target;
-  // (nor before the rest of a flock has landed: it clears their rows with its own)
-  if ((t?.slide && !t.slid) || state.flock.length) return Infinity;
+  // (nor before the rest of a flock has landed: it clears their rows with its own; but a
+  // powerup goes off with them still on the way)
+  if ((t?.slide && !t.slid) || (state.flock.length && !state.active?.shape.powerup)) return Infinity;
   return isCalm(state) && !dozing(state) ? null : CONFIG.zen.lockMs * state.zen.pace;
 }
 
