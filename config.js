@@ -215,6 +215,11 @@ export const CONFIG = {
     // ...or else one of the biggest destroyers (`size` cells at least) that would take `most` of
     // what's there at once
     sweep: { size: 90, most: 0.6 },
+    // A fill (turbo zen) that hands over part way up (relay: chance, at between `at` of the way
+    // up, as a share of the board) to another that carries on on top of it, so the screen fills
+    // with one thing and then another; with nothing in between (blasts[0]), or a powerup or two
+    // first (blasts[1], blasts[2]: how likely), knocking some of it down for the next to build on.
+    relay: { chance: 0.4, at: [0.3, 0.6], blasts: [0.5, 0.3, 0.2] },
     // On the way up (a fill), beds for one big or strange piece each (of minBlocks blocks at
     // least), patches of tiles, and Expanderz filling what they can of the gaps (grows): how
     // likely none, one, two or three of them (beds; patches; grows), above `belowTop` rows from

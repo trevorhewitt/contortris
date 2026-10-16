@@ -32,7 +32,7 @@ import { selectPiece, destroyerCells, pickFitting, inGame } from "./selection.js
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
 import { expandGroup, roomNeeded, groupUnderWay, lastVersion, noteVersion, groupPlayable, playableRun, groupMembers } from "./level6.js";
-import { makeRng, sampleByWeight } from "./util.js";
+import { makeRng, sampleByWeight, valueNoise } from "./util.js";
 import { loadShapes } from "./shapes.js";
 import { colourFamily } from "./threads.js";
 import { COMBOS } from "../shapes/combos.js";
@@ -62,7 +62,7 @@ const WEIGHTS = {
 const MOVEMENT_WEIGHTS = {
   zen: { natural: 5, rain: 1, family: 1.6, colours: 1, twos: 0.7 },
   turbo: { natural: 0.25, rain: 0.15, build: 0.5, giants: 0.3, column: 2.5, beds: 2, crack: 2, mess: 0.9, fall: 0.3, well: 0.3, chorus: 1.2,
-    mono: 5, combo: 4, pile: 2, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 2, blackholes: 1, expanders: 1, oops: 2.5, tiles: 1.2 },
+    mono: 5, combo: 4, pile: 2.5, small: 0.8, big: 0.8, standing: 2, colour: 2.5, squares: 1.6, waves: 3.5, blackholes: 1, expanders: 1, oops: 2.5, tiles: 1.2 },
 };
 // (the ones that need a low, tidy board to build on)
 const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "standing", "colour", "squares", "tiles", "pile"]);
@@ -266,6 +266,12 @@ function pickMovement(state) {
   const occ = occupancy(state.board);
   const h = heightOf(occ, cols, rows);
   if (z.after && !PLANNED.has(z.after)) return z.after;
+  // (a fill that handed over part way up: another that carries on on top of it)
+  if (z.handOver) {
+    z.handOver = false;
+    const on = Object.entries(MOVEMENT_WEIGHTS[zenSet(state)]).filter(([k]) => BLENDS.has(k) && k !== z.last && k !== z.lastShow);
+    if (on.length) return sampleByWeight(on, ([, w]) => w, state.rng)[0];
+  }
   // (zen: never building anything up, so no waiting for a tidy board)
   if (isCalm(state)) return sampleByWeight(Object.entries(MOVEMENT_WEIGHTS.zen).filter(([k]) => k !== z.last && k !== z.lastShow), ([, w]) => w, state.rng)[0];
   if (!z.after) {
@@ -526,7 +532,7 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
     return s;
   };
   return {
-    caption, pace, phase: "fill", target, blasts: 0, pieces: 0, weights: null, leave: 3, extras: null,
+    caption, pace, phase: "fill", target, blasts: 0, pieces: 0, weights: null, leave: 3, extras: null, relay: null,
     // (now and then, on the way up, a bed for one big or strange piece, or a patch of tiles)
     interject(state) {
       // (not if the player had the last one: it might not be where it was going)
@@ -548,12 +554,34 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         // one of the tallest pieces can bring it all down at the end)
         const occ = occupancy(state.board), clear = [...Array(cols).keys()].filter(x => colTop(occ, x, cols, rows) === rows);
         this.weights = { ...weights, well: clear.length ? clear[Math.floor(state.rng() * clear.length)] : Math.floor(state.rng() * cols) };
-        // (on top of whatever's there; and now and then it leaves some behind for the next)
+        // (on top of whatever's there; and as often as not it leaves some behind, a fifth to
+        // two fifths of the screen, for the next to build on)
         this.target = Math.min(rows - 3, Math.max(this.target, stackHeight(state) + 5));
-        if (state.rng() < 0.3) this.leave = int(state, 5, 8);
+        if (state.rng() < 0.5) this.leave = int(state, Math.round(rows * 0.2), Math.round(rows * 0.4));
+        // (and now and then it hands over part way up to another, which carries on on top of it:
+        // CONFIG.zen.relay)
+        const RL = CONFIG.zen.relay, h0 = stackHeight(state);
+        if (RL && !isCalm(state) && !only && state.rng() < RL.chance) {
+          const at = Math.round(rows * (RL.at[0] + (RL.at[1] - RL.at[0]) * state.rng()));
+          if (at >= h0 + 4 && at <= this.target - 5) this.relay = { at, blasts: sampleByWeight(RL.blasts.map((w, n) => [n, w]), ([, w]) => w, state.rng)[0] };
+        }
         // (behind the home screen it leaves plenty: CONFIG.modes.home.keep)
         const keep = CONFIG.modes[state.mode]?.keep;
         if (keep) this.leave = int(state, keep[0], keep[1]);
+      }
+      // (handing over: straight away, or after a powerup or two that knock some of it down)
+      if (this.phase === "fill" && this.relay && stackHeight(state) >= this.relay.at) this.phase = "relay";
+      if (this.phase === "relay") {
+        // (one that takes some of it, not most: a middling destroyer or a gravitizer)
+        const some = this.blasts < this.relay.blasts && bestPowerup(state, powerupPool(state).filter(p => !p.powerup.bad && (p.powerup.type === "gravity" || (["destroyer", "acid"].includes(p.powerup.type) && destroyerCells(p) <= 24))), CONFIG.zen.powerupChoices, WEIGHTS.clear, Math.round(rows / 5));
+        if (some) {
+          state.zen.queue.push({ shape: some, weights: WEIGHTS.clear, blast: this.blasts });
+          this.blasts++;
+          return;
+        }
+        this.phase = "relayed";
+        state.zen.handOver = true; // (the next movement builds on this one: pickMovement)
+        return;
       }
       let shape = this.phase === "fill" && !again.last ? nextOne(state) : null;
       if (shape && !fitsUnder(state, shape, 2)) shape = only ? null : pick(state, smallPool(state)); // (nearly there: nothing too big)
@@ -582,17 +610,18 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
         this.blasts++;
       }
     },
-    done(state) { return this.phase === "blast" && (this.blasts >= blasts || stackHeight(state) <= this.leave || !stillWorthIt(this, state, this.blasts)); },
+    done(state) { return this.phase === "relayed" || (this.phase === "blast" && (this.blasts >= blasts || stackHeight(state) <= this.leave || !stillWorthIt(this, state, this.blasts))); },
   };
 }
 
 // Comings and goings: built up full of gaps, then the gravitizers sort the gaps out,
-// then up again, higher, and again, until at last it all comes down.
+// then up again, higher, and again, the last time right up towards the top, until at last the
+// gravitizers (the biggest first) bring it all down.
 function waves(state) {
   const { rows } = CONFIG.board;
   const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= 3), pal = palettePick(state, pool);
   return {
-    caption: "comings and goings", phase: "fill", round: 0, rounds: int(state, 2, 3), target: up(int(state, 11, 14)), pieces: 0, fixes: 0, blasts: 0, weights: null,
+    caption: "comings and goings", phase: "fill", round: 0, rounds: int(state, 2, 4), target: up(int(state, 13, 16)), pieces: 0, fixes: 0, blasts: 0, weights: null,
     fill(state) {
       const z = state.zen, h = stackHeight(state);
       if (!this.weights) { this.weights = { ...WEIGHTS.holey }; this.target = Math.max(this.target, h + 4); }
@@ -607,10 +636,10 @@ function waves(state) {
           this.fixes++;
           return;
         }
-        // (and up again, higher)
+        // (and up again, higher: the last time, right up towards the top)
         this.phase = "fill";
         this.pieces = 0;
-        this.target = Math.min(rows - 3, Math.max(stackHeight(state) + 5, this.target + int(state, 2, 4)));
+        this.target = this.round >= this.rounds ? rows - 3 : Math.min(rows - 3, Math.max(stackHeight(state) + 5, this.target + int(state, 3, 5)));
       }
       if (this.phase === "fill") {
         let shape = stray(state) ?? (state.rng() < 0.12 ? buildPiece(state) : fromPalette(state, pal, pool, 3));
@@ -619,11 +648,18 @@ function waves(state) {
         this.pieces++;
         return;
       }
-      z.queue.push({ shape: this.blasts < 2 ? bigPowerup(state) : bestPowerup(state), weights: WEIGHTS.clear, blast: this.blasts });
+      z.queue.push({ shape: (this.blasts < 2 && bigGravitizer(state)) || (this.blasts < 2 ? bigPowerup(state) : bestPowerup(state)), weights: WEIGHTS.clear, blast: this.blasts });
       this.blasts++;
     },
     done(state) { return this.phase === "blast" && (this.blasts >= 6 || stackHeight(state) <= 3 || !stillWorthIt(this, state, this.blasts)); },
   };
+}
+
+// One of the big gravitizers (the earthquake, the whale...) where it would bring the most down,
+// or null.
+function bigGravitizer(state) {
+  const pool = powerupPool(state).filter(p => p.powerup.type === "gravity" && !p.powerup.bad && gravityColumns(p) >= 6);
+  return pool.length ? bestPowerup(state, pool) : null;
 }
 
 // The gaps under blocks on the board.
@@ -740,7 +776,7 @@ const MOVEMENTS = {
       if (left <= 0 || !fitsUnder(st, cur, 4)) { cur = fromPalette(st, pal, pool); left = int(st, 2, 4); }
       left--;
       return cur;
-    }, { target: up(int(state, 17, 20)), pace: 0.8 });
+    }, { target: up(int(state, 18, 21)), pace: 0.8 });
   },
 
   // the board full of one thing: spam, the animals, Big Bens...
@@ -749,14 +785,14 @@ const MOVEMENTS = {
     return fillThenBlast(fam.caption, (st) => {
       const fits = fam.pieces.filter(s => fitsUnder(st, s, 4));
       return fits.length ? pickFresh(st, fits) : pickFresh(st, smallPool(st));
-    }, { target: up(int(state, 17, 20)), pace: 0.75, streaks: 0.3, loose: true, strays: (CONFIG.zen.strays?.chance ?? 0) / 2 });
+    }, { target: up(int(state, 18, 21)), pace: 0.75, streaks: 0.3, loose: true, strays: (CONFIG.zen.strays?.chance ?? 0) / 2 });
   },
 
   // the board full of one awkward thing, and the name says so all the way up: "Oops, all bagpipes!"
   oops: (state) => {
     const s = awkwardOne(state);
     if (!s) return MOVEMENTS.mono(state);
-    return fillThenBlast(null, () => s, { target: up(int(state, 17, 20)), pace: 0.75, only: true, keyChance: 0.3, label: oopsName(state, s) });
+    return fillThenBlast(null, () => s, { target: up(int(state, 18, 21)), pace: 0.75, only: true, keyChance: 0.3, label: oopsName(state, s) });
   },
 
   // the board full of one of the combinations in shapes/combos.js: the portraits; the papers, the
@@ -769,7 +805,7 @@ const MOVEMENTS = {
     if (!c) return MOVEMENTS.mono(state);
     const { cols, rows } = CONFIG.board;
     // (as high as fillThenBlast will take it: on top of whatever's there)
-    const h0 = stackHeight(state), target = Math.min(rows - 3, Math.max(up(int(state, 17, 20)), h0 + 5));
+    const h0 = stackHeight(state), target = Math.min(rows - 3, Math.max(up(int(state, 18, 21)), h0 + 5));
     const labels = c.label == null ? [] : [].concat(c.label);
     const label = labels.length && state.rng() < (c.labelChance ?? 1) ? labels[Math.floor(state.rng() * labels.length)] : null;
     // (small things quickly, and enough of them to fill it; big things slowly)
@@ -820,7 +856,7 @@ const MOVEMENTS = {
   // big things
   big: (state) => {
     const pool = giantPool(state), pal = palettePick(state, pool);
-    return fillThenBlast(pal ? `big ${pal.caption}` : "big things", (st) => (pal ? fromPalette(st, pal, pool) : giantPiece(st)), { target: up(int(state, 16, 19)), pace: 1.1 });
+    return fillThenBlast(pal ? `big ${pal.caption}` : "big things", (st) => (pal ? fromPalette(st, pal, pool) : giantPiece(st)), { target: up(int(state, 17, 20)), pace: 1.1 });
   },
 
   // the giants: a level 6 set if one fits, or a few giant pieces
@@ -898,7 +934,7 @@ const MOVEMENTS = {
 
   // built up, then one black hole after another
   blackholes: (state) => fillThenBlast("a series of black holes", ((pool, pal) => (st) => (st.rng() < 0.12 ? buildPiece(st) : fromPalette(st, pal, pool)))(regularPool(state).filter(s => (s.difficulty ?? 1) <= 3), palettePick(state, regularPool(state).filter(s => (s.difficulty ?? 1) <= 3))), {
-    target: up(int(state, 15, 19)), pace: 0.8, blasts: 8, streaks: 0.25,
+    target: up(int(state, 17, 20)), pace: 0.8, blasts: 8, streaks: 0.25,
     blastWith: (st, n) => { const holes = powerupPool(st).filter(p => /black hole/i.test(p.name)); return holes.length && n % 3 !== 2 ? bestPowerup(st, holes) : bigPowerup(st); },
   }),
 
@@ -918,7 +954,7 @@ const MOVEMENTS = {
       return bestPowerup(st, few, few.length, WEIGHTS.grow);
     };
     if (way === "only") {
-      return fillThenBlast("expanding", (st) => grower(st, all), { target: up(int(state, 16, 20)), pace: 0.9, only: true, keyChance: 0.3, weights: WEIGHTS.grow, maxPieces: 16 * CONFIG.board.cols / 14 });
+      return fillThenBlast("expanding", (st) => grower(st, all), { target: up(int(state, 17, 21)), pace: 0.9, only: true, keyChance: 0.3, weights: WEIGHTS.grow, maxPieces: 16 * CONFIG.board.cols / 14 });
     }
     const pool = regularPool(state).filter(s => (s.difficulty ?? 1) <= 3), pal = palettePick(state, pool);
     const big = all.filter(p => (p.powerup.tier ?? 1) >= 3 || (p.powerup.help ?? 0) >= 4.5);
@@ -931,7 +967,7 @@ const MOVEMENTS = {
         if (p) return p;
       }
       return fromPalette(st, pal, pool);
-    }, { target: up(int(state, 17, 20)), pace: way === "showcase" ? 1 : 0.85, streaks: 0.15 });
+    }, { target: up(int(state, 18, 21)), pace: way === "showcase" ? 1 : 0.85, streaks: 0.15 });
   },
 
   // zen: a few of one family of pieces (a few bees, some florgnorfepuses)
@@ -2400,40 +2436,61 @@ function colourPattern(kind, { cols, rows, H, top, rng, enough }) {
 }
 
 // A pile: poured in the middle (or against the left or right wall: `from`), each stage a shell a
-// few rows thick under slopes that go down from a little over the top of it, so it grows
-// outwards, its bottom rows completing (and going) once it reaches the walls; then the rest
-// filled in, up to the top of it, so it all goes. Returns { items, caption } or null.
+// few rows thick under the slopes, so it grows up and out, right up to the top of the screen:
+// against a wall, a slope from the top of that wall down to the foot of the other, cutting the
+// screen in half; in the middle (more or less), a hill as high, its foot at the walls. Never
+// quite true: steeper each time or a little less, and lumpy. Then the rest of the screen filled
+// in but for the column at its foot, and one of the tallest pieces down that, so it all goes at
+// once. Returns { items, caption } or null.
 export function planPile(state, from = null) {
   const { cols, rows } = CONFIG.board;
   const rng = state.rng;
   const occ = occupancy(state.board);
   if (!solid(occ, cols, rows) || heightOf(occ, cols, rows) > 2) return null;
   from ??= sampleByWeight([["middle", 2], ["left", 1], ["right", 1]], ([, w]) => w, rng)[0];
-  const at = from === "middle" ? (cols - 1) / 2 : from === "left" ? 0 : cols - 1;
-  const slope = (0.8 + rng() * 0.7) * (from === "middle" ? 1 : 0.6), top = up(int(state, 15, 18));
-  const stages = int(state, 8, 13) + (cols > 20 ? 3 : 0), cands = fillerCandidates(state);
+  const top = rows - int(state, 2, 3);
+  const at = from === "middle" ? (cols - 1) * (0.35 + 0.3 * rng()) : from === "left" ? 0 : cols - 1;
+  const reach = Math.max(1, from === "middle" ? Math.max(at, cols - 1 - at) : cols - 1);
+  const slope = (top / reach) * (1 + 0.3 * rng());
+  const lumps = valueNoise(rng, 2.5 + 2.5 * rng()), lumpy = 1 + rng();
+  // (the column furthest from where it's poured stays clear on the way up, so it's all still
+  // there for the end)
+  const foot = Math.abs(cols - 1 - at) >= at ? cols - 1 : 0;
+  const cands = fillerCandidates(state);
   let work = occ.slice();
   const steps = [];
   const heightAt = (x) => rows - colTop(work, x, cols, rows);
-  for (let k = 0; k < stages; k++) {
+  for (let k = 0; k < 2 * rows; k++) {
     const x0 = Math.round(at);
     let crest = 0;
     for (let x = Math.max(0, x0 - 1); x <= Math.min(cols - 1, x0 + 1); x++) crest = Math.max(crest, heightAt(x));
+    if (crest >= top) break;
     const peak = Math.min(top, crest + int(state, 3, 4));
     const need = new Uint8Array(cols * rows);
     let n = 0;
     for (let x = 0; x < cols; x++) {
-      const T = Math.floor(peak - slope * Math.abs(x - at));
+      const T = x === foot ? 0 : Math.max(0, Math.min(peak, Math.floor(peak - slope * Math.abs(x - at) + (lumps(x, 0) - 0.5) * 2 * lumpy)));
       for (let y = rows - 1; y >= rows - T; y--) if (!work[y * cols + x]) { need[y * cols + x] = 1; n++; }
     }
-    if (!n) continue;
+    if (!n) break;
     const w = work.slice(), placed = tile(w, need, cands, rng, cols, rows);
     if (!placed) { if (k < 3) return null; break; }
-    clearFull(w, cols, rows); // (the rows it completed go, and the next stage builds on what's left)
+    clearFull(w, cols, rows);
     work = w;
     steps.push(...asFillers(placed));
   }
-  // ...and then the rest, up to the top of it
+  // ...and then the rest: the whole screen but the column at its foot, and one of the tallest
+  // pieces down that column, so it all goes at once (or, if there's none, or the column isn't
+  // clear all the way down, the rest up to the top of it, going a row or two at a time)
+  const keys = zenKeys(state).filter(k => k.rotations[0][0].length === 1);
+  if (keys.length && colTop(work, foot, cols, rows) === rows) {
+    const need = new Uint8Array(cols * rows);
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) if (x !== foot && !work[y * cols + x]) need[y * cols + x] = 1;
+    const rest = tile(work.slice(), need, cands, rng, cols, rows) ?? tileFlat(work.slice(), need, cands, rng, cols, rows);
+    const k = keys[Math.floor(rng() * keys.length)];
+    const items = rest && toItems(occ, [...steps, ...asFillers(rest), { shape: k, rot: 0, mat: k.rotations[0], x: foot, key: true }], cols, rows, { mustClear: false });
+    if (items) return { items, caption: from === "middle" ? "a pile" : `a pile, from the ${from}` };
+  }
   const h = heightOf(work, cols, rows), need = new Uint8Array(cols * rows);
   for (let y = rows - h; y < rows; y++) for (let x = 0; x < cols; x++) if (!work[y * cols + x]) need[y * cols + x] = 1;
   const rest = tile(work.slice(), need, cands, rng, cols, rows) ?? tileFlat(work.slice(), need, cands, rng, cols, rows);

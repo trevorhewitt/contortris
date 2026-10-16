@@ -254,8 +254,8 @@ test("turbo zen: a crack through every row, built nearly to the top, then sealed
     const a = log.movements[i], b = log.movements[j];
     assert.ok(peak >= 18, `${end}: built ${peak} rows`);
     // (the pacmen and taps: a few of them eating rows, and then the rest in big bites, while that's
-    // worth it)
-    if (end === "powered") assert.ok(log.movements.slice(i + 1, j + 1).some(m => m.name === "demolition") && b.height <= peak - 10, `${end}: left ${b.height} rows of ${peak}: ${log.movements.map(m => m.name)}`);
+    // worth it; unless they ate it all)
+    if (end === "powered") assert.ok((log.movements.slice(i + 1, j + 1).some(m => m.name === "demolition") || b.height <= 3) && b.height <= peak - 10, `${end}: left ${b.height} rows of ${peak}: ${log.movements.map(m => m.name)}`);
     else assert.ok(b.height <= 3, `${end}: left ${b.height} rows`);
     // (the rows go as rows, but for the columns, eaten away, and the pacmen, which eat them)
     if (end !== "columns" && end !== "powered") assert.ok(b.lines - a.lines >= 18, `${end}: cleared ${b.lines - a.lines} rows`);
@@ -347,7 +347,7 @@ test("turbo zen: an emotions chart that gets stranger on the way up, with the on
   assert.ok(Math.max(...stages) === c.stages.length - 1, `all the way up: ${stages.join(" ")}`);
 });
 
-test("turbo zen: a pile, poured in the middle or against a wall, grows outwards with its bottom rows going, then all of it", () => {
+test("turbo zen: a pile, poured in the middle or against a wall, grows up towards the top of the screen, then all of it goes", () => {
   for (const from of ["middle", "left", "right"]) {
     for (const seed of [2, 3]) {
       const state = createGameState(shapes, powerups, { rng: makeRng(seed), groups: GROUPS, threads: { threads: THREADS, sets: SET_THREADS } });
@@ -355,7 +355,7 @@ test("turbo zen: a pile, poured in the middle or against a wall, grows outwards 
       for (const row of state.board) row.fill(null);
       const res = planPile(state, from);
       assert.ok(res, `${from}: a pile`);
-      assert.ok(res.items.cleared >= 15, `${from}: ${res.items.cleared} rows went`);
+      assert.ok(res.items.cleared >= rows - 6, `${from}: ${res.items.cleared} rows went`);
       // (part way up, it's a pile: higher where it was poured than at the far wall)
       const mid = res.items[Math.floor(res.items.length / 4)].expect;
       const h = (x) => { for (let y = 0; y < rows; y++) if (mid[y * cols + x]) return rows - y; return 0; };
@@ -366,6 +366,46 @@ test("turbo zen: a pile, poured in the middle or against a wall, grows outwards 
       assert.ok(end.reduce((a, b) => a + b, 0) <= cols * 3, `${from}: ${end.reduce((a, b) => a + b, 0)} blocks left`);
     }
   }
+});
+
+test("turbo zen: now and then a fill hands over part way up to another, which carries on on top of it", () => {
+  let relays = 0, built = 0;
+  for (const seed of [1, 2]) {
+    const { state, log } = zen(seed, "turbo");
+    let prev = null, at = 0;
+    run(state, log, 20 * 60000, () => {
+      const m = state.zen.movement;
+      if (m !== prev) {
+        if (prev?.phase === "relayed") {
+          relays++;
+          at = height(state);
+          // (the next one builds on it: nothing cleared away in between but what a powerup or two took)
+          assert.ok(at >= prev.relay.at - 6, `${prev.name} handed over at ${prev.relay.at}, ${at} left for ${m?.name}`);
+          if (m && m.phase === "fill") built++;
+        }
+        prev = m;
+      }
+    });
+  }
+  assert.ok(relays >= 3, `${relays} hand-overs`);
+  assert.ok(built >= 2, `${built} of them built on`);
+});
+
+test("turbo zen: comings and goings, higher each time, the last right up towards the top, then the gravitizers bring it down", () => {
+  const { state, log } = zen(3, "turbo");
+  run(state, log, 3000);
+  zenStart(state, "waves");
+  let started = false, peak = 0, firstBlast = null;
+  on(state, (t, d) => { if (t === "spawn" && state.zen.movement?.name === "waves" && state.zen.movement.phase === "blast" && d.shape.powerup && !firstBlast) firstBlast = d.shape; });
+  for (let t = 0; t < 10 * 60000; t += 32) {
+    updateGame(state, 32);
+    const m = state.zen.movement;
+    if (m?.name === "waves") { started = true; peak = Math.max(peak, height(state)); }
+    else if (started) break;
+  }
+  assert.ok(started, "it came");
+  assert.ok(peak >= rows - 7, `up to ${peak} of ${rows} rows`);
+  assert.ok(firstBlast?.powerup.type === "gravity", `the first to bring it down: ${firstBlast?.id}`);
 });
 
 test("a board full of one thing has a name for it, now and then just its own", () => {
