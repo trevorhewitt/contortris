@@ -13,9 +13,13 @@
 //
 // The board behind the menu is the game's own (state, drawn by the renderer onto the board
 // canvas as usual); the home screen only shows it through the camera, on a canvas of its own.
+// There are two of them, in fact: the camera cuts between the two boards as well as around each,
+// so a cut can be to somewhere else altogether, not just the same board from another angle. Only
+// the one on screen plays (main.js asks liveState()); the other waits where it was, which costs
+// nothing.
 
 import { CONFIG } from "../config.js";
-import { startRun, resetGame, updateGame, getGhostDropY, collides } from "./game.js";
+import { startRun, resetGame, updateGame, getGhostDropY, collides, createGameState, markBoardDirty } from "./game.js";
 import { resolvePowerupArea } from "./powerups.js";
 const H = () => CONFIG.home ?? {};
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -51,6 +55,10 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   // (idle from where (the home screen, or "off": the game over), and the page to wake up to)
   let fadeFrom = "home", wakeTo = "menu";
   let saved = null; // (what the background mustn't change for the next real game)
+  // The second board behind the menu (a game state of its own), whether it's the one on screen,
+  // and how much of its quick start it still has to have (game ms, a little each frame)
+  let other = null, onOther = false, otherWarm = 0;
+  const shown = () => (onOther && other && (phase === "home" || phase === "fading") ? other : state);
   const view = { w: 0, h: 0, dpr: 1, fx: 1, burst: 1 };
 
   /* ---------- sizes ---------- */
@@ -87,12 +95,34 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     state.backdrop = true;
     startRun(state, "home");
     warmLeft = 26000; // (game time: it comes on with something on the board already)
+    // (the other board: the same pieces, sets and themes, a game of its own, warmed up a little
+    // each frame behind the scenes before the camera ever cuts to it)
+    other = createGameState(state.allShapes, state.allPowerups);
+    other.groups = state.groups;
+    other.threads = state.threads;
+    other.backdrop = true;
+    startRun(other, "home");
+    onOther = false;
+    otherWarm = 26000;
     camera.reset();
   }
 
   function stopBackground() {
     if (state.mode === "home") resetGame(state);
+    other = null;
+    onOther = false;
     window.__homeShellPx = null;
+  }
+
+  // (at a cut, now and then, to the other board: once it has something on it, and never in the
+  // middle of a powerup going off on this one, nor after only a moment on it)
+  let boardSince = 0;
+  function maybeSwitchBoards(now) {
+    if (!other || otherWarm > 0 || shown().effect || now - boardSince < (H().otherBoardAfterMs ?? 1800)) return;
+    if (Math.random() >= (H().otherBoard ?? 0.5)) return;
+    onOther = !onOther;
+    boardSince = now;
+    markBoardDirty(shown());
   }
 
   // (sets served and their versions: the next real game shouldn't care what went by back here)
@@ -133,13 +163,14 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     };
     // (`must`: just where things land and go off, which the shot has to see; otherwise all a
     // powerup will reach, which it should see as much of as it can)
-    if (state.effect?.area) { if (must) { const c = state.effect.centre; add(Math.floor(c.x) - 1, Math.floor(c.y) - 1, Math.floor(c.x) + 2, Math.floor(c.y) + 2); } else addArea(state.effect.area); }
-    const a = state.active;
-    if (a) piece(a, Math.max(0, getGhostDropY(state) ?? a.y));
-    for (const f of state.flock ?? []) {
+    const B = shown();
+    if (B.effect?.area) { if (must) { const c = B.effect.centre; add(Math.floor(c.x) - 1, Math.floor(c.y) - 1, Math.floor(c.x) + 2, Math.floor(c.y) + 2); } else addArea(B.effect.area); }
+    const a = B.active;
+    if (a) piece(a, Math.max(0, getGhostDropY(B) ?? a.y));
+    for (const f of B.flock ?? []) {
       if (!f?.shape) continue;
       let land = f.land;
-      if (land == null) { const mat = f.shape.rotations[f.rotIdx] ?? f.shape.rotations[0]; land = Math.max(0, f.y ?? 0); while (!collides(state, f.x, land + 1, mat)) land++; }
+      if (land == null) { const mat = f.shape.rotations[f.rotIdx] ?? f.shape.rotations[0]; land = Math.max(0, f.y ?? 0); while (!collides(B, f.x, land + 1, mat)) land++; }
       piece(f, land);
     }
     return box;
@@ -148,12 +179,13 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   function nextBox() {
     const { cols, rows } = CONFIG.board;
     let box = null;
-    for (const it of (state.zen?.queue ?? []).slice(0, 2)) {
+    const B = shown();
+    for (const it of (B.zen?.queue ?? []).slice(0, 2)) {
       const t = it?.target, mat = it?.shape?.rotations?.[t?.rot ?? 0];
       if (!t || !mat || t.x == null) continue;
       const w = mat[0].length, h = mat.length;
       let top = rows;
-      for (let x = Math.max(0, t.x); x < Math.min(cols, t.x + w); x++) for (let y = 0; y < top; y++) if (state.board[y]?.[x]) { top = y; break; }
+      for (let x = Math.max(0, t.x); x < Math.min(cols, t.x + w); x++) for (let y = 0; y < top; y++) if (B.board[y]?.[x]) { top = y; break; }
       const b = { x0: Math.max(0, t.x), y0: Math.max(0, top - h - 2), x1: Math.min(cols, t.x + w), y1: Math.min(rows, top + 1) };
       box = box ? { x0: Math.min(box.x0, b.x0), y0: Math.min(box.y0, b.y0), x1: Math.max(box.x1, b.x1), y1: Math.max(box.y1, b.y1) } : b;
     }
@@ -164,7 +196,8 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   function stackBox() {
     const { cols, rows } = CONFIG.board;
     let top = rows;
-    for (let y = 0; y < rows; y++) if (state.board[y]?.some(Boolean)) { top = y; break; }
+    const B = shown();
+    for (let y = 0; y < rows; y++) if (B.board[y]?.some(Boolean)) { top = y; break; }
     const x = Math.floor(Math.random() * Math.max(1, cols - 8));
     return { x0: x, y0: Math.max(0, top - 4), x1: Math.min(cols, x + 8), y1: Math.min(rows, top + 4) };
   }
@@ -250,15 +283,15 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     },
     step(dt, now) {
       const s0 = this.shot;
-      if (!s0 || now >= s0.end) this.frame(now); // (a cut)
+      if (!s0 || now >= s0.end) { if (s0) maybeSwitchBoards(now); this.frame(now); } // (a cut: now and then to the other board)
       else if (!reduced) {
         // the next thing to land, or go off, somewhere this shot can't see: cut to it (a new
         // piece the moment it comes, so you see it come down; never two cuts within minShotMs)
-        const b = actionBox(true), piece = state.active?.shape ?? null;
+        const B = shown(), b = actionBox(true), piece = B.active?.shape ?? null;
         const fresh = piece !== this.piece;
         this.piece = piece;
-        if (b && !this.sees(b, 0.2) && (fresh || state.effect || now - s0.start > (H().minShotMs ?? 600))) {
-          if (now - s0.start > (H().minShotMs ?? 600) || state.effect || piece?.powerup) this.frame(now);
+        if (b && !this.sees(b, 0.2) && (fresh || B.effect || now - s0.start > (H().minShotMs ?? 600))) {
+          if (now - s0.start > (H().minShotMs ?? 600) || B.effect || piece?.powerup) { maybeSwitchBoards(now); this.frame(now); }
         }
       }
       const s = this.shot, u = Math.min(1, (now - s.start) / (s.end - s.start));
@@ -626,6 +659,8 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     if (phase === "home" || phase === "fading") {
       // (it comes on with something on the board already: a fast start, a little each frame)
       for (let i = 0; warmLeft > 0 && i < 8; i++) { updateGame(state, 50); warmLeft -= 50; }
+      // (and the other board's, a little at a time, once the first has had its own)
+      if (warmLeft <= 0 && other && otherWarm > 0) for (let i = 0; otherWarm > 0 && i < 2; i++) { updateGame(other, 50); otherWarm -= 50; }
       camera.step(dt, now);
       camera.draw();
       stepFx(dt, now);
@@ -645,10 +680,12 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     // (a new page: the time spent on the last one doesn't count as being left alone on this one)
     noteInput,
     active: () => phase === "home" || phase === "fading",
+    // (the board on screen: main.js plays and draws this one)
+    liveState: shown,
     // (still giving the board behind its quick start)
     warming: () => phase === "home" && warmLeft > 0,
     phase: () => phase,
     // (for looking at in dev mode: what the camera can see, and where the action is)
-    debug: () => ({ x: camera.x, y: camera.y, z: camera.z, ...camera.half(camera.z), action: actionBox(true), reach: actionBox(), shot: camera.shot, sees: (b) => camera.sees(b, 0) }),
+    debug: () => ({ boards: { other: !!other, onOther, otherWarm, warmLeft }, x: camera.x, y: camera.y, z: camera.z, ...camera.half(camera.z), action: actionBox(true), reach: actionBox(), shot: camera.shot, sees: (b) => camera.sees(b, 0) }),
   };
 }

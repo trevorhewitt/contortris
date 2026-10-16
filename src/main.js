@@ -69,8 +69,10 @@ function tick(now) {
   const dt = Math.min(50, now - last);
   last = now;
 
-  updateGame(state, dt * timeScaleOf(state)); // (turbo zen runs faster)
-  renderer.draw(state, now);
+  // (the board on screen: the game's own, or behind the home screen, either of its two boards)
+  const live = ui.liveState?.() ?? state;
+  updateGame(live, dt * timeScaleOf(live)); // (turbo zen runs faster)
+  renderer.draw(live, now);
   ui.frame(now);
 
   requestAnimationFrame(tick);

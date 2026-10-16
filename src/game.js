@@ -210,8 +210,11 @@ function emit(state, type, data = {}) {
 }
 
 // Every change to state.board must call this (the renderer caches the board).
+// (numbered across every board, so a board swapped in for another is never taken for it: the
+// home screen has two)
+let boardVersions = 0;
 export function markBoardDirty(state) {
-  state.boardVersion++;
+  state.boardVersion = ++boardVersions;
 }
 
 /* =========================

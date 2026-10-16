@@ -1356,6 +1356,7 @@ export function bindUI({ state, renderer, achievements }) {
   return {
     frame(now) { updateHUD(); home.frame(now ?? performance.now()); },
     home: () => home,
+    liveState: () => home.liveState(),
     toast,
     showPanel,
     startGame,

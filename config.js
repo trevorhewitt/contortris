@@ -52,6 +52,8 @@ export const CONFIG = {
   home: {
     rows: 24, minCols: 14, maxCols: 30, widthShare: 0.85,
     zoom: 2.6, shotMs: [2600, 4200], tiltChance: 0.3, maxTurn: 5, minView: [10, 9], minShotMs: 600,
+    // (at a cut, how often to the other of its two boards rather than somewhere else on this one)
+    otherBoard: 0.5,
     fxEvery: [14000, 22000], logoEvery: 2600,
     idleMs: 30000,
     burstMs: 600, fadeMs: 240,
