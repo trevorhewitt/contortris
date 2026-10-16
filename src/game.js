@@ -1189,7 +1189,7 @@ function planShow(state, e, fx, affected, reach) {
     let stop = null;
     if (kind === "destroy" && (fx.destroyed.length || fx.consumed.length)) stop = planPull(state, show, fx, start, slow);
     else if (kind === "move" && moves.length) stop = startMoveAnim(state, moves, { start, power, slow, show });
-    else if (kind === "fill" && sprouts.length) stop = startGrowAnim(state, sprouts, e.centre, { start, show });
+    else if (kind === "fill" && sprouts.length) stop = startGrowAnim(state, sprouts, e.centre, { start, show, from: e.placed });
     else if (kind === "phantom") stop = planGhost(state, show, e, start, slow);
     if (stop == null) continue;
     const ph = { kind, start, end: stop };
@@ -1307,7 +1307,7 @@ function startMoveAnim(state, moves, { start = 0, power = 0, slow = 1, show = nu
 
 // Expanders: new blocks pop in, in rings outward from the powerup. In a show, a pulse goes out
 // first and each block sprouts with a glow and a few sparkles. Returns when it's over.
-function startGrowAnim(state, filled, centre, { start = 0, show = null } = {}) {
+function startGrowAnim(state, filled, centre, { start = 0, show = null, from = null } = {}) {
   const cfg = CONFIG.fx.powerup;
   const cols = CONFIG.board.cols;
   const anim = state.fx.growAnim;
@@ -1316,8 +1316,24 @@ function startGrowAnim(state, filled, centre, { start = 0, show = null } = {}) {
   anim.growMs = cfg.expandGrowMs;
   let maxDelay = 0, reach = 1;
 
+  // (it flows out of the piece through what it fills: down the columns, round what's in the way;
+  // a part it can't reach that way, say the far side of a block, as the crow flies)
+  const steps = new Map();
+  if (from?.length) {
+    const inFill = new Set(filled.map(({ x, y }) => y * cols + x)), queue = [];
+    for (const p of from) { const k = p.y * cols + p.x; if (p.y >= 0 && !steps.has(k)) { steps.set(k, 0); queue.push(p); } }
+    for (let i = 0; i < queue.length; i++) {
+      const { x, y } = queue[i], d = steps.get(y * cols + x);
+      for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) {
+        const k = ny * cols + nx;
+        if (nx < 0 || nx >= cols || ny < 0 || !inFill.has(k) || steps.has(k)) continue;
+        steps.set(k, d + 1);
+        queue.push({ x: nx, y: ny });
+      }
+    }
+  }
   for (const { x, y } of filled) {
-    const d = Math.hypot(x - centre.x, y - centre.y);
+    const d = steps.get(y * cols + x) ?? Math.hypot(x - centre.x, y - centre.y);
     const delay = start + d * cfg.expandStaggerMsPerCell;
     anim.byIndex.set(y * cols + x, delay);
     maxDelay = Math.max(maxDelay, delay);
