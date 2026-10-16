@@ -312,8 +312,13 @@ export const CONFIG = {
     // The newest things in the game come first (update this with every new batch), so they can be
     // looked at straight away: a new piece is newBoost times likelier until it has turned up
     // newUntilShown times since the page was loaded, a new set newSetBoost times (load the page
-    // again to see them all again). Anything never seen in this browser at all comes up
-    // unseenBoost times as often.
+    // again to see them all again); and the very latest, the last batch's (`latest`), before
+    // all of those (latestBoost, latestSetBoost). Anything never seen in this browser at all
+    // comes up unseenBoost times as often.
+    latest: {
+      sets: ["great_and_terrible", "spam", "beans", "spaghetti_os", "tower_of_babel"],
+      pieces: ["a_bee", "two_bees", "bee_line", "bee_bigger_bee", "cloud_of_bees", "bees", "forgotten_bee", "bees_knees"],
+    },
     newest: {
       sets: ["sunshine", "trees", "great_and_terrible", "space", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
@@ -339,7 +344,7 @@ export const CONFIG = {
         "meteor_shower", "tidal_wave", "dragon_with_hay_fever", "giant_eraser", "hole_in_one",
         "horseshoe_magnet", "sarcastic_thumbs_up", "ice_skate", "hole_punch", "lightning_bolt_with_a_grudge", "lit_fuse", "magic_wand", "toadstool",
         "invader_squid_arcade", "invader_crab_neon", "invader_octopus_sticky_notes", "mystery_ship", "invader_squid_neon", "invader_crab_sticky_notes", "invader_octopus_arcade",
-        "a_bee", "two_bees", "bee_line", "queen_bee", "honeycomb", "bees_knees", "bee_bigger_bee", "bee_in_a_bonnet", "cloud_of_bees",
+        "a_bee", "two_bees", "bee_line", "queen_bee", "honeycomb", "bees_knees", "bee_bigger_bee", "cloud_of_bees",
         "space_invader_2", "space_invader_3", "space_invader_4",
         "happy_pills_2", "piece_of_sky_sunset", "piece_of_sky_night",
         "bull", "camel", "mouse", "elephant_in_the_room", "giant_rubber_duck", "dinosaur_fossil",
@@ -354,7 +359,7 @@ export const CONFIG = {
         "long_red_ribbon",
       ],
     },
-    novelty: { newBoost: 400, newSetBoost: 400, newUntilShown: 1, unseenBoost: 4, firstBoost: 1e6 },
+    novelty: { latestBoost: 5000, latestSetBoost: 5000, newBoost: 400, newSetBoost: 400, newUntilShown: 1, unseenBoost: 4, firstBoost: 1e6 },
     // It won't let you lose: with the stack `height` of the way up the board, a big destroyer (one
     // that takes at least minCells cells: a black hole or the like), at most one every `every`
     // pieces; within lastRows of the top, `last` (the one that takes everything). And should it

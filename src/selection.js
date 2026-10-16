@@ -223,9 +223,9 @@ export function computeBoardPresence(state) {
 
 // Developer mode (a mode with `newest`): a piece in CONFIG.devMode.newest is newBoost times
 // likelier until it has turned up newUntilShown times since the page was loaded (counting this
-// game), one of firstPieces firstBoost times until it has turned up once; anything never seen in
-// this browser, unseenBoost times. (state.seenEver and state.shownThisLoad are kept by the UI.)
-// Every other mode is as it comes.
+// game), one in CONFIG.devMode.latest latestBoost times, one of firstPieces firstBoost times
+// until it has turned up once; anything never seen in this browser, unseenBoost times.
+// (state.seenEver and state.shownThisLoad are kept by the UI.) Every other mode is as it comes.
 function noveltyMultiplier(sel, shape) {
   if (!CONFIG.modes[sel.mode]?.newest || !sel.seenEver) return 1;
   const d = CONFIG.devMode, n = d.novelty ?? {};
@@ -233,6 +233,7 @@ function noveltyMultiplier(sel, shape) {
   const shown = (sel.shownThisLoad?.get(shape.id) ?? 0) + served;
   // (once the opening set has come)
   if ((d.firstPieces ?? []).includes(shape.id) && !shown && sel.level6?.seen?.size) return n.firstBoost ?? 1000;
+  if ((d.latest?.pieces ?? []).includes(shape.id) && shown < (n.newUntilShown ?? 1)) return n.latestBoost ?? n.newBoost ?? 6;
   if ((d.newest?.pieces ?? []).includes(shape.id) && shown < (n.newUntilShown ?? 1)) return n.newBoost ?? 6;
   return (sel.seenEver.get(shape.id) ?? 0) + served ? 1 : (n.unseenBoost ?? 2.5);
 }

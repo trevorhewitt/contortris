@@ -384,14 +384,16 @@ function familyWeight(state, g, cfg) {
   return recent.some(id => family.includes(id)) ? cfg.familyWeight ?? 0.1 : 1;
 }
 
-// Developer mode: the newest sets first (CONFIG.devMode.newest) until each has come once since
-// the page was loaded, and any never seen in this browser more often. (Every other mode: as it comes.)
+// Developer mode: the latest sets first of all (CONFIG.devMode.latest), then the newest
+// (CONFIG.devMode.newest), until each has come once since the page was loaded, and any never seen
+// in this browser more often. (Every other mode: as it comes.)
 function setNovelty(state, g) {
   const l6 = state.pieceSel.level6;
   if (!CONFIG.modes[state.mode]?.newest || !l6.seenBefore) return 1;
   const n = CONFIG.devMode.novelty ?? {};
   const here = l6.seen.get(g.id) ?? 0;
   const shown = (l6.shownThisLoad?.get(g.id) ?? 0) + here;
+  if ((CONFIG.devMode.latest?.sets ?? []).includes(g.id) && shown < (n.newUntilShown ?? 1)) return n.latestSetBoost ?? n.newSetBoost ?? 10;
   if ((CONFIG.devMode.newest?.sets ?? []).includes(g.id) && shown < (n.newUntilShown ?? 1)) return n.newSetBoost ?? 10;
   return (l6.seenBefore.get(g.id) ?? 0) + here ? 1 : (n.unseenBoost ?? 2.5);
 }

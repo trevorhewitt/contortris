@@ -55,14 +55,15 @@ test("groups in the data are complete (every piece exists)", () => {
   for (const s of shapes.filter(s => s.difficulty === 6 && (s.frequency ?? 1) > 0)) assert.ok(inGroups.has(s.id), `${s.id} is level 6 but in no group`);
 });
 
-test("spam always starts with two spams (the first the can that also turns up on its own), then 2-5 more; Sp is usually followed by am!", () => {
+test("spam always starts with two spams (the first the can that also turns up on its own), then a long run more; Sp is usually followed by am!", () => {
   const g = normaliseGroups(GROUPS, shapes).find(g => g.id === "spam");
   const rng = makeRng(5);
   let sp = 0, spAm = 0;
   for (let i = 0; i < 400; i++) {
     const ids = expandGroup(g, rng).map(s => s.id);
     assert.deepEqual(ids.slice(0, 2), ["spam_can", "spam"]);
-    assert.ok(ids.length >= 4 && ids.length <= 7, ids.join());
+    // (almost annoyingly long: two runs of it, with one of its own powerups in between, not here)
+    assert.ok(ids.length >= 12 && ids.length <= 22, ids.join());
     assert.ok(ids.every(id => /spa*m|maps|^sp|^am$|spergegam/.test(id)), ids.join());
     ids.forEach((id, k) => { if (id === "sp" && k + 1 < ids.length) { sp++; if (ids[k + 1] === "am") spAm++; } });
   }
@@ -143,11 +144,14 @@ function matchSequenceAt(sequence, ids, at) {
   const steps = sequence.map(st => {
     if (typeof st === "string") return { members: new Set([st]), lo: 1, hi: 1 };
     if (st.variant) return { members: new Set(st.variant), lo: 1, hi: 1 };
-    if (st.chain) return { members: new Set([...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))]), lo: st.chain.min ?? 1, hi: st.chain.max ?? 4 };
+    // (a chain's powerups can be left out where they can't come yet: as few as one of it)
+    if (st.chain) return { members: new Set([...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))]), lo: 1, hi: st.chain.max ?? 4 };
     // (now and then one of them over and over, as itself or its echo)
     if (st.repeat) return { members: new Set([...st.repeat, ...st.repeat.map(id => shapes.find(s => s.id === id)?.echo).filter(Boolean)]), lo: 0, hi: [].concat(st.times).at(-1) };
     const [lo, hi] = Array.isArray(st.count) ? st.count : [st.count ?? 1, st.count ?? 1];
-    return { members: new Set(st.pick), lo, hi };
+    // (a step that only happens now and then, or of powerups that can't come yet: maybe none)
+    const optional = st.chance != null || st.pick.every(id => !shapes.some(s => s.id === id));
+    return { members: new Set(st.pick), lo: optional ? 0 : lo, hi };
   });
   let best = -1;
   const go = (si, i, n, echoed) => {
@@ -502,7 +506,7 @@ test("beans and Spaghetti-Os: a can (that also turns up on its own), then more a
     for (let i = 0; i < 200; i++) {
       const ids = expandGroup(g, rng).map(s => s.id);
       assert.equal(ids[0], can, ids.join());
-      assert.ok(ids.length >= 4 && ids.length <= 8, ids.join());
+      assert.ok(ids.length >= 12 && ids.length <= 22, ids.join()); // (almost annoyingly long)
       runs.add(ids.join());
     }
     assert.ok(runs.size > 150, `${id}: ${runs.size} different runs of 200`);
@@ -669,4 +673,68 @@ test("a set doesn't come round again until most of the others have been since (t
   assert.ok(sets >= 40, `${sets} sets`);
   assert.ok(fewest >= need, `two of a kind with only ${fewest} others between them`);
   assert.ok(emotions / sets < 0.1, `emotions ${emotions} of ${sets}`);
+});
+
+test("the Tower of Babel stands up in every version: each section sits on the one below with nothing hanging over a gap", () => {
+  const g = GROUPS.find(g => g.id === "tower_of_babel");
+  const byId = new Map(shapes.map(s => [s.id, s]));
+  for (const seq of sequencesOf(g)) {
+    for (let k = 1; k < seq.length; k++) {
+      const lo = byId.get(seq[k - 1]).rotations[0], hi = byId.get(seq[k]).rotations[0];
+      // (centred one on the other, as they're built)
+      const off = Math.floor((lo[0].length - hi[0].length) / 2);
+      const top = lo[0], bottom = hi[hi.length - 1];
+      const over = bottom.map((c, x) => c && !top[x + off] ? x : -1).filter(x => x >= 0);
+      assert.deepEqual(over, [], `${seq[k]} on ${seq[k - 1]}: hanging over a gap at ${over}`);
+    }
+  }
+});
+
+test("the bad omens: two or three signs first, then the great and terrible things; and half the time a silly ending, the same things by sillier names", () => {
+  const g = normaliseGroups(GROUPS, [...shapes, ...powerups]).find(g => g.id === "great_and_terrible");
+  const signs = new Set(["an_omen", "a_bad_sign", "omen_of_great_things", "prophecy_of_great_things", "a_red_sky_in_the_morning", "an_eclipse", "a_howling_dog", "a_broken_clock"]);
+  const silly = new Set(["a_no_good_very_very_bad_thing", "a_thing_whos_been_a_very_bad_boy", "bad_thing_very_bad_thing", "a_thing_that_knows_what_it_did", "a_thing_that_should_be_ashamed_of_itself"]);
+  const rng = makeRng(3);
+  let sillyEnds = 0, newSigns = 0;
+  for (let i = 0; i < 300; i++) {
+    const ids = expandGroup(g, rng).map(s => s.id);
+    const first = ids.findIndex(id => /^great_and_terrible_things/.test(id));
+    assert.ok(first >= 2 && ids.slice(0, first).every(id => signs.has(id)), ids.join());
+    if (ids.slice(0, first).some(id => ["a_red_sky_in_the_morning", "an_eclipse", "a_howling_dog", "a_broken_clock"].includes(id))) newSigns++;
+    const tail = ids.filter(id => silly.has(id));
+    if (tail.length) { sillyEnds++; assert.deepEqual(ids.slice(-tail.length), tail, `the silly ones at the end: ${ids.join()}`); }
+  }
+  assert.ok(sillyEnds > 300 * 0.4 && sillyEnds < 300 * 0.6, `a silly ending in ${sillyEnds} of 300`);
+  assert.ok(newSigns > 100, `the new signs in ${newSigns} of 300`);
+  // (the same art and the same effect as the serious ones)
+  const byId = new Map(powerups.map(p => [p.id, p]));
+  for (const [s, from] of [["a_no_good_very_very_bad_thing", "a_terrible_thing"], ["a_thing_whos_been_a_very_bad_boy", "a_horrible_thing"], ["bad_thing_very_bad_thing", "a_great_terrible_thing"], ["a_thing_that_knows_what_it_did", "an_unspeakably_terrible_thing"]]) {
+    const a = SHAPES.find(x => x.id === s), b = SHAPES.find(x => x.id === from);
+    assert.deepEqual(a.color, b.color, `${s}: ${from}'s art`);
+    assert.deepEqual(byId.get(s).powerup.areaRotations[0].cells, byId.get(from).powerup.areaRotations[0].cells, `${s}: ${from}'s effect`);
+  }
+});
+
+test("spam, beans and Spaghetti-Os bring their own powerups now and then (and the giant spaghetti-o), and never need them", () => {
+  const all = normaliseGroups(GROUPS, [...shapes, ...powerups]);
+  const own = { spam: ["exploding_spam", "very_heavy_spam"], beans: ["nuclear_beans", "tonne_of_beans"], spaghetti_os: ["radioactive_spaghetti_os", "settled_spaghetti_os"] };
+  for (const [id, pus] of Object.entries(own)) {
+    const g = all.find(g => g.id === id);
+    // (so Extreme, with no powerups, still has them: groupPlayable)
+    assert.deepEqual(g.powerupClasses, [], `${id} needs no powerup class`);
+    const rng = makeRng(8);
+    let with1 = 0, giant = 0;
+    for (let i = 0; i < 200; i++) {
+      const ids = expandGroup(g, rng).map(s => s.id);
+      if (ids.some(x => pus.includes(x))) with1++;
+      if (ids.includes("giant_spaghetti_o")) giant++;
+    }
+    assert.ok(with1 > 200 * 0.8, `${id}: its own powerups in ${with1} of 200 runs`);
+    if (id === "spaghetti_os") assert.ok(giant > 20, `the giant spaghetti-o in ${giant} of 200`);
+  }
+  // ...and in Extreme they're left out, the rest of the run as it was
+  const state = createGameState(shapes, powerups, { rng: makeRng(2), groups: GROUPS });
+  startRun(state, "extreme");
+  const spam = state.groups.find(g => g.id === "spam");
+  assert.ok(groupPlayable(state, spam), "spam in Extreme");
 });
