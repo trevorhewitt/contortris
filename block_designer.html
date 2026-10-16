@@ -4799,13 +4799,75 @@
       // approving an untouched piece: saved there and then, and on to the next in the list
       state.claudeDraft = false;
       setDirty(true);
-      if (await saveCurrent()) navPiece(1);
-      else scheduleRender();
+      // FAST APPROVE (added by helper model): instead of awaiting a full save before moving on,
+      // the built shape is queued and written in the background (see approvalQueue below), and
+      // the next piece opens immediately. Rapid repeated clicks just add more items to the queue,
+      // which are coalesced into as few file writes as possible.
+      // Only the simple case (piece came from the file, id unchanged, no build errors) is queued;
+      // anything that could need a dialog (conflicts, renames, no file) still takes the old path.
+      if (!queueApproval()){
+        if (await saveCurrent()) navPiece(1);
+        else scheduleRender();
+        return;
+      }
+      navPiece(1);
       return;
     }
     if (isPlainObject(o) && o.claudeDraft === true) state.claudeDraft = true;
     setDirty(true); scheduleRender();
   });
+
+  // ---- Background approval queue (added by helper model; used by "Approve and next") ----
+  // Each item: { shape, draftKey }. The editor's draft for that piece is kept as a backup until
+  // its write succeeds, so a failed write loses nothing (the piece shows up in the Drafts tab).
+  const approvalQueue = [];
+  let approvalRunning = false;
+  // Returns true if the open piece was queued (caller then navigates on), false to fall back to saveCurrent.
+  function queueApproval(){
+    if (adjust.open) return false;          // pending colour adjustment needs the normal save path
+    endAction();
+    flushChipInputs();
+    const built = buildShapeFromEditor();
+    const src = state.source;
+    if (built.errors.length || !src || src.id !== built.shape.id || !BLOCKS.items.some(s => s && s.id === src.id)) return false;
+    approvalQueue.push({ shape: built.shape, draftKey: state.draftKey });
+    // navPiece -> openEntry -> flushDraft stores the (dirty) draft as a backup before switching
+    runApprovalQueue();
+    return true;
+  }
+  async function runApprovalQueue(){
+    if (approvalRunning) return;
+    approvalRunning = true;
+    try {
+      while (approvalQueue.length){
+        // share the lock with saveCurrent so the two never write the file at the same time
+        while (saveBusy) await new Promise(r => setTimeout(r, 50));
+        saveBusy = true;
+        const batch = approvalQueue.splice(0);   // everything clicked so far goes in one write
+        try {
+          const parsed = await freshParsed(BLOCKS);
+          if (!parsed) throw new Error("the blocks file isn't loaded");
+          const items = parsed.items.slice(), missing = [];
+          for (const { shape } of batch){
+            const i = items.findIndex(s => s && s.id === shape.id);
+            if (i >= 0) items[i] = shape; else missing.push(shape.id);
+          }
+          await writeItems(BLOCKS, parsed, items);
+          for (const { shape, draftKey } of batch){
+            if (missing.includes(shape.id)) continue;
+            // the piece open in the editor right now keeps its state; otherwise its backup draft is done with
+            if (draftKey === state.draftKey){ state.source = { id: shape.id, original: clone(shape) }; state.claudeDraft = false; clearTimeout(draftTimer); draftTimer = 0; setDirty(false); }
+            deleteDraft(draftKey);
+          }
+          renderList(); syncAllUI();
+          const ok = batch.length - missing.length;
+          toast(`Approved ${ok} piece${ok === 1 ? "" : "s"}${missing.length ? `; not found in file (kept as drafts): ${missing.join(", ")}` : ""}`, missing.length ? "bad" : "good");
+        } catch (e){
+          toast(`Approving failed (${batch.map(b => b.shape.id).join(", ")}); their edits are kept as drafts: ${e.message || e}`, "bad");
+        } finally { saveBusy = false; }
+      }
+    } finally { approvalRunning = false; }
+  }
 
   function renderIdHint(built){
     const id = built.shape.id;
@@ -5588,7 +5650,8 @@
   // unsaved-changes guard: blocks keep drafts, so only warn if the draft couldn't be stored anywhere
   window.addEventListener("beforeunload", (e) => {
     if (state.dirty) saveDraftNow();
-    if (ach.dirty || (state.dirty && draftLocalFull && !draftServer)){ e.preventDefault(); e.returnValue = ""; }
+    // approvalQueue/approvalRunning: background approvals not yet written (helper model)
+    if (ach.dirty || approvalQueue.length || approvalRunning || (state.dirty && draftLocalFull && !draftServer)){ e.preventDefault(); e.returnValue = ""; }
   });
 
   // ============================================================
@@ -5691,7 +5754,7 @@
     { k: "drafts", label: "Drafts", title: "Pieces with unsaved edits (autosaved drafts), most recent first" },
   ];
   const kindLabel = (k) => (LIST_KINDS.find(x => x.k === k) || LIST_KINDS[0]).label;
-  const kindOk = (s, kind, linked) => kind === "banished" ? isBanished(s, linked) : kind === "untouched" ? isUntouched(s)
+  const kindOk = (s, kind, linked) => kind === "banished" ? isBanished(s, linked) : kind === "untouched" ? isUntouched(s) && !isBanished(s, linked) /* helper model: banished pieces never appear in game, so not listed for review */
     : !isBanished(s, linked) && (kind === "all" || (kind === "powerup") === isPowerupEntry(s));
   const viewSig = () => state.list.kind + "|" + state.list.filter.trim().toLowerCase();
 
@@ -5724,7 +5787,7 @@
       if (!s || typeof s !== "object") continue;
       const ban = isBanished(s, linked);
       if (ban) c.banished++; else { c.all++; c[isPowerupEntry(s) ? "powerup" : "regular"]++; }
-      if (isUntouched(s)) c.untouched++;
+      if (isUntouched(s) && !ban) c.untouched++; // helper model: banished excluded from Untouched
     }
     return c;
   }
