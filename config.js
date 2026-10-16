@@ -31,6 +31,10 @@ export const CONFIG = {
     // `keep` rows or so, so the board is seldom bare; and it stops while the page is hidden.
     // Never one to play.)
     home: { label: "Home", hidden: true, powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 1, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, captions: false, callouts: false, names: false, home: true, keep: [6, 10], dramatic: false, rest: false },
+    // (Developer mode, for looking at what's new, CONFIG.devMode: hold God mode and Turbo zen down
+    // together on the home screen, or shift-click God mode. God mode, with newest: the newest
+    // things first; rescue: it won't let you lose, and no end game; steady: it never speeds up.)
+    dev: { label: "Developer", hidden: true, powerups: true, giants: true, level6: "open", everything: true, newest: true, rescue: true, steady: true },
   },
   defaultMode: "normal",
 
@@ -217,6 +221,8 @@ export const CONFIG = {
     // ...or else one of the biggest destroyers (`size` cells at least) that would take `most` of
     // what's there at once
     sweep: { size: 90, most: 0.6 },
+    // (some kinds of powerup kept apart, by tag: none within `drops` pieces of another)
+    apart: { sinkhole: { drops: 25 } },
     // A fill (turbo zen) that hands over part way up (relay: chance, at between `at` of the way
     // up, as a share of the board) to another that carries on on top of it, so the screen fills
     // with one thing and then another; with nothing in between (blasts[0]), or a powerup or two
@@ -276,16 +282,29 @@ export const CONFIG = {
     // ...and these are this much as likely as they would be (the large black hole takes
     // everything: it's better for being rarer). Zen's director goes by the same numbers.
     rarer: { large_black_hole: 0.3, tidal_wave: 0.45 },
-    // the set God mode opens with, the first time since the page was loaded (of these, the first
-    // never seen in this browser, or else any of them), and the pieces that come straight after
-    // it (firstBoost times likelier until each has come once)
-    firstSet: ["emotions_ascent", "emotions_british", "emotions_online"],
+    // Sets being shown off (for trying them out): they come round whenever they like, not waiting
+    // for every other set to have had its turn (just never twice running), `weight` times as
+    // likely. Empty it when they've been seen enough.
+    featured: { sets: [], weight: 10 },
+    // calm spells: after a level 6 set (afterSet), or `giants` giants within `within` pieces
+    // (afterGiants), this many ordinary pieces: no giants, no sets
+    calm: { afterSet: [8, 14], giants: 2, within: 8, afterGiants: [6, 10] },
+    helpPower: 1.25,                 // always prefer the more helpful powerups (as when struggling)
+  },
+
+  // Developer mode (modes.dev): God mode (CONFIG.godMode), for looking at what's new.
+  devMode: {
+    holdMs: 500, // (God mode and Turbo zen held down together this long, on the home screen)
+    // the set it opens with, the first time since the page was loaded (of these, the first never
+    // seen in this browser, or else any of them), and the pieces that come straight after it
+    // (firstBoost times likelier until each has come once)
+    firstSet: [],
     firstPieces: [],
     // The newest things in the game come first (update this with every new batch), so they can be
-    // looked at straight away, and then it's God mode as usual: a new piece is newBoost times
-    // likelier until it has turned up newUntilShown times since the page was loaded, a new set
-    // newSetBoost times (load the page again to see them all again). Anything never seen in this
-    // browser at all comes up unseenBoost times as often. (God mode.)
+    // looked at straight away: a new piece is newBoost times likelier until it has turned up
+    // newUntilShown times since the page was loaded, a new set newSetBoost times (load the page
+    // again to see them all again). Anything never seen in this browser at all comes up
+    // unseenBoost times as often.
     newest: {
       sets: ["sunshine", "trees", "great_and_terrible", "space", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
@@ -326,15 +345,12 @@ export const CONFIG = {
         "long_red_ribbon",
       ],
     },
-    novelty: { newBoost: 25, newSetBoost: 40, newUntilShown: 1, unseenBoost: 2.5, firstBoost: 1e6 },
-    // Sets being shown off (for trying them out): they come round whenever they like, not waiting
-    // for every other set to have had its turn (just never twice running), `weight` times as
-    // likely. Empty it when they've been seen enough.
-    featured: { sets: [], weight: 10 },
-    // calm spells: after a level 6 set (afterSet), or `giants` giants within `within` pieces
-    // (afterGiants), this many ordinary pieces: no giants, no sets
-    calm: { afterSet: [8, 14], giants: 2, within: 8, afterGiants: [6, 10] },
-    helpPower: 1.25,                 // always prefer the more helpful powerups (as when struggling)
+    novelty: { newBoost: 400, newSetBoost: 400, newUntilShown: 1, unseenBoost: 4, firstBoost: 1e6 },
+    // It won't let you lose: with the stack `height` of the way up the board, a big destroyer (one
+    // that takes at least minCells cells: a black hole or the like), at most one every `every`
+    // pieces; within lastRows of the top, `last` (the one that takes everything). And should it
+    // top out all the same, all but the bottom few rows dissolve, as in zen.
+    rescue: { height: 0.5, every: 3, minCells: 60, lastRows: 8, last: "large_black_hole" },
   },
 
   scoring: {
@@ -650,6 +666,10 @@ export const CONFIG = {
       // Variety: no long runs of one class. Each of the last `last` powerups that was of the
       // same class makes another one of it this much less likely.
       classVariety: { last: 2, weight: 0.4 },
+      // ...and some kinds of powerup (by tag) kept apart: within `drops` pieces of one, another of
+      // the kind is `weight` times as likely (the sinkhole-type: a column dug out, the ground
+      // either side filled in). Turbo zen keeps them apart as well (CONFIG.zen.apart).
+      apart: { sinkhole: { drops: 30, weight: 0.04 } },
 
       // After a level 6 set: the next few pieces are very likely a powerup, and the big
       // destroyers (two rows or more, a wide area, several columns; never the bad ones) are the

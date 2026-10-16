@@ -4784,7 +4784,7 @@
     const o = state.source && state.source.original;
     const wasDraft = isPlainObject(o) && o.claudeDraft === true;
     let txt = "", btn = "", reviewed = false;
-    if (state.claudeDraft && built.shape.claudeDraft === true){ txt = "Untouched: made by Claude, not reviewed yet. Saving any change marks it reviewed."; btn = "Mark reviewed"; }
+    if (state.claudeDraft && built.shape.claudeDraft === true){ txt = "Untouched: made by Claude, not reviewed yet. Saving any change marks it reviewed."; btn = "Approve and next"; }
     else if (state.claudeDraft){ txt = "Was untouched (made by Claude): saving your changes marks it reviewed."; reviewed = true; }
     else if (wasDraft){ txt = "Marked reviewed: saving removes the untouched flag."; btn = "Undo"; reviewed = true; }
     el.untouchedBox.classList.toggle("hidden", !txt);
@@ -4793,10 +4793,17 @@
     el.untouchedBtn.classList.toggle("hidden", !btn);
     el.untouchedBtn.textContent = btn;
   }
-  el.untouchedBtn.addEventListener("click", () => {
+  el.untouchedBtn.addEventListener("click", async () => {
     const o = state.source && state.source.original;
-    if (state.claudeDraft) state.claudeDraft = false;
-    else if (isPlainObject(o) && o.claudeDraft === true) state.claudeDraft = true;
+    if (state.claudeDraft){
+      // approving an untouched piece: saved there and then, and on to the next in the list
+      state.claudeDraft = false;
+      setDirty(true);
+      if (await saveCurrent()) navPiece(1);
+      else scheduleRender();
+      return;
+    }
+    if (isPlainObject(o) && o.claudeDraft === true) state.claudeDraft = true;
     setDirty(true); scheduleRender();
   });
 
@@ -5451,11 +5458,12 @@
   }
 
   // One save at a time (a double click or a held Ctrl+S must not save twice), one message per save
+  // (true once it's written)
   let saveBusy = false;
   async function saveCurrent(){
-    if (saveBusy) return;
+    if (saveBusy) return false;
     saveBusy = true;
-    try { await saveCurrentNow(); } finally { saveBusy = false; }
+    try { return await saveCurrentNow(); } finally { saveBusy = false; }
   }
   async function saveCurrentNow(){
     const notes = [];
@@ -5524,9 +5532,11 @@
       if (state.list.cursor && state.list.cursor.key === oldKey) state.list.cursor.key = state.draftKey;
       syncAllUI(); renderList();
       toast(`${action === "replace" ? "Updated" : "Added"} "${shape.id}" — ${[savedWhere(slot, how), ...notes].join("; ")}`, slot.writeNote ? "bad" : "good");
+      return true;
     } catch (e){
       toast(e.message || String(e), "bad");
     }
+    return false;
   }
 
   async function deleteLoaded(){

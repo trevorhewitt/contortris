@@ -400,15 +400,15 @@ export function bindUI({ state, renderer, achievements }) {
   state.level6Recent = store.getJSON(LEVEL6_RECENT_KEY, []);
   let savedRecent = state.level6Recent;
 
-  // God mode puts the newest things first, and anything never seen in this browser comes up
-  // more (CONFIG.godMode.novelty): what has been seen here, and how often
+  // Developer mode puts the newest things first, and anything never seen in this browser comes up
+  // more (CONFIG.devMode.novelty): what has been seen here, and how often
   const SEEN_KEY = "extris.seen.v1", SEEN_SETS_KEY = "extris.seenSets.v1";
   state.seenEver = new Map(Object.entries(store.getJSON(SEEN_KEY, {})));
   state.seenSetsEver = new Map(Object.entries(store.getJSON(SEEN_SETS_KEY, {})));
   // (and which version of each set came last, so the next one is another)
   const SET_VERSIONS_KEY = "extris.setVersions.v1";
   state.setVersions = new Map(Object.entries(store.getJSON(SET_VERSIONS_KEY, {})));
-  // (and since the page was loaded: God mode shows the newest things once each, then carries on as usual)
+  // (and since the page was loaded: developer mode shows the newest things once each, then carries on as usual)
   state.shownThisLoad = new Map();
   state.setsShownThisLoad = new Map();
   state.zenOpenings = new Set(); // (turbo zen's opening, once: CONFIG.zen.opening)
@@ -935,7 +935,31 @@ export function bindUI({ state, renderer, achievements }) {
   /* ---------- buttons ---------- */
 
   // (from the home screen: it all bursts into pieces, a few words, and off it goes)
-  for (const b of document.querySelectorAll(".modeBtn")) b.addEventListener("click", () => home.play(b.dataset.mode, { from: b }));
+  // Developer mode (CONFIG.modes.dev): God mode and Turbo zen held down together for
+  // CONFIG.devMode.holdMs, or a shift-click on God mode. (Once both are down, neither one's own
+  // click counts until they're both let go.)
+  const chordBtns = [$("btnGod"), $("btnTurbo")];
+  const chord = { down: new Map(), timer: 0, swallow: false };
+  const bothDown = () => chordBtns.every(b => [...chord.down.values()].includes(b));
+  const chordOff = () => { clearTimeout(chord.timer); chord.timer = 0; for (const b of chordBtns) b.classList.remove("chord"); };
+  for (const b of chordBtns) b.addEventListener("pointerdown", (e) => {
+    chord.down.set(e.pointerId, b);
+    if (!bothDown() || chord.timer) return;
+    chord.swallow = true;
+    for (const c of chordBtns) c.classList.add("chord");
+    chord.timer = setTimeout(() => { const go = bothDown(); chordOff(); if (go) home.play("dev", { from: chordBtns[0] }); }, CONFIG.devMode?.holdMs ?? 500);
+  });
+  const chordUp = (e) => {
+    if (!chord.down.delete(e.pointerId)) return;
+    if (!bothDown()) chordOff();
+    if (!chord.down.size && chord.swallow) setTimeout(() => { if (!chord.down.size) chord.swallow = false; }, 400);
+  };
+  window.addEventListener("pointerup", chordUp, true);
+  window.addEventListener("pointercancel", chordUp, true);
+  for (const b of document.querySelectorAll(".modeBtn")) b.addEventListener("click", (e) => {
+    if (chord.swallow) return;
+    home.play(e.shiftKey && b === chordBtns[0] ? "dev" : b.dataset.mode, { from: b });
+  });
   $("btnHowTo").addEventListener("click", () => { panelBack = "menu"; showPanel("howto"); });
   $("btnAchievements").addEventListener("click", () => { panelBack = "menu"; showPanel("achievements"); });
   $("btnResume").addEventListener("click", () => resumeGame());

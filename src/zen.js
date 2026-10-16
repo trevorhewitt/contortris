@@ -317,7 +317,7 @@ const stackHeight = (state) => heightOf(occupancy(state.board), CONFIG.board.col
 const regularPool = (state) => state.shapes.filter(s => !s.powerup && (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6 && (!s.once || !(state.zenUses?.get(s.id) > 0)) && (!isCalm(state) || inGame(s)));
 const smallPool = (state) => regularPool(state).filter(s => (s.difficulty ?? 1) <= 1 && blocks(s) <= 4);
 const giantPool = (state) => regularPool(state).filter(s => (s.difficulty ?? 1) >= 4);
-const powerupPool = (state) => state.powerups.filter(p => (p.frequency ?? 1) > 0);
+const powerupPool = (state) => state.powerups.filter(p => (p.frequency ?? 1) > 0 && !keptApart(state, p));
 const blocks = (s) => s.rotations[0].reduce((n, r) => n + r.filter(Boolean).length, 0);
 
 // The game's own choice of piece (links, sets, powerups and all), passing over any that would
@@ -430,7 +430,14 @@ function stray(state, chance = CONFIG.zen.strays?.chance ?? 0) {
   if (!pool.length) return null;
   return sampleByWeight(pool, s => 1 / (1 + (uses.get(s.id) ?? 0)) ** (S.power ?? 1.5), state.rng);
 }
-const noteUse = (state, shape) => { const u = (state.zenUses ??= new Map()); u.set(shape.id, (u.get(shape.id) ?? 0) + 1); };
+const noteUse = (state, shape) => {
+  const u = (state.zenUses ??= new Map());
+  u.set(shape.id, (u.get(shape.id) ?? 0) + 1);
+  // (and when a kind kept apart last came: CONFIG.zen.apart)
+  for (const t of shape.tags ?? []) if (CONFIG.zen.apart?.[t]) (state.zenTagAt ??= {})[t] = state.drops;
+};
+// A kind kept apart (CONFIG.zen.apart) that came too recently to come again yet?
+const keptApart = (state, shape) => (shape.tags ?? []).some(t => { const a = CONFIG.zen.apart?.[t]; return a && state.drops - (state.zenTagAt?.[t] ?? -Infinity) < a.drops; });
 // How fresh a piece is (turbo zen): 1 if it hasn't come up since the page was loaded, less the
 // more it has (to the power `power`), so whatever the director picks from, it spreads itself
 // over all of it. (Zen as it comes: always 1.)

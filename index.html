@@ -442,6 +442,8 @@
     }
     button.modeBtn:focus-visible{ background: #222; box-shadow: 0 0 0 3px rgba(0,0,0,0.9), 0 6px 0 rgba(0,0,0,0.55), 0 0 0 6px rgba(123,247,255,0.55); }
     button.modeBtn:active{ transform: none; }
+    /* (God mode and Turbo zen held down together: developer mode, on its way) */
+    button.modeBtn.chord{ box-shadow: 0 0 0 3px rgba(0,0,0,0.9), 0 6px 0 rgba(0,0,0,0.55), 0 0 0 6px rgba(255,255,255,0.75), 0 0 40px rgba(255,255,255,0.6); }
     .modeTag{
       font-family: var(--font-body); font-size: clamp(9px, min(1.45vw, 2vh), 14px);
       text-transform: none; letter-spacing: 0; line-height: 1.25; opacity: 0.92;
@@ -1221,7 +1223,7 @@
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
             <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
-            <div class="small" id="gameVersion">version 202610160943</div>
+            <div class="small" id="gameVersion">version 202610161309</div>
           </div>
 
           <div class="msg panel" id="panelHowTo" hidden>
@@ -1239,7 +1241,7 @@
               <h3>Modes</h3>
               <div id="howtoModes"></div>
 
-              <p class="small menuFoot">[Extris version 202610160943 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Extris version 202610161309 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>

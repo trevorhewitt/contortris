@@ -708,7 +708,7 @@ function lockPiece(state) {
   // A powerup that vanishes when it fires can't top you out.
   const consumed = !!shape.powerup?.consume;
   if (lockedAboveTop && !consumed) {
-    if (state.zen) zenRescue(state); // zen never ends
+    if (neverEnds(state)) zenRescue(state); // zen never ends (nor developer mode)
     else setGameOver(state, shape);
   }
 
@@ -959,7 +959,8 @@ function startRowFall(state, dropDistances, delays = null) {
 
 function recomputeSpeed(state) {
   if (state.zen) { zenSpeed(state); return; } // (zen: it never speeds up)
-  const mult = Math.pow(CONFIG.timing.speedMultiplierPerLevel, state.level - 1);
+  // (nor developer mode: CONFIG.modes.dev.steady)
+  const mult = Math.pow(CONFIG.timing.speedMultiplierPerLevel, CONFIG.modes[state.mode]?.steady ? 0 : state.level - 1);
   state.dropMs = Math.max(CONFIG.timing.minDropMs, Math.floor(CONFIG.timing.baseDropMs * mult));
   if (state.endGameMs != null) state.dropMs = Math.min(state.dropMs, state.endGameMs);
 }
@@ -1760,9 +1761,12 @@ function finishTurn(state, alsoRows = null) {
   clearFullLines(state, alsoRows);
 
   let ok = spawnPiece(state);
-  if (!ok && state.zen) { zenRescue(state); ok = spawnPiece(state); }
+  if (!ok && neverEnds(state)) { zenRescue(state); ok = spawnPiece(state); }
   if (!ok) setGameOver(state, state.lastLockedShape);
 }
+
+// (zen, and developer mode: CONFIG.modes.dev.rescue)
+const neverEnds = (state) => !!state.zen || CONFIG.modes[state.mode]?.rescue === true;
 
 // Zen mode never ends: if anything tops out, all but the bottom few rows dissolve.
 export function zenRescue(state) {

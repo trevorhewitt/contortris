@@ -221,18 +221,19 @@ export function computeBoardPresence(state) {
   return presence;
 }
 
-// God mode: a piece in CONFIG.godMode.newest is newBoost times likelier until it has turned up
-// newUntilShown times since the page was loaded (counting this game), one of firstPieces
-// firstBoost times until it has turned up once; anything never seen in this browser,
-// unseenBoost times. (state.seenEver and state.shownThisLoad are kept by the UI.)
+// Developer mode (a mode with `newest`): a piece in CONFIG.devMode.newest is newBoost times
+// likelier until it has turned up newUntilShown times since the page was loaded (counting this
+// game), one of firstPieces firstBoost times until it has turned up once; anything never seen in
+// this browser, unseenBoost times. (state.seenEver and state.shownThisLoad are kept by the UI.)
+// Every other mode is as it comes.
 function noveltyMultiplier(sel, shape) {
-  if (!isGodMode(sel.mode) || CONFIG.modes[sel.mode]?.calm || !sel.seenEver) return 1; // (zen is as it comes)
-  const n = CONFIG.godMode.novelty ?? {};
+  if (!CONFIG.modes[sel.mode]?.newest || !sel.seenEver) return 1;
+  const d = CONFIG.devMode, n = d.novelty ?? {};
   const served = sel.servedCounts.get(shape.id) ?? 0;
   const shown = (sel.shownThisLoad?.get(shape.id) ?? 0) + served;
-  // (once the opening set has come; turbo zen has its own opening)
-  if (!CONFIG.modes[sel.mode]?.zen && (CONFIG.godMode.firstPieces ?? []).includes(shape.id) && !shown && sel.level6?.seen?.size) return n.firstBoost ?? 1000;
-  if ((CONFIG.godMode.newest?.pieces ?? []).includes(shape.id) && shown < (n.newUntilShown ?? 1)) return n.newBoost ?? 6;
+  // (once the opening set has come)
+  if ((d.firstPieces ?? []).includes(shape.id) && !shown && sel.level6?.seen?.size) return n.firstBoost ?? 1000;
+  if ((d.newest?.pieces ?? []).includes(shape.id) && shown < (n.newUntilShown ?? 1)) return n.newBoost ?? 6;
   return (sel.seenEver.get(shape.id) ?? 0) + served ? 1 : (n.unseenBoost ?? 2.5);
 }
 
@@ -257,7 +258,7 @@ export function varietyMultiplier(sel, shape) {
   // ...and never straight after one it mustn't follow (shape.notAfter)
   if (shape.notAfter?.includes(sel.lastShapeId)) mult *= 1e-9;
 
-  // God mode: the newest things first, and anything never seen in this browser more often
+  // (developer mode: the newest things first, and anything never seen in this browser more often)
   mult *= noveltyMultiplier(sel, shape);
 
   // pieces that opened recent games (state.openingMemory, filled in by the UI)
@@ -366,6 +367,14 @@ export function selectPiece(state) {
   // (and so may a powerup, or a level 6 set starting now)
   const thread = pickThread(state);
   sel.currentThread = thread;
+
+  // (developer mode: about to lose, a black hole or the like, CONFIG.devMode.rescue)
+  const rescue = devRescue(state);
+  if (rescue) {
+    commitSelectedShape(sel, rescue);
+    notePowerupDropped(sel);
+    return rescue;
+  }
 
   // A level 6 group that has started carries on, piece after piece, whatever else is going on.
   const grouped = nextGroupPiece(state);
@@ -989,9 +998,12 @@ function maybeSelectPowerup(state, danger01) {
     // a class's pieces share its weight, so big classes don't crowd out small ones
     const classSize = candidates.filter(c => c.powerup.cls === p.powerup.cls).length;
     const threadW = CONFIG.assist.threads?.powerups ? threadWeight(sel.currentThread, p, sel.servedCounts.get(p.id) ?? 0) : 1;
-    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * runW * wideW(p) * bigW(p) * rarerW(p) * varietyMultiplier(sel, p) * threadW * (6 / (classSize + 5));
+    // (kinds kept apart: CONFIG.assist.powerups.apart)
+    const apartW = (p.tags ?? []).reduce((w, t) => { const a = cfg.apart?.[t]; return a && sel.dropIndex - (ps.tagAt?.[t] ?? -Infinity) < a.drops ? w * a.weight : w; }, 1);
+    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * runW * wideW(p) * bigW(p) * rarerW(p) * varietyMultiplier(sel, p) * threadW * apartW * (6 / (classSize + 5));
   }, state.rng);
   if (chosen && introducing(chosen)) { ps.lastIntroDrop = sel.dropIndex; ps.pendingIntro.add(chosen.powerup.cls); }
+  for (const t of chosen?.tags ?? []) if (cfg.apart?.[t]) (ps.tagAt ??= {})[t] = sel.dropIndex;
   return chosen;
 }
 
@@ -1061,6 +1073,23 @@ export function introduceAllPowerups(state) {
   for (const p of state.powerups) {
     if (!ps.classes.includes(p.powerup.cls)) ps.classes.push(p.powerup.cls);
   }
+}
+
+// Developer mode (a mode with `rescue`): it won't let you lose. With the stack up `height` of the
+// board, a big destroyer (a black hole or the like), at most one every `every` pieces; with it
+// within lastRows of the top, the one that takes everything (CONFIG.devMode.rescue).
+function devRescue(state) {
+  const r = CONFIG.devMode?.rescue, sel = state.pieceSel, rows = CONFIG.board.rows;
+  if (!r || !CONFIG.modes[state.mode]?.rescue || !state.powerups.length) return null;
+  const top = highestLockedRowIndex(state);
+  if (top === null || rows - top < rows * (r.height ?? 0.5)) return null;
+  if (sel.dropIndex - (sel.rescuedAt ?? -Infinity) < (r.every ?? 2)) return null;
+  const live = state.powerups.filter(p => (p.frequency ?? 1) > 0 && !p.powerup.bad && !state.devPowerups?.disabled?.has(p.id));
+  const last = top < (r.lastRows ?? 8) ? live.find(p => p.id === r.last) : null;
+  const big = live.filter(p => p.powerup.type === "destroyer" && destroyerCells(p) >= (r.minCells ?? 60));
+  const pick = last ?? (big.length ? sampleByWeight(big, p => varietyMultiplier(sel, p), state.rng) : null);
+  if (pick) sel.rescuedAt = sel.dropIndex;
+  return pick;
 }
 
 function notePowerupDropped(sel) {

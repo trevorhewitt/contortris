@@ -108855,6 +108855,9 @@ export const SHAPES = [
       },
     frequency: 0.7,
     claudeDraft: true,
+    tags: [
+        "sinkhole"
+      ],
   },
   {
     id: "big_green_pipe",
@@ -109617,6 +109620,9 @@ export const SHAPES = [
       },
     frequency: 0.7,
     claudeDraft: true,
+    tags: [
+        "sinkhole"
+      ],
   },
   {
     id: "bottomless_hole",
@@ -109897,6 +109903,9 @@ export const SHAPES = [
       },
     frequency: 0.6,
     claudeDraft: true,
+    tags: [
+        "sinkhole"
+      ],
   },
   {
     id: "deep_end",
@@ -110665,6 +110674,9 @@ export const SHAPES = [
       },
     frequency: 0.5,
     claudeDraft: true,
+    tags: [
+        "sinkhole"
+      ],
   },
   {
     id: "narrow_mineshaft",
@@ -117713,6 +117725,9 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    tags: [
+        "sinkhole"
+      ],
   },
   {
     id: "mineshaft",
@@ -118574,6 +118589,9 @@ export const SHAPES = [
       },
     frequency: 0.4,
     claudeDraft: true,
+    tags: [
+        "sinkhole"
+      ],
   },
   {
     id: "lift_shaft",
@@ -120027,6 +120045,9 @@ export const SHAPES = [
       },
     frequency: 0.4,
     claudeDraft: true,
+    tags: [
+        "sinkhole"
+      ],
   },
   {
     id: "straight_quarry",
@@ -120510,6 +120531,9 @@ export const SHAPES = [
       },
     frequency: 0.35,
     claudeDraft: true,
+    tags: [
+        "sinkhole"
+      ],
   },
   {
     id: "crevasse",
@@ -121373,6 +121397,9 @@ export const SHAPES = [
       },
     frequency: 0.4,
     claudeDraft: true,
+    tags: [
+        "sinkhole"
+      ],
   },
   {
     id: "canyon",
@@ -121899,6 +121926,9 @@ export const SHAPES = [
       },
     frequency: 0.3,
     claudeDraft: true,
+    tags: [
+        "sinkhole"
+      ],
   },
   {
     id: "mentos_in_cola",

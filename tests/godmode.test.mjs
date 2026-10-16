@@ -74,11 +74,7 @@ test("god mode: more big pieces (above all level 6 sets) and more powerups, and 
     }
     return { giants: giants / n, sets: sets / n, pus: pus / n, wide: wide / Math.max(1, pus) };
   };
-  // (the long-run mix: not the newest things, which God mode brings first for a while)
-  const newest = CONFIG.godMode.newest.pieces;
-  CONFIG.godMode.newest.pieces = [];
-  let god, normal;
-  try { god = count("god"); normal = count("normal"); } finally { CONFIG.godMode.newest.pieces = newest; }
+  const god = count("god"), normal = count("normal");
   const big = (m) => m.giants + m.sets;
   assert.ok(big(god) > big(normal) * 1.5, `big pieces ${big(god).toFixed(3)} vs ${big(normal).toFixed(3)}`);
   assert.ok(god.sets > god.giants, `level 6 ${god.sets.toFixed(3)}, giants ${god.giants.toFixed(3)}`);
@@ -183,9 +179,9 @@ test("after a level 6 set: a big destroyer comes soon", () => {
   assert.ok(soon / sets >= 0.6, `a big destroyer within 4 pieces after ${soon} of ${sets} sets`);
 });
 
-test("god mode: the newest things come first, once each since the page was loaded, then as usual", () => {
-  const newest = new Set(CONFIG.godMode.newest.pieces), newSets = new Set(CONFIG.godMode.newest.sets);
-  const share = ({ seenEver = new Map(), seenSetsEver = new Map(), shown = new Map(), setsShown = new Map() }) => {
+test("developer mode: the newest things come first, once each since the page was loaded, then as usual (and God mode is as it comes)", () => {
+  const newest = new Set(CONFIG.devMode.newest.pieces), newSets = new Set(CONFIG.devMode.newest.sets);
+  const share = ({ seenEver = new Map(), seenSetsEver = new Map(), shown = new Map(), setsShown = new Map(), mode = "dev" }) => {
     let fresh = 0, n = 0, firstNew = 0, games = 0;
     for (const seed of [1, 2, 3, 4, 5, 6]) {
       const state = createGameState(shapes, powerups, { rng: makeRng(seed * 7), groups: GROUPS });
@@ -193,7 +189,7 @@ test("god mode: the newest things come first, once each since the page was loade
       state.shownThisLoad = shown; state.setsShownThisLoad = setsShown;
       const served = [];
       on(state, (t, d) => { if (t === "spawn") served.push(d.shape); });
-      startRun(state, "god");
+      startRun(state, mode);
       for (let i = 0; i < 40 && !state.gameOver; i++) { setStack(state, 3); drop(state); }
       const regular = served.filter(s => !s.powerup && s.difficulty !== 6);
       fresh += regular.filter(s => newest.has(s.id)).length; n += regular.length;
@@ -208,12 +204,16 @@ test("god mode: the newest things come first, once each since the page was loade
   const reload = share({ seenEver: all, seenSetsEver: allSets });
   // ...and once each has turned up since the page was loaded, as usual
   const after = share({ seenEver: all, seenSetsEver: allSets, shown: once, setsShown: setsOnce });
-  console.log(`newest: ${(blank.fresh * 100).toFixed(0)}% of pieces on a new browser, ${(reload.fresh * 100).toFixed(0)}% after a reload, ${(after.fresh * 100).toFixed(0)}% once shown; first set new in ${(blank.firstNew * 100).toFixed(0)}% / ${(reload.firstNew * 100).toFixed(0)}% / ${(after.firstNew * 100).toFixed(0)}%`);
+  // ...and God mode, on a fresh page: as it comes
+  const god = share({ seenEver: all, seenSetsEver: allSets, mode: "god" });
+  console.log(`newest: ${(blank.fresh * 100).toFixed(0)}% of pieces on a new browser, ${(reload.fresh * 100).toFixed(0)}% after a reload, ${(after.fresh * 100).toFixed(0)}% once shown (God mode ${(god.fresh * 100).toFixed(0)}%); first set new in ${(blank.firstNew * 100).toFixed(0)}% / ${(reload.firstNew * 100).toFixed(0)}% / ${(after.firstNew * 100).toFixed(0)}%`);
   // (by a clear margin: the newest list keeps growing, and some of it comes in linked runs anyway)
   for (const [k, r] of Object.entries({ blank, reload })) {
-    assert.ok(r.fresh - after.fresh >= 0.08, `${k}: newest ${(r.fresh * 100).toFixed(0)}% vs ${(after.fresh * 100).toFixed(0)}%`);
+    assert.ok(r.fresh - after.fresh >= 0.15, `${k}: newest ${(r.fresh * 100).toFixed(0)}% vs ${(after.fresh * 100).toFixed(0)}%`);
+    assert.ok(r.fresh - god.fresh >= 0.15, `${k}: newest ${(r.fresh * 100).toFixed(0)}% vs God mode's ${(god.fresh * 100).toFixed(0)}%`);
     assert.ok(r.firstNew >= 0.5, `${k}: the first set was a new one in ${(r.firstNew * 100).toFixed(0)}% of games`);
   }
+  assert.ok(Math.abs(god.fresh - after.fresh) < 0.1, `God mode ${(god.fresh * 100).toFixed(0)}% of the newest, as it comes ${(after.fresh * 100).toFixed(0)}%`);
 });
 
 test("god mode: after a set, and after a few giants close together, a calm spell of ordinary pieces", () => {
@@ -247,18 +247,25 @@ test("god mode: after a set, and after a few giants close together, a calm spell
   assert.ok(ends >= 4, `${ends} sets`);
 });
 
-test("God mode opens with the emotions chart's ascent into the pseudo-spiritual", () => {
-  const state = createGameState(shapes, powerups, { rng: makeRng(3), groups: GROUPS });
-  const sets = [];
-  on(state, (t, d) => { if (t === "spawn" && state.pieceSel.level6.group && sets.at(-1) !== state.pieceSel.level6.group) sets.push(state.pieceSel.level6.group); });
-  startRun(state, "god");
-  for (let i = 0; i < 80 && sets.length < 2 && !state.gameOver; i++) {
-    hardDropAndLock(state);
-    for (let k = 0; k < 120 && (state.effect || state.hold); k++) updateGame(state, 16);
-    state.board = state.board.map(r => r.fill(null));
-  }
-  // (the first of them never seen in this browser: here, nothing has been)
-  assert.equal(sets[0], [].concat(CONFIG.godMode.firstSet)[0], `the first set: ${sets.join(", ")}`);
+test("developer mode can open with a particular set (the emotions chart's ascent into the pseudo-spiritual, say)", () => {
+  const was = CONFIG.devMode.firstSet;
+  CONFIG.devMode.firstSet = ["emotions_ascent", "emotions_british"];
+  try {
+    for (const mode of ["dev", "god"]) {
+      const state = createGameState(shapes, powerups, { rng: makeRng(3), groups: GROUPS });
+      const sets = [];
+      on(state, (t, d) => { if (t === "spawn" && state.pieceSel.level6.group && sets.at(-1) !== state.pieceSel.level6.group) sets.push(state.pieceSel.level6.group); });
+      startRun(state, mode);
+      for (let i = 0; i < 80 && sets.length < 2 && !state.gameOver; i++) {
+        hardDropAndLock(state);
+        for (let k = 0; k < 120 && (state.effect || state.hold); k++) updateGame(state, 16);
+        state.board = state.board.map(r => r.fill(null));
+      }
+      // (the first of them never seen in this browser: here, nothing has been; God mode, as it comes)
+      if (mode === "dev") assert.equal(sets[0], CONFIG.devMode.firstSet[0], `the first set: ${sets.join(", ")}`);
+      else assert.ok(sets.length, "God mode has its sets too");
+    }
+  } finally { CONFIG.devMode.firstSet = was; }
   const ascent = normaliseGroups(GROUPS, [...shapes, ...powerups]).find(g => g.id === "emotions_ascent");
   const rng = makeRng(7);
   for (let i = 0; i < 50; i++) {
@@ -268,25 +275,50 @@ test("God mode opens with the emotions chart's ascent into the pseudo-spiritual"
   }
 });
 
-test("God mode can bring particular pieces soon after its opening set, the first time since the page was loaded", () => {
-  const was = CONFIG.godMode.firstPieces, newest = CONFIG.godMode.newest.pieces;
-  CONFIG.godMode.firstPieces = ["portrait_of_a_potato"];
-  CONFIG.godMode.newest.pieces = []; // (the newest things come first too: not what this is about)
+test("developer mode can bring particular pieces soon after its opening set, the first time since the page was loaded", () => {
+  const d = CONFIG.devMode, was = d.firstPieces, newest = d.newest.pieces, first = d.firstSet;
+  d.firstPieces = ["portrait_of_a_potato"];
+  d.firstSet = ["emotions_ascent"];
+  d.newest.pieces = []; // (the newest things come first too: not what this is about)
   try {
     const state = createGameState(shapes, powerups, { rng: makeRng(4), groups: GROUPS });
     state.seenEver = new Map(); state.shownThisLoad = new Map(); // (as the UI keeps them)
     const served = [];
     on(state, (t, d) => { if (t === "spawn") served.push({ id: d.shape.id, set: !!state.pieceSel.level6.group }); });
-    startRun(state, "god");
-    for (let i = 0; i < 120 && !served.some(s => s.id === CONFIG.godMode.firstPieces[0]) && !state.gameOver; i++) {
+    startRun(state, "dev");
+    for (let i = 0; i < 120 && !served.some(s => s.id === d.firstPieces[0]) && !state.gameOver; i++) {
       hardDropAndLock(state);
       for (let k = 0; k < 120 && (state.effect || state.hold); k++) updateGame(state, 16);
       state.board = state.board.map(r => r.fill(null));
     }
-    const at = served.findIndex(s => s.id === CONFIG.godMode.firstPieces[0]);
+    const at = served.findIndex(s => s.id === d.firstPieces[0]);
     const setEnds = served.findIndex((s, i) => i > 0 && served[i - 1].set && !s.set);
     assert.ok(at >= 0, `never came: ${served.map(s => s.id).slice(0, 40).join(" ")}`);
     // (soon after: the powerups and giants God mode serves meanwhile can come first)
     assert.ok(setEnds >= 0 && at >= setEnds - 1 && at <= setEnds + 8, `at piece ${at}, the opening set over at ${setEnds}`);
-  } finally { CONFIG.godMode.firstPieces = was; CONFIG.godMode.newest.pieces = newest; }
+  } finally { d.firstPieces = was; d.newest.pieces = newest; d.firstSet = first; }
+});
+
+test("developer mode: left alone it never ends nor speeds up, and with the stack high a black hole or the like comes", () => {
+  const minCells = CONFIG.devMode.rescue.minCells;
+  for (const seed of [1, 2, 3]) {
+    const state = createGameState(shapes, powerups, { rng: makeRng(seed * 13), groups: GROUPS });
+    const served = [];
+    let dissolved = 0;
+    on(state, (t, d) => { if (t === "spawn") served.push(d.shape); if (t === "zenRescue") dissolved++; });
+    startRun(state, "dev");
+    const dropMs = state.dropMs;
+    // (nobody steering: every piece straight down where it comes in)
+    for (let i = 0; i < 250 && !state.gameOver; i++) {
+      hardDropAndLock(state);
+      for (let k = 0; k < 400 && (state.effect || state.hold); k++) updateGame(state, 16);
+    }
+    const big = served.filter(s => s.powerup && !s.powerup.setOnly && destroyerCells(s) >= minCells).length;
+    console.log(`seed ${seed}: ${served.length} pieces, ${big} big destroyers, dissolved ${dissolved} times`);
+    assert.ok(!state.gameOver, `seed ${seed}: game over after ${served.length} pieces`);
+    assert.equal(state.dropMs, dropMs, "the same pace all the way");
+    assert.equal(state.pieceSel.endGame.times, 0, "no end game");
+    assert.ok(big >= 5, `seed ${seed}: ${big} big destroyers`);
+    assert.ok(dissolved <= 3, `seed ${seed}: the board dissolved ${dissolved} times (the black holes should do it)`);
+  }
 });

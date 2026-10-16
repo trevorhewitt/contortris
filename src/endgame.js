@@ -57,7 +57,8 @@ export function noteLanding(state, steered) {
 export function trackEndGame(state) {
   const cfg = CONFIG.endGame ?? {};
   const eg = state.pieceSel?.endGame;
-  if (!eg || cfg.enabled === false) return null;
+  // (developer mode won't let you lose: no end game either, CONFIG.modes.dev.rescue)
+  if (!eg || cfg.enabled === false || CONFIG.modes[state.mode]?.rescue) return null;
   const dev = state.devEndGame ?? "auto";
   const rows = pileRows(state);
   // destroying rows (by any means) means they're still fighting

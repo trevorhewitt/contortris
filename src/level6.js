@@ -327,8 +327,8 @@ export function maybeStartGroup(state) {
   // CONFIG.godMode.featured)
   const featured = isGodMode(state.mode) ? CONFIG.godMode?.featured ?? {} : {};
   for (const g of live) if (featured.sets?.includes(g.id) && !pool.includes(g) && state.level6Recent?.[0] !== g.id) pool.push(g);
-  // (God mode opens with a particular set, or one of a few, the first time since the page was
-  // loaded: CONFIG.godMode.firstSet)
+  // (developer mode can open with a particular set, or one of a few, the first time since the
+  // page was loaded: CONFIG.devMode.firstSet)
   const opening = firstDue && openingSet(state);
   if (opening) pool = [opening];
   // ...and only one whose whole run fits on the board (a set can't be cleared until it's down)
@@ -348,8 +348,8 @@ export function maybeStartGroup(state) {
 // (one of them, if it's a list: the first never seen in this browser, or else any of them; and
 // once one of them has opened a game since the page was loaded, that's that)
 function openingSet(state) {
-  const ids = [].concat(CONFIG.godMode?.firstSet ?? []);
-  if (!ids.length || state.mode !== "god") return null;
+  const ids = [].concat(CONFIG.devMode?.firstSet ?? []);
+  if (!ids.length || !CONFIG.modes[state.mode]?.newest) return null;
   const l6 = state.pieceSel.level6;
   if (ids.some(id => (l6.shownThisLoad?.get(id) ?? 0) + (l6.seen.get(id) ?? 0) > 0)) return null;
   const live = ids.map(id => state.groups.find(g => g.id === id && g.frequency > 0)).filter(Boolean);
@@ -373,15 +373,15 @@ function familyWeight(state, g, cfg) {
   return recent.some(id => family.includes(id)) ? cfg.familyWeight ?? 0.1 : 1;
 }
 
-// God mode: the newest sets first (CONFIG.godMode.newest) until each has come once since the
-// page was loaded, and any never seen in this browser more often.
+// Developer mode: the newest sets first (CONFIG.devMode.newest) until each has come once since
+// the page was loaded, and any never seen in this browser more often. (Every other mode: as it comes.)
 function setNovelty(state, g) {
   const l6 = state.pieceSel.level6;
-  if (!isGodMode(state.mode) || CONFIG.modes[state.mode]?.calm || !l6.seenBefore) return 1; // (zen is as it comes)
-  const n = CONFIG.godMode.novelty ?? {};
+  if (!CONFIG.modes[state.mode]?.newest || !l6.seenBefore) return 1;
+  const n = CONFIG.devMode.novelty ?? {};
   const here = l6.seen.get(g.id) ?? 0;
   const shown = (l6.shownThisLoad?.get(g.id) ?? 0) + here;
-  if ((CONFIG.godMode.newest?.sets ?? []).includes(g.id) && shown < (n.newUntilShown ?? 1)) return n.newSetBoost ?? 10;
+  if ((CONFIG.devMode.newest?.sets ?? []).includes(g.id) && shown < (n.newUntilShown ?? 1)) return n.newSetBoost ?? 10;
   return (l6.seenBefore.get(g.id) ?? 0) + here ? 1 : (n.unseenBoost ?? 2.5);
 }
 
