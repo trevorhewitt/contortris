@@ -4308,14 +4308,17 @@
     return spec;
   }
   // the cells' paints (Map "x,y" -> paint), the same for as long as nothing changes
-  function artPaintsFor(fill, cells, piece){
+  // (`area`: every cell of its area, filled or not: a picture goes over the area's whole box, as
+  // the game's does, and over the piece too where it's part of its fill: powerups.js pictureBox)
+  function artPaintsFor(fill, cells, piece, area = null){
     const spec = artSpecOf(fill);
     if (!spec || !cells.length) return null;
     const key = cells.map(c => c.x + "," + c.y).join(";") + "|" + piece.map(c => c.x + "," + c.y).join(";");
     const had = artPaints.get(fill);
     if (had && had.key === key) return had.paints;
     let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    for (const c of cells){ x0 = Math.min(x0, c.x); x1 = Math.max(x1, c.x); y0 = Math.min(y0, c.y); y1 = Math.max(y1, c.y); }
+    const boxOf = [...(area ?? cells), ...(spec.cover ? piece : [])];
+    for (const c of boxOf){ x0 = Math.min(x0, c.x); x1 = Math.max(x1, c.x); y0 = Math.min(y0, c.y); y1 = Math.max(y1, c.y); }
     const byIndex = fillArtLib.paintFill(spec, cells, { cols: GAME.cols, rows: GAME.rows, piece, seed: 7, box: { x0, x1, y0, y1 } });
     const paints = new Map();
     for (const [i, paint] of byIndex) paints.set(areaKey(i % GAME.cols, Math.floor(i / GAME.cols)), paint);
@@ -4376,7 +4379,7 @@
       const dir = m.powerup.direction || "down";
       const cx = pos.x + m.w / 2, cy = pos.y + m.h / 2;
       const pieceCells = m.blocks.map(b => ({ x: pos.x + b.x, y: pos.y + b.y })).filter(c => c.x >= 0 && c.y >= 0 && c.x < GAME.cols && c.y < GAME.rows);
-      const art = type === "expander" ? artPaintsFor(m.powerup.fill, [...aff].filter(k => !occupied.has(k)).map(k => { const [x, y] = parseKey(k); return { x, y }; }), pieceCells) : null;
+      const art = type === "expander" ? artPaintsFor(m.powerup.fill, [...aff].filter(k => !occupied.has(k)).map(k => { const [x, y] = parseKey(k); return { x, y }; }), pieceCells, [...aff].map(k => { const [x, y] = parseKey(k); return { x, y }; })) : null;
       for (const k of aff){
         const [x, y] = parseKey(k);
         if (art && art.has(k)){
@@ -4396,7 +4399,7 @@
         const aff = affectedCells(cells, 0, 0, GAME.cols, GAME.rows);
         const col = partColour(part.type);
         const pieceCells = m.blocks.map(b => ({ x: pos.x + b.x, y: pos.y + b.y })).filter(c => c.x >= 0 && c.y >= 0 && c.x < GAME.cols && c.y < GAME.rows);
-        const art = part.type === "expander" ? artPaintsFor(part.fill, [...aff].filter(k => !occupied.has(k)).map(k => { const [x, y] = parseKey(k); return { x, y }; }), pieceCells) : null;
+        const art = part.type === "expander" ? artPaintsFor(part.fill, [...aff].filter(k => !occupied.has(k)).map(k => { const [x, y] = parseKey(k); return { x, y }; }), pieceCells, [...aff].map(k => { const [x, y] = parseKey(k); return { x, y }; })) : null;
         for (const k of aff){
           const [x, y] = parseKey(k);
           if (art && art.has(k)){
@@ -4480,7 +4483,7 @@
       if (part.type === "destroyer" || part.type === "acid" || part.type === "blast"){ for (const k of aff) stack.delete(k); continue; }
       if (part.type !== "expander" || part.fill == null) continue;
       const targets = [...aff].filter(k => !stack.has(k) && !pieceKeys.has(k) && !art.has(k)).map(k => { const [x, y] = parseKey(k); return { x, y }; });
-      const paints = artPaintsFor(part.fill, targets, pieceCells.map(c => ({ x: c.x, y: c.y })));
+      const paints = artPaintsFor(part.fill, targets, pieceCells.map(c => ({ x: c.x, y: c.y })), [...aff].map(k => { const [x, y] = parseKey(k); return { x, y }; }));
       if (paints){ for (const [k, p] of paints) art.set(k, p); joined = true; }
       else for (const c of targets) art.set(areaKey(c.x, c.y), part.fill); // (a colour, or one block over and over)
     }
