@@ -5,7 +5,7 @@
 export const CONFIG = {
   board: { cols: 14, rows: 24 },
 
-  // Game modes. Extreme = the original game. Normal = the same game plus powerups.
+  // Game modes. Extreme = the game with no powerups. Normal (Classic) = the same game plus powerups.
   modes: {
     // giants: whether the huge (difficulty 4 and 5) pieces turn up at all
     // level6: whether the level 6 groups can unlock (see assist.level6), or "open": open from
@@ -17,7 +17,7 @@ export const CONFIG = {
     // (Easy is gone from the menu: kept here so a game remembered as Easy still means something)
     easy: { label: "Easy", tagline: "powerups, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true, hidden: true, hideOnPause: true },
     normal: { label: "Classic", tagline: "the full game, powerups and all", powerups: true, giants: true, level6: true, warmup: true, hideOnPause: true },
-    extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true, hints: false, hideOnPause: true },
+    extreme: { label: "Extreme", tagline: "no powerups. no help.", powerups: false, giants: true, level6: true, hints: false, hideOnPause: true },
     god: { label: "God", tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true, hideOnPause: true },
     // speeds: a speed setting on the pause menu, these times timeScale (1 to start with).
     // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); calm: zen for playing, slow

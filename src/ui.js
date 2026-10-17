@@ -951,7 +951,7 @@ export function bindUI({ state, renderer, achievements }) {
     ];
     devPanel.innerHTML = `<div class="devTitle">dev mode</div>` +
       lines.map(([k, v]) => `<div><span class="k">${k}</span> <span class="v">${escapeHtml(v)}</span></div>`).join("") +
-      `<div class="devHint">pause menu: pick the next piece · D V E P keys</div>`;
+      `<div class="devHint">pause menu: pick the next piece · backquote, then V E P keys</div>`;
   }
 
   /* ---------- buttons ---------- */
