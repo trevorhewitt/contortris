@@ -2,10 +2,8 @@
 // PACING — how far into a game we are (no DOM)
 // ============================================================
 // A game (in a mode with `warmup`, CONFIG.modes) starts gently: for the first few pieces the
-// picker leans towards pieces that fit the board well (CONFIG.assist.warmup), so it plays not
-// much harder than Tetris, and that fades away. Later on the mix opens up, a little at a time,
-// towards something like God mode's: more of the awkward pieces, the giants and the level 6
-// sets more often (CONFIG.assist.later).
+// picker leans towards pieces that fit the board well (CONFIG.assist.warmup), so it plays
+// easily, and that fades away. Later on it gets harder (src/difficulty.js).
 
 import { CONFIG } from "../config.js";
 import { clamp01 } from "./util.js";
@@ -25,9 +23,4 @@ export function warmth(state) {
   return d <= full ? 1 : clamp01(1 - (d - full) / Math.max(1, gone - full));
 }
 
-// 0 until the mix starts opening up, 1 once it's as open as it gets (0 in modes without it).
-export function lateness(state) {
-  const l = CONFIG.assist.later;
-  if (!l || !paced(state)) return 0;
-  return clamp01((drops(state) - (l.from ?? 80)) / Math.max(1, (l.by ?? 300) - (l.from ?? 80)));
-}
+// (later on, the game gets harder: src/difficulty.js)

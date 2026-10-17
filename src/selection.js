@@ -17,7 +17,8 @@ import { LEVEL6, initLevel6, nextGroupPiece, maybeStartGroup, groupUnderWay } fr
 import { initEndGame, endGameOn, endGameLevelWeights } from "./endgame.js";
 import { isGodMode, godConfig, gravityColumns } from "./godmode.js";
 import { pickThread, threadWeight } from "./threads.js";
-import { warmth, lateness, alwaysWarm } from "./pacing.js";
+import { warmth, alwaysWarm } from "./pacing.js";
+import { hardness, eased, classWeight } from "./difficulty.js";
 
 const DEBUG_LINK = false; // verbose console logging for linked shapes
 
@@ -351,7 +352,8 @@ export function selectPiece(state) {
 
   const mixCfg = godConfig(state.mode, "pieceMix", CONFIG.assist.pieceMix); // (zen leans to the easy ones)
   const danger01 = computeStackDanger01(state);
-  const danger = clamp01(danger01 * (mixCfg.dangerBiasStrength ?? 1.0));
+  // (a high stack leans to the small pieces: less so the harder it's got, src/difficulty.js)
+  const danger = clamp01(danger01 * eased(state, "dangerBias", mixCfg.dangerBiasStrength ?? 1.0));
 
   // Cooldowns tick down.
   if (sel.cooldown.hard > 0) sel.cooldown.hard -= 1;
@@ -389,7 +391,7 @@ export function selectPiece(state) {
   // The first giant: always somewhere in CONFIG...hard.firstGiantBetween (unless it would
   // land on an already dangerous stack, then as soon as things calm down a bit).
   if (sel.giantDueAt != null && !sel.hadGiant && sel.dropIndex >= sel.giantDueAt && !sel.lastWasHard && danger01 < 0.55) {
-    const giants = state.shapes.filter(s => (s.difficulty ?? 1) === 5 && (s.frequency ?? 1) > 0);
+    const giants = state.shapes.filter(s => (s.difficulty ?? 1) === 5 && (s.frequency ?? 1) > 0 && fitsNow(state, s));
     if (giants.length) {
       // (one that sits well on the board as it is: the first one's a laugh, not a disaster)
       const g = pickFitting(state, giants, s => (s.frequency ?? 1) * varietyMultiplier(sel, s));
@@ -456,11 +458,12 @@ export function selectPiece(state) {
 
   let levelW = {};
   for (const k of LEVELS) levelW[k] = lerp(baseW[k] ?? 0, openingW[k] ?? 0, openingT);
-  // (the start of a game leans to the easy levels, fading; later the mix opens up: src/pacing.js)
-  const warm = warmth(state), late = lateness(state);
-  if (late > 0) {
-    const lateW = normaliseWeights({ ...CONFIG.assist.later.levelWeight });
-    for (const k of LEVELS) levelW[k] = lerp(levelW[k] ?? 0, lateW[k] ?? 0, late);
+  // (the start of a game leans to the easy levels, fading: src/pacing.js; and the harder it gets,
+  // the more of the awkward ones: src/difficulty.js)
+  const warm = warmth(state), late = hardness(state);
+  if (late > 0 && CONFIG.difficulty?.levelWeight) {
+    const lateW = normaliseWeights({ ...CONFIG.difficulty.levelWeight });
+    for (const k of LEVELS) levelW[k] = Math.max(0, lerp(levelW[k] ?? 0, lateW[k] ?? 0, late));
   }
   if (warm > 0 && !alwaysWarm(state)) { // (Zen keeps its own easy mix: CONFIG.zen.calm.pieceMix)
     const warmW = normaliseWeights({ ...CONFIG.assist.warmup.levelWeight });
@@ -475,7 +478,9 @@ export function selectPiece(state) {
   const hard = hardCfg(state.mode);
 
   const pastMinHard = sel.dropIndex > (hard.minDropIndex ?? 5);
-  const dangerAllowsHard = danger01 <= (hard.hardMaxDanger ?? 0.32);
+  // (the harder it's got, the higher the stack can be for one: and one only ever comes if it fits,
+  // below)
+  const dangerAllowsHard = danger01 <= eased(state, "hardMaxDanger", hard.hardMaxDanger ?? 0.32);
   const cooldownAllowsHard = (sel.cooldown.hard ?? 0) <= 0 && !sel.lastWasHard;
 
   const modeHasGiants = CONFIG.modes[state.mode]?.giants !== false;
@@ -486,7 +491,7 @@ export function selectPiece(state) {
     sel.dropIndex >= (hard.softWindowStart ?? 6) &&
     sel.dropIndex <= (hard.softWindowEnd ?? 25);
 
-  const recharge = (hard.rechargePerDrop ?? 0.005) * (inWindow ? 1.4 : 0.8) * lerp(1, CONFIG.assist.later?.hardRate ?? 1, late);
+  const recharge = (hard.rechargePerDrop ?? 0.005) * (inWindow ? 1.4 : 0.8) * eased(state, "hardRate", 1);
   sel.urge.hard = clamp01(Math.min(hard.maxUrge ?? 0.95, (sel.urge.hard ?? 0) + recharge));
 
   const addHardWeight = allowHard ? (sel.urge.hard ?? 0) : 0;
@@ -497,8 +502,8 @@ export function selectPiece(state) {
     // Compute probability of choosing a 5 vs 4, with 5 suppressed as danger rises.
     let p5 = hard.baseProbLevel5WhenHard ?? 0.55;
 
-    const dFull = hard.level5FullAllowedDanger ?? 0.12;
-    const dNever = hard.level5AlmostNeverDanger ?? 0.28;
+    const dFull = eased(state, "level5FullDanger", hard.level5FullAllowedDanger ?? 0.12);
+    const dNever = eased(state, "level5NeverDanger", hard.level5AlmostNeverDanger ?? 0.28);
 
     // Suppression factor: 1 below dFull, ~0 above dNever, smooth in between.
     const t = clamp01((danger01 - dFull) / Math.max(1e-6, (dNever - dFull)));
@@ -546,6 +551,13 @@ export function selectPiece(state) {
   let candidates = state.shapes.filter(s =>
     (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) === chosenLevel && unspent(s)
   );
+  // Hard, never unfair: with the stack up, only what can still go somewhere with room above it
+  // (a giant that couldn't fit would just end the game)
+  if (chosenLevel >= 4 || danger01 > 0.3) {
+    const fit = candidates.filter(s => fitsNow(state, s));
+    if (fit.length) candidates = fit;
+    else if (chosenLevel >= 4) candidates = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) <= 2 && unspent(s) && fitsNow(state, s));
+  }
 
   // Fallback: if no shapes exist for that level, broaden to any frequency>0 (never level 6).
   if (candidates.length === 0) {
@@ -671,9 +683,31 @@ export function fitBadness(board, shape) {
   return best === Infinity ? 99 : best;
 }
 
+// Can this piece go anywhere on the board as it is (any turn it can get to, any column, dropped
+// straight down) and still have `headroom` rows clear above it?
+export function fitsNow(state, shape, headroom = 2) {
+  const b = state.board, rows = b.length, cols = b[0].length;
+  const turns = Math.min(shape.rotations.length, shape.rotation?.mode === "none" ? 1 : 4);
+  for (let r = 0; r < turns; r++) {
+    const m = shape.rotations[r], h = m.length, w = m[0].length;
+    if (w > cols || h + headroom > rows) continue;
+    for (let x = 0; x + w <= cols; x++) {
+      // the lowest it can rest
+      let y = -h;
+      const ok = (yy) => m.every((row, j) => row.every((c, i) => !c || (yy + j < rows && (yy + j < 0 || !b[yy + j][x + i]))));
+      while (ok(y + 1)) y++;
+      if (y >= headroom) return true;
+    }
+  }
+  return false;
+}
+
 function noteHardDropped(sel, lvl = 5) {
   sel.urge.hard = 0.0;
-  sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, hardCfg(sel.mode).cooldownDrops ?? 9);
+  // (closer together the harder it's got: src/difficulty.js)
+  const gap = eased({ mode: sel.mode, pieceSel: sel }, "hardCooldown", hardCfg(sel.mode).cooldownDrops ?? 9);
+  sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, Math.round(gap));
+  sel.lastHardAt = sel.dropIndex;
   sel.hasDroppedFirstHard = true;
   if (lvl === 5) sel.hadGiant = true;
   if (lvl === 4 || lvl === 5) (sel.giantsAt ??= []).push(sel.dropIndex);
@@ -882,15 +916,18 @@ function maybeSelectPowerup(state, danger01) {
   // (in the end game there's no more help: powerups get rarer, and struggling doesn't matter)
   const endGame = endGameOn(state);
   const struggle = endGame ? 0 : sel.struggle;
+  // (the harder it's got, the rarer they are, but the likelier when it's bad: src/difficulty.js)
   const boost = endGame ? (CONFIG.endGame?.powerupRate ?? 0.3)
-    : (1 + (cfg.dangerBoost ?? 0) * danger01 + (cfg.holesBoost ?? 0) * holes01) * (1 + (cfg.struggle?.chanceBoost ?? 0) * struggle);
+    : eased(state, "powerupRate", 1) * (1 + eased(state, "dangerBoost", cfg.dangerBoost ?? 0) * danger01 + (cfg.holesBoost ?? 0) * holes01) * (1 + (cfg.struggle?.chanceBoost ?? 0) * struggle);
   const rate = state.devPowerups?.rate ?? 1; // dev mode frequency override
   // just after a level 6 set: a powerup is very likely (a big destroyer, see below)
   const after = cfg.afterSet ?? {};
   const l6 = sel.level6;
   const sinceSet = l6?.seen?.size && !l6.queue.length ? sel.dropIndex - l6.lastEnd : Infinity;
   const afterSet = !endGame && sinceSet >= 1 && sinceSet <= (after.pieces ?? 0);
-  const chance = clamp01(Math.max(ps.chance * boost * rate, afterSet ? (after.chance ?? 0) : 0));
+  // ...and just after a giant, the harder it's got the likelier a powerup, to dig out with
+  const afterGiant = !endGame && sel.lastHardAt != null && sel.dropIndex - sel.lastHardAt <= 2 ? eased(state, "afterGiant", 0) : 0;
+  const chance = clamp01(Math.max(ps.chance * boost * rate, afterSet ? (after.chance ?? 0) : 0, afterGiant * rate));
   ps.lastChance = chance;
 
   if (state.rng() >= chance) {
@@ -917,8 +954,11 @@ function maybeSelectPowerup(state, danger01) {
   const combos = cfg.combos ?? {};
   // (counted from classes the player has actually met, not just unlocked)
   const met = [...ps.shownClasses].filter(c => c !== "combo");
+  // (in a set order: only once every class before "combo" in it has been met, and never if it
+  // isn't in it)
+  const order = classOrder(), ci = order ? order.indexOf("combo") : -1;
   const combosOpen = sel.dropIndex >= (combos.minDrop ?? 0) &&
-    (!prog?.enabled || met.length >= (combos.minClasses ?? 2));
+    (!prog?.enabled || (order ? ci >= 0 && order.slice(0, ci).every(c => ps.shownClasses.has(c)) : met.length >= (combos.minClasses ?? 2)));
   candidates = candidates.filter(p => p.powerup.type !== "combo" ||
     (combosOpen && (!prog?.enabled || p.powerup.parts.every(part => ps.shownClasses.has(part.cls)))));
   if (prog?.enabled && combosOpen && !ps.classes.includes("combo") && candidates.some(p => p.powerup.type === "combo")) {
@@ -1001,7 +1041,8 @@ function maybeSelectPowerup(state, danger01) {
     const threadW = CONFIG.assist.threads?.powerups ? threadWeight(sel.currentThread, p, sel.servedCounts.get(p.id) ?? 0) : 1;
     // (kinds kept apart: CONFIG.assist.powerups.apart)
     const apartW = (p.tags ?? []).reduce((w, t) => { const a = cfg.apart?.[t]; return a && sel.dropIndex - (ps.tagAt?.[t] ?? -Infinity) < a.drops ? w * a.weight : w; }, 1);
-    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * runW * wideW(p) * bigW(p) * rarerW(p) * varietyMultiplier(sel, p) * threadW * apartW * (6 / (classSize + 5));
+    // (and how often its class comes at this stage of the game: CONFIG.difficulty.classes)
+    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * runW * wideW(p) * bigW(p) * rarerW(p) * varietyMultiplier(sel, p) * threadW * apartW * (6 / (classSize + 5)) * classWeight(state, p.powerup.cls);
   }, state.rng);
   if (chosen && introducing(chosen)) { ps.lastIntroDrop = sel.dropIndex; ps.pendingIntro.add(chosen.powerup.cls); }
   for (const t of chosen?.tags ?? []) if (cfg.apart?.[t]) (ps.tagAt ??= {})[t] = sel.dropIndex;
@@ -1033,8 +1074,11 @@ function unlockNextClass(state, pool) {
     const simple = remaining.filter(t => (prog.firstClassPool ?? remaining).includes(t));
     if (simple.length) remaining = simple;
   }
+  // (in the order the developer tools set, exactly: progression.order)
+  const order = classOrder();
+  if (order) remaining = remaining.filter(t => t === order.find(c => c !== "combo" && !ps.classes.includes(c)));
   // (one of the first two is always progression.early, the gravitizers)
-  const must = mustOpen(ps);
+  const must = order ? null : mustOpen(ps);
   if (must) remaining = remaining.filter(t => t === must);
   // prefer a class that has something usable on the board right now
   const use = CONFIG.assist.powerups.usability ?? {};
@@ -1051,6 +1095,13 @@ function unlockNextClass(state, pool) {
   return next;
 }
 
+// The classes in the order they're to come (CONFIG.assist.powerups.progression.order, set by the
+// developer tools), without the ones switched off; or null (the usual way).
+export function classOrder() {
+  const order = CONFIG.assist.powerups.progression?.order, off = CONFIG.assist.powerups.disabledTypes ?? [];
+  return Array.isArray(order) ? order.filter(c => !off.includes(c)) : null;
+}
+
 // The class that has to open next, if any: one of the first two classes is always
 // progression.early (the gravitizers: after the first giants and sets, they're what helps).
 function mustOpen(ps) {
@@ -1063,6 +1114,13 @@ function mustOpen(ps) {
 // first two), unless it has been a long time (progression.comboWaitDrops).
 function nextClassAllowed(state) {
   const prog = CONFIG.assist.powerups.progression, sel = state.pieceSel, ps = sel.powerup;
+  // (in a set order: a class after "combo" waits for the first combo, or a long time)
+  const order = classOrder();
+  if (order) {
+    const next = order.find(c => c !== "combo" && !ps.classes.includes(c));
+    const waits = next && order.indexOf("combo") >= 0 && order.indexOf("combo") < order.indexOf(next) && !ps.shownClasses.has("combo");
+    return !waits || sel.dropIndex - ps.classAtDrop >= (prog?.comboWaitDrops ?? Infinity);
+  }
   if (!prog?.combosBeforeThird || ps.shownClasses.has("combo")) return true;
   if (ps.classes.filter(c => c !== "combo").length < 2) return true;
   return sel.dropIndex - ps.classAtDrop >= (prog.comboWaitDrops ?? Infinity);

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Local Extris server: serves the game and the block designer, and lets the designer
+Local Eztrix server: serves the game and the block designer, and lets the designer
 save straight into your files (no downloads).
 
     python3 serve.py            # then open http://localhost:8000/block_designer.html
@@ -157,7 +157,7 @@ class Handler(SimpleHTTPRequestHandler):
 def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
     server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    print(f"Extris on http://localhost:{port}/  (designer: http://localhost:{port}/block_designer.html)")
+    print(f"Eztrix on http://localhost:{port}/  (designer: http://localhost:{port}/block_designer.html)")
     print("Saves from the designer go straight into shapes/*.js (backups in shapes/.backups/). Ctrl+C to stop.")
     try:
         server.serve_forever()

@@ -1425,7 +1425,10 @@ function formFlock(state, land) {
   if (!F || isCalm(state) || z.userHas || t?.slide || land == null || cols < F.minCols) return;
   // (a powerup: only in a run of pieces, not a plan, nor a big moment, nor one that falls through)
   const pu = a.shape.powerup;
-  if (pu && (z.expect || z.pauseFirst || z.current?.key || z.current?.dramatic || z.current?.emergency || isPhantomPowerup(pu) || z.simRng() >= (F.powerups ?? 0))) return;
+  // (nor one that fills: the flock's spots are worked out on the board as it is, and it could
+  // fill in under them while they're still on their way down)
+  const fills = pu && (pu.type === "expander" || pu.parts?.some(p => p.type === "expander"));
+  if (pu && (fills || z.expect || z.pauseFirst || z.current?.key || z.current?.dramatic || z.current?.emergency || isPhantomPowerup(pu) || z.simRng() >= (F.powerups ?? 0))) return;
   // (the tiniest pieces come down in a shower: lots of them at once)
   const tiny = F.tiny && blocks(a.shape) <= 2 ? F.tiny : null;
   const room = Math.min(tiny?.most ?? F.most, Math.floor(cols / (tiny?.colsEach ?? F.colsEach))) - 1;
@@ -2635,7 +2638,7 @@ export function planSquares(state) {
   const gapAt = (j) => (slot != null ? slot : (j * 2 + 1) % nx);
   const fine = sq === 1;
   const kinds = [
-    { caption: fine ? "a fine checkerboard" : "a checkerboard", colour: (i, j) => palette[(i + j) % 2] },
+    { caption: fine ? "a fine chequerboard" : "a chequerboard", colour: (i, j) => palette[(i + j) % 2] },
     { caption: fine ? "fine diagonal stripes" : "diagonal stripes", colour: (i, j) => palette[(i + j) % Math.min(4, palette.length)] },
     { caption: fine ? "the other diagonal, finely" : "the other diagonal", colour: (i, j) => palette[((i - j) % 3 + 3) % 3] },
     { caption: fine ? "fine rings" : "rings", colour: (i, j) => palette[(Math.max(Math.abs(i - (nx - 1) / 2), Math.abs(j - (ny - 1) / 2)) | 0) % palette.length] },

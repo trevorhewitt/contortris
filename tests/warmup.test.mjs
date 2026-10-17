@@ -1,7 +1,7 @@
 // Run with:  node --test tests/
 // The start of a game plays nicely (CONFIG.assist.warmup): the pieces lean to the ones that fit
-// the board, the level 6 sets mostly wait, and it all fades out; later the mix opens up
-// (CONFIG.assist.later).
+// the board, the level 6 sets mostly wait, and it all fades out; later it gets harder
+// (CONFIG.difficulty).
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CONFIG } from "../config.js";
@@ -11,7 +11,8 @@ import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun } from "../src/game.js";
 import { selectPiece, fitBadness } from "../src/selection.js";
-import { warmth, lateness } from "../src/pacing.js";
+import { warmth } from "../src/pacing.js";
+import { hardness } from "../src/difficulty.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const { cols, rows } = CONFIG.board;
@@ -82,7 +83,8 @@ test("later on the mix opens up: more of the awkward levels", () => {
     }
     return hard / n;
   };
-  assert.equal(lateness({ mode: "normal", pieceSel: { dropIndex: CONFIG.assist.later.by } }), 1);
-  const early = share(CONFIG.assist.warmup.goneBy), late = share(CONFIG.assist.later.by);
+  const D = CONFIG.difficulty.normal, end = D.start + D.length;
+  assert.equal(hardness({ mode: "normal", pieceSel: { dropIndex: end } }), D.hardest);
+  const early = share(CONFIG.assist.warmup.goneBy), late = share(end);
   assert.ok(late > early * 1.4, `level 3 and up: ${(early * 100).toFixed(0)}% after the warm-up, ${(late * 100).toFixed(0)}% later on`);
 });

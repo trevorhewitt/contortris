@@ -1,5 +1,5 @@
 /**
- * EXTRIS BLOCKS — every piece in the game: regular blocks and powerups.
+ * EZTRIX BLOCKS — every piece in the game: regular blocks and powerups.
  * Edit by hand or with block_designer.html (it keeps this comment when saving).
  *
  * Each entry:
@@ -79,7 +79,7 @@
  *   tier: 1 | 2 | 3,          1 = gentle ... 3 = very strong. Stronger tiers are served more
  *                             when the stack is high (CONFIG.assist.powerups in config.js)
  *   description: "...",       optional: replaces the effect text shown under the name
- *   area: {                   the highlighted ("effected") cells:
+ *   area: {                   the highlighted ("affected") cells:
  *     origin: [x, y],         where the piece's top-left block sits inside `grid`
  *     grid: ["..."],          "." not affected, "#" this cell, "-" this cell's whole row,
  *   },                        "|" this cell's whole column, "+" both row and column,
@@ -390,7 +390,7 @@ export const SHAPES = [
   },
   {
     id: "brain",
-    name: "an acutal human brain",
+    name: "an actual human brain",
     grid: [
         ".XX.",
         "XXXX",
@@ -929,7 +929,7 @@ export const SHAPES = [
   },
   {
     id: "colour",
-    name: "old tv colour bars",
+    name: "old TV colour bars",
     grid: [
         "XXXX",
         "XXXX",
@@ -964,7 +964,7 @@ export const SHAPES = [
   },
   {
     id: "nicholas",
-    name: "Nicholas Cage",
+    name: "Nicolas Cage",
     grid: [
         "XXX",
         "XXX",
@@ -1235,7 +1235,7 @@ export const SHAPES = [
   },
   {
     id: "seeyou3",
-    name: "an eye that watches you play extris",
+    name: "an eye that watches you play Eztrix",
     grid: [
         "X"
       ],
@@ -1512,15 +1512,16 @@ export const SHAPES = [
     id: "cat_loaf",
     name: "catloaf",
     grid: [
-        "X..",
-        "XXX"
+        "X...",
+        "XXXX"
       ],
-    color: [["#f2a444","#8e4a14","#f2a444","","","","","",""],["#2a1a10","#f2a444","#2a1a10","","","","","",""],["#fff4e0","#ff8a9a","#fff4e0","","","","","",""],["#fff4e0","#fff4e0","#f9bd62","#b8641c","#f9bd62","#f9bd62","#b8641c","#f9bd62","#c87828"],["#fff4e0","#f2a444","#f2a444","#f2a444","#f2a444","#f2a444","#f2a444","#f2a444","#c87828"],["#c87828","#c87828","#c87828","#c87828","#c87828","#c87828","#c87828","#c87828","#c87828"]],
+    color: [["#f2a444","#8e4a14","#f2a444","","","","","","","","",""],["#2a1a10","#f2a444","#2a1a10","","","","","","","","",""],["#fff4e0","#ff8a9a","#fff4e0","","","","","","","","",""],["#fff4e0","#fff4e0","#f9bd62","#b8641c","#f9bd62","#f9bd62","#b8641c","#f9bd62","#f9bd62","#b8641c","#f9bd62","#c87828"],["#fff4e0","#f2a444","#f2a444","#f2a444","#f2a444","#f2a444","#f2a444","#f2a444","#f2a444","#f2a444","#f2a444","#c87828"],["#c87828","#c87828","#c87828","#c87828","#c87828","#c87828","#c87828","#c87828","#c87828","#c87828","#c87828","#c87828"]],
     difficulty: 1,
     rotation: {
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
     oops: {
         "many": "catloaves"
       },
@@ -1633,14 +1634,16 @@ export const SHAPES = [
     grid: [
         "X.",
         "X.",
+        "X.",
         "XX"
       ],
-    color: [["#88211d","#a02622","#a02622","#a02622","#a02622","#88211d","","","","","",""],["#a44e4b","#8e1c18","#8e1c18","#8e1c18","#8e1c18","#a44e4b","","","","","",""],["#746b84","#3e3552","#4e4264","#3e3552","#4e4264","#686177","","","","","",""],["#a02622","#c8302a","#c8302a","#c8302a","#c8302a","#a02622","","","","","",""],["#746b84","#4e4264","#4e4264","#4e4264","#4e4264","#746b84","","","","","",""],["#746b84","#3e3552","#4e4264","#4e4264","#3e3552","#746b84","","","","","",""],["#545164","#4e4264","#4e4264","#4e4264","#4e4264","#545164","","","","","",""],["#746b84","#24203a","#4e4264","#4e4264","#24203a","#746b84","","","","","",""],["#746b84","#ff3a2a","#4e4264","#4e4264","#ff3a2a","#746b84","","","","","",""],["#746b84","#4e4264","#4e4264","#4e4264","#4e4264","#746b84","","","","","",""],["#746b84","#4e4264","#24203a","#24203a","#4e4264","#746b84","","","","","",""],["#746b84","#24203a","#4e4264","#4e4264","#24203a","#746b84","","","","","",""],["#746b84","#3e3552","#4e4264","#4e4264","#4e4264","#615674","#746b84","#746b84","#686177","#a02622","#a02622","#88211d"],["#746b84","#4e4264","#4e4264","#4e4264","#3e3552","#4e4264","#4e4264","#4e4264","#4e4264","#c8302a","#c8302a","#a02622"],["#a02622","#c8302a","#4e4264","#4e4264","#4e4264","#4e4264","#4e4264","#4e4264","#4e4264","#c8302a","#e8a090","#a02622"],["#a02622","#c8302a","#c8302a","#4e4264","#4e4264","#4e4264","#3e3552","#4e4264","#4e4264","#c8302a","#c8302a","#a02622"],["#a02622","#c8302a","#c8302a","#4e4264","#4e4264","#4e4264","#4e4264","#4e4264","#4e4264","#c8302a","#8e1c18","#a02622"],["#ad625f","#a44e4b","#a44e4b","#686177","#686177","#686177","#686177","#686177","#686177","#a44e4b","#a44e4b","#ad625f"]],
+    color: [["#88211d","#a02622","#a02622","#a02622","#a02622","#88211d","","","","","",""],["#a44e4b","#8e1c18","#8e1c18","#8e1c18","#8e1c18","#a44e4b","","","","","",""],["#746b84","#3e3552","#4e4264","#3e3552","#4e4264","#686177","","","","","",""],["#a02622","#c8302a","#c8302a","#c8302a","#c8302a","#a02622","","","","","",""],["#746b84","#4e4264","#4e4264","#4e4264","#4e4264","#746b84","","","","","",""],["#746b84","#3e3552","#4e4264","#4e4264","#3e3552","#746b84","","","","","",""],["#545164","#4e4264","#4e4264","#4e4264","#4e4264","#545164","","","","","",""],["#746b84","#4e4264","#4e4264","#4e4264","#3e3552","#746b84","","","","","",""],["#746b84","#4e4264","#4e4264","#4e4264","#4e4264","#746b84","","","","","",""],["#746b84","#24203a","#4e4264","#4e4264","#24203a","#746b84","","","","","",""],["#746b84","#ff3a2a","#4e4264","#4e4264","#ff3a2a","#746b84","","","","","",""],["#746b84","#4e4264","#4e4264","#4e4264","#4e4264","#746b84","","","","","",""],["#746b84","#4e4264","#24203a","#24203a","#4e4264","#746b84","","","","","",""],["#746b84","#24203a","#4e4264","#4e4264","#24203a","#746b84","","","","","",""],["#746b84","#4e4264","#4e4264","#4e4264","#4e4264","#746b84","","","","","",""],["#746b84","#3e3552","#4e4264","#4e4264","#4e4264","#746b84","","","","","",""],["#746b84","#4e4264","#4e4264","#4e4264","#4e4264","#746b84","","","","","",""],["#746b84","#4e4264","#4e4264","#4e4264","#3e3552","#746b84","","","","","",""],["#746b84","#3e3552","#4e4264","#4e4264","#4e4264","#615674","#746b84","#746b84","#686177","#a02622","#a02622","#88211d"],["#746b84","#4e4264","#4e4264","#4e4264","#3e3552","#4e4264","#4e4264","#4e4264","#4e4264","#c8302a","#c8302a","#a02622"],["#a02622","#c8302a","#4e4264","#4e4264","#4e4264","#4e4264","#4e4264","#4e4264","#4e4264","#c8302a","#e8a090","#a02622"],["#a02622","#c8302a","#c8302a","#4e4264","#4e4264","#4e4264","#4e4264","#4e4264","#4e4264","#c8302a","#c8302a","#a02622"],["#a02622","#c8302a","#c8302a","#4e4264","#4e4264","#4e4264","#4e4264","#4e4264","#4e4264","#c8302a","#8e1c18","#a02622"],["#ad625f","#a44e4b","#a44e4b","#686177","#686177","#686177","#686177","#686177","#686177","#a44e4b","#a44e4b","#ad625f"]],
     difficulty: 1,
     rotation: {
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "rubber_chicken",
@@ -1776,14 +1779,16 @@ export const SHAPES = [
     grid: [
         ".X",
         ".X",
+        ".X",
         "XX"
       ],
-    color: [["","","","","","","#b84141","#d64c4c","#d64c4c","#d64c4c","#d64c4c","#b84141"],["","","","","","","#cbcdd0","#f2f4f8","#f2f4f8","#f2f4f8","#f2f4f8","#cbcdd0"],["","","","","","","#8d939e","#a8afbc","#a8afbc","#a8afbc","#a8afbc","#8d939e"],["","","","","","","#cbcdd0","#f2f4f8","#f2f4f8","#f2f4f8","#f2f4f8","#cbcdd0"],["","","","","","","#8d939e","#a8afbc","#a8afbc","#a8afbc","#a8afbc","#8d939e"],["","","","","","","#b98d52","#f6d8a0","#f6d8a0","#dca862","#dca862","#946632"],["","","","","","","#b98d52","#4a2a12","#f6d8a0","#dca862","#4a2a12","#946632"],["","","","","","","#b98d52","#ffffff","#f6d8a0","#b07a3c","#ffffff","#946632"],["","","","","","","#b98d52","#f6d8a0","#f6d8a0","#dca862","#dca862","#78b2d6"],["","","","","","","#b98d52","#f6d8a0","#4a2a12","#4a2a12","#dca862","#4c94ca"],["","","","","","","#b98d52","#4a2a12","#b07a3c","#dca862","#4a2a12","#946632"],["","","","","","","#b98d52","#f6d8a0","#f6d8a0","#dca862","#dca862","#946632"],["#5870b0","#314fa8","#6683cd","#314fa8","#6683cd","#cfb586","#dca862","#f6d8a0","#f6d8a0","#dca862","#dca862","#946632"],["#6683cd","#3a5ec8","#7a9cf4","#3a5ec8","#7a9cf4","#f6d8a0","#dca862","#f6d8a0","#f6d8a0","#b07a3c","#dca862","#946632"],["#6683cd","#3a5ec8","#7a9cf4","#3a5ec8","#7a9cf4","#dca862","#dca862","#dca862","#f6d8a0","#dca862","#dca862","#946632"],["#6683cd","#3a5ec8","#7a9cf4","#3a5ec8","#7a9cf4","#dca862","#dca862","#dca862","#dca862","#dca862","#dca862","#b98d52"],["#6683cd","#3a5ec8","#7a9cf4","#3a5ec8","#7a9cf4","#b07a3c","#b07a3c","#b07a3c","#b07a3c","#b07a3c","#b07a3c","#946632"],["#5870b0","#314fa8","#6683cd","#314fa8","#6683cd","#946632","#946632","#946632","#946632","#946632","#946632","#7f582b"]],
+    color: [["","","","","","","#b84141","#d64c4c","#d64c4c","#d64c4c","#d64c4c","#b84141"],["","","","","","","#cbcdd0","#f2f4f8","#f2f4f8","#f2f4f8","#f2f4f8","#cbcdd0"],["","","","","","","#8d939e","#a8afbc","#a8afbc","#a8afbc","#a8afbc","#8d939e"],["","","","","","","#cbcdd0","#f2f4f8","#f2f4f8","#f2f4f8","#f2f4f8","#cbcdd0"],["","","","","","","#8d939e","#a8afbc","#a8afbc","#a8afbc","#a8afbc","#8d939e"],["","","","","","","#b98d52","#f6d8a0","#f6d8a0","#dca862","#dca862","#946632"],["","","","","","","#b98d52","#4a2a12","#f6d8a0","#dca862","#4a2a12","#946632"],["","","","","","","#b98d52","#ffffff","#f6d8a0","#b07a3c","#ffffff","#946632"],["","","","","","","#b98d52","#f6d8a0","#f6d8a0","#dca862","#dca862","#78b2d6"],["","","","","","","#b98d52","#f6d8a0","#4a2a12","#4a2a12","#dca862","#4c94ca"],["","","","","","","#b98d52","#4a2a12","#b07a3c","#dca862","#4a2a12","#946632"],["","","","","","","#b98d52","#f6d8a0","#f6d8a0","#dca862","#dca862","#946632"],["","","","","","","#b98d52","#f6d8a0","#f6d8a0","#dca862","#dca862","#946632"],["","","","","","","#b98d52","#f6d8a0","#f6d8a0","#dca862","#b07a3c","#946632"],["","","","","","","#b98d52","#f6d8a0","#f6d8a0","#dca862","#dca862","#78b2d6"],["","","","","","","#b98d52","#f6d8a0","#dca862","#dca862","#dca862","#4c94ca"],["","","","","","","#b98d52","#f6d8a0","#f6d8a0","#dca862","#dca862","#946632"],["","","","","","","#b98d52","#f6d8a0","#f6d8a0","#dca862","#dca862","#946632"],["#5870b0","#314fa8","#6683cd","#314fa8","#6683cd","#cfb586","#dca862","#f6d8a0","#f6d8a0","#dca862","#dca862","#946632"],["#6683cd","#3a5ec8","#7a9cf4","#3a5ec8","#7a9cf4","#f6d8a0","#dca862","#f6d8a0","#f6d8a0","#b07a3c","#dca862","#946632"],["#6683cd","#3a5ec8","#7a9cf4","#3a5ec8","#7a9cf4","#dca862","#dca862","#dca862","#f6d8a0","#dca862","#dca862","#946632"],["#6683cd","#3a5ec8","#7a9cf4","#3a5ec8","#7a9cf4","#dca862","#dca862","#dca862","#dca862","#dca862","#dca862","#b98d52"],["#6683cd","#3a5ec8","#7a9cf4","#3a5ec8","#7a9cf4","#b07a3c","#b07a3c","#b07a3c","#b07a3c","#b07a3c","#b07a3c","#946632"],["#5870b0","#314fa8","#6683cd","#314fa8","#6683cd","#946632","#946632","#946632","#946632","#946632","#946632","#7f582b"]],
     difficulty: 1,
     rotation: {
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
     tags: [
         "sport"
       ],
@@ -1997,7 +2002,7 @@ export const SHAPES = [
   },
   {
     id: "fried_egg",
-    name: "a sunny side up egg",
+    name: "a sunny-side-up egg",
     grid: [
         "XX",
         "X."
@@ -2090,14 +2095,16 @@ export const SHAPES = [
     grid: [
         "XX",
         "X.",
+        "X.",
         "X."
       ],
-    color: [["#ffffff","#e43b44","#e43b44","#ffffff"],["#e43b44","#c42e38","#efe5ec","#efe5ec"],["#e43b44","#efe5ec","",""],["#ffffff","#efe5ec","",""],["#ffffff","#c42e38","",""],["#e43b44","#c42e38","",""]],
+    color: [["#ffffff","#e43b44","#e43b44","#ffffff"],["#e43b44","#c42e38","#efe5ec","#efe5ec"],["#e43b44","#efe5ec","",""],["#ffffff","#efe5ec","",""],["#ffffff","#c42e38","",""],["#e43b44","#c42e38","",""],["#e43b44","#efe5ec","",""],["#ffffff","#efe5ec","",""]],
     difficulty: 1,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     oops: {
         "many": "candy canes"
       },
@@ -2142,7 +2149,7 @@ export const SHAPES = [
   },
   {
     id: "inside_out_umbrella",
-    name: "an inside out umbrella",
+    name: "an inside-out umbrella",
     grid: [
         "X.X",
         "XXX",
@@ -2338,7 +2345,7 @@ export const SHAPES = [
   },
   {
     id: "barefoot_lego",
-    name: "a single lego, placed exactly where you will step",
+    name: "a single Lego, placed exactly where you will step",
     grid: [
         "X"
       ],
@@ -2403,15 +2410,16 @@ export const SHAPES = [
     id: "overpacked_suitcase",
     name: "a suitcase that will not close. it has tried.",
     grid: [
-        "X..",
-        "XXX"
+        "X...",
+        "XXXX"
       ],
-    color: [["#b2b2b2","#d6d6d6","#d6d6d6","#5085cb","#5085cb","#426fa9","","","","","","","","","","","",""],["#be2832","#ffffff","#5f9ef2","#5f9ef2","#5f9ef2","#5085cb","","","","","","","","","","","",""],["#d6d6d6","#e2303c","#5f9ef2","#a8ccff","#5f9ef2","#5085cb","","","","","","","","","","","",""],["#be2832","#ffffff","#5f9ef2","#5f9ef2","#5f9ef2","#5085cb","","","","","","","","","","","",""],["#d6d6d6","#e2303c","#5f9ef2","#5f9ef2","#5f9ef2","#8dabd6","","","","","","","","","","","",""],["#be2832","#ffffff","#5f9ef2","#5f9ef2","#5f9ef2","#5085cb","","","","","","","","","","","",""],["#be2832","#ffffff","#5f9ef2","#5f9ef2","#5f9ef2","#5f9ef2","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#623918"],["#bc8145","#e09a52","#e09a52","#e09a52","#e09a52","#8c5222","#e09a52","#e09a52","#e09a52","#e09a52","#e09a52","#e09a52","#8c5222","#e09a52","#e09a52","#e09a52","#e09a52","#bc8145"],["#a3662d","#c27a36","#c27a36","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#a3662d"],["#a3662d","#c27a36","#c27a36","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#fff0a0","#e8c25a","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#a3662d"],["#a3662d","#c27a36","#c27a36","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#e8c25a","#e8c25a","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#a3662d"],["#885526","#a3662d","#a3662d","#a3662d","#a3662d","#76451d","#a3662d","#a3662d","#a3662d","#a3662d","#a3662d","#a3662d","#76451d","#a3662d","#a3662d","#a3662d","#a3662d","#885526"]],
+    color: [["#b2b2b2","#d6d6d6","#d6d6d6","#5085cb","#5085cb","#426fa9","","","","","","","","","","","","","","","","","",""],["#be2832","#ffffff","#5f9ef2","#5f9ef2","#5f9ef2","#5085cb","","","","","","","","","","","","","","","","","",""],["#d6d6d6","#e2303c","#5f9ef2","#a8ccff","#5f9ef2","#5085cb","","","","","","","","","","","","","","","","","",""],["#be2832","#ffffff","#5f9ef2","#5f9ef2","#5f9ef2","#5085cb","","","","","","","","","","","","","","","","","",""],["#d6d6d6","#e2303c","#5f9ef2","#5f9ef2","#5f9ef2","#8dabd6","","","","","","","","","","","","","","","","","",""],["#be2832","#ffffff","#5f9ef2","#5f9ef2","#5f9ef2","#5085cb","","","","","","","","","","","","","","","","","",""],["#be2832","#ffffff","#5f9ef2","#5f9ef2","#5f9ef2","#5f9ef2","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#5f9ef2","#5085cb","#76451d","#76451d","#76451d","#76451d","#76451d","#76451d","#623918"],["#bc8145","#e09a52","#e09a52","#e09a52","#e09a52","#8c5222","#e09a52","#e09a52","#e09a52","#e09a52","#e09a52","#e09a52","#e09a52","#e09a52","#e09a52","#5f9ef2","#426fa9","#e09a52","#8c5222","#e09a52","#e09a52","#e09a52","#e09a52","#bc8145"],["#a3662d","#c27a36","#c27a36","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#c27a36","#c27a36","#c27a36","#c27a36","#c27a36","#426fa9","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#a3662d"],["#a3662d","#c27a36","#c27a36","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#c27a36","#fff0a0","#e8c25a","#c27a36","#c27a36","#c27a36","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#a3662d"],["#a3662d","#c27a36","#c27a36","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#c27a36","#e8c25a","#e8c25a","#c27a36","#c27a36","#c27a36","#c27a36","#c27a36","#8c5222","#c27a36","#c27a36","#c27a36","#c27a36","#a3662d"],["#885526","#a3662d","#a3662d","#a3662d","#a3662d","#76451d","#a3662d","#a3662d","#a3662d","#a3662d","#a3662d","#a3662d","#a3662d","#a3662d","#a3662d","#a3662d","#a3662d","#a3662d","#76451d","#a3662d","#a3662d","#a3662d","#a3662d","#885526"]],
     difficulty: 1,
     rotation: {
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "blinking_photo_strip",
@@ -2468,7 +2476,7 @@ export const SHAPES = [
   },
   {
     id: "slough_postcard",
-    name: "a postcard from slough",
+    name: "a postcard from Slough",
     grid: [
         "XX",
         "XX"
@@ -2545,7 +2553,7 @@ export const SHAPES = [
   },
   {
     id: "lost_ufo",
-    name: "a ufo with a wacky green alien",
+    name: "a UFO with a wacky green alien",
     grid: [
         ".X.",
         "XXX"
@@ -3178,7 +3186,7 @@ export const SHAPES = [
   },
   {
     id: "tiniest",
-    name: "the worlds tiniest volion",
+    name: "the world's tiniest violin",
     grid: [
         "X",
         "X"
@@ -3539,7 +3547,7 @@ export const SHAPES = [
   },
   {
     id: "message",
-    name: "tv static with a hidden message inside",
+    name: "TV static with a hidden message inside",
     grid: [
         "XXX",
         "XXX"
@@ -3556,7 +3564,7 @@ export const SHAPES = [
   },
   {
     id: "rasberry",
-    name: "a blue rasberry",
+    name: "a blue raspberry",
     grid: [
         "XX",
         "XX",
@@ -3618,7 +3626,7 @@ export const SHAPES = [
   },
   {
     id: "threatening",
-    name: "A threatening legal letter written by a five year old",
+    name: "A threatening legal letter written by a five-year-old",
     grid: [
         "XX",
         "XX",
@@ -3656,7 +3664,7 @@ export const SHAPES = [
   },
   {
     id: "north",
-    name: "the north star",
+    name: "the North Star",
     grid: [
         ".X.",
         "XXX",
@@ -3851,7 +3859,7 @@ export const SHAPES = [
   },
   {
     id: "flemish",
-    name: "a 12th century Flemish castle",
+    name: "a 12th-century Flemish castle",
     grid: [
         "XX...XX",
         "XXXXXXX",
@@ -4446,7 +4454,7 @@ export const SHAPES = [
   },
   {
     id: "tuesday",
-    name: "the concept of tuesday",
+    name: "the concept of Tuesday",
     grid: [
         "XXX",
         ".X."
@@ -4808,11 +4816,11 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "vvv-vvv",
+            ".vv.vv.",
             "...v..."
           ]
         },
-        "intro": "Puffs up into every empty cell in its own row, wall to wall, and everything under it, seven wide, all the way down to the floor. Don't get it in your hair.",
+        "intro": "Puffs up into every empty cell beside it and under it, five columns wide, from its own row all the way down to the floor. Don't get it in your hair.",
         "help": 4.5,
         "starter": true
       },
@@ -4820,6 +4828,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "mole",
@@ -5078,7 +5087,7 @@ export const SHAPES = [
   },
   {
     id: "newtons_apple",
-    name: "newton's apple",
+    name: "Newton's apple",
     grid: [
         "X"
       ],
@@ -7365,12 +7374,12 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "-",
-            "-",
+            ".",
+            ".",
             "v"
           ]
         },
-        "intro": "Floods its own row and the row under it, wall to wall, and drips down the column under it to the floor. Call a plumber.",
+        "intro": "Drips steadily down the column under it, into every empty cell, all the way to the floor. Call a plumber.",
         "help": 4.5,
         "starter": true
       },
@@ -7378,6 +7387,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "wall_filler",
@@ -7446,17 +7456,18 @@ export const SHAPES = [
           ],
           "grid": [
             "...........",
-            "vvvvv.vvvvv",
-            "-....v....."
+            "...vv.vv...",
+            ".....v....."
           ]
         },
-        "intro": "Squirts filler into every gap five out either side of its lower end and under it, down to the floor, and right along the row under it, wall to wall, air pockets and all. Very satisfying.",
+        "intro": "Squirts filler into every gap two out either side of its lower end and under it, five columns wide, all the way down to the floor, air pockets and all. Very satisfying.",
         "help": 4
       },
     rotation: {
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "popcorn",
@@ -10820,10 +10831,10 @@ export const SHAPES = [
           ],
           "grid": [
             "-",
-            "-"
+            "."
           ]
         },
-        "intro": "Pops sideways into every empty cell in its own row and the row under it, wall to wall. You can't stop at one.",
+        "intro": "Pops sideways into every empty cell along its own row, wall to wall. You can't stop at one.",
         "help": 4.5,
         "starter": true
       },
@@ -10831,6 +10842,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "sneeze",
@@ -11009,12 +11021,12 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "vvvv.vvvv",
+            "..vv.vv..",
             ".........",
             "....v...."
           ]
         },
-        "intro": "Rises out of its jar and into every empty cell beside it and under it, nine columns wide, all the way down to the floor. It has a name now and it is Gerald.",
+        "intro": "Rises out of its jar and into every empty cell beside it and under it, five columns wide, all the way down to the floor. It has a name now and it is Gerald.",
         "help": 4.5,
         "starter": true
       },
@@ -11022,6 +11034,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.9,
+    claudeDraft: true,
   },
   {
     id: "acid_candy",
@@ -12440,7 +12453,7 @@ export const SHAPES = [
           "cover": true
         },
         "tier": 2,
-        "intro": "Face down, sadly. It splats into the two rows under it, wall to wall, in layers. Five second rule.",
+        "intro": "Face down, sadly. It splats into the two rows under it, wall to wall, in layers. Five-second rule.",
         "area": {
           "origin": [
             2,
@@ -12558,7 +12571,7 @@ export const SHAPES = [
     powerup: {
         "type": "gravity",
         "tier": 1,
-        "intro": "Only the unlucky blocks fall: every other cell, in a checkerboard across the 6x6 patch under it, drops down. Seven years of this.",
+        "intro": "Only the unlucky blocks fall: every other cell, in a chequerboard across the 6x6 patch under it, drops down. Seven years of this.",
         "area": {
           "origin": [
             2,
@@ -12875,7 +12888,7 @@ export const SHAPES = [
     powerup: {
         "type": "expander",
         "tier": 1,
-        "intro": "Your marbles roll out of both sides and fill every empty cell in its own row and the row under it, wall to wall, and the rest drop into everything under it, nine wide, down to the floor. You can't find them anywhere. Look, there they are.",
+        "intro": "Your marbles roll out of both sides and along its own row, into every empty cell, wall to wall. You can't find them anywhere. Look, there they are.",
         "area": {
           "origin": [
             4,
@@ -12883,7 +12896,7 @@ export const SHAPES = [
           ],
           "grid": [
             "-.........",
-            "vvvvvvvvv-"
+            ".........."
           ]
         },
         "fill": {
@@ -12962,6 +12975,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "lawn_sprinkler",
@@ -13149,7 +13163,7 @@ export const SHAPES = [
     powerup: {
         "type": "expander",
         "tier": 1,
-        "intro": "Flops pancakes into every empty cell under it, eight columns wide, all the way down to the plate, and right along the two rows under it, wall to wall. Syrup is not included. Syrup is never included.",
+        "intro": "Flops pancakes right along the row under it, into every empty cell, wall to wall. Syrup is not included. Syrup is never included.",
         "area": {
           "origin": [
             3,
@@ -13157,8 +13171,8 @@ export const SHAPES = [
           ],
           "grid": [
             ".........",
-            "vvvvvvvv-",
-            "-........"
+            "........-",
+            "........."
           ]
         },
         "fill": {
@@ -15313,6 +15327,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "ball_pit",
@@ -15324,14 +15339,14 @@ export const SHAPES = [
     powerup: {
         "type": "expander",
         "tier": 3,
-        "intro": "Fills every empty cell in the twelve columns around it with balls, all the way down to the floor. Nobody knows what is at the bottom.",
+        "intro": "Fills every empty cell in the eight columns around it with balls, three out either side, from its own row all the way down to the floor. Nobody knows what is at the bottom.",
         "area": {
           "origin": [
             5,
             0
           ],
           "grid": [
-            "vvvvv..vvvvv",
+            "..vvv..vvv..",
             ".....vv....."
           ]
         },
@@ -15425,10 +15440,11 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "lego_brick",
-    name: "lego bricks",
+    name: "Lego bricks",
     grid: [
         "X"
       ],
@@ -15436,7 +15452,7 @@ export const SHAPES = [
     powerup: {
         "type": "expander",
         "tier": 3,
-        "intro": "Multiplies and builds a solid step pyramid under it, thirteen bricks wide at the bottom, every empty cell of it right down to the floor. You will find the last piece with your foot at 3am.",
+        "intro": "Multiplies and builds a solid step pyramid under it, eleven bricks wide at the bottom, every empty cell of it right down to the floor. You will find the last piece with your foot at 3am.",
         "area": {
           "origin": [
             6,
@@ -15449,7 +15465,7 @@ export const SHAPES = [
             "...v.....v...",
             "..v.......v..",
             ".v.........v.",
-            "v...........v"
+            "............."
           ]
         },
         "fill": [
@@ -15523,6 +15539,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "cotton_candy",
@@ -15535,14 +15552,14 @@ export const SHAPES = [
     powerup: {
         "type": "expander",
         "tier": 3,
-        "intro": "Fluffs out sideways into every empty cell in its two rows and the row under them, wall to wall. It is 98% air and 2% regret.",
+        "intro": "Fluffs out sideways into every empty cell in its lower row and the row under it, wall to wall. It is 98% air and 2% regret.",
         "area": {
           "origin": [
             0,
             0
           ],
           "grid": [
-            "-",
+            ".",
             "-",
             "-"
           ]
@@ -15598,6 +15615,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
+    claudeDraft: true,
   },
   {
     id: "foam_cousin",
@@ -15610,14 +15628,14 @@ export const SHAPES = [
     powerup: {
         "type": "expander",
         "tier": 3,
-        "intro": "Fills every empty cell in the thirteen columns around it, all the way down to the floor. It is only staying for a few days. It said that in March.",
+        "intro": "Fills every empty cell in the nine columns around it, all the way down to the floor. It is only staying for a few days. It said that in March.",
         "area": {
           "origin": [
             6,
             0
           ],
           "grid": [
-            "vvvvvv.vvvvvv",
+            "..vvvv.vvvv..",
             ".............",
             "......v......"
           ]
@@ -15673,10 +15691,11 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
+    claudeDraft: true,
   },
   {
     id: "zeus_bolt",
-    name: "a lightning bolt from zeus",
+    name: "a lightning bolt from Zeus",
     grid: [
         ".X",
         "XX",
@@ -15871,10 +15890,10 @@ export const SHAPES = [
     id: "stomach",
     name: "a leaky stomach full of acid",
     grid: [
-        "X..",
-        "XXX"
+        "X...",
+        "XXXX"
       ],
-    color: [["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","",""],["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","",""],["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","",""],["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#f0a0b8","#e0708f","#e0708f","#7a1f3d","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#f0a0b8","#f0a0b8","#e0708f","#7a1f3d","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#ffd8e4","#f0a0b8","#f0a0b8","#e0708f","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#451c2a"],["#7a1f3d","#f0a0b8","#ffd8e4","#3e2731","#f0a0b8","#e0708f","#e0708f","#e0708f","#3e2731","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#7a1f3d"],["#7a1f3d","#f0a0b8","#e0708f","#e0708f","#3e2731","#3e2731","#3e2731","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#7a1f3d"],["#7a1f3d","#e0708f","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#f4ffd0","#9ae83a","#9ae83a","#9ae83a","#e0708f","#e0708f","#7a1f3d"],["#451c2a","#7a1f3d","#9ae83a","#f4ffd0","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#5aa020","#9ae83a","#9ae83a","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#7a1f3d","#451c2a"],["#451c2a","#451c2a","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#451c2a","#451c2a"]],
+    color: [["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","","","","","","","",""],["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","","","","","","","",""],["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","","","","","","","",""],["#451c2a","#7a1f3d","#f0a0b8","#e0708f","#7a1f3d","#451c2a","","","","","","","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#f0a0b8","#e0708f","#e0708f","#7a1f3d","","","","","","","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#f0a0b8","#f0a0b8","#e0708f","#7a1f3d","","","","","","","","","","","","","","","","","",""],["#7a1f3d","#f0a0b8","#ffd8e4","#f0a0b8","#f0a0b8","#e0708f","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#451c2a"],["#7a1f3d","#f0a0b8","#ffd8e4","#3e2731","#f0a0b8","#e0708f","#e0708f","#e0708f","#3e2731","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#7a1f3d"],["#7a1f3d","#f0a0b8","#e0708f","#e0708f","#3e2731","#3e2731","#3e2731","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#e0708f","#7a1f3d"],["#7a1f3d","#e0708f","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#f4ffd0","#9ae83a","#9ae83a","#9ae83a","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#9ae83a","#e0708f","#e0708f","#7a1f3d"],["#451c2a","#7a1f3d","#9ae83a","#f4ffd0","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#5aa020","#9ae83a","#9ae83a","#9ae83a","#9ae83a","#9ae83a","#9ae83a","#f4ffd0","#9ae83a","#9ae83a","#c8ff6a","#9ae83a","#9ae83a","#9ae83a","#7a1f3d","#451c2a"],["#451c2a","#451c2a","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#7a1f3d","#451c2a","#451c2a"]],
     powerup: {
         "type": "destroyer",
         "tier": 2,
@@ -15886,12 +15905,12 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            ".......",
-            ".......",
-            "#######",
-            "#######",
-            "#######",
-            "#######"
+            "........",
+            "........",
+            "########",
+            "########",
+            "########",
+            "########"
           ]
         }
       },
@@ -15899,6 +15918,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "vinegar_bottle",
@@ -16964,10 +16984,10 @@ export const SHAPES = [
     id: "hot_glue_gun",
     name: "a hot glue gun",
     grid: [
-        "XXX",
-        "X.."
+        "XXXX",
+        "X..."
       ],
-    color: [["#ead4aa","#ead4aa","#ead4aa","#ead4aa","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#c0cbdc","#c0cbdc"],["#ead4aa","#ffffff","#ead4aa","#0099db","#0099db","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#0099db","#0099db","#0099db","#c0cbdc","#8b9bb4"],["#ead4aa","#ead4aa","#ead4aa","#ead4aa","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#c0cbdc","#c0cbdc"],["#262b44","#262b44","#262b44","#0099db","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#262b44","#262b44","#262b44"],["#262b44","#262b44","#262b44","#0099db","#124e89","#262b44","#fee761","#fee761","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#ead4aa"],["#262b44","#262b44","#262b44","#0099db","#124e89","#262b44","#262b44","#fee761","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#ead4aa"],["#262b44","#262b44","#0099db","#0099db","#124e89","#262b44","","","","","","","","","","","",""],["#262b44","#262b44","#0099db","#124e89","#124e89","#262b44","","","","","","","","","","","",""],["#262b44","#262b44","#0099db","#124e89","#124e89","#262b44","","","","","","","","","","","",""],["#262b44","#0099db","#0099db","#124e89","#124e89","#262b44","","","","","","","","","","","",""],["#262b44","#0099db","#124e89","#124e89","#262b44","#262b44","","","","","","","","","","","",""],["#262b44","#124e89","#124e89","#124e89","#262b44","#262b44","","","","","","","","","","","",""]],
+    color: [["#ead4aa","#ead4aa","#ead4aa","#ead4aa","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#c0cbdc","#c0cbdc"],["#ead4aa","#ffffff","#ead4aa","#0099db","#0099db","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#a6e4ff","#0099db","#0099db","#c0cbdc","#8b9bb4"],["#ead4aa","#ead4aa","#ead4aa","#ead4aa","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#0099db","#c0cbdc","#c0cbdc"],["#262b44","#262b44","#262b44","#0099db","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#124e89","#262b44","#262b44","#262b44"],["#262b44","#262b44","#262b44","#0099db","#124e89","#262b44","#fee761","#fee761","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#124e89","#262b44","#124e89","#262b44","#124e89","#262b44","#262b44","#262b44","#262b44","#ead4aa"],["#262b44","#262b44","#262b44","#0099db","#124e89","#262b44","#262b44","#fee761","#262b44","#262b44","#262b44","#262b44","#262b44","#262b44","#124e89","#262b44","#124e89","#262b44","#124e89","#262b44","#262b44","#262b44","#262b44","#ead4aa"],["#262b44","#262b44","#0099db","#0099db","#124e89","#262b44","","","","","","","","","","","","","","","","","",""],["#262b44","#262b44","#0099db","#124e89","#124e89","#262b44","","","","","","","","","","","","","","","","","",""],["#262b44","#262b44","#0099db","#124e89","#124e89","#262b44","","","","","","","","","","","","","","","","","",""],["#262b44","#0099db","#0099db","#124e89","#124e89","#262b44","","","","","","","","","","","","","","","","","",""],["#262b44","#0099db","#124e89","#124e89","#262b44","#262b44","","","","","","","","","","","","","","","","","",""],["#262b44","#124e89","#124e89","#124e89","#262b44","#262b44","","","","","","","","","","","","","","","","","",""]],
     powerup: {
         "type": "combo",
         "tier": 2,
@@ -17075,6 +17095,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "car_airbag",
@@ -23397,7 +23418,7 @@ export const SHAPES = [
             "width": 1
           }
         },
-        "intro": "Its pages come loose and fill every empty cell of the three rows under it, wall to wall. Somehow there are leftovers.",
+        "intro": "Its pages come loose and fill every empty cell of the two rows under it, wall to wall. Somehow there are leftovers.",
         "area": {
           "origin": [
             0,
@@ -23408,7 +23429,7 @@ export const SHAPES = [
             ".",
             "-",
             "-",
-            "-"
+            "."
           ]
         },
         "help": 5,
@@ -23418,6 +23439,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
     tags: [
         "scripture"
       ],
@@ -23633,7 +23655,7 @@ export const SHAPES = [
   },
   {
     id: "egg_timer",
-    name: "a time bomb controlled by an hour glass",
+    name: "a time bomb controlled by an hourglass",
     grid: [
         "X",
         "X",
@@ -23665,7 +23687,7 @@ export const SHAPES = [
   },
   {
     id: "fizzing_aspirin",
-    name: "an alka-seltzer tablet",
+    name: "an Alka-Seltzer tablet",
     grid: [
         "X"
       ],
@@ -23859,17 +23881,18 @@ export const SHAPES = [
           ],
           "grid": [
             "........",
-            "-vvvvvvv",
-            "v......."
+            "..vvvv..",
+            "........"
           ]
         },
-        "intro": "The bath overflows: bubbles fill the row under it, wall to wall, and everything under it, eight wide, all the way down to the floor. There is a duck in there somewhere and it is fine.",
+        "intro": "The bath overflows: bubbles fill every empty cell under it, four columns wide, all the way down to the floor. There is a duck in there somewhere and it is fine.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "liquid_cat",
@@ -24910,21 +24933,22 @@ export const SHAPES = [
             1
           ],
           "grid": [
-            ".###########.",
-            "######.######",
-            "#############",
-            "#############",
-            "v###########v",
-            ".vvvvvvvvvvv."
+            "...#######...",
+            "...###.###...",
+            "...#######...",
+            "...#######...",
+            "...#######...",
+            "...vvvvvvv..."
           ]
         },
-        "intro": "Swells up in every direction into one big sponge: thirteen columns wide, from the row above it to four rows under it, and into every gap under that, down to the floor.",
+        "intro": "Swells up in every direction into one big sponge: seven columns wide, from the row above it to three rows under it, and into every gap under that, down to the floor.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "packing_peanuts",
@@ -25932,18 +25956,19 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "vvvv..vvvv",
+            ".vvv..vvv.",
             "..........",
             "....vv...."
           ]
         },
-        "intro": "Fills every empty cell beside it, four out each side, and everything under it, ten columns in all, down to the floor. Nobody has ever successfully put them back in the box.",
+        "intro": "Fills every empty cell beside it, three out each side, and everything under it, eight columns in all, down to the floor. Nobody has ever successfully put them back in the box.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.98,
+    claudeDraft: true,
   },
   {
     id: "stuffed_duvet",
@@ -27398,18 +27423,19 @@ export const SHAPES = [
           "grid": [
             "....v.v....",
             "...v.v.v...",
-            "..v.....v..",
-            ".v.......v.",
-            "v.........v"
+            "...........",
+            "...........",
+            "..........."
           ]
         },
-        "intro": "Explodes into a drift of snow: every empty cell in a heap eleven wide around it, sloping down from it all the way to the floor.",
+        "intro": "Explodes into a drift of snow: every empty cell in a heap five wide around it, sloping down from it all the way to the floor.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "autumn_leaves",
@@ -29312,17 +29338,18 @@ export const SHAPES = [
             "....vvvv....",
             "...v....v...",
             "..v......v..",
-            ".v........v.",
-            "v..........v"
+            "............",
+            "............"
           ]
         },
-        "intro": "The leaves drift down into a heap around it and settle into every gap underneath, twelve wide, all the way to the ground. Someone has to rake all this.",
+        "intro": "The leaves drift down into a heap around it and settle into every gap underneath, eight wide, all the way to the ground. Someone has to rake all this.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "self_raising_cake",
@@ -29418,7 +29445,7 @@ export const SHAPES = [
   },
   {
     id: "flour_sack",
-    name: "a sack of potatoes",
+    name: "a sack of flour",
     grid: [
         "XX"
       ],
@@ -29713,7 +29740,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 3,
-        "intro": "Mum, dad and the little one each dig a tunnel straight down (3, 5 and 2 blocks deep), then everything in the five columns under them drops into the gaps. Dad's glasses do not help.",
+        "intro": "Mum, Dad and the little one each dig a tunnel straight down (3, 5 and 2 blocks deep), then everything in the five columns under them drops into the gaps. Dad's glasses do not help.",
         "parts": [
           {
             "type": "destroyer",
@@ -30088,7 +30115,7 @@ export const SHAPES = [
   },
   {
     id: "dustpan_brush",
-    name: "a dust pan and brush",
+    name: "a dustpan and brush",
     grid: [
         "XX"
       ],
@@ -30663,7 +30690,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 2,
-        "intro": "Its glowing mist pours out along both of its rows, wall to wall, and settles into the column under it, all the way down to the floor.",
+        "intro": "Its glowing mist pours out along both of its rows, wall to wall, into every empty cell, and just hangs there.",
         "parts": [
           {
             "type": "phantom"
@@ -30708,7 +30735,7 @@ export const SHAPES = [
               "grid": [
                 "-",
                 "-",
-                "v"
+                "."
               ]
             }
           }
@@ -30720,6 +30747,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "spectral_moth",
@@ -30999,7 +31027,7 @@ export const SHAPES = [
   },
   {
     id: "ghost_swiss_knife",
-    name: "a ghostly swiss army knife",
+    name: "a ghostly Swiss Army knife",
     grid: [
         "XXX"
       ],
@@ -31129,7 +31157,7 @@ export const SHAPES = [
   },
   {
     id: "time_builder",
-    name: "a time-travelling builder (from next tuesday)",
+    name: "a time-travelling builder (from next Tuesday)",
     grid: [
         "XX",
         "XX"
@@ -33332,7 +33360,7 @@ export const SHAPES = [
   },
   {
     id: "earth",
-    name: "the earth",
+    name: "the Earth",
     grid: [
         "...XXX...",
         ".XXXXXXX.",
@@ -33723,7 +33751,7 @@ export const SHAPES = [
   },
   {
     id: "emotion_mother_earth",
-    name: "the sweet embrace of mother earth",
+    name: "the sweet embrace of Mother Earth",
     grid: [
         "XXX",
         "XXX",
@@ -38830,18 +38858,19 @@ export const SHAPES = [
             "...vvvvv...",
             "..v.....v..",
             "...........",
-            ".v.......v.",
             "...........",
-            "v.........v"
+            "...........",
+            "..........."
           ]
         },
-        "intro": "Rains into every empty cell under it, all the way down to the floor, spreading out to eleven columns wide as it falls.",
+        "intro": "Rains into every empty cell under it, all the way down to the floor, spreading out to seven columns wide as it falls.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
     nameAgain: "another storm cloud",
     oops: {
         "many": "storm clouds"
@@ -44666,18 +44695,19 @@ export const SHAPES = [
             "..............",
             "..v........v..",
             "..............",
-            ".v..........v.",
             "..............",
-            "v............v"
+            "..............",
+            ".............."
           ]
         },
-        "intro": "A downpour: rain in every empty cell under it, all the way down to the floor, spreading out to fourteen columns wide as it falls.",
+        "intro": "A downpour: rain in every empty cell under it, all the way down to the floor, spreading out to ten columns wide as it falls.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.3,
+    claudeDraft: true,
     nameAgain: "another big storm cloud",
     oops: {
         "many": "big storm clouds"
@@ -58720,17 +58750,18 @@ export const SHAPES = [
             "....v.v....",
             "...v.v.v...",
             "..v.....v..",
-            ".v.......v.",
-            "v.........v"
+            "...........",
+            "..........."
           ]
         },
-        "intro": "Rain and a fork of lightning: every empty cell under it, all the way down to the floor, the rain spreading out quickly to eleven columns wide.",
+        "intro": "Rain and a fork of lightning: every empty cell under it, all the way down to the floor, the rain spreading out quickly to seven columns wide.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.3,
+    claudeDraft: true,
     nameAgain: "another rumbling storm cloud",
     noShake: true,
     oops: {
@@ -60954,18 +60985,19 @@ export const SHAPES = [
             "..............",
             "..v........v..",
             "..............",
-            ".v..........v.",
             "..............",
-            "v............v"
+            "..............",
+            ".............."
           ]
         },
-        "intro": "Pours into every empty cell under it, all the way down to the floor, spreading out to fourteen columns wide as it falls.",
+        "intro": "Pours into every empty cell under it, all the way down to the floor, spreading out to ten columns wide as it falls.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.3,
+    claudeDraft: true,
     tags: [
         "weather"
       ],
@@ -84724,18 +84756,19 @@ export const SHAPES = [
             "...vvvvv...",
             "..v.....v..",
             "...........",
-            ".v.......v.",
             "...........",
-            "v.........v"
+            "...........",
+            "..........."
           ]
         },
-        "intro": "Rains cats and dogs into every empty cell under it, all the way down to the floor, spreading out to eleven columns wide as it falls. Mostly it's rain.",
+        "intro": "Rains cats and dogs into every empty cell under it, all the way down to the floor, spreading out to seven columns wide as it falls. Mostly it's rain.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
     tags: [
         "weather"
       ],
@@ -99904,20 +99937,21 @@ export const SHAPES = [
             "....v..v....",
             "...v....v...",
             "............",
-            "..v......v..",
             "............",
-            ".v........v.",
             "............",
-            "v..........v"
+            "............",
+            "............",
+            "............"
           ]
         },
-        "intro": "Cries into every empty cell under it, all the way down to the floor, spreading out to twelve columns wide as it goes. It says it's fine.",
+        "intro": "Cries into every empty cell under it, all the way down to the floor, spreading out to six columns wide as it goes. It says it's fine.",
         "help": 4
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
     tags: [
         "weather"
       ],
@@ -110326,20 +110360,21 @@ export const SHAPES = [
             "............",
             "...vvvvvv...",
             "............",
-            "..v......v..",
             "............",
-            ".v........v.",
             "............",
-            "v..........v"
+            "............",
+            "............",
+            "............"
           ]
         },
-        "intro": "Rains into every empty cell under it, all the way down to the floor, spreading out to twelve columns wide as it falls.",
+        "intro": "Rains straight down into every empty cell under it, six columns wide, one out either side of it, all the way down to the floor.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.4,
+    claudeDraft: true,
     tags: [
         "weather"
       ],
@@ -110395,15 +110430,16 @@ export const SHAPES = [
     id: "two_lions",
     name: "two lions",
     grid: [
-        "X..",
-        "XXX"
+        "X...",
+        "XXXX"
       ],
-    color: [["#85491f","#814018","#9b5524","#814018","#9b5524","#814018","#85491f","","","","","","","","","","","","","",""],["#814018","#b9652b","#d8a443","#d8a443","#d8a443","#b9652b","#814018","","","","","","","","","","","","","",""],["#9b5524","#d8a443","#2a1608","#d8a443","#2a1608","#d8a443","#9b5524","","","","","","","","","","","","","",""],["#814018","#d8a443","#f3e0b2","#5b2f18","#f3e0b2","#d8a443","#814018","","","","","","","","","","","","","",""],["#9b5524","#d8a443","#f3e0b2","#f3e0b2","#f3e0b2","#d8a443","#9b5524","","","","","","","","","","","","","",""],["#814018","#b9652b","#d8a443","#f3e0b2","#d8a443","#b9652b","#814018","","","","","","","","","","","","","",""],["#9b5524","#9a4c1d","#b9652b","#9a4c1d","#b9652b","#9a4c1d","#9b5524","","","","","","","","","","","","","",""],["#814018","#b9652b","#d8a443","#eac066","#d8a443","#b9652b","#7b3d17","#916e2d","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#8d6427","#b58a38","#8d6427","#9c7630"],["#b58a38","#d8a443","#eac066","#eac066","#eac066","#d8a443","#ad8336","#582a10","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#b58a38"],["#b58a38","#a8772e","#d8a443","#eac066","#d8a443","#a8772e","#ad8336","#582a10","#eac066","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#2a1608","#d8a443","#ccbc96"],["#b58a38","#a8772e","#d8a443","#eac066","#d8a443","#a8772e","#ad8336","#865f25","#eac066","#eac066","#eac066","#eac066","#eac066","#eac066","#eac066","#d8a443","#d8a443","#d8a443","#d8a443","#f3e0b2","#4c2714"],["#b58a38","#a8772e","#d8a443","#d8a443","#d8a443","#a8772e","#ad8336","#ad8336","#eac066","#eac066","#eac066","#eac066","#eac066","#eac066","#eac066","#d8a443","#d8a443","#d8a443","#f3e0b2","#f3e0b2","#ccbc96"],["#c5a156","#f3e0b2","#eac066","#a8772e","#eac066","#f3e0b2","#bb9a52","#ad8336","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#b58a38"],["#afa180","#ccbc96","#8d6427","#8d6427","#8d6427","#ccbc96","#a39677","#71501f","#8d6427","#b58a38","#8d6427","#8d6427","#b58a38","#b58a38","#b58a38","#b58a38","#ccbc96","#ccbc96","#ccbc96","#ccbc96","#afa180"]],
+    color: [["#85491f","#814018","#9b5524","#814018","#9b5524","#814018","#85491f","","","","","","","","","","","","","","","","","","","","",""],["#814018","#b9652b","#d8a443","#d8a443","#d8a443","#b9652b","#814018","","","","","","","","","","","","","","","","","","","","",""],["#9b5524","#d8a443","#2a1608","#d8a443","#2a1608","#d8a443","#9b5524","","","","","","","","","","","","","","","","","","","","",""],["#814018","#d8a443","#f3e0b2","#5b2f18","#f3e0b2","#d8a443","#814018","","","","","","","","","","","","","","","","","","","","",""],["#9b5524","#d8a443","#f3e0b2","#f3e0b2","#f3e0b2","#d8a443","#9b5524","","","","","","","","","","","","","","","","","","","","",""],["#814018","#b9652b","#d8a443","#f3e0b2","#d8a443","#b9652b","#814018","","","","","","","","","","","","","","","","","","","","",""],["#9b5524","#9a4c1d","#b9652b","#9a4c1d","#b9652b","#9a4c1d","#9b5524","","","","","","","","","","","","","","","","","","","","",""],["#814018","#b9652b","#d8a443","#eac066","#d8a443","#b9652b","#7b3d17","#916e2d","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#8d6427","#b58a38","#8d6427","#9c7630"],["#b58a38","#d8a443","#eac066","#eac066","#eac066","#d8a443","#ad8336","#582a10","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#b58a38"],["#b58a38","#a8772e","#d8a443","#eac066","#d8a443","#a8772e","#ad8336","#582a10","#d8a443","#eac066","#eac066","#eac066","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#2a1608","#d8a443","#ccbc96"],["#b58a38","#a8772e","#d8a443","#eac066","#d8a443","#a8772e","#ad8336","#865f25","#eac066","#eac066","#eac066","#eac066","#eac066","#a8772e","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#d8a443","#f3e0b2","#4c2714"],["#b58a38","#a8772e","#d8a443","#d8a443","#d8a443","#a8772e","#ad8336","#ad8336","#eac066","#eac066","#eac066","#eac066","#eac066","#a8772e","#d8a443","#d8a443","#d8a443","#d8a443","#a8772e","#eac066","#eac066","#eac066","#eac066","#d8a443","#d8a443","#f3e0b2","#f3e0b2","#ccbc96"],["#c5a156","#f3e0b2","#eac066","#a8772e","#eac066","#f3e0b2","#bb9a52","#ad8336","#eac066","#eac066","#eac066","#eac066","#a8772e","#d8a443","#d8a443","#d8a443","#d8a443","#a8772e","#eac066","#eac066","#eac066","#eac066","#eac066","#eac066","#d8a443","#d8a443","#d8a443","#b58a38"],["#afa180","#ccbc96","#8d6427","#8d6427","#8d6427","#ccbc96","#a39677","#71501f","#8d6427","#ccbc96","#ccbc96","#ccbc96","#b58a38","#b58a38","#b58a38","#b58a38","#b58a38","#8d6427","#b58a38","#b58a38","#b58a38","#b58a38","#ccbc96","#ccbc96","#ccbc96","#ccbc96","#ccbc96","#afa180"]],
     difficulty: 6,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
   },
   {
     id: "two_kangaroos",
@@ -112035,8 +112071,8 @@ export const SHAPES = [
     frequency: 1,
   },
   {
-    id: "emotion_playing_extris",
-    name: "playing Extris",
+    id: "emotion_playing_eztrix",
+    name: "playing Eztrix",
     grid: [
         "XXX",
         "XXX",
@@ -112051,8 +112087,8 @@ export const SHAPES = [
     frequency: 1,
   },
   {
-    id: "emotion_winning_extris",
-    name: "winning Extris",
+    id: "emotion_winning_eztrix",
+    name: "winning Eztrix",
     grid: [
         "XXX",
         "XXX",
@@ -112100,7 +112136,7 @@ export const SHAPES = [
   },
   {
     id: "emotion_being_a_piece",
-    name: "realising you are a just a piece in a game",
+    name: "realising you are just a piece in a game",
     grid: [
         "XXX",
         "XXX",
@@ -113043,7 +113079,7 @@ export const SHAPES = [
   },
   {
     id: "kilometerworm",
-    name: "a kilometerworm",
+    name: "a kilometreworm",
     grid: [
         "X",
         "X",
@@ -113262,7 +113298,7 @@ export const SHAPES = [
   },
   {
     id: "lego_brick_2x4",
-    name: "a duplo brick",
+    name: "a Duplo brick",
     grid: [
         "X.X.X.X",
         "XXXXXXX",
@@ -113275,7 +113311,7 @@ export const SHAPES = [
       },
     frequency: 1,
     oops: {
-        "many": "duplo bricks"
+        "many": "Duplo bricks"
       },
   },
   {
@@ -113609,9 +113645,10 @@ export const SHAPES = [
     grid: [
         "X.",
         "X.",
+        "X.",
         "XX"
       ],
-    color: [["#bca364","#ce9f48","#ce9f48","#ce9f48","#ce9f48","#bca364","","","","","",""],["#ce9f48","#2c3d95","#1c2869","#1c2869","#2c3d95","#ce9f48","","","","","",""],["#ce9f48","#1c2869","#1c2869","#1c2869","#ffe17a","#ce9f48","","","","","",""],["#ce9f48","#1c2869","#fff5c6","#1c2869","#1c2869","#ce9f48","","","","","",""],["#ce9f48","#2c3d95","#1c2869","#1c2869","#2c3d95","#ce9f48","","","","","",""],["#d9bc73","#eab552","#eab552","#eab552","#eab552","#d9bc73","","","","","",""],["#c48e33","#c4882a","#dfa13a","#c4882a","#dfa13a","#ac7825","","","","","",""],["#c48e33","#c4882a","#dfa13a","#c4882a","#dfa13a","#ac7825","","","","","",""],["#c48e33","#c4882a","#dfa13a","#c4882a","#dfa13a","#ac7825","","","","","",""],["#ce9f48","#dfa13a","#eab552","#dfa13a","#eab552","#c48e33","","","","","",""],["#c48e33","#eab552","#dfa13a","#eab552","#dfa13a","#ce9f48","","","","","",""],["#ce9f48","#dfa13a","#eab552","#dfa13a","#eab552","#c48e33","","","","","",""],["#c48e33","#eab552","#dfa13a","#eab552","#dfa13a","#eab552","#c48e33","#ce9f48","#c48e33","#ce9f48","#9f3d29","#8a3424"],["#9f3d29","#b5452f","#dfa13a","#eab552","#dfa13a","#eab552","#dfa13a","#eab552","#dfa13a","#eab552","#b5452f","#9f3d29"],["#9f3d29","#b5452f","#b5452f","#dfa13a","#eab552","#dfa13a","#f2c66a","#2c3d95","#f2c66a","#eab552","#cc5b3e","#9f3d29"],["#9f3d29","#b5452f","#b5452f","#eab552","#dfa13a","#eab552","#f2c66a","#fff5c6","#f2c66a","#dfa13a","#b5452f","#9f3d29"],["#7e2e21","#b5452f","#b5452f","#c4882a","#c4882a","#c4882a","#c4882a","#c4882a","#c4882a","#c4882a","#b5452f","#7e2e21"],["#6d281d","#7e2e21","#7e2e21","#7e2e21","#ac7825","#ac7825","#ac7825","#ac7825","#ac7825","#7e2e21","#7e2e21","#6d281d"]],
+    color: [["#bca364","#ce9f48","#ce9f48","#ce9f48","#ce9f48","#bca364","","","","","",""],["#ce9f48","#2c3d95","#1c2869","#1c2869","#2c3d95","#ce9f48","","","","","",""],["#ce9f48","#1c2869","#1c2869","#1c2869","#ffe17a","#ce9f48","","","","","",""],["#ce9f48","#1c2869","#fff5c6","#1c2869","#1c2869","#ce9f48","","","","","",""],["#ce9f48","#2c3d95","#1c2869","#1c2869","#2c3d95","#ce9f48","","","","","",""],["#d9bc73","#eab552","#eab552","#eab552","#eab552","#d9bc73","","","","","",""],["#c48e33","#c4882a","#dfa13a","#c4882a","#dfa13a","#ac7825","","","","","",""],["#c48e33","#c4882a","#dfa13a","#c4882a","#dfa13a","#ac7825","","","","","",""],["#c48e33","#c4882a","#dfa13a","#c4882a","#dfa13a","#ac7825","","","","","",""],["#c48e33","#c4882a","#dfa13a","#c4882a","#dfa13a","#ac7825","","","","","",""],["#ce9f48","#dfa13a","#eab552","#dfa13a","#eab552","#c48e33","","","","","",""],["#c48e33","#eab552","#dfa13a","#eab552","#dfa13a","#ce9f48","","","","","",""],["#ce9f48","#dfa13a","#eab552","#dfa13a","#eab552","#c48e33","","","","","",""],["#c48e33","#f2c66a","#2c3d95","#f2c66a","#dfa13a","#ce9f48","","","","","",""],["#ce9f48","#f2c66a","#fff5c6","#f2c66a","#eab552","#c48e33","","","","","",""],["#c48e33","#eab552","#dfa13a","#eab552","#dfa13a","#ce9f48","","","","","",""],["#ce9f48","#dfa13a","#eab552","#dfa13a","#eab552","#c48e33","","","","","",""],["#c48e33","#eab552","#dfa13a","#eab552","#dfa13a","#ce9f48","","","","","",""],["#c48e33","#eab552","#dfa13a","#eab552","#dfa13a","#eab552","#c48e33","#ce9f48","#c48e33","#ce9f48","#9f3d29","#8a3424"],["#9f3d29","#b5452f","#dfa13a","#eab552","#dfa13a","#eab552","#dfa13a","#eab552","#dfa13a","#eab552","#b5452f","#9f3d29"],["#9f3d29","#b5452f","#b5452f","#dfa13a","#eab552","#dfa13a","#f2c66a","#2c3d95","#f2c66a","#eab552","#cc5b3e","#9f3d29"],["#9f3d29","#b5452f","#b5452f","#eab552","#dfa13a","#eab552","#f2c66a","#fff5c6","#f2c66a","#dfa13a","#b5452f","#9f3d29"],["#7e2e21","#b5452f","#b5452f","#c4882a","#c4882a","#c4882a","#c4882a","#c4882a","#c4882a","#c4882a","#b5452f","#7e2e21"],["#6d281d","#7e2e21","#7e2e21","#7e2e21","#ac7825","#ac7825","#ac7825","#ac7825","#ac7825","#7e2e21","#7e2e21","#6d281d"]],
     difficulty: 1,
     rotation: {
         "mode": "any"
@@ -114744,7 +114781,7 @@ export const SHAPES = [
   },
   {
     id: "bones_brachio_head",
-    name: "a Brachiosaurus head bones",
+    name: "a Brachiosaurus head bone",
     grid: [
         "....XX.",
         "....XXX",
@@ -116365,12 +116402,12 @@ export const SHAPES = [
   },
   {
     id: "ice_skate",
-    name: "an razor-sharp ice skate",
+    name: "a razor-sharp ice skate",
     grid: [
-        "..X",
-        "XXX"
+        "...X",
+        "XXXX"
       ],
-    color: [["","","","","","","","","","","","","","","","","","","#e8e3da","#efe8db","#efe8db","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#93b4e3"],["","","","","","","","","","","","","","","","","","","#e8e3da","#efe8db","#d6ccbb","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#93b4e3","#93b4e3"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#c9d1dd","#7d8698","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#cfc6b8","#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#e8e3da","#cfc6b8"],["#cfc6b8","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#7a4a29","#7a4a29","#7a4a29","#7a4a29","#7a4a29","#5c361d"],["#6e4325","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#5c361d","#5c361d","#5c361d","#5c361d","#5c361d","#5c361d"],["#262c36","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#262c36"],["#262c36","#5f6b80","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#262c36"],["#262c36","#262c36","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#262c36","#262c36"]],
+    color: [["","","","","","","","","","","","","","","","","","","","","","","","","","","","#e8e3da","#efe8db","#efe8db","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#93b4e3"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#e8e3da","#efe8db","#d6ccbb","#bcd6fa","#bcd6fa","#bcd6fa","#bcd6fa","#93b4e3","#93b4e3"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#fdfcf9","#c9d1dd","#7d8698","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#cfc6b8","#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#d6ccbb","#ffffff","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#7d8698","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#cfc6b8"],["#e8e3da","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#fdfcf9","#e8e3da","#e8e3da","#cfc6b8"],["#cfc6b8","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#e8e3da","#7a4a29","#7a4a29","#7a4a29","#7a4a29","#7a4a29","#5c361d"],["#6e4325","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#8e5c34","#5c361d","#5c361d","#5c361d","#5c361d","#5c361d","#5c361d"],["#262c36","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#eef3f8","#262c36"],["#262c36","#5f6b80","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#aab7c8","#262c36"],["#262c36","#262c36","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#7c899d","#262c36","#262c36"]],
     powerup: {
         "type": "destroyer",
         "tier": 2,
@@ -116395,6 +116432,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "hole_punch",
@@ -116432,7 +116470,7 @@ export const SHAPES = [
   },
   {
     id: "lightning_bolt_with_a_grudge",
-    name: "a bolt of lightiningi",
+    name: "a bolt of lightning",
     grid: [
         "XX.",
         ".XX"
@@ -116850,7 +116888,7 @@ export const SHAPES = [
   },
   {
     id: "giant_spaghetti_o",
-    name: "a giant spaghetti-o",
+    name: "a giant Spaghetti-O",
     grid: [
         ".XXXX.",
         "XXXXXX",
@@ -116865,7 +116903,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 1,
-    nameAgain: "another giant spaghetti-o",
+    nameAgain: "another giant Spaghetti-O",
     tags: [
         "food"
       ],
@@ -117215,7 +117253,7 @@ export const SHAPES = [
   },
   {
     id: "canal_houses",
-    name: "a charming row of river-side houses",
+    name: "a charming row of riverside houses",
     grid: [
         ".X..XX.X..XX.",
         "XXXXXXXXXXXXX",
@@ -117687,7 +117725,7 @@ export const SHAPES = [
   },
   {
     id: "emotion_last_biscuit",
-    name: "noticing that there's only one biscuit lefti",
+    name: "noticing that there's only one biscuit left",
     grid: [
         "XXX",
         "XXX",
@@ -117929,16 +117967,17 @@ export const SHAPES = [
             "...vvvvv...",
             "..v.....v..",
             ".v.......v.",
-            "v.........v"
+            "..........."
           ]
         },
-        "intro": "Tips its whole load: sand fills every empty cell under it and to each side, in a heap eleven columns wide that slopes down from it to the floor. It was meant for next door.",
+        "intro": "Tips its whole load: sand fills every empty cell under it and to each side, in a heap nine columns wide that slopes down from it to the floor. It was meant for next door.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "bath_left_running",
@@ -119156,18 +119195,19 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "vvvvv..vvvvv",
+            "...vv..vv...",
             "............",
             ".....vv....."
           ]
         },
-        "intro": "Rice runs into every empty cell beside it, five out each side, and everything under it, twelve columns in all, down to the floor. You will still be finding it in ten years.",
+        "intro": "Rice runs into every empty cell beside it, two out each side, and everything under it, six columns in all, down to the floor. You will still be finding it in ten years.",
         "help": 4
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "memory_foam_mattress",
@@ -125488,17 +125528,18 @@ export const SHAPES = [
             "......v....",
             "...v...v...",
             "..v.vvv.v..",
-            ".v.......v.",
-            "v.........v"
+            "...........",
+            "..........."
           ]
         },
-        "intro": "Slumps into a heap around it and settles into every gap underneath, eleven columns wide, all the way to the floor. Exactly one sock is missing.",
+        "intro": "Slumps into a heap around it and settles into every gap underneath, seven columns wide, all the way to the floor. Exactly one sock is missing.",
         "help": 4
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "thanksgiving_mash",
@@ -125571,18 +125612,19 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "vvvvv.vvvvv",
+            "..vvv.vvv..",
             "...........",
             ".....v....."
           ]
         },
-        "intro": "Fills every empty cell beside it and under it, eleven columns in all, all the way down to the floor, with mashed potato. It was made for forty people. Four came.",
+        "intro": "Fills every empty cell beside it and under it, seven columns in all, all the way down to the floor, with mashed potato. It was made for forty people. Four came.",
         "help": 4
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "advancing_glacier",
@@ -126750,16 +126792,17 @@ export const SHAPES = [
             "-",
             "-",
             "-",
-            "-"
+            "."
           ]
         },
-        "intro": "Fills the four whole rows under it, wall to wall, with ice. It is advancing at two metres a year, which for a glacier is reckless.",
+        "intro": "Fills the three whole rows under it, wall to wall, with ice. It is advancing at two metres a year, which for a glacier is reckless.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.25,
+    claudeDraft: true,
   },
   {
     id: "last_jigsaw_piece",
@@ -129834,17 +129877,18 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "-..........",
-            "vvvvvvvvvvv"
+            "...........",
+            "..vvvvvvv.."
           ]
         },
-        "intro": "Fills its own row, wall to wall, and every empty cell under it, eleven columns wide, down to the floor. It was under the sofa the whole time.",
+        "intro": "Fills every empty cell under it, seven columns wide, from the row under it all the way down to the floor. It was under the sofa the whole time.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "paper_shredder",
@@ -131357,16 +131401,17 @@ export const SHAPES = [
             "..",
             "-.",
             "-.",
-            "-."
+            ".."
           ]
         },
-        "intro": "Fills the three rows under it, wall to wall, with sandbags. The water was never coming this way, but it is good to be prepared.",
+        "intro": "Fills the two rows under it, wall to wall, with sandbags. The water was never coming this way, but it is good to be prepared.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "avalanche",
@@ -131437,16 +131482,17 @@ export const SHAPES = [
             "...v..v..v...",
             "..v.......v..",
             ".v.........v.",
-            "v...........v"
+            "............."
           ]
         },
-        "intro": "Comes down in a huge heap: snow fills every empty cell under it and to each side, thirteen columns wide, sloping down from it to the floor. It's only a small one. It has been practising.",
+        "intro": "Comes down in a huge heap: snow fills every empty cell under it and to each side, eleven columns wide, sloping down from it to the floor. It's only a small one. It has been practising.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.3,
+    claudeDraft: true,
   },
   {
     id: "tipped_honey_jar",
@@ -131522,16 +131568,17 @@ export const SHAPES = [
           ],
           "grid": [
             "-......",
-            "vvvvvvv"
+            "......."
           ]
         },
-        "intro": "Honey fills every empty cell of its own row, wall to wall, and everything under it seven columns wide, all the way down to the floor. It has never once been in a hurry.",
+        "intro": "Honey fills every empty cell along its top row, wall to wall, and goes no further. It has never once been in a hurry.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "slumped_beanbag",
@@ -131603,17 +131650,18 @@ export const SHAPES = [
             ".............",
             ".............",
             "...vvvvvvv...",
-            ".vv.......vv.",
-            "v...........v"
+            ".............",
+            "............."
           ]
         },
-        "intro": "Slumps into a low heap thirteen wide around it, and into every empty cell under that, down to the floor. Someone sat in it in 1997 and it has never really recovered.",
+        "intro": "Slumps flat into every empty cell under it, seven columns wide, all the way down to the floor. Someone sat in it in 1997 and it has never really recovered.",
         "help": 4
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "unravelling_yarn",
@@ -132025,18 +132073,19 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "v.v",
-            "-v.",
+            "...",
+            "-..",
             "-.."
           ]
         },
-        "intro": "Knits itself into every empty cell of the two rows under it, wall to wall, and of its own column and the one either side, from it down to the floor. Nobody is holding the needles.",
+        "intro": "Knits itself, row by row, into every empty cell of the two rows under it, wall to wall. Nobody is holding the needles.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "patchwork_quilt",
@@ -133601,16 +133650,17 @@ export const SHAPES = [
           "grid": [
             "-..",
             "-..",
-            "-.."
+            "..."
           ]
         },
-        "intro": "Unfolds into every empty cell of its own row and the two rows under it, wall to wall. Every square was sewn by a different aunt, and they all have opinions.",
+        "intro": "Unfolds into every empty cell of its own row and the row under it, wall to wall. Every square was sewn by a different aunt, and they all have opinions.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.4,
+    claudeDraft: true,
   },
   {
     id: "spilled_paint",
@@ -133683,16 +133733,17 @@ export const SHAPES = [
             ".......",
             "vvvvvvv",
             ".......",
-            "-......"
+            "......."
           ]
         },
-        "intro": "Flows into every empty cell under it, seven columns wide, all the way down to the floor, and right along the row it lands on, wall to wall. It said 'one coat' on the tin.",
+        "intro": "Flows into every empty cell beside it and under it, seven columns wide, from its middle row all the way down to the floor. It said 'one coat' on the tin.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
     id: "mountain_of_post",
@@ -135596,17 +135647,18 @@ export const SHAPES = [
             ".........",
             "...v.v...",
             "..v.v.v..",
-            ".v..-..v.",
+            ".v.....v.",
             "v.......v"
           ]
         },
-        "intro": "Piles into a heap nine wide that slopes down from it to the floor, and fills the row it lands on, wall to wall. Most of it is for the previous occupant.",
+        "intro": "Piles into a heap nine wide that slopes down from it, every empty cell of it, all the way to the floor. Most of it is for the previous occupant.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "paddling_swan",
@@ -137461,16 +137513,17 @@ export const SHAPES = [
           ],
           "grid": [
             "-..........",
-            "vvvvvvvvvvv"
+            "..........."
           ]
         },
-        "intro": "Beans pour into every empty cell under it, eleven columns wide, all the way down to the floor, and along its own row, wall to wall. The tin said it serves two.",
+        "intro": "Beans pour out sideways into every empty cell along its own row, wall to wall. The tin said it serves two.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.35,
+    claudeDraft: true,
   },
   {
     id: "spaghetti_os_tin_upended",
@@ -138894,18 +138947,19 @@ export const SHAPES = [
             ".....v.v.....",
             "....v.v.v....",
             "...v.....v...",
-            "..v.......v..",
-            ".v.........v.",
-            "v...........v"
+            ".............",
+            ".............",
+            "............."
           ]
         },
-        "intro": "Spaghetti-os slump out into every empty cell of a heap thirteen wide under it, sloping down from it all the way to the floor. For a moment, it was a sandcastle.",
+        "intro": "Spaghetti-os slump out into every empty cell of a heap seven wide under it, sloping down from it all the way to the floor. For a moment, it was a sandcastle.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.35,
+    claudeDraft: true,
   },
   {
     id: "exploding_spam",
@@ -139093,7 +139147,7 @@ export const SHAPES = [
   },
   {
     id: "settled_spaghetti_os",
-    name: "pure, concentrated speghetti-os",
+    name: "pure, concentrated Spaghetti-Os",
     grid: [
         "X",
         "X"
@@ -139115,7 +139169,7 @@ export const SHAPES = [
             "...v..."
           ]
         },
-        "intro": "Everything in the seven columns round it settles down as far as it will go, the outer ones from a little higher up. They have.",
+        "intro": "Everything in the seven columns round it settles down as far as it will go, the outer ones from a little higher up. They have settled.",
         "setOnly": true
       },
     rotation: {
@@ -139125,7 +139179,7 @@ export const SHAPES = [
   },
   {
     id: "lego_cube_2x2_red",
-    name: "a solid cube of lego bricks",
+    name: "a solid cube of Lego bricks",
     grid: [
         "XX",
         "XX"
@@ -139145,7 +139199,7 @@ export const SHAPES = [
   },
   {
     id: "lego_cube_2x2_blue",
-    name: "a solid cube of lego bricks",
+    name: "a solid cube of Lego bricks",
     grid: [
         "XX",
         "XX"
@@ -139165,7 +139219,7 @@ export const SHAPES = [
   },
   {
     id: "lego_cube_3x3",
-    name: "a solid cube of lego bricks",
+    name: "a solid cube of Lego bricks",
     grid: [
         "XXX",
         "XXX",
@@ -139186,7 +139240,7 @@ export const SHAPES = [
   },
   {
     id: "lego_cube_4x4",
-    name: "a big solid cube of lego bricks",
+    name: "a big solid cube of Lego bricks",
     grid: [
         "XXXX",
         "XXXX",
@@ -139208,7 +139262,7 @@ export const SHAPES = [
   },
   {
     id: "lego_slab_2x4",
-    name: "a solid slab of lego bricks",
+    name: "a solid slab of Lego bricks",
     grid: [
         "XXXX",
         "XXXX"
@@ -139228,7 +139282,7 @@ export const SHAPES = [
   },
   {
     id: "lego_block_3x2",
-    name: "a solid block of lego bricks",
+    name: "a solid block of Lego bricks",
     grid: [
         "XX",
         "XX",
@@ -139437,20 +139491,22 @@ export const SHAPES = [
   },
   {
     id: "spare_allen_key",
-    name: "a spare allen key",
+    name: "a spare Allen key",
     grid: [
+        "X.",
         "X.",
         "X.",
         "XX"
       ],
-    color: [["#4b525e","#555c6a","#8b929e","#b4b9c2","#b4b9c2","#8b929e","#555c6a","#4b525e","","","","","","","",""],["#555c6a","#9aa2af","#c8ced8","#f4f7fb","#c8ced8","#c8ced8","#9aa2af","#555c6a","","","","","","","",""],["#555c6a","#5e6676","#9aa2af","#9aa2af","#9aa2af","#9aa2af","#5e6676","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#5e6676","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#4b525e"],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#b8bec8","#f4f7fb","#f4f7fb","#f4f7fb","#f4f7fb","#f4f7fb","#f4f7fb","#5e6676","#9aa2af","#555c6a"],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#b9c0cb","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#9aa2af","#c8ced8","#8b929e"],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#9aa2af","#f4f7fb","#b4b9c2"],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#9aa2af","#c8ced8","#b4b9c2"],["#555c6a","#f4f7fb","#b9c0cb","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#9aa2af","#c8ced8","#8b929e"],["#555c6a","#b8bec8","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#5e6676","#9aa2af","#555c6a"],["#4b525e","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#4b525e"]],
+    color: [["#4b525e","#555c6a","#8b929e","#b4b9c2","#b4b9c2","#8b929e","#555c6a","#4b525e","","","","","","","",""],["#555c6a","#9aa2af","#c8ced8","#f4f7fb","#c8ced8","#c8ced8","#9aa2af","#555c6a","","","","","","","",""],["#555c6a","#5e6676","#9aa2af","#9aa2af","#9aa2af","#9aa2af","#5e6676","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#555c6a","","","","","","","",""],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#7d8594","#5e6676","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#4b525e"],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#a3abb8","#b8bec8","#f4f7fb","#f4f7fb","#f4f7fb","#f4f7fb","#f4f7fb","#f4f7fb","#5e6676","#9aa2af","#555c6a"],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#b9c0cb","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#9aa2af","#c8ced8","#8b929e"],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#9aa2af","#f4f7fb","#b4b9c2"],["#555c6a","#f4f7fb","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#cfd5de","#9aa2af","#c8ced8","#b4b9c2"],["#555c6a","#f4f7fb","#b9c0cb","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#a3abb8","#9aa2af","#c8ced8","#8b929e"],["#555c6a","#b8bec8","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#7d8594","#5e6676","#9aa2af","#555c6a"],["#4b525e","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#555c6a","#4b525e"]],
     difficulty: 1,
     rotation: {
         "mode": "any"
       },
     frequency: 1,
+    claudeDraft: true,
     oops: {
-        "many": "spare allen keys"
+        "many": "spare Allen keys"
       },
   },
   {
@@ -139560,18 +139616,19 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "-",
+            ".",
             "-",
             "-"
           ]
         },
-        "intro": "Pops into every empty cell of its own three rows, wall to wall. The bag said to stop when the pops were two seconds apart. They were never two seconds apart.",
+        "intro": "Pops into every empty cell of its lower two rows, wall to wall. The bag said to stop when the pops were two seconds apart. They were never two seconds apart.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.45,
+    claudeDraft: true,
   },
   {
     id: "fog_machine",
@@ -139635,16 +139692,17 @@ export const SHAPES = [
           ],
           "grid": [
             ".........",
-            "vvvvvvvvv"
+            ".vvvvvvv."
           ]
         },
-        "intro": "Rolls fog into every empty cell of the nine columns centred on it, from the row under it all the way down to the floor. The school play finished in 2009.",
+        "intro": "Rolls fog into every empty cell of the seven columns centred on it, from the row under it all the way down to the floor. The school play finished in 2009.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "spreading_cloud",
@@ -141087,30 +141145,32 @@ export const SHAPES = [
           "grid": [
             "..........",
             "..........",
-            "vvvvvvvvvv",
-            "-........."
+            "..vvvvvv..",
+            ".........."
           ]
         },
-        "intro": "Pours a rainbow straight down out of itself: every empty cell in the ten columns under it, from the row under it all the way down to the floor, and a band of it right across the row under that, wall to wall. There is no pot of gold at the bottom, just the bottom.",
+        "intro": "Pours a rainbow straight down out of itself: every empty cell in the six columns under it, from the row under it all the way down to the floor. There is no pot of gold at the bottom, just the bottom.",
         "help": 4
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.8,
+    claudeDraft: true,
   },
   {
-    id: "extris",
-    name: "Extris",
+    id: "eztrix",
+    name: "Eztrix",
     grid: [
         "XXXXXX"
       ],
-    color: [["#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#840b1f","#ffae3d","#ffae3d","#ffae3d","#84520b","#84520b","#ffae3d","#ffae3d","#ffae3d","#84520b","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#84800b","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0b8433","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0b5c84","#520b84","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#520b84","#520b84"],["#ff3d5e","#ff3d5e","#ff3d5e","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#840b1f","#ffae3d","#ffae3d","#ffae3d","#84520b","#84520b","#ffae3d","#ffae3d","#ffae3d","#84520b","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#84800b","#3dff7e","#3dff7e","#3dff7e","#0fbd49","#0fbd49","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0f83bd","#0f83bd","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0f83bd","#0f83bd","#0b5c84","#ae3dff","#ae3dff","#ae3dff","#740fbd","#740fbd","#ae3dff","#ae3dff","#ae3dff","#520b84"],["#ff3d5e","#ff3d5e","#ff3d5e","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#bd740f","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#bd740f","#84520b","#bdb70f","#bdb70f","#fff93d","#fff93d","#fff93d","#fff93d","#bdb70f","#bdb70f","#84800b","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0b8433","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0b5c84","#0b5c84","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0b5c84","#0b5c84","#0b5c84","#ae3dff","#ae3dff","#ae3dff","#520b84","#520b84","#740fbd","#740fbd","#740fbd","#520b84"],["#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#840b1f","#840b1f","#84520b","#bd740f","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#bd740f","#84520b","#84520b","#84800b","#84800b","#fff93d","#fff93d","#fff93d","#fff93d","#84800b","#84800b","#84800b","#3dff7e","#3dff7e","#3dff7e","#0b8433","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0b5c84","#0b5c84","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0b5c84","#0b5c84","#0b5c84","#740fbd","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#520b84","#520b84"],["#ff3d5e","#ff3d5e","#ff3d5e","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#840b1f","#840b1f","#84520b","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#84520b","#84520b","#84800b","#84800b","#fff93d","#fff93d","#fff93d","#fff93d","#84800b","#84800b","#84800b","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#0fbd49","#0fbd49","#0b8433","#0b5c84","#0b5c84","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0b5c84","#0b5c84","#0b5c84","#520b84","#740fbd","#740fbd","#740fbd","#740fbd","#ae3dff","#ae3dff","#ae3dff","#520b84"],["#ff3d5e","#ff3d5e","#ff3d5e","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#ffae3d","#ffae3d","#ffae3d","#bd740f","#bd740f","#ffae3d","#ffae3d","#ffae3d","#84520b","#84800b","#84800b","#fff93d","#fff93d","#fff93d","#fff93d","#84800b","#84800b","#84800b","#3dff7e","#3dff7e","#3dff7e","#0fbd49","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0b8433","#0b5c84","#0b5c84","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0b5c84","#0b5c84","#0b5c84","#ae3dff","#ae3dff","#ae3dff","#520b84","#520b84","#ae3dff","#ae3dff","#ae3dff","#520b84"],["#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#840b1f","#ffae3d","#ffae3d","#ffae3d","#84520b","#84520b","#ffae3d","#ffae3d","#ffae3d","#84520b","#84800b","#84800b","#fff93d","#fff93d","#fff93d","#fff93d","#84800b","#84800b","#84800b","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0fbd49","#3dff7e","#3dff7e","#3dff7e","#0b8433","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0b5c84","#740fbd","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#740fbd","#520b84"],["#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#840b1f","#bd740f","#bd740f","#bd740f","#84520b","#84520b","#bd740f","#bd740f","#bd740f","#84520b","#84800b","#84800b","#bdb70f","#bdb70f","#bdb70f","#bdb70f","#84800b","#84800b","#84800b","#0fbd49","#0fbd49","#0fbd49","#0b8433","#0b8433","#0fbd49","#0fbd49","#0fbd49","#0b8433","#0f83bd","#0f83bd","#0f83bd","#0f83bd","#0f83bd","#0f83bd","#0f83bd","#0f83bd","#0b5c84","#520b84","#740fbd","#740fbd","#740fbd","#740fbd","#740fbd","#740fbd","#520b84","#520b84"],["#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#84520b","#84520b","#84520b","#84520b","#84520b","#84520b","#84520b","#84520b","#84520b","#84800b","#84800b","#84800b","#84800b","#84800b","#84800b","#84800b","#84800b","#84800b","#0b8433","#0b8433","#0b8433","#0b8433","#0b8433","#0b8433","#0b8433","#0b8433","#0b8433","#0b5c84","#0b5c84","#0b5c84","#0b5c84","#0b5c84","#0b5c84","#0b5c84","#0b5c84","#0b5c84","#520b84","#520b84","#520b84","#520b84","#520b84","#520b84","#520b84","#520b84","#520b84"]],
+    color: [["#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#840b1f","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#84520b","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#84800b","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0b8433","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0b5c84","#ae3dff","#ae3dff","#ae3dff","#520b84","#520b84","#ae3dff","#ae3dff","#ae3dff","#520b84"],["#ff3d5e","#ff3d5e","#ff3d5e","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#840b1f","#bd740f","#bd740f","#bd740f","#bd740f","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#84520b","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#fff93d","#84800b","#3dff7e","#3dff7e","#3dff7e","#0fbd49","#0fbd49","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0f83bd","#0f83bd","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0f83bd","#0f83bd","#0b5c84","#ae3dff","#ae3dff","#ae3dff","#520b84","#520b84","#ae3dff","#ae3dff","#ae3dff","#520b84"],["#ff3d5e","#ff3d5e","#ff3d5e","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#84520b","#84520b","#84520b","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#bd740f","#84520b","#bdb70f","#bdb70f","#fff93d","#fff93d","#fff93d","#fff93d","#bdb70f","#bdb70f","#84800b","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0b8433","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0b5c84","#0b5c84","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0b5c84","#0b5c84","#0b5c84","#740fbd","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#740fbd","#520b84"],["#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#840b1f","#840b1f","#84520b","#84520b","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#bd740f","#84520b","#84520b","#84800b","#84800b","#fff93d","#fff93d","#fff93d","#fff93d","#84800b","#84800b","#84800b","#3dff7e","#3dff7e","#3dff7e","#0b8433","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0b5c84","#0b5c84","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0b5c84","#0b5c84","#0b5c84","#520b84","#740fbd","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#740fbd","#520b84","#520b84"],["#ff3d5e","#ff3d5e","#ff3d5e","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#840b1f","#840b1f","#84520b","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#bd740f","#84520b","#84520b","#84520b","#84800b","#84800b","#fff93d","#fff93d","#fff93d","#fff93d","#84800b","#84800b","#84800b","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#3dff7e","#0fbd49","#0fbd49","#0b8433","#0b5c84","#0b5c84","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0b5c84","#0b5c84","#0b5c84","#520b84","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#ae3dff","#520b84","#520b84"],["#ff3d5e","#ff3d5e","#ff3d5e","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#bd740f","#84520b","#84520b","#84520b","#84520b","#84800b","#84800b","#fff93d","#fff93d","#fff93d","#fff93d","#84800b","#84800b","#84800b","#3dff7e","#3dff7e","#3dff7e","#0fbd49","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0b8433","#0b5c84","#0b5c84","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0b5c84","#0b5c84","#0b5c84","#ae3dff","#ae3dff","#ae3dff","#740fbd","#740fbd","#ae3dff","#ae3dff","#ae3dff","#520b84"],["#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#ff3d5e","#840b1f","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#ffae3d","#84520b","#84800b","#84800b","#fff93d","#fff93d","#fff93d","#fff93d","#84800b","#84800b","#84800b","#3dff7e","#3dff7e","#3dff7e","#0b8433","#0fbd49","#3dff7e","#3dff7e","#3dff7e","#0b8433","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#3dbeff","#0b5c84","#ae3dff","#ae3dff","#ae3dff","#520b84","#520b84","#ae3dff","#ae3dff","#ae3dff","#520b84"],["#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#bd0f2c","#840b1f","#bd740f","#bd740f","#bd740f","#bd740f","#bd740f","#bd740f","#bd740f","#bd740f","#84520b","#84800b","#84800b","#bdb70f","#bdb70f","#bdb70f","#bdb70f","#84800b","#84800b","#84800b","#0fbd49","#0fbd49","#0fbd49","#0b8433","#0b8433","#0fbd49","#0fbd49","#0fbd49","#0b8433","#0f83bd","#0f83bd","#0f83bd","#0f83bd","#0f83bd","#0f83bd","#0f83bd","#0f83bd","#0b5c84","#740fbd","#740fbd","#740fbd","#520b84","#520b84","#740fbd","#740fbd","#740fbd","#520b84"],["#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#840b1f","#84520b","#84520b","#84520b","#84520b","#84520b","#84520b","#84520b","#84520b","#84520b","#84800b","#84800b","#84800b","#84800b","#84800b","#84800b","#84800b","#84800b","#84800b","#0b8433","#0b8433","#0b8433","#0b8433","#0b8433","#0b8433","#0b8433","#0b8433","#0b8433","#0b5c84","#0b5c84","#0b5c84","#0b5c84","#0b5c84","#0b5c84","#0b5c84","#0b5c84","#0b5c84","#520b84","#520b84","#520b84","#520b84","#520b84","#520b84","#520b84","#520b84","#520b84"]],
     difficulty: 2,
     rotation: {
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "dinosaur_footprints",
@@ -161863,19 +161923,20 @@ export const SHAPES = [
           "grid": [
             "..........vv..vv..........",
             "........vv......vv........",
-            "......vv....vv....vv......",
-            "....vv..............vv....",
-            "..vv..................vv..",
-            "vv......................vv"
+            "............vv............",
+            "..........................",
+            "..........................",
+            ".........................."
           ]
         },
-        "intro": "Erupts: brown foam fills every empty cell around it and under it, in a dome that reaches the walls, all the way down to the floor.",
+        "intro": "Erupts: brown foam fills every empty cell around it and under it, in a dome ten columns wide, all the way down to the floor.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "squat_volcano",
@@ -167278,18 +167339,19 @@ export const SHAPES = [
             ".....v...v.....",
             "....v..v..v....",
             "...v.......v...",
-            "..v.........v..",
-            ".v...........v.",
-            "v.............v"
+            "...............",
+            "...............",
+            "..............."
           ]
         },
-        "intro": "Lava spills out over both sides and runs down to the floor: every empty cell under it in a skirt fifteen columns wide, one row lower for each column out.",
+        "intro": "Lava spills out over both sides and runs down to the floor: every empty cell under it in a skirt nine columns wide, one row lower for each column out.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.4,
+    claudeDraft: true,
   },
   {
     id: "big_waterfall",
@@ -175876,18 +175938,19 @@ export const SHAPES = [
             "...v.......v...",
             "...............",
             "..v.........v..",
-            ".v...........v.",
             "...............",
-            "v.............v"
+            "...............",
+            "..............."
           ]
         },
-        "intro": "The river goes over the edge: water fills every empty cell under it, five columns wide, down to the floor, and its spray spreads out either side as it falls, fifteen columns wide at the bottom.",
+        "intro": "The river goes over the edge: water fills every empty cell under it, five columns wide, down to the floor, and its spray spreads out either side as it falls, eleven columns wide at the bottom.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "spilled_milk",
@@ -175924,19 +175987,20 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            ".######..######.",
-            "#######vv#######",
-            ".######..######.",
-            "....vvv..vvv...."
+            ".....##..##.....",
+            ".....##vv##.....",
+            ".....##..##.....",
+            ".....vv..vv....."
           ]
         },
-        "intro": "Spreads into a wide puddle: every empty cell of its own row and the two rows under it, fourteen to sixteen columns across, and it runs down into everything under the middle of it, eight columns wide, all the way to the floor.",
+        "intro": "Spreads into a puddle six columns across, two out either side: every empty cell beside it and under it, from its own row all the way down to the floor.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "inner_light",
@@ -175977,16 +176041,17 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "vvvvvvvvvvvvv"
+            "..vvvvvvvvv.."
           ]
         },
-        "intro": "Light pours out of it, sideways and down: every empty cell in its own row and under it, thirteen columns wide, all the way down to the floor.",
+        "intro": "Light pours out of it, sideways and down: every empty cell in its own row and under it, nine columns wide, all the way down to the floor.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "burst_of_sunshine",
@@ -176028,17 +176093,18 @@ export const SHAPES = [
             "...............",
             ".....vvvvv.....",
             "...vv.....vv...",
-            ".vv.........vv.",
-            "v.............v"
+            "...............",
+            "..............."
           ]
         },
-        "intro": "Sunbeams fan out underneath it: every empty cell in a wide cone under it, fifteen columns across at the bottom, all the way down to the floor.",
+        "intro": "Sunbeams fan out underneath it: every empty cell in a cone under it, nine columns across at the bottom, all the way down to the floor.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.4,
+    claudeDraft: true,
   },
   {
     id: "inflating_bouncy_castle",
@@ -179792,19 +179858,20 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "..vv........vv..",
+            "................",
             ".....v....v.....",
             "....v.vvvv.v....",
-            "vv............vv"
+            "................"
           ]
         },
-        "intro": "Inflates into a whole castle round it and under it: towers, battlements and every empty cell below them, sixteen columns wide, down to the floor.",
+        "intro": "Inflates into a whole castle round it and under it: a battlement either side and every empty cell below them, eight columns wide, down to the floor.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.35,
+    claudeDraft: true,
   },
   {
     id: "microwaved_marshmallow",
@@ -179851,21 +179918,22 @@ export const SHAPES = [
           ],
           "grid": [
             ".....###.....",
-            ".###########.",
-            "######.######",
-            "v###########v",
-            ".v#########v.",
-            "..vvv###vvv..",
+            "...#######...",
+            "...###.###...",
+            "...#######...",
+            "...#######...",
+            "...vv###vv...",
             ".....vvv....."
           ]
         },
-        "intro": "Puffs up into one great round marshmallow round itself, thirteen columns wide, and sags into every gap under it, down to the floor.",
+        "intro": "Puffs up into one great round marshmallow round itself, seven columns wide, and sags into every gap under it, down to the floor.",
         "help": 4.5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.7,
+    claudeDraft: true,
   },
   {
     id: "incoming_tide",
@@ -179930,16 +179998,17 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "vvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
+            ".........vvvvvvvvvvv........."
           ]
         },
-        "intro": "Fills every empty cell in its own row and everything under it, wall to wall, with the sea.",
+        "intro": "Fills every empty cell in its own row and everything under it, eleven columns wide, with the sea.",
         "help": 5
       },
     rotation: {
         "mode": "any"
       },
     frequency: 0.25,
+    claudeDraft: true,
   },
   {
     id: "bathroom_tiles",
@@ -179953,14 +180022,14 @@ export const SHAPES = [
         "type": "expander",
         "tier": 2,
         "help": 5,
-        "intro": "Tiles every empty cell in the twelve columns around it, from its own top row down to the floor. The grout is spotless.",
+        "intro": "Tiles every empty cell in the six columns around it, from its own top row down to the floor. The grout is spotless.",
         "area": {
           "origin": [
             5,
             0
           ],
           "grid": [
-            "vvvvvvvvvvvv"
+            "...vvvvvv..."
           ]
         },
         "fill": {
@@ -180014,6 +180083,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
+    claudeDraft: true,
   },
   {
     id: "herringbone_floor",
@@ -180027,7 +180097,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Lays a parquet floor in a broad step: four columns wide from its own top row, fourteen wide from two rows lower, every empty cell down to the floor.",
+        "intro": "Lays a parquet floor in a broad step: four columns wide from its own top row, eight wide from two rows lower, every empty cell down to the floor.",
         "area": {
           "origin": [
             6,
@@ -180036,7 +180106,7 @@ export const SHAPES = [
           "grid": [
             ".....vvvv.....",
             "..............",
-            "vvvvv....vvvvv"
+            "...vv....vv..."
           ]
         },
         "fill": {
@@ -184372,6 +184442,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.45,
+    claudeDraft: true,
   },
   {
     id: "hexagonal_tiles",
@@ -184385,14 +184456,14 @@ export const SHAPES = [
         "type": "expander",
         "tier": 2,
         "help": 5,
-        "intro": "Tiles its own two rows and the row under them, wall to wall, in hexagons of three colours, no two of a colour side by side.",
+        "intro": "Tiles its lower row and the row under it, wall to wall, in hexagons of three colours, no two of a colour side by side.",
         "area": {
           "origin": [
             0,
             0
           ],
           "grid": [
-            "-",
+            ".",
             "-",
             "-"
           ]
@@ -186748,6 +186819,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
+    claudeDraft: true,
   },
   {
     id: "fish_scale_tiles",
@@ -186761,7 +186833,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Tiles a mound of fish scales round it, a row lower every two columns out, fourteen columns wide at the bottom, every empty cell down to the floor. No fish were involved.",
+        "intro": "Tiles a mound of fish scales round it, a row lower every two columns out, eight columns wide at the bottom, every empty cell down to the floor. No fish were involved.",
         "area": {
           "origin": [
             6,
@@ -186770,8 +186842,8 @@ export const SHAPES = [
           "grid": [
             "......vv......",
             "....vv..vv....",
-            "..vv......vv..",
-            "vv..........vv"
+            "...v......v...",
+            ".............."
           ]
         },
         "fill": {
@@ -191084,6 +191156,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.45,
+    claudeDraft: true,
   },
   {
     id: "moroccan_mosaic",
@@ -191097,7 +191170,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Spreads into a mound of stars and crosses round it, a row lower every column out, fourteen columns wide at the bottom, every empty cell down to the floor.",
+        "intro": "Spreads into a mound of stars and crosses round it, a row lower every column out, eight columns wide at the bottom, every empty cell down to the floor.",
         "area": {
           "origin": [
             6,
@@ -191107,9 +191180,9 @@ export const SHAPES = [
             ".....vvvv.....",
             "....v....v....",
             "...v......v...",
-            "..v........v..",
-            ".v..........v.",
-            "v............v"
+            "..............",
+            "..............",
+            ".............."
           ]
         },
         "fill": {
@@ -195383,6 +195456,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "terrazzo_slab",
@@ -195395,7 +195469,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 2,
         "help": 5,
-        "intro": "Pours into the three rows under it, wall to wall, and sets.",
+        "intro": "Pours into the two rows under it, wall to wall, and sets.",
         "area": {
           "origin": [
             0,
@@ -195405,7 +195479,7 @@ export const SHAPES = [
             ".",
             "-",
             "-",
-            "-"
+            "."
           ]
         },
         "fill": {
@@ -195546,6 +195620,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0,
+    claudeDraft: true,
   },
   {
     id: "tessellating_lizards",
@@ -195559,7 +195634,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Lizards fit themselves into every empty cell under it, a column to its right and eleven out to its left, a row lower every two columns, down to the floor. They always fit.",
+        "intro": "Lizards fit themselves into every empty cell under it, a column to its right and five out to its left, a row lower every two columns, down to the floor. They always fit.",
         "area": {
           "origin": [
             11,
@@ -195570,10 +195645,10 @@ export const SHAPES = [
             "...............",
             ".........vv...v",
             ".......vv......",
-            ".....vv........",
-            "...vv..........",
-            ".vv............",
-            "v.............."
+            "......v........",
+            "...............",
+            "...............",
+            "..............."
           ]
         },
         "fill": {
@@ -198251,6 +198326,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "chequered_marble",
@@ -198264,14 +198340,14 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Lays a marble floor across the whole board under it: every empty cell, wall to wall, from its own top row down to the floor. The echo is tremendous.",
+        "intro": "Lays a marble floor under it and either side: every empty cell, ten columns wide, from its own top row down to the floor. The echo is tremendous.",
         "area": {
           "origin": [
             30,
             0
           ],
           "grid": [
-            "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
+            "..........................vvvvvvvvvv.........................."
           ]
         },
         "fill": {
@@ -200013,6 +200089,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.2,
+    claudeDraft: true,
   },
   {
     id: "lego_few_bricks",
@@ -200025,14 +200102,14 @@ export const SHAPES = [
         "type": "expander",
         "tier": 2,
         "help": 5,
-        "intro": "Fills every empty cell in the twelve columns around it with Lego, from its own row down to the floor. There are never just a few.",
+        "intro": "Fills every empty cell in the six columns around it with Lego, from its own row down to the floor. There are never just a few.",
         "area": {
           "origin": [
             5,
             0
           ],
           "grid": [
-            "vvvvvvvvvvvv"
+            "...vvvvvv..."
           ]
         },
         "fill": {
@@ -204848,6 +204925,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.6,
+    claudeDraft: true,
   },
   {
     id: "lego_heap",
@@ -204861,7 +204939,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Tips out into a heap round it, a row lower every column out, fifteen columns wide at the bottom, every empty cell down to the floor. Someone will tread on one.",
+        "intro": "Tips out into a heap round it, a row lower every column out, nine columns wide at the bottom, every empty cell down to the floor. Someone will tread on one.",
         "area": {
           "origin": [
             6,
@@ -204872,9 +204950,9 @@ export const SHAPES = [
             ".....v...v.....",
             "....v.....v....",
             "...v.......v...",
-            "..v.........v..",
-            ".v...........v.",
-            "v.............v"
+            "...............",
+            "...............",
+            "..............."
           ]
         },
         "fill": {
@@ -209654,6 +209732,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "lego_tub",
@@ -209667,7 +209746,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Empties out across the four rows under it, wall to wall. The instructions are in there somewhere.",
+        "intro": "Empties out across the two rows under it, wall to wall. The instructions are in there somewhere.",
         "area": {
           "origin": [
             0,
@@ -209678,8 +209757,8 @@ export const SHAPES = [
             ".",
             "-",
             "-",
-            "-",
-            "-"
+            ".",
+            "."
           ]
         },
         "fill": {
@@ -214449,6 +214528,7 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
   {
     id: "lego_bucket",
@@ -214462,7 +214542,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Spills into every empty cell under it, a column to its left and eleven out to its right, a row lower every two columns, down to the floor.",
+        "intro": "Spills into every empty cell under it, a column to its left and five out to its right, a row lower every two columns, down to the floor.",
         "area": {
           "origin": [
             1,
@@ -214472,10 +214552,10 @@ export const SHAPES = [
             ".vv...........",
             "...vv.........",
             "v....vv.......",
-            ".......vv.....",
-            ".........vv...",
-            "...........vv.",
-            ".............v"
+            ".......v......",
+            "..............",
+            "..............",
+            ".............."
           ]
         },
         "fill": {
@@ -219253,581 +219333,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.5,
+    claudeDraft: true,
   },
 ];
-
-// ------------------------------------------------------------------
-// PHANTOMZ REMOVED (helper model): the phantom powerup is out of the game, so every entry
-// with powerup.type "phantom" was moved out of the SHAPES array into this comment.
-// Kept outside the array on purpose: block_designer.html drops comments *inside* the array
-// when it saves, but keeps text after it. Combos that include a phantom part were left alone.
-// To restore one, move it back inside SHAPES above.
-/*
-  {
-    id: "friendly_ghost",
-    name: "a friendly ghost",
-    grid: [
-        "X"
-      ],
-    color: [["#969cb3","#cdd0d6","#cdd0d6","#cdd0d6","#cdd0d6","#cdd0d6","#969cb3"],["#cdd0d6","#ffffff","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#cdd0d6"],["#cdd0d6","#f4f8ff","#3a3a70","#f4f8ff","#3a3a70","#f4f8ff","#8d97bc"],["#cdd0d6","#ffc0d8","#f4f8ff","#f4f8ff","#f4f8ff","#ffc0d8","#8d97bc"],["#cdd0d6","#f4f8ff","#f4f8ff","#ff9ec4","#f4f8ff","#f4f8ff","#8d97bc"],["#cdd0d6","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#8d97bc"],["#7b84a4","#cdd0d6","#8d97bc","#cdd0d6","#8d97bc","#cdd0d6","#7b84a4"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "It floats straight down through your blocks and settles into the deepest gap it fits, where it stays. It just wanted to help.",
-        "help": 2,
-        "starter": true
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 1,
-    claudeDraft: true,
-  },
-  {
-    id: "quantum_lentil",
-    name: "a quantum lentil",
-    grid: [
-        "X"
-      ],
-    color: [["#74b2ba","#b5d4d6","#86ccd6","#b5d4d6","#86ccd6","#ca8651","#9d5631"],["#b5d4d6","#9ff3ff","#d8fcff","#9ff3ff","#f0a060","#ffd0a0","#b56338"],["#86ccd6","#d8fcff","#9ff3ff","#f0a060","#ffd0a0","#f0a060","#b56338"],["#b5d4d6","#9ff3ff","#f0a060","#ffd0a0","#f0a060","#f0a060","#b56338"],["#86ccd6","#f0a060","#ffd0a0","#f0a060","#f0a060","#d77643","#944c28"],["#ca8651","#f0a060","#f0a060","#f0a060","#d77643","#b05a30","#944c28"],["#af7546","#b56338","#b56338","#b56338","#944c28","#944c28","#814223"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Until it lands, it is both here and at the bottom of your stack. It passes through blocks and drops into the deepest gap it fits.",
-        "help": 2
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.9,
-    claudeDraft: true,
-  },
-  {
-    id: "ghost_sock",
-    name: "the ghost of a sock",
-    grid: [
-        "X",
-        "X"
-      ],
-    color: [["#979eba","#aeb5d6","#aeb5d6","#aeb5d6","#aeb5d6","#aeb5d6","#979eba"],["#aeb5d6","#fee761","#fee761","#fee761","#fee761","#fee761","#aeb5d6"],["#d6a1b5","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#d6a1b5"],["#cdd0d6","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#9ea8ca"],["#8dc0d6","#a8e4ff","#a8e4ff","#a8e4ff","#a8e4ff","#a8e4ff","#8dc0d6"],["#cdd0d6","#4a4a80","#f4f8ff","#f4f8ff","#4a4a80","#f4f8ff","#9ea8ca"],["#cdd0d6","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#9ea8ca"],["#cdd0d6","#f4f8ff","#f4f8ff","#7080b8","#f4f8ff","#f4f8ff","#9ea8ca"],["#cdd0d6","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#9ea8ca"],["#cdd0d6","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#9ea8ca"],["#d6a1b5","#ffc0d8","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#9ea8ca"],["#d6a1b5","#ffc0d8","#ffc0d8","#f4f8ff","#f4f8ff","#f4f8ff","#9ea8ca"],["#cdd0d6","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#ff9ec4","#d685a5"],["#8992af","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#d685a5","#ba738f"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Lost in the dryer, now at peace. It drifts through your blocks and lies down in the deepest gap it fits. Its partner is still out there.",
-        "help": 2.5,
-        "starter": true
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.9,
-  },
-  {
-    id: "phasing_cat",
-    name: "a cat that walks through walls",
-    grid: [
-        "XX"
-      ],
-    color: [["#aeafba","#c8cad6","#9ba1ca","#c8cad6","#c8cad6","#9b5143","#9b5143","#663e3e","#9b5143","#c8cad6","#d685a5","#c8cad6","#d685a5","#aeafba"],["#c8cad6","#b8c0f0","#eef0ff","#eef0ff","#eef0ff","#b86050","#b86050","#7a4a4a","#b86050","#eef0ff","#eef0ff","#eef0ff","#eef0ff","#c8cad6"],["#c8cad6","#eef0ff","#eef0ff","#eef0ff","#eef0ff","#7a4a4a","#7a4a4a","#7a4a4a","#7a4a4a","#eef0ff","#2ce8f5","#eef0ff","#2ce8f5","#c8cad6"],["#c8cad6","#eef0ff","#eef0ff","#eef0ff","#eef0ff","#7a4a4a","#b86050","#b86050","#b86050","#eef0ff","#eef0ff","#ff9ec4","#eef0ff","#c8cad6"],["#c8cad6","#eef0ff","#eef0ff","#eef0ff","#eef0ff","#7a4a4a","#b86050","#b86050","#b86050","#8890c8","#eef0ff","#eef0ff","#eef0ff","#7279a8"],["#9ba1ca","#eef0ff","#b8c0f0","#eef0ff","#b8c0f0","#7a4a4a","#7a4a4a","#7a4a4a","#7a4a4a","#eef0ff","#eef0ff","#eef0ff","#eef0ff","#c8cad6"],["#aeafba","#9ba1ca","#c8cad6","#9ba1ca","#c8cad6","#9b5143","#9b5143","#663e3e","#9b5143","#9ba1ca","#c8cad6","#9ba1ca","#c8cad6","#868caf"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Ignores walls, blocks and you. It strolls straight down through the stack into the deepest gap it fits, and sits there like it owns the place.",
-        "help": 2
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.9,
-  },
-  {
-    id: "ghost_worm",
-    name: "the ghost of a worm",
-    grid: [
-        "X",
-        "X",
-        "X"
-      ],
-    color: [["#979eba","#aeb5d6","#aeb5d6","#aeb5d6","#aeb5d6","#979eba"],["#aeb5d6","#fee761","#fee761","#fee761","#fee761","#aeb5d6"],["#d6b5c3","#6a3050","#ffd8e8","#ffd8e8","#6a3050","#a8748d"],["#d6b5c3","#fff0f6","#d0709a","#d0709a","#ffd8e8","#a8748d"],["#c38da8","#e8a8c8","#e8a8c8","#e8a8c8","#e8a8c8","#c38da8"],["#d6b5c3","#fff0f6","#ffd8e8","#ffd8e8","#ffd8e8","#a8748d"],["#d6b5c3","#fff0f6","#ffd8e8","#ffd8e8","#ffd8e8","#a8748d"],["#c38da8","#e8a8c8","#e8a8c8","#e8a8c8","#e8a8c8","#c38da8"],["#d6b5c3","#ffd8e8","#fff0f6","#ffd8e8","#ffd8e8","#a8748d"],["#d6b5c3","#ffd8e8","#fff0f6","#ffd8e8","#ffd8e8","#a8748d"],["#c38da8","#e8a8c8","#e8a8c8","#e8a8c8","#e8a8c8","#c38da8"],["#d6b5c3","#ffd8e8","#fff0f6","#ffd8e8","#ffd8e8","#a8748d"],["#d6b5c3","#ffd8e8","#fff0f6","#ffd8e8","#ffd8e8","#a8748d"],["#c38da8","#e8a8c8","#e8a8c8","#e8a8c8","#e8a8c8","#c38da8"],["#d6b5c3","#fff0f6","#ffd8e8","#ffd8e8","#ffd8e8","#a8748d"],["#d6b5c3","#fff0f6","#ffd8e8","#ffd8e8","#ffd8e8","#a8748d"],["#c38da8","#e8a8c8","#e8a8c8","#e8a8c8","#e8a8c8","#c38da8"],["#92657b","#c38da8","#c38da8","#c38da8","#a8748d","#92657b"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Gone to the big compost heap in the sky. It wriggles down through solid blocks into the deepest gap it fits.",
-        "help": 2
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.8,
-  },
-  {
-    id: "forgotten_memories",
-    name: "a pair of forgotten memories",
-    grid: [
-        "X.X"
-      ],
-    color: [["#e8e4f8","#e8e4f8","#e8e4f8","#e8e4f8","#e8e4f8","#e8e4f8","","","","","","","#e8e4f8","#e8e4f8","#e8e4f8","#e8e4f8","#e8e4f8","#e8e4f8"],["#e8e4f8","#8090c0","#8090c0","#8090c0","#8090c0","#e8e4f8","","","","","","","#e8e4f8","#8090c0","#6a5070","#6a5070","#8090c0","#e8e4f8"],["#e8e4f8","#fee761","#fee761","#8090c0","#8090c0","#e8e4f8","","","","","","","#e8e4f8","#8090c0","#e8c0a8","#e8c0a8","#8090c0","#e8e4f8"],["#e8e4f8","#8090c0","#fee761","#fee761","#fee761","#b8b0d8","","","","","","","#e8e4f8","#8090c0","#e8c0a8","#e8c0a8","#8090c0","#b8b0d8"],["#e8e4f8","#e8e4f8","#e8e4f8","#e8e4f8","#e8e4f8","#b8b0d8","","","","","","","#e8e4f8","#8090c0","#8090c0","#8090c0","#e8e4f8","#b8b0d8"],["#e8e4f8","#e8e4f8","#b8b0d8","#e8e4f8","#b8b0d8","#b8b0d8","","","","","","","#e8e4f8","#e8e4f8","#b8b0d8","#e8e4f8","#b8b0d8","#b8b0d8"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 2,
-        "intro": "One is where you left your keys. The other is that guy's name. They sink through everything and settle into the deepest gap they fit, never to be seen again.",
-        "help": 2
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0,
-    claudeDraft: true,
-  },
-  {
-    id: "ghost_tetromino",
-    name: "the ghost of a tetris piece",
-    grid: [
-        "X..",
-        "XXX"
-      ],
-    color: [["#a8c8ff","#a8c8ff","#a8c8ff","#a8c8ff","#a8c8ff","#5a7cff","","","","","","","","","","","",""],["#a8c8ff","#1a2280","#1a2280","#1a2280","#1a2280","#5a7cff","","","","","","","","","","","",""],["#a8c8ff","#e8f0ff","#1a2280","#1a2280","#e8f0ff","#5a7cff","","","","","","","","","","","",""],["#a8c8ff","#1a2280","#1a2280","#1a2280","#1a2280","#5a7cff","","","","","","","","","","","",""],["#a8c8ff","#1a2280","#1a2280","#2a34a0","#1a2280","#5a7cff","","","","","","","","","","","",""],["#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","","","","","","","","","","","",""],["#a8c8ff","#a8c8ff","#a8c8ff","#a8c8ff","#a8c8ff","#5a7cff","#a8c8ff","#a8c8ff","#a8c8ff","#a8c8ff","#a8c8ff","#5a7cff","#a8c8ff","#a8c8ff","#a8c8ff","#a8c8ff","#a8c8ff","#5a7cff"],["#a8c8ff","#1a2280","#1a2280","#1a2280","#1a2280","#5a7cff","#a8c8ff","#1a2280","#1a2280","#1a2280","#1a2280","#5a7cff","#a8c8ff","#1a2280","#1a2280","#1a2280","#1a2280","#5a7cff"],["#a8c8ff","#1a2280","#2a34a0","#1a2280","#1a2280","#5a7cff","#a8c8ff","#1a2280","#2a34a0","#1a2280","#1a2280","#5a7cff","#a8c8ff","#1a2280","#2a34a0","#1a2280","#1a2280","#5a7cff"],["#a8c8ff","#1a2280","#1a2280","#1a2280","#1a2280","#5a7cff","#a8c8ff","#1a2280","#1a2280","#1a2280","#1a2280","#5a7cff","#a8c8ff","#1a2280","#1a2280","#1a2280","#1a2280","#5a7cff"],["#a8c8ff","#1a2280","#1a2280","#1a2280","#1a2280","#5a7cff","#a8c8ff","#1a2280","#1a2280","#1a2280","#1a2280","#5a7cff","#a8c8ff","#1a2280","#1a2280","#1a2280","#1a2280","#5a7cff"],["#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff","#5a7cff"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 2,
-        "intro": "You've seen it before: the faint outline showing where a piece will land. Now it goes there for real, straight through your blocks into the deepest gap it fits.",
-        "help": 1.5
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0,
-    claudeDraft: true,
-  },
-  {
-    id: "haunted_bedsheet",
-    name: "a haunted bedsheet",
-    grid: [
-        "XX",
-        "XX"
-      ],
-    color: [["#71799e","#a5aeca","#c8cdd6","#c8cdd6","#c8cdd6","#c8cdd6","#c8cdd6","#c8cdd6","#c8cdd6","#c8cdd6","#a5aeca","#8f97af"],["#a5aeca","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#a5aeca"],["#c8cdd6","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#c8cdd6"],["#c8cdd6","#eef4ff","#3a4680","#3a4680","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#3a4680","#3a4680","#eef4ff","#c8cdd6"],["#c8cdd6","#eef4ff","#3a4680","#3a4680","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#3a4680","#3a4680","#eef4ff","#a5aeca"],["#c8cdd6","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#a5aeca"],["#d6a1b5","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#d6a1b5"],["#c8cdd6","#eef4ff","#eef4ff","#c4cff0","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#c4cff0","#eef4ff","#eef4ff","#a5aeca"],["#c8cdd6","#eef4ff","#eef4ff","#c4cff0","#eef4ff","#eef4ff","#eef4ff","#eef4ff","#c4cff0","#eef4ff","#ffffff","#d6d6d6"],["#d6a1b5","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#ffc0d8","#e43b44","#d6d6d6"],["#c8cdd6","#c4cff0","#eef4ff","#eef4ff","#eef4ff","#c4cff0","#eef4ff","#eef4ff","#eef4ff","#c4cff0","#eef4ff","#c8cdd6"],["#71799e","#c8cdd6","#818bb5","#c8cdd6","#818bb5","#c8cdd6","#818bb5","#c8cdd6","#818bb5","#c8cdd6","#818bb5","#aeb2ba"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 2,
-        "intro": "There is nobody underneath. It floats down through your blocks and settles in the deepest gap it fits. Wash at 40.",
-        "help": 1
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0,
-    claudeDraft: true,
-  },
-  {
-    id: "will_o_wisp",
-    name: "a will-o'-the-wisp",
-    grid: [
-        "X"
-      ],
-    color: [["#137b9e","#25c3ce","#168db5","#86ccd6","#168db5","#25c3ce","#137b9e"],["#25c3ce","#9ff3ff","#2ce8f5","#9ff3ff","#2ce8f5","#9ff3ff","#25c3ce"],["#25c3ce","#9ff3ff","#9ff3ff","#ffffff","#9ff3ff","#9ff3ff","#25c3ce"],["#25c3ce","#9ff3ff","#2a4a8a","#ffffff","#2a4a8a","#9ff3ff","#25c3ce"],["#25c3ce","#9ff3ff","#ffffff","#ffffff","#ffffff","#9ff3ff","#25c3ce"],["#25c3ce","#2ce8f5","#9ff3ff","#9ff3ff","#9ff3ff","#2ce8f5","#25c3ce"],["#137b9e","#25c3ce","#168db5","#25c3ce","#168db5","#25c3ce","#137b9e"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Drifts straight down through your blocks into the deepest gap it fits, and stays there glowing. Do not follow it into the swamp.",
-        "help": 2
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.84,
-  },
-  {
-    id: "quantum_electron",
-    name: "an electron",
-    grid: [
-        "X"
-      ],
-    color: [["#5286d9","#4f93ff","#4372d0","#4f93ff","#4372d0","#4f93ff","#5286d9"],["#4f93ff","#8fd8ff","#3a7cff","#3a7cff","#3a7cff","#8fd8ff","#4f93ff"],["#4372d0","#3a7cff","#8fd8ff","#8fd8ff","#8fd8ff","#3a7cff","#4372d0"],["#4f93ff","#8fd8ff","#ffffff","#ffffff","#ffffff","#8fd8ff","#4f93ff"],["#4372d0","#3a7cff","#8fd8ff","#8fd8ff","#8fd8ff","#3a7cff","#4372d0"],["#4f93ff","#8fd8ff","#3a7cff","#3a7cff","#3a7cff","#8fd8ff","#4f93ff"],["#5286d9","#4f93ff","#4372d0","#4f93ff","#4372d0","#4f93ff","#5286d9"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Tunnels straight through your blocks and turns up in the deepest gap it fits. Physicists hate it. It's very negative about the whole thing.",
-        "help": 2
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 1,
-  },
-  {
-    id: "ghost_pepper",
-    name: "a ghost pepper",
-    grid: [
-        "X",
-        "X"
-      ],
-    color: [["#2d593c","#4c865e","#346645","#86bc94","#346645","#4c865e","#2d593c"],["#4c865e","#5aa070","#5aa070","#5aa070","#5aa070","#5aa070","#4c865e"],["#346645","#5aa070","#3e7a52","#5aa070","#3e7a52","#5aa070","#346645"],["#c35e72","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#6a2a40","#ffb0b8","#6a2a40","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#6a2a40","#ffb0b8","#6a2a40","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffb0b8","#ffe0e4","#a03050","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffe0e4","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#c35e72"],["#d6949b","#ffb0b8","#ffe0e4","#ffb0b8","#ffb0b8","#ffb0b8","#aa5263"],["#d6949b","#ffb0b8","#ffb0b8","#ffb0b8","#e87088","#ffb0b8","#6a2a40"],["#aa5263","#ffb0b8","#ffb0b8","#ffb0b8","#ffb0b8","#d6949b","#6a2a40"],["#6a2a40","#ffb0b8","#aa5263","#ffb0b8","#aa5263","#d6949b","#6a2a40"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "So hot it went straight through the stack. It falls through blocks into the deepest gap it fits and stays there, still burning.",
-        "help": 2.5,
-        "starter": true
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.9,
-  },
-  {
-    id: "poltergeist_teacup",
-    name: "a poltergeist's teacup",
-    grid: [
-        "XX"
-      ],
-    color: [["#7b84a4","#a88065","#a88065","#a88065","#a88065","#a88065","#a88065","#a88065","#a88065","#6674af","#9ba6cb","#9ba6cb","#9ba6cb","#8691b1"],["#cdcfd6","#c89878","#c89878","#a87050","#c89878","#c89878","#a87050","#c89878","#c89878","#f4f6ff","#7a8ad0","#7a8ad0","#7a8ad0","#9ba6cb"],["#cdcfd6","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#7a8ad0","#b8c6f2","#7a8ad0","#9ba6cb"],["#cdcfd6","#ff8ab8","#f4f6ff","#ff8ab8","#f4f6ff","#ff8ab8","#f4f6ff","#ff8ab8","#f4f6ff","#f4f6ff","#7a8ad0","#b8c6f2","#7a8ad0","#9ba6cb"],["#8d97bc","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#a8b4e0","#7a8ad0","#7a8ad0","#7a8ad0","#9ba6cb"],["#9ba6cb","#a8b4e0","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#f4f6ff","#a8b4e0","#b8c6f2","#b8c6f2","#b8c6f2","#b8c6f2","#9ba6cb"],["#bababa","#d6d6d6","#d6d6d6","#d6d6d6","#d6d6d6","#d6d6d6","#d6d6d6","#d6d6d6","#d6d6d6","#d6d6d6","#d6d6d6","#d6d6d6","#d6d6d6","#7b84a4"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Floats down through the blocks and settles into the deepest gap it fits. The tea is still hot. Nobody poured it.",
-        "help": 3,
-        "starter": true
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0,
-  },
-  {
-    id: "bar_of_soap",
-    name: "prison soap",
-    grid: [
-        "XX"
-      ],
-    color: [["#b2b5ba","#a8cdd6","#cdd0d6","#d6bfca","#d6bfca","#d6bfca","#d6bfca","#cdd0d6","#a8cdd6","#d6bfca","#d6bfca","#cdd0d6","#a8cdd6","#b2b5ba"],["#d685a5","#ffe3f0","#ffe3f0","#ffe3f0","#ffe3f0","#ffe3f0","#ffe3f0","#ffe3f0","#ffe3f0","#ffe3f0","#ffe3f0","#ffe3f0","#ff9ec4","#bc5e86"],["#d685a5","#ffe3f0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#ffe3f0","#bc5e86"],["#d685a5","#ffe3f0","#e070a0","#ff9ec4","#ff9ec4","#ffe3f0","#ff9ec4","#ff9ec4","#ffe3f0","#ff9ec4","#ff9ec4","#e070a0","#ff9ec4","#bc5e86"],["#d685a5","#ffe3f0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#e070a0","#ff9ec4","#bc5e86"],["#d685a5","#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#ff9ec4","#e070a0","#bc5e86"],["#a45275","#a8cdd6","#bc5e86","#bc5e86","#bc5e86","#bc5e86","#cdd0d6","#bc5e86","#bc5e86","#bc5e86","#bc5e86","#a8cdd6","#bc5e86","#a45275"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Slips straight through your blocks and ends up in the deepest gap it fits, exactly like it does in the shower.",
-        "help": 2
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.9,
-  },
-  {
-    id: "spirit_level",
-    name: "a spirit level",
-    grid: [
-        "XXX"
-      ],
-    color: [["#656f92","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#9ea8ca","#656f92"],["#9ea8ca","#f4f8ff","#5a6aa8","#f4f8ff","#f4f8ff","#f4f8ff","#8a98c8","#4fa880","#4fa880","#4fa880","#4fa880","#4fa880","#4fa880","#8a98c8","#f4f8ff","#f4f8ff","#5a6aa8","#9ea8ca"],["#9ea8ca","#f4f8ff","#5a6aa8","#f4f8ff","#f4f8ff","#f4f8ff","#4fa880","#7ad8a8","#ffffff","#ffffff","#7ad8a8","#7ad8a8","#4fa880","#f4f8ff","#f4f8ff","#f4f8ff","#5a6aa8","#9ea8ca"],["#9ea8ca","#f4f8ff","#5a6aa8","#f4f8ff","#f4f8ff","#f4f8ff","#4fa880","#7ad8a8","#7ad8a8","#7ad8a8","#7ad8a8","#7ad8a8","#4fa880","#f4f8ff","#f4f8ff","#f4f8ff","#5a6aa8","#9ea8ca"],["#9ea8ca","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#f4f8ff","#8a98c8","#4fa880","#4fa880","#4fa880","#4fa880","#4fa880","#4fa880","#8a98c8","#f4f8ff","#f4f8ff","#f4f8ff","#9ea8ca"],["#656f92","#7480a8","#7480a8","#7480a8","#7480a8","#7480a8","#7480a8","#7480a8","#7480a8","#7480a8","#7480a8","#7480a8","#7480a8","#7480a8","#7480a8","#7480a8","#7480a8","#656f92"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "A genuinely spiritual spirit level. It passes through your blocks and lies down in the deepest gap it fits, perfectly level.",
-        "help": 1.5
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0,
-  },
-  {
-    id: "greased_piglet",
-    name: "a greasy piglet",
-    grid: [
-        "XXX"
-      ],
-    color: [["#ba8192","#d694a8","#d694a8","#d694a8","#d694a8","#d694a8","#d694a8","#d694a8","#d694a8","#d694a8","#d694a8","#d694a8","#bc6580","#bc6580","#d694a8","#d694a8","#bc6580","#a4586f"],["#a8516c","#c86080","#fff6fa","#fff6fa","#fff6fa","#ffb0c8","#fff6fa","#fff6fa","#fff6fa","#fff6fa","#ffb0c8","#ffb0c8","#ffb0c8","#e07898","#ffb0c8","#ffb0c8","#e07898","#d694a8"],["#a8516c","#ffb0c8","#ffb0c8","#fff6fa","#fff6fa","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#3e2731","#ffb0c8","#ffb0c8","#3e2731","#d694a8"],["#d694a8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ff7aa0","#ff7aa0","#ff7aa0","#ff7aa0","#d694a8"],["#bc6580","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#ffb0c8","#e07898","#ffb0c8","#ff7aa0","#a0405a","#a0405a","#ff7aa0","#d694a8"],["#a4586f","#943c57","#bc6580","#bc6580","#bc6580","#943c57","#bc6580","#bc6580","#bc6580","#943c57","#bc6580","#bc6580","#bc6580","#943c57","#bc6580","#bc6580","#943c57","#a4586f"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Nobody can hold on to it, blocks included. It squirts down through the stack into the deepest gap it fits. Squeal.",
-        "help": 1.5
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.8,
-  },
-  {
-    id: "phantom_finger",
-    name: "the ghost of a finger",
-    grid: [
-        "X.",
-        "XX"
-      ],
-    color: [["#8189aa","#c3c6d6","#d6a8b9","#d6a8b9","#d6a8b9","#c3c6d6","#8189aa","","","","","","",""],["#c3c6d6","#e8ecff","#ffc8dc","#ffe8f0","#ffc8dc","#e8ecff","#949ec3","","","","","","",""],["#c3c6d6","#e8ecff","#ffc8dc","#ffc8dc","#ffc8dc","#e8ecff","#949ec3","","","","","","",""],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#949ec3","","","","","","",""],["#c3c6d6","#7080b8","#7080b8","#7080b8","#7080b8","#e8ecff","#949ec3","","","","","","",""],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#949ec3","","","","","","",""],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#c3c6d6","","","","","","",""],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#c3c6d6","#c3c6d6","#c3c6d6","#c3c6d6","#c3c6d6","#c3c6d6","#8189aa"],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#7080b8","#e8ecff","#e8ecff","#7080b8","#e8ecff","#e8ecff","#7080b8","#949ec3"],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#7080b8","#e8ecff","#e8ecff","#7080b8","#e8ecff","#e8ecff","#7080b8","#949ec3"],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#7080b8","#e8ecff","#e8ecff","#7080b8","#e8ecff","#e8ecff","#7080b8","#949ec3"],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#949ec3"],["#c3c6d6","#c8f0ff","#e8ecff","#e8ecff","#c8f0ff","#e8ecff","#e8ecff","#c8f0ff","#e8ecff","#e8ecff","#c8f0ff","#e8ecff","#e8ecff","#949ec3"],["#8189aa","#c3c6d6","#949ec3","#949ec3","#c3c6d6","#949ec3","#949ec3","#c3c6d6","#949ec3","#949ec3","#c3c6d6","#949ec3","#949ec3","#8189aa"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Somebody's phantom limb. It sinks through your blocks into the deepest gap it fits, and points. It still itches.",
-        "help": 2
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.8,
-  },
-  {
-    id: "ghost_eel",
-    name: "an extremely slippery eel",
-    grid: [
-        "XXXX"
-      ],
-    color: [["#2e4d42","#4c745e","#35594c","#4c745e","#35594c","#4c745e","#35594c","#4c745e","#35594c","#4c745e","#35594c","#4c745e","#35594c","#4c745e","#35594c","#4c745e","#35594c","#4c745e","#35594c","#4c745e","#35594c","#4c745e","#507865","#456858"],["#35594c","#7fb398","#7fb398","#7fb398","#7fb398","#d8fff0","#7fb398","#7fb398","#7fb398","#7fb398","#7fb398","#7fb398","#d8fff0","#7fb398","#7fb398","#7fb398","#7fb398","#7fb398","#7fb398","#4a7563","#7fb398","#5f8f78","#5f8f78","#507865"],["#35594c","#5f8f78","#d8fff0","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#d8fff0","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#d8fff0","#5f8f78","#5f8f78","#5f8f78","#4a7563","#5f8f78","#fee761","#2a2550","#507865"],["#4c745e","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#5f8f78","#4a7563","#5f8f78","#5f8f78","#2f4a40","#273e36"],["#35594c","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#c8dca0","#2f4a40","#507865"],["#7b895e","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#8d9e6c","#7b895e"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 2,
-        "intro": "Slides down through every block in the way into the deepest gap it fits. Turn it upright to post it down a well.",
-        "help": 2.5
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.67,
-  },
-  {
-    id: "ninja",
-    name: "a ninja (you didn't see this)",
-    grid: [
-        ".X.",
-        "XXX"
-      ],
-    color: [["","","","","","","#6574b8","#4d5995","#4d5995","#4d5995","#4d5995","#6574b8","","","","","",""],["","","","","","","#a15e88","#e43b44","#e43b44","#e43b44","#e43b44","#a15e88","","","","","",""],["","","","","","","#4d5995","#e8b796","#ffffff","#e8b796","#ffffff","#4d5995","","","","","",""],["","","","","","","#4d5995","#2a3060","#2a3060","#2a3060","#2a3060","#4d5995","","","","","",""],["","","","","","","#5664a3","#2a3060","#2a3060","#2a3060","#2a3060","#5664a3","","","","","",""],["","","","","","","#4d5995","#2a3060","#3e4880","#3e4880","#2a3060","#4d5995","","","","","",""],["#6474b9","#5462a7","#5462a7","#5462a7","#5462a7","#5462a7","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#5462a7","#5462a7","#5462a7","#5462a7","#919ecd","#6474b9"],["#a395ad","#3a4588","#3a4588","#3a4588","#3a4588","#3a4588","#2a3060","#3e4880","#2a3060","#2a3060","#3e4880","#2a3060","#3a4588","#3a4588","#3a4588","#c0cbdc","#ffffff","#919ecd"],["#5462a7","#3a4588","#3a4588","#3a4588","#3a4588","#3a4588","#a02838","#e43b44","#e43b44","#e43b44","#e43b44","#a02838","#3a4588","#3a4588","#3a4588","#3a4588","#c0cbdc","#5462a7"],["#5664a3","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#5664a3"],["#4d5995","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#1c2048","#1c2048","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#2a3060","#4d5995"],["#6574b8","#5664a3","#5664a3","#5664a3","#4d5995","#4d5995","#4d5995","#4d5995","#47528a","#47528a","#4d5995","#4d5995","#4d5995","#4d5995","#5664a3","#5664a3","#5664a3","#6574b8"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 2,
-        "intro": "Slips silently down through your blocks into the deepest gap it fits. If anyone asks, it was never here.",
-        "help": 1
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0,
-  },
-  {
-    id: "buttered_cat",
-    name: "a cat with toast strapped to its back",
-    grid: [
-        "XX.",
-        ".XX"
-      ],
-    color: [["#86513a","#9b5d43","#9b5d43","#9b5d43","#9b5d43","#9b5d43","#9b5d43","#9b5d43","#9b5d43","#9b5d43","#9b5d43","#86513a","","","","","",""],["#9b5d43","#ead4aa","#ead4aa","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#ead4aa","#9b5d43","","","","","",""],["#9b5d43","#ead4aa","#fee761","#fee761","#fee761","#fff3b0","#fee761","#fee761","#fee761","#fee761","#ead4aa","#9b5d43","","","","","",""],["#9b5d43","#ead4aa","#ead4aa","#fee761","#fee761","#fee761","#fee761","#fee761","#fee761","#ead4aa","#ead4aa","#9b5d43","","","","","",""],["#9b5d43","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#ead4aa","#e43b44","#ead4aa","#ead4aa","#e43b44","#9b5d43","","","","","",""],["#86513a","#9b5d43","#9b5d43","#9b5d43","#9b5d43","#9b5d43","#b86f50","#e43b44","#b86f50","#b86f50","#e43b44","#9b5d43","","","","","",""],["","","","","","","#a94c0f","#e43b44","#f77622","#f77622","#e43b44","#f77622","#cf631d","#cf631d","#a94c0f","#cf631d","#cf631d","#93420d"],["","","","","","","#cf631d","#e43b44","#c95a12","#c95a12","#e43b44","#c95a12","#c95a12","#f77622","#f77622","#f77622","#f77622","#cf631d"],["","","","","","","#a94c0f","#e43b44","#f77622","#f77622","#e43b44","#f77622","#f77622","#f77622","#2a6a50","#f77622","#2a6a50","#a94c0f"],["","","","","","","#cf631d","#e43b44","#c95a12","#c95a12","#e43b44","#c95a12","#c95a12","#f77622","#f77622","#ff9ec4","#f77622","#cf631d"],["","","","","","","#cf631d","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#f77622","#a94c0f"],["","","","","","","#93420d","#cf631d","#a94c0f","#a94c0f","#a94c0f","#cf631d","#a94c0f","#a94c0f","#a94c0f","#cf631d","#a94c0f","#93420d"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 2,
-        "intro": "It can't land butter-side down OR feet-first, so it doesn't land: it sinks through your blocks into the deepest gap it fits. Science.",
-        "help": 1
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.54,
-  },
-  {
-    id: "cat_burglar",
-    name: "a cat burglar",
-    grid: [
-        "X.",
-        "XX"
-      ],
-    color: [["#71717c","#d685a5","#81818f","#81818f","#d685a5","#71717c","","","","","",""],["#81818f","#9a9aaa","#9a9aaa","#9a9aaa","#9a9aaa","#81818f","","","","","",""],["#272c56","#2e3466","#2e3466","#2e3466","#2e3466","#272c56","","","","","",""],["#272c56","#fee761","#2e3466","#2e3466","#fee761","#272c56","","","","","",""],["#81818f","#9a9aaa","#9a9aaa","#ff9ec4","#9a9aaa","#81818f","","","","","",""],["#81818f","#6e6e82","#9a9aaa","#6e6e82","#9a9aaa","#5c5c6d","","","","","",""],["#31375e","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#31375e","#31375e","#31375e","#31375e","#31375e","#31375e"],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#9a9aaa"],["#31375e","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#9a9aaa","#9a9aaa"],["#c3c6d6","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#e8ecff","#9a9aaa","#9a9aaa"],["#31375e","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270","#3a4270"],["#71717c","#81818f","#5c5c6d","#31375e","#31375e","#31375e","#31375e","#31375e","#81818f","#81818f","#5c5c6d","#31375e"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 2,
-        "intro": "Sneaks down through your blocks into the deepest gap it fits and hides there with the loot. It is a cat. It is also a burglar.",
-        "help": 1
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.5,
-  },
-  {
-    id: "neutrino",
-    name: "a neutrino",
-    grid: [
-        "X"
-      ],
-    color: [["#746bbd","#695dce","#695dce","#877cdb","#695dce","#695dce","#746bbd"],["#a3d1db","#bdf3ff","#bdf3ff","#9d90ff","#55c8ff","#55c8ff","#877cdb"],["#877cdb","#7a6cf0","#7a6cf0","#55c8ff","#bdf3ff","#ffffff","#49acdb"],["#a3d1db","#bdf3ff","#bdf3ff","#bdf3ff","#ffffff","#ffffff","#a3d1db"],["#877cdb","#7a6cf0","#7a6cf0","#55c8ff","#bdf3ff","#ffffff","#49acdb"],["#a3d1db","#bdf3ff","#bdf3ff","#9d90ff","#55c8ff","#55c8ff","#877cdb"],["#746bbd","#695dce","#695dce","#877cdb","#695dce","#695dce","#746bbd"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Passes straight through your blocks and stops in the deepest gap it fits, where it stays. Trillions of them go through you every second. This one finally sat down.",
-        "help": 2.5,
-        "starter": true
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.9,
-  },
-  {
-    id: "vanishing_coin",
-    name: "a magician's disappearing coin",
-    grid: [
-        "X"
-      ],
-    color: [["#9382b7","#c9bbdb","#bb841d","#bb841d","#bb841d","#c9bbdb","#9382b7"],["#c9bbdb","#d99a22","#fff3a6","#fff3a6","#ffd447","#ffd447","#c9bbdb"],["#bb841d","#fff3a6","#fff3a6","#ffd447","#ffd447","#d99a22","#dbdbdb"],["#bb841d","#fff3a6","#ffd447","#ffd447","#ffd447","#d99a22","#aa97d4"],["#bb841d","#ffd447","#ffd447","#ffd447","#d99a22","#c6b0f7","#c9bbdb"],["#c9bbdb","#d99a22","#ffd447","#d99a22","#d99a22","#ead9ff","#dbdbdb"],["#9382b7","#c9bbdb","#bb841d","#bb841d","#c9bbdb","#aa97d4","#ada1bd"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Vanishes through your blocks and reappears in the deepest gap it fits, and stays there. Is this your gap?",
-        "help": 2
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0,
-  },
-  {
-    id: "schrodingers_box",
-    name: "schrödinger's cat... maybe",
-    grid: [
-        "XX"
-      ],
-    color: [["#865c33","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#ceb384","#ceb384","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#865c33"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#bb8a53"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#bb8a53"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#bb8a53"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#bb8a53"],["#bb8a53","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#efd09a","#efd09a","#d9a061","#d9a061","#d9a061","#d9a061","#d9a061","#bb8a53"],["#865c33","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#ceb384","#ceb384","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#9c6c3b","#865c33"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Sinks straight through your blocks into the deepest gap it fits, and stays there. Until it lands, the cat inside is both fine and extremely fine.",
-        "help": 2.5
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.9,
-  },
-  {
-    id: "trenchcoat_spy",
-    name: "a spy in a trench coat",
-    grid: [
-        "X",
-        "X",
-        "X"
-      ],
-    color: [["#523722","#5f4028","#5f4028","#5f4028","#5f4028","#523722"],["#5f4028","#94653d","#94653d","#94653d","#94653d","#5f4028"],["#34241d","#3c2a22","#3c2a22","#3c2a22","#3c2a22","#34241d"],["#cea584","#f0c09a","#f0c09a","#f0c09a","#f0c09a","#cea584"],["#262d3e","#2c3448","#f0c09a","#2c3448","#2c3448","#cea584"],["#cea584","#f0c09a","#f0c09a","#d89a78","#f0c09a","#cea584"],["#ba9e67","#b89656","#f0c09a","#f0c09a","#d8b878","#9e814a"],["#ba9e67","#d8b878","#b89656","#b89656","#d8b878","#ba9e67"],["#ba9e67","#b89656","#d8b878","#d8b878","#b89656","#ba9e67"],["#ba9e67","#d8b878","#d8b878","#3c2a22","#d8b878","#ba9e67"],["#ba9e67","#b89656","#d8b878","#3c2a22","#d8b878","#ba9e67"],["#ba9e67","#d8b878","#d8b878","#3c2a22","#d8b878","#ba9e67"],["#775b32","#8a6a3a","#8a6a3a","#3c2a22","#8a6a3a","#775b32"],["#5c4424","#6b4f2a","#6b4f2a","#6b4f2a","#6b4f2a","#5c4424"],["#ba9e67","#d8b878","#d8b878","#3c2a22","#d8b878","#ba9e67"],["#ba9e67","#b89656","#d8b878","#d8b878","#d8b878","#ba9e67"],["#ba9e67","#b89656","#d8b878","#d8b878","#d8b878","#ba9e67"],["#664e2b","#775b32","#ba9e67","#775b32","#775b32","#664e2b"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Slips down through your blocks unseen and takes up position in the deepest gap it fits. This message will self-destruct. The spy will not: it stays.",
-        "help": 2
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.86,
-  },
-  {
-    id: "jellyfish",
-    name: "a hammerhead jellyfish",
-    grid: [
-        "XXX",
-        ".X."
-      ],
-    color: [["#a6538b","#c160a2","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#db7bb3","#c160a2","#a6538b"],["#c160a2","#ff8fd0","#ffc4ea","#ffc4ea","#ffc4ea","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ffc4ea","#c160a2"],["#db7bb3","#ffc4ea","#ffffff","#ffc4ea","#ffc4ea","#ff8fd0","#ff8fd0","#5a2350","#ff8fd0","#ff8fd0","#ff8fd0","#5a2350","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#db7bb3"],["#db7bb3","#ffc4ea","#ffc4ea","#ffc4ea","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ffc4ea","#db7bb3"],["#db7bb3","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#5a2350","#5a2350","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#ff8fd0","#db7bb3"],["#823772","#db7bb3","#974084","#db7bb3","#974084","#db7bb3","#b04a9a","#ff8fd0","#b04a9a","#ff8fd0","#b04a9a","#ff8fd0","#974084","#db7bb3","#974084","#db7bb3","#974084","#bd6a9a"],["","","","","","","#ba539b","#ffc4ea","#d860b4","#ffc4ea","#d860b4","#dba9c9","","","","","",""],["","","","","","","#ba539b","#ffc4ea","#d860b4","#ffc4ea","#d860b4","#dba9c9","","","","","",""],["","","","","","","#dba9c9","#d860b4","#ffc4ea","#d860b4","#ffc4ea","#ba539b","","","","","",""],["","","","","","","#dba9c9","#d860b4","#ffc4ea","#d860b4","#ffc4ea","#ba539b","","","","","",""],["","","","","","","#ba539b","#ffc4ea","#d860b4","#ffc4ea","#d860b4","#dba9c9","","","","","",""],["","","","","","","#a04785","#dba9c9","#ba539b","#dba9c9","#ba539b","#bd91ad","","","","","",""]],
-    powerup: {
-        "type": "phantom",
-        "tier": 2,
-        "intro": "Drifts down through your blocks into the deepest gap it fits, and stays there. It has no brain, and it still found the best spot.",
-        "help": 1
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.7,
-  },
-  {
-    id: "slippery_seal",
-    name: "a wet seal",
-    grid: [
-        "..X",
-        "XXX"
-      ],
-    color: [["","","","","","","","","","","","","#5e6a7b","#6d7b8f","#9da9b8","#9da9b8","#6d7b8f","#5e6a7b"],["","","","","","","","","","","","","#6d7b8f","#b6c4d6","#7f8fa6","#7f8fa6","#7f8fa6","#6d7b8f"],["","","","","","","","","","","","","#6d7b8f","#1e2633","#ffffff","#7f8fa6","#7f8fa6","#6d7b8f"],["","","","","","","","","","","","","#6d7b8f","#1e2633","#1e2633","#7f8fa6","#2e3644","#282e3a"],["","","","","","","","","","","","","#6d7b8f","#7f8fa6","#c9d3df","#ffffff","#c9d3df","#dbdbdb"],["","","","","","","","","","","","","#6d7b8f","#7f8fa6","#c9d3df","#c9d3df","#c9d3df","#adb5c0"],["#465162","#525f72","#6d7b8f","#6d7b8f","#6d7b8f","#9da9b8","#9da9b8","#9da9b8","#9da9b8","#9da9b8","#6d7b8f","#6d7b8f","#7f8fa6","#7f8fa6","#7f8fa6","#c9d3df","#c9d3df","#6d7b8f"],["#525f72","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#c9d3df","#c9d3df","#c9d3df","#6d7b8f"],["#525f72","#5f6e84","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#7f8fa6","#c9d3df","#c9d3df","#c9d3df","#6d7b8f"],["#525f72","#7f8fa6","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#7f8fa6","#6d7b8f"],["#525f72","#5f6e84","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#c9d3df","#5f6e84","#5f6e84","#5f6e84","#c9d3df","#6d7b8f"],["#465162","#6d7b8f","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#adb5c0","#525f72","#525f72","#adb5c0","#5e6a7b"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 2,
-        "intro": "Slides down through your blocks on its belly into the deepest gap it fits, and stays there. Nobody has ever kept hold of a seal. Arf.",
-        "help": 1
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.7,
-  },
-  {
-    id: "greased_lightning",
-    name: "greasy lightning",
-    grid: [
-        "X.",
-        "XX",
-        ".X"
-      ],
-    color: [["#b47221","#dbc240","#dbc240","#dbc240","#dbc240","#b47221","","","","","",""],["#d18426","#ffe14a","#ffffff","#ffe14a","#ffe14a","#d18426","","","","","",""],["#d18426","#ffe14a","#ffe14a","#ffffff","#ffe14a","#d18426","","","","","",""],["#d18426","#ffe14a","#ffe14a","#ffffff","#ffe14a","#d18426","","","","","",""],["#d18426","#ffe14a","#ffe14a","#ffe14a","#ffffff","#d18426","","","","","",""],["#d18426","#ffe14a","#ffe14a","#ffe14a","#ffffff","#dbc240","","","","","",""],["#d18426","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffffff","#dbc240","#dbc240","#dbc240","#dbc240","#dbc240","#b47221"],["#d18426","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffffff","#ffffff","#ffe14a","#ffe14a","#ffe14a","#d18426"],["#d18426","#8a4a1a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffffff","#ffe14a","#ffe14a","#d18426"],["#d18426","#8a4a1a","#8a4a1a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffffff","#ffe14a","#d18426"],["#d18426","#f39a2c","#8a4a1a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffffff","#d18426"],["#b47221","#d18426","#d18426","#dbc240","#dbc240","#dbc240","#ffe14a","#ffe14a","#ffe14a","#ffe14a","#ffffff","#d18426"],["","","","","","","#d18426","#ffe14a","#ffe14a","#ffe14a","#ffffff","#d18426"],["","","","","","","#d18426","#ffe14a","#ffe14a","#ffffff","#ffe14a","#d18426"],["","","","","","","#d18426","#ffe14a","#ffffff","#ffe14a","#ffe14a","#d18426"],["","","","","","","#d18426","#ffe14a","#ffffff","#ffe14a","#8a4a1a","#d18426"],["","","","","","","#d18426","#ffe14a","#ffffff","#ffe14a","#f39a2c","#d18426"],["","","","","","","#b47221","#d18426","#dbdbdb","#d18426","#d18426","#b47221"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 2,
-        "intro": "Zaps straight down through your blocks into the deepest gap it fits, and stays there. Lightning never strikes the same place twice. Greased lightning never strikes anything.",
-        "help": 1
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.6,
-  },
-  {
-    id: "fish_got_away",
-    name: "a slippery fish",
-    grid: [
-        "XXX"
-      ],
-    color: [["#23665c","#28776b","#44a790","#44a790","#44a790","#44a790","#77c6b2","#44a790","#44a790","#44a790","#44a790","#44a790","#44a790","#286b64","#5fbaa4","#5fbaa4","#5fbaa4","#52a08d"],["#28776b","#4fc2a8","#4fc2a8","#14303a","#4fc2a8","#8ae6cf","#8ae6cf","#8ae6cf","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#2f7c74","#2f7c74","#6fd8bf","#6fd8bf","#286b64"],["#c8c8ce","#2f8a7c","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#2f7c74","#2f7c74","#2f7c74","#286b64"],["#c8c8ce","#e8e8f0","#2f8a7c","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#4fc2a8","#2f7c74","#2f7c74","#2f7c74","#286b64"],["#28776b","#2f8a7c","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#d9f4e2","#4fc2a8","#2f7c74","#2f7c74","#6fd8bf","#6fd8bf","#286b64"],["#23665c","#28776b","#28776b","#bbd2c2","#bbd2c2","#bbd2c2","#bbd2c2","#bbd2c2","#bbd2c2","#bbd2c2","#bbd2c2","#44a790","#44a790","#286b64","#5fbaa4","#5fbaa4","#5fbaa4","#52a08d"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 1,
-        "intro": "Wriggles off the hook and down through your blocks into the deepest gap it fits, and stays there. It was this big. Three blocks, honestly.",
-        "help": 2.5
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.8,
-  },
-  {
-    id: "wisp_of_fog",
-    name: "a wisp of fog",
-    grid: [
-        "XX.X"
-      ],
-    color: [["#7d8794","#b5bdc8","#b5bdc8","#919dac","#919dac","#919dac","#b5bdc8","#b5bdc8","#b5bdc8","#919dac","#919dac","#7d8794","","","","","","","#7d8794","#919dac","#b5bdc8","#b5bdc8","#919dac","#7d8794"],["#b5bdc8","#f4f7fb","#f4f7fb","#d3dce8","#d3dce8","#a9b6c8","#d3dce8","#f4f7fb","#f4f7fb","#f4f7fb","#d3dce8","#b5bdc8","","","","","","","#b5bdc8","#f4f7fb","#f4f7fb","#d3dce8","#d3dce8","#b5bdc8"],["#b5bdc8","#f4f7fb","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#f4f7fb","#d3dce8","#d3dce8","#d3dce8","#b5bdc8","","","","","","","#b5bdc8","#d3dce8","#f4f7fb","#f4f7fb","#d3dce8","#919dac"],["#b5bdc8","#d3dce8","#d3dce8","#d3dce8","#a9b6c8","#a9b6c8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#919dac","","","","","","","#b5bdc8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#919dac"],["#919dac","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#b5bdc8","","","","","","","#919dac","#d3dce8","#d3dce8","#d3dce8","#d3dce8","#919dac"],["#7d8794","#919dac","#919dac","#919dac","#919dac","#919dac","#919dac","#919dac","#919dac","#919dac","#919dac","#7d8794","","","","","","","#7d8794","#919dac","#919dac","#919dac","#919dac","#7d8794"]],
-    powerup: {
-        "type": "phantom",
-        "tier": 2,
-        "intro": "Rolls down through your blocks and settles in the deepest gap its three puffs fit (two together, a gap, then one), and stays there. Visibility: poor.",
-        "help": 1.5
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.66,
-  },
-  {
-    id: "pickpockets_hand",
-    name: "the sneaky hand of a pickpocket",
-    grid: [
-        "XXX",
-        "X.."
-      ],
-    color: [["#b39376","#d0ab8a","#d0ab8a","#d0ab8a","#d0ab8a","#dbdbdb","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#303b6a"],["#d0ab8a","#f2c7a0","#f2c7a0","#f2c7a0","#f2c7a0","#f2c7a0","#ffffff","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#38457b"],["#d0ab8a","#f2c7a0","#f2c7a0","#f2c7a0","#f2c7a0","#ffffff","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#38457b"],["#d0ab8a","#c98a64","#f2c7a0","#c98a64","#f2c7a0","#ffffff","#ffffff","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#38457b"],["#d0ab8a","#c98a64","#f2c7a0","#c98a64","#f2c7a0","#ffffff","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#41508f","#e8ecf6","#38457b"],["#d0ab8a","#c98a64","#f2c7a0","#c98a64","#f2c7a0","#ffffff","#dbdbdb","#38457b","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#38457b","#c8cbd4","#303b6a"],["#d0ab8a","#8a4f26","#f2c7a0","#8a4f26","#f2c7a0","#774421","","","","","","","","","","","",""],["#774421","#7ed36a","#7ed36a","#7ed36a","#8a4f26","#774421","","","","","","","","","","","",""],["#774421","#b06a34","#b06a34","#b06a34","#b06a34","#774421","","","","","","","","","","","",""],["#774421","#b06a34","#b06a34","#ffd447","#b06a34","#774421","","","","","","","","","","","",""],["#774421","#b06a34","#b06a34","#b06a34","#b06a34","#774421","","","","","","","","","","","",""],["#663a1c","#774421","#774421","#774421","#774421","#663a1c","","","","","","","","","","","",""]],
-    powerup: {
-        "type": "phantom",
-        "tier": 2,
-        "intro": "Slips down through your blocks into the deepest gap it fits, and keeps whatever it finds there. Check your pockets.",
-        "help": 1.5
-      },
-    rotation: {
-        "mode": "any"
-      },
-    frequency: 0.6,
-  },
-*/

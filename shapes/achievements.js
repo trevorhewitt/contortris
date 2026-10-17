@@ -1,5 +1,5 @@
 /**
- * EXTRIS ACHIEVEMENTS
+ * EZTRIX ACHIEVEMENTS
  * Edit by hand or with block_designer.html (Achievements tab; it keeps this comment when saving).
  *
  * Each entry:
@@ -11134,7 +11134,7 @@ export const ACHIEVEMENTS = [
   },
   {
     id: "blocks_500",
-    name: "Bull in a China Shop",
+    name: "Wrecking Ball",
     description: "Destroy 500 blocks in one game.",
     icon: [
         [

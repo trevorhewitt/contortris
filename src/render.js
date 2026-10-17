@@ -967,7 +967,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     return area;
   }
 
-  // The highlighted ("effected") cells of the falling powerup (at its landing
+  // The highlighted ("affected") cells of the falling powerup (at its landing
   // spot) or of a locked powerup that is charging up.
   function drawPowerupOverlay(state, ghostY, now) {
     let pu, area, pieceCells, centre, intensity = 1, chargeT = 0;

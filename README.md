@@ -1,15 +1,18 @@
-# Extris
+# Eztrix
 
-A Tetris-like game where every piece is a silly pixel-art object.
+A falling-block puzzle game where every piece is a silly pixel-art object: fill a row and it
+clears.
 
-- **Easy mode**: Normal without the giant (difficulty 4 and 5) pieces.
-- **Normal mode**: the game plus powerups, introduced one class at a time. Destroyers always come first,
-  then a new random class joins every so often: Dissolverz (destroyers and acid), Gravitizerz,
-  Expanderz and Phantomz, plus Comboz once two classes are in. (Blasts and goo still exist in
-  the code but are switched off: `assist.powerups.disabledTypes` in `config.js`.)
-  Each new powerup pauses the game with an intro screen (tick "skip powerup intro screens" to turn
-  them off for the session). The pause menu's **Powerups** page lists every one you've met.
-- **Extreme mode**: the original game. No powerups, no mercy.
+- **Classic**: the game plus powerups, introduced one class at a time: Dissolverz (destroyers and
+  acid), Gravitizerz and Expanderz, plus Comboz once two classes are in. (Blasts, goo and phantoms
+  still exist in the code but are switched off: `assist.powerups.disabledTypes` in `config.js`.)
+  Each new class pauses the game with an intro screen (tick "skip powerup intro screens" to turn
+  them off for the session). It starts easy and gets harder as it goes (`difficulty` in
+  `config.js`, `src/difficulty.js`).
+- **Extreme**: no powerups, no mercy.
+- **God mode**: everything from the first piece; it gets harder too.
+- **Zen** and **Turbo zen**: it plays itself (slowly, or as a show), or you do.
+- **Tutorial**: the controls and every kind of powerup, page by page.
 
 ## Where things are
 
@@ -17,7 +20,7 @@ A Tetris-like game where every piece is a silly pixel-art object.
 |---|---|
 | `index.html` | The game page (layout, menus, styles). |
 | `block_designer.html` | The one editor: blocks, powerups and achievements. |
-| `config.js` | **Every tunable number**: speeds, the piece picker, powerup scheduling, the look, sound. |
+| `config.js` | **Every tunable number**: speeds, the piece picker, powerup scheduling, how it gets harder, the look. |
 | `shapes/main_shapes.js` | **Every block**, regular and powerups (the header comment documents every field). |
 | `shapes/achievements.js` | **Every achievement** (the header comment documents every trigger type). |
 | `src/` | Game code (you shouldn't need to touch it to add content). |
@@ -30,13 +33,15 @@ A Tetris-like game where every piece is a silly pixel-art object.
 | `main.js` | Boots the game and runs the loop. |
 | `game.js` | The game rules: falling, locking, line clears, powerup effects. No DOM, sends events. |
 | `selection.js` | The piece picker: difficulty levels, "hard" pieces, powerup scheduling, variety. |
+| `difficulty.js` | How Classic and God mode get harder as a game goes on. |
+| `devtools.js` | The developer tools page (settings to try the game out with). |
+| `zen.js` | Zen and Turbo zen: the director and the autopilot. |
 | `powerups.js` | Powerup areas and effects for every class (`computeEffect`). |
 | `demo.js` | The little looping powerup animations on the intro / help / How to play screens. |
 | `shapes.js` | Loads `shapes/main_shapes.js`. |
 | `achievements.js` | Tracks and unlocks achievements (saved in the browser). |
 | `render.js` | Draws everything on the board canvas. |
 | `ui.js` | Menus, How to play, achievements page, toasts, HUD, touch + keyboard. |
-| `sound.js` | Synthesised sound effects. |
 
 ## Running it
 
@@ -80,19 +85,33 @@ Otherwise it downloads the updated file for you to drop in.
 - `assist.pieceMix.hard.firstGiantBetween`: the first giant always lands in this range of pieces.
 - `assist.variety.giants.repeatPenalty`: how strongly a giant you've already had is avoided.
 - `scoring`: points for placing, destroying and clearing.
-- `sound.enabled`, `sound.volume`.
+- `difficulty`: for Classic and God mode, the easy start, how long it takes to get hard, how hard
+  it gets, the speed limits, what "hard" means, and how often each powerup class comes when.
 
-## Dev mode
+## Developer tools
 
-Open `index.html?devmode=1` for a live dev-info panel on the left (tap it to fold/unfold on phones),
-and a dev section in the pause menu: pick exactly which piece comes next, unlock every powerup,
-clear the board or fill it with a messy stack, tick which powerups are enabled, and override how
-often powerups turn up.
+Hold **God mode** and **Turbo zen** down together on the home screen (or shift-click God mode) to
+switch the developer tools on (remembered in this browser; a "Developer tools" button on the home
+screen brings the page back). The page has:
+
+- **Developer game**: God mode with the newest pieces and sets first; it won't let you lose.
+- **Powerup classes in Classic**: which classes are in, and (ticked) the exact order they come in,
+  with "Comboz" where the combos may start.
+- **Sliders** for how Classic and God mode get harder, what "hard" means, how often each class
+  comes at the start, halfway and once it's hard, and powerups overall. Changed ones show in yellow.
+- **Copy settings**: copies just what you've changed, as text to paste into a message.
+- **Back to the usual** and **Turn developer tools off** (everything back to the game's own).
+
+While they're on, the game's numbers show at the side of the screen (where the game has got to:
+how hard, the classes in, level 6, the end game...; tap it to fold it away on a phone), and the
+pause menu has a dev section: pick exactly which piece comes next, unlock every powerup, clear the
+board or fill it with a messy stack, tick which powerups are enabled, and override how often
+powerups turn up. `index.html?devmode=1` turns them on for one visit.
 
 ## Debug keys
 
-Open `index.html?debug` to get `window.__extris` in the console. In game, press **D** for the
-debug panel, then:
+Open `index.html?debug` to get `window.__eztrix` in the console. In game, press **`** (backquote)
+for the debug panel, then:
 
 - **V** switches between the enhanced and classic look
 - **E** cycles the edge strength

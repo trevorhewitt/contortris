@@ -18,6 +18,9 @@ import { endGameStatus } from "./endgame.js";
 import { zenIgnoreInput, zenMovementChoices, zenStart } from "./zen.js";
 import { rarity } from "./rarity.js";
 import { createHome } from "./home.js";
+import { buildDevTools, devToolsOn, setDevTools } from "./devtools.js";
+import { difficultyStatus, classWeight } from "./difficulty.js";
+import { classOrder } from "./selection.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -180,8 +183,11 @@ export function bindUI({ state, renderer, achievements }) {
     gameover: $("panelGameOver"),
     intro: $("panelIntro"),
     powerups: $("panelPowerups"),
+    devtools: $("panelDevTools"),
   };
-  const devmode = new URLSearchParams(location.search).get("devmode") === "1";
+  // The developer tools (src/devtools.js): on in this browser, or for this visit (?devmode=1)
+  const devUrl = new URLSearchParams(location.search).get("devmode") === "1";
+  let devmode = devUrl || devToolsOn();
   const SKIP_KEY = "extris.skipIntros";
   const skipIntros = () => { try { return sessionStorage.getItem(SKIP_KEY) === "1"; } catch { return false; } };
   const setSkipIntros = (on) => {
@@ -306,6 +312,7 @@ export function bindUI({ state, renderer, achievements }) {
     store.set("extris.mode", lastMode);
     newBest = false;
     state.backdrop = false;
+    hideBoard(false);
     setWholeWindow(lastMode === "turbo" && turboWhole);
     startRun(state, lastMode);
     state.speed = savedSpeed(lastMode);
@@ -317,8 +324,13 @@ export function bindUI({ state, renderer, achievements }) {
     zenIgnoreInput(state); // (zen: coming back isn't taking the piece over)
     if (state.gameOver) return;
     state.paused = false;
+    hideBoard(false);
     showPanel(null);
   }
+
+  // (paused in a mode that hides the board: CONFIG.modes[mode].hideOnPause)
+  const boardHidden = () => document.body.classList.contains("boardHidden");
+  function hideBoard(on) { document.body.classList.toggle("boardHidden", !!on); }
 
   function pauseGame() {
     if (state.gameOver || !state.running) return;
@@ -329,6 +341,8 @@ export function bindUI({ state, renderer, achievements }) {
     $("btnWholeWindow").textContent = wholeWindow ? "Back to the usual board" : "Fill the window";
     $("btnSpeed").hidden = !CONFIG.modes[state.mode]?.speeds;
     $("btnSpeed").textContent = speedText();
+    hideBoard(CONFIG.modes[state.mode]?.hideOnPause);
+    $("pauseHintLook").style.display = boardHidden() ? "none" : "";
     showPanel("pause");
   }
 
@@ -339,6 +353,7 @@ export function bindUI({ state, renderer, achievements }) {
   }
 
   function goToMenu() {
+    hideBoard(false);
     setWholeWindow(false);
     resetGame(state);
     showPanel("menu");
@@ -747,8 +762,12 @@ export function bindUI({ state, renderer, achievements }) {
   /* ---------- dev mode (?devmode=1) ---------- */
 
   const devPanel = $("devPanel");
+  let devSetUp = false;
   function setupDevMode() {
     if (!devmode) return;
+    $("devRow").hidden = false;
+    if (devSetUp) { devPanel.hidden = false; document.body.classList.add("devmode"); return; }
+    devSetUp = true;
     document.body.classList.add("devmode");
     devPanel.hidden = false;
     // on narrow screens the panel would cover the board, so it starts folded: tap to open
@@ -920,6 +939,9 @@ export function bindUI({ state, renderer, achievements }) {
       ["struggle", (state.pieceSel?.struggle ?? 0).toFixed(2)],
       ["usable powerups", ps?.lastUsable ?? "–"],
       ["first giant", state.pieceSel?.giantDueAt == null ? "none (easy)" : state.pieceSel.hadGiant ? "done" : `due at piece ${state.pieceSel.giantDueAt}`],
+      ["difficulty", difficultyStatus(state)],
+      ["classes now", ["destroyer", "gravity", "expander", "combo"].map(c => `${c.slice(0, 4)} ×${classWeight(state, c).toFixed(1)}`).join(" ")],
+      ["class order", classOrder()?.join(" › ") ?? "usual"],
       ["level 6", level6Status(state)],
       ["end game", endGameStatus(state)],
       ["classes", ps ? (ps.classes.join(", ") || "none yet") : "–"],
@@ -947,7 +969,7 @@ export function bindUI({ state, renderer, achievements }) {
     if (!bothDown() || chord.timer) return;
     chord.swallow = true;
     for (const c of chordBtns) c.classList.add("chord");
-    chord.timer = setTimeout(() => { const go = bothDown(); chordOff(); if (go) home.play("dev", { from: chordBtns[0] }); }, CONFIG.devMode?.holdMs ?? 500);
+    chord.timer = setTimeout(() => { const go = bothDown(); chordOff(); if (go) openDevTools(); }, CONFIG.devMode?.holdMs ?? 500);
   });
   const chordUp = (e) => {
     if (!chord.down.delete(e.pointerId)) return;
@@ -958,8 +980,26 @@ export function bindUI({ state, renderer, achievements }) {
   window.addEventListener("pointercancel", chordUp, true);
   for (const b of document.querySelectorAll(".modeBtn")) b.addEventListener("click", (e) => {
     if (chord.swallow) return;
-    home.play(e.shiftKey && b === chordBtns[0] ? "dev" : b.dataset.mode, { from: b });
+    if (e.shiftKey && b === chordBtns[0]) { openDevTools(); return; }
+    home.play(b.dataset.mode, { from: b });
   });
+  // The developer tools switched on (both held down, or a shift-click on God mode), and their
+  // page: a developer game (new things first), and the settings (src/devtools.js)
+  function openDevTools() {
+    if (!devmode) { setDevTools(true); devmode = true; }
+    setupDevMode();
+    buildDevTools($("devToolsBody"), {
+      onPlayDev: () => home.play("dev", { from: chordBtns[0] }),
+      onClose: () => {
+        devmode = devUrl;
+        if (!devmode) { $("devRow").hidden = true; devPanel.hidden = true; document.body.classList.remove("devmode"); }
+        showPanel("menu");
+      },
+    });
+    panelBack = "menu";
+    showPanel("devtools");
+  }
+  $("btnDevTools").addEventListener("click", () => openDevTools());
   $("btnHowTo").addEventListener("click", () => { panelBack = "menu"; showPanel("howto"); });
   $("btnAchievements").addEventListener("click", () => { panelBack = "menu"; showPanel("achievements"); });
   $("btnResume").addEventListener("click", () => resumeGame());
@@ -973,7 +1013,7 @@ export function bindUI({ state, renderer, achievements }) {
 
   const boardCanvas = $("boardCanvas"), boardShell = $("boardShell"), pieceCard = $("pieceCard");
   const look = { zoom: 1, tx: 0, ty: 0, pointers: new Map(), pinch: null, start: null, moved: false, lastTap: 0, lastX: 0, lastY: 0 };
-  const looking = () => currentPanel === "pause";
+  const looking = () => currentPanel === "pause" && !boardHidden();
 
   function applyLook() {
     const W = boardShell.clientWidth, H = boardShell.clientHeight, z = look.zoom;
@@ -1167,7 +1207,8 @@ export function bindUI({ state, renderer, achievements }) {
   const EDGE_STEPS = [0, 0.15, 0.3, 0.5, 1];
 
   window.addEventListener("keydown", (e) => {
-    if (e.code === "KeyD" && !e.repeat) {
+    // (the backquote key, by Escape: D moves the piece)
+    if (e.code === "Backquote" && !e.repeat) {
       state.debug = !state.debug;
       debugPanel.style.display = state.debug ? "block" : "none";
       return;
@@ -1188,7 +1229,7 @@ export function bindUI({ state, renderer, achievements }) {
     }
 
     if (e.code === "Escape") {
-      if (currentPanel === "howto" || currentPanel === "achievements" || currentPanel === "powerups") showPanel(panelBack);
+      if (currentPanel === "howto" || currentPanel === "achievements" || currentPanel === "powerups" || currentPanel === "devtools") showPanel(panelBack);
       else if (currentPanel === "intro") resumeGame();
       else togglePause();
       return;
@@ -1209,37 +1250,39 @@ export function bindUI({ state, renderer, achievements }) {
 
     markInput(state, "keyboard");
 
+    // (the arrow keys, or W A S D)
     switch (e.code) {
-      case "ArrowLeft":
+      case "ArrowLeft": case "KeyA":
         e.preventDefault();
         downTaps.n = 0;
         tryMove(state, -1, 0);
         break;
-      case "ArrowRight":
+      case "ArrowRight": case "KeyD":
         e.preventDefault();
         downTaps.n = 0;
         tryMove(state, +1, 0);
         break;
-      case "ArrowUp":
+      case "ArrowUp": case "KeyW":
         e.preventDefault();
         tryRotate(state);
         break;
-      case "ArrowDown":
+      case "ArrowDown": case "KeyS":
         e.preventDefault();
-        if (!e.repeat && isTripleTap()) { teleportDown(); break; }
+        if (!e.repeat && isMultiTap()) { teleportDown(); break; }
         state.softDropping = true;
         break;
     }
   });
 
-  // Triple tap / triple press down: drops the piece straight to where it will land. (The first
-  // two taps move it down as usual; a move to the side starts the count again.)
+  // Double tap / double press down (CONFIG.timing.multiTaps): drops the piece straight to where
+  // it will land. (The first tap moves it down as usual; a move to the side starts the count
+  // again.)
   const downTaps = { n: 0, at: 0 };
-  function isTripleTap() {
+  function isMultiTap() {
     const now = performance.now(), t = downTaps;
     t.n = now - t.at < (CONFIG.timing.multiTapMs ?? 300) ? t.n + 1 : 1;
     t.at = now;
-    if (t.n < (CONFIG.timing.multiTaps ?? 3)) return false;
+    if (t.n < (CONFIG.timing.multiTaps ?? 2)) return false;
     t.n = 0;
     return true;
   }
@@ -1251,7 +1294,7 @@ export function bindUI({ state, renderer, achievements }) {
   }
 
   window.addEventListener("keyup", (e) => {
-    if (e.code === "ArrowDown") state.softDropping = false;
+    if (e.code === "ArrowDown" || e.code === "KeyS") state.softDropping = false;
   });
 
   /* ---------- touch / mouse zones ---------- */
@@ -1333,7 +1376,7 @@ export function bindUI({ state, renderer, achievements }) {
     const zone = getZone(e.clientX, e.clientY);
     state.touch.zone = zone;
 
-    if (zone === "bottom" && isTripleTap()) {
+    if (zone === "bottom" && isMultiTap()) {
       applyGlow(zone);
       teleportDown();
       return;

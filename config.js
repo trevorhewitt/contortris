@@ -1,5 +1,5 @@
 // ============================================================
-// EXTRIS SETTINGS — every tunable number in the game lives here.
+// EZTRIX SETTINGS — every tunable number in the game lives here.
 // ============================================================
 
 export const CONFIG = {
@@ -12,11 +12,13 @@ export const CONFIG = {
     //         the first piece
     // everything: every powerup class and the combos are in from the first piece (no intro
     //         screens, nothing to wait for)
+    // hideOnPause: the board (and the next piece) can't be seen while it's paused, so nobody
+    //         plans their next move with the clock stopped
     // (Easy is gone from the menu: kept here so a game remembered as Easy still means something)
-    easy: { label: "Easy", tagline: "powerups, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true, hidden: true },
-    normal: { label: "Classic", tagline: "the full game, powerups and all", powerups: true, giants: true, level6: true, warmup: true },
-    extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true, hints: false },
-    god: { label: "God", tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true },
+    easy: { label: "Easy", tagline: "powerups, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true, hidden: true, hideOnPause: true },
+    normal: { label: "Classic", tagline: "the full game, powerups and all", powerups: true, giants: true, level6: true, warmup: true, hideOnPause: true },
+    extreme: { label: "Extreme", tagline: "the original. no help.", powerups: false, giants: true, level6: true, hints: false, hideOnPause: true },
+    god: { label: "God", tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true, hideOnPause: true },
     // speeds: a speed setting on the pause menu, these times timeScale (1 to start with).
     // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); calm: zen for playing, slow
     // and easy (CONFIG.zen.calm, which also has its own numbers for the pieces); timeScale: how fast it all runs;
@@ -86,10 +88,10 @@ export const CONFIG = {
     slideMaxMs: 3000,
     tapRepeatStartMs: 140,
     tapRepeatEveryMs: 55,
-    // triple tap the bottom of the board (or press down three times) to drop instantly, or a
-    // side (left / right three times) to slide all the way over; taps this close together count
+    // double tap the bottom of the board (or press down twice) to drop straight down; taps this
+    // close together count
     multiTapMs: 300,
-    multiTaps: 3,
+    multiTaps: 2,
     // a piece about to lock sticking out above the top (game over) gets this long more, once:
     // it flashes red and the board warns, and it can still be moved
     lastChanceMs: 1000,
@@ -128,6 +130,42 @@ export const CONFIG = {
     speedPerPiece: 0.93,// the fall gets this much faster with every piece...
     minDropMs: 60,      // ...down to this many ms per row
     spawnJitter: 3,     // pieces come in further off-centre, so the whole board fills up
+  },
+
+  // How Classic and God mode get harder as the game goes on (src/difficulty.js). Per mode: the
+  // easy start (`start` pieces), then the climb (`length` pieces) to `hardest` (0: as easy as
+  // the start all the way; 1: the full challenge, `hard` below; more: harder still); and the
+  // speed: during the climb never quicker than a limit that comes down from capStartMs to
+  // capEndMs a row, and once the climb is over, quicker with every piece (perPiece) down to
+  // minMs. Extreme and the zen modes don't change. (The developer tools have sliders for all of
+  // it.)
+  difficulty: {
+    normal: { start: 40, length: 360, hardest: 1, speed: { capStartMs: 320, capEndMs: 150, perPiece: 0.996, minMs: 75 } },
+    god: { start: 25, length: 500, hardest: 0.8, speed: { capStartMs: 280, capEndMs: 140, perPiece: 0.997, minMs: 80 } },
+    // What hardness 1 means (at the start it's the usual numbers, in CONFIG.assist and God
+    // mode's own; in between, part way):
+    hard: {
+      dangerBias: 0.35,       // a high stack leans the mix to the small pieces this much (usually pieceMix.dangerBiasStrength)
+      hardMaxDanger: 0.72,    // the giants still come with the stack this high (usually 0.32), as long as one fits
+      level5FullDanger: 0.4,  // the biggest giants as likely as ever with the stack this high (usually 0.12)...
+      level5NeverDanger: 0.75,// ...and hardly ever above this (usually 0.28)
+      hardRate: 2.6,          // the giants this many times as often
+      hardCooldown: 4,        // ...and at least this many pieces apart (usually 9)
+      setRate: 2.4,           // the level 6 sets this many times as often...
+      setMaxStackRows: 13,    // ...and still with the stack this many rows tall (usually 10), if there's room
+      powerupRate: 0.55,      // powerups this much as often...
+      dangerBoost: 2.4,       // ...but this much likelier with the stack at the top (usually 1.6): a real relief
+      afterGiant: 0.5,        // ...and for the two pieces after a giant, a powerup at least this often
+    },
+    // the level mix at hardness 1 (blended from assist.pieceMix's on the way)
+    levelWeight: { 0: 0.06, 1: 0.32, 2: 0.34, 3: 0.28 },
+    // the powerup classes: how often each comes at the start of a game, halfway through the
+    // climb, and at the end of it (blended in between)
+    classes: {
+      early: { destroyer: 1, gravity: 1, expander: 1, combo: 1 },
+      middle: { destroyer: 1, gravity: 1, expander: 1, combo: 1 },
+      late: { destroyer: 1, gravity: 1, expander: 1, combo: 1 },
+    },
   },
 
   // God mode (modes.god): everything from the first piece, and plenty of it. The level 6 sets
@@ -341,7 +379,7 @@ export const CONFIG = {
         "bathroom_tiles", "herringbone_floor", "hexagonal_tiles", "fish_scale_tiles", "moroccan_mosaic", "terrazzo_slab", "tessellating_lizards", "chequered_marble", "lego_few_bricks", "lego_heap", "lego_tub", "lego_bucket",
         "mentos_in_cola", "squat_volcano", "big_waterfall", "spilled_milk", "inner_light", "burst_of_sunshine", "inflating_bouncy_castle", "swelling_sponge", "microwaved_marshmallow", "incoming_tide",
         "road_sinkhole", "big_green_pipe", "bottomless_hole", "deep_end", "narrow_mineshaft", "mineshaft", "lift_shaft", "straight_quarry", "crevasse", "canyon",
-        "sphinx", "extris", "present_big", "present_wide", "present_tall", "present_long", "present_small", "dinosaur_footprints", "bigfoot_footprints",
+        "sphinx", "eztrix", "present_big", "present_wide", "present_tall", "present_long", "present_small", "dinosaur_footprints", "bigfoot_footprints",
         "stop_sign", "dynamite", "umbrella_for_a_fish", "seen_things", "storm_in_a_teacup",
         "microwave_popcorn", "fog_machine", "spreading_cloud", "sun_in_a_cloud",
         "box_of_eggs", "spare_allen_key", "bees_knees", "popcorn",
@@ -466,12 +504,12 @@ export const CONFIG = {
       fatigue: 0.8,       // ...and a thread pulls less on pieces it's brought already this game
       maxRun: 7,          // ...and after this many picks in a row that followed one, a plain random one
       powerups: true,     // powerups follow threads too
-      powerupWeight: 40,  // ...this many times likelier (their weight is mostly how much they'd help)
+      powerupWeight: 60,  // ...this many times likelier (their weight is mostly how much they'd help)
     },
 
     openingNoLevel0UntilDrop: 17, // no level-0 (tiny) pieces in the first 17 drops
 
-    // The start of a game (a mode with `warmup`) plays nicely, not much harder than Tetris: for
+    // The start of a game (a mode with `warmup`) plays gently: for
     // the first `fullUntil` pieces, fading out by `goneBy`, the levels lean to `levelWeight`, and
     // each piece is picked `draws` times over the usual way, and then one of those that would sit
     // well on the board as it is: a piece that couldn't help leaving n gaps under itself is
@@ -479,10 +517,6 @@ export const CONFIG = {
     // first while it's still funny), but ones that fit; a level 6 set only now and then
     // (`sets`: this much of the time it would have, at the start).
     warmup: { fullUntil: 25, goneBy: 90, strength: 2.5, draws: 8, sets: 0.1, levelWeight: { 0: 0.08, 1: 0.6, 2: 0.27, 3: 0.05 } },
-    // ...and later on (a mode with `warmup`), from piece `from` to piece `by`, the mix opens up a
-    // little at a time, towards something like God mode's: the levels lean to `levelWeight`, the
-    // giants come `hardRate` times as often and the level 6 sets `setRate` times (src/pacing.js).
-    later: { from: 90, by: 300, levelWeight: { 0: 0.1, 1: 0.38, 2: 0.32, 3: 0.2 }, hardRate: 2.5, setRate: 2 },
 
     // “Danger” bands (rows-from-top). Higher = assistance kicks in earlier.
     topRowsForDiff2Only: 19,  // (scaled with the board: it was 22 of 28 rows)
@@ -655,6 +689,9 @@ export const CONFIG = {
         // then the combos of those two, and only then (combosBeforeThird) the third class, or
         // after comboWaitDrops pieces anyway
         early: "gravity", combosBeforeThird: true, comboWaitDrops: 90,
+        // ...or, in this order exactly (the developer tools set it): the classes one after
+        // another, and "combo" where the combos may start (left out: no combos). null: as above.
+        order: null,
         newClassEvery: 6,          // after this many powerups, the next one opens a new class
         newClassAfterDrops: 32,    // ...or after this many drops since the last new class
         // intro screens interrupt the game: at least this many pieces between two of them

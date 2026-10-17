@@ -1,5 +1,5 @@
 // ============================================================
-// EXTRIS — boot: load the blocks + achievements, wire everything up, run the loop
+// EZTRIX — boot: load the blocks + achievements, wire everything up, run the loop
 // ============================================================
 
 import { CONFIG } from "../config.js";
@@ -12,8 +12,11 @@ import { createGameState, on, updateGame, hardDropAndLock, setNextPiece, timeSca
 import { createRenderer } from "./render.js";
 import { createAchievements } from "./achievements.js";
 import { bindUI } from "./ui.js";
+import { applySavedDevSettings } from "./devtools.js";
 import { store } from "./util.js";
 
+// (the developer tools' settings, if they're on: src/devtools.js)
+applySavedDevSettings();
 const { shapes, powerups } = loadShapes(RAW_SHAPES);
 const state = createGameState(shapes, powerups, { groups: GROUPS, threads: { threads: THREADS, sets: SET_THREADS } });
 
@@ -53,7 +56,7 @@ ui = bindUI({ state, renderer, achievements });
 
 // Handy for testing in the browser console: open index.html?debug
 if (new URLSearchParams(location.search).has("debug")) {
-  window.__extris = {
+  window.__eztrix = {
     state, CONFIG, shapes, powerups, renderer, achievements, ui,
     step: (dt = 16) => updateGame(state, dt),           // advance without waiting for frames
     drop: () => hardDropAndLock(state),                  // drop + lock the current piece now

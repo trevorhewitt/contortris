@@ -492,7 +492,7 @@ test("emotions: two to four ordinary ones, then on to the strange, mostly ending
   assert.ok(firsts.size >= 8, `opens ${firsts.size} ways`);
   assert.deepEqual([...opens].sort(), [2, 3, 4], "with two, three or four of them");
   assert.ok(overAndOver > 400 * 0.2 && overAndOver < 400 * 0.4, `over and over ${overAndOver} of 400`);
-  const absurd = ["existential_dread", "winning_extris", "inner_emptiness", "being_a_piece", "playing_extris", "urge_to_rotate", "long_piece", "row_grief", "fear_of_ceiling", "utter_euphoria"].map(n => "emotion_" + n);
+  const absurd = ["existential_dread", "winning_eztrix", "inner_emptiness", "being_a_piece", "playing_eztrix", "urge_to_rotate", "long_piece", "row_grief", "fear_of_ceiling", "utter_euphoria"].map(n => "emotion_" + n);
   const plainEnds = ["happiness", "sadness", "anger", "fear", "surprise", "boredom", "calm", "jealousy"].map(n => "emotion_" + n);
   const count = (list) => list.reduce((n, id) => n + (lasts.get(id) ?? 0), 0);
   assert.ok(count(absurd) > 400 * 0.6, `ends on the absurd ${count(absurd)} of 400 (before any déjà vu)`);

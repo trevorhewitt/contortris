@@ -27,6 +27,7 @@ import { trackEndGame, endGameOn, spawnJitter, noteLanding } from "./endgame.js"
 import { remixShape } from "./remix.js";
 import { createZen, zenNext, zenPeek, zenTick, zenSpawned, zenSpeed, zenSteps, zenLockMs, zenDramatic, reachableTurns } from "./zen.js";
 import { buildThreads } from "./threads.js";
+import { rampCfg, rampDropMs } from "./difficulty.js";
 
 /* =========================
    State
@@ -511,6 +512,8 @@ function spawnPiece(state) {
   if (state.pieceSel && trackLevel6(state)) emit(state, "level6Unlocked", {});
   // ...or reach two thirds of the board (the end game), or dig their way out of it?
   if (state.pieceSel && !state.zen) updateEndGame(state, trackEndGame(state));
+  // (the speed goes with how far into the game it is, as well as the rows: src/difficulty.js)
+  if (rampCfg(state)?.speed && !state.zen) recomputeSpeed(state);
   let shape, rotIdx = 0;
   if (state.zen) {
     // zen: the director picks each piece as it's needed, on the board as it is now
@@ -961,7 +964,9 @@ function recomputeSpeed(state) {
   if (state.zen) { zenSpeed(state); return; } // (zen: it never speeds up)
   // (nor developer mode: CONFIG.modes.dev.steady)
   const mult = Math.pow(CONFIG.timing.speedMultiplierPerLevel, CONFIG.modes[state.mode]?.steady ? 0 : state.level - 1);
-  state.dropMs = Math.max(CONFIG.timing.minDropMs, Math.floor(CONFIG.timing.baseDropMs * mult));
+  // (Classic and God mode: limited during the climb, and quicker every piece after it:
+  // src/difficulty.js)
+  state.dropMs = rampDropMs(state, Math.max(CONFIG.timing.minDropMs, Math.floor(CONFIG.timing.baseDropMs * mult)));
   if (state.endGameMs != null) state.dropMs = Math.min(state.dropMs, state.endGameMs);
 }
 
@@ -1878,7 +1883,7 @@ export function updateGame(state, dt) {
   }
 }
 
-// Drop the active piece straight down and lock it now (the triple tap; and for tests). With
+// Drop the active piece straight down and lock it now (the double tap; and for tests). With
 // `lastChance` (the player's own drop), a piece that would top out gets its last chance first.
 export function hardDropAndLock(state, { lastChance: allowLastChance = false } = {}) {
   if (!state.active || state.effect || state.hold || state.gameOver) return false;

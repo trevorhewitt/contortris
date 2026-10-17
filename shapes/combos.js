@@ -1,5 +1,5 @@
 /**
- * EXTRIS COMBINATIONS: pieces that look good together, or funny. Turbo zen fills the board with
+ * EZTRIX COMBINATIONS: pieces that look good together, or funny. Turbo zen fills the board with
  * one of these now and then (src/zen.js, the "combo" movement), and its other fills borrow them
  * as palettes. A running list: edit by hand, and add to it.
  *
@@ -26,7 +26,7 @@ const SPECIFIC = ["emotion_someone_behind_you", "emotion_ear_itch", "emotion_ove
 const INTENSE = ["emotion_utter_euphoria", "emotion_existential_dread", "emotion_nails_chalkboard", "emotion_gut_terror"];
 const AGAIN = ["emotion_deja_vu", "emotion_deja_vu_2", "emotion_memory_loss", "emotion_memory_loss_2", "emotion_spooky_coincidence", "emotion_spooky_coincidence_2"];
 const MADE_UP = ["emotion_forglavedness", "emotion_plorch", "emotion_glumpf", "emotion_wibberance", "emotion_snerk", "emotion_sprongle", "emotion_halvering"];
-const THE_GAME = ["emotion_inner_emptiness", "emotion_playing_extris", "emotion_winning_extris", "emotion_urge_to_rotate", "emotion_long_piece",
+const THE_GAME = ["emotion_inner_emptiness", "emotion_playing_eztrix", "emotion_winning_eztrix", "emotion_urge_to_rotate", "emotion_long_piece",
   "emotion_being_a_piece", "emotion_row_grief", "emotion_fear_of_ceiling"];
 const BRITISH = ["emotion_mustnt_grumble", "emotion_queueing", "emotion_bagging_area", "emotion_quietly_seething", "emotion_last_biscuit", "emotion_sorry"];
 const ONLINE = ["emotion_buffering", "emotion_unread_notifications", "emotion_low_battery", "emotion_someone_typing", "emotion_not_a_robot", "emotion_off_and_on_again"];

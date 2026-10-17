@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <!-- Disable zoom + keep viewport stable -->
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Extris</title>
+  <title>Eztrix</title>
 
   <style>
     /* A game, not a document: no text selection or long-press callouts anywhere
@@ -31,7 +31,7 @@
       box-shadow: inset -3px -3px 0 rgba(0,0,0,0.35), inset 3px 3px 0 rgba(255,255,255,0.35), 0 0 14px var(--c);
       background: var(--c); animation: bootDrop 2.4s cubic-bezier(.5,0,.6,1) infinite; animation-delay: var(--d);
     }
-    /* (four blocks fall into place one after another, rest a moment, and go) */
+    /* (five blocks fall into place one after another, a plus, rest a moment, and go) */
     @keyframes bootDrop{
       0%{ opacity: 0; transform: translateY(-60px); }
       10%{ opacity: 1; }
@@ -773,6 +773,19 @@
       border: 1px dashed rgba(123,247,255,0.4);
     }
     .devTools input[type=range]{ width: 100%; }
+    /* the developer tools' own page (src/devtools.js) */
+    .devToolsPanel{ text-align: left; max-height: 100%; overflow-y: auto; width: min(520px, 100%); }
+    .devToolsPanel .big{ text-align: center; }
+    .devNote{ margin: 6px 0 10px; opacity: 0.8; }
+    .devSection{ margin: 10px 0; padding: 8px 10px; border: 1px dashed rgba(123,247,255,0.35); }
+    .devSection > summary{ cursor: pointer; margin: 0; }
+    .devClassRow{ display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 13px; }
+    .devClassName{ flex: 1 1 auto; }
+    .devMini{ padding: 2px 8px; min-width: 0; }
+    .devCheck{ display: block; font-size: 12px; margin-top: 6px; opacity: 0.85; }
+    .devSlider{ display: block; margin: 8px 0; font-size: 12px; }
+    .devSlider input{ width: 100%; }
+    .devSlider.changed .devSliderLabel{ color: #ffd36b; }
     .devEnabled{ text-align: left; font-size: 11px; max-height: 40vh; overflow-y: auto; }
     .devEnabled details{ margin: 2px 0; }
     .devEnabled summary{ cursor: pointer; }
@@ -1055,6 +1068,8 @@
     /* the next piece (src/render.js drawNext): in its own art; a powerup's shell goes rainbow */
     #nextCanvas{ flex: 1 1 auto; width: 100%; min-height: 0; display: block; image-rendering: pixelated; }
     #nextCanvas.pop{ animation: nextPop 280ms cubic-bezier(.2, 1.5, .4, 1) both; }
+    /* (paused in Classic, God mode or Extreme: no peeking at the board or the next piece) */
+    body.boardHidden #boardCanvas, body.boardHidden #nextCanvas, body.boardHidden #nameLayer{ visibility: hidden; }
     @keyframes nextPop{ from{ transform: scale(0.6); opacity: 0.3; } to{ transform: none; opacity: 1; } }
     .nextMiniShell.power{
       border-color: transparent;
@@ -1192,7 +1207,7 @@
   <!-- opening the page: this on its own until the home screen is ready (src/ui.js, boot) -->
   <div class="boot" id="boot" role="img" aria-label="Loading">
     <div class="bootIcon">
-      <i style="left:0;top:40px;--c:#ff4d6d;--d:0s"></i><i style="left:20px;top:40px;--c:#ffb84d;--d:0.12s"></i><i style="left:40px;top:40px;--c:#4dc3ff;--d:0.24s"></i><i style="left:40px;top:20px;--c:#b44dff;--d:0.36s"></i>
+      <i style="left:20px;top:40px;--c:#ff4d6d;--d:0s"></i><i style="left:0;top:20px;--c:#ffb84d;--d:0.1s"></i><i style="left:20px;top:20px;--c:#4dc3ff;--d:0.2s"></i><i style="left:40px;top:20px;--c:#9ad45b;--d:0.3s"></i><i style="left:20px;top:0;--c:#b44dff;--d:0.4s"></i>
     </div>
   </div>
   <!-- the home screen (src/home.js): turbo zen behind it, through the camera, and effects over it -->
@@ -1210,7 +1225,7 @@
         <div id="overlay" class="overlay show">
           <div id="pieceCard" class="pieceCard" hidden></div>
           <div class="msg panel homeMenu" id="panelMenu" hidden>
-            <div class="homeLogoWrap"><div class="homeLogo" id="homeLogo" role="img" aria-label="Extris"><span style="--i:0;--h:350"><b>E</b></span><span style="--i:1;--h:35"><b>X</b></span><span style="--i:2;--h:58"><b>T</b></span><span style="--i:3;--h:140"><b>R</b></span><span style="--i:4;--h:200"><b>I</b></span><span style="--i:5;--h:275"><b>S</b></span></div></div>
+            <div class="homeLogoWrap"><div class="homeLogo" id="homeLogo" role="img" aria-label="Eztrix"><span style="--i:0;--h:350"><b>E</b></span><span style="--i:1;--h:35"><b>Z</b></span><span style="--i:2;--h:58"><b>T</b></span><span style="--i:3;--h:140"><b>R</b></span><span style="--i:4;--h:200"><b>I</b></span><span style="--i:5;--h:275"><b>X</b></span></div></div>
             <div class="homeModes">
               <button id="btnExtreme" class="modeBtn" style="--i:0" data-mode="extreme"><span class="modeName">Extreme</span><span class="modeTag"></span></button>
               <button id="btnNormal" class="modeBtn" style="--i:1" data-mode="normal"><span class="modeName">Classic</span><span class="modeTag"></span></button>
@@ -1223,7 +1238,14 @@
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
             <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
-            <div class="small" id="gameVersion">version 202610170027</div>
+            <div class="menuRow homeRow" id="devRow" hidden><button id="btnDevTools" class="secondary small">Developer tools</button></div>
+            <div class="small" id="gameVersion">version 202610180004</div>
+          </div>
+
+          <div class="msg panel devToolsPanel" id="panelDevTools" hidden>
+            <div class="big">Developer tools</div>
+            <div id="devToolsBody"></div>
+            <div class="menuBtns"><button class="secondary" data-back>Back</button></div>
           </div>
 
           <div class="msg panel" id="panelHowTo" hidden>
@@ -1232,8 +1254,8 @@
               <h2 class="howLead">Weird pieces fall. Fill a row to destroy it. Don't let the pile reach the top.</h2>
 
               <h3>Controls</h3>
-              <p><b>Touch:</b> tap the left or right side to move, tap the top to rotate, tap the bottom middle to drop faster. Hold to keep going. Triple tap the bottom to drop straight down.</p>
-              <p><b>Keyboard:</b> <kbd>←</kbd> <kbd>→</kbd> move, <kbd>↑</kbd> rotate, <kbd>↓</kbd> drop faster, <kbd>Space</kbd> pause. Press <kbd>↓</kbd> three times quickly to drop straight down.</p>
+              <p><b>Touch:</b> tap the left or right side to move, tap the top to rotate, tap the bottom middle to drop faster. Hold to keep going. Double tap the bottom to drop straight down.</p>
+              <p><b>Keyboard:</b> <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> move, <kbd>↑</kbd> or <kbd>W</kbd> rotate, <kbd>↓</kbd> or <kbd>S</kbd> drop faster, <kbd>Space</kbd> pause. Press <kbd>↓</kbd> or <kbd>S</kbd> twice quickly to drop straight down.</p>
 
               <h3>Powerups</h3>
               <div id="howtoClasses"></div>
@@ -1241,7 +1263,7 @@
               <h3>Modes</h3>
               <div id="howtoModes"></div>
 
-              <p class="small menuFoot">[Extris version 202610170027 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[Eztrix version 202610170027 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>
@@ -1261,7 +1283,7 @@
           <div class="msg panel" id="panelPause" hidden>
             <div class="big">Paused</div>
             <div class="small" id="pauseMode"></div>
-            <div class="small pauseHint">tap a piece to look at it · pinch or double tap to zoom</div>
+            <div class="small pauseHint" id="pauseHintLook">tap a piece to look at it · pinch or double tap to zoom</div>
             <div class="menuBtns">
               <button id="btnResume">Resume</button>
               <button id="btnWholeWindow" class="secondary" hidden>Fill the window</button>
@@ -1362,7 +1384,7 @@
       </div>
     
       <div class="bottomCenter">
-        <div class="hudLogo" aria-hidden="true"><span style="--h:350">E</span><span style="--h:35">X</span><span style="--h:58">T</span><span style="--h:140">R</span><span style="--h:200">I</span><span style="--h:275">S</span></div>
+        <div class="hudLogo" aria-hidden="true"><span style="--h:350">E</span><span style="--h:35">Z</span><span style="--h:58">T</span><span style="--h:140">R</span><span style="--h:200">I</span><span style="--h:275">X</span></div>
         <button id="pauseBtn" class="pauseBtn" aria-label="Pause/Play">▶</button>
       </div>
     
