@@ -21,6 +21,7 @@ import { createHome } from "./home.js";
 import { buildDevTools, devToolsOn, setDevTools } from "./devtools.js";
 import { difficultyStatus, classWeight } from "./difficulty.js";
 import { classOrder } from "./selection.js";
+import { bindTutorial } from "./tutorialui.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -472,6 +473,9 @@ export function bindUI({ state, renderer, achievements }) {
         }
         break;
       case "spawn":
+        // (the tutorial: its pieces' names, and that's all; nothing counts as seen, and no intro
+        // screens: its pages say what each powerup does)
+        if (state.tutorial) { nameLayer.setShape(d.shape); break; }
         // (the turbo zen behind the home screen, or filling in for it: nobody's playing, so
         // nothing counts as seen, and there are no names to read)
         if (state.backdrop) { if (CONFIG.modes[state.mode]?.names !== false) nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames, d.label); break; }
@@ -1400,6 +1404,10 @@ export function bindUI({ state, renderer, achievements }) {
     stopRepeat();
     clearGlows();
   });
+
+  /* ---------- the tutorial (src/tutorialui.js: its bar, the finger and the keys) ---------- */
+
+  bindTutorial({ state, togglePause, resumeGame, goToMenu, play: (mode, opts) => home.play(mode, opts) });
 
   /* ---------- boot ---------- */
 

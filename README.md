@@ -38,6 +38,8 @@ clears.
 | `zen.js` | Zen and Turbo zen: the director and the autopilot. |
 | `powerups.js` | Powerup areas and effects for every class (`computeEffect`). |
 | `demo.js` | The little looping powerup animations on the intro / help / How to play screens. |
+| `tutorial.js` | The tutorial's pages (each one's words, board and pieces) and the autopilot that plays them. No DOM. |
+| `tutorialui.js` | The tutorial on the page: its bar, the finger tapping the board, the keys lighting up. |
 | `shapes.js` | Loads `shapes/main_shapes.js`. |
 | `achievements.js` | Tracks and unlocks achievements (saved in the browser). |
 | `render.js` | Draws everything on the board canvas. |

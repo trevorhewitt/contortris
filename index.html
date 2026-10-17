@@ -1149,6 +1149,102 @@
       font-weight: 900;
     }
   
+    /* ---------- the tutorial (src/tutorial.js, src/tutorialui.js) ---------- */
+    /* its bar takes the bottom bar's place, a little taller (the fit script makes room for it) */
+    body.tutorial{ --bottom-bar-h: 136px; }
+    body.tutorial .bottomBar{ width: min(100vw, 600px); grid-template-columns: 1fr; padding-top: 7px; }
+    body.tutorial .bottomBar > .bottomLeft, body.tutorial .bottomBar > .bottomCenter, body.tutorial .bottomBar > .bottomRight{ display: none; }
+    .tutorialBar{ position: relative; display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+    .tutorialBar[hidden]{ display: none; }
+    .tutDots{ display: flex; justify-content: center; gap: 5px; flex: none; }
+    .tutDots i{ width: 6px; height: 6px; background: rgba(255,255,255,0.16); box-shadow: 0 0 0 1px rgba(0,0,0,0.85); }
+    .tutDots i.done{ background: rgba(123,247,255,0.42); }
+    .tutDots i.on{ background: #7bf7ff; box-shadow: 0 0 0 1px #000, 0 0 8px rgba(123,247,255,0.85); }
+    .tutSay{ flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .tutText{
+      font-family: var(--font-body); font-size: clamp(12px, 3.4vw, 15px); line-height: 1.3;
+      text-align: center; color: var(--text); text-shadow: 0 1px 0 #000; max-width: 34em;
+    }
+    .tutText kbd{
+      display: inline-block; min-width: 1.2em; padding: 2px 4px 1px; margin: 0 1px;
+      font-family: var(--font-display); font-size: 8px; line-height: 1.4; text-align: center; vertical-align: 1px;
+      color: rgba(245,245,255,0.95); background: rgba(34,38,68,0.96);
+      border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 2px 0 rgba(0,0,0,0.8);
+    }
+    .tutText .tutName{ font-family: var(--font-display); font-weight: 400; font-size: 0.72em; letter-spacing: 0.04em; text-transform: uppercase; animation: rainbowText 1.6s steps(12, end) infinite; }
+    .tutText .tutName.cls-destroyer{ animation-name: fireText; }
+    .tutText .tutName.cls-gravity{ animation-name: deepText; }
+    .tutText .tutName.cls-expander{ animation-name: growText; }
+    .tutText .tutName.cls-phantom{ animation-name: ghostText; }
+    /* the keys it presses (with a keyboard): WASD and the arrows, each lit as it's pressed */
+    .tutKeys{ display: flex; gap: 8px; flex: none; }
+    .tutKeys[hidden]{ display: none; }
+    .tutKeyset{ display: grid; grid-template-columns: repeat(3, 20px); grid-template-rows: repeat(2, 20px); gap: 2px; }
+    .tutKeyset i{
+      display: grid; place-items: center; font-style: normal; font-family: var(--font-display); font-size: 8px;
+      color: rgba(245,245,255,0.75); background: rgba(34,38,68,0.96); border: 1px solid rgba(255,255,255,0.22);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.85); transition: background 60ms linear, color 60ms linear, transform 60ms linear, box-shadow 60ms linear;
+    }
+    .tutKeyset i:first-child{ grid-column: 2; }
+    .tutKeyset i:nth-child(n+2){ grid-row: 2; }
+    .tutKeyset i.lit{ color: #0a0916; background: #7bf7ff; border-color: #fff; transform: translateY(2px); box-shadow: 0 0 0 rgba(0,0,0,0.85), 0 0 12px rgba(123,247,255,0.85); }
+    .tutNav{ display: flex; align-items: center; gap: 6px; flex: none; }
+    .tutGap{ flex: 1 1 0; }
+    .tutNav button{ min-height: 40px; padding: 8px 12px; font-size: 9px; white-space: nowrap; }
+    .tutNav button[hidden]{ display: none; }
+    .tutNav button:disabled{ opacity: 0.35; cursor: default; }
+    .tutNav .tutPause{ width: 52px; padding: 0; font-size: 13px; }
+    /* (a phone: the last page's four buttons on one row) */
+    @media (max-width: 440px){ .tutNav{ gap: 5px; } .tutNav button{ padding: 8px 9px; font-size: 8px; } .tutNav .tutPause{ width: 44px; } }
+    /* (more room: bigger keys) */
+    @media (min-width: 600px){ .tutKeyset{ grid-template-columns: repeat(3, 23px); grid-template-rows: repeat(2, 23px); } .tutKeyset i{ font-size: 9px; } }
+    #tutNext.nudge{ animation: tutNudge 1.1s ease-in-out infinite; }
+    @keyframes tutNudge{
+      0%, 100%{ box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 10px rgba(123,247,255,0.2); }
+      50%{ box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 0 4px rgba(123,247,255,0.6), 0 0 22px rgba(123,247,255,0.6); }
+    }
+    /* (the player did what the page shows) */
+    .tutCheer{
+      position: absolute; left: 50%; top: -5px; transform: translateX(-50%); pointer-events: none; opacity: 0;
+      padding: 3px 8px 2px; background: #0a0916; box-shadow: 0 0 0 2px #000, 0 0 12px rgba(123,247,255,0.45);
+      font-family: var(--font-display); font-size: 10px; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.08em;
+      text-shadow: 0 2px 0 #000; animation: rainbowText 1.6s steps(12, end) infinite;
+    }
+    .tutCheer.on{ animation: rainbowText 1.6s steps(12, end) infinite, tutCheer 1.6s ease-out both; }
+    @keyframes tutCheer{ 0%{ opacity: 0; transform: translate(-50%, 6px) scale(0.6); } 15%{ opacity: 1; transform: translate(-50%, 0) scale(1.15); } 25%, 75%{ opacity: 1; transform: translate(-50%, 0) scale(1); } 100%{ opacity: 0; transform: translate(-50%, -4px); } }
+    /* the part of the board the finger is about to tap, faintly in its own colour (the zones are
+       src/ui.js getZone's) */
+    .tutZones{ position: absolute; inset: 0; pointer-events: none; }
+    .tutZone{ position: absolute; inset: 0; opacity: 0; transition: opacity 200ms linear; background: rgba(var(--zc), 0.1); }
+    .tutZone.on{ opacity: 1; }
+    .tutZone.hit{ animation: tutZoneHit 280ms ease-out; }
+    @keyframes tutZoneHit{ from{ background: rgba(var(--zc), 0.3); } }
+    .tutZone[data-zone=left]{ --zc: 255,220,90; clip-path: polygon(0 22%, 50% 22%, 50% 72%, 25% 72%, 25% 100%, 0 100%); }
+    .tutZone[data-zone=right]{ --zc: 90,200,255; clip-path: polygon(50% 22%, 100% 22%, 100% 100%, 75% 100%, 75% 72%, 50% 72%); }
+    .tutZone[data-zone=top]{ --zc: 110,255,140; clip-path: inset(0 0 78% 0); }
+    .tutZone[data-zone=bottom]{ --zc: 255,90,90; clip-path: inset(72% 25% 0 25%); }
+    /* the finger: it goes to the zone, and taps (a ripple where it touched) or holds */
+    .tutFinger{
+      position: fixed; left: 0; top: 0; z-index: 45; pointer-events: none; opacity: 0;
+      transition: transform 240ms cubic-bezier(.3, .7, .3, 1), opacity 160ms linear;
+    }
+    .tutFinger.on{ opacity: 0.96; }
+    .tutHand{ transform-origin: 24.5px 1.4px; filter: drop-shadow(2px 4px 0 rgba(0,0,0,0.5)); transition: transform 90ms ease-out; }
+    .tutHand svg{ display: block; }
+    .tutHand.tap{ animation: tutTap 210ms ease-out; }
+    .tutHand.hold{ transform: translateY(3px) scale(0.92); }
+    @keyframes tutTap{ 0%{ transform: none; } 35%{ transform: translateY(4px) scale(0.9); } 100%{ transform: none; } }
+    .tutRipple{
+      position: absolute; z-index: -1; left: 24.5px; top: 1.4px; width: 12px; height: 12px; margin: -6px 0 0 -6px;
+      box-sizing: border-box; border: 3px solid rgba(255,255,255,0.9); box-shadow: 0 0 10px rgba(123,247,255,0.8);
+      animation: tutRipple 440ms ease-out forwards;
+    }
+    @keyframes tutRipple{ from{ transform: scale(0.4); opacity: 1; } to{ transform: scale(3.6); opacity: 0; } }
+    /* (a page set up, or going round again: the board fades in) */
+    #boardCanvas.tutFade{ animation: tutFade 360ms ease-out; }
+    @keyframes tutFade{ from{ opacity: 0.2; } }
+    @media (prefers-reduced-motion: reduce){ .tutFinger{ transition: opacity 160ms linear; } .tutHand.tap, .tutRipple, #boardCanvas.tutFade{ animation: none; } }
+
     #boardShell.glow-left{
       box-shadow:
         0 18px 60px rgba(0,0,0,0.55),
@@ -1234,12 +1330,13 @@
               <button id="btnTurbo" class="modeBtn" style="--i:4" data-mode="turbo"><span class="modeName">Turbo zen</span><span class="modeTag"></span></button>
             </div>
             <div class="menuRow homeRow">
+              <button id="btnTutorial" class="secondary small">Tutorial</button>
               <button id="btnHowTo" class="secondary small">How to play</button>
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
             <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
             <div class="menuRow homeRow" id="devRow" hidden><button id="btnDevTools" class="secondary small">Developer tools</button></div>
-            <div class="small" id="gameVersion">version 202610180004</div>
+            <div class="small" id="gameVersion">version 202610180037</div>
           </div>
 
           <div class="msg panel devToolsPanel" id="panelDevTools" hidden>
@@ -1392,6 +1489,29 @@
         <div class="statPill">
           <div class="k">Score</div>
           <div class="v" id="scoreText">0</div>
+        </div>
+      </div>
+
+      <!-- the tutorial (src/tutorialui.js), in place of the rest: what each page says, the keys
+           it presses (with a keyboard), and the way from page to page -->
+      <div class="tutorialBar" id="tutorialBar" hidden>
+        <div class="tutDots" id="tutDots" role="img"></div>
+        <div class="tutCheer" id="tutCheer" aria-hidden="true">Nice!</div>
+        <div class="tutSay">
+          <div class="tutKeys" id="tutKeys" aria-hidden="true" hidden>
+            <div class="tutKeyset"><i data-k="w">W</i><i data-k="a">A</i><i data-k="s">S</i><i data-k="d">D</i></div>
+            <div class="tutKeyset"><i data-k="up">&#8593;</i><i data-k="left">&#8592;</i><i data-k="down">&#8595;</i><i data-k="right">&#8594;</i></div>
+          </div>
+          <div class="tutText" id="tutText" aria-live="polite"></div>
+        </div>
+        <div class="tutNav">
+          <button id="tutBack" class="secondary">&#9664; Back</button>
+          <span class="tutGap"></span>
+          <button id="tutPause" class="tutPause" aria-label="Pause">&#10074;&#10074;</button>
+          <span class="tutGap"></span>
+          <button id="tutHome" class="secondary" hidden>Home</button>
+          <button id="tutPlay" hidden>Play Classic</button>
+          <button id="tutNext">Next &#9654;</button>
         </div>
       </div>
     </div>

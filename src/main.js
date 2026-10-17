@@ -49,8 +49,8 @@ const renderer = createRenderer(document.getElementById("boardCanvas"), document
 // Achievements listen first, so the game-over screen can show what was unlocked.
 let ui = null;
 const achievements = createAchievements(ACHIEVEMENTS, { onUnlock: (def) => ui?.toast(def) });
-// (not in zen mode: it plays itself)
-if (CONFIG.achievements.enabled) on(state, (type, data, st) => { if (!CONFIG.modes[st.mode]?.zen) achievements.handle(type, data, st); });
+// (not in zen mode: it plays itself; nor in a mode that says so: the tutorial)
+if (CONFIG.achievements.enabled) on(state, (type, data, st) => { if (!CONFIG.modes[st.mode]?.zen && CONFIG.modes[st.mode]?.achievements !== false) achievements.handle(type, data, st); });
 
 ui = bindUI({ state, renderer, achievements });
 
