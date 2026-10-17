@@ -18,6 +18,7 @@ import { endGameStatus } from "./endgame.js";
 import { zenIgnoreInput, zenMovementChoices, zenStart } from "./zen.js";
 import { rarity } from "./rarity.js";
 import { createHome } from "./home.js";
+import { bindTutorial } from "./tutorialui.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -457,6 +458,9 @@ export function bindUI({ state, renderer, achievements }) {
         }
         break;
       case "spawn":
+        // (the tutorial: its pieces' names, and that's all; nothing counts as seen, and no intro
+        // screens: its pages say what each powerup does)
+        if (state.tutorial) { nameLayer.setShape(d.shape); break; }
         // (the turbo zen behind the home screen, or filling in for it: nobody's playing, so
         // nothing counts as seen, and there are no names to read)
         if (state.backdrop) { if (CONFIG.modes[state.mode]?.names !== false) nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames, d.label); break; }
@@ -1166,8 +1170,10 @@ export function bindUI({ state, renderer, achievements }) {
   let debugPowerupIdx = 0;
   const EDGE_STEPS = [0, 0.15, 0.3, 0.5, 1];
 
+  // (D is a move now, with A, W and S: the debug panel only with index.html?debug)
+  const debugKeys = new URLSearchParams(location.search).has("debug");
   window.addEventListener("keydown", (e) => {
-    if (e.code === "KeyD" && !e.repeat) {
+    if (e.code === "KeyD" && !e.repeat && debugKeys) {
       state.debug = !state.debug;
       debugPanel.style.display = state.debug ? "block" : "none";
       return;
@@ -1211,20 +1217,24 @@ export function bindUI({ state, renderer, achievements }) {
 
     switch (e.code) {
       case "ArrowLeft":
+      case "KeyA":
         e.preventDefault();
         downTaps.n = 0;
         tryMove(state, -1, 0);
         break;
       case "ArrowRight":
+      case "KeyD":
         e.preventDefault();
         downTaps.n = 0;
         tryMove(state, +1, 0);
         break;
       case "ArrowUp":
+      case "KeyW":
         e.preventDefault();
         tryRotate(state);
         break;
       case "ArrowDown":
+      case "KeyS":
         e.preventDefault();
         if (!e.repeat && isTripleTap()) { teleportDown(); break; }
         state.softDropping = true;
@@ -1251,7 +1261,7 @@ export function bindUI({ state, renderer, achievements }) {
   }
 
   window.addEventListener("keyup", (e) => {
-    if (e.code === "ArrowDown") state.softDropping = false;
+    if (e.code === "ArrowDown" || e.code === "KeyS") state.softDropping = false;
   });
 
   /* ---------- touch / mouse zones ---------- */
@@ -1357,6 +1367,10 @@ export function bindUI({ state, renderer, achievements }) {
     stopRepeat();
     clearGlows();
   });
+
+  /* ---------- the tutorial (src/tutorialui.js: its bar, the finger and the keys) ---------- */
+
+  bindTutorial({ state, togglePause, resumeGame, goToMenu, play: (mode, opts) => home.play(mode, opts) });
 
   /* ---------- boot ---------- */
 

@@ -27,6 +27,7 @@ import { trackEndGame, endGameOn, spawnJitter, noteLanding } from "./endgame.js"
 import { remixShape } from "./remix.js";
 import { createZen, zenNext, zenPeek, zenTick, zenSpawned, zenSpeed, zenSteps, zenLockMs, zenDramatic, reachableTurns } from "./zen.js";
 import { buildThreads } from "./threads.js";
+import { createTutorial, tutorialNext, tutorialTick, tutorialTopOut } from "./tutorial.js";
 
 /* =========================
    State
@@ -248,6 +249,7 @@ export function resetGame(state) {
   cancelLock(state);
 
   state.zen = null;
+  state.tutorial = null;
   state.lastLockedShape = null;
   state.gameOverInfo.pieceName = "";
   state.gameOverInfo.shape = null;
@@ -285,6 +287,8 @@ export function startRun(state, mode) {
   // Zen mode: it plays itself (src/zen.js), and never ends
   state.zen = CONFIG.modes[state.mode]?.zen ? createZen(state) : null;
   if (state.zen) state.dropMs = CONFIG.zen.dropMs;
+  // The tutorial: a page at a time, each with its own board and pieces (src/tutorial.js)
+  state.tutorial = CONFIG.modes[state.mode]?.tutorial ? createTutorial(state) : null;
   state.running = true;
   state.paused = false;
   emit(state, "start", { mode: state.mode });
@@ -511,8 +515,15 @@ function spawnPiece(state) {
   if (state.pieceSel && trackLevel6(state)) emit(state, "level6Unlocked", {});
   // ...or reach two thirds of the board (the end game), or dig their way out of it?
   if (state.pieceSel && !state.zen) updateEndGame(state, trackEndGame(state));
-  let shape, rotIdx = 0;
-  if (state.zen) {
+  let shape, rotIdx = 0, at = null;
+  if (state.tutorial) {
+    // the tutorial: the page says what comes, turned and where (src/tutorial.js); with nothing
+    // more to come, the board waits for the page to go round again
+    const t = tutorialNext(state);
+    if (!t) { state.active = null; return true; }
+    ({ shape, rot: rotIdx, x: at } = t);
+    state.next = null;
+  } else if (state.zen) {
     // zen: the director picks each piece as it's needed, on the board as it is now
     shape = prepareShape(state, zenNext(state));
     state.next = zenPeek(state);
@@ -543,6 +554,7 @@ function spawnPiece(state) {
   };
   // (zen: it starts out already turned, over the place it's going)
   if (state.zen) zenSpawned(state);
+  if (at != null) state.active.x = at; // (the tutorial's pieces start where the page says)
   const pauseFirst = state.zen?.pauseFirst ?? 0;
 
   const ok = isPhantomPowerup(shape.powerup) || !collides(state, state.active.x, state.active.y, getActiveMatrix(state));
@@ -760,6 +772,7 @@ function landFlock(state, f) {
 
 function setGameOver(state, shape) {
   if (state.gameOver) return;
+  if (state.tutorial) { tutorialTopOut(state); return; } // (the tutorial can't be lost: the page starts again)
   state.gameOver = true;
   state.running = false;
   state.effect = null;
@@ -1807,6 +1820,9 @@ export function updateGame(state, dt) {
   if (state.paused) return;
 
   if (state.zen) zenTick(state, dt); // zen: the autopilot steers (unless the player is)
+  // (the tutorial: its autopilot shows the moves, and when a page starts or goes round again,
+  // its first piece comes now)
+  if (state.tutorial && tutorialTick(state, dt)) spawnPiece(state);
   if (state.active?.lastChance) state.active.lastChance.elapsedMs += dt;
 
   // (a dramatic pause: everything waits but the sparkles)

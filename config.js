@@ -35,6 +35,11 @@ export const CONFIG = {
     // together on the home screen, or shift-click God mode. God mode, with newest: the newest
     // things first; rescue: it won't let you lose, and no end game; steady: it never speeds up.)
     dev: { label: "Developer", hidden: true, powerups: true, giants: true, level6: "open", everything: true, newest: true, rescue: true, steady: true },
+    // (The tutorial, CONFIG.tutorial: the controls and each kind of piece, a page at a time, on
+    // the real board. It has a button of its own on the home screen, so it isn't one of the mode
+    // buttons, nor the mode the menu remembers (hidden); no score, no game over, and nothing
+    // counts towards the achievements.)
+    tutorial: { label: "Tutorial", hidden: true, tutorial: true, powerups: true, giants: true, level6: false, achievements: false },
   },
   defaultMode: "normal",
 
@@ -89,7 +94,7 @@ export const CONFIG = {
     // triple tap the bottom of the board (or press down three times) to drop instantly, or a
     // side (left / right three times) to slide all the way over; taps this close together count
     multiTapMs: 300,
-    multiTaps: 3,
+    multiTaps: 2,
     // a piece about to lock sticking out above the top (game over) gets this long more, once:
     // it flashes red and the board warns, and it can still be moved
     lastChanceMs: 1000,
@@ -269,6 +274,16 @@ export const CONFIG = {
     // and how it goes), e.g. { turbo: { movement: "crack", opts: { end: "up" } } }: nothing, for now.
     opening: {},
   },
+
+  // The tutorial (CONFIG.modes.tutorial; src/tutorial.js plays it, src/tutorialui.js shows it):
+  // each page a sentence, a board set up for it and a piece or two, which an autopilot plays at
+  // a pace you can follow, showing what it presses as it goes. Its pieces fall a row every
+  // dropMs (once the player has taken one over, playerDropMs); it waits firstMs before its first
+  // press, stepMs between presses (tapGapMs between the taps of a double tap), and holds the
+  // piece down for holdMs. Once everything on the page has landed and settled, restMs and it goes
+  // round again. Playing at all takes the piece over; left alone for idleMs, the autopilot
+  // carries on.
+  tutorial: { dropMs: 190, playerDropMs: 420, firstMs: 750, stepMs: 340, tapGapMs: 170, holdMs: 460, restMs: 1500, idleMs: 6000 },
 
   godMode: {
     hard: {                       // the giants (assist.pieceMix.hard)
