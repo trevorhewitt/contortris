@@ -7,6 +7,9 @@
   <title>Eztrix</title>
 
   <style>
+    /* hidden means hidden, whatever a class's own display says (the developer tools' button
+       used to show on every home screen because .menuRow is a flex box) */
+    [hidden]{ display: none !important; }
     /* A game, not a document: no text selection or long-press callouts anywhere
        (holding a finger on the board used to select the HUD / achievement text on phones). */
     html, body, * {
