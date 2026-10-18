@@ -321,14 +321,14 @@ export const CONFIG = {
     pieceMs: 650,        // (but each takes this long at least, however short the way down: it starts further up, out of sight)
     restMs: 300,         // after a big clearance, a moment's breath before the next piece (not while the player's playing)
     maxStepsPerFrame: 3, // (so a fast fall stays fast in turbo zen)
-    // The player touches a piece and it's theirs until it lands, wherever they put it; the next
-    // comes already where the computer wants it, on the board as it is by then. While they're
-    // playing (they touched it in the last playMs, real time), one piece at a time, a little
-    // slower, straight in at the top for them to take if they like, and no dramatic pauses:
+    // The player touches a piece and it's theirs until it lands, wherever they put it. While
+    // they're playing (they had the last piece, or touched it in the last playMs, real time), the
+    // computer keeps its hands off: each piece still comes already where it wants it, on the
+    // board as it is by then, but one at a time, straight in at the top, and falling at a pace
+    // they can steer, for them to take if they like; and no dramatic pauses:
     playMs: 4000,
-    playFallMs: 60,      // (the autopilot's pieces fall a row this often then, whatever they are)
-    dropMs: 200,         // the player's own piece falls a row this often (still quick)...
-    playerLockMs: 80,    // ...and locks this soon after landing, so the next comes promptly
+    dropMs: 200,         // the player's pace: a row this often, their own piece and the computer's while they're playing
+    playerLockMs: 80,    // the player's own piece locks this soon after landing, so the next comes promptly
     // The pace (times fallMs, lockMs and pieceMs): small things, repeats and the pieces that build
     // up the board come down faster; the pieces that bring it all down take their time. And from
     // low (an empty board) to high (a full one), it eases off a little as it nears the top.

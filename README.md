@@ -30,8 +30,8 @@ clears.
   comes near the top (it still can't be lost). In Turbo zen every piece arrives already turned
   and over the place it's going, and drops straight into it, quickly; the computer never moves
   a piece once it's on the board. Step in whenever you like: the piece you touch is yours until
-  it lands, and the next comes promptly, one at a time while you're playing (`zen` in
-  `config.js`).
+  it lands, and while you're playing the next ones come promptly, one at a time, at a pace you
+  can steer (`zen` in `config.js`).
 - **Options**: skip the Shiny Piece intro screens, a favourite piece that turns up a little more
   often, toned-down animations, high contrast, and whether Turbo zen fills the screen. Kept in
   the browser.

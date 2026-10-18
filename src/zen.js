@@ -28,9 +28,10 @@
 // interludes between. Small and repetitive things come down faster; the big moments take their
 // time (CONFIG.zen.pace). The player can step in whenever they like: the piece they touch is
 // theirs until it lands, wherever they put it, and the next comes already where the computer
-// wants it on the board as it is then. While they're playing, it's one piece at a time, a
-// little slower, each landing and the next coming promptly; left alone, it's quicker again,
-// and on a big board often a few at once (a flock).
+// wants it on the board as it is then. While they're playing, the computer keeps its hands
+// off: one piece at a time, each straight in at the top and falling at a pace they can steer,
+// for them to take if they like; left alone, it's quicker again, and on a big board often a few
+// at once (a flock).
 //
 // Nothing can top either out. If the player builds it up into danger, a big powerup comes
 // ("steady"; in zen, big enough to make some room but not to bring the whole board down), and
@@ -1487,6 +1488,7 @@ function bigPowerup(state) {
 // computer never moves it, and the player can take it over whenever they like (zenTick).
 export function zenSpawned(state) {
   const z = state.zen, a = state.active;
+  const theirs = z.userHas; // (turbo zen: the player had the last one)
   z.piece = a;
   z.userHas = false;
   noteUse(state, a.shape);
@@ -1513,9 +1515,9 @@ export function zenSpawned(state) {
   if (isCalm(state)) z.spots = [...z.spots, [a.x, a.x + mat[0].length]].slice(-8);
   const land = isPhantomPowerup(a.shape.powerup) ? phantomLandingY(state.board, a.x, mat) : dropY(occupancy(state.board), mat, a.x, cols, rows);
   z.fall = Math.max(1, (land ?? 0) - a.y);
-  // (turbo zen, with the player playing: it comes straight in at the top for them to take if
-  // they like, and nothing holds it up)
-  const play = playing(state);
+  // (turbo zen, with the player playing, the one after theirs too: it comes straight in at the
+  // top for them to take if they like, falls at their pace, and nothing holds it up)
+  const play = !isCalm(state) && (theirs || playing(state));
   z.playing = play;
   // (a powerup about to bring most of the board down: the dramatic pause comes before it falls;
   // game.js holds everything for it)
@@ -1659,13 +1661,13 @@ function flockSpot(occ, shape, weights, free, cols, rows, headroom, rng, maxTurn
   return best;
 }
 
-// How fast the piece falls: turbo zen's quickly (but each takes a moment at least), a little less
-// quickly and all at the same speed while the player's playing, and the player's own quickly
-// too; in zen, easily either way, unless it's dozing (game.js asks)...
+// How fast the piece falls: turbo zen's quickly (but each takes a moment at least), and the
+// player's own, and the computer's while they're playing, at a pace they can steer; in zen,
+// easily either way, unless it's dozing (game.js asks)...
 export function zenSpeed(state) {
   const z = state.zen, Z = CONFIG.zen;
   if (isCalm(state)) state.dropMs = !z.userHas && dozing(state) ? Z.calm.idleDropMs : Z.calm.dropMs;
-  else state.dropMs = z.userHas ? Z.dropMs : playing(state) ? Z.playFallMs : Math.max(8, Z.fallMs * z.pace);
+  else state.dropMs = z.userHas || z.playing ? Z.dropMs : Math.max(8, Z.fallMs * z.pace);
 }
 const autopilot = (state) => { const z = state.zen; return !!z && !z.userHas && !!state.active && z.piece === state.active; };
 // ...how many rows it can fall in one frame (null: as usual)...
@@ -1703,14 +1705,11 @@ export function zenTick(state, dt) {
   const z = state.zen;
   const a = state.active;
   z.clock += dt;
-  // (zen dozes off, or wakes up, there and then; turbo zen speeds back up there and then once the
-  // player has stopped playing: the piece already falling goes at the new pace)
+  // (zen dozes off, or wakes up, there and then: the piece already falling goes at the new pace.
+  // Turbo zen keeps the pace each piece came in with, unless the player takes it over.)
   if (isCalm(state)) {
     const d = dozing(state);
     if (d !== !!z.dozing) { z.dozing = d; zenSpeed(state); }
-  } else {
-    const p = playing(state);
-    if (p !== !!z.playing) { z.playing = p; zenSpeed(state); }
   }
   // the player pressed something: this piece is theirs (until it lands)
   if (state.lastInputAt !== z.inputAt) {
@@ -1735,7 +1734,7 @@ export function zenTick(state, dt) {
 // falls instead: zenSpawned.) Never while the player's playing: the next comes promptly.
 export function zenDramatic(state, info) {
   const z = state.zen, D = CONFIG.zen.dramatic;
-  if (!D || CONFIG.modes[state.mode]?.dramatic === false || !z?.current?.dramatic || z.userHas || isCalm(state) || playing(state) || info.shape.powerup) return 0;
+  if (!D || CONFIG.modes[state.mode]?.dramatic === false || !z?.current?.dramatic || z.userHas || isCalm(state) || z.playing || info.shape.powerup) return 0;
   const rows = CONFIG.board.rows; // (the numbers are for the usual board: as much of a bigger one)
   return state.board.filter(row => row.every(Boolean)).length >= D.minRows * Math.max(1, rows / 24) ? D.pauseMs * timeScaleOf(state) : 0;
 }

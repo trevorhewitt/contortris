@@ -354,7 +354,7 @@ test("turbo zen: the computer never moves or turns a piece on the board, nor sli
   }
 });
 
-test("turbo zen: the player plays a piece, and the next comes promptly, already in place, one at a time and a little slower; left alone, quicker again, a few at once", () => {
+test("turbo zen: the player plays a few pieces, and the computer keeps its hands off the next ones: already in place, but one at a time, in at the top and at their pace; left alone, quicker again, a few at once", () => {
   const Z = CONFIG.zen;
   const usual = { cols: CONFIG.board.cols, rows: CONFIG.board.rows };
   CONFIG.board.cols = 44; CONFIG.board.rows = 30; // (a big board, where it often drops a few at once)
@@ -363,31 +363,17 @@ test("turbo zen: the player plays a piece, and the next comes promptly, already 
     run(state, null, 4000);
     const ready = () => state.active && !state.effect && !state.hold && state.active.y >= 0 && !state.active.shape.powerup && !state.flock.length;
     while (!ready()) updateGame(state, 16);
-    // the player takes one over: it's theirs, falling quickly, and nothing moves it but them
+    // the player takes one over: it's theirs, falling at their pace, and nothing moves it but them
     const piece = state.active;
     markInput(state, "keyboard");
     while (tryMove(state, -1, 0)) { /* to the wall */ }
     updateGame(state, 16);
     assert.equal(state.zen.userHas, true);
-    assert.equal(state.dropMs, Z.dropMs, "the player's own piece falls quickly");
+    assert.equal(state.dropMs, Z.dropMs, "the player's own piece falls at their pace");
     const x = piece.x, rot = piece.rotIdx;
     let landed = null, gap = null;
     on(state, (t) => { if (t === "spawn" && landed != null && gap == null) gap = state.zen.clock - landed; });
-    while (state.active === piece) {
-      if (state.locking && landed == null) landed = state.zen.clock;
-      updateGame(state, 16);
-      if (state.active === piece) assert.ok(piece.x === x && piece.rotIdx === rot, "nothing moves it but the player");
-    }
-    // ...and once it has landed, it locks straight away and the next comes
-    assert.ok(gap != null && gap <= Z.playerLockMs + 32, `the next came ${gap}ms after it landed`);
-    // (and they play the next one too, straight down)
-    while (!ready()) updateGame(state, 16);
-    markInput(state, "keyboard");
-    hardDropAndLock(state);
-    // the next ones, with nobody touching anything: already in place as they come, and while the
-    // player's still about (playMs), one at a time, in at the top, all at the same steady speed,
-    // each as soon as the last has locked (unless rows were clearing, or a powerup going off);
-    // after that, quicker, and often a few at once
+    // (every piece from here on, as it comes)
     const seen = [];
     let lockedAt = null, busy = false;
     on(state, (t, d) => {
@@ -395,21 +381,66 @@ test("turbo zen: the player plays a piece, and the next comes promptly, already 
       if (t === "rowsDestroyed" || t === "powerupFire") busy = true;
       if (t !== "spawn") return;
       const a = state.active, want = state.zen.target, z = state.zen;
-      seen.push({ playing: z.clock - z.playedAt < Z.playMs * CONFIG.modes.turbo.timeScale, inPlace: !!want && a.x === want.x && a.rotIdx === want.rot,
+      seen.push({ playing: z.playing, inPlace: !!want && a.x === want.x && a.rotIdx === want.rot,
         flock: state.flock.length, dropMs: state.dropMs, quick: Math.max(8, Z.fallMs * z.pace), top: a.y >= -a.shape.rotations[a.rotIdx].length,
-        gap: lockedAt == null || busy ? null : z.clock - lockedAt, mine: z.userHas });
+        gap: lockedAt == null || busy ? null : z.clock - lockedAt, played: false });
     });
+    while (state.active === piece) {
+      if (state.locking && landed == null) landed = state.zen.clock;
+      updateGame(state, 16);
+      if (state.active === piece) assert.ok(piece.x === x && piece.rotIdx === rot, "nothing moves it but the player");
+    }
+    // ...and once it has landed, it locks straight away and the next comes
+    assert.ok(gap != null && gap <= Z.playerLockMs + 32, `the next came ${gap}ms after it landed`);
+    // (and they play on, a few more, each moved over a column as it comes and dropped)
+    for (let n = 0; n < 3; n++) {
+      while (!ready()) updateGame(state, 16);
+      seen[seen.length - 1].played = true;
+      markInput(state, "keyboard");
+      tryMove(state, 1, 0);
+      hardDropAndLock(state);
+    }
+    // the ones that came while they played, and the next ones, with nobody touching anything:
+    // already in place as they come, and while the player's still about (they had the last one,
+    // or touched it in the last playMs), one at a time, in at the top, at their pace, each as soon
+    // as the last has locked (unless rows were clearing, or a powerup going off); after that,
+    // quicker, and often a few at once
     // (60 of them left alone: a plan can go a while without a few at once)
     for (let t = 0; t < 60000 && seen.filter(p => !p.playing).length < 60; t += 16) updateGame(state, 16);
+    const last = seen.findLastIndex(p => p.played);
     const playing = seen.filter(p => p.playing), idle = seen.filter(p => !p.playing);
-    assert.ok(playing.length >= 3 && idle.length >= 30, `${playing.length} pieces while playing, ${idle.length} after`);
-    assert.ok(seen.every(p => !p.mine && p.inPlace), "every one already in place");
-    assert.ok(playing.every(p => p.flock === 0 && p.dropMs === Z.playFallMs && p.top), "one at a time, at the top, steady");
+    assert.ok(last >= 2 && idle.length >= 30, `${last + 1} pieces played, ${idle.length} after`);
+    assert.ok(seen.slice(0, last + 2).every(p => p.playing), "hands off all the while they played, and the one after their last");
+    assert.ok(seen.every(p => p.inPlace), "every one already in place");
+    assert.ok(playing.every(p => p.flock === 0 && p.dropMs === Z.dropMs && p.top), "one at a time, at the top, at their pace");
     assert.ok(playing.every(p => p.gap === 0 || p.gap == null), "each straight after the last one locked");
     assert.ok(idle.every(p => p.dropMs === p.quick), "quicker again");
     assert.ok(idle.filter(p => p.flock > 0).length >= idle.length * 0.25, `${idle.filter(p => p.flock > 0).length} of ${idle.length} a few at once`);
   } finally {
     CONFIG.board.cols = usual.cols; CONFIG.board.rows = usual.rows;
+  }
+});
+
+test("turbo zen: the piece after the player's is left to them too, however long ago they last touched anything", () => {
+  const Z = CONFIG.zen, was = Z.playMs;
+  Z.playMs = 1; // (so it's only that they had the last one)
+  try {
+    const { state } = zen(4, "turbo");
+    run(state, null, 4000);
+    while (!(state.active && !state.effect && !state.hold && state.active.y >= 0 && !state.active.shape.powerup && !state.flock.length)) updateGame(state, 16);
+    // (they take one and let it fall where it was going: by the time it lands, they're long gone)
+    markInput(state, "keyboard");
+    const seen = [];
+    on(state, (t) => {
+      if (t !== "spawn") return;
+      const a = state.active;
+      seen.push({ dropMs: state.dropMs, quick: Math.max(8, Z.fallMs * state.zen.pace), top: a.y >= -a.shape.rotations[a.rotIdx].length, flock: state.flock.length });
+    });
+    while (seen.length < 3) updateGame(state, 16);
+    assert.ok(seen[0].dropMs === Z.dropMs && seen[0].top && seen[0].flock === 0, "the one after theirs: in at the top, at their pace");
+    assert.equal(seen[1].dropMs, seen[1].quick, "and then it's the computer's again");
+  } finally {
+    Z.playMs = was;
   }
 });
 
