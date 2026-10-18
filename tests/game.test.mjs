@@ -514,6 +514,25 @@ test("a piece marked once only ever turns up once a game (a sock with no match)"
   assert.equal(seen, 1, "once, and only once");
 });
 
+test("the Sphinx's nose slots back into the notch in its face, and sticks out in front of it", () => {
+  const { state } = newGame("normal", 3);
+  placeActive(state, "sphinx", 2, -6);
+  hardDropAndLock(state);
+  const at = (x, y) => state.board[y][x];
+  // the notch: the front of its head, between the brow and the chin, the face behind it
+  const nx = 2 + 3, ny = ROWS - 6 + 1;
+  assert.ok(!at(nx, ny) && at(nx, ny - 1) && at(nx, ny + 1) && at(nx + 1, ny), "a notch where the nose was");
+  // the nose comes down in front of the head, and over into the notch on its way past
+  placeActive(state, "sphinx_nose", nx - 2, -1);
+  while (state.active.y < ny) assert.ok(tryMove(state, 0, 1), "down in front of the head");
+  assert.ok(tryMove(state, 1, 0), "over into the notch");
+  hardDropAndLock(state);
+  const nose = at(nx, ny);
+  assert.ok(nose && nose.pid !== at(nx + 1, ny).pid, "the nose in the notch");
+  assert.equal(at(nx - 1, ny)?.pid, nose.pid, "...and the rest of it sticking out in front");
+  assert.ok(!at(nx - 1, ny - 1) && !at(nx - 1, ny + 1), "with nothing over or under it");
+});
+
 test("tiles never come in a game (only turbo zen builds with them)", async () => {
   const { selectPiece } = await import("../src/selection.js");
   const tagged = (s) => s.tags?.some(t => CONFIG.assist.turboOnlyTags.includes(t));
