@@ -949,18 +949,19 @@ function maybeSelectPowerup(state, danger01) {
   const struggle = endGame ? 0 : sel.struggle;
   // (the harder it's got, the rarer they are, but the likelier when it's bad: src/difficulty.js)
   const boost = endGame ? (CONFIG.endGame?.powerupRate ?? 0.3)
-    : eased(state, "powerupRate", 1) * (1 + eased(state, "dangerBoost", cfg.dangerBoost ?? 0) * danger01 + (cfg.holesBoost ?? 0) * holes01) * (1 + (cfg.struggle?.chanceBoost ?? 0) * struggle);
+    : eased(state, "powerupRate", 1) * (1 + eased(state, "dangerBoost", cfg.dangerBoost ?? 0) * danger01 + eased(state, "holesBoost", cfg.holesBoost ?? 0) * holes01) * (1 + eased(state, "struggleBoost", cfg.struggle?.chanceBoost ?? 0) * struggle);
   const rate = state.devPowerups?.rate ?? 1; // dev mode frequency override
   // just after a level 6 set: a powerup is very likely (a big destroyer, see below)
   const after = cfg.afterSet ?? {};
   const l6 = sel.level6;
   const sinceSet = l6?.seen?.size && !l6.queue.length ? sel.dropIndex - l6.lastEnd : Infinity;
   const afterSet = !endGame && sinceSet >= 1 && sinceSet <= (after.pieces ?? 0);
+  const afterSetChance = eased(state, "afterSet", after.chance ?? 0);
   // ...and just after a giant, the harder it's got the likelier a powerup, to dig out with
   const afterGiant = !endGame && sel.lastHardAt != null && sel.dropIndex - sel.lastHardAt <= 2 ? eased(state, "afterGiant", 0) : 0;
   // (in a wave's stretch of awkward pieces, hardly any: src/waves.js)
   const held = waveTense(state) ? CONFIG.waves?.[state.mode]?.shiny ?? 1 : 1;
-  const chance = clamp01(Math.max(ps.chance * boost * rate, afterSet ? (after.chance ?? 0) : 0, afterGiant * rate) * held);
+  const chance = clamp01(Math.max(ps.chance * boost * rate, afterSet ? afterSetChance : 0, afterGiant * rate) * held);
   ps.lastChance = chance;
 
   if (state.rng() >= chance) {
@@ -1026,7 +1027,9 @@ function maybeSelectPowerup(state, danger01) {
   const st = cfg.struggle ?? {};
   // help preference: from slightly favouring gentle ones (calm) to strongly helpful (struggling)
   const lucky = !endGame && state.rng() < (st.luckyChance ?? 0);
-  let power = endGame ? 0 : lucky ? (st.helpPower ?? 2) : lerp(st.calmHelpPower ?? 0, st.helpPower ?? 2, sel.struggle);
+  // (the harder it's got, the less the most helpful ones come to the rescue: src/difficulty.js)
+  const helpPower = eased(state, "helpPower", st.helpPower ?? 2);
+  let power = endGame ? 0 : lucky ? helpPower : lerp(st.calmHelpPower ?? 0, helpPower, sel.struggle);
   // God mode: always the more helpful ones, and above all the wide gravitizers
   const god = isGodMode(state.mode) && !endGame;
   if (god) power = Math.max(power, CONFIG.godMode?.helpPower ?? 0);

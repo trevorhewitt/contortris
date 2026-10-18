@@ -183,31 +183,34 @@ export const CONFIG = {
   // How Classic and God mode get harder as the game goes on (src/difficulty.js). Per mode: the
   // easy start (`start` pieces), then the climb (`length` pieces) to `hardest` (0: as easy as
   // the start all the way; 1: the full challenge, `hard` below; more: harder still); and the
-  // speed: faster with every piece from the very first, from fromMs a row at the start to capEndMs
-  // at the end of the climb (or faster, if the rows cleared say so), but during the climb never
-  // quicker than a limit that comes down from capStartMs to capEndMs; once the climb is over, quicker with every piece (perPiece) down to
-  // minMs. Extreme and the zen modes don't change. (The developer tools have sliders for all of
-  // it.)
+  // speed, by how far into the game it is: fromMs a row at the first piece, the same bit faster
+  // with every piece to toMs at the end of the climb, then faster still with every piece
+  // (perPiece) down to minMs. Extreme and the zen modes don't change. (The developer tools have
+  // sliders for all of it.)
   difficulty: {
-    normal: { start: 40, length: 360, hardest: 1, speed: { fromMs: 500, capStartMs: 320, capEndMs: 150, perPiece: 0.996, minMs: 75 } },
-    god: { start: 25, length: 500, hardest: 0.8, speed: { fromMs: 420, capStartMs: 280, capEndMs: 140, perPiece: 0.997, minMs: 80 } },
+    normal: { start: 30, length: 300, hardest: 1, speed: { fromMs: 500, toMs: 110, perPiece: 0.997, minMs: 70 } },
+    god: { start: 25, length: 500, hardest: 0.8, speed: { fromMs: 340, toMs: 140, perPiece: 0.997, minMs: 80 } },
     // What hardness 1 means (at the start it's the usual numbers, in CONFIG.assist and God
     // mode's own; in between, part way):
     hard: {
-      dangerBias: 0.35,       // a high stack leans the mix to the small pieces this much (usually pieceMix.dangerBiasStrength)
-      hardMaxDanger: 0.72,    // the giants still come with the stack this high (usually 0.32), as long as one fits
-      level5FullDanger: 0.4,  // the biggest giants as likely as ever with the stack this high (usually 0.12)...
-      level5NeverDanger: 0.75,// ...and hardly ever above this (usually 0.28)
-      hardRate: 2.6,          // the giants this many times as often
-      hardCooldown: 4,        // ...and at least this many pieces apart (usually 9)
-      setRate: 2.4,           // the level 6 sets this many times as often...
-      setMaxStackRows: 13,    // ...and still with the stack this many rows tall (usually 10), if there's room
-      powerupRate: 0.55,      // powerups this much as often...
-      dangerBoost: 2.4,       // ...but this much likelier with the stack at the top (usually 1.6): a real relief
-      afterGiant: 0.5,        // ...and for the two pieces after a giant, a powerup at least this often
+      dangerBias: 0.5,        // a high stack leans the mix to the small pieces this much (usually pieceMix.dangerBiasStrength)
+      hardMaxDanger: 0.22,    // the giants only with the stack this low (usually 0.32): never near the top
+      level5FullDanger: 0.08, // the biggest giants as likely as ever with the stack this high (usually 0.12)...
+      level5NeverDanger: 0.2, // ...and hardly ever above this (usually 0.28)
+      hardRate: 2.2,          // the giants this many times as often (while the stack's low)
+      hardCooldown: 5,        // ...and at least this many pieces apart (usually 9)
+      setRate: 1.8,           // the level 6 sets this many times as often...
+      setMaxStackRows: 8,     // ...but only with the stack at most this many rows tall (usually 10)
+      powerupRate: 0.2,       // Shiny Pieces this much as often...
+      dangerBoost: 0.6,       // ...a stack at the top making them only this much likelier (usually 1.1)...
+      holesBoost: 0.3,        // ...air pockets this much (usually assist.powerups.holesBoost)...
+      struggleBoost: 0.15,    // ...and struggling this much (usually assist.powerups.struggle.chanceBoost)
+      helpPower: 1,           // the most helpful ones only this much preferred when it's bad (usually struggle.helpPower)
+      afterGiant: 0.15,       // for the two pieces after a giant, a Shiny Piece at least this often
+      afterSet: 0.4,          // ...and for the few after a level 6 set (usually assist.powerups.afterSet.chance)
     },
     // the level mix at hardness 1 (blended from assist.pieceMix's on the way)
-    levelWeight: { 0: 0.06, 1: 0.32, 2: 0.34, 3: 0.28 },
+    levelWeight: { 0: 0.04, 1: 0.28, 2: 0.36, 3: 0.32 },
     // the powerup classes: how often each comes at the start of a game, halfway through the
     // climb, and at the end of it (blended in between)
     classes: {
@@ -870,14 +873,14 @@ export const CONFIG = {
         smoothing: 0.3,      // 0..1: how quickly the tally follows the board
         helpPower: 2.2,
         calmHelpPower: -0.3, // when not struggling, slightly favour the gentler ones
-        chanceBoost: 0.6,    // the powerup chance is also multiplied by 1 + chanceBoost * struggle
+        chanceBoost: 0.45,   // the powerup chance is also multiplied by 1 + chanceBoost * struggle
         luckyChance: 0.12,
       },
 
       // The chance is multiplied by (1 + dangerBoost*danger + holesBoost*holes01):
       // you get more help when the stack is high or full of air pockets.
-      dangerBoost: 1.6,
-      holesBoost: 0.8,
+      dangerBoost: 1.1,
+      holesBoost: 0.5,
       holesForMax: 18, // this many air pockets counts as holes01 = 1
 
       // Which class is most useful right now (multipliers):

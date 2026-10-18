@@ -4,11 +4,12 @@
 // Classic and God mode start easy and get harder as the game goes on (CONFIG.difficulty, one
 // section per mode; Extreme and the zen modes don't change). For the first `start` pieces it's
 // as easy as it gets; over the next `length` pieces it climbs to `hardest`. Hard means the game
-// stops holding your hand: a high stack no longer turns the pieces into tiny ones, the giants
-// keep coming when you're in trouble (as long as they'd fit), the level 6 sets come more often,
-// and the powerups come less often, but still more often the worse it looks, so they're a real
-// relief. Never unfair: nothing comes that couldn't fit on the board as it is. Once the climb
-// is over, everything is in, and from then on it only gets faster.
+// stops holding your hand: it's faster all the way (rampDropMs), the Shiny Pieces come less
+// often and come to the rescue less when it looks bad, a high stack no longer turns the pieces
+// into tiny ones, and there are more of the awkward ones. The giants and the level 6 sets come
+// more often too, but only with the stack low: never near the top, so what ends a game is how
+// it's played, not a giant landing on it. Once the climb is over, everything is in, and from
+// then on it only gets faster.
 
 import { CONFIG } from "../config.js";
 import { clamp01, lerp } from "./util.js";
@@ -24,12 +25,13 @@ export function rampProgress(state) {
   return clamp01((drops(state) - (c.start ?? 0)) / Math.max(1, c.length ?? 1));
 }
 
-// How hard it is now: 0 at the start, `hardest` at the end of the climb (eased in and out)
+// How hard it is now: 0 at the start, `hardest` at the end of the climb (steadily, so it's felt
+// all the way up)
 export function hardness(state) {
   const c = rampCfg(state);
   if (!c) return 0;
   const t = rampProgress(state);
-  return (c.hardest ?? 1) * t * t * (3 - 2 * t);
+  return (c.hardest ?? 1) * t;
 }
 
 // The climb is over: everything's in, and from here on it gets faster
@@ -54,22 +56,18 @@ export function classWeight(state, cls) {
   return p < 0.5 ? lerp(w("early"), w("middle"), p * 2) : lerp(w("middle"), w("late"), (p - 0.5) * 2);
 }
 
-// How fast it falls (ms a row), given the usual speed for the rows cleared so far. It gets
-// faster from the very first piece: a little with every piece, from fromMs at the start down to
-// capEndMs at the end of the climb, or faster still if the rows cleared say so; but during the
-// climb never quicker than a limit that comes down from capStartMs to capEndMs. After the climb,
-// quicker with every piece (perPiece), down to minMs.
+// How fast it falls (ms a row). By how far into the game it is, not the rows: from fromMs at the
+// first piece to toMs at the end of the climb, the same bit faster with every piece (so it's felt
+// all the way, not all at the start), and after the climb faster still with every piece
+// (perPiece), down to minMs. (`ms`, the speed by the rows cleared, is for the modes that don't
+// get harder.)
 export function rampDropMs(state, ms) {
   const s = rampCfg(state)?.speed;
   if (!s) return ms;
-  const c = rampCfg(state), end = (c.start ?? 0) + (c.length ?? 0);
-  const cap = lerp(s.capStartMs ?? ms, s.capEndMs ?? ms, rampProgress(state));
-  if (!rampDone(state)) {
-    const byPieces = lerp(s.fromMs ?? ms, s.capEndMs ?? ms, clamp01(drops(state) / Math.max(1, end)));
-    return Math.max(Math.round(cap), Math.round(Math.min(ms, byPieces)));
-  }
-  const past = drops(state) - end;
-  return Math.max(s.minMs ?? 60, Math.round(Math.min(ms, cap) * Math.pow(s.perPiece ?? 1, past)));
+  const c = rampCfg(state), end = (c.start ?? 0) + (c.length ?? 0), n = drops(state);
+  const from = s.fromMs ?? ms, to = s.toMs ?? from;
+  const climb = from * Math.pow(to / from, clamp01(n / Math.max(1, end)));
+  return Math.max(s.minMs ?? 60, Math.round(climb * Math.pow(s.perPiece ?? 1, Math.max(0, n - end))));
 }
 
 // For the dev panel: where the game is

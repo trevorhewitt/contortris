@@ -4,8 +4,9 @@
 // Holding God mode and Turbo zen down together on the home screen switches the developer tools
 // on, for this visit only (never remembered: the next visit starts without them), and opens
 // their page: a developer game (new things first),
-// which powerup classes Classic has and in what order they come, sliders for how Classic and
-// God mode get harder (CONFIG.difficulty) and how often each class comes at each stage, and a
+// which powerup classes Classic has and in what order they come, sliders for how fast Classic and
+// God mode fall and how they get harder (CONFIG.difficulty) and how often each class comes at
+// each stage, and a
 // button that copies the settings, to hand on. While they're on, the settings apply to every
 // game, and the game's numbers show at the side of the screen (src/ui.js updateDevPanel).
 // Turning them off, or leaving, puts everything back as it was. (The settings are kept for the
@@ -35,26 +36,34 @@ const ramp = (mode) => [
   [`difficulty.${mode}.start`, "easy start (pieces)", 0, 300, 5],
   [`difficulty.${mode}.length`, "then gets harder over (pieces)", 0, 1500, 10],
   [`difficulty.${mode}.hardest`, "how hard it gets (1 = full)", 0, 1.5, 0.05],
-  [`difficulty.${mode}.speed.fromMs`, "speed at the very start (ms a row)", 200, 800, 10],
-  [`difficulty.${mode}.speed.capStartMs`, "speed limit at the start (ms a row)", 100, 600, 10],
-  [`difficulty.${mode}.speed.capEndMs`, "speed limit once it's hard (ms a row)", 40, 400, 5],
+];
+// (how fast it falls, by how far into the game it is: src/difficulty.js rampDropMs)
+const speed = (mode) => [
+  [`difficulty.${mode}.speed.fromMs`, "speed at the start (ms a row)", 150, 900, 10],
+  [`difficulty.${mode}.speed.toMs`, "speed once it's hard (ms a row)", 40, 500, 5],
   [`difficulty.${mode}.speed.perPiece`, "after that, faster per piece", 0.98, 1, 0.001],
-  [`difficulty.${mode}.speed.minMs`, "fastest (ms a row)", 30, 200, 5],
+  [`difficulty.${mode}.speed.minMs`, "fastest (ms a row)", 30, 300, 5],
 ];
 const STAGES = [["early", "at the start"], ["middle", "halfway"], ["late", "once it's hard"]];
 const GROUPS = [
+  { title: "Classic: speed", items: speed("normal") },
   { title: "Classic: getting harder", items: ramp("normal") },
+  { title: "God mode: speed", items: speed("god") },
   { title: "God mode: getting harder", items: ramp("god") },
   { title: "What “hard” means", items: [
     ["difficulty.hard.dangerBias", "a high stack makes pieces small", 0, 1.5, 0.05],
-    ["difficulty.hard.hardMaxDanger", "giants still come this high up (0–1)", 0.2, 1, 0.02],
+    ["difficulty.hard.hardMaxDanger", "giants only with the stack this low (0–1)", 0.05, 1, 0.01],
     ["difficulty.hard.hardRate", "giants: how often (×)", 0.5, 6, 0.1],
     ["difficulty.hard.hardCooldown", "giants: at least this far apart", 1, 15, 1],
     ["difficulty.hard.setRate", "level 6 sets: how often (×)", 0.5, 6, 0.1],
-    ["difficulty.hard.setMaxStackRows", "level 6 sets: up to this tall a stack", 4, 18, 1],
+    ["difficulty.hard.setMaxStackRows", "level 6 sets: up to this tall a stack", 2, 18, 1],
     ["difficulty.hard.powerupRate", "Shiny Pieces: how often (×)", 0.1, 2, 0.05],
     ["difficulty.hard.dangerBoost", "Shiny Pieces: likelier when high up", 0, 6, 0.1],
+    ["difficulty.hard.holesBoost", "Shiny Pieces: likelier with air pockets", 0, 3, 0.05],
+    ["difficulty.hard.struggleBoost", "Shiny Pieces: likelier when struggling", 0, 2, 0.05],
+    ["difficulty.hard.helpPower", "Shiny Pieces: the best ones when struggling", 0, 4, 0.1],
     ["difficulty.hard.afterGiant", "Shiny Pieces: chance just after a giant", 0, 1, 0.05],
+    ["difficulty.hard.afterSet", "Shiny Pieces: chance just after a set", 0, 1, 0.05],
   ] },
   ...STAGES.map(([stage, when]) => ({
     title: `Shiny Piece classes ${when}`,

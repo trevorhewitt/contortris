@@ -110,7 +110,8 @@ Otherwise it downloads the updated file for you to drop in.
 - `assist.variety.giants.repeatPenalty`: how strongly a giant you've already had is avoided.
 - `scoring`: points for placing, destroying and clearing.
 - `difficulty`: for Classic and God mode, the easy start, how long it takes to get hard, how hard
-  it gets, the speed limits, what "hard" means, and how often each powerup class comes when.
+  it gets, the speed (by how far into the game it is), what "hard" means, and how often each
+  powerup class comes when.
 
 ## Developer tools
 
@@ -122,8 +123,9 @@ page has:
 - **Developer game**: God mode with the newest pieces and sets first; it won't let you lose.
 - **Shiny Piece classes in Classic**: which classes are in, and (ticked) the exact order they come in,
   with "Comboz" where the combos may start.
-- **Sliders** for how Classic and God mode get harder, what "hard" means, how often each class
-  comes at the start, halfway and once it's hard, and Shiny Pieces overall. Changed ones show in yellow.
+- **Sliders** for how fast Classic and God mode fall (at the start, once it's hard, and faster
+  per piece after that), how they get harder, what "hard" means, how often each class comes at
+  the start, halfway and once it's hard, and Shiny Pieces overall. Changed ones show in yellow.
 - **Copy settings**: copies just what you've changed, as text to paste into a message.
 - **Back to the usual** and **Turn developer tools off** (everything back to the game's own).
 

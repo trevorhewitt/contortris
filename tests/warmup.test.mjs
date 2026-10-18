@@ -12,7 +12,7 @@ import { makeRng } from "../src/util.js";
 import { createGameState, startRun } from "../src/game.js";
 import { selectPiece, fitBadness } from "../src/selection.js";
 import { warmth } from "../src/pacing.js";
-import { hardness } from "../src/difficulty.js";
+import { hardness, rampDropMs } from "../src/difficulty.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const { cols, rows } = CONFIG.board;
@@ -87,4 +87,17 @@ test("later on the mix opens up: more of the awkward levels", () => {
   assert.equal(hardness({ mode: "normal", pieceSel: { dropIndex: end } }), D.hardest);
   const early = share(CONFIG.assist.warmup.goneBy), late = share(end);
   assert.ok(late > early * 1.4, `level 3 and up: ${(early * 100).toFixed(0)}% after the warm-up, ${(late * 100).toFixed(0)}% later on`);
+});
+
+test("the speed goes by how far into the game it is, felt all the way: a bit faster with every piece", () => {
+  const D = CONFIG.difficulty.normal, end = D.start + D.length, s = D.speed;
+  const at = (n) => rampDropMs({ mode: "normal", pieceSel: { dropIndex: n } }, 9999);
+  assert.equal(at(0), s.fromMs, "the start");
+  assert.equal(at(end), s.toMs, "the end of the climb");
+  // (the same few per cent faster every stretch of the climb, not all at the start)
+  const steps = [0, 1, 2, 3].map(k => at(Math.round(end * (k + 1) / 4)) / at(Math.round(end * k / 4)));
+  for (const r of steps) assert.ok(Math.abs(r - steps[0]) < 0.03, `each quarter ${steps.map(x => x.toFixed(2)).join(" ")}`);
+  assert.ok(at(end + 50) < at(end), "and faster after it");
+  assert.equal(at(end + 5000), s.minMs, "down to the fastest");
+  assert.equal(rampDropMs({ mode: "extreme", pieceSel: { dropIndex: 300 } }, 123), 123, "Extreme: by the rows, as ever");
 });
