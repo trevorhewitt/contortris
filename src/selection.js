@@ -4,9 +4,10 @@
 // Order of precedence for each drop:
 //   0. a level 6 group that is under way carries on (src/level6.js)
 //   1. linked shapes (prev.nextShapes / nextShapeProbs) — "back to back" pieces
-//   2. a level 6 group may start (once unlocked)
-//   3. powerup scheduler (Normal mode only)
-//   4. regular level mix: (a) choose a difficulty level, (b) choose a shape in that
+//   2. a wave's big Gravitizer, once its stretch of awkward pieces is over (src/waves.js)
+//   3. a level 6 group may start (once unlocked)
+//   4. powerup scheduler (Normal mode only): the class first, then one of its pieces
+//   5. regular level mix: (a) choose a difficulty level, (b) choose a shape in that
 //      level by frequency × variety (recently served / already on the board)
 // Level 6 pieces (difficulty 6) only ever come in their groups.
 
@@ -19,6 +20,7 @@ import { isGodMode, godConfig, gravityColumns } from "./godmode.js";
 import { pickThread, threadWeight } from "./threads.js";
 import { warmth, alwaysWarm } from "./pacing.js";
 import { hardness, eased, classWeight } from "./difficulty.js";
+import { initWaves, waveTense, waveLevels, waveStep } from "./waves.js";
 
 const DEBUG_LINK = false; // verbose console logging for linked shapes
 
@@ -87,6 +89,8 @@ export function initPieceSelectionState(state) {
   state.pieceSel.level6 = initLevel6(state);
   // the end game (src/endgame.js)
   state.pieceSel.endGame = initEndGame();
+  // the waves: a stretch of awkward pieces, then a big Gravitizer (src/waves.js)
+  state.pieceSel.waves = initWaves(state);
   // God mode: every powerup class and the combos are in from the first piece (counted as met,
   // so there are no intro screens)
   if (isGodMode(state.mode)) {
@@ -427,6 +431,18 @@ function pickNextPiece(state) {
     return linked;
   }
 
+  // A wave (src/waves.js): its stretch of awkward pieces over, the big Gravitizer that ends it
+  // (as soon as there's plenty for it to bring down)
+  const relief = state.powerups.length ? waveStep(state, danger01, calm, (p) => powerupUsefulnessCached(state, p)) : null;
+  if (relief) {
+    // (it counts as one of its class's share: CONFIG.assist.powerups.fairShare)
+    const fs = (sel.powerup.fair ??= { due: {}, had: {} });
+    fs.had[relief.powerup.cls] = (fs.had[relief.powerup.cls] ?? 0) + 1;
+    commitSelectedShape(sel, relief);
+    notePowerupDropped(sel);
+    return relief;
+  }
+
   // Level 6: maybe a group starts here.
   const groupStart = maybeStartGroup(state);
   if (groupStart) {
@@ -536,6 +552,9 @@ function pickNextPiece(state) {
 
   // Softly suppress level 3 in danger to prevent “still awkward at the top”.
   levelW[3] *= (1 - 0.65 * danger);
+
+  // ...unless it's a wave's stretch of awkward pieces (src/waves.js: until the stack's too high)
+  waveLevels(state, levelW);
 
   // Hard-ban level 0 for the first few drops.
   if (sel.dropIndex <= (CONFIG.assist.openingNoLevel0UntilDrop ?? 0)) {
@@ -938,7 +957,9 @@ function maybeSelectPowerup(state, danger01) {
   const afterSet = !endGame && sinceSet >= 1 && sinceSet <= (after.pieces ?? 0);
   // ...and just after a giant, the harder it's got the likelier a powerup, to dig out with
   const afterGiant = !endGame && sel.lastHardAt != null && sel.dropIndex - sel.lastHardAt <= 2 ? eased(state, "afterGiant", 0) : 0;
-  const chance = clamp01(Math.max(ps.chance * boost * rate, afterSet ? (after.chance ?? 0) : 0, afterGiant * rate));
+  // (in a wave's stretch of awkward pieces, hardly any: src/waves.js)
+  const held = waveTense(state) ? CONFIG.waves?.[state.mode]?.shiny ?? 1 : 1;
+  const chance = clamp01(Math.max(ps.chance * boost * rate, afterSet ? (after.chance ?? 0) : 0, afterGiant * rate) * held);
   ps.lastChance = chance;
 
   if (state.rng() >= chance) {
@@ -1047,27 +1068,56 @@ function maybeSelectPowerup(state, danger01) {
   };
 
   ps.sinceClass++;
-  const chosen = sampleByWeight(candidates, (p) => {
-    // (useless: rare; a little use: less likely; a lot of use: full weight)
-    const little = use.littleWeight ?? 1, good = Math.max(1, use.goodUseful ?? 1);
-    const usableW = !useful.size ? 1 : !useful.get(p.id) ? (use.unusableWeight ?? 0.1)
-      : little + (1 - little) * Math.min(1, (helped.get(p.id) - 1) / Math.max(1, good - 1));
-    // (variety: not a third of one class in a row)
-    const cv = cfg.classVariety ?? {};
-    const runW = Math.pow(cv.weight ?? 1, (ps.recentClasses ?? []).slice(-(cv.last ?? 0)).filter(c => c === p.powerup.cls).length);
+  // (useless: rare; a little use: less likely; a lot of use: full weight)
+  const little = use.littleWeight ?? 1, good = Math.max(1, use.goodUseful ?? 1);
+  const usableW = (p) => !useful.size ? 1 : !useful.get(p.id) ? (use.unusableWeight ?? 0.1)
+    : little + (1 - little) * Math.min(1, (helped.get(p.id) - 1) / Math.max(1, good - 1));
+  // (what the board needs: CONFIG.assist.powerups.need)
+  const needW = (p) => {
     const sideways = p.powerup.type === "gravity" && (p.powerup.direction === "left" || p.powerup.direction === "right");
     const n = (sideways ? need.gravitySideways : null) ?? need[p.powerup.type] ?? { base: 1 };
-    const needW = (n.base ?? 1) + (n.holes ?? 0) * holes01 + (n.danger ?? 0) * danger01;
+    return (n.base ?? 1) + (n.holes ?? 0) * holes01 + (n.danger ?? 0) * danger01;
+  };
+  // A piece's own weight, among its class's (and the same without the thread's pull)
+  const plainW = new Map(), pieceW = new Map();
+  for (const p of candidates) {
     const helpW = Math.pow((p.powerup.help ?? 3) / 3, power);
-    const comboW = p.powerup.type === "combo" ? (firstComboDue ? (combos.firstBoost ?? 1) : (combos.weight ?? 1)) : 1;
-    // a class's pieces share its weight, so big classes don't crowd out small ones
-    const classSize = candidates.filter(c => c.powerup.cls === p.powerup.cls).length;
     const threadW = CONFIG.assist.threads?.powerups ? threadWeight(sel.currentThread, p, sel.servedCounts.get(p.id) ?? 0) : 1;
     // (kinds kept apart: CONFIG.assist.powerups.apart)
     const apartW = (p.tags ?? []).reduce((w, t) => { const a = cfg.apart?.[t]; return a && sel.dropIndex - (ps.tagAt?.[t] ?? -Infinity) < a.drops ? w * a.weight : w; }, 1);
-    // (and how often its class comes at this stage of the game: CONFIG.difficulty.classes)
-    return clearerW(p) * (p.frequency ?? 1) * needW * helpW * comboW * usableW * runW * wideW(p) * bigW(p) * rarerW(p) * varietyMultiplier(sel, p) * threadW * apartW * (6 / (classSize + 5)) * classWeight(state, p.powerup.cls);
-  }, state.rng);
+    const w = clearerW(p) * (p.frequency ?? 1) * needW(p) * helpW * usableW(p) * wideW(p) * bigW(p) * rarerW(p) * varietyMultiplier(sel, p) * apartW;
+    plainW.set(p, w);
+    pieceW.set(p, w * threadW);
+  }
+  // Standard pools: the class first, then one of its pieces, so each class gets its share however
+  // many pieces it has. A class's share: how often it comes at this stage of the game
+  // (CONFIG.difficulty.classes; the combos `combos.weight` of one), steered by what the board needs,
+  // whether any of it could help now, the thread being followed (as much as its pieces are pulled,
+  // on the whole), and no long runs of one class (classVariety) or two close together
+  // (classApart); and kept even over the game (fairShare: behind its share, likelier).
+  const byClass = new Map();
+  for (const p of candidates) (byClass.get(p.powerup.cls) ?? byClass.set(p.powerup.cls, []).get(p.powerup.cls)).push(p);
+  const share = (c) => classWeight(state, c) * (c === "combo" ? combos.weight ?? 1 : 1);
+  const cv = cfg.classVariety ?? {}, fair = cfg.fairShare ?? {}, fs = (ps.fair ??= { due: {}, had: {} });
+  const classW = new Map([...byClass].map(([c, list]) => {
+    const runW = Math.pow(cv.weight ?? 1, (ps.recentClasses ?? []).slice(-(cv.last ?? 0)).filter(x => x === c).length);
+    const ap = cfg.classApart?.[c];
+    const apartW = ap && sel.dropIndex - (ps.classAt?.[c] ?? -Infinity) < ap.drops ? ap.weight : 1;
+    const most = Math.max(1, fair.most ?? 1);
+    const fairW = Math.min(most, Math.max(1 / most, Math.exp((fair.strength ?? 0) * ((fs.due[c] ?? 0) - (fs.had[c] ?? 0)))));
+    const firstW = c === "combo" && firstComboDue ? combos.firstBoost ?? 1 : 1;
+    const needC = list.reduce((a, p) => a + needW(p), 0) / list.length;
+    const plain = list.reduce((a, p) => a + plainW.get(p), 0);
+    const threadC = plain > 0 ? list.reduce((a, p) => a + pieceW.get(p), 0) / plain : 1;
+    return [c, share(c) * firstW * runW * apartW * fairW * needC * threadC * Math.max(...list.map(usableW)) * Math.max(...list.map(bigW))];
+  }));
+  const cls = sampleByWeight([...byClass.keys()], c => classW.get(c), state.rng);
+  const chosen = sampleByWeight(byClass.get(cls), p => pieceW.get(p), state.rng);
+  // (what each class that could have come was due, and which one had it: fairShare)
+  const shares = [...byClass.keys()].reduce((a, c) => a + share(c), 0) || 1;
+  for (const c of byClass.keys()) fs.due[c] = (fs.due[c] ?? 0) + share(c) / shares;
+  fs.had[cls] = (fs.had[cls] ?? 0) + 1;
+  (ps.classAt ??= {})[cls] = sel.dropIndex;
   if (chosen && introducing(chosen)) { ps.lastIntroDrop = sel.dropIndex; ps.pendingIntro.add(chosen.powerup.cls); }
   for (const t of chosen?.tags ?? []) if (cfg.apart?.[t]) (ps.tagAt ??= {})[t] = sel.dropIndex;
   return chosen;

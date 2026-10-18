@@ -7,11 +7,14 @@ clears.
   "powerup"), introduced one class at a time: Dissolverz (destroyers and acid), Gravitizerz and
   Expanderz, plus Comboz once two classes are in. (Blasts, goo and phantoms still exist in the
   code but are switched off: `assist.powerups.disabledTypes` in `config.js`.) Each new class
-  pauses the game with an intro screen (Options turns them off). The bay at the bottom left holds
-  one big Shiny Piece of each class per game, each showing up there once its class has opened:
-  tap the bay, pick one from its menu (the game slows while it's open), and it takes the falling
-  piece's place. No keys for it. It starts easy and gets harder as it goes (`difficulty` in
-  `config.js`, `src/difficulty.js`).
+  pauses the game with an intro screen (Options turns them off). Each class comes about as often
+  as the others, however many pieces it has. The bay at the bottom left holds one middling Shiny
+  Piece of each of the three classes per game (never a combo), each showing up there once one of
+  its class has come: tap the bay, pick one from its menu (the game slows while it's open), and it
+  takes the falling piece's place. No keys for it. It starts easy and gets harder as it goes
+  (`difficulty` in `config.js`, `src/difficulty.js`), and now and then the pieces turn awkward for
+  a stretch, with the Shiny Pieces held back, until a big Gravitizer brings the mess down
+  (`waves`, `src/waves.js`).
 - **Extreme**: no Shiny Pieces, no mercy.
 - **God mode**: everything from the first piece; it gets harder too.
 - **Zen** and **Turbo zen**: it plays itself (slowly, or as a show), or you do.
@@ -43,6 +46,7 @@ clears.
 | `game.js` | The game rules: falling, locking, line clears, powerup effects. No DOM, sends events. |
 | `selection.js` | The piece picker: difficulty levels, "hard" pieces, powerup scheduling, variety. |
 | `difficulty.js` | How Classic and God mode get harder as a game goes on. |
+| `waves.js` | Classic and God mode's waves: a stretch of awkward pieces, then a big Gravitizer. |
 | `devtools.js` | The developer tools page (settings to try the game out with). |
 | `zen.js` | Zen and Turbo zen: the director and the autopilot. |
 | `powerups.js` | Powerup areas and effects for every class (`computeEffect`). |
@@ -97,7 +101,10 @@ Otherwise it downloads the updated file for you to drop in.
 - `assist.powerups`: how often powerups appear and which ones; `progression` controls how they are
   introduced (`firstClassPool`, `newClassEvery`, or `enabled: false` for all at once), `combos`
   (when combo powerups start), `struggle` (how much the helpful ones are favoured when you're in
-  trouble) and `usability` (how strongly powerups that can't help on the current board are avoided).
+  trouble), `usability` (how strongly powerups that can't help on the current board are avoided),
+  `fairShare` (how firmly each class is kept to its share over a game), `classApart` (the
+  expanders kept apart) and `expanderMaxCols` (how wide an expander's fill can be).
+- `waves`: Classic and God mode's stretches of awkward pieces and the big Gravitizer after each.
 - `assist.pieceMix.hard.firstGiantBetween`: the first giant always lands in this range of pieces.
 - `assist.variety.giants.repeatPenalty`: how strongly a giant you've already had is avoided.
 - `scoring`: points for placing, destroying and clearing.

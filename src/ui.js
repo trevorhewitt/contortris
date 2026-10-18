@@ -15,6 +15,7 @@ import { CLASS_INFO, analyseBoard } from "./powerups.js";
 import { introduceAllPowerups, computeStackDanger01 } from "./selection.js";
 import { level6Status, startGroup, scheduleFirstGroup } from "./level6.js";
 import { endGameStatus } from "./endgame.js";
+import { waveStatus } from "./waves.js";
 import { zenIgnoreInput, zenMovementChoices, zenStart } from "./zen.js";
 import { rarity } from "./rarity.js";
 import { createHome } from "./home.js";
@@ -998,6 +999,7 @@ export function bindUI({ state, renderer, achievements }) {
       ["class order", classOrder()?.join(" › ") ?? "usual"],
       ["level 6", level6Status(state)],
       ["end game", endGameStatus(state)],
+      ["waves", waveStatus(state)],
       ["classes", ps ? (ps.classes.join(", ") || "none yet") : "–"],
       ["shiny seen", ps ? `${ps.shown.size}/${state.powerups.length} · ${state.devPowerups.disabled.size} disabled` : "–"],
       ["pieces on board", String(state.instances.size)],

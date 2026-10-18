@@ -220,8 +220,12 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
           part.fillArt = pf.art ?? null;
           part.fillStyle = { ...style, baseColor: pf.baseColor };
         }
+        // (one that strikes everything under it, `under`: its own columns however it's turned,
+        // from its top down to the floor, so its highlight always takes in the whole of it, gaps
+        // between its blocks and all, and lines up with it whichever way it's turned)
+        if (powerup.under) powerup.areaRotations = allowed.map(i => underArea(allRotations[i]));
         // (and where the piece was before it turned goes with it: no blank, or block left standing)
-        allowed.forEach((i, k) => withOwnCells(powerup, k, allRotations[0], allRotations[i]));
+        else allowed.forEach((i, k) => withOwnCells(powerup, k, allRotations[0], allRotations[i]));
       }
     }
 
@@ -306,6 +310,12 @@ function normaliseRemix(r) {
   if (typeof r.scramble === "string" && r.scramble) return { scramble: r.scramble };
   if (Array.isArray(r.stickers) && r.stickers.length >= 2) return { stickers: r.stickers.filter(c => typeof c === "string") };
   return null;
+}
+
+// Everything under a piece turned this way (`mat`): each of its columns, from its top row down to
+// the floor.
+function underArea(mat) {
+  return { cells: [], rows: [], cols: [], downs: mat[0].map((_, x) => ({ dx: x, dy: 0 })) };
 }
 
 // The rotation-0 area `base` (offsets from the piece's top-left), moved so it sits the same

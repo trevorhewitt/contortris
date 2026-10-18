@@ -131,6 +131,29 @@ export function areaRotationsFor(area, rotations, trim = { top: 0, left: 0 }) {
   return out;
 }
 
+// An expander's fill (a combo's too) never reaches more than CONFIG.assist.powerups.expanderMaxCols
+// columns across, centred on the piece as it first comes, whatever its area as drawn: two of them
+// side by side can't fill whole rows from wall to wall. (Its other turns follow from that one.)
+function narrowFill(areaRotations, rotations) {
+  const max = CONFIG.assist?.powerups?.expanderMaxCols;
+  if (!(max > 0)) return areaRotations;
+  const c = (rotations[0][0].length - 1) / 2, keep = (dx) => Math.abs(dx - c) < max / 2;
+  const span = [];
+  for (let dx = Math.floor(c - max / 2); dx <= Math.ceil(c + max / 2); dx++) if (keep(dx)) span.push(dx);
+  const a = areaRotations[0];
+  const out = [{
+    cells: [...a.cells.filter(q => keep(q.dx)), ...a.rows.flatMap(dy => span.map(dx => ({ dx, dy })))],
+    rows: [],
+    cols: a.cols.filter(keep),
+    downs: (a.downs ?? []).filter(q => keep(q.dx)),
+  }];
+  // (a combo's fill that's all off to the sides, the ground either side of the hole it digs,
+  // stays as it is: it never fills a row across, the hole's in the way)
+  if (isEmptyArea(out[0])) return areaRotations;
+  for (let i = 1; i < rotations.length; i++) out.push(rotateArea90CW(out[i - 1], rotations[i - 1].length));
+  return out;
+}
+
 export function isEmptyArea(a) {
   return !a.cells.length && !a.rows.length && !a.cols.length && !a.downs?.length;
 }
@@ -202,6 +225,7 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
     areaRotations = scatterAreas(rotations, raw.scatter, makeRng([...String(id)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7)));
   } else {
     areaRotations = areaRotationsFor(raw.area, rotations, trim);
+    if (type === "expander") areaRotations = narrowFill(areaRotations, rotations);
     if (isEmptyArea(areaRotations[0])) {
       console.warn(`[${id}] powerup has an empty area; it will do nothing.`);
     }
@@ -233,6 +257,9 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
     bad: raw.bad === true,
     // (one that only ever comes in its level 6 set: shapes/groups.js)
     setOnly: raw.setOnly === true,
+    // (its area is everything under it, its own columns from its top down to the floor, however
+    // it's turned: src/shapes.js)
+    under: raw.under === true,
     scatter: (raw.scatter && type === "destroyer") ? {
       radius: Math.max(1, Number(raw.scatter.radius) || 5),
       density: Math.max(0.05, Math.min(1, Number(raw.scatter.density) || 0.5)),

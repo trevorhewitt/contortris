@@ -100,15 +100,16 @@ export const CONFIG = {
   },
 
   // The powerup shelf (src/shelf.js), in place of the next piece, in the modes marked shelf: true.
-  // classes: one slot each, in this order; pieces: the strong ones a slot can hold (one picked at
-  // random each game); perGame: how many of each the player has in a game (later on, the shelf
-  // will be the player's own, bought, kept from game to game).
+  // classes: one slot each, in this order (only these three: never a combo); pieces: the ones a
+  // slot can hold (one picked at random each game), middling ones: a real help, not a board
+  // cleared (the first of each is the tutorial's); perGame: how many of each the player has in a
+  // game (later on, the shelf will be the player's own, bought, kept from game to game).
   shelf: {
     classes: ["destroyer", "expander", "gravity"],
     pieces: {
-      destroyer: ["dragon_with_hay_fever", "hole_in_one", "giant_eraser"],
-      expander: ["squat_volcano", "tipper_truck", "avalanche"],
-      gravity: ["steamroller", "blue_whale", "hippo_bellyflop"],
+      destroyer: ["magic_wand", "katana", "lit_fuse"],
+      expander: ["spilled_paint", "storm_cloud", "week_of_laundry"],
+      gravity: ["anvil", "sumo_wrestler", "ton_of_bricks"],
     },
     perGame: 1,
     // The bay on the page (src/shelfui.js): a tap opens its menu, and while it's open the game
@@ -209,10 +210,25 @@ export const CONFIG = {
     // the powerup classes: how often each comes at the start of a game, halfway through the
     // climb, and at the end of it (blended in between)
     classes: {
-      early: { destroyer: 1, gravity: 1, expander: 1, combo: 1 },
-      middle: { destroyer: 1, gravity: 1, expander: 1, combo: 1 },
-      late: { destroyer: 1, gravity: 1, expander: 1, combo: 1 },
+      early: { destroyer: 1, gravity: 1, expander: 0.8, combo: 1 },
+      middle: { destroyer: 1, gravity: 1, expander: 0.8, combo: 1 },
+      late: { destroyer: 1, gravity: 1, expander: 0.8, combo: 1 },
     },
+  },
+
+  // Waves (src/waves.js), in Classic and God mode: now and then a stretch of the awkward pieces with
+  // the Shiny Pieces held back, the board getting tense, and then a big Gravitizer, timed for when
+  // there's plenty for it to bring down. first: the first stretch starts somewhere in this range of
+  // pieces (in Classic, not before the Gravitizerz have been met); every: pieces from one big
+  // Gravitizer to the next stretch, at the start of the climb and at its end (src/difficulty.js,
+  // blended in between); pieces: how long a stretch is, likewise; levels: the level mix it leans to,
+  // and mix: how far (1: entirely); shiny: the Shiny Pieces this much as often while it lasts;
+  // endAt: a stack this high (0 to 1) ends it there and then. relief: the Gravitizer that ends it,
+  // a tier 3 one collapsing at least minCols columns, once one would bring at least minMoved blocks
+  // down (the likeliest the one that brings down the most), waiting up to `wait` pieces for that.
+  waves: {
+    normal: { first: [75, 95], every: [60, 34], pieces: [5, 9], mix: 0.7, levels: { 2: 0.3, 3: 0.5, 4: 0.2 }, shiny: 0.1, endAt: 0.62, relief: { minCols: 5, minMoved: 10, wait: 6 } },
+    god: { first: [30, 45], every: [42, 26], pieces: [6, 10], mix: 0.8, levels: { 3: 0.55, 4: 0.35, 5: 0.1 }, shiny: 0.15, endAt: 0.6, relief: { minCols: 6, minMoved: 12, wait: 5 } },
   },
 
   // God mode (modes.god): everything from the first piece, and plenty of it. The level 6 sets
@@ -806,9 +822,23 @@ export const CONFIG = {
         minDrop: 40,
       },
 
+      // Standard pools: the class comes first, then one of its pieces, so each class that's in
+      // gets its share (CONFIG.difficulty.classes; the combos `combos.weight` of one) however many
+      // pieces it has. Then, over the game, a class that has had less than its share comes more
+      // often, and one that's had more, less: e^(strength × how many it's behind), at most `most`
+      // times as often (or 1/most).
+      fairShare: { strength: 0.7, most: 4 },
       // Variety: no long runs of one class. Each of the last `last` powerups that was of the
       // same class makes another one of it this much less likely.
       classVariety: { last: 2, weight: 0.4 },
+      // ...and a class kept apart from its last one: within `drops` pieces of it, `weight` times as
+      // likely. The expanders: two close together, side by side or one over the other, filled
+      // whole stacks in one go.
+      classApart: { expander: { drops: 10, weight: 0.12 } },
+      // An expander's fill (a combo's too) never reaches more than this many columns across,
+      // centred on the piece, whatever its area as drawn in the designer (src/powerups.js): two
+      // side by side can't fill rows from wall to wall. null: as drawn.
+      expanderMaxCols: 5,
       // ...and some kinds of powerup (by tag) kept apart: within `drops` pieces of one, another of
       // the kind is `weight` times as likely (the sinkhole-type: a column dug out, the ground
       // either side filled in). Turbo zen keeps them apart as well (CONFIG.zen.apart).
@@ -990,6 +1020,9 @@ export const CONFIG = {
         fadeMs: 170,        // a vanishing powerup fades out
         comboOverlap: 0.72, // a combo's next part starts when the one before is this far through
         finaleLead: 120,    // and its rainbow comes this long before the end
+        // ...running out from the middle along every part of it, cell by cell (msPerCell further
+        // out), each cell lit for `ms`, with sparks off `sparks` of them
+        comboSweep: { msPerCell: 30, ms: 460, sparks: 0.3 },
         destroy: { pullMs: 150, msPerSqrtCell: 52, jitterMs: 60, popMs: 260, maxEmbers: 180 },
         gravity: { trembleMs: 230, trembleFrom: 6, squashMs: 150 },
         phantom: { ms: 380 },

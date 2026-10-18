@@ -180,7 +180,8 @@ test("after a level 6 set: a big destroyer comes soon", () => {
 });
 
 test("developer mode: the newest things come first, once each since the page was loaded, then as usual (and God mode is as it comes)", () => {
-  const newest = new Set(CONFIG.devMode.newest.pieces), newSets = new Set(CONFIG.devMode.newest.sets);
+  // (the very latest, the last batch's, are the newest of all)
+  const d = CONFIG.devMode, newest = new Set([...d.newest.pieces, ...(d.latest?.pieces ?? [])]), newSets = new Set([...d.newest.sets, ...(d.latest?.sets ?? [])]);
   const share = ({ seenEver = new Map(), seenSetsEver = new Map(), shown = new Map(), setsShown = new Map(), mode = "dev" }) => {
     let fresh = 0, n = 0, firstNew = 0, games = 0;
     for (const seed of [1, 2, 3, 4, 5, 6]) {
@@ -276,15 +277,15 @@ test("developer mode can open with a particular set (the emotions chart's ascent
 });
 
 test("developer mode can bring particular pieces soon after its opening set, the first time since the page was loaded", () => {
-  const d = CONFIG.devMode, was = d.firstPieces, newest = d.newest.pieces, first = d.firstSet;
+  const d = CONFIG.devMode, was = d.firstPieces, newest = d.newest.pieces, latest = d.latest.pieces, first = d.firstSet;
   d.firstPieces = ["portrait_of_a_potato"];
   d.firstSet = ["emotions_ascent"];
-  d.newest.pieces = []; // (the newest things come first too: not what this is about)
+  d.newest.pieces = d.latest.pieces = []; // (the newest things come first too: not what this is about)
   try {
     const state = createGameState(shapes, powerups, { rng: makeRng(4), groups: GROUPS });
     state.seenEver = new Map(); state.shownThisLoad = new Map(); // (as the UI keeps them)
     const served = [];
-    on(state, (t, d) => { if (t === "spawn") served.push({ id: d.shape.id, set: !!state.pieceSel.level6.group }); });
+    on(state, (t, d) => { if (t === "spawn") served.push({ id: d.shape.id, set: !!state.pieceSel.level6.group, ordinary: !d.shape.powerup && (d.shape.difficulty ?? 1) < 4 }); });
     startRun(state, "dev");
     for (let i = 0; i < 120 && !served.some(s => s.id === d.firstPieces[0]) && !state.gameOver; i++) {
       hardDropAndLock(state);
@@ -294,9 +295,11 @@ test("developer mode can bring particular pieces soon after its opening set, the
     const at = served.findIndex(s => s.id === d.firstPieces[0]);
     const setEnds = served.findIndex((s, i) => i > 0 && served[i - 1].set && !s.set);
     assert.ok(at >= 0, `never came: ${served.map(s => s.id).slice(0, 40).join(" ")}`);
-    // (soon after: the powerups and giants God mode serves meanwhile can come first)
-    assert.ok(setEnds >= 0 && at >= setEnds - 1 && at <= setEnds + 8, `at piece ${at}, the opening set over at ${setEnds}`);
-  } finally { d.firstPieces = was; d.newest.pieces = newest; d.firstSet = first; }
+    // (soon after: the powerups and giants God mode serves meanwhile can come first, so among the
+    // ordinary pieces)
+    const nth = served.slice(setEnds, at + 1).filter(s => s.ordinary && !s.set).length;
+    assert.ok(setEnds >= 0 && at >= setEnds - 1 && nth <= 5, `ordinary piece ${nth} after the opening set (at piece ${at}, the set over at ${setEnds})`);
+  } finally { d.firstPieces = was; d.newest.pieces = newest; d.latest.pieces = latest; d.firstSet = first; }
 });
 
 test("developer mode: left alone it never ends nor speeds up, and with the stack high a black hole or the like comes", () => {

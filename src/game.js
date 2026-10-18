@@ -1254,17 +1254,53 @@ function planShow(state, e, fx, affected, reach) {
   }
   if (reach) state.fx.shockwaves.push({ kind: "blast", x: show.centre.x, y: show.centre.y, radius: reach + 1, elapsedMs: -hold, durationMs: 420 * slow });
   if (show.cls === "combo") {
-    // the finale: a rainbow ring and a burst of confetti
+    // the finale: the rainbow running out from the middle along every part of it, every cell it
+    // touched (a long one lights up all the way along), sparks flying off all along it, a
+    // rainbow ring and a burst of confetti
     const at = Math.max(hold, end - S.finaleLead);
     show.finaleAt = at;
+    show.sweep = comboSweep(e, show.centre, at, slow);
+    sparksAlong(state, show.sweep);
     state.fx.shockwaves.push({ kind: "rainbow", x: show.centre.x, y: show.centre.y, radius: 2.5 + 5 * power + Math.sqrt(affected) * 0.35, elapsedMs: -at, durationMs: 560 * slow });
-    confetti(state, show.centre, Math.round(16 + 60 * power), at);
-    end = Math.max(end, at + 240);
+    confetti(state, show.centre, Math.round(10 + 40 * power), at);
+    end = Math.max(end, at + 240, show.sweep.last + show.sweep.ms * 0.6);
   }
   show.settleMs = Math.round(Math.max(S.minSettleMs, end) + S.extraMs * power);
   show.durationMs = show.settleMs + S.tailMs;
   state.fx.show = show;
   return show;
+}
+
+// A combo's rainbow, cell by cell: every cell of each part's area, and the piece itself, each lit
+// in turn the further it is from the middle ({ cells: [{ x, y, type, at }], ms, last }).
+function comboSweep(e, centre, at, slow) {
+  const C = CONFIG.fx.powerup.show.comboSweep ?? {}, cols = CONFIG.board.cols;
+  const types = new Map();
+  (e.pu.parts ?? []).forEach((p, k) => { for (const i of e.area.parts?.[k]?.indices ?? []) if (!types.has(i)) types.set(i, p.type); });
+  for (const { x, y } of e.placed) if (y >= 0 && !types.has(y * cols + x)) types.set(y * cols + x, "combo");
+  const cells = [];
+  let last = at;
+  for (const [i, type] of types) {
+    const x = i % cols, y = (i / cols) | 0;
+    const t = at + Math.hypot(x + 0.5 - centre.x, y + 0.5 - centre.y) * (C.msPerCell ?? 30) * slow;
+    cells.push({ x, y, type, at: t });
+    last = Math.max(last, t);
+  }
+  return { cells, ms: (C.ms ?? 460) * slow, last };
+}
+
+// ...and sparks flying off it all along, each as its cell lights up.
+function sparksAlong(state, sweep) {
+  const cellPx = CONFIG.render.cellPx, share = CONFIG.fx.powerup.show.comboSweep?.sparks ?? 0.3;
+  for (const c of sweep.cells) {
+    if (Math.random() >= share) continue;
+    const a = Math.random() * Math.PI * 2, sp = 40 + Math.random() * 120;
+    addParticle(state, {
+      x: (c.x + 0.5) * cellPx, y: (c.y + 0.5) * cellPx, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 50,
+      lifeMs: 500 + Math.random() * 500, delayMs: c.at,
+      color: "#ffffff", chroma: true, glow: true, g: 240, drag: 1.4, size: 2 + (Math.random() < 0.3 ? 1 : 0),
+    });
+  }
 }
 
 // Destroyers: every block in the area is pulled into the middle, faster and faster and glowing

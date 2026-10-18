@@ -161,33 +161,35 @@ export const PAGES = [
     again: ["hippo_bellyflop", "sumo_wrestler", "steamroller"],
   },
   {
-    // (a pile full of gaps, some of them covered over)
+    // (a pile full of gaps in the middle, some of them covered over: filled in, the bottom three
+    // rows go; and a gap on the right in the two above, for the next one)
     id: "expander", cls: "expander",
     text: "{name} fill every empty cell in their highlight with new blocks.",
     more: "Drop one on a pile full of gaps.",
     board: [
-      ".....a......b.",
-      "cd...e..f..gbb",
-      "cd.hii.j....k.",
-      "..lhii.j...m..",
-      "n..o..p.qr.m.s",
-      ".t.uuv.wrrrmx.",
+      "aa.......b....",
+      "cdd.e...ff...g",
+      "cdj.eh.llf...g",
+      "oop.m..nrsstuu",
+      "vwp..x..ryztAu",
+      "vwBB..C.DyzFAG",
     ],
     pieces: [{ id: "expanding_foam", to: { x: 5 }, then: ["drop"] }],
     again: ["packing_peanuts", "spilled_paint", "storm_cloud", "microwave_popcorn"],
   },
   {
-    // (junk scattered about, and gaps all through it)
+    // (junk scattered over a pile full of gaps: it burns away its row and fills the gaps under
+    // it, and four rows go; the junk left is the next one's)
     id: "combo", cls: "combo",
     text: "{name} do two things at once, each in its own colours.",
     more: "This one burns away its row and fills in the gaps below.",
     board: [
-      "..a......b.c..",
-      ".d.e.f.gghi...",
-      ".d.jj.kl..i.m.",
-      "nd.o...l.p....",
-      "nd..qr..spp.tt",
-      "...uqqq..pvvtt",
+      "..a.....F.b.c.",
+      "Gd.e....H.ff.g",
+      "hh.i.....jk.ll",
+      "mnnp..o..qqrst",
+      "mupp.v..wxyrst",
+      "zuAA.B.C.xDDEE",
     ],
     pieces: [{ id: "jelly_mould", to: { x: 5 }, then: ["drop"] }],
     again: ["wizard_all_trades", "mineshaft", "jelly_mould"],
@@ -202,31 +204,27 @@ export const PAGES = [
       "ddxbb.c.......",
       "dd.eb..k.ll..m",
       "ffge.h.k..n.mm",
-      "f.g.jhi.o.n..p",
+      "f.g.jhioo.n..p",
       "..gjjhioo..q.p",
     ],
     pieces: [{ id: "hippo_bellyflop", to: { x: 1 }, then: ["drop"] }, { id: "storm_cloud", to: { x: 9 }, then: ["drop"] }],
   },
   {
-    // (an awkward piece over a heap: the shelf's Dissolverz goes in its place, and takes the
-    // heap away)
+    // (an awkward piece over a heap: the bay's Dissolverz goes in its place, and blasts a round
+    // hole in the heap, all but its edges)
     id: "shelf", powers: true, shelf: "destroyer",
     text: {
-      touch: "Every game you get one big Shiny Piece of each class in your bay: tap the bay, pick one, and it takes the falling piece's place.",
-      keys: "Every game you get one big Shiny Piece of each class in your bay: click the bay, pick one, and it takes the falling piece's place.",
+      touch: "Every game you get one Shiny Piece of each class in your bay: tap the bay, pick one, and it takes the falling piece's place.",
+      keys: "Every game you get one Shiny Piece of each class in your bay: click the bay, pick one, and it takes the falling piece's place.",
     },
     dropMs: 420,
     board: [
       "......ab......",
-      ".....cab......",
-      ".....cdde.....",
-      "....ffd.eg....",
-      "....h.ijjg....",
-      "...hh.iik.l...",
-      "...m.nn.kll...",
-      "..mm.o.ppqq...",
-      "..rsso.t.uqv..",
-      ".rr.wwxtt.uvv.",
+      ".....cabd.....",
+      "....ecc.df....",
+      "...gehhiiff...",
+      "...g.jhk.lm...",
+      "..nnjjkkolmm..",
     ],
     pieces: [{ id: "pyramid", firstMs: 1800, then: ["shelf"] }], // (a moment to see the finger go to the bay)
   },

@@ -1227,6 +1227,26 @@ export function createRenderer(boardCanvas, nextCanvas) {
       }
     }
 
+    // combos: the rainbow running out along every part of it, cell by cell, each cell in its
+    // part's own colours with a white square split into the warm rainbow over it
+    if (sh.sweep) {
+      bctx.globalCompositeOperation = "lighter";
+      for (const c of sh.sweep.cells) {
+        const u = (t - c.at) / sh.sweep.ms;
+        if (u < 0 || u >= 1) continue;
+        const a = Math.sin(u * Math.PI), px = c.x * cell, py = c.y * cell;
+        const col = markColour(c.type, now, c.x, c.y);
+        bctx.fillStyle = hsla(col.h, col.s, Math.max(col.l, 62), 0.5 * a);
+        bctx.fillRect(px, py, cell, cell);
+        let ux = c.x + 0.5 - sh.centre.x, uy = c.y + 0.5 - sh.centre.y;
+        const len = Math.hypot(ux, uy) || 1;
+        ux /= len; uy /= len;
+        drawChromaSquare(bctx, px + cell / 2, py + cell / 2, cell * (0.28 + 0.34 * (1 - u)), ux, uy, 1 + cell * 0.14 * a, a, 0.12);
+      }
+      bctx.globalAlpha = 1;
+      bctx.globalCompositeOperation = "source-over";
+    }
+
     // blocks that have left the board: pulled into the core, or fading away
     for (const b of sh.blocks) drawGone(b, t, cx, cy, now);
 

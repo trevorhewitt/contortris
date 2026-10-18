@@ -116471,12 +116471,11 @@ export const SHAPES = [
             0
           ],
           "grid": [
-            "...",
-            "...",
             "vvv"
           ]
         },
-        "intro": "Strikes every block under it, three columns wide, all the way down to the floor. It isn't meant to strike the same place twice. It keeps a list."
+        "under": true,
+        "intro": "Strikes every block under it, all the way down to the floor: three columns wide lying down, two standing up. It isn't meant to strike the same place twice. It keeps a list."
       },
     rotation: {
         "mode": "any"

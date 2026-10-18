@@ -1,6 +1,6 @@
 // Run with:  node --test tests/*.test.mjs
-// The powerup shelf: one strong powerup of each class each game, which takes the falling piece's
-// place when it's used; in Classic a class's slot opens with the class.
+// The powerup shelf: one middling powerup of each class each game, which takes the falling piece's
+// place when it's used; in Classic a class's slot opens once one of the class has come.
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CONFIG } from "../config.js";
@@ -37,15 +37,29 @@ test("God mode: a full shelf, and using a slot swaps the falling piece for its p
   assert.equal(useShelf(state, 0), false, "only one of each");
 });
 
-test("Classic: a slot opens only once its class has", () => {
+test("Classic: a slot opens only once one of its class has come (so the bay never meets a class, or opens the combos)", () => {
   const state = game("normal");
-  const opened = state.pieceSel.powerup.classes;
+  const ps = state.pieceSel.powerup, met = ps.shownClasses;
+  // (a class that's in, but none of it has come yet: still shut)
+  ps.classes.push(state.shelf.slots[0].cls);
   for (const [i, slot] of state.shelf.slots.entries()) {
-    assert.equal(shelfReady(state, slot), opened.includes(slot.cls));
-    if (!opened.includes(slot.cls)) assert.equal(useShelf(state, i), false);
+    assert.equal(shelfReady(state, slot), met.has(slot.cls));
+    if (!met.has(slot.cls)) assert.equal(useShelf(state, i), false);
   }
-  opened.push(...state.shelf.slots.map(s => s.cls));
+  for (const s of state.shelf.slots) met.add(s.cls);
+  const before = new Set(met);
   assert.ok(useShelf(state, 1));
+  assert.deepEqual(met, before, "nothing new met");
+});
+
+test("the bay: one of each of the three classes, never a combo, once each", () => {
+  const state = game("god");
+  assert.deepEqual(state.shelf.slots.map(s => s.cls).sort(), ["destroyer", "expander", "gravity"]);
+  for (const s of state.shelf.slots) {
+    assert.equal(s.shape.powerup.cls, s.cls);
+    assert.ok(!s.shape.powerup.parts, `${s.shape.id}: not a combo`);
+    assert.equal(s.left, 1);
+  }
 });
 
 test("Taken while nothing is falling, it comes next", () => {
