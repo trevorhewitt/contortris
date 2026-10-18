@@ -232,6 +232,12 @@ export const CONFIG = {
     restMs: 900,         // after a big clearance, a breath before the next piece
     maxStepsPerFrame: 3, // (so a fast fall stays fast in turbo zen)
     dropMs: 300,         // how fast a piece falls once the player has taken it over (turbo zen: still quick, times its pace)
+    // Turbo zen handing back to the computer: after the player has played a piece, it doesn't snap
+    // straight back. The next ones come in at the top as they would in a game, and the computer
+    // turns and moves them a step at a time (one every stepMs, slowest to quickest), falling at
+    // the player's pace and speeding back up, over `drops` pieces left alone, until it's fully
+    // the computer's again: arriving already in place, at full speed, flocks and all.
+    handBack: { drops: 6, stepMs: [230, 50] },
     // The pace (times fallMs, lockMs and pieceMs): small things, repeats and the pieces that build
     // up the board come down faster; the pieces that bring it all down take their time. And from
     // low (an empty board) to high (a full one), it eases off a little as it nears the top.

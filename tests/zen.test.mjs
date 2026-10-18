@@ -202,6 +202,64 @@ test("turbo zen: a piece still out of sight when the player takes it comes strai
   assert.ok(found, "no piece came from out of sight");
 });
 
+test("turbo zen: after the player has played a piece, the computer takes back over a little at a time", () => {
+  const H = CONFIG.zen.handBack;
+  const { state } = zen(3, "turbo");
+  run(state, null, 4000);
+  while (!state.active || state.effect || state.hold || state.active.y < 0) updateGame(state, 16);
+  markInput(state, "keyboard");
+  while (tryMove(state, -1, 0)) { /* to the wall */ }
+  updateGame(state, 16);
+  assert.equal(state.zen.hand, 0, "it's the player's");
+  // the pieces after it: in at the top as in a game, and steered over a step at a time, falling at
+  // the player's pace and speeding up, until it's all the computer's again
+  const seen = [];
+  on(state, (t) => {
+    if (t !== "spawn" || state.zen.userHas) return;
+    const a = state.active, want = state.zen.target;
+    seen.push({ hand: state.zen.hand, dropMs: state.dropMs, inPlace: !!want && a.x === want.x && a.rotIdx === want.rot, flock: state.flock.length });
+  });
+  hardDropAndLock(state);
+  for (let t = 0; t < 120000 && seen.length < H.drops + 2; t += 16) updateGame(state, 16);
+  assert.ok(seen.length >= H.drops + 1, `${seen.length} pieces`);
+  for (let i = 1; i < seen.length; i++) assert.ok(seen[i].hand >= seen[i - 1].hand, "it only ever takes more back");
+  assert.ok(seen[0].hand < 0.5 && seen[0].dropMs > state.dropMs, `slowly at first (${seen[0].dropMs}ms a row)`);
+  assert.ok(seen.slice(0, H.drops - 1).every(p => p.hand < 1 && p.flock === 0), "no flock while it takes back over");
+  const back = seen.findIndex(p => p.hand >= 1);
+  assert.ok(back >= H.drops - 1 && back <= H.drops, `all the computer's again after ${back + 1} pieces`);
+  assert.ok(seen[back].inPlace, "and then in place as it comes");
+});
+
+test("turbo zen: a plan the player steps into carries on from the board as it is", () => {
+  let carried = 0;
+  for (const seed of [2, 5, 7]) {
+    const { state, log } = zen(seed, "turbo");
+    zenStart(state, "crack");
+    log.movements.length = 0;
+    // (once it has got going, the player drops one of its pieces against a wall)
+    let stepped = false;
+    run(state, log, 3 * 60000, () => {
+      const z = state.zen, a = state.active;
+      if (stepped || !a || state.effect || state.hold || !z.expect || state.drops < 12 || a !== z.piece || a.y < 0) return;
+      stepped = true;
+      markInput(state, "keyboard");
+      const dir = a.x < cols / 2 ? 1 : -1;
+      while (tryMove(state, dir, 0)) { /* to the far wall */ }
+      hardDropAndLock(state);
+    });
+    assert.ok(stepped, `seed ${seed}: the player stepped in`);
+    const names = log.movements.map(m => m.name);
+    assert.ok(!names.includes("abandoned"), `seed ${seed}: not abandoned`);
+    if (names.includes("adrift")) {
+      carried++;
+      const i = names.indexOf("adrift");
+      assert.ok(names.slice(0, i).includes("crack") || i === 0, `seed ${seed}: ${names}`);
+    }
+    assert.equal(log.over, false);
+  }
+  assert.ok(carried >= 1, "the board no longer matched the plan, and it carried on");
+});
+
 test("turbo zen: every piece starts out over the place it's going, already turned", () => {
   const { state, log } = zen(2, "turbo");
   let checked = 0, planned = 0;
@@ -234,7 +292,7 @@ test("turbo zen: each planned movement builds right up and then clears what it b
       assert.ok(b.lines - a.lines >= least, `${name} (seed ${seed}) cleared ${b.lines - a.lines} rows`);
       assert.ok(b.height <= 3, `${name} (seed ${seed}) left ${b.height} rows`);
       if (least === rows) assert.ok(log.clears.includes(rows), `${name}: all ${rows} rows at once`);
-      assert.ok(!log.movements.some(m => m.name === "abandoned"), "nobody stepped in");
+      assert.ok(!log.movements.some(m => m.name === "adrift"), "nobody stepped in");
     }
   }
 });
@@ -259,7 +317,7 @@ test("turbo zen: a crack through every row, built nearly to the top, then sealed
     else assert.ok(b.height <= 3, `${end}: left ${b.height} rows`);
     // (the rows go as rows, but for the columns, eaten away, and the pacmen, which eat them)
     if (end !== "columns" && end !== "powered") assert.ok(b.lines - a.lines >= 18, `${end}: cleared ${b.lines - a.lines} rows`);
-    assert.ok(!log.movements.some(m => m.name === "abandoned"), `${end}: nobody stepped in`);
+    assert.ok(!log.movements.some(m => m.name === "adrift"), `${end}: nobody stepped in`);
   }
 });
 
@@ -597,7 +655,7 @@ test("turbo zen on a big board: often a few pieces fall at once, each in columns
       assert.ok(apart, `${start}: each in columns of its own`);
       assert.equal(landed + state.flock.length, extra, `${start}: ${landed} of ${extra} landed (and ${state.flock.length} still falling)`);
       assert.equal(log.rescues, 0, `${start}: never needed rescuing`);
-      assert.ok(!log.movements.some(m => m.name === "abandoned"), `${start}: the plans came out as planned`);
+      assert.ok(!log.movements.some(m => m.name === "adrift"), `${start}: the plans came out as planned`);
     }
   } finally {
     CONFIG.board.cols = usual.cols; CONFIG.board.rows = usual.rows;

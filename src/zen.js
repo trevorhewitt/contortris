@@ -24,10 +24,12 @@
 // Nothing can top either out. If the player builds it up into danger, a big powerup comes
 // ("steady"), and if a piece ever does lock above the top, the board is rescued instead
 // (game.js zenRescue). If the player steps in during a planned movement and the board no longer
-// matches the plan, the director says "never mind" and tidies up.
+// matches the plan, the plan carries on from the board as it is: each piece where the plan put
+// it while it still lands there, or else wherever's best. And in turbo zen the computer takes
+// back over gently (CONFIG.zen.handBack).
 
 import { CONFIG } from "../config.js";
-import { tryMove, zenCaption, timeScaleOf, settleFlock } from "./game.js";
+import { tryMove, tryRotate, zenCaption, timeScaleOf, settleFlock } from "./game.js";
 import { selectPiece, destroyerCells, pickFitting, inGame } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
@@ -99,6 +101,8 @@ export function createZen(state) {
     target: null,     // where it's going
     userHas: false,   // the player has taken this piece over
     userAt: null,     // (the last time they did: state.drops)
+    hand: 1,          // turbo zen: how far the computer has taken back over since (1: all the way; CONFIG.zen.handBack)
+    stepWait: 0,      // (and taking back over, its next step)
     clock: 0, inputClock: 0, // (game time, and when the player last pressed anything: zen dozes off without them)
     helpedAt: -99,    // (zen: the last little help, state.drops)
     pace: 1, lastId: null, fall: 24, rest: 0, blocks: null,
@@ -141,12 +145,12 @@ export function zenNext(state) {
   const z = state.zen;
   const { cols, rows } = CONFIG.board;
   const occ = occupancy(state.board);
-  // the player stepped in and the plan no longer fits the board: never mind
+  // the player stepped in and the plan no longer fits the board: it carries on from the board as
+  // it is, each piece where the plan put it while it still lands there (adrift: the board it was
+  // to leave, to tell), or else wherever's best
   if (z.expect && !sameBoard(occ, z.expect)) {
-    z.queue = z.queue.filter(it => !it.expect);
-    z.movement = null;
-    z.after = null;
-    zenCaption(state, "never mind", "abandoned");
+    for (const it of z.queue) if (it.expect) { it.adrift = it.expect; delete it.expect; }
+    zenCaption(state, "carrying on", "adrift");
   }
   z.expect = null;
   // (a fill can put something in first, now that the board has settled: a bed for one big or
@@ -1366,6 +1370,11 @@ function bigPowerup(state) {
 export function zenSpawned(state) {
   const z = state.zen, a = state.active;
   z.piece = a;
+  // (turbo zen: the player played the last one, or the computer takes a step further back over)
+  const H = !isCalm(state) && CONFIG.zen.handBack;
+  if (H) z.hand = z.userHas || state.lastInputAt !== z.inputAt ? 1 / H.drops : Math.min(1, (z.hand ?? 1) + 1 / H.drops + 1e-9);
+  else z.hand = 1;
+  z.stepWait = stepMs(state);
   z.userHas = false;
   noteUse(state, a.shape);
   // (anything pressed since the last piece came was the player playing that one, not this one)
@@ -1373,7 +1382,9 @@ export function zenSpawned(state) {
   z.inputAt = state.lastInputAt;
   z.target = targetFor(state);
   const t = z.target;
-  if (t) {
+  // (still taking back over: it comes in at the top as usual, and is turned and moved over a step
+  // at a time, in zenTick)
+  if (t && z.hand >= 1) {
     const mat = a.shape.rotations[t.rot];
     if (mat && t.x >= 0 && t.x + mat[0].length <= CONFIG.board.cols) {
       a.rotIdx = t.rot;
@@ -1384,18 +1395,21 @@ export function zenSpawned(state) {
   }
   z.pace = paceFor(state, z.current, a.shape);
   z.lastId = a.shape.id;
-  // how far it has to fall (a short way, near the top, it takes its time)
-  const mat = a.shape.rotations[a.rotIdx];
+  // how far it has to fall (a short way, near the top, it takes its time): where it's going,
+  // if it's not there yet
+  const go = t && a.shape.rotations[t.rot] ? t : { rot: a.rotIdx, x: a.x };
+  const mat = a.shape.rotations[go.rot];
   const { cols, rows } = CONFIG.board;
-  const land = isPhantomPowerup(a.shape.powerup) ? phantomLandingY(state.board, a.x, mat) : dropY(occupancy(state.board), mat, a.x, cols, rows);
+  const land = isPhantomPowerup(a.shape.powerup) ? phantomLandingY(state.board, go.x, mat) : dropY(occupancy(state.board), mat, go.x, cols, rows);
   z.fall = Math.max(1, (land ?? 0) - a.y);
+  z.land = land ?? CONFIG.board.rows;
   // (a powerup about to bring most of the board down: the dramatic pause comes before it falls;
   // game.js holds everything for it)
-  z.pauseFirst = a.shape.powerup && land != null && bigMoment(state, a.shape, a.rotIdx, a.x, land) ? CONFIG.zen.dramatic.pauseMs * timeScaleOf(state) : 0;
+  z.pauseFirst = a.shape.powerup && land != null && bigMoment(state, a.shape, go.rot, go.x, land) ? CONFIG.zen.dramatic.pauseMs * timeScaleOf(state) : 0;
   zenSpeed(state);
   // (each takes a moment at least, however short the way down, but it falls at the same speed
   // all the way: a short way down, it starts a little further up, out of sight)
-  if (!isCalm(state) && !z.userHas) {
+  if (!isCalm(state) && !z.userHas && z.hand >= 1) {
     const lead = Math.ceil(CONFIG.zen.pieceMs * z.pace / state.dropMs) - z.fall;
     if (lead > 0) a.y -= lead;
   }
@@ -1422,7 +1436,7 @@ function formFlock(state, land) {
   const z = state.zen, F = CONFIG.zen.flock, a = state.active, t = z.target;
   const { cols, rows } = CONFIG.board;
   state.flock = [];
-  if (!F || isCalm(state) || z.userHas || t?.slide || land == null || cols < F.minCols) return;
+  if (!F || isCalm(state) || z.userHas || z.hand < 1 || t?.slide || land == null || cols < F.minCols) return;
   // (a powerup: only in a run of pieces, not a plan, nor a big moment, nor one that falls through)
   const pu = a.shape.powerup;
   // (nor one that fills: the flock's spots are worked out on the board as it is, and it could
@@ -1534,7 +1548,16 @@ function flockSpot(occ, shape, weights, free, cols, rows, headroom, rng, maxTurn
 export function zenSpeed(state) {
   const z = state.zen, Z = CONFIG.zen;
   if (isCalm(state)) state.dropMs = !z.userHas && dozing(state) ? Z.calm.idleDropMs : Z.calm.dropMs;
-  else state.dropMs = z.userHas ? Z.dropMs : Math.max(8, Z.fallMs * z.pace);
+  else {
+    // (taking back over: from the player's pace to its own)
+    const own = Math.max(8, Z.fallMs * z.pace), k = (z.hand ?? 1) ** 1.5;
+    state.dropMs = z.userHas ? Z.dropMs : Math.round(Z.dropMs + (own - Z.dropMs) * k);
+  }
+}
+// (taking back over: how long between its steps, slowest just after the player let go)
+function stepMs(state) {
+  const [slow, quick] = CONFIG.zen.handBack?.stepMs ?? [200, 50];
+  return slow + (quick - slow) * (state.zen.hand ?? 1);
 }
 const autopilot = (state) => { const z = state.zen; return !!z && !z.userHas && !!state.active && z.piece === state.active; };
 // ...how many rows it can fall in one frame (null: as usual)...
@@ -1581,6 +1604,7 @@ export function zenTick(state, dt) {
     if (a && !z.userHas) {
       z.userHas = true;
       z.userAt = state.drops;
+      z.hand = 0;
       zenSpeed(state);
       // (one still out of sight, up where it started a short way down or after a big clearance,
       // comes straight to the top of the board: at the player's pace it would take an age)
@@ -1590,6 +1614,17 @@ export function zenTick(state, dt) {
     }
   }
   if (!a || state.effect || z.userHas || a !== z.piece) return;
+  // taking back over (turbo zen): a step at a time over to where it's going, turning first
+  const t0 = z.target;
+  if (t0 && (z.hand ?? 1) < 1 && !isCalm(state)) {
+    // (and never too late: nearly down with steps still to go, a step every frame)
+    const left = (a.rotIdx !== t0.rot ? 1 : 0) + Math.abs(t0.x - a.x);
+    if ((z.stepWait -= dt) <= 0 || (left && a.y + left + 2 >= z.land)) {
+      z.stepWait = stepMs(state);
+      if (a.rotIdx !== t0.rot) tryRotate(state);
+      else if (a.x !== t0.x) tryMove(state, Math.sign(t0.x - a.x), 0);
+    }
+  }
   // down at the right depth: slide in under the overhang (or, if it came to rest anywhere
   // else, never mind the slide)
   const t = z.target;
@@ -1627,7 +1662,7 @@ export function zenIgnoreInput(state) {
 function targetFor(state) {
   const z = state.zen, a = state.active;
   const item = z.current;
-  if (item?.target && item.shape.id === a.shape.id) return { ...item.target };
+  if (item?.target && item.shape.id === a.shape.id && (!item.adrift || landsAsPlanned(state, item))) return { ...item.target };
   // (zen, now and then: where a person might have put it, leaving a hole)
   const slip = isCalm(state) ? slipFor(state, a.shape, item?.turns ?? 4) : null;
   if (slip) return slip;
@@ -3485,4 +3520,18 @@ function score(occ, lines, w, cols, rows) {
   }
   const over = Math.max(0, Math.max(maxH, inWell) - (rows - (w.headroom ?? CONFIG.zen.headroom)));
   return w.height * agg + w.lines * lines + w.holes * holes + w.bump * bump + (w.cover ?? 0) * cover - 4 * over * over - 3 * inWell;
+}
+
+// One of a plan the player stepped into (adrift): would it still land just where the plan put it?
+// (Every block of it where the board the plan had it leave has blocks: or else, not before a
+// row it was to clear.)
+function landsAsPlanned(state, item) {
+  const { cols, rows } = CONFIG.board, t = item.target, mat = item.shape.rotations[t.rot];
+  if (!mat || t.slide) return false;
+  const y = dropY(occupancy(state.board), mat, t.x, cols, rows);
+  if (y == null) return false;
+  for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) {
+    if (mat[j][i] && (y + j < 0 || !item.adrift[(y + j) * cols + t.x + i])) return false;
+  }
+  return true;
 }
