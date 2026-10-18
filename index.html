@@ -1336,7 +1336,7 @@
 
     .nextMiniShell, .statPill{
       box-sizing: border-box; height: 100%;
-      width: clamp(92px, 30vw, 150px); min-width: 0;
+      width: clamp(118px, 34vw, 170px); min-width: 0; /* (as wide as the bay, so the bar's even) */
       padding: 6px 6px 5px;
       border-radius: var(--ui-radius);
       background: radial-gradient(160px 110px at 50% 30%, rgba(255,255,255,0.07), rgba(0,0,0,0.5));
@@ -1882,7 +1882,7 @@
         <!-- the bay (src/shelfui.js), where the next piece used to be: the Extra Shiny Pieces, a
              Shiny Piece × how many -->
         <div class="shelf edge" id="shelf">
-          <button type="button" class="bayBtn" aria-haspopup="menu" aria-expanded="false"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 12 8" aria-hidden="true" shape-rendering="crispEdges"><path d="M0 1h3v3H0zM0 5h3v3H0zM4 5h3v3H4z"/><path class="baySpark" d="M9 0h1v5H9zM7 2h5v1H7z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span></button>
+          <button type="button" class="bayBtn" aria-haspopup="menu" aria-expanded="false"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 9 8" aria-hidden="true" shape-rendering="crispEdges"><path d="M0 1h3v3H0zM0 5h3v3H0z"/><path class="baySpark" d="M6 0h1v5H6zM4 2h5v1H4z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span></button>
         </div>
         <canvas id="nextCanvas" hidden></canvas>
       </div>
@@ -1908,7 +1908,7 @@
           <div class="tutKeys" id="tutKeys" aria-hidden="true" hidden>
             <div class="tutKeyset"><i data-k="up">&#8593;</i><i data-k="left">&#8592;</i><i data-k="down">&#8595;</i><i data-k="right">&#8594;</i></div>
           </div>
-          <div class="shelf tutShelf edge" id="tutShelf" hidden><button type="button" class="bayBtn" aria-haspopup="menu" aria-expanded="false"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 12 8" aria-hidden="true" shape-rendering="crispEdges"><path d="M0 1h3v3H0zM0 5h3v3H0zM4 5h3v3H4z"/><path class="baySpark" d="M9 0h1v5H9zM7 2h5v1H7z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span></button></div>
+          <div class="shelf tutShelf edge" id="tutShelf" hidden><button type="button" class="bayBtn" aria-haspopup="menu" aria-expanded="false"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 9 8" aria-hidden="true" shape-rendering="crispEdges"><path d="M0 1h3v3H0zM0 5h3v3H0z"/><path class="baySpark" d="M6 0h1v5H6zM4 2h5v1H4z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span></button></div>
         </div>
         <div class="tutNav">
           <button id="tutBack" class="secondary">&#9664; Back</button>
