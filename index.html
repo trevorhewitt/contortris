@@ -223,9 +223,11 @@
       min-height: 0;
     }
   
-    /* Turbo zen can fill the whole window (ui.js setWholeWindow): the bottom bar goes, and a
-       small pause button sits in the corner of the board, out of the way */
+    /* Turbo zen can fill the whole window (ui.js setWholeWindow): the bottom bar goes (and its
+       room, so the board's in the middle, frame and all), and a small pause button sits in the
+       corner of the board, out of the way */
     body.wholeWindow .bottomBar{ display: none; }
+    body.wholeWindow .app{ grid-template-rows: 1fr env(safe-area-inset-bottom); }
     .floatPause{ display: none; }
     body.wholeWindow .floatPause{
       display: block; position: absolute; top: 8px; right: 8px; width: 40px; height: 40px; min-height: 0;
@@ -268,7 +270,7 @@
       animation: omBreathe 4.4s ease-in-out infinite reverse;
     }
     @keyframes omBreathe{ 0%, 100%{ opacity: 0.3; } 50%{ opacity: 0.55; } }
-    body.home .boardFrame, body.wholeWindow .boardFrame{ display: none; }
+    body.home .boardFrame{ display: none; }
 
     /* (over everything but the board, faint scan lines, like an old screen: the board itself
        stays crisp, cut out of them where it is, frame and all: --board-x, -y, -w, -h, from
