@@ -185,10 +185,10 @@ test("after a level 6 set: a big destroyer comes soon", () => {
 test("developer mode: the newest things come first, once each since the page was loaded, then as usual (and God mode is as it comes)", () => {
   // (the very latest, the last batch's, are the newest of all)
   const d = CONFIG.devMode, newest = new Set([...d.newest.pieces, ...(d.latest?.pieces ?? [])]), newSets = new Set([...d.newest.sets, ...(d.latest?.sets ?? [])]);
-  const share = ({ seenEver = new Map(), seenSetsEver = new Map(), shown = new Map(), setsShown = new Map(), mode = "dev" }) => {
+  const share = ({ seenEver = new Map(), seenSetsEver = new Map(), shown = new Map(), setsShown = new Map(), mode = "dev", games: count = 12 }) => {
     let fresh = 0, n = 0, firstNew = 0, games = 0;
     // (a dozen games each: a share of a hundred pieces or so is at the mercy of a few)
-    for (let seed = 1; seed <= 12; seed++) {
+    for (let seed = 1; seed <= count; seed++) {
       const state = createGameState(shapes, powerups, { rng: makeRng(seed * 7), groups: GROUPS });
       state.seenEver = seenEver; state.seenSetsEver = seenSetsEver;
       state.shownThisLoad = shown; state.setsShownThisLoad = setsShown;
@@ -208,9 +208,11 @@ test("developer mode: the newest things come first, once each since the page was
   const blank = share({});
   const reload = share({ seenEver: all, seenSetsEver: allSets });
   // ...and once each has turned up since the page was loaded, as usual
-  const after = share({ seenEver: all, seenSetsEver: allSets, shown: once, setsShown: setsOnce });
+  // (these two three dozen games each: they're compared with each other, and a dozen games' share
+  // swings by 10 points or so either way)
+  const after = share({ seenEver: all, seenSetsEver: allSets, shown: once, setsShown: setsOnce, games: 36 });
   // ...and God mode, on a fresh page: as it comes
-  const god = share({ seenEver: all, seenSetsEver: allSets, mode: "god" });
+  const god = share({ seenEver: all, seenSetsEver: allSets, mode: "god", games: 36 });
   console.log(`newest: ${(blank.fresh * 100).toFixed(0)}% of pieces on a new browser, ${(reload.fresh * 100).toFixed(0)}% after a reload, ${(after.fresh * 100).toFixed(0)}% once shown (God mode ${(god.fresh * 100).toFixed(0)}%); first set new in ${(blank.firstNew * 100).toFixed(0)}% / ${(reload.firstNew * 100).toFixed(0)}% / ${(after.firstNew * 100).toFixed(0)}%`);
   // (by a clear margin: the newest list keeps growing, and some of it comes in linked runs anyway)
   for (const [k, r] of Object.entries({ blank, reload })) {
