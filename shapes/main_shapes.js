@@ -15568,7 +15568,7 @@ export const SHAPES = [
     powerup: {
         "type": "expander",
         "tier": 3,
-        "intro": "Fills every empty cell in the eight columns around it with balls, three out either side, from its own row all the way down to the floor. Nobody knows what is at the bottom.",
+        "intro": "Fills every empty cell in the four columns around it with balls, one out either side, from its own row all the way down to the floor. Nobody knows what is at the bottom.",
         "area": {
           "origin": [
             5,
@@ -15681,7 +15681,7 @@ export const SHAPES = [
     powerup: {
         "type": "expander",
         "tier": 3,
-        "intro": "Multiplies and builds a solid step pyramid under it, eleven bricks wide at the bottom, every empty cell of it right down to the floor. You will find the last piece with your foot at 3am.",
+        "intro": "Multiplies and builds a solid step pyramid under it, five bricks wide at the bottom, every empty cell of it right down to the floor. You will find the last piece with your foot at 3am.",
         "area": {
           "origin": [
             6,
@@ -15857,7 +15857,7 @@ export const SHAPES = [
     powerup: {
         "type": "expander",
         "tier": 3,
-        "intro": "Fills every empty cell in the nine columns around it, all the way down to the floor. It is only staying for a few days. It said that in March.",
+        "intro": "Fills every empty cell in the five columns around it, all the way down to the floor. It is only staying for a few days. It said that in March.",
         "area": {
           "origin": [
             6,
@@ -25029,7 +25029,7 @@ export const SHAPES = [
             "vvvvvvv"
           ]
         },
-        "intro": "Pours itself into every empty cell under it, seven columns wide, all the way to the floor. If it fits, it sits. It always fits.",
+        "intro": "Pours itself into every empty cell under it, five columns wide, all the way to the floor. If it fits, it sits. It always fits.",
         "help": 4
       },
     rotation: {
@@ -25170,7 +25170,7 @@ export const SHAPES = [
             "...vvvvvvv..."
           ]
         },
-        "intro": "Swells up in every direction into one big sponge: seven columns wide, from the row above it to three rows under it, and into every gap under that, down to the floor.",
+        "intro": "Swells up in every direction into one big sponge: seven columns wide, from the row above it to three rows under it, and into every gap under its middle five, down to the floor.",
         "help": 5
       },
     rotation: {
@@ -26190,7 +26190,7 @@ export const SHAPES = [
             "....vv...."
           ]
         },
-        "intro": "Fills every empty cell beside it, three out each side, and everything under it, eight columns in all, down to the floor. Nobody has ever successfully put them back in the box.",
+        "intro": "Fills every empty cell beside it, one out each side, and everything under it, four columns in all, down to the floor. Nobody has ever successfully put them back in the box.",
         "help": 4.5
       },
     rotation: {
@@ -30501,7 +30501,7 @@ export const SHAPES = [
             }
           }
         ],
-        "intro": "Lands with a thwack that wipes out its whole row, wall to wall, then wobbles into every empty cell under it, seven wide, all the way down to the floor. Nobody asked for lime.",
+        "intro": "Lands with a thwack that wipes out its whole row, wall to wall, then wobbles into every empty cell under it, five wide, all the way down to the floor. Nobody asked for lime.",
         "help": 5
       },
     rotation: {
@@ -39093,7 +39093,7 @@ export const SHAPES = [
             "..........."
           ]
         },
-        "intro": "Rains into every empty cell under it, all the way down to the floor, spreading out to seven columns wide as it falls.",
+        "intro": "Rains into every empty cell under it, all the way down to the floor, five columns wide.",
         "help": 4.5
       },
     rotation: {
@@ -44930,7 +44930,7 @@ export const SHAPES = [
             ".............."
           ]
         },
-        "intro": "A downpour: rain in every empty cell under it, all the way down to the floor, spreading out to ten columns wide as it falls.",
+        "intro": "A downpour: rain in every empty cell under it, all the way down to the floor, four columns wide.",
         "help": 5
       },
     rotation: {
@@ -58984,7 +58984,7 @@ export const SHAPES = [
             "..........."
           ]
         },
-        "intro": "Rain and a fork of lightning: every empty cell under it, all the way down to the floor, the rain spreading out quickly to seven columns wide.",
+        "intro": "Rain and a fork of lightning: every empty cell under it, all the way down to the floor, the rain spreading out quickly to five columns wide.",
         "help": 4.5
       },
     rotation: {
@@ -61220,7 +61220,7 @@ export const SHAPES = [
             ".............."
           ]
         },
-        "intro": "Pours into every empty cell under it, all the way down to the floor, spreading out to ten columns wide as it falls.",
+        "intro": "Pours into every empty cell under the middle four columns of it, all the way down to the floor.",
         "help": 5
       },
     rotation: {
@@ -84991,7 +84991,7 @@ export const SHAPES = [
             "..........."
           ]
         },
-        "intro": "Rains cats and dogs into every empty cell under it, all the way down to the floor, spreading out to seven columns wide as it falls. Mostly it's rain.",
+        "intro": "Rains cats and dogs into every empty cell under it, all the way down to the floor, five columns wide. Mostly it's rain.",
         "help": 4.5
       },
     rotation: {
@@ -100174,7 +100174,7 @@ export const SHAPES = [
             "............"
           ]
         },
-        "intro": "Cries into every empty cell under it, all the way down to the floor, spreading out to six columns wide as it goes. It says it's fine.",
+        "intro": "Cries into every empty cell under it, all the way down to the floor, spreading out to four columns wide as it goes. It says it's fine.",
         "help": 4
       },
     rotation: {
@@ -110597,7 +110597,7 @@ export const SHAPES = [
             "............"
           ]
         },
-        "intro": "Rains straight down into every empty cell under it, six columns wide, one out either side of it, all the way down to the floor.",
+        "intro": "Rains straight down into every empty cell under it, four columns wide, all the way down to the floor.",
         "help": 4.5
       },
     rotation: {
@@ -118158,7 +118158,7 @@ export const SHAPES = [
             "..........."
           ]
         },
-        "intro": "Tips its whole load: sand fills every empty cell under it and to each side, in a heap nine columns wide that slopes down from it to the floor. It was meant for next door.",
+        "intro": "Tips its whole load: sand fills every empty cell under it and to each side, in a heap five columns wide, down to the floor. It was meant for next door.",
         "help": 5
       },
     rotation: {
@@ -119388,7 +119388,7 @@ export const SHAPES = [
             ".....vv....."
           ]
         },
-        "intro": "Rice runs into every empty cell beside it, two out each side, and everything under it, six columns in all, down to the floor. You will still be finding it in ten years.",
+        "intro": "Rice runs into every empty cell beside it, one out each side, and everything under it, four columns in all, down to the floor. You will still be finding it in ten years.",
         "help": 4
       },
     rotation: {
@@ -125720,7 +125720,7 @@ export const SHAPES = [
             "..........."
           ]
         },
-        "intro": "Slumps into a heap around it and settles into every gap underneath, seven columns wide, all the way to the floor. Exactly one sock is missing.",
+        "intro": "Slumps into a heap around it and settles into every gap underneath, five columns wide, all the way to the floor. Exactly one sock is missing.",
         "help": 4
       },
     rotation: {
@@ -125805,7 +125805,7 @@ export const SHAPES = [
             ".....v....."
           ]
         },
-        "intro": "Fills every empty cell beside it and under it, seven columns in all, all the way down to the floor, with mashed potato. It was made for forty people. Four came.",
+        "intro": "Fills every empty cell beside it and under it, five columns in all, all the way down to the floor, with mashed potato. It was made for forty people. Four came.",
         "help": 4
       },
     rotation: {
@@ -130069,7 +130069,7 @@ export const SHAPES = [
             "..vvvvvvv.."
           ]
         },
-        "intro": "Fills every empty cell under it, seven columns wide, from the row under it all the way down to the floor. It was under the sofa the whole time.",
+        "intro": "Fills every empty cell under it, five columns wide, from the row under it all the way down to the floor. It was under the sofa the whole time.",
         "help": 4.5
       },
     rotation: {
@@ -131646,7 +131646,7 @@ export const SHAPES = [
             "............."
           ]
         },
-        "intro": "Comes down in a huge heap: snow fills every empty cell under it and to each side, eleven columns wide, sloping down from it to the floor. It's only a small one. It has been practising.",
+        "intro": "Comes down in a huge heap: snow fills every empty cell under it and to each side, five columns wide, all the way down to the floor. It's only a small one. It has been practising.",
         "help": 5
       },
     rotation: {
@@ -131815,7 +131815,7 @@ export const SHAPES = [
             "............."
           ]
         },
-        "intro": "Slumps flat into every empty cell under it, seven columns wide, all the way down to the floor. Someone sat in it in 1997 and it has never really recovered.",
+        "intro": "Slumps flat into every empty cell under it, five columns wide, all the way down to the floor. Someone sat in it in 1997 and it has never really recovered.",
         "help": 4
       },
     rotation: {
@@ -133897,7 +133897,7 @@ export const SHAPES = [
             "......."
           ]
         },
-        "intro": "Flows into every empty cell beside it and under it, seven columns wide, from its middle row all the way down to the floor. It said 'one coat' on the tin.",
+        "intro": "Flows into every empty cell beside it and under it, five columns wide, from its middle row all the way down to the floor. It said 'one coat' on the tin.",
         "help": 4.5
       },
     rotation: {
@@ -135812,7 +135812,7 @@ export const SHAPES = [
             "v.......v"
           ]
         },
-        "intro": "Piles into a heap nine wide that slopes down from it, every empty cell of it, all the way to the floor. Most of it is for the previous occupant.",
+        "intro": "Piles into a heap five wide that slopes down from it, every empty cell of it, all the way to the floor. Most of it is for the previous occupant.",
         "help": 5
       },
     rotation: {
@@ -139113,7 +139113,7 @@ export const SHAPES = [
             "............."
           ]
         },
-        "intro": "Spaghetti-os slump out into every empty cell of a heap seven wide under it, sloping down from it all the way to the floor. For a moment, it was a sandcastle.",
+        "intro": "Spaghetti-os slump out into every empty cell of a heap five wide under it, sloping down from it all the way to the floor. For a moment, it was a sandcastle.",
         "help": 4.5
       },
     rotation: {
@@ -139856,7 +139856,7 @@ export const SHAPES = [
             ".vvvvvvv."
           ]
         },
-        "intro": "Rolls fog into every empty cell of the seven columns centred on it, from the row under it all the way down to the floor. The school play finished in 2009.",
+        "intro": "Rolls fog into every empty cell of the five columns centred on it, from the row under it all the way down to the floor. The school play finished in 2009.",
         "help": 4.5
       },
     rotation: {
@@ -141310,7 +141310,7 @@ export const SHAPES = [
             ".........."
           ]
         },
-        "intro": "Pours a rainbow straight down out of itself: every empty cell in the six columns under it, from the row under it all the way down to the floor. There is no pot of gold at the bottom, just the bottom.",
+        "intro": "Pours a rainbow straight down out of itself: every empty cell in the four columns under it, from the row under it all the way down to the floor. There is no pot of gold at the bottom, just the bottom.",
         "help": 4
       },
     rotation: {
@@ -162095,7 +162095,7 @@ export const SHAPES = [
             ".........................."
           ]
         },
-        "intro": "Erupts: brown foam fills every empty cell around it and under it, in a dome ten columns wide, all the way down to the floor.",
+        "intro": "Erupts: brown foam fills every empty cell around it and under it, in a dome four columns wide, all the way down to the floor.",
         "help": 5
       },
     rotation: {
@@ -167510,7 +167510,7 @@ export const SHAPES = [
             "..............."
           ]
         },
-        "intro": "Lava spills out over both sides and runs down to the floor: every empty cell under it in a skirt nine columns wide, one row lower for each column out.",
+        "intro": "Lava spills out over both sides and runs down to the floor: every empty cell under it in a skirt five columns wide, one row lower for each column out.",
         "help": 5
       },
     rotation: {
@@ -176109,7 +176109,7 @@ export const SHAPES = [
             "..............."
           ]
         },
-        "intro": "The river goes over the edge: water fills every empty cell under it, five columns wide, down to the floor, and its spray spreads out either side as it falls, eleven columns wide at the bottom.",
+        "intro": "The river goes over the edge: water fills every empty cell under it, five columns wide, down to the floor.",
         "help": 5
       },
     rotation: {
@@ -176159,7 +176159,7 @@ export const SHAPES = [
             ".....vv..vv....."
           ]
         },
-        "intro": "Spreads into a puddle six columns across, two out either side: every empty cell beside it and under it, from its own row all the way down to the floor.",
+        "intro": "Spreads into a puddle six columns across, two out either side, and every empty cell under the middle four of them, all the way down to the floor.",
         "help": 4.5
       },
     rotation: {
@@ -176210,7 +176210,7 @@ export const SHAPES = [
             "..vvvvvvvvv.."
           ]
         },
-        "intro": "Light pours out of it, sideways and down: every empty cell in its own row and under it, nine columns wide, all the way down to the floor.",
+        "intro": "Light pours out of it, sideways and down: every empty cell in its own row and under it, five columns wide, all the way down to the floor.",
         "help": 5
       },
     rotation: {
@@ -176263,7 +176263,7 @@ export const SHAPES = [
             "..............."
           ]
         },
-        "intro": "Sunbeams fan out underneath it: every empty cell in a cone under it, nine columns across at the bottom, all the way down to the floor.",
+        "intro": "Sunbeams fan out underneath it: every empty cell under it, five columns across, all the way down to the floor.",
         "help": 5
       },
     rotation: {
@@ -180030,7 +180030,7 @@ export const SHAPES = [
             "................"
           ]
         },
-        "intro": "Inflates into a whole castle round it and under it: a battlement either side and every empty cell below them, eight columns wide, down to the floor.",
+        "intro": "Inflates into a castle under it: every empty cell below it, four columns wide, down to the floor.",
         "help": 5
       },
     rotation: {
@@ -180167,7 +180167,7 @@ export const SHAPES = [
             ".........vvvvvvvvvvv........."
           ]
         },
-        "intro": "Fills every empty cell in its own row and everything under it, eleven columns wide, with the sea.",
+        "intro": "Fills every empty cell in its own row and everything under it, five columns wide, with the sea.",
         "help": 5
       },
     rotation: {
@@ -180188,7 +180188,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 2,
         "help": 5,
-        "intro": "Tiles every empty cell in the six columns around it, from its own top row down to the floor. The grout is spotless.",
+        "intro": "Tiles every empty cell in the four columns around it, from its own top row down to the floor. The grout is spotless.",
         "area": {
           "origin": [
             5,
@@ -180263,7 +180263,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Lays a parquet floor in a broad step: four columns wide from its own top row, eight wide from two rows lower, every empty cell down to the floor.",
+        "intro": "Lays a parquet floor: four columns wide from its own top row, every empty cell down to the floor.",
         "area": {
           "origin": [
             6,
@@ -186999,7 +186999,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Tiles a mound of fish scales round it, a row lower every two columns out, eight columns wide at the bottom, every empty cell down to the floor. No fish were involved.",
+        "intro": "Tiles a mound of fish scales round it, a column either side a row lower, four columns wide at the bottom, every empty cell down to the floor. No fish were involved.",
         "area": {
           "origin": [
             6,
@@ -191336,7 +191336,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Spreads into a mound of stars and crosses round it, a row lower every column out, eight columns wide at the bottom, every empty cell down to the floor.",
+        "intro": "Spreads into stars and crosses round it, four columns wide from its own top row, every empty cell down to the floor.",
         "area": {
           "origin": [
             6,
@@ -195800,7 +195800,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Lizards fit themselves into every empty cell under it, a column to its right and five out to its left, a row lower every two columns, down to the floor. They always fit.",
+        "intro": "Lizards fit themselves into every empty cell under it and a column out either side, down to the floor. They always fit.",
         "area": {
           "origin": [
             11,
@@ -198506,7 +198506,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Lays a marble floor under it and either side: every empty cell, ten columns wide, from its own top row down to the floor. The echo is tremendous.",
+        "intro": "Lays a marble floor under it and either side: every empty cell, four columns wide, from its own top row down to the floor. The echo is tremendous.",
         "area": {
           "origin": [
             30,
@@ -200268,7 +200268,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 2,
         "help": 5,
-        "intro": "Fills every empty cell in the six columns around it with Lego, from its own row down to the floor. There are never just a few.",
+        "intro": "Fills every empty cell in the four columns around it with Lego, from its own row down to the floor. There are never just a few.",
         "area": {
           "origin": [
             5,
@@ -205105,7 +205105,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Tips out into a heap round it, a row lower every column out, nine columns wide at the bottom, every empty cell down to the floor. Someone will tread on one.",
+        "intro": "Tips out into a heap round it, a row lower every column out, five columns wide at the bottom, every empty cell down to the floor. Someone will tread on one.",
         "area": {
           "origin": [
             6,
@@ -214708,7 +214708,7 @@ export const SHAPES = [
         "type": "expander",
         "tier": 3,
         "help": 5,
-        "intro": "Spills into every empty cell under it, a column to its left and five out to its right, a row lower every two columns, down to the floor.",
+        "intro": "Spills into every empty cell under it and a column out either side, down to the floor.",
         "area": {
           "origin": [
             1,
