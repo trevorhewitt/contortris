@@ -779,23 +779,123 @@
     #panelIntro, #panelPowerups{ background: rgba(0,0,0,0.97); }
     /* the intro slides straight over the board: no backdrop, no fade */
     .overlay.intro{ background: none; transition: none; }
-    /* paused: the board stays in view, with a small panel at the top. Tap a piece for its card,
-       an empty spot to hide the panel (and again to bring it back); pinch, double tap or the
-       wheel to zoom in, drag to look around (src/ui.js) */
-    .overlay.boardPause{ background: none; align-items: flex-start; padding-top: 8px; touch-action: none; }
-    .overlay.boardPause #panelPause{ padding: 8px 10px 2px; background: rgba(0,0,0,0.8); transition: opacity 120ms linear; }
-    .overlay.boardPause #panelPause .big{ font-size: 12px; line-height: 1.4; margin: 0; }
-    .overlay.boardPause #pauseMode{ font-size: 10px; margin-top: 2px; }
-    /* (all the buttons flow together, in as few rows as fit) */
-    .overlay.boardPause #panelPause:not([hidden]){ display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 5px; padding-bottom: 8px; }
-    .overlay.boardPause #panelPause > .big, .overlay.boardPause #panelPause > .small{ flex: 0 0 100%; }
-    .overlay.boardPause #panelPause .menuBtns, .overlay.boardPause #panelPause .menuRow{ display: contents; }
-    .overlay.boardPause #panelPause button{ min-height: 30px; padding: 5px 8px; font-size: 7px; }
-    .overlay.boardPause #panelPause .devTools{ flex: 0 0 100%; }
-    .overlay.boardPause #panelPause .panelX{ top: 4px; right: 4px; width: 28px; height: 28px; min-height: 0; padding: 0; font-size: 11px; }
-    .overlay.boardPause.peek #panelPause, .overlay.boardPause.zoomed #panelPause{ opacity: 0; pointer-events: none; }
-    .overlay .pauseHint{ display: none; }
-    .overlay.boardPause .pauseHint{ display: block; font-size: 10px !important; opacity: 0.75; margin: 0 0 2px; }
+    /* paused (src/ui.js): the whole screen, dark, and the menu in the middle of it, its buttons in
+       a column and the pieces so far under them (src/pausemenu.js), a glow breathing round it and
+       sparkles drifting up past it. Where the board stays in view (zen), a tap outside the menu,
+       or "Look at the board", puts the menu away to look at the board: tap a piece for its card,
+       pinch, double tap or the wheel to zoom in, drag to look around; then an empty spot, or
+       Done, and the menu's back */
+    .overlay.boardPause{
+      position: fixed; inset: 0; z-index: 15; touch-action: none;
+      background: radial-gradient(ellipse 80% 62% at 50% 46%, rgba(24,18,44,0.62), rgba(0,0,0,0.9) 78%);
+    }
+    .overlay.boardPause.peek, .overlay.boardPause.zoomed{ background: none; }
+    /* (the scan lines over all of it, as on the home screen, but not over the board being looked at) */
+    body:has(.overlay.boardPause:not(.peek):not(.zoomed))::after{ -webkit-mask: none; mask: none; }
+    .pauseFx{ display: none; position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; image-rendering: pixelated; transition: opacity 160ms linear; }
+    .overlay.boardPause .pauseFx{ display: block; }
+    #panelPause.panel{
+      position: relative; isolation: isolate;
+      width: clamp(300px, calc(100% - 24px), 400px); padding: 20px 18px 16px;
+      background: radial-gradient(130% 50% at 50% 0%, rgba(255,255,255,0.07), rgba(255,255,255,0) 70%), rgba(5,5,12,0.93);
+      transition: opacity 140ms linear;
+    }
+    .overlay.boardPause.peek #panelPause, .overlay.boardPause.zoomed #panelPause,
+    .overlay.boardPause.peek .pauseFx, .overlay.boardPause.zoomed .pauseFx{ opacity: 0; pointer-events: none; }
+    /* (its glow: wide and soft in the edge's colours, warm off the left and cool off the right,
+       and a white one close in, the two breathing out of step) */
+    #panelPause::before, #panelPause::after{ content: ""; position: absolute; inset: calc(var(--edge-w) * -1); z-index: -1; pointer-events: none; }
+    #panelPause::before{
+      box-shadow:
+        -16px 0 52px -10px rgba(var(--om-orange),0.6), 16px 0 52px -10px rgba(var(--om-violet),0.6),
+        0 -14px 46px -16px rgba(var(--om-gold),0.45), 0 14px 46px -16px rgba(var(--om-cyan),0.45),
+        0 0 90px rgba(var(--om-pink),0.16);
+      animation: pauseBreathe 4.4s ease-in-out infinite;
+    }
+    #panelPause::after{ border: 3px solid rgba(255,255,255,0.5); filter: blur(7px); animation: pauseBreathe 3.1s ease-in-out infinite reverse; }
+    @keyframes pauseBreathe{ 0%, 100%{ opacity: 0.45; } 50%{ opacity: 1; } }
+    /* (its name torn a little further apart, now and then) */
+    #panelPause .big{ font-size: 20px; margin: 0 0 4px; animation: pauseTear 5.3s steps(1, end) infinite; }
+    @keyframes pauseTear{
+      0%, 100%{ text-shadow: var(--rgb-split), 0 0 24px rgba(var(--om-pink),0.3); transform: none; }
+      63%{ text-shadow: var(--om-tear), 0 0 24px rgba(var(--om-pink),0.3); transform: translateX(1px); }
+      64.5%{ text-shadow: var(--rgb-split), 0 0 24px rgba(var(--om-pink),0.3); transform: none; }
+    }
+    #panelPause .menuBtns{ width: min(100%, 250px); gap: 8px; margin: 14px auto 16px; }
+    #panelPause .menuBtns button{ min-height: 40px; padding: 9px 12px; }
+    /* (Resume, the one to press: lit, with a band of light rolling down through it now and then) */
+    #btnResume{ position: relative; overflow: hidden; isolation: isolate; color: #fff; border-color: var(--edge-line); box-shadow: var(--edge-split), var(--edge-glow); text-shadow: var(--rgb-split); }
+    #btnResume::after{
+      content: ""; position: absolute; left: 0; right: 0; top: -100%; height: 300%; z-index: -1; pointer-events: none;
+      background: linear-gradient(to bottom, transparent 40%, rgba(var(--om-pink),0.16) 45%, rgba(255,255,255,0.14) 48%, rgba(var(--om-cyan),0.16) 51%, transparent 56%);
+      animation: modeSlide 4.2s linear infinite;
+    }
+    /* the pieces so far (src/pausemenu.js): the one in the middle big and lit, split into the
+       edge's colours, those either side smaller and dimmer; its name under it, then how hard
+       and how rare it is, in words */
+    .pieceGallery{
+      position: relative; box-sizing: border-box; padding: 7px 8px 10px;
+      border: var(--edge-w) solid var(--edge-quiet-line); box-shadow: var(--edge-quiet);
+      background: radial-gradient(70% 50% at 50% 36%, rgba(255,255,255,0.06), rgba(0,0,0,0) 70%), rgba(0,0,0,0.5);
+    }
+    .pgHead{
+      display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+      font-family: var(--font-display); font-size: 7px; line-height: 1.4; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+    }
+    /* (the strip cut off at its ends: the pieces further along, out of sight, don't stretch the menu) */
+    .pgStage{ position: relative; height: 104px; margin: 4px 0 2px; overflow: hidden; overflow: clip; touch-action: pan-y; cursor: grab; }
+    .pgStage.dragging{ cursor: grabbing; }
+    .pgTrack{ position: absolute; inset: 0 30px; }
+    /* (a soft light behind the one in the middle, breathing) */
+    .pgTrack::before{
+      content: ""; position: absolute; left: 50%; top: 50%; width: 190px; height: 104px; transform: translate(-50%, -50%); pointer-events: none;
+      background: radial-gradient(closest-side, rgba(255,255,255,0.16), rgba(var(--om-pink),0.06) 62%, rgba(0,0,0,0));
+      animation: pauseBreathe 3.1s ease-in-out infinite;
+    }
+    .pgSlot{ position: absolute; left: 50%; top: 50%; line-height: 0; }
+    .pgSlot.mid{ z-index: 1; }
+    .pgTrack.glide .pgSlot{ transition: transform 260ms cubic-bezier(.2, .8, .3, 1), opacity 260ms linear; }
+    .pgSlot canvas{ display: block; image-rendering: auto; }
+    .pgSlot.mid canvas{
+      image-rendering: pixelated;
+      filter: drop-shadow(-1px 0 0 rgba(var(--om-pink),0.85)) drop-shadow(1px 0 0 rgba(var(--om-cyan),0.8)) drop-shadow(0 0 8px rgba(255,255,255,0.32));
+    }
+    .pgArrow{ position: absolute; top: 50%; z-index: 1; width: 28px; height: 40px; min-height: 0; margin-top: -20px; padding: 0; font-size: 9px; line-height: 1; }
+    .pgArrow:disabled{ opacity: 0.25; cursor: default; }
+    .pgPrev{ left: 0; }
+    .pgNext{ right: 0; }
+    /* (room for the longest name, three lines of it, and the words under it, so nothing moves as
+       the pieces go by: the name and its words together in the middle of it) */
+    .pgSay{ display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 88px; }
+    .pgName{
+      font-family: var(--font-display); font-size: 9px; line-height: 1.6; letter-spacing: 0.04em; text-transform: uppercase;
+      text-align: center; overflow-wrap: anywhere; color: #fff;
+      text-shadow: -1px 0 0 rgba(var(--om-pink),0.6), 1px 0 0 rgba(var(--om-cyan),0.55), 0 0 10px rgba(255,255,255,0.3);
+    }
+    /* (a Shiny Piece's name and class in the class's colours, as its name is when it falls: still
+       its colour with the animations toned down) */
+    .pgName.shiny, .pgCls{ animation: rgbText 1.6s steps(12, end) infinite; }
+    .pgName.cls-destroyer, .pgCls.cls-destroyer{ animation-name: fireText; color: var(--rgb-r); }
+    .pgName.cls-gravity, .pgCls.cls-gravity{ animation-name: deepText; color: #3f7bff; }
+    .pgName.cls-expander, .pgCls.cls-expander{ animation-name: growText; color: var(--rgb-g); }
+    .pgStats{ display: grid; grid-template-columns: max-content minmax(0, max-content); justify-content: center; align-items: baseline; column-gap: 10px; row-gap: 3px; }
+    .pgK{ font-family: var(--font-display); font-size: 7px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-align: right; }
+    .pgV{ font-family: var(--font-body); font-size: 14px; line-height: 1.25; color: #fff; text-align: left; text-shadow: 0 0 8px rgba(255,255,255,0.25); }
+    .pgCls{ font-weight: 600; }
+    .pgNone{ display: none; padding: 14px 0 8px; font-family: var(--font-body); font-size: 13px; color: var(--muted); text-align: center; }
+    .pieceGallery.empty .pgStage, .pieceGallery.empty .pgSay, .pieceGallery.empty .pgCount{ display: none; }
+    .pieceGallery.empty .pgNone{ display: block; }
+    /* looking at the board: what to do, and Done, at the top (not while a piece's card is up:
+       the card may be there) */
+    .pauseLook{
+      display: none; position: absolute; left: 50%; top: max(10px, env(safe-area-inset-top)); z-index: 4; transform: translateX(-50%);
+      box-sizing: border-box; width: max-content; max-width: calc(100% - 20px);
+      align-items: center; gap: 10px; padding: 6px 6px 6px 12px; background: rgba(0,0,0,0.86);
+    }
+    .pauseLook .small{ font-family: var(--font-body); font-size: 12px; line-height: 1.3; color: var(--muted); text-align: left; }
+    .pauseLook button{ flex: none; min-height: 32px; padding: 6px 12px; }
+    .overlay.boardPause.peek .pauseLook, .overlay.boardPause.zoomed .pauseLook{ display: flex; }
+    .overlay.boardPause:has(> .pieceCard:not([hidden])) .pauseLook{ display: none; }
     .pieceCard{
       position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
       width: min(calc(100% - 20px), 340px); box-sizing: border-box; padding: 10px 12px 12px;
@@ -1654,19 +1754,45 @@
             </div>
           </div>
 
+          <!-- paused: the sparkles behind the menu (src/pausemenu.js), and, looking at the board in
+               a mode that leaves it in view, what to do and the way back to the menu -->
+          <canvas id="pauseFx" class="pauseFx" aria-hidden="true"></canvas>
+          <div class="pauseLook edge" id="pauseLook">
+            <span class="small">tap a piece to look at it · pinch or double tap to zoom</span>
+            <button id="btnLookDone" class="small">Done</button>
+          </div>
+
           <div class="msg panel" id="panelPause" hidden>
             <button class="panelX" id="btnPauseX" aria-label="Resume">X</button>
             <div class="big">Paused</div>
             <div class="small" id="pauseMode"></div>
-            <div class="small pauseHint" id="pauseHintLook">tap a piece to look at it · pinch or double tap to zoom</div>
             <div class="menuBtns">
               <button id="btnResume">Resume</button>
+              <button id="btnLookBoard" class="secondary" hidden>Look at the board</button>
               <button id="btnWholeWindow" class="secondary" hidden>Fill the window</button>
               <button id="btnSpeed" class="secondary" hidden>Speed: 1×</button>
               <button id="btnPowerupHelp" class="secondary" hidden>Shiny Pieces</button>
               <button id="btnPauseHowTo" class="secondary">How to play</button>
               <button id="btnPauseOptions" class="secondary">Options</button>
               <button id="btnQuit" class="secondary">Quit to menu</button>
+            </div>
+            <!-- the pieces so far, in the order they fell (src/pausemenu.js): swipe, the arrows, or
+                 ← → and A D -->
+            <div class="pieceGallery" id="pieceGallery" role="group" aria-label="The pieces so far">
+              <div class="pgHead"><span class="pgTitle">Pieces so far</span><span class="pgCount"></span></div>
+              <div class="pgStage">
+                <button class="pgArrow pgPrev" aria-label="The piece before">&#9664;</button>
+                <div class="pgTrack"></div>
+                <button class="pgArrow pgNext" aria-label="The piece after">&#9654;</button>
+              </div>
+              <div class="pgSay" aria-live="polite">
+                <div class="pgName"></div>
+                <div class="pgStats">
+                  <span class="pgK">How hard</span><span class="pgV pgHard"></span>
+                  <span class="pgK">How rare</span><span class="pgV pgRare"></span>
+                </div>
+              </div>
+              <div class="pgNone">Nothing's landed yet.</div>
             </div>
             <div class="devTools" id="devTools" hidden>
               <div class="devTitle">dev: next piece</div>

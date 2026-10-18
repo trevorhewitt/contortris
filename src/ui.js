@@ -26,6 +26,7 @@ import { classOrder } from "./selection.js";
 import { bindTutorial } from "./tutorialui.js";
 import { bindOptions, favouritePool } from "./optionsui.js";
 import { getOption, setOption, applyOptions, favourite } from "./settings.js";
+import { createGallery, createSparkles } from "./pausemenu.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -248,6 +249,12 @@ export function bindUI({ state, renderer, achievements }) {
 
   const modeLabel = (mode) => CONFIG.modes[mode]?.label ?? mode;
 
+  // The pause menu's gallery of the pieces so far, and its sparkles (src/pausemenu.js). (Only
+  // while the menu's there: not while the board's being looked at, "looking at the board" below.)
+  const pauseMenuUp = () => currentPanel === "pause" && !overlay.classList.contains("peek") && !overlay.classList.contains("zoomed");
+  const gallery = createGallery({ state, root: $("pieceGallery") });
+  const sparkles = createSparkles({ canvas: $("pauseFx"), panel: panels.pause, showing: pauseMenuUp });
+
   /* ---------- panels ---------- */
 
   function showPanel(name) {
@@ -255,7 +262,8 @@ export function bindUI({ state, renderer, achievements }) {
     home?.noteInput();
     overlay.classList.toggle("show", !!name);
     overlay.classList.toggle("intro", name === "intro"); // slides over the board, no fade
-    // paused, the board stays in view (a small panel at the top: see "looking at the board")
+    // paused: the menu over the whole screen (and in zen, the board behind it to look at: see
+    // "looking at the board")
     overlay.classList.toggle("boardPause", name === "pause");
     overlay.classList.remove("peek");
     if (name !== "pause") resetLook();
@@ -276,12 +284,14 @@ export function bindUI({ state, renderer, achievements }) {
     }
   }
 
-  // The menu, pause and game over panels always fit on the board: if there isn't room, they're
-  // scaled down rather than scrolled. (How to play and the lists scroll as usual.)
+  // The menu, pause and game over panels always fit on the board (the pause menu, on the screen):
+  // if there isn't room, they're scaled down rather than scrolled. (How to play and the lists
+  // scroll as usual.)
   const FIT_PANELS = new Set(["pause", "gameover", "intro"]); // (the menu is the home screen: it fits itself)
   function fitPanel(name = currentPanel) {
     const el = panels[name];
     if (!el || !FIT_PANELS.has(name)) return;
+    if (name === "pause") gallery.render(); // (its strip is laid out to the menu's width)
     if (name === "pause" && devmode) return; // the dev tools make it long: it scrolls
     el.style.transform = "";
     el.classList.add("fit");
@@ -388,7 +398,8 @@ export function bindUI({ state, renderer, achievements }) {
     $("btnSpeed").hidden = !CONFIG.modes[state.mode]?.speeds;
     $("btnSpeed").textContent = speedText();
     hideBoard(CONFIG.modes[state.mode]?.hideOnPause);
-    $("pauseHintLook").style.display = boardHidden() ? "none" : "";
+    $("btnLookBoard").hidden = boardHidden();
+    gallery.open(); // (the newest piece in the middle)
     showPanel("pause");
   }
 
@@ -516,6 +527,7 @@ export function bindUI({ state, renderer, achievements }) {
     switch (type) {
       case "start":
         setStarts = 0;
+        gallery.clear();
         // (the player's favourite piece comes a little more often: src/settings.js)
         if (state.pieceSel) state.pieceSel.favourite = favourite(favouritePool(state.shapes));
         if (agCfg) {
@@ -543,6 +555,10 @@ export function bindUI({ state, renderer, achievements }) {
       case "next":
         renderer.drawNext(d.next, true, nextLook(d.next));
         break;
+      case "lock":
+        // (every piece that lands, for the pause menu's gallery: not the home screen's turbo zen's)
+        if (!state.backdrop) gallery.add(d.shape);
+        break;
       case "dramaticPause": // (turbo zen: in place of the piece's name while the board glows)
         if (d.on) nameLayer.setName("(dramatic pause)", "", "", !!CONFIG.modes[state.mode]?.flashNames);
         else if (d.shape) nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames); // (and then the one that waited)
@@ -562,6 +578,7 @@ export function bindUI({ state, renderer, achievements }) {
       case "reset":
         nameLayer.clear();
         renderer.drawNext(null);
+        gallery.clear();
         break;
     }
   });
@@ -1068,12 +1085,20 @@ export function bindUI({ state, renderer, achievements }) {
   $("btnPowerupHelp").addEventListener("click", () => { panelBack = "pause"; showPanel("powerups"); });
   $("btnIntroContinue").addEventListener("click", () => resumeGame());
   /* ---------- paused: looking at the board ---------- */
-  // Tap a piece (or the falling one) for its card; tap an empty spot to hide the panel, and
-  // again to bring it back. Pinch, double tap or the wheel to zoom in, drag to look around.
+  // Where the board stays in view (zen): "Look at the board", or a tap anywhere outside the menu,
+  // puts the menu away (the overlay's "peek"). Tap a piece (or the falling one) for its card; tap
+  // an empty spot, or Done, to bring the menu back. Pinch, double tap or the wheel to zoom in,
+  // drag to look around.
 
   const boardCanvas = $("boardCanvas"), boardShell = $("boardShell"), pieceCard = $("pieceCard");
-  const look = { zoom: 1, tx: 0, ty: 0, pointers: new Map(), pinch: null, start: null, moved: false, lastTap: 0, lastX: 0, lastY: 0 };
+  const look = { zoom: 1, tx: 0, ty: 0, pointers: new Map(), pinch: null, start: null, moved: false, lastTap: 0, lastX: 0, lastY: 0, peeked: false };
   const looking = () => currentPanel === "pause" && !boardHidden();
+  $("btnLookBoard").addEventListener("click", () => overlay.classList.add("peek"));
+  $("btnLookDone").addEventListener("click", () => {
+    resetLook();
+    overlay.classList.remove("peek");
+    $("btnResume").focus({ preventScroll: true });
+  });
 
   function applyLook() {
     const W = boardShell.clientWidth, H = boardShell.clientHeight, z = look.zoom;
@@ -1100,6 +1125,7 @@ export function bindUI({ state, renderer, achievements }) {
     look.pointers.clear(); look.pinch = null; look.start = null;
     applyLook();
     hideCard();
+    look.peeked = false;
   }
 
   function cellAt(cx, cy) {
@@ -1119,9 +1145,11 @@ export function bindUI({ state, renderer, achievements }) {
     return inst?.shape ? { shape: inst.shape, rot: inst.rotIdx ?? 0 } : null;
   }
 
-  // The card: the piece as it landed, its name, how rare it is, and what a powerup does.
+  // The card: the piece as it landed, its name, how rare it is, and what a powerup does. (The menu
+  // goes while it's up, and comes back after it unless the board was being looked at already.)
   function showCard(shape, rot, at) {
     const line = (cls, text) => { const d = document.createElement("div"); d.className = cls; d.textContent = text; return d; };
+    if (pieceCard.hidden) look.peeked = overlay.classList.contains("peek");
     pieceCard.innerHTML = "";
     const mat = shape.rotations[rot] ?? shape.rotations[0];
     const maxW = boardShell.clientWidth - 64, maxH = boardShell.clientHeight * 0.3;
@@ -1146,7 +1174,7 @@ export function bindUI({ state, renderer, achievements }) {
   function hideCard() {
     if (pieceCard.hidden) return;
     pieceCard.hidden = true;
-    overlay.classList.remove("peek");
+    if (!look.peeked) overlay.classList.remove("peek");
   }
   pieceCard.addEventListener("click", hideCard);
 
@@ -1166,7 +1194,7 @@ export function bindUI({ state, renderer, achievements }) {
   }
 
   overlay.addEventListener("pointerdown", (e) => {
-    if (!looking() || e.target.closest?.(".msg, .pieceCard")) return;
+    if (!looking() || e.target.closest?.(".msg, .pieceCard, .pauseLook")) return;
     e.preventDefault();
     look.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     try { overlay.setPointerCapture(e.pointerId); } catch { /* (not everywhere) */ }
@@ -1206,7 +1234,7 @@ export function bindUI({ state, renderer, achievements }) {
   overlay.addEventListener("pointerup", lift);
   overlay.addEventListener("pointercancel", lift);
   overlay.addEventListener("wheel", (e) => {
-    if (!looking()) return;
+    if (!looking() || e.target.closest?.(".msg")) return; // (over the menu, it's the menu's)
     e.preventDefault();
     zoomAt(look.zoom * Math.exp(-e.deltaY * 0.0015), e.clientX, e.clientY);
   }, { passive: false });
@@ -1312,6 +1340,9 @@ export function bindUI({ state, renderer, achievements }) {
       else if (currentPanel === "intro") { e.preventDefault(); resumeGame(); }
       return;
     }
+    // (paused, the arrows and A / D go through the pieces so far: src/pausemenu.js. Not in the
+    // developer tools' lists and sliders, which have their own uses for them)
+    if (pauseMenuUp() && !editable(e.target) && gallery.key(e)) { e.preventDefault(); return; }
 
     if (!state.running || state.gameOver || state.paused) return;
 
@@ -1510,7 +1541,7 @@ export function bindUI({ state, renderer, achievements }) {
   }
 
   return {
-    frame(now) { updateHUD(); fadeName(); home.frame(now ?? performance.now()); },
+    frame(now) { updateHUD(); fadeName(); home.frame(now ?? performance.now()); sparkles.frame(now ?? performance.now()); },
     home: () => home,
     liveState: () => home.liveState(),
     toast,
