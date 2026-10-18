@@ -253,6 +253,7 @@ export function resetGame(state) {
   state.zen = null;
   state.tutorial = null;
   state.shelf = null;
+  state.bayOpen = false;
   state.lastLockedShape = null;
   state.gameOverInfo.pieceName = "";
   state.gameOverInfo.shape = null;
@@ -338,7 +339,9 @@ export function collides(state, px, py, mat) {
 
 // How fast the game runs in this mode, times the speed setting (turbo zen's pause menu).
 export function timeScaleOf(state) {
-  return (CONFIG.modes[state.mode]?.timeScale ?? 1) * (state.speed ?? 1);
+  // (the bay's menu open: slower, to choose in. src/shelfui.js)
+  const bay = state.bayOpen && !state.paused ? CONFIG.shelf?.bayTimeScale ?? 1 : 1;
+  return (CONFIG.modes[state.mode]?.timeScale ?? 1) * (state.speed ?? 1) * bay;
 }
 
 export function markInput(state, type) {

@@ -1,12 +1,13 @@
 // ============================================================
 // THE POWERUP SHELF — powerups kept by, to use when you choose (no DOM)
 // ============================================================
-// In place of the next piece, the player has a shelf of powerups (CONFIG.shelf): for now one
+// In place of the next piece, the player has a bay of shiny pieces (CONFIG.shelf): for now one
 // strong one of each class (Dissolverz, Gravitizerz, Expanderz) in every game, picked from a short
-// list. Tapping one takes the falling piece away and the powerup falls in its place (game.js
-// useShelf). In Classic a class's slot only opens once that class has opened in the game (its
-// intro comes first), so nothing on the shelf is a surprise. (Later the shelf will be the
-// player's own, bought, kept from game to game: `left` is how many of each are on it.)
+// list. The bay on the page (src/shelfui.js) shows only the ones that can be used now, and a tap
+// on it opens its menu, to pick one: the falling piece goes and that one falls in its place
+// (game.js useShelf). In Classic a class's piece only turns up in the bay once that class has
+// opened in the game (its intro comes first), so nothing in it is a surprise. (Later the bay will
+// be the player's own, bought, kept from game to game: `left` is how many of each are in it.)
 
 import { CONFIG } from "../config.js";
 

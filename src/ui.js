@@ -6,7 +6,7 @@ import { CONFIG } from "../config.js";
 import { escapeHtml, store } from "./util.js";
 import { getDifficultyZone } from "./selection.js";
 import {
-  on, startRun, resetGame, tryMove, tryRotate, beginLockIfNeeded, markInput, setNextPiece, markBoardDirty, isPowerupEnabled, hardDropAndLock, introduced,
+  on, startRun, resetGame, tryMove, tryRotate, beginLockIfNeeded, markInput, setNextPiece, markBoardDirty, isPowerupEnabled, hardDropAndLock, introduced, getActiveMatrix,
 } from "./game.js";
 import { makeShapePreviewCanvas, drawIcon } from "./render.js";
 import { createDemo, runDemos } from "./demo.js";
@@ -136,7 +136,21 @@ function createNameLayer(nameLayerEl) {
     setName(shape.name, instant ? "" : shape.powerup?.description ?? "", shape.powerup ? shape.powerup.cls ?? "combo" : "", instant);
   }
 
-  return { setName, setShape, clear };
+  // The rows of the board the words cover, [top, bottom], or null with none showing.
+  function rows(count) {
+    const h = nameLayerEl.clientHeight;
+    if (!currentEl || !h) return null;
+    return [Math.floor(currentEl.offsetTop / h * count), Math.ceil((currentEl.offsetTop + currentEl.offsetHeight) / h * count) - 1];
+  }
+  // (faded: the falling piece among the stack under the words. CONFIG.render.names)
+  let busy = false;
+  function setBusy(on) {
+    if (on === busy) return;
+    busy = on;
+    nameLayerEl.style.opacity = on ? String(CONFIG.render.names?.busyOpacity ?? 0.2) : "";
+  }
+
+  return { setName, setShape, clear, rows, setBusy };
 }
 
 // ============================================================
@@ -364,6 +378,7 @@ export function bindUI({ state, renderer, achievements }) {
 
   function pauseGame() {
     if (state.gameOver || !state.running) return;
+    shelf.close();
     state.paused = true;
     state.softDropping = false;
     $("pauseMode").textContent = `${modeLabel(state.mode)} mode`;
@@ -492,7 +507,7 @@ export function bindUI({ state, renderer, achievements }) {
     opening = [];
   }
 
-  // The powerup shelf, where the next piece was (src/shelfui.js)
+  // The bay, where the next piece was: the shiny pieces kept by (src/shelfui.js)
   const shelf = bindShelf({ state, root: $("shelf") });
 
   on(state, (type, d) => {
@@ -1299,10 +1314,6 @@ export function bindUI({ state, renderer, achievements }) {
 
     markInput(state, "keyboard");
 
-    // (1, 2, 3: the powerups on the shelf)
-    const shelfKey = /^(?:Digit|Numpad)([1-9])$/.exec(e.code);
-    if (shelfKey && state.shelf) { e.preventDefault(); shelf.use(Number(shelfKey[1]) - 1); return; }
-
     // (the arrow keys, or W A S D)
     switch (e.code) {
       case "ArrowLeft": case "KeyA":
@@ -1321,7 +1332,7 @@ export function bindUI({ state, renderer, achievements }) {
         break;
       case "ArrowDown": case "KeyS":
         e.preventDefault();
-        if (!e.repeat && isMultiTap()) { teleportDown(); break; }
+        if (!e.repeat && isMultiTap(CONFIG.timing.multiPressMs)) { teleportDown(); break; }
         state.softDropping = true;
         break;
     }
@@ -1329,11 +1340,11 @@ export function bindUI({ state, renderer, achievements }) {
 
   // Double tap / double press down (CONFIG.timing.multiTaps): drops the piece straight to where
   // it will land. (The first tap moves it down as usual; a move to the side starts the count
-  // again.)
+  // again. `ms`: how close together they count, the key's own for the keyboard.)
   const downTaps = { n: 0, at: 0 };
-  function isMultiTap() {
+  function isMultiTap(ms = CONFIG.timing.multiTapMs ?? 300) {
     const now = performance.now(), t = downTaps;
-    t.n = now - t.at < (CONFIG.timing.multiTapMs ?? 300) ? t.n + 1 : 1;
+    t.n = now - t.at < ms ? t.n + 1 : 1;
     t.at = now;
     if (t.n < (CONFIG.timing.multiTaps ?? 2)) return false;
     t.n = 0;
@@ -1480,8 +1491,23 @@ export function bindUI({ state, renderer, achievements }) {
     });
   });
 
+  // The falling piece's name fades while the piece is among the stack under the words: the
+  // piece in the rows they cover, and something already landed in those rows too. (Just
+  // falling past empty rows, it's left as it is.)
+  function fadeName() {
+    const a = state.active, r = a && state.running && !state.backdrop ? nameLayer.rows(CONFIG.board.rows) : null;
+    let busy = false;
+    if (r) {
+      const [top, bottom] = r, mat = getActiveMatrix(state);
+      const inRows = (y) => y >= top && y <= bottom;
+      const piece = mat.some((row, j) => inRows(a.y + j) && row.some(Boolean));
+      busy = piece && state.board.some((row, y) => inRows(y) && row.some(Boolean));
+    }
+    nameLayer.setBusy(busy);
+  }
+
   return {
-    frame(now) { updateHUD(); home.frame(now ?? performance.now()); },
+    frame(now) { updateHUD(); fadeName(); home.frame(now ?? performance.now()); },
     home: () => home,
     liveState: () => home.liveState(),
     toast,

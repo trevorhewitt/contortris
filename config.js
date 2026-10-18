@@ -106,6 +106,9 @@ export const CONFIG = {
       gravity: ["steamroller", "blue_whale", "hippo_bellyflop"],
     },
     perGame: 1,
+    // The bay on the page (src/shelfui.js): a tap opens its menu, and while it's open the game
+    // runs at this speed (1: no slower), to choose in.
+    bayTimeScale: 0.3,
   },
 
   timing: {
@@ -125,8 +128,10 @@ export const CONFIG = {
     tapRepeatStartMs: 140,
     tapRepeatEveryMs: 55,
     // double tap the bottom of the board (or press down twice) to drop straight down; taps this
-    // close together count
+    // close together count (multiPressMs: two presses of the down key, which take a little longer
+    // than two taps)
     multiTapMs: 300,
+    multiPressMs: 460,
     multiTaps: 2,
     // a piece about to lock sticking out above the top (game over) gets this long more, once:
     // it flashes red and the board warns, and it can still be moved
@@ -504,6 +509,12 @@ export const CONFIG = {
     // piece across it; and it glows glowCells of a cell out, in its own colours (an ordinary piece
     // in `glow`).
     next: { periodMs: 2400, comboPeriodMs: 3600, loopPieces: 2.2, glowCells: 0.55, glowAlpha: 0.85, glow: "rgba(150,135,255,0.8)" },
+
+    // The falling piece's name over the board (src/ui.js): faded to busyOpacity while the piece
+    // is among the stack under the words (the piece and the stack both in the rows the words
+    // cover), so they're not in the way where the game is going on. A piece just falling past
+    // empty rows leaves them as they are.
+    names: { busyOpacity: 0.2 },
 
     cellPx: 18,
     maxScale: 3, // max backing-store pixels per board pixel (crispness vs cost)

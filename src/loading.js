@@ -99,14 +99,19 @@
   }
 
   function draw() {
-    const box = canvas.getBoundingClientRect(), dpr = Math.min(3, window.devicePixelRatio || 1);
-    const W = Math.max(1, Math.round(box.width * dpr)), H = Math.max(1, Math.round(box.height * dpr));
-    if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; }
+    // (the bar is just as big as its cells: as wide as there's room for in whole cells, the
+    // pieces at either end right up against its sides)
+    const dpr = Math.min(3, window.devicePixelRatio || 1);
+    const room = Math.min(window.innerWidth * 0.86, 420);
+    const cell = Math.max(1, Math.floor(room * dpr / D.cols)), W = cell * D.cols, H = cell * D.rows;
+    if (canvas.width !== W || canvas.height !== H) {
+      canvas.width = W; canvas.height = H;
+      canvas.style.width = `${W / dpr}px`; canvas.style.height = `${H / dpr}px`;
+    }
     const g = canvas.getContext("2d");
     g.imageSmoothingEnabled = false;
     g.clearRect(0, 0, W, H);
-    const pad = Math.round(3 * dpr), cell = Math.floor(Math.min((W - pad * 2) / D.cols, (H - pad * 2) / D.rows));
-    const ox = Math.round((W - cell * D.cols) / 2), oy = Math.round((H - cell * D.rows) / 2);
+    const ox = 0, oy = 0;
     // the board: faint cells
     g.fillStyle = "rgba(255,255,255,0.05)";
     for (let y = 0; y < D.rows; y++) for (let x = 0; x < D.cols; x++) g.fillRect(ox + x * cell + 1, oy + y * cell + 1, cell - 2, cell - 2);

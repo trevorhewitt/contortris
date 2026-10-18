@@ -4,11 +4,12 @@
 // src/tutorial.js plays each page; this shows it. The page's sentence goes over the top of the
 // board, where a game shows the pieces' names, with an X beside it to go home. The bar takes the
 // bottom bar's place: Back and Next, Touch or Keys (which it shows), the pages as a row of dots,
-// and a pause button; on the shelf's page, the shelf. On the last page the modes cover the board,
+// and a pause button; on the bay's page, the bay. On the last page the modes cover the board,
 // each with a button to play it. And whatever the autopilot presses, as it presses it: on a
 // touch screen a finger tapping the part of the board that does it (the zones are ui.js
-// getZone's, each lit faintly in its own colour as the finger gets there) or the shelf; with a
-// keyboard, a little picture of the arrow keys in the bar, the key lighting up. It starts with
+// getZone's, each lit faintly in its own colour as the finger gets there); with a keyboard, a
+// little picture of the arrow keys in the bar, the key lighting up; and the bay, which has no
+// keys, the finger either way, tapping it and then the piece in its menu. It starts with
 // whichever the device looks like it has, goes with whatever the player actually uses, and
 // Touch and Keys switch it by hand.
 // Playing at all (a tap on the board, a key that moves the piece) takes the piece over
@@ -47,8 +48,9 @@ const HAND_COLOURS = { "#": "#1a1428", w: "#fff4e6", s: "#e0c9b8", c: "#ffffff",
 const PX = 3.5;           // (screen pixels to a pixel of it)
 const TIP = { x: 7, y: 0.4 };
 
-// What each press is: the zone of the board that does it (or the shelf), and the arrow key.
-const ZONE_OF = { left: "left", right: "right", turn: "top", down: "bottom", hold: "bottom", drop: "bottom", shelf: "shelf" };
+// What each press is: the zone of the board that does it (or the bay, and the piece in its
+// menu), and the arrow key.
+const ZONE_OF = { left: "left", right: "right", turn: "top", down: "bottom", hold: "bottom", drop: "bottom", bay: "bay", shelf: "shelf" };
 const KEYS_OF = { left: ["left"], right: ["right"], turn: ["up"], down: ["down"], hold: ["down"], drop: ["down"] };
 // (where in each zone the finger taps, as shares of the board across and down)
 const TIP_AT = { left: [0.25, 0.47], right: [0.75, 0.47], top: [0.5, 0.11], bottom: [0.5, 0.86] };
@@ -222,23 +224,23 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     shown.fingerOn = false;
     for (const z of Object.values(zones)) z.classList.remove("on");
     for (const el of keyEls.values()) el.classList.remove("lit");
-    for (const el of shelfRoot.querySelectorAll(".aim")) el.classList.remove("aim");
+    shelfRoot.classList.remove("aim");
+    shelf.item(shelfSlot(state))?.classList.remove("aim");
     litUntil.clear();
   }
 
-  // (the shelf's slot the autopilot is going for)
-  const aimSlot = () => shelfRoot.querySelectorAll(".shelfSlot")[shelfSlot(state)] ?? null;
+  // (the bay, or the piece in its menu the autopilot is going for)
+  const aimAt = (zone) => (zone === "bay" ? shelf.button : zone === "shelf" ? shelf.item(shelfSlot(state)) : null);
 
   // A press: the finger taps (a ripple where it touched, the edge of the board lights as it does
   // for the player's own taps), or the keys light up.
   function pressed(key, now) {
     const zone = ZONE_OF[key];
     lastPress = { at: now, zone };
-    if (key === "shelf") {
-      const b = aimSlot();
-      b?.classList.remove("pop"); void b?.offsetWidth; b?.classList.add("pop");
-    }
-    if (view === "touch") {
+    // (the bay: its menu opens; the piece in it: taken, and the menu goes)
+    if (key === "bay") shelf.open();
+    if (key === "shelf") shelf.close();
+    if (view === "touch" || zone === "bay" || zone === "shelf") {
       hand.classList.remove("tap");
       void hand.offsetWidth;
       hand.classList.add("tap");
@@ -260,9 +262,11 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
   }
 
   function placeFinger(zone) {
-    // (the shelf: the middle of its slot)
-    const slot = zone === "shelf" ? aimSlot() : null;
-    const r = (slot ?? shell).getBoundingClientRect(), [fx, fy] = slot ? [0.5, 0.5] : TIP_AT[zone];
+    // (the bay, or a piece in its menu: the middle of it)
+    const slot = aimAt(zone);
+    // (the bay's menu not open yet: the bay)
+    const at = slot ?? (zone === "shelf" ? shelf.button : null);
+    const r = (at ?? shell).getBoundingClientRect(), [fx, fy] = at ? [0.5, 0.5] : TIP_AT[zone] ?? [0.5, 0.86];
     const x = r.left + r.width * fx - TIP.x * PX, y = r.top + r.height * fy - TIP.y * PX;
     // (coming into view, it appears where it's going rather than flying in from wherever it was)
     if (!shown.fingerOn) {
@@ -284,13 +288,14 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     const aim = live && t.hint.aim ? ZONE_OF[t.hint.aim] : null;
     // (the finger stays a moment after its last tap, even with the piece gone: a drop)
     const zone = aim ?? (live && now - lastPress.at < 420 ? lastPress.zone : null);
-    const fingerOn = view === "touch" && !!zone;
+    // (the bay has no keys: the finger goes to it whichever it shows)
+    const fingerOn = !!zone && (view === "touch" || zone === "bay" || zone === "shelf");
     if (fingerOn) placeFinger(zone);
     if (fingerOn !== shown.fingerOn) { finger.classList.toggle("on", fingerOn); shown.fingerOn = fingerOn; }
     hand.classList.toggle("hold", fingerOn && t.hint.held);
     for (const [z, el] of Object.entries(zones)) el.classList.toggle("on", view === "touch" && z === zone);
-    const slot = shelfRoot.hidden ? null : aimSlot();
-    slot?.classList.toggle("aim", aim === "shelf");
+    shelfRoot.classList.toggle("aim", aim === "bay" && !shelfRoot.hidden);
+    shelf.item(shelfSlot(state))?.classList.toggle("aim", aim === "shelf");
     const held = live && t.hint.held ? KEYS_OF.hold : [];
     for (const [k, el] of keyEls) el.classList.toggle("lit", live && (held.includes(k) || (litUntil.get(k) ?? 0) > now));
   }
@@ -314,8 +319,10 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
       shown.paused = state.paused;
       pauseBtn.textContent = state.paused ? "▶" : "❚❚";
       pauseBtn.setAttribute("aria-label", state.paused ? "Resume" : "Pause");
-      // (the pause menu over the board: the page's words and the X out of the way of its own)
+      // (the pause menu over the board: the page's words and the X out of the way of its own,
+      // and the bay's menu closed)
       shell.classList.toggle("tutPaused", !!state.paused);
+      if (state.paused) shelf.close();
     }
     showHints(t, now);
   }
