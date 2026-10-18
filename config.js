@@ -86,12 +86,13 @@ export const CONFIG = {
     // with no palette (anything goes) paletteNone of the time, and a palette more kinds
     // (paletteKinds: the weights for 2, 3, 4, ... up to 15 of them).
     movements: { mono: 0.2, oops: 0.2, combo: 0.3, tiles: 0.1, squares: 0.25, colour: 0.35, chorus: 0.5, natural: 4, build: 4, mess: 2, small: 1.5, big: 1.5, beds: 1.3, column: 1.2 },
-    // Now and then, at a cut (chance), a mosaic instead (src/mosaic.js): a grid cols × rows packed
-    // full of pieces on a theme (themes: how likely each; tags: the kinds of thing that can be
-    // one), drawn cellPx a cell, swept across fast for a few shots (shots), each shotMs long,
-    // zooming between zoom times as close as filling the screen, turning up to maxTurn degrees.
+    // A while after the home screen comes up (firstMs), and every so often after that (everyMs),
+    // the next cut is to a mosaic (src/mosaic.js): a grid cols × rows packed full of pieces on a
+    // theme (themes: how likely each; tags: the kinds of thing that can be one), drawn cellPx a
+    // cell, swept across fast for a few shots (shots), each shotMs long, zooming between zoom
+    // times as close as filling the screen, turning up to maxTurn degrees.
     mosaic: {
-      chance: 0.22, shots: [2, 4], shotMs: [1000, 1700], zoom: [1.15, 3.4], maxTurn: 32,
+      firstMs: [12000, 20000], everyMs: [30000, 45000], shots: [2, 4], shotMs: [1000, 1700], zoom: [1.15, 3.4], maxTurn: 32,
       cols: 56, rows: 34, cellPx: 20,
       tags: ["food", "space", "tiles", "landmark", "surreal", "weather", "bugs"],
       themes: { everything: 3, powerups: 1.5, giants: 1.2, few: 1.6, food: 1, space: 0.8, tiles: 0.8, landmark: 0.5, surreal: 0.6, weather: 0.5, bugs: 0.5 },

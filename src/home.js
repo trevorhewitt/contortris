@@ -115,11 +115,12 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     otherWarm = 26000;
     camera.reset();
     newMosaic();
+    mosaicAt = performance.now() + pickIn(H().mosaic?.firstMs ?? [12000, 20000]);
   }
 
   // The next mosaic, packed now and painted a little each frame until it's ready (`mosaic.ready`);
-  // and whether the camera is on it, and for how many more shots.
-  let mosaic = null, onMosaic = 0;
+  // whether the camera is on it, and for how many more shots; and when it's next time for one.
+  let mosaic = null, onMosaic = 0, mosaicAt = 0;
   function newMosaic() {
     const M = H().mosaic;
     if (!M || reduced) { mosaic = null; return; }
@@ -302,19 +303,24 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       const [m0, m1] = c.shotMs ?? [2600, 4200];
       this.shot = { start: now, end: now + rand(m0, m1), a, b, z0, z1, rot, cover, kind, focus };
     },
+    // (a cut to the mosaic, when it's time for one: at any cut, but not in the middle of a powerup
+    // going off, nor straight after another cut; true if it did)
+    toMosaic(now) {
+      const M = H().mosaic;
+      if (!mosaic?.ready || reduced || now < mosaicAt || shown().effect || now - this.shot.start <= (H().minShotMs ?? 600)) return false;
+      const [a, b] = M.shots ?? [2, 4];
+      onMosaic = a + Math.floor(Math.random() * (b - a + 1));
+      mosaicAt = now + pickIn(M.everyMs ?? [30000, 45000]);
+      this.mosaicShot(now);
+      return true;
+    },
     step(dt, now) {
       const s0 = this.shot;
       if (mosaic && !mosaic.ready) mosaic.ready = mosaic.step(3);
       if (!s0 || now >= s0.end) {
         // a cut: now and then to the other board, or for a few shots to a mosaic, and back
-        const M = H().mosaic;
         if (onMosaic > 0 && --onMosaic > 0) { this.mosaicShot(now); return this.stepMosaic(now); }
-        if (onMosaic === 0 && s0 && !s0.mosaic && !reduced && mosaic?.ready && Math.random() < (M?.chance ?? 0)) {
-          const [a, b] = M.shots ?? [2, 4];
-          onMosaic = a + Math.floor(Math.random() * (b - a + 1));
-          this.mosaicShot(now);
-          return this.stepMosaic(now);
-        }
+        if (s0 && !s0.mosaic && this.toMosaic(now)) return this.stepMosaic(now);
         if (s0?.mosaic) { newMosaic(); markBoardDirty(shown()); } // (back from one: a fresh one for next time)
         else if (s0) maybeSwitchBoards(now);
         this.frame(now);
@@ -326,7 +332,11 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
         const fresh = piece !== this.piece;
         this.piece = piece;
         if (b && !this.sees(b, 0.2) && (fresh || B.effect || now - s0.start > (H().minShotMs ?? 600))) {
-          if (now - s0.start > (H().minShotMs ?? 600) || B.effect || piece?.powerup) { maybeSwitchBoards(now); this.frame(now); }
+          if (now - s0.start > (H().minShotMs ?? 600) || B.effect || piece?.powerup) {
+            if (this.toMosaic(now)) return this.stepMosaic(now);
+            maybeSwitchBoards(now);
+            this.frame(now);
+          }
         }
       }
       const s = this.shot, u = Math.min(1, (now - s.start) / (s.end - s.start));
