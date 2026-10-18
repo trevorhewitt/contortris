@@ -195,7 +195,7 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
       const shape = state.allById.get(c.id);
       if (!shape) return;
       const card = document.createElement("div");
-      card.className = "tutClass omRing";
+      card.className = "tutClass";
       card.style.setProperty("--n", i);
       const cvs = document.createElement("canvas");
       const name = document.createElement("b");
