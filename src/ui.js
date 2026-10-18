@@ -242,7 +242,7 @@ export function bindUI({ state, renderer, achievements }) {
     if (name === "menu") { renderMenu(); home?.enter(); }
     if (name === "achievements") renderAchievements();
     stopDemos();
-    if (name === "howto") startHowToDemos();
+    if (name === "howto") { startHowToDemos(); $("btnHowDemo").parentElement.hidden = panelBack !== "menu"; }
     if (name === "powerups") renderPowerupHelp();
     if (name === "pause") $("btnPowerupHelp").hidden = !state.pieceSel?.powerup.shown.size;
     if (name) {
@@ -1198,6 +1198,13 @@ export function bindUI({ state, renderer, achievements }) {
   for (const b of document.querySelectorAll("[data-back]")) {
     b.addEventListener("click", () => showPanel(panelBack));
   }
+  // How to play: a tap anywhere outside it goes back too, and from the home screen it can start
+  // the tutorial (from a game's pause menu there's a game going on, so that button isn't there)
+  document.addEventListener("click", (e) => {
+    if (currentPanel !== "howto" || e.target.closest?.("#panelHowTo, button, a, input, label")) return;
+    showPanel(panelBack);
+  });
+  $("btnHowDemo").addEventListener("click", (e) => home.play("tutorial", { from: e.currentTarget }));
 
   pauseBtn.addEventListener("click", (e) => {
     e.preventDefault();

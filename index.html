@@ -522,6 +522,15 @@
       margin: 16px 0 6px;
     }
     .howto p{ margin: 0 0 8px; }
+    .howDemoRow{ display: flex; justify-content: center; margin: 4px 0 10px; }
+    /* the X in a panel's top right corner: back to where it came from */
+    .overlay .msg.panel:has(> .panelX){ position: relative; }
+    .panelX{
+      position: absolute; top: 6px; right: 6px; z-index: 2;
+      width: 34px; height: 34px; min-height: 0; padding: 0;
+      font-family: var(--font-display); font-size: 14px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
     .howto .howLead{
       font-family: var(--font-display); font-weight: 400; font-size: 12px; line-height: 1.8;
       letter-spacing: 0.04em; text-transform: uppercase; text-align: center;
@@ -1349,13 +1358,15 @@
           </div>
 
           <div class="msg panel" id="panelHowTo" hidden>
+            <button class="panelX" data-back aria-label="Close">X</button>
             <div class="big">How to play</div>
             <div class="howto">
-              <h2 class="howLead">Weird pieces fall. Fill a row to destroy it. Don't let the pile reach the top.</h2>
+              <h2 class="howLead">Pieces fall. Fill a row to destroy it. Don't let the pile reach the top.</h2>
+              <div class="howDemoRow"><button id="btnHowDemo">Play the demo</button></div>
 
               <h3>Controls</h3>
               <p><b>Touch:</b> tap the left or right side to move, tap the top to rotate, tap the bottom middle to drop faster. Hold to keep going. Double tap the bottom to drop straight down.</p>
-              <p><b>Keyboard:</b> <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> move, <kbd>↑</kbd> or <kbd>W</kbd> rotate, <kbd>↓</kbd> or <kbd>S</kbd> drop faster, <kbd>Space</kbd> pause. Press <kbd>↓</kbd> or <kbd>S</kbd> twice quickly to drop straight down.</p>
+              <p><b>Keyboard:</b> <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> move, <kbd>↑</kbd> or <kbd>W</kbd> rotate, <kbd>↓</kbd> or <kbd>S</kbd> drop faster, <kbd>Space</kbd> pause. Double press <kbd>↓</kbd> or <kbd>S</kbd> to drop straight down.</p>
 
               <h3>Powerups</h3>
               <div id="howtoClasses"></div>
