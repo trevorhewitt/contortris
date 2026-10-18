@@ -117,6 +117,19 @@
       --om-glow: 0 0 8px rgba(var(--om-orange),0.5), 0 0 20px rgba(var(--om-pink),0.36), 0 0 42px rgba(var(--om-violet),0.24);
       --om-split: -2px 0 0 rgba(var(--om-pink),0.8), 2px 0 0 rgba(var(--om-cyan),0.75), 0 -1px 0 rgba(var(--om-gold),0.45), 0 1px 0 rgba(var(--om-violet),0.5);
       --om-tear-box: -4px 0 0 rgba(var(--om-pink),0.95), -7px 0 0 rgba(var(--om-orange),0.55), 4px 0 0 rgba(var(--om-cyan),0.95), 0 3px 0 rgba(var(--om-gold),0.7), 0 -2px 0 rgba(var(--om-violet),0.6);
+      /* THE border, the same everywhere (the board, the bay, the score, the buttons, the panels):
+         a white line pulled apart into its colours a pixel at a time, warm to one side and cool to
+         the other, like an old screen's picture, and glowing soft with them. (Its colours come off
+         the line itself: no rainbow going round it.) .edge puts it on anything */
+      --edge-w: 2px;
+      --edge-line: rgba(255,255,255,0.9);
+      --edge-split: -1px 0 0 rgba(var(--om-pink),0.95), -2px 0 0 rgba(var(--om-orange),0.7), -3px 0 1px rgba(var(--om-gold),0.45), 1px 0 0 rgba(var(--om-cyan),0.9), 2px 0 0 rgba(var(--om-violet),0.6), inset 1px 0 0 rgba(var(--om-cyan),0.5), inset -1px 0 0 rgba(var(--om-pink),0.5);
+      --edge-glow: -5px 0 14px -4px rgba(var(--om-orange),0.5), 5px 0 14px -4px rgba(var(--om-violet),0.5), 0 0 18px rgba(var(--om-pink),0.14);
+      /* (buttons at rest: the same, quieter, until they're pointed at) */
+      --edge-quiet-line: rgba(255,255,255,0.42);
+      --edge-quiet: -1px 0 0 rgba(var(--om-pink),0.55), 1px 0 0 rgba(var(--om-cyan),0.5);
+      /* ...and torn a little further apart, now and then */
+      --edge-torn: -3px 1px 0 rgba(var(--om-pink),0.95), -5px 1px 0 rgba(var(--om-orange),0.7), -7px 1px 1px rgba(var(--om-gold),0.45), 3px -1px 0 rgba(var(--om-cyan),0.9), 5px -1px 0 rgba(var(--om-violet),0.6), inset 2px 0 0 rgba(var(--om-cyan),0.5), inset -2px 0 0 rgba(var(--om-pink),0.5);
   
       --text: rgba(245,245,255,0.92);
       --muted: rgba(245,245,255,0.70);
@@ -176,6 +189,14 @@
     /* the rainbow turning round a ring: whatever has one runs omSpin */
     @property --om-ang{ syntax: "<angle>"; inherits: false; initial-value: 0deg; }
     @keyframes omSpin{ to{ --om-ang: 360deg; } }
+    /* the border (--edge-*), on anything; all of them torn a little further apart at once, now
+       and then, like a screen catching a bad signal */
+    .edge{ border: var(--edge-w) solid var(--edge-line); box-shadow: var(--edge-split), var(--edge-glow); animation: edgeTear 6.7s steps(1, end) infinite; }
+    @keyframes edgeTear{
+      0%, 100%{ box-shadow: var(--edge-split), var(--edge-glow); }
+      71%{ box-shadow: var(--edge-torn), var(--edge-glow); }
+      72.5%{ box-shadow: var(--edge-split), var(--edge-glow); }
+    }
     /* a ring round a box without a border of its own: its ::before, masked to the edge */
     .omRing::before{
       content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; padding: 2px;
@@ -1209,64 +1230,77 @@
     }
     .bottomRight{ justify-content: flex-end; }
 
-    /* the bay: the shiny pieces that can be used now, and a tap opens its menu (src/shelfui.js) */
+    /* the bay: the Extra Shiny Pieces, a Shiny Piece × how many can be used now, and a tap opens
+       its menu (src/shelfui.js). Dressed like the score beside it */
     .shelf{
       box-sizing: border-box; height: 100%;
       width: clamp(118px, 34vw, 170px); min-width: 0;
       border-radius: var(--ui-radius);
-      background: rgba(0,0,0,0.55);
-      border: 2px solid rgba(255,255,255,0.10);
-      display: flex;
+      background: radial-gradient(160px 110px at 50% 30%, rgba(255,255,255,0.07), rgba(0,0,0,0.5));
+      display: flex; position: relative;
     }
+    .shelf[hidden]{ display: none; }
     .shelf .bayBtn{
-      flex: 1 1 auto; min-width: 0; min-height: 0; padding: 5px 5px 6px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+      flex: 1 1 auto; min-width: 0; min-height: 0; padding: 5px 5px 4px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
       background: transparent; border: 0; border-radius: inherit; box-shadow: none; text-shadow: none;
       color: inherit; touch-action: manipulation;
     }
     .shelf .bayBtn:active{ transform: none; }
-    .shelf .k{ text-align: center; }
-    .bayPeek{ flex: 1 1 auto; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .bayPeek .bayArt{ max-height: 100%; max-width: calc((100% - 16px) / 3); image-rendering: pixelated; filter: drop-shadow(0 0 4px rgba(255,255,255,0.45)); }
-    .bayEmpty{ display: none; font-family: var(--font-display); font-size: 7px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.4; }
-    .shelf.empty .bayPeek{ display: none; }
-    .shelf.empty .bayEmpty{ display: block; flex: 1 1 auto; align-content: center; }
-    .shelf.empty .bayBtn:disabled{ opacity: 1; cursor: default; }
-    /* (ringed like the board; something in it: it glows, and turns faster when it's open) */
-    .shelf{ border-image: conic-gradient(from var(--om-ang), var(--om-stops)) 1; animation: omSpin 7s linear infinite; }
-    .shelf.empty{ border-image: none; animation: none; }
-    .shelf:not(.empty){ box-shadow: var(--om-split), var(--om-glow); }
-    .shelf.open{ animation-duration: 1.4s; box-shadow: var(--om-tear-box), var(--om-glow), 0 0 26px rgba(255,255,255,0.3); }
-    .shelf.pop{ animation: nextPop 320ms cubic-bezier(.2, 1.5, .4, 1) both, omSpin 7s linear infinite; }
+    .shelf .bayBtn:disabled{ opacity: 1; cursor: default; }
+    .shelf .bayBtn:not(:disabled):hover{ background: rgba(255,255,255,0.06); }
+    .shelf .k{
+      font-family: var(--font-display); font-size: 8px; line-height: 1.4; color: var(--muted);
+      white-space: normal; text-transform: uppercase; text-align: center;
+    }
+    /* (the Shiny Piece, ×, how many: the number like the score's) */
+    .bayTally{
+      display: flex; align-items: center; justify-content: center; gap: 0.4em;
+      font-family: var(--font-numbers); font-size: clamp(13px, 4vw, 19px); line-height: 1.4; letter-spacing: 0.04em;
+      color: rgba(245,245,255,0.96); text-shadow: var(--rgb-split);
+    }
+    .bayIcon{
+      height: 0.8em; width: auto; flex: none; fill: currentColor;
+      filter: drop-shadow(-1px 0 0 rgba(var(--om-pink),0.95)) drop-shadow(1px 0 0 rgba(var(--om-cyan),0.9)) drop-shadow(0 0 4px rgba(var(--om-orange),0.5));
+    }
+    .bayX{ font-size: 0.7em; opacity: 0.8; }
+    .shelf.empty .bayTally{ opacity: 0.45; text-shadow: none; }
+    .shelf.empty .bayIcon{ filter: none; }
+    /* (one more: the number hops up, flashing) */
+    .bayTally.bump .bayN{ animation: bayBump 520ms cubic-bezier(.2, 1.6, .4, 1) both; }
+    .bayTally.bump .bayIcon{ animation: bayHop 520ms cubic-bezier(.2, 1.6, .4, 1) both; }
+    .bayN{ display: inline-block; }
+    @keyframes bayBump{
+      0%{ transform: translateY(0.5em) scale(0.4); opacity: 0; }
+      35%{ transform: translateY(-0.25em) scale(1.7); opacity: 1; text-shadow: var(--om-tear), 0 0 16px #fff; }
+      100%{ transform: none; }
+    }
+    @keyframes bayHop{ 30%{ transform: translateY(-0.3em) rotate(-12deg) scale(1.25); } 100%{ transform: none; } }
+    .shelf.open .bayBtn{ background: rgba(255,255,255,0.08); }
     /* its menu, over the bottom of the board: one of each, bigger, its name and class under it */
     .bayMenu{
       position: absolute; left: 50%; bottom: 10px; z-index: 8; transform: translateX(-50%);
       width: max-content; max-width: calc(100% - 16px); box-sizing: border-box; padding: 8px 8px 10px;
-      background: rgba(5,5,9,0.95); border: 2px solid #fff;
-      border-image: conic-gradient(from var(--om-ang), var(--om-stops)) 1;
-      box-shadow: 0 0 0 2px #000, var(--om-split), var(--om-glow);
-      animation: bayIn 160ms cubic-bezier(.2, 1.4, .4, 1) both, omSpin 2.4s linear infinite;
+      background: rgba(5,5,9,0.95);
+      animation: bayIn 160ms cubic-bezier(.2, 1.4, .4, 1) both;
     }
     .bayMenu[hidden]{ display: none; }
     @keyframes bayIn{ from{ transform: translateX(-50%) translateY(14px) scale(0.92); opacity: 0; } }
-    .bayTitle{ font-family: var(--font-display); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; text-align: center; margin: 0 0 8px; animation: rgbText 1.6s steps(12, end) infinite; }
+    .bayTitle{ font-family: var(--font-display); font-size: 8px; line-height: 1.4; letter-spacing: 0.04em; text-transform: uppercase; text-align: center; color: var(--muted); margin: 0 0 8px; }
     .bayItems{ display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
     .bayItem{
-      --c: #fff;
       position: relative; width: 98px; min-height: 0; padding: 7px 5px 6px;
       display: flex; flex-direction: column; align-items: center; gap: 5px;
-      background: #000; border: 2px solid var(--c); border-radius: 4px;
-      box-shadow: 0 0 10px color-mix(in srgb, var(--c) 55%, transparent), inset 0 0 10px color-mix(in srgb, var(--c) 25%, transparent);
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.22); border-radius: var(--ui-radius);
+      box-shadow: none; text-shadow: none; color: var(--text);
       touch-action: manipulation;
     }
+    .bayItem:hover, .bayItem:focus-visible{ background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.7); box-shadow: none; }
     .bayItem:active{ transform: none; }
-    .bayItem.cls-destroyer{ --c: #ff2b4a; }
-    .bayItem.cls-expander{ --c: #29ff6a; }
-    .bayItem.cls-gravity{ --c: #2f7bff; }
     .bayItem .bayArt{ max-width: 76px; max-height: 60px; image-rendering: pixelated; }
     .bayName{ font-family: var(--font-display); font-size: 7px; line-height: 1.5; letter-spacing: 0.02em; text-transform: uppercase; text-align: center; overflow-wrap: break-word; }
-    .bayClass{ font-family: var(--font-display); font-size: 6px; letter-spacing: 0.06em; text-transform: uppercase; color: color-mix(in srgb, var(--c) 75%, #fff); }
-    .bayCount{ position: absolute; right: 4px; top: 3px; font-family: var(--font-display); font-size: 7px; }
+    .bayClass{ font-family: var(--font-display); font-size: 6px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .bayLeft{ position: absolute; right: 4px; top: 3px; font-family: var(--font-display); font-size: 7px; }
     .bayItem.aim{ outline: 2px solid #fff; outline-offset: 2px; }
 
     .nextMiniShell, .statPill{
@@ -1275,10 +1309,6 @@
       padding: 6px 6px 5px;
       border-radius: var(--ui-radius);
       background: radial-gradient(160px 110px at 50% 30%, rgba(255,255,255,0.07), rgba(0,0,0,0.5));
-      border: 2px solid rgba(255,255,255,0.10);
-      border-image: conic-gradient(from var(--om-ang), var(--om-stops)) 1;
-      box-shadow: 0 0 0 2px rgba(0,0,0,0.55) inset, var(--om-split), var(--om-glow);
-      animation: omSpin 7s linear infinite reverse;
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
       position: relative; overflow: hidden;
     }
@@ -1792,9 +1822,10 @@
 
     <div class="bottomBar">
       <div class="bottomLeft">
-        <!-- the bay (src/shelfui.js), where the next piece used to be: the shiny pieces kept by -->
-        <div class="shelf" id="shelf" hidden>
-          <button type="button" class="bayBtn" aria-haspopup="menu" aria-expanded="false"><span class="k">Bay</span><span class="bayPeek"></span><span class="bayEmpty">empty</span></button>
+        <!-- the bay (src/shelfui.js), where the next piece used to be: the Extra Shiny Pieces, a
+             Shiny Piece × how many -->
+        <div class="shelf edge" id="shelf">
+          <button type="button" class="bayBtn" aria-haspopup="menu" aria-expanded="false"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 12 8" aria-hidden="true" shape-rendering="crispEdges"><path d="M0 1h3v3H0zM0 5h3v3H0zM4 5h3v3H4z"/><path class="baySpark" d="M9 0h1v5H9zM7 2h5v1H7z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span></button>
         </div>
         <canvas id="nextCanvas" hidden></canvas>
       </div>
@@ -1805,7 +1836,7 @@
       </div>
     
       <div class="bottomRight">
-        <div class="statPill">
+        <div class="statPill edge">
           <div class="k">Score</div>
           <div class="v" id="scoreText">0</div>
         </div>
@@ -1820,7 +1851,7 @@
           <div class="tutKeys" id="tutKeys" aria-hidden="true" hidden>
             <div class="tutKeyset"><i data-k="up">&#8593;</i><i data-k="left">&#8592;</i><i data-k="down">&#8595;</i><i data-k="right">&#8594;</i></div>
           </div>
-          <div class="shelf tutShelf" id="tutShelf" hidden><button type="button" class="bayBtn" aria-haspopup="menu" aria-expanded="false"><span class="k">Bay</span><span class="bayPeek"></span><span class="bayEmpty">empty</span></button></div>
+          <div class="shelf tutShelf edge" id="tutShelf" hidden><button type="button" class="bayBtn" aria-haspopup="menu" aria-expanded="false"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 12 8" aria-hidden="true" shape-rendering="crispEdges"><path d="M0 1h3v3H0zM0 5h3v3H0zM4 5h3v3H4z"/><path class="baySpark" d="M9 0h1v5H9zM7 2h5v1H7z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span></button></div>
         </div>
         <div class="tutNav">
           <button id="tutBack" class="secondary">&#9664; Back</button>

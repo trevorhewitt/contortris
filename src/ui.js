@@ -508,11 +508,11 @@ export function bindUI({ state, renderer, achievements }) {
     opening = [];
   }
 
-  // The bay, where the next piece was: the shiny pieces kept by (src/shelfui.js)
-  const shelf = bindShelf({ state, root: $("shelf") });
+  // The bay, where the next piece was: the Extra Shiny Pieces, in every mode (src/shelfui.js;
+  // it keeps up every frame: updateHUD)
+  const shelf = bindShelf({ state, root: $("shelf"), always: true });
 
   on(state, (type, d) => {
-    if (type === "start" || type === "spawn" || type === "reset" || type === "gameOver") shelf.refresh();
     switch (type) {
       case "start":
         setStarts = 0;
@@ -571,6 +571,7 @@ export function bindUI({ state, renderer, achievements }) {
   let hudScore = null;
   function updateHUD() {
     if (state.score !== hudScore) { hudScore = state.score; scoreText.textContent = String(state.score); }
+    shelf.refresh();
     if (devmode) updateDevPanel();
     pauseBtn.textContent = (state.running && !state.paused) ? "❚❚" : "▶";
 

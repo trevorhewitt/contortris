@@ -578,6 +578,8 @@ function spawnPiece(state) {
     // before it falls. (Until then the next-piece preview shows it as a plain piece: introduced,
     // below, so it's never seen before its intro.)
     const ps = state.pieceSel.powerup, isNew = introduce(state, shape);
+    // (the first of its class: its piece in the bay waits until it's down on the board. shelf.js)
+    if (isNew) state.active.firstOfClass = shape.powerup.cls;
     // (a powerup that will introduce its class, once it shows as the next piece, is only ever
     // swapped for another of its class: stillUseful. So the classes still come in their order.)
     if (shape.powerup) ps.previewed?.delete(shape.powerup.cls);

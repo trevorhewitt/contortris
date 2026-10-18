@@ -1,6 +1,6 @@
 // Run with:  node --test tests/*.test.mjs
 // The powerup shelf: one middling powerup of each class each game, which takes the falling piece's
-// place when it's used; in Classic a class's slot opens once one of the class has come.
+// place when it's used; in Classic a class's slot opens the moment the class unlocks.
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CONFIG } from "../config.js";
@@ -8,7 +8,7 @@ import { SHAPES } from "../shapes/main_shapes.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, updateGame, useShelf, on } from "../src/game.js";
-import { shelfReady } from "../src/shelf.js";
+import { shelfReady, shelfCount } from "../src/shelf.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const game = (mode, seed = 3) => {
@@ -80,4 +80,37 @@ test("Taken while nothing is falling, it comes next", () => {
 test("No shelf in Extreme or zen", () => {
   assert.equal(game("extreme").shelf, null);
   assert.equal(game("zen").shelf, null);
+});
+
+test("Classic: a class's piece comes into the bay the moment the class unlocks: its first piece down on the board, not before", () => {
+  let checked = 0;
+  for (const seed of [3, 8, 21]) {
+    const state = game("normal", seed);
+    let first = null;
+    on(state, (t, d) => { if (t === "spawn" && d.isNew && !first) first = d.shape; });
+    // (pieces dropped straight down, until the first Shiny Piece comes)
+    for (let i = 0; i < 400 && !first && !state.gameOver; i++) {
+      if (state.active) state.active.y = Math.max(state.active.y, 0);
+      for (let t = 0; t < 4000 && state.active && !first; t += 16) { state.softDropping = true; updateGame(state, 16); }
+      for (let t = 0; t < 2000 && !state.active && !first; t += 16) updateGame(state, 16);
+    }
+    assert.ok(first, `seed ${seed}: a Shiny Piece came`);
+    const cls = first.powerup.cls, slot = state.shelf.slots.find(s => s.cls === cls);
+    if (!slot) continue; // (a class the bay doesn't have: the combos)
+    // (its intro: it's still above the board)
+    assert.ok(state.active.y + state.active.shape.rotations[state.active.rotIdx].length <= 0);
+    assert.equal(shelfReady(state, slot), false, `seed ${seed}: not in the bay yet`);
+    assert.equal(shelfCount(state), 0);
+    // (it comes down onto the board)
+    state.softDropping = false;
+    let steps = 0;
+    while (state.active?.firstOfClass === cls && state.active.y + state.active.shape.rotations[state.active.rotIdx].length <= 0 && steps++ < 400) {
+      assert.equal(shelfReady(state, slot), false);
+      updateGame(state, 16);
+    }
+    assert.equal(shelfReady(state, slot), true, `seed ${seed}: in the bay once it's on the board`);
+    assert.equal(shelfCount(state), 1);
+    checked++;
+  }
+  assert.ok(checked > 0);
 });

@@ -1,75 +1,76 @@
 // ============================================================
-// THE BAY ON THE PAGE — the shiny pieces kept by, in the bottom bar where the next piece was (DOM)
+// THE BAY ON THE PAGE — the Extra Shiny Pieces, in the bottom bar where the next piece was (DOM)
 // ============================================================
-// The bay (src/shelf.js) shows only the shiny pieces in it that can be used now: one of a class
-// once that class has opened in the game (its intro comes first), and none once it's used. A tap
-// on the bay opens its menu, over the bottom of the board: each of them, bigger, with its name
-// and its class. A tap on one there uses it (the falling piece goes, and it comes down in its
-// place: game.js useShelf); a tap anywhere else, or Escape, closes it. While it's open the game
-// runs slow (CONFIG.shelf.bayTimeScale), to choose in. No keys for it.
+// The bay (src/shelf.js) says how many Extra Shiny Pieces can be used now: a Shiny Piece, ×, and
+// the number (×0 when there are none), which hops up whenever one comes (in Classic, the moment
+// each class unlocks). It's there in every mode, with some in it or none (`always`; the
+// tutorial's only on its page). A tap on it opens its menu, over the bottom of the board: each of
+// them, bigger, with its name and its class. A tap on one there uses it (the falling piece goes,
+// and it comes down in its place: game.js useShelf); a tap anywhere else, or Escape, closes it.
+// While it's open the game runs slow (CONFIG.shelf.bayTimeScale), to choose in. No keys for it.
 
 import { useShelf } from "./game.js";
-import { shelfReady } from "./shelf.js";
+import { shelfReady, shelfCount } from "./shelf.js";
 import { makeShapePreviewCanvas } from "./render.js";
 import { CLASS_INFO } from "./powerups.js";
 
-export function bindShelf({ state, root, onUse = () => {} }) {
-  const btn = root.querySelector(".bayBtn"), peek = root.querySelector(".bayPeek");
+export function bindShelf({ state, root, onUse = () => {}, always = false }) {
+  const btn = root.querySelector(".bayBtn"), num = root.querySelector(".bayN"), tally = root.querySelector(".bayTally");
   // (the menu goes over the board: the bar it's in cuts off anything that sticks out of it)
   const host = document.getElementById("boardShell") ?? root;
   const menu = document.createElement("div");
-  menu.className = "bayMenu";
+  menu.className = "bayMenu edge";
   menu.hidden = true;
   menu.setAttribute("role", "menu");
-  menu.setAttribute("aria-label", "Shiny Pieces");
-  menu.innerHTML = `<div class="bayTitle">Shiny Pieces</div><div class="bayItems"></div>`;
+  menu.setAttribute("aria-label", "Extra Shiny Pieces");
+  menu.innerHTML = `<div class="bayTitle">Extra Shiny Pieces</div><div class="bayItems"></div>`;
   const items = menu.querySelector(".bayItems");
   host.appendChild(menu);
 
-  // (each piece's picture, made once: small in the bay, big in its menu)
+  // (each piece's picture in the menu, made once)
   const arts = new Map();
-  function art(shape, big) {
-    const key = `${shape.id}:${big ? "big" : "small"}`;
-    if (!arts.has(key)) {
-      const c = makeShapePreviewCanvas(shape, big ? 10 : 5, big ? 2 : 1);
+  function art(shape) {
+    if (!arts.has(shape.id)) {
+      const c = makeShapePreviewCanvas(shape, 10, 2);
       c.removeAttribute("style");
       c.className = "bayArt";
-      arts.set(key, c);
+      arts.set(shape.id, c);
     }
-    return arts.get(key);
+    return arts.get(shape.id);
   }
   const ready = () => (state.shelf?.slots ?? []).map((slot, i) => ({ slot, i })).filter(({ slot }) => shelfReady(state, slot));
   const live = () => !!state.shelf && state.running && !state.gameOver && !state.paused;
   let shown = null, menuShown = null, count = 0, open = false;
 
+  // (every frame: src/ui.js. Nothing's touched unless something's changed)
   function refresh() {
-    root.hidden = !state.shelf;
-    const now = ready();
-    const key = now.map(({ slot, i }) => `${i}:${slot.shape.id}:${slot.left}`).join(",");
-    if (key !== shown) {
-      shown = key;
-      peek.replaceChildren(...now.map(({ slot }) => art(slot.shape, false)));
-      const what = now.map(({ slot }) => slot.shape.name).join(", ");
-      btn.setAttribute("aria-label", now.length ? `Bay: ${what}` : "Bay: empty");
-      btn.title = now.length ? "Open the bay" : "Shiny Pieces land here once they've turned up in the game";
-      // (one more than there was: the bay hops)
-      if (now.length > count && state.shelf) { root.classList.remove("pop"); void root.offsetWidth; root.classList.add("pop"); }
-      count = now.length;
-    }
-    btn.disabled = !now.length;
-    root.classList.toggle("empty", !now.length);
-    if (open && (!now.length || !live())) setOpen(false);
-    else if (open && key !== menuShown) drawMenu(now, key);
+    const now = ready(), n = shelfCount(state), on = live();
+    const pieces = now.map(({ slot, i }) => `${i}:${slot.shape.id}:${slot.left}`).join(",");
+    const key = `${!!state.shelf}|${on}|${n}|${pieces}`;
+    if (key === shown) return;
+    shown = key;
+    root.hidden = !always && !state.shelf;
+    num.textContent = String(n);
+    const what = now.map(({ slot }) => slot.shape.name).join(", ");
+    btn.setAttribute("aria-label", n ? `Extra Shiny Pieces: ${n} (${what})` : "Extra Shiny Pieces: none");
+    btn.title = n ? "Use one of your Extra Shiny Pieces" : "Extra Shiny Pieces you get land here";
+    // (one more than there was: the number hops up)
+    if (n > count) { tally.classList.remove("bump"); void tally.offsetWidth; tally.classList.add("bump"); }
+    count = n;
+    btn.disabled = !n;
+    root.classList.toggle("empty", !n);
+    if (open && (!n || !on)) setOpen(false);
+    else if (open && pieces !== menuShown) drawMenu(now, pieces);
   }
 
   // (made again only when what's in it changes: a click on one that's just been made again
   // would come to nothing)
-  function drawMenu(now = ready(), key = shown) {
-    menuShown = key;
+  function drawMenu(now = ready(), pieces = now.map(({ slot, i }) => `${i}:${slot.shape.id}:${slot.left}`).join(",")) {
+    menuShown = pieces;
     items.replaceChildren(...now.map(({ slot, i }) => {
       const b = document.createElement("button");
       b.type = "button";
-      b.className = `bayItem cls-${slot.cls}`;
+      b.className = "bayItem";
       b.setAttribute("role", "menuitem");
       b.dataset.slot = String(i);
       const name = document.createElement("span");
@@ -78,10 +79,10 @@ export function bindShelf({ state, root, onUse = () => {} }) {
       const cls = document.createElement("span");
       cls.className = "bayClass";
       cls.textContent = CLASS_INFO[slot.cls]?.name ?? slot.cls;
-      b.append(art(slot.shape, true), name, cls);
+      b.append(art(slot.shape), name, cls);
       if (slot.left > 1) {
         const n = document.createElement("span");
-        n.className = "bayCount";
+        n.className = "bayLeft";
         n.textContent = `×${slot.left}`;
         b.appendChild(n);
       }

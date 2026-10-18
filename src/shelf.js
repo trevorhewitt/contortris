@@ -1,15 +1,16 @@
 // ============================================================
 // THE POWERUP SHELF — powerups kept by, to use when you choose (no DOM)
 // ============================================================
-// In place of the next piece, the player has a bay of shiny pieces (CONFIG.shelf): one middling
-// one of each of the three classes (Dissolverz, Gravitizerz, Expanderz; never a combo) in every
-// game, picked from a short list, each to use once. The bay on the page (src/shelfui.js) shows
-// only the ones that can be used now, and a tap on it opens its menu, to pick one: the falling
-// piece goes and that one falls in its place (game.js useShelf). In Classic a class's piece only
-// turns up in the bay once one of that class has come in the game (its intro first), so nothing in
-// it is a surprise, and using it never brings anything in sooner (the combos come once two classes
-// have been met: a piece from the bay is never the one that meets one). (Later the bay will be the
-// player's own, bought, kept from game to game: `left` is how many of each are in it.)
+// In place of the next piece, the player has a bay of Extra Shiny Pieces (CONFIG.shelf): one
+// middling one of each of the three classes (Dissolverz, Gravitizerz, Expanderz; never a combo) in
+// every game, picked from a short list, each to use once. The bay on the page (src/shelfui.js)
+// shows how many can be used now, and a tap on it opens its menu, to pick one: the falling piece
+// goes and that one falls in its place (game.js useShelf). In Classic a class's piece only comes
+// into the bay once the class has been unlocked: the first of its class is down on the board (its
+// intro first), so nothing in it is a surprise, and using it never brings anything in sooner (the
+// combos come once two classes have been met: a piece from the bay is never the one that meets
+// one). (Later the bay will be the player's own, bought, kept from game to game: `left` is how many
+// of each are in it.)
 
 import { CONFIG } from "../config.js";
 
@@ -34,11 +35,26 @@ export function createShelf(state, { demo = false } = {}) {
 // The bay's classes: one slot each, whatever CONFIG.shelf.classes says beyond these.
 const BAY_CLASSES = ["destroyer", "expander", "gravity"];
 
-// Can this slot be used now? (It has one left, and one of its class has come in this game.)
+// Can this slot be used now? (It has one left, and its class has been unlocked in this game.)
 export function shelfReady(state, slot) {
   if (!slot || slot.left <= 0 || !state.running || state.gameOver) return false;
   if (CONFIG.modes[state.mode]?.everything || state.tutorial) return true;
-  return !!state.pieceSel?.powerup?.shownClasses?.has(slot.cls);
+  return unlocked(state, slot.cls);
+}
+
+// How many Extra Shiny Pieces can be used now (0 in a mode without a bay).
+export function shelfCount(state) {
+  return (state.shelf?.slots ?? []).reduce((n, slot) => n + (shelfReady(state, slot) ? slot.left : 0), 0);
+}
+
+// Has this class been unlocked? One of its class has come (game.js introduce), and isn't still
+// on its way in: the first of a class (game.js spawnPiece marks it) starts out above the board,
+// with its intro showing, and the class's piece comes into the bay the moment it's down on the
+// board (or it's landed, dropped straight down).
+function unlocked(state, cls) {
+  if (!state.pieceSel?.powerup?.shownClasses?.has(cls)) return false;
+  const a = state.active;
+  return !(a && a.firstOfClass === cls && a.y + (a.shape.rotations[a.rotIdx]?.length ?? 0) <= 0);
 }
 
 // (game.js spawnPiece) The powerup taken off the shelf while nothing was falling, if there is

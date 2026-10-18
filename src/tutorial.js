@@ -214,8 +214,8 @@ export const PAGES = [
     // hole in the heap, all but its edges)
     id: "shelf", powers: true, shelf: "destroyer",
     text: {
-      touch: "Every game you get one Shiny Piece of each class in your bay: tap the bay, pick one, and it takes the falling piece's place.",
-      keys: "Every game you get one Shiny Piece of each class in your bay: click the bay, pick one, and it takes the falling piece's place.",
+      touch: "Every game you get an Extra Shiny Piece of each class to keep for when you need it: tap Extra Shiny Pieces, pick one, and it takes the falling piece's place.",
+      keys: "Every game you get an Extra Shiny Piece of each class to keep for when you need it: click Extra Shiny Pieces, pick one, and it takes the falling piece's place.",
     },
     dropMs: 420,
     board: [
