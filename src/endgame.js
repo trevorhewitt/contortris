@@ -4,10 +4,11 @@
 // A hidden part of the experience, never announced. When it's clear the player has given up
 // (the pile has sat two thirds up the board for a good while without a single row being
 // destroyed, and sooner if they've stopped steering the pieces), the game quietly stops
-// helping and goes for the finale: bigger and worse pieces, fewer powerups, and the fall gets
-// faster with every piece (game.js). Digging back down to CONFIG.endGame.exitAtRows gets you
-// out, which isn't easy. Games then end with a full board and a big, silly last piece, rather
-// than fizzling out with small pieces on a central tower.
+// helping and goes for the finale: worse pieces, fewer powerups, and the fall gets faster with
+// every piece (game.js). Digging back down to CONFIG.endGame.exitAtRows gets you out, which
+// isn't easy. Games then end with a full board, rather than fizzling out with small pieces on a
+// central tower: while they're still playing, by the pace (no giants: endGameLevelWeights); once
+// they've stopped steering altogether, with a big, silly last piece.
 //
 // state.devEndGame: "auto" (the rule above), "on" (always) or "off" (never) — dev mode.
 
@@ -102,7 +103,9 @@ function enter(eg) {
 }
 
 // Level weights while the end game is on: CONFIG.endGame.levelWeights, with more and more of
-// the weight moving onto the giants (4 and 5) the longer it lasts.
+// the weight moving onto the giants (4 and 5) the longer it lasts. But the giants only once
+// they've stopped steering: while they're still playing there are none (their share goes to
+// the others), so it's their play that ends it, faster and faster, and never a giant landing.
 export function endGameLevelWeights(state, modeHasGiants) {
   const cfg = CONFIG.endGame ?? {};
   const base = cfg.levelWeights ?? { 2: 0.2, 3: 0.4, 4: 0.2, 5: 0.2 };
@@ -110,7 +113,7 @@ export function endGameLevelWeights(state, modeHasGiants) {
   const shift = Math.min(cfg.giantsRampMax ?? 0.35, (cfg.giantsRamp ?? 0) * n);
   const w = {};
   for (let k = 0; k <= 5; k++) w[k] = Math.max(0, base[k] ?? 0);
-  if (!modeHasGiants) { w[4] = 0; w[5] = 0; return w; }
+  if (!modeHasGiants || !stoppedSteering(state)) { w[4] = 0; w[5] = 0; return w; }
   const small = w[0] + w[1] + w[2] + w[3];
   if (small > 0 && shift > 0) {
     const take = Math.min(small, shift);
@@ -119,6 +122,14 @@ export function endGameLevelWeights(state, modeHasGiants) {
     w[5] += take / 2;
   }
   return w;
+}
+
+// Have they stopped steering the pieces? (CONFIG.endGame.idleOf: so many of the last few dropped
+// where they appeared, not moved or turned at all)
+function stoppedSteering(state) {
+  const eg = state.pieceSel?.endGame;
+  const [needIdle] = CONFIG.endGame?.idleOf ?? [3, 5];
+  return !!eg && eg.recent.filter(steered => !steered).length >= needIdle;
 }
 
 // How far off-centre pieces may spawn (columns either way).

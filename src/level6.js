@@ -261,11 +261,28 @@ export function nextGroupPiece(state) {
   const l6 = state.pieceSel.level6;
   if (!l6.queue.length) return null;
   const shape = l6.queue.shift();
-  if (!l6.queue.length) {
-    l6.lastEnd = state.pieceSel.dropIndex;
-    l6.group = null;
-  }
+  if (!l6.queue.length) endGroup(state);
   return shape;
+}
+
+// Can the group's next piece come now? Not while the stack's got too high for it to come in with
+// room to spare (`fits(shape, rows)`: could it go somewhere with that many rows clear above it?
+// CONFIG.assist.level6.waitHeadroom): then it waits, and ordinary pieces come meanwhile, until
+// there's room again; after `waitPieces` of waiting, the set gives up. So a set never piles its
+// big pieces onto a stack that's near the top.
+export function groupPieceReady(state, fits) {
+  const l6 = state.pieceSel.level6, cfg = level6Cfg(state);
+  if (!l6.queue.length) return false;
+  if (fits(l6.queue[0], cfg.waitHeadroom ?? 0)) { l6.held = 0; return true; }
+  if ((l6.held = (l6.held ?? 0) + 1) > (cfg.waitPieces ?? 6)) { l6.queue = []; endGroup(state); }
+  return false;
+}
+
+function endGroup(state) {
+  const l6 = state.pieceSel.level6;
+  l6.lastEnd = state.pieceSel.dropIndex;
+  l6.group = null;
+  l6.held = 0;
 }
 
 // Can this set come now? Not banished; and one with powerups in it only where there are
@@ -303,7 +320,7 @@ function afterClassMet(state) {
 
 // Maybe start a group on this piece: returns its first piece, or null.
 export function maybeStartGroup(state) {
-  if (!state.groups?.length || !level6Open(state) || !afterClassMet(state)) return null;
+  if (!state.groups?.length || !level6Open(state) || !afterClassMet(state) || groupUnderWay(state)) return null;
   const sel = state.pieceSel, l6 = sel.level6, cfg = level6Cfg(state);
   if (sel.lastWasHard) return null; // never straight after a giant
   if (sel.calmUntil != null && sel.dropIndex < sel.calmUntil) return null; // (God mode: a calm spell)

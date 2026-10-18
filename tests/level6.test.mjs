@@ -366,6 +366,57 @@ test("end game: big pieces faster and faster, and it can be escaped (all unannou
   assert.ok(state.dropMs >= CONFIG.timing.minDropMs);
 });
 
+test("end game while they're still steering: faster and worse, but never a giant", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(21), groups: GROUPS });
+  startRun(state, "normal");
+  state.devEndGame = "on";
+  setStack(state, 17); dropSteered(state);
+  assert.equal(endGameOn(state), true);
+  const served = [];
+  on(state, (t, d) => { if (t === "spawn") served.push(d.shape); });
+  for (let i = 0; i < 30; i++) { setStack(state, 17); dropSteered(state); }
+  assert.equal(served.filter(s => !s.powerup && s.difficulty >= 4).length, 0, served.map(s => s.id).join());
+});
+
+test("late in a game, giants only with the stack low, and a set under way waits while it's high (then gives up)", () => {
+  const D = CONFIG.difficulty.normal, end = D.start + D.length, cfg = CONFIG.assist.level6;
+  const giantsWith = (rows) => {
+    let n = 0;
+    for (const seed of [41, 42, 43]) {
+      const state = createGameState(shapes, powerups, { rng: makeRng(seed), groups: GROUPS });
+      startRun(state, "normal");
+      state.devEndGame = "off";
+      for (let i = 0; i < 150; i++) {
+        setStack(state, rows);
+        state.pieceSel.dropIndex = end;
+        const s = selectPiece(state);
+        if (!s.powerup && (s.difficulty ?? 1) >= 4) n++;
+      }
+    }
+    return n;
+  };
+  assert.equal(giantsWith(13), 0, "none on a stack 13 rows tall");
+  assert.ok(giantsWith(4) > 0, "but they still come on a low one");
+
+  const state = createGameState(shapes, powerups, { rng: makeRng(44), groups: GROUPS });
+  startRun(state, "normal");
+  state.devLevel6 = "on";
+  state.devEndGame = "off";
+  startGroup(state, normaliseGroups(GROUPS, shapes).find(g => g.id === "townhouses"));
+  const left = state.pieceSel.level6.queue.length;
+  assert.ok(left > 0);
+  for (let i = 0; i < cfg.waitPieces; i++) {
+    setStack(state, 17);
+    state.pieceSel.dropIndex = end;
+    const s = selectPiece(state);
+    assert.ok((s.difficulty ?? 1) < 4 || s.powerup, `${s.id} on a stack 17 rows tall`);
+    assert.equal(state.pieceSel.level6.queue.length, left, "the set waits");
+  }
+  setStack(state, 17);
+  selectPiece(state);
+  assert.equal(state.pieceSel.level6.queue.length, 0, "and in the end gives up");
+});
+
 test("end game: a single tall giant on its end doesn't count as a full board", () => {
   const state = createGameState(shapes, powerups, { rng: makeRng(4) });
   const R = state.board.length;

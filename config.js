@@ -152,10 +152,10 @@ export const CONFIG = {
   },
 
   // End game: a hidden part of the experience (never announced). Once it's clear the player has
-  // given up, the game quietly stops helping and goes for a frantic finale: bigger and worse
-  // pieces, fewer powerups, and the fall gets faster with every piece. Digging back down to
-  // `exitAtRows` gets you out (not easy). Games then end with a full board and, usually, a big
-  // piece, instead of a long slow fizzle on a central tower. All modes.
+  // given up, the game quietly stops helping and goes for a frantic finale: worse pieces, fewer
+  // powerups, and the fall gets faster with every piece. Digging back down to `exitAtRows` gets
+  // you out (not easy). Games then end with a full board (and, if they'd stopped steering
+  // altogether, a big piece), instead of a long slow fizzle on a central tower. All modes.
   endGame: {
     enabled: true,
     // "Given up" = the pile has sat this high...
@@ -170,7 +170,8 @@ export const CONFIG = {
     idleOf: [3, 4],
     graceAfterGroup: 8, // a level 6 group, and this many pieces after it, don't count
     exitAtRows: 10,     // it stops if the pile is dug back down to this many rows or fewer
-    // what comes meanwhile (Easy has no giants: their share goes to the others)...
+    // what comes meanwhile (no giants while they're still steering, nor in a mode without
+    // them: their share goes to the others, so it's the pace that ends it)...
     levelWeights: { 0: 0, 1: 0.05, 2: 0.1, 3: 0.25, 4: 0.3, 5: 0.3 },
     giantsRamp: 0.05,   // ...and every piece moves this much more of the weight onto the giants
     giantsRampMax: 0.3,
@@ -649,6 +650,8 @@ export const CONFIG = {
 
         // If danger is above this, hard is disallowed entirely (same idea as old level4MaxDanger).
         hardMaxDanger: 0.32,
+        // ...and a giant only comes if it could go somewhere with this many rows clear above it.
+        headroom: 5,
 
         // Level 5 gating: level 5 is suppressed as stack gets higher.
         // Below level5FullAllowedDanger: 5 is fully eligible.
@@ -719,6 +722,11 @@ export const CONFIG = {
       // (Three townhouses in a row need about 15 rows.)
       roomFactor: 1.25,
       headroom: 3,
+      // A set under way: its next piece waits while it couldn't come in with `waitHeadroom` rows
+      // clear above it (the stack's got too high), and ordinary pieces come meanwhile; after
+      // `waitPieces` of that, the set gives up. So a set never piles onto a stack near the top.
+      waitHeadroom: 5,
+      waitPieces: 8,
       // No set comes round again until every other one has had its turn this game, and the last
       // `rememberRecent` sets served (also in the previous game, in this browser), or if more
       // the last restShare of all the others, wait if any other set can go: so once they've all

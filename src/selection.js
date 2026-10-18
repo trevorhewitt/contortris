@@ -14,7 +14,7 @@
 import { CONFIG } from "../config.js";
 import { clamp01, lerp, sampleByWeight } from "./util.js";
 import { analyseBoard, resolvePowerupArea, computeEffect, phantomLandingY, isPhantomPowerup } from "./powerups.js";
-import { LEVEL6, initLevel6, nextGroupPiece, maybeStartGroup, groupUnderWay } from "./level6.js";
+import { LEVEL6, initLevel6, nextGroupPiece, groupPieceReady, maybeStartGroup, groupUnderWay } from "./level6.js";
 import { initEndGame, endGameOn, endGameLevelWeights } from "./endgame.js";
 import { isGodMode, godConfig, gravityColumns } from "./godmode.js";
 import { pickThread, threadWeight } from "./threads.js";
@@ -395,8 +395,9 @@ function pickNextPiece(state) {
     return rescue;
   }
 
-  // A level 6 group that has started carries on, piece after piece, whatever else is going on.
-  const grouped = nextGroupPiece(state);
+  // A level 6 group that has started carries on, piece after piece, whatever else is going on
+  // (unless the stack's got too high for its next piece, which then waits: src/level6.js)
+  const grouped = groupPieceReady(state, (s, rows) => fitsNow(state, s, rows)) ? nextGroupPiece(state) : null;
   if (grouped) {
     commitSelectedShape(sel, grouped);
     sel.fromSet = true;
@@ -404,11 +405,16 @@ function pickNextPiece(state) {
     return grouped;
   }
   const calm = inCalm(state);
+  // (the giants only with the stack low enough, the lower the harder it's got: never near the
+  // top, src/difficulty.js; and only one that could go somewhere with room to spare above it)
+  const hard = hardCfg(state.mode);
+  const giantRoom = danger01 <= eased(state, "hardMaxDanger", hard.hardMaxDanger ?? 0.32);
+  const giantFits = (s) => fitsNow(state, s, hard.headroom ?? 2);
 
-  // The first giant: always somewhere in CONFIG...hard.firstGiantBetween (unless it would
-  // land on an already dangerous stack, then as soon as things calm down a bit).
-  if (sel.giantDueAt != null && !sel.hadGiant && sel.dropIndex >= sel.giantDueAt && !sel.lastWasHard && danger01 < 0.55 && !calm) {
-    const giants = state.shapes.filter(s => (s.difficulty ?? 1) === 5 && (s.frequency ?? 1) > 0 && fitsNow(state, s));
+  // The first giant: always somewhere in CONFIG...hard.firstGiantBetween (unless the stack's
+  // too high for one, then as soon as it's back down).
+  if (sel.giantDueAt != null && !sel.hadGiant && sel.dropIndex >= sel.giantDueAt && !sel.lastWasHard && giantRoom && !calm) {
+    const giants = state.shapes.filter(s => (s.difficulty ?? 1) === 5 && (s.frequency ?? 1) > 0 && giantFits(s));
     if (giants.length) {
       // (one that sits well on the board as it is: the first one's a laugh, not a disaster)
       const g = pickFitting(state, giants, s => (s.frequency ?? 1) * varietyMultiplier(sel, s));
@@ -419,7 +425,8 @@ function pickNextPiece(state) {
   }
 
   let linked = tryLinkedNextShape(state, prevShape, idToShape, DEBUG_LINK);
-  if (calm && linked && !linked.powerup && (linked.difficulty ?? 1) >= 4) linked = null; // (not in a calm spell)
+  // (no giant in a calm spell, nor on a stack too high for one)
+  if (linked && !linked.powerup && (linked.difficulty ?? 1) >= 4 && (calm || !giantRoom || !giantFits(linked))) linked = null;
 
   if (linked) {
     commitSelectedShape(sel, linked);
@@ -505,12 +512,9 @@ function pickNextPiece(state) {
   for (const k of LEVELS) levelW[k] = lerp(levelW[k] ?? 0, dangerTarget[k] ?? 0, danger);
 
   // 3) Hard scheduler (4/5 share the same urge/cooldown).
-  const hard = hardCfg(state.mode);
-
   const pastMinHard = sel.dropIndex > (hard.minDropIndex ?? 5);
-  // (the harder it's got, the higher the stack can be for one: and one only ever comes if it fits,
-  // below)
-  const dangerAllowsHard = danger01 <= eased(state, "hardMaxDanger", hard.hardMaxDanger ?? 0.32);
+  // (and one only ever comes if it fits with room to spare, below)
+  const dangerAllowsHard = giantRoom;
   const cooldownAllowsHard = (sel.cooldown.hard ?? 0) <= 0 && !sel.lastWasHard;
 
   const modeHasGiants = CONFIG.modes[state.mode]?.giants !== false;
@@ -588,7 +592,7 @@ function pickNextPiece(state) {
   // Hard, never unfair: with the stack up, only what can still go somewhere with room above it
   // (a giant that couldn't fit would just end the game)
   if (chosenLevel >= 4 || danger01 > 0.3) {
-    const fit = candidates.filter(s => fitsNow(state, s));
+    const fit = candidates.filter(s => (chosenLevel >= 4 ? giantFits(s) : fitsNow(state, s)));
     if (fit.length) candidates = fit;
     else if (chosenLevel >= 4) candidates = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) <= 2 && unspent(s) && fitsNow(state, s));
   }
