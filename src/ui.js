@@ -23,6 +23,8 @@ import { bindShelf } from "./shelfui.js";
 import { difficultyStatus, classWeight } from "./difficulty.js";
 import { classOrder } from "./selection.js";
 import { bindTutorial } from "./tutorialui.js";
+import { bindOptions, favouritePool } from "./optionsui.js";
+import { getOption, setOption, applyOptions, favourite } from "./settings.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -209,14 +211,17 @@ export function bindUI({ state, renderer, achievements }) {
     intro: $("panelIntro"),
     powerups: $("panelPowerups"),
     devtools: $("panelDevTools"),
+    options: $("panelOptions"),
   };
   // The developer tools (src/devtools.js): on in this browser, or for this visit (?devmode=1)
   const devUrl = new URLSearchParams(location.search).get("devmode") === "1";
   let devmode = devUrl || devToolsOn();
-  const SKIP_KEY = "eztrix.skipIntros";
-  const skipIntros = () => { try { return sessionStorage.getItem(SKIP_KEY) === "1"; } catch { return false; } };
+  // (the options: src/settings.js, and their page, src/optionsui.js)
+  applyOptions();
+  const options = bindOptions({ state });
+  const skipIntros = () => !!getOption("skipIntros");
   const setSkipIntros = (on) => {
-    try { sessionStorage.setItem(SKIP_KEY, on ? "1" : "0"); } catch { /* ignore */ }
+    setOption("skipIntros", on);
     for (const b of document.querySelectorAll(".skipIntros")) b.checked = on;
   };
 
@@ -245,6 +250,7 @@ export function bindUI({ state, renderer, achievements }) {
     stopDemos();
     if (name === "howto") { startHowToDemos(); $("btnHowDemo").parentElement.hidden = panelBack !== "menu"; }
     if (name === "powerups") renderPowerupHelp();
+    if (name === "options") options.refresh();
     if (name === "pause") $("btnPowerupHelp").hidden = !state.pieceSel?.powerup.shown.size;
     if (name) {
       const scroller = panels[name];
@@ -329,8 +335,7 @@ export function bindUI({ state, renderer, achievements }) {
   /* ---------- game flow ---------- */
 
   // (turbo zen fills the window unless the player has switched back to the usual board, in the
-  // pause menu, since the page was loaded)
-  let turboWhole = true;
+  // pause menu or the options)
   function startGame(mode = lastMode) {
     markInput(state, "touch");
     lastMode = CONFIG.modes[mode] ? mode : CONFIG.defaultMode;
@@ -338,7 +343,7 @@ export function bindUI({ state, renderer, achievements }) {
     newBest = false;
     state.backdrop = false;
     hideBoard(false);
-    setWholeWindow(lastMode === "turbo" && turboWhole);
+    setWholeWindow(lastMode === "turbo" && !!getOption("turboWhole"));
     startRun(state, lastMode);
     state.speed = savedSpeed(lastMode);
     showPanel(null);
@@ -495,6 +500,8 @@ export function bindUI({ state, renderer, achievements }) {
     switch (type) {
       case "start":
         setStarts = 0;
+        // (the player's favourite piece comes a little more often: src/settings.js)
+        if (state.pieceSel) state.pieceSel.favourite = favourite(favouritePool(state.shapes));
         if (agCfg) {
           state.pieceSel.openingMemory = new Set(store.getJSON(OPENINGS_KEY, []).flat());
           opening = [];
@@ -1034,6 +1041,8 @@ export function bindUI({ state, renderer, achievements }) {
   $("btnDevTools").addEventListener("click", () => openDevTools());
   $("btnHowTo").addEventListener("click", () => { panelBack = "menu"; showPanel("howto"); });
   $("btnAchievements").addEventListener("click", () => { panelBack = "menu"; showPanel("achievements"); });
+  $("btnOptions").addEventListener("click", () => { panelBack = "menu"; showPanel("options"); });
+  $("btnPauseOptions").addEventListener("click", () => { panelBack = "pause"; showPanel("options"); });
   $("btnResume").addEventListener("click", () => resumeGame());
   $("btnQuit").addEventListener("click", () => goToMenu());
   $("btnPauseHowTo").addEventListener("click", () => { panelBack = "pause"; showPanel("howto"); });
@@ -1229,7 +1238,7 @@ export function bindUI({ state, renderer, achievements }) {
   });
   // (a fresh run on the new board: the old one's pieces don't fit it)
   $("btnWholeWindow").addEventListener("click", () => {
-    turboWhole = !wholeWindow;
+    setOption("turboWhole", !wholeWindow);
     startGame("turbo");
   });
 
@@ -1268,7 +1277,7 @@ export function bindUI({ state, renderer, achievements }) {
     }
 
     if (e.code === "Escape") {
-      if (currentPanel === "howto" || currentPanel === "achievements" || currentPanel === "powerups" || currentPanel === "devtools") showPanel(panelBack);
+      if (currentPanel === "howto" || currentPanel === "achievements" || currentPanel === "powerups" || currentPanel === "devtools" || currentPanel === "options") showPanel(panelBack);
       else if (currentPanel === "intro") resumeGame();
       else togglePause();
       return;

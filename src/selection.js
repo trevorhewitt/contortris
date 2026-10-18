@@ -263,6 +263,9 @@ export function varietyMultiplier(sel, shape) {
   // (developer mode: the newest things first, and anything never seen in this browser more often)
   mult *= noveltyMultiplier(sel, shape);
 
+  // the player's favourite piece (sel.favourite, from the options: src/settings.js)
+  if (sel.favourite && sel.favourite === shape.id) mult *= v.favourite ?? 1;
+
   // pieces that opened recent games (state.openingMemory, filled in by the UI)
   const ag = v.acrossGames;
   if (ag && sel.openingMemory?.has(shape.id) && sel.dropIndex <= (ag.drops ?? 20)) mult *= ag.penalty ?? 1;

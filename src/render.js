@@ -2,6 +2,7 @@
 // RENDERER — draws the board, pieces, powerup highlights and effects
 // ============================================================
 
+import { calmFx } from "./settings.js";
 import { CONFIG } from "../config.js";
 import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour, rgbHue } from "./util.js";
 import { getShapePaint } from "./shapes.js";
@@ -609,7 +610,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     const q = state.fx?.quake;
     if (!q || q.trauma <= 0.0001) return;
 
-    const trauma2 = q.trauma * q.trauma;
+    const trauma2 = q.trauma * q.trauma * (calmFx() ? 0.25 : 1); // (toned down: gentler)
     const maxOffset = CONFIG.fx.quake.maxOffsetPx * trauma2;
     const maxRot = (CONFIG.fx.quake.rotationalDegrees * Math.PI / 180) * trauma2;
 
@@ -1064,7 +1065,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   function drawFlash(state) {
     const f = state.fx.flash;
     if (!f.active) return;
-    const a = 0.85 * (1 - clamp01(f.elapsedMs / f.durationMs));
+    const a = (calmFx() ? 0.3 : 0.85) * (1 - clamp01(f.elapsedMs / f.durationMs));
     bctx.fillStyle = `rgba(255,255,255,${a.toFixed(3)})`;
     for (const { x, y } of f.cells) bctx.fillRect(x * cell, y * cell, cell, cell);
   }

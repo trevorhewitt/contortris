@@ -23,6 +23,7 @@ import { CONFIG } from "../config.js";
 import { startRun, resetGame, updateGame, getGhostDropY, collides, createGameState, markBoardDirty } from "./game.js";
 import { resolvePowerupArea } from "./powerups.js";
 import { buildMosaic, paintMosaic } from "./mosaic.js";
+import { calmFx } from "./settings.js";
 const H = () => CONFIG.home ?? {};
 const rand = (a, b) => a + Math.random() * (b - a);
 const pickIn = ([a, b]) => rand(a, b);
@@ -50,7 +51,8 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   const bg = $("homeBg"), fxc = bg, burstc = $("homeBurst"), dark = $("homeDark"), idleBtn = $("idlePlay"), logo = $("homeLogo");
   const bgx = bg.getContext("2d"), fx = bgx, bx = burstc.getContext("2d");
   const body = document.body;
-  const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+  // (toned down, by the device or the options: src/settings.js)
+  let reduced = calmFx();
 
   let phase = "off"; // off | home | idle | starting
   let idleAt = 0, warmLeft = 0, resizeTimer = null, last = performance.now(), guardUntil = 0;
@@ -305,7 +307,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
         // a cut: now and then to the other board, or for a few shots to a mosaic, and back
         const M = H().mosaic;
         if (onMosaic > 0 && --onMosaic > 0) { this.mosaicShot(now); return this.stepMosaic(now); }
-        if (onMosaic === 0 && s0 && !s0.mosaic && mosaic?.ready && Math.random() < (M?.chance ?? 0)) {
+        if (onMosaic === 0 && s0 && !s0.mosaic && !reduced && mosaic?.ready && Math.random() < (M?.chance ?? 0)) {
           const [a, b] = M.shots ?? [2, 4];
           onMosaic = a + Math.floor(Math.random() * (b - a + 1));
           this.mosaicShot(now);
@@ -716,6 +718,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   function frame(now) {
     const dt = Math.min(50, now - last);
     last = now;
+    reduced = calmFx();
     if (phase === "home" || phase === "fading") {
       // (it comes on with something on the board already: a fast start, a little each frame)
       for (let i = 0; warmLeft > 0 && i < 8; i++) { updateGame(state, 50); warmLeft -= 50; }

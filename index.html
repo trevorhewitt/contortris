@@ -558,6 +558,31 @@
       margin: 16px 0 6px;
     }
     .howto p{ margin: 0 0 8px; }
+    /* the options */
+    .optionsPanel .big{ margin-bottom: 10px; }
+    .optList{ display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin: 0 auto 12px; width: fit-content; }
+    .favRow{ display: flex; align-items: center; justify-content: center; gap: 12px; margin: 0 0 10px; }
+    .favWhat{ text-align: left; }
+    .favNow{ display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 10px; min-width: 96px; }
+    .favNow canvas{ image-rendering: pixelated; max-width: 84px; max-height: 64px; }
+    .favName{ font-size: 8px; max-width: 110px; white-space: normal; line-height: 1.4; }
+    .favGrid{
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px;
+      max-height: 46vh; overflow-y: auto; padding: 6px; margin: 0 0 10px;
+      background: rgba(0,0,0,0.6); box-shadow: 0 0 0 2px rgba(255,255,255,0.12);
+    }
+    .favGrid[hidden]{ display: none; }
+    .favGrid button{ min-height: 0; padding: 4px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #000; box-shadow: 0 0 0 1px rgba(255,255,255,0.18); }
+    .favGrid button.on{ box-shadow: 0 0 0 2px #fff, -2px 0 0 2px rgba(255,31,75,0.8), 2px 0 0 2px rgba(47,107,255,0.8); }
+    .favGrid canvas{ image-rendering: pixelated; max-width: 100%; max-height: 100%; }
+    /* toned down (an option, or the device asks for less motion): no scan lines, no glitching or
+       rolling light, the logo still */
+    body.calmFx::after{ display: none; }
+    body.calmFx *, body.calmFx *::before, body.calmFx *::after{ animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+    /* high contrast: the pieces bolder and brighter, the words pure white */
+    body.highContrast canvas{ filter: contrast(1.45) saturate(1.3) brightness(1.06); }
+    body.highContrast{ --text: #ffffff; }
+    body.highContrast .small, body.highContrast .modeTag, body.highContrast .tutModeSay{ opacity: 1; color: #fff; }
     .howDemoRow{ display: flex; justify-content: center; margin: 4px 0 10px; }
     /* the X in a panel's top right corner: back to where it came from */
     .overlay .msg.panel:has(> .panelX){ position: relative; }
@@ -1484,8 +1509,8 @@
             <div class="menuRow homeRow">
               <button id="btnHowTo" class="secondary small">How to play</button>
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
+              <button id="btnOptions" class="secondary small">Options</button>
             </div>
-            <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
             <div class="menuRow homeRow" id="devRow" hidden><button id="btnDevTools" class="secondary small">Developer tools</button></div>
             <div class="small" id="gameVersion">version 202610180037</div>
           </div>
@@ -1493,6 +1518,24 @@
           <div class="msg panel devToolsPanel" id="panelDevTools" hidden>
             <div class="big">Developer tools</div>
             <div id="devToolsBody"></div>
+            <div class="menuBtns"><button class="secondary" data-back>Back</button></div>
+          </div>
+
+          <!-- the options (src/optionsui.js, kept by src/settings.js) -->
+          <div class="msg panel optionsPanel" id="panelOptions" hidden>
+            <button class="panelX" data-back aria-label="Close">X</button>
+            <div class="big">Options</div>
+            <div class="optList">
+              <label class="skipBox"><input type="checkbox" class="skipIntros" data-opt="skipIntros"> Skip the powerup intro screens</label>
+              <label class="skipBox"><input type="checkbox" data-opt="calmFx"> Tone down the animations</label>
+              <label class="skipBox"><input type="checkbox" data-opt="contrast"> High contrast</label>
+              <label class="skipBox"><input type="checkbox" data-opt="turboWhole"> Turbo zen fills the screen</label>
+            </div>
+            <div class="favRow">
+              <div class="favWhat"><div class="k">Favourite piece</div><div class="small">It turns up a little more often.</div></div>
+              <button class="favNow secondary" id="btnFavPick" aria-label="Choose your favourite piece"><span id="favArt"></span><span class="favName" id="favName"></span></button>
+            </div>
+            <div class="favGrid" id="favGrid" hidden></div>
             <div class="menuBtns"><button class="secondary" data-back>Back</button></div>
           </div>
 
@@ -1540,6 +1583,7 @@
               <button id="btnSpeed" class="secondary" hidden>Speed: 1×</button>
               <button id="btnPowerupHelp" class="secondary" hidden>Powerups</button>
               <button id="btnPauseHowTo" class="secondary">How to play</button>
+              <button id="btnPauseOptions" class="secondary">Options</button>
               <button id="btnQuit" class="secondary">Quit to menu</button>
             </div>
             <div class="devTools" id="devTools" hidden>

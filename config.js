@@ -631,6 +631,8 @@ export const CONFIG = {
       // Hard rule: the same piece never comes again within this many pieces (linked
       // "back to back" pieces like the fish are the only exception). 0 = off.
       noRepeatWithin: 5,
+      // The player's favourite piece (the Options page) comes this many times as often.
+      favourite: 2.5,
       // Links that lead round and round (each tile to the others of its shape): after this many
       // in a row of them, the link isn't followed.
       linkRun: 4,
