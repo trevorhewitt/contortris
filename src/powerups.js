@@ -131,21 +131,22 @@ export function areaRotationsFor(area, rotations, trim = { top: 0, left: 0 }) {
   return out;
 }
 
-// An expander's fill (a combo's too) never reaches more than CONFIG.assist.powerups.expanderMaxCols
-// columns across, centred on the piece as it first comes, whatever its area as drawn: two of them
-// side by side can't fill whole rows from wall to wall. (Its other turns follow from that one.)
-// A combo's fill that's the ground either side of a hole it digs to the floor stays as it is (a
-// mineshaft, a canyon): the hole's in the way of its ever filling a row across.
+// An expander's fill down to the floor (a combo's too) never reaches more than
+// CONFIG.assist.powerups.expanderMaxCols columns across, centred on the piece as it first comes,
+// whatever its area as drawn: two of them side by side can't fill the stack from wall to wall.
+// (Its other turns follow from that one.) A fill along a row, or in a shape of its own, is as
+// drawn: a row's worth is what makes those worth having. A combo's fill that's the ground either
+// side of a hole it digs to the floor stays as it is (a mineshaft, a canyon): the hole's in the
+// way of its ever filling a row across.
 function narrowFill(areaRotations, rotations) {
   const max = CONFIG.assist?.powerups?.expanderMaxCols;
   if (!(max > 0)) return areaRotations;
   const c = (rotations[0][0].length - 1) / 2, keep = (dx) => Math.abs(dx - c) < max / 2;
-  const span = [];
-  for (let dx = Math.floor(c - max / 2); dx <= Math.ceil(c + max / 2); dx++) if (keep(dx)) span.push(dx);
   const a = areaRotations[0];
+  if (!a.cols.some(dx => !keep(dx)) && !(a.downs ?? []).some(q => !keep(q.dx))) return areaRotations;
   const out = [{
-    cells: [...a.cells.filter(q => keep(q.dx)), ...a.rows.flatMap(dy => span.map(dx => ({ dx, dy })))],
-    rows: [],
+    cells: a.cells,
+    rows: a.rows,
     cols: a.cols.filter(keep),
     downs: (a.downs ?? []).filter(q => keep(q.dx)),
   }];

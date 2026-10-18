@@ -29330,19 +29330,20 @@ export const SHAPES = [
         },
         "area": {
           "origin": [
-            5,
+            2,
             0
           ],
           "grid": [
-            "............",
-            "....vvvv....",
-            "...v....v...",
-            "..v......v..",
-            "............",
-            "............"
+            "......",
+            ".####.",
+            "######",
+            "######",
+            "######",
+            "######",
+            "######"
           ]
         },
-        "intro": "The leaves drift down into a heap around it and settle into every gap underneath, eight wide, all the way to the ground. Someone has to rake all this.",
+        "intro": "The leaves drift down into a heap under it, six wide and six deep, and settle into every gap in it. Someone has to rake all this.",
         "help": 5
       },
     rotation: {
@@ -136069,15 +136070,15 @@ export const SHAPES = [
         },
         "area": {
           "origin": [
-            1,
+            2,
             0
           ],
           "grid": [
-            "-..",
-            "-.."
+            "######",
+            "######"
           ]
         },
-        "intro": "Spam slides out into every empty cell of its own row and the row under it, wall to wall. It is still the shape of the tin.",
+        "intro": "Spam slides out two cells either side, into every empty cell of its own row and the row under it: a slab six wide. It is still the shape of the tin.",
         "help": 4.5
       },
     rotation: {

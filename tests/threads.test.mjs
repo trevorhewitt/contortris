@@ -47,6 +47,7 @@ function play(mode, enabled, seeds = [1, 2, 3, 4, 5, 6, 7, 8]) {
   } finally {
     CONFIG.assist.threads.enabled = was;
   }
+  out.puCount = out.pu;
   out.reg = out.reg[0] / out.reg[1];
   out.pu = out.pu[0] / Math.max(1, out.pu[1]);
   return out;
@@ -75,7 +76,14 @@ test("threads: pieces (and powerups) follow on from each other far more often, w
     // since the tiles, which all share a theme, left the games)
     assert.ok(on.reg - off.reg >= 0.08, `${mode}: ordinary pieces ${(on.reg * 100).toFixed(0)}% vs ${(off.reg * 100).toFixed(0)}%`);
     assert.ok(on.reg < 0.75, `${mode}: but not always (${(on.reg * 100).toFixed(0)}%)`);
-    if (mode === "god") assert.ok(on.pu > off.pu * 2, `powerups ${(on.pu * 100).toFixed(0)}% vs ${(off.pu * 100).toFixed(0)}%`);
+    if (mode === "god") {
+      // (the powerups, over twice the games: there are fewer of them. About 1.9 times as often
+      // over 40 games, since the Expanderz along a row or in a shape fill as drawn again and get
+      // picked on their own merits a little more)
+      const more = [9, 10, 11, 12, 13, 14, 15, 16], share = (a, b) => (a.puCount[0] + b.puCount[0]) / (a.puCount[1] + b.puCount[1]);
+      const puOn = share(on, play(mode, true, more)), puOff = share(off, play(mode, false, more));
+      assert.ok(puOn > puOff * 1.6, `powerups ${(puOn * 100).toFixed(0)}% vs ${(puOff * 100).toFixed(0)}%`);
+    }
     // no theme takes over: runs stay short, and the pieces stay varied
     assert.ok(Math.max(...on.runs) <= 14, `${mode}: a run of ${Math.max(...on.runs)}`);
     for (const game of on.games) {

@@ -15,6 +15,7 @@ import {
 } from "../src/powerups.js";
 import { SHAPES } from "../shapes/main_shapes.js";
 import { loadShapes } from "../src/shapes.js";
+import { CONFIG } from "../config.js";
 const POWERUPS = SHAPES.filter(s => s.powerup);
 
 // Board helpers: rows of "#" (block) and "." (empty).
@@ -161,6 +162,20 @@ test("expander fills only empty affected cells", () => {
     "ff.",
     "..#",
   ]);
+});
+
+test("Expanderz: only a fill down to the floor is kept narrow; one along a row, or in a shape, is as drawn", () => {
+  const ids = ["lost_marbles", "tipped_honey_jar", "beans_tin_on_its_side", "spam_tin_opened", "liquid_cat"];
+  const { powerups } = loadShapes(SHAPES.filter(s => ids.includes(s.id)));
+  const area = Object.fromEntries(powerups.map(s => [s.id, s.powerup.areaRotations[0]]));
+  const wide = (xs) => Math.max(...xs) - Math.min(...xs) + 1;
+  // (along their own row, wall to wall)
+  for (const id of ["lost_marbles", "tipped_honey_jar", "beans_tin_on_its_side"]) assert.deepEqual(area[id].rows, [0], id);
+  // (a slab of spam, six wide)
+  assert.equal(wide(area.spam_tin_opened.cells.map(q => q.dx)), 6);
+  // (down to the floor: no wider than the cap, though drawn wider)
+  assert.ok(wide(parseArea(SHAPES.find(s => s.id === "liquid_cat").powerup.area).downs.map(q => q.dx)) > CONFIG.assist.powerups.expanderMaxCols);
+  assert.ok(wide(area.liquid_cat.downs.map(q => q.dx)) <= CONFIG.assist.powerups.expanderMaxCols);
 });
 
 test("collapseRows removes rows and drops everything above", () => {

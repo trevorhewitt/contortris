@@ -110,7 +110,8 @@ Otherwise it downloads the updated file for you to drop in.
   (when combo powerups start), `struggle` (how much the helpful ones are favoured when you're in
   trouble), `usability` (how strongly powerups that can't help on the current board are avoided),
   `fairShare` (how firmly each class is kept to its share over a game), `classApart` (the
-  expanders kept apart) and `expanderMaxCols` (how wide an expander's fill can be).
+  expanders kept apart) and `expanderMaxCols` (how wide an expander's fill down to the floor
+  can be; one along a row or in a shape is as drawn).
 - `waves`: Classic and God mode's stretches of awkward pieces and the big Gravitizer after each.
 - `assist.pieceMix.hard.firstGiantBetween`: the first giant always lands in this range of pieces.
 - `assist.variety.giants.repeatPenalty`: how strongly a giant you've already had is avoided.
