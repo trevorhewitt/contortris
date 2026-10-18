@@ -4316,14 +4316,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.8,
-    nextShapeProbs: [
-        0.25,
-        0.15
-      ],
-    nextShapes: [
-        "happy_pills",
-        "happy_pills_2"
-      ],
     oops: {
         "many": "happy pills"
       },
@@ -114497,12 +114489,6 @@ export const SHAPES = [
         "mode": "any"
       },
     frequency: 0.4,
-    nextShapeProbs: [
-        0.2
-      ],
-    nextShapes: [
-        "happy_pills"
-      ],
     oops: {
         "many": "happy pills"
       },
