@@ -124,8 +124,9 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     bar.hidden = !onNow;
     textEl.hidden = !onNow;
     xBtn.hidden = !onNow;
-    if (!onNow) modesEl.hidden = true;
+    if (!onNow) { modesEl.hidden = true; shell.classList.remove("tutPaused"); }
     shown.page = -1;
+    shown.paused = null;
     shown.cheer = state.tutorial?.cheer ?? 0;
     window.__fitBoard?.(); // (the bar is taller than the usual one: the board makes room)
     cancelAnimationFrame(raf);
@@ -174,16 +175,25 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     nextBtn.classList.add("nudge");
   }
 
-  const go = (i) => {
-    if (!state.tutorial) return;
+  // (from the page it's on its way to, when a click has only just asked for one: two quick
+  // clicks, two pages)
+  const go = (d) => {
+    const t = state.tutorial;
+    if (!t) return;
     if (state.paused) resumeGame();
-    tutorialGoTo(state, i);
+    tutorialGoTo(state, (t.pending ?? t.page) + d);
   };
-  backBtn.addEventListener("click", () => go(state.tutorial.page - 1));
-  nextBtn.addEventListener("click", () => go(state.tutorial.page + 1));
+  backBtn.addEventListener("click", () => go(-1));
+  nextBtn.addEventListener("click", () => go(1));
   pauseBtn.addEventListener("click", (e) => { e.preventDefault(); togglePause(); });
-  xBtn.addEventListener("click", () => goToMenu());
+  // (paused, the pause menu has its own X; this one is the tutorial's, out of it)
+  xBtn.addEventListener("click", () => { if (state.paused) resumeGame(); else goToMenu(); });
   xBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
+  // (a press on a button keeps the pointer until it's let go: one that slides a little off the
+  // button before it's let go still counts as a click on it)
+  for (const b of [...bar.querySelectorAll("button"), xBtn]) b.addEventListener("pointerdown", (e) => {
+    if (e.button === 0) try { b.setPointerCapture(e.pointerId); } catch { /* (not everywhere) */ }
+  });
   for (const b of modesEl.querySelectorAll("[data-mode]")) {
     b.addEventListener("pointerdown", (e) => e.stopPropagation());
     b.addEventListener("click", () => play(b.dataset.mode, { from: b }));
@@ -304,6 +314,8 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
       shown.paused = state.paused;
       pauseBtn.textContent = state.paused ? "▶" : "❚❚";
       pauseBtn.setAttribute("aria-label", state.paused ? "Resume" : "Pause");
+      // (the pause menu over the board: the page's words and the X out of the way of its own)
+      shell.classList.toggle("tutPaused", !!state.paused);
     }
     showHints(t, now);
   }

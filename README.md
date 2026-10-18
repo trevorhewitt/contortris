@@ -102,8 +102,9 @@ Otherwise it downloads the updated file for you to drop in.
 ## Developer tools
 
 Hold **God mode** and **Turbo zen** down together on the home screen (or shift-click God mode) to
-switch the developer tools on (remembered in this browser; a "Developer tools" button on the home
-screen brings the page back). The page has:
+switch the developer tools on, for this visit only (a reload, or the next visit, starts without
+them; while they're on, a "Developer tools" button on the home screen brings the page back). The
+page has:
 
 - **Developer game**: God mode with the newest pieces and sets first; it won't let you lose.
 - **Powerup classes in Classic**: which classes are in, and (ticked) the exact order they come in,
@@ -117,7 +118,8 @@ While they're on, the game's numbers show at the side of the screen (where the g
 how hard, the classes in, level 6, the end game...; tap it to fold it away on a phone), and the
 pause menu has a dev section: pick exactly which piece comes next, unlock every powerup, clear the
 board or fill it with a messy stack, tick which powerups are enabled, and override how often
-powerups turn up. `index.html?devmode=1` turns them on for one visit.
+powerups turn up. `index.html?devmode=1` turns them on from the start. The settings are kept for
+the tab: switch the tools on again after a reload and they're as you left them.
 
 ## Debug keys
 

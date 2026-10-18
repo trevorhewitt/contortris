@@ -46,7 +46,9 @@ export const CONFIG = {
     // the real board. It has a button of its own on the home screen, so it isn't one of the mode
     // buttons, nor the mode the menu remembers (hidden); no score, no game over, and nothing
     // counts towards the achievements.)
-    tutorial: { label: "Tutorial", tagline: "how it all works, in a minute", hidden: true, tutorial: true, powerups: true, giants: true, level6: false, achievements: false },
+    // (pauseWhenHidden false: another tab and back, and it's just where it was, not paused. It
+    // doesn't carry on while it's out of sight, as turbo zen does: it waits.)
+    tutorial: { label: "Tutorial", tagline: "how it all works, in a minute", hidden: true, tutorial: true, powerups: true, giants: true, level6: false, achievements: false, pauseWhenHidden: false },
   },
   defaultMode: "normal",
 

@@ -71,8 +71,9 @@ let last = performance.now();
 // minute after a while), so a timer moves the game on by however long it's really been.
 let hiddenTimer = null;
 document.addEventListener("visibilitychange", () => {
-  // (not the home screen's: it just waits)
-  if (document.hidden && CONFIG.modes[state.mode]?.pauseWhenHidden === false && !CONFIG.modes[state.mode]?.home) {
+  // (not the home screen's, nor the tutorial's: they just wait)
+  const m = CONFIG.modes[state.mode];
+  if (document.hidden && m?.pauseWhenHidden === false && !m.home && !m.tutorial) {
     let then = performance.now();
     hiddenTimer = setInterval(() => {
       const now = performance.now();

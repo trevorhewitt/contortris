@@ -257,7 +257,7 @@ export function bindUI({ state, renderer, achievements }) {
       if (scroller) scroller.scrollTop = 0;
       fitPanel(name);
       // focus the main button for keyboard players
-      panels[name]?.querySelector("button")?.focus({ preventScroll: true });
+      panels[name]?.querySelector("button:not(.panelX)")?.focus({ preventScroll: true });
     }
   }
 
@@ -1044,6 +1044,7 @@ export function bindUI({ state, renderer, achievements }) {
   $("btnOptions").addEventListener("click", () => { panelBack = "menu"; showPanel("options"); });
   $("btnPauseOptions").addEventListener("click", () => { panelBack = "pause"; showPanel("options"); });
   $("btnResume").addEventListener("click", () => resumeGame());
+  $("btnPauseX").addEventListener("click", () => resumeGame()); // (the pause menu's X: back to the game)
   $("btnQuit").addEventListener("click", () => goToMenu());
   $("btnPauseHowTo").addEventListener("click", () => { panelBack = "pause"; showPanel("howto"); });
   $("btnPowerupHelp").addEventListener("click", () => { panelBack = "pause"; showPanel("powerups"); });

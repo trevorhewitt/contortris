@@ -2,19 +2,29 @@
 // DEVELOPER TOOLS — settings to try the game out with (DOM)
 // ============================================================
 // Holding God mode and Turbo zen down together on the home screen switches the developer tools
-// on (remembered in this browser) and opens their page: a developer game (new things first),
+// on, for this visit only (never remembered: the next visit starts without them), and opens
+// their page: a developer game (new things first),
 // which powerup classes Classic has and in what order they come, sliders for how Classic and
 // God mode get harder (CONFIG.difficulty) and how often each class comes at each stage, and a
 // button that copies the settings, to hand on. While they're on, the settings apply to every
 // game, and the game's numbers show at the side of the screen (src/ui.js updateDevPanel).
-// Turning them off puts everything back as it was.
+// Turning them off, or leaving, puts everything back as it was. (The settings are kept for the
+// tab, so switching them on again after a reload brings the same ones back.)
 
 import { CONFIG } from "../config.js";
-import { store } from "./util.js";
 import { CLASS_INFO } from "./powerups.js";
 
-const ON_KEY = "eztrix.devtools";
 const SETTINGS_KEY = "eztrix.devSettings";
+// (they used to be remembered in the browser, on and their settings both: gone, so nobody is
+// left with them on, or with a class switched off, for good)
+for (const k of ["eztrix.devtools", "extris.devtools", "eztrix.devSettings", "extris.devSettings"]) {
+  try { globalThis.localStorage?.removeItem(k); } catch { /* storage unavailable */ }
+}
+const session = {
+  get(k) { try { return globalThis.sessionStorage?.getItem(k) ?? null; } catch { return null; } },
+  set(k, v) { try { globalThis.sessionStorage?.setItem(k, v); } catch { /* storage unavailable */ } },
+};
+let on = false;
 
 // The classes a game can have (the ones never switched on for anyone stay off)
 const CLASSES = ["destroyer", "gravity", "expander", "combo"];
@@ -68,14 +78,15 @@ const DEFAULTS = Object.fromEntries(GROUPS.flatMap(g => g.items).map(([p]) => [p
 const DEFAULT_OFF = [...(CONFIG.assist.powerups.disabledTypes ?? [])];
 const DEFAULT_ORDER = CONFIG.assist.powerups.progression?.order ?? null;
 
-export const devToolsOn = () => store.get(ON_KEY) === "1";
+export const devToolsOn = () => on;
 
 // What's been changed: { values: { path: value }, classes: { on: [..], order: [..] | null } }
 function load() {
-  const s = store.getJSON(SETTINGS_KEY, null);
+  let s = null;
+  try { s = JSON.parse(session.get(SETTINGS_KEY) ?? "null"); } catch { s = null; }
   return s && typeof s === "object" ? { values: s.values ?? {}, classes: s.classes ?? null } : { values: {}, classes: null };
 }
-const save = (s) => store.set(SETTINGS_KEY, JSON.stringify(s));
+const save = (s) => session.set(SETTINGS_KEY, JSON.stringify(s));
 
 // Put the settings into CONFIG (or, off, the game's own back)
 function apply(s, on = true) {
@@ -92,9 +103,9 @@ function apply(s, on = true) {
   }
 }
 
-// At start-up: the saved settings, if the developer tools are on
+// At start-up (they're only ever on from the start with ?devmode=1): the settings kept for the tab
 export function applySavedDevSettings() {
-  if (devToolsOn()) apply(load());
+  if (new URLSearchParams(globalThis.location?.search ?? "").get("devmode") === "1") { on = true; apply(load()); }
 }
 
 // The settings as text, to hand on: only what differs from the game's own
@@ -214,7 +225,7 @@ export function buildDevTools(body, hooks = {}) {
 }
 
 // Switch the developer tools on or off (off: the game's own settings back)
-export function setDevTools(on) {
-  store.set(ON_KEY, on ? "1" : "0");
+export function setDevTools(v) {
+  on = !!v;
   apply(load(), on);
 }

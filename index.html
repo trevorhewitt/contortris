@@ -710,6 +710,7 @@
     .overlay.boardPause #panelPause .menuBtns, .overlay.boardPause #panelPause .menuRow{ display: contents; }
     .overlay.boardPause #panelPause button{ min-height: 30px; padding: 5px 8px; font-size: 7px; }
     .overlay.boardPause #panelPause .devTools{ flex: 0 0 100%; }
+    .overlay.boardPause #panelPause .panelX{ top: 4px; right: 4px; width: 28px; height: 28px; min-height: 0; padding: 0; font-size: 11px; }
     .overlay.boardPause.peek #panelPause, .overlay.boardPause.zoomed #panelPause{ opacity: 0; pointer-events: none; }
     .overlay .pauseHint{ display: none; }
     .overlay.boardPause .pauseHint{ display: block; font-size: 10px !important; opacity: 0.75; margin: 0 0 2px; }
@@ -1294,6 +1295,8 @@
       display: flex; align-items: center; justify-content: center;
     }
     .tutX[hidden]{ display: none; }
+    /* (paused: the pause menu over the board, with its own X) */
+    .boardShell.tutPaused .tutTop, .boardShell.tutPaused .tutX{ visibility: hidden; }
     /* the last page: the modes, over the board playing itself */
     .tutModes{
       position: absolute; inset: 0; z-index: 4; box-sizing: border-box;
@@ -1365,6 +1368,13 @@
     @media (max-width: 440px){ .tutNav{ gap: 5px; } .tutNav button, .tutNav .tutView button{ padding: 8px 7px; font-size: 8px; } .tutNav .tutPause{ width: 40px; } }
     /* (more room: bigger keys) */
     @media (min-width: 600px){ .tutKeyset{ grid-template-columns: repeat(3, 23px); grid-template-rows: repeat(2, 23px); } .tutKeyset i{ font-size: 9px; } }
+    /* (no shift when pressed, and a little more to hit than it shows: the glow round a button
+       counts as the button, more so for Back and Next at the ends) */
+    .tutNav button{ position: relative; }
+    .tutNav button:active{ transform: none; }
+    .tutNav button::after{ content: ""; position: absolute; inset: -3px; }
+    #tutBack::after, #tutNext::after{ inset: -10px; }
+    #tutNext{ padding-left: 16px; padding-right: 16px; }
     #tutNext.nudge{ animation: tutNudge 1.1s ease-in-out infinite; }
     @keyframes tutNudge{
       0%, 100%{ box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 10px rgba(255,255,255,0.2); }
@@ -1574,6 +1584,7 @@
           </div>
 
           <div class="msg panel" id="panelPause" hidden>
+            <button class="panelX" id="btnPauseX" aria-label="Resume">X</button>
             <div class="big">Paused</div>
             <div class="small" id="pauseMode"></div>
             <div class="small pauseHint" id="pauseHintLook">tap a piece to look at it · pinch or double tap to zoom</div>
