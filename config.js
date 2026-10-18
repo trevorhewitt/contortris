@@ -148,8 +148,9 @@ export const CONFIG = {
     multiPressMs: 460,
     multiTaps: 2,
     // a piece about to lock sticking out above the top (game over) gets this long more, once:
-    // it flashes red and the board warns, and it can still be moved
-    lastChanceMs: 1000,
+    // it flashes red and the board warns, and it can still be moved (much longer than the usual
+    // grace: it's the one that would end the game)
+    lastChanceMs: 2000,
   },
 
   // Turning (src/game.js tryRotate). A piece turns about its top-left corner, shifting a column or
