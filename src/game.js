@@ -1507,7 +1507,7 @@ function wisps(state, cells, at, power) {
   }
 }
 
-// Combos: confetti in every colour.
+// Combos: confetti, white squares split into the warm rainbow (render.js drawChromaSquare).
 function confetti(state, centre, n, at) {
   const cellPx = CONFIG.render.cellPx;
   for (let i = 0; i < n; i++) {
@@ -1515,7 +1515,7 @@ function confetti(state, centre, n, at) {
     addParticle(state, {
       x: centre.x * cellPx, y: centre.y * cellPx, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 60,
       lifeMs: 700 + Math.random() * 600, delayMs: at,
-      color: hsl(Math.random() * 360, 95, 62), g: 260, drag: 1.3, size: 2 + (Math.random() < 0.4 ? 1 : 0),
+      color: "#ffffff", chroma: true, glow: true, g: 260, drag: 1.3, size: 2 + (Math.random() < 0.4 ? 1 : 0),
     });
   }
 }
@@ -1580,15 +1580,15 @@ function rowClearShow(state, fullRows, removed, dropDistances) {
     durationMs: rowDelay(order.length - 1) + T.sweepMs + T.fadeMs + (T.rippleMs ?? 0),
   });
   spawnCellParticles(state, rowsToCells(removed), 1, 0, { delayOf, speed: T.speed ?? 1 });
-  // sparks at the head of each sweep
+  // sparks at the head of each sweep (white squares split into the warm rainbow: render.js)
   if (T.sparks) {
     const cellPx = CONFIG.render.cellPx;
     for (const y of order) for (let x = 0; x < cols; x++) for (let k = 0; k < T.sparks; k++) {
       const a = vr() * Math.PI * 2, sp = 60 + vr() * 160 * (T.speed ?? 1), life = 260 + vr() * 380;
       state.fx.particles.push({
         x: (x + vr()) * cellPx, y: (y + vr()) * cellPx, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 50,
-        lifeMs: life, maxLifeMs: life, delayMs: delayOf(x, y), size: 2,
-        color: T.rainbow ? `hsl(${[350, 135, 222][Math.floor(vr() * 3)]}, 100%, 72%)` : vr() < 0.5 ? "#ffffff" : "#fff4b0",
+        lifeMs: life, maxLifeMs: life, delayMs: delayOf(x, y), size: T.rainbow && vr() < 0.35 ? 3 : 2,
+        color: "#ffffff", chroma: true, glow: true,
       });
     }
   }

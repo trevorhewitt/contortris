@@ -15,14 +15,21 @@ export function easeOutBack(t) {
   return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
 }
 
-// The game's colours are red, green and blue, never the rainbow between them: any hue, as the
-// nearest of the three (the same red, green and blue as the powerup classes).
-const RGB_HUES = [350, 135, 222];
-export function rgbHue(h) {
-  h = ((h % 360) + 360) % 360;
-  let best = RGB_HUES[0], gap = 999;
-  for (const c of RGB_HUES) { const d = Math.min(Math.abs(h - c), 360 - Math.abs(h - c)); if (d < gap) { gap = d; best = c; } }
-  return best;
+// The game's light: a warm retro rainbow, round a ring (pink, orange, gold, then cyan and violet
+// and back to pink: index.html's --om-* colours). ombre(t) is the colour a fraction t of the way
+// round it (any number: it wraps), sliding smoothly from one to the next, as "rgba(...)" with
+// alpha a; lift takes it toward white (0 to 1). ombreRGB gives the [r, g, b].
+export const OMBRE = [[255, 61, 139], [255, 140, 56], [255, 214, 90], [86, 224, 255], [168, 108, 255]];
+export function ombreRGB(t, lift = 0, out = [0, 0, 0]) {
+  const n = OMBRE.length, u = (((t % 1) + 1) % 1) * n, i = Math.floor(u) % n, f = u - Math.floor(u);
+  const a = OMBRE[i], b = OMBRE[(i + 1) % n], e = f * f * (3 - 2 * f);
+  for (let k = 0; k < 3; k++) { const v = a[k] + (b[k] - a[k]) * e; out[k] = Math.round(v + (255 - v) * lift); }
+  return out;
+}
+const ombreTmp = [0, 0, 0];
+export function ombre(t, a = 1, lift = 0) {
+  const [r, g, b] = ombreRGB(t, lift, ombreTmp);
+  return `rgba(${r},${g},${b},${typeof a === "number" ? clamp01(a).toFixed(3) : a})`;
 }
 
 export function hsla(h, s, l, a) {

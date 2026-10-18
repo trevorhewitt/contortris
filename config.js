@@ -65,8 +65,12 @@ export const CONFIG = {
   // Left alone for `idleMs`, it all fades away into plain turbo zen filling the window (a fresh
   // one whenever the window changes size), with a small button to play; any touch, click, key or
   // move of the mouse brings the home screen back.
-  // Choosing a mode: everything on the screen bursts into pieces and fades to dark (`burstMs` in
-  // all, the last `fadeMs` of it the fade), and the game comes up out of the dark (`fadeMs`).
+  // Choosing a mode: the screen breaks into squares that shoot away from the button and it fades
+  // to dark (`burstMs` in all, the last `fadeMs` of it the fade), and the game comes up out of the
+  // dark (`fadeMs`), switching on like an old screen. warp: the wave breaking it up gets to the
+  // furthest corner in waveS seconds; the squares it's reached speed up by `accel` screen sizes a
+  // second, each second; and the screen breaks into about `squares` of them (src/home.js). A
+  // device that's falling behind (a few frames slower than slowMs) gets it simpler.
   home: {
     rows: 24, minCols: 14, maxCols: 30, widthShare: 0.85,
     zoom: 2.6, shotMs: [2600, 4200], tiltChance: 0.3, maxTurn: 5, minView: [10, 9], minShotMs: 600,
@@ -74,7 +78,8 @@ export const CONFIG = {
     otherBoard: 0.5,
     fxEvery: [14000, 22000], logoEvery: 2600,
     idleMs: 30000,
-    burstMs: 600, fadeMs: 240,
+    burstMs: 720, fadeMs: 240,
+    warp: { waveS: 0.34, accel: 5, squares: 1800, slowMs: 30 },
     // Turbo zen behind it goes for broad mixes of pieces (src/zen.js): each movement this many
     // times as likely as in turbo zen (those of one thing, or a few, a good deal less), a fill
     // with no palette (anything goes) paletteNone of the time, and a palette more kinds
@@ -909,8 +914,9 @@ export const CONFIG = {
     // rows go at once: each tier from `rows` rows. patterns: which way the light goes, one at
     // random ("ltr", "rtl", "centre": from the middle out, "edges": from both ends in, "weave":
     // every other row the other way); rowStaggerMs: each row up starts this much later; band: its height (cells); glow,
-    // chroma (cyan and magenta fringes), rainbow, ripples (lines running up and down the board),
-    // sparks (per cell), wash (a rainbow over the whole board), speed (how hard it scatters),
+    // chroma (the warm split either side of the light), rainbow (the warm rainbow), ripples (lines
+    // running up and down the board), sparks (per cell: white, split into the warm rainbow), wash
+    // (the warm rainbow over the whole board), speed (how hard it scatters),
     // trauma (a shake).
     rowClear: {
       tiers: [
@@ -1002,10 +1008,10 @@ export const CONFIG = {
       },
       overlay: {
         periodMs: 900,           // one loop of the square / line animation
-        hueDegPerMs: 0.12,       // colour shimmer speed (red, green and blue in turn for anything without classColours)
+        hueDegPerMs: 0.12,       // colour shimmer speed (the warm rainbow's colours in turn for anything without classColours)
         hueStepPerCell: 18,      // colour spread across cells
-        rgbSplit: 0.06,          // the marks' red and blue copies, pulled apart this much of a cell
-        rgbSplitAlpha: 0.6,      // ...and how strong they are (times the mark's own)
+        rgbSplit: 0.06,          // the marks' warm split (copies of them in the warm rainbow, render.js WARM_SPLIT): this much of a cell apart a step
+        rgbSplitAlpha: 0.7,      // ...and how strong they are (times the mark's own)
         fillAlpha: 0.30,         // cells the effect will change
         idleFillAlpha: 0.11,     // highlighted cells it won't change (e.g. empty cells for a destroyer)
         markAlpha: 0.95,

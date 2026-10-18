@@ -4,7 +4,7 @@
 
 import { calmFx } from "./settings.js";
 import { CONFIG } from "../config.js";
-import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour, rgbHue } from "./util.js";
+import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour, ombre, OMBRE } from "./util.js";
 import { getShapePaint } from "./shapes.js";
 import { getActiveMatrix, getGhostDropY } from "./game.js";
 import { resolvePowerupArea, computeEffect, isPhantomPowerup, classOf } from "./powerups.js";
@@ -231,14 +231,44 @@ export function drawIcon(ctx, grid, x, y, sizePx) {
 //   ghost (Phantomz): faint diagonal stripes drifting past, flickering in and out.
 const MARK_STYLE = { destroyer: "shrink", acid: "shrink", expander: "burst", goo: "burst", phantom: "ghost", gravity: "line", blast: "out" };
 
+// The warm split (an old screen's colours pulled out of true, in the game's warm rainbow): copies
+// of a thing fanned out to each side of it, pink, orange and gold one way, cyan and violet the
+// other, fading the further out they are. [how far out (in steps, + one way, - the other), colour, strength]
+const rgbOf = ([r, g, b]) => `rgb(${r},${g},${b})`;
+const [PINK, ORANGE, GOLD, CYAN, VIOLET] = OMBRE.map(rgbOf);
+export const WARM_SPLIT = [[2.4, GOLD, 0.35], [1.7, ORANGE, 0.55], [1, PINK, 0.85], [-1, CYAN, 0.85], [-1.8, VIOLET, 0.5]];
+// The warm rainbow's hues (for colours given as hue, saturation and lightness)
+const OMBRE_HUES = [336, 25, 45, 191, 264];
+
+// A white square z across centred on (x, y), split into the warm rainbow along the way it's
+// going (ux, uy: which way, of length 1; o: how far apart each step): pink, orange and gold
+// trailing behind it, cyan and violet ahead. Drawn "lighter" (where the copies overlap: white),
+// at strength a; glow adds a faint warm halo round it.
+export function drawChromaSquare(ctx, x, y, z, ux, uy, o, a = 1, glow = 0) {
+  const h = z / 2;
+  if (glow > 0) {
+    ctx.globalAlpha = a * glow;
+    ctx.fillStyle = ORANGE;
+    ctx.fillRect(x - z * 1.5, y - z * 1.5, z * 3, z * 3);
+  }
+  for (const [k, colour, strength] of WARM_SPLIT) {
+    ctx.globalAlpha = a * strength;
+    ctx.fillStyle = colour;
+    ctx.fillRect(x - h - ux * o * k, y - h - uy * o * k, z, z);
+  }
+  ctx.globalAlpha = a;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(x - h, y - h, z, z);
+}
+
 // The colour of a highlighted cell: its class's gradient (CONFIG.fx.powerup.classColours),
-// shimmering back and forth across the cells; full rainbow for anything without one.
+// shimmering back and forth across the cells; the warm rainbow for anything without one.
 export function markColour(type, now, x, y) {
   const o = CONFIG.fx.powerup.overlay;
   const pal = CONFIG.fx.powerup.classColours?.[classOf(type)];
   const t = now * o.hueDegPerMs + (x + y) * o.hueStepPerCell;
-  // (no colours of its own: red, green and blue in turn, never the rainbow between them)
-  if (!pal) return { h: [350, 135, 222][Math.floor(((t % 360) + 360) % 360 / 120)], s: 100, l: 58 };
+  // (no colours of its own: the warm rainbow's in turn)
+  if (!pal) return { h: OMBRE_HUES[Math.floor(((t % 360) + 360) % 360 / 72)], s: 100, l: 62 };
   const [h0, h1] = pal.hues;
   const span = ((h1 - h0) % 360 + 360) % 360 || 360;
   const tri = 1 - Math.abs(((t / span) % 2) - 1); // 0 -> 1 -> 0 ...
@@ -258,18 +288,20 @@ export function drawPowerupMark(ctx, { type, direction }, px, py, cell, now, x, 
   // marks glow additively so they stay visible over bright pixel art
   ctx.globalCompositeOperation = "lighter";
   const mark = hsla(c.h, c.s, Math.min(92, c.l + 2), markA);
-  // The mark, split into red, green and blue like an old screen: a red copy pulled one way and a
-  // blue one the other, as far as the cell's own little glitch has them (now and then they tear
-  // further apart for a moment), then the mark itself in its class's colour over them.
+  // The mark, split into the warm rainbow like an old screen pulled out of true (WARM_SPLIT):
+  // fading copies of it fanned out to each side, as far as the cell's own little glitch has them
+  // (now and then they tear further apart for a moment), then the mark itself in its class's
+  // colour over them.
   const split = o.rgbSplit ?? 0;
   if (split > 0) {
     const tick = Math.floor(now / 90), g = hash01(tick * 31 + x * 7 + y * 13);
     const d = cell * split * (g > 0.93 ? 3.2 : g > 0.8 ? 1.8 : 1);
     const dy = g > 0.93 ? cell * split * (hash01(tick + x) - 0.5) * 2 : 0;
     const a = markA * (o.rgbSplitAlpha ?? 0.6);
-    for (const [dx, colour] of [[-d, `rgba(255,31,75,${a})`], [d, `rgba(47,107,255,${a})`]]) {
+    for (const [k, colour, strength] of WARM_SPLIT) {
       ctx.save();
-      ctx.translate(dx, dx > 0 ? dy : -dy);
+      ctx.globalAlpha *= a * strength;
+      ctx.translate(-d * k, k > 0 ? -dy : dy);
       ctx.strokeStyle = colour;
       ctx.fillStyle = colour;
       drawMarkShape(ctx, type, direction, px, py, cell, now, x, y, dist, centre);
@@ -558,17 +590,14 @@ export function createRenderer(boardCanvas, nextCanvas) {
       g.restore();
     }
 
-    // Scanlines + chromatic border (both looks).
+    // A faint warm edge just inside the board (both looks). No scan lines: the pieces stay crisp.
     function drawScreenFX(g) {
       g.save();
-      g.globalAlpha = 0.08;
-      g.fillStyle = "rgba(255,255,255,0.06)";
-      for (let y = 0; y < bh; y += 4) g.fillRect(0, y, bw, 1);
-      g.globalAlpha = 0.05;
-      g.strokeStyle = "rgba(255,0,140,0.55)";
+      g.globalAlpha = 0.06;
+      g.strokeStyle = PINK;
       g.strokeRect(1.5, 1.5, bw - 3, bh - 3);
-      g.globalAlpha = 0.04;
-      g.strokeStyle = "rgba(0,255,255,0.55)";
+      g.globalAlpha = 0.05;
+      g.strokeStyle = CYAN;
       g.strokeRect(3.5, 2.5, bw - 6, bh - 6);
       g.restore();
     }
@@ -1121,13 +1150,15 @@ export function createRenderer(boardCanvas, nextCanvas) {
       bctx.beginPath(); bctx.arc(cx, cy, r, 0, Math.PI * 2); bctx.stroke();
       bctx.setLineDash([]);
     } else if (w.kind === "rainbow") {
-      // a ring of red, green and blue, turning as it spreads
-      const segs = 24;
-      bctx.lineWidth = Math.max(2, cell * 0.4 * fade);
-      for (let k = 0; k < segs; k++) {
-        const a0 = (k / segs) * Math.PI * 2 + now * 0.003, a1 = a0 + Math.PI * 2 / segs + 0.02;
-        bctx.strokeStyle = hsla(rgbHue((k / segs) * 360), 100, 62, 0.85 * fade);
-        bctx.beginPath(); bctx.arc(cx, cy, r, a0, a1); bctx.stroke();
+      // a ring of the warm rainbow, turning as it spreads, with a soft glow of it round it
+      const segs = 30;
+      for (const [width, alpha, lift] of [[cell * 1.1, 0.22, 0], [cell * 0.4, 0.85, 0.15]]) {
+        bctx.lineWidth = Math.max(2, width * fade);
+        for (let k = 0; k < segs; k++) {
+          const a0 = (k / segs) * Math.PI * 2 + now * 0.003, a1 = a0 + Math.PI * 2 / segs + 0.02;
+          bctx.strokeStyle = ombre(k / segs, alpha * fade, lift);
+          bctx.beginPath(); bctx.arc(cx, cy, r, a0, a1); bctx.stroke();
+        }
       }
     }
     bctx.globalCompositeOperation = "source-over";
@@ -1339,7 +1370,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       bctx.lineWidth = 4;
       bctx.strokeStyle = "rgba(0,0,0,0.85)";
       bctx.strokeText(text, x, y);
-      bctx.fillStyle = c.color ?? (c.big ? hsla(rgbHue(now * 0.3), 100, 68, 1) : "#ffffff");
+      bctx.fillStyle = c.color ?? (c.big ? ombre(now * 0.0008, 1, 0.2) : "#ffffff");
       bctx.fillText(text, x, y);
     }
     bctx.restore();
@@ -1401,13 +1432,13 @@ export function createRenderer(boardCanvas, nextCanvas) {
     bctx.globalCompositeOperation = "lighter";
     for (const c of list) {
       const T = tiers[c.tier] ?? tiers[0], t = c.elapsedMs, mid = bw / 2;
-      const colour = (x, a, l = 70) => T.rainbow ? `hsla(${rgbHue(c.hue + (x / bw) * 300 + t * 0.25)}, 100%, ${l}%, ${a})` : `rgba(255,255,255,${a})`;
-      // a soft wash of red, green and blue over the whole board, rising from the bottom
+      const colour = (x, a, lift = 0.2) => T.rainbow ? ombre((c.hue + (x / bw) * 300 + t * 0.25) / 360, a, lift) : `rgba(255,255,255,${a})`;
+      // a soft wash of the warm rainbow over the whole board, rising from the bottom
       if (T.wash) {
         const p = Math.min(1, t / (c.durationMs * 0.75)), yc = bh * (1.15 - 1.3 * p), half = bh * 0.22;
-        const a = 0.22 * Math.sin(Math.PI * p);
+        const a = 0.24 * Math.sin(Math.PI * p);
         const g = bctx.createLinearGradient(0, yc - half, 0, yc + half);
-        for (let k = 0; k <= 6; k++) g.addColorStop(k / 6, `hsla(${rgbHue(c.hue + k * 50)}, 100%, 60%, ${(a * Math.sin(Math.PI * k / 6)).toFixed(3)})`);
+        for (let k = 0; k <= 6; k++) g.addColorStop(k / 6, ombre((c.hue + k * 50) / 360, a * Math.sin(Math.PI * k / 6)));
         bctx.fillStyle = g;
         bctx.fillRect(0, yc - half, bw, half * 2);
       }
@@ -1428,15 +1459,20 @@ export function createRenderer(boardCanvas, nextCanvas) {
           const g = bctx.createLinearGradient(from, 0, head, 0);
           g.addColorStop(0, colour(from, (0.12 * fade).toFixed(3)));
           g.addColorStop(0.75, colour((from + head) / 2, (0.35 * fade).toFixed(3)));
-          g.addColorStop(1, colour(head, (0.75 * fade).toFixed(3), 80));
+          g.addColorStop(1, colour(head, (0.75 * fade).toFixed(3), 0.5));
           bctx.fillStyle = g;
           bctx.fillRect(lo, top, w, h);
           // the head itself, while it's still moving: white hot, with a glow and fringes
           if (s < 1) {
             if (T.glow) { bctx.shadowColor = T.rainbow ? colour(head, 1) : "rgba(180,240,255,1)"; bctx.shadowBlur = T.glow * scale; }
-            if (T.chroma) {
-              bctx.fillStyle = "rgba(0,255,255,0.45)"; bctx.fillRect(head - 3, top - 1, 3, h + 2);
-              bctx.fillStyle = "rgba(255,0,170,0.45)"; bctx.fillRect(head, top - 1, 3, h + 2);
+            if (T.chroma) { // (the warm split either side of it)
+              const ahead = head >= from ? 1 : -1;
+              for (const [k, fringe, strength] of WARM_SPLIT) {
+                bctx.globalAlpha = 0.6 * strength * fade;
+                bctx.fillStyle = fringe;
+                bctx.fillRect(head - 1.5 - ahead * k * 2.5, top - 1, 3, h + 2);
+              }
+              bctx.globalAlpha = 1;
             }
             bctx.fillStyle = `rgba(255,255,255,${(0.95 * fade).toFixed(3)})`;
             bctx.fillRect(head - 1.5, top, 3, h);
@@ -1453,7 +1489,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
           const p = tr / T.rippleMs, d = p * bh * 0.55, a = 0.5 * (1 - p);
           for (const yy of [yc - d, yc + d]) {
             if (yy < 0 || yy > bh) continue;
-            bctx.fillStyle = T.rainbow ? `hsla(${rgbHue(c.hue + k * 70 + p * 120)}, 100%, 70%, ${a.toFixed(3)})` : `rgba(200,245,255,${a.toFixed(3)})`;
+            bctx.fillStyle = T.rainbow ? ombre((c.hue + k * 70 + p * 120) / 360, a, 0.25) : `rgba(200,245,255,${a.toFixed(3)})`;
             bctx.fillRect(0, yy - 1, bw, 2);
           }
         }
@@ -1509,6 +1545,11 @@ export function createRenderer(boardCanvas, nextCanvas) {
         // (a twinkle comes and goes; the rest fade out)
         const life = clamp01(p.lifeMs / p.maxLifeMs);
         bctx.globalAlpha = p.twinkle ? Math.sin(Math.PI * life) : life;
+        if (p.chroma) { // white, split into the warm rainbow along the way it's going
+          const sp = Math.hypot(p.vx, p.vy), s = p.size;
+          drawChromaSquare(bctx, p.x + s / 2, p.y + s / 2, s, sp ? p.vx / sp : 0, sp ? p.vy / sp : 1, Math.min(s, 0.5 + sp * 0.005), bctx.globalAlpha, 0.14);
+          continue;
+        }
         bctx.fillStyle = p.color;
         if (p.shape === "plus") { // a little twinkle
           const s = p.size, k = Math.max(1, s / 2);

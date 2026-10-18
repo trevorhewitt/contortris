@@ -8,8 +8,9 @@
 // while (CONFIG.home.idleMs), all of that fades away into plain turbo zen filling the window, with
 // a small button to play (a fresh one whenever the window changes size); any touch, click, key or
 // move of the mouse brings the home screen back. (The same from the achievements, and from the
-// game over: anywhere but How to play, and anywhere a game is still going on.) And choosing a mode: everything on the screen
-// bursts into pieces and fades to dark, and the game comes up.
+// game over: anywhere but How to play, and anywhere a game is still going on.) And choosing a mode: the screen breaks
+// into squares that shoot away from the button, white hot, split into the warm rainbow, and the
+// game switches on out of the dark like an old screen.
 //
 // The board behind the menu is the game's own (state, drawn by the renderer onto the board
 // canvas as usual); the home screen only shows it through the camera, on a canvas of its own.
@@ -24,11 +25,12 @@ import { startRun, resetGame, updateGame, getGhostDropY, collides, createGameSta
 import { resolvePowerupArea } from "./powerups.js";
 import { buildMosaic, paintMosaic } from "./mosaic.js";
 import { calmFx } from "./settings.js";
+import { drawChromaSquare } from "./render.js";
+import { ombre, ombreRGB } from "./util.js";
 const H = () => CONFIG.home ?? {};
 const rand = (a, b) => a + Math.random() * (b - a);
 const pickIn = ([a, b]) => rand(a, b);
 const smooth = (t) => t * t * (3 - 2 * t);
-const RAINBOW = ["#ff4d6d", "#ffb84d", "#f9ff4d", "#4dff88", "#4dc3ff", "#b44dff"];
 
 // The size of the board behind the menu, for a window this shape.
 export function homeBoardSize(w, h) {
@@ -409,39 +411,39 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     shade.width = 160; shade.height = Math.max(40, Math.round(160 * view.h / view.w));
     const c = shade.getContext("2d"), w = shade.width, h = shade.height;
     const tint = c.createLinearGradient(0, 0, w, h);
-    tint.addColorStop(0, "rgba(255,77,160,0.08)"); tint.addColorStop(0.5, "rgba(77,195,255,0.06)"); tint.addColorStop(1, "rgba(180,77,255,0.08)");
+    tint.addColorStop(0, ombre(0, 0.08)); tint.addColorStop(0.5, ombre(0.25, 0.05)); tint.addColorStop(1, ombre(0.8, 0.08));
     c.fillStyle = tint; c.fillRect(0, 0, w, h);
     const v = c.createRadialGradient(w / 2, h * 0.45, Math.min(w, h) * 0.3, w / 2, h / 2, Math.max(w, h) * 0.72);
     v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.55)");
     c.fillStyle = v; c.fillRect(0, 0, w, h);
     return shade;
   }
+  // (a soft glow in one of the warm rainbow's colours, t of the way round it: made once each)
   const glows = new Map();
-  function glow(hue) {
-    const key = Math.round(((hue % 360) + 360) % 360 / 15) * 15;
+  function glow(t) {
+    const key = Math.round((((t % 1) + 1) % 1) * 20) % 20;
     let g = glows.get(key);
     if (!g) {
       g = document.createElement("canvas");
       g.width = g.height = 64;
       const c = g.getContext("2d"), grad = c.createRadialGradient(32, 32, 0, 32, 32, 32);
-      grad.addColorStop(0, `hsla(${key},100%,85%,1)`);
-      grad.addColorStop(0.25, `hsla(${key},100%,65%,0.55)`);
-      grad.addColorStop(1, `hsla(${key},100%,50%,0)`);
+      grad.addColorStop(0, ombre(key / 20, 1, 0.6));
+      grad.addColorStop(0.25, ombre(key / 20, 0.55, 0.1));
+      grad.addColorStop(1, ombre(key / 20, 0));
       c.fillStyle = grad;
       c.fillRect(0, 0, 64, 64);
       glows.set(key, g);
     }
     return g;
   }
+  // (each of them white, split into the warm rainbow, and glowing one of its colours: t)
   function spawnMote(kind, W, Hh, now) {
-    // (red, green or blue: the game's colours, never the rainbow between them)
-    const hue = [350, 135, 222][Math.floor(rand(0, 3))];
-    const m = { kind, hue, age: 0, rot: rand(0, 6.28), vr: rand(-2, 2) };
-    if (kind === "embers") Object.assign(m, { x: rand(0, W), y: Hh + 10, vx: rand(-12, 12), vy: rand(-70, -30), size: rand(6, 16), life: rand(5, 9) });
+    const m = { kind, t: Math.random(), age: 0, rot: rand(0, 6.28), vr: rand(-2, 2) };
+    if (kind === "embers") Object.assign(m, { x: rand(0, W), y: Hh + 10, vx: rand(-12, 12), vy: rand(-70, -30), size: rand(6, 16), life: rand(5, 9), t: rand(0, 0.45) });
     else if (kind === "sparkles") Object.assign(m, { x: rand(0, W), y: rand(0, Hh), vx: 0, vy: 0, size: rand(8, 22), life: rand(1.2, 2.4) });
-    else if (kind === "confetti") Object.assign(m, { x: rand(0, W), y: -10, vx: rand(-25, 25), vy: rand(30, 80), size: rand(4, 9), life: rand(7, 12), hue: rand(0, 360) });
+    else if (kind === "confetti") Object.assign(m, { x: rand(0, W), y: -10, vx: rand(-25, 25), vy: rand(30, 80), size: rand(4, 9), life: rand(7, 12) });
     else if (kind === "comets") { const fromLeft = Math.random() < 0.5; Object.assign(m, { x: fromLeft ? -40 : W + 40, y: rand(-0.1, 0.6) * Hh, vx: (fromLeft ? 1 : -1) * rand(380, 620), vy: rand(80, 200), size: rand(3, 6), life: 3 }); }
-    else Object.assign(m, { x: rand(0, W), y: -10, vx: rand(-10, 10), vy: rand(15, 40), size: rand(2, 5), life: rand(10, 16), phase: rand(0, 6.28), hue: 210 }); // snow
+    else Object.assign(m, { x: rand(0, W), y: -10, vx: rand(-10, 10), vy: rand(15, 40), size: rand(2, 5), life: rand(10, 16), phase: rand(0, 6.28), t: rand(0.58, 0.7) }); // snow
     return m;
   }
   const RATE = { embers: 9, sparkles: 7, confetti: 10, comets: 0.7, snow: 16 }; // (a second, on a 1000×700 screen)
@@ -467,25 +469,35 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       const t = m.age / m.life, fade = Math.min(1, t * 5, (1 - t) * 3);
       if (m.kind === "snow") m.x += Math.sin(m.age * 2 + m.phase) * 18 * s;
       m.x += m.vx * s; m.y += m.vy * s; m.rot += m.vr * s;
-      const x = m.x * d, y = m.y * d, z = m.size * d;
-      fx.globalAlpha = fade * (m.kind === "snow" ? 0.6 : 0.85);
+      const x = m.x * d, y = m.y * d, z = m.size * d, a = fade * (m.kind === "snow" ? 0.6 : 0.85);
+      const sp = Math.hypot(m.vx, m.vy), ux = sp ? m.vx / sp : 0, uy = sp ? m.vy / sp : 1;
+      fx.globalAlpha = a;
       if (m.kind === "confetti") {
-        fx.fillStyle = `hsl(${m.hue},95%,62%)`;
-        const w = z * (0.5 + 0.5 * Math.abs(Math.cos(m.rot)));
-        fx.fillRect(x - w / 2, y - z / 2, w, z);
+        // (a white square tumbling down, its split opening and closing as it turns)
+        const w = z * (0.55 + 0.45 * Math.abs(Math.cos(m.rot)));
+        drawChromaSquare(fx, x, y, w, Math.cos(m.rot), Math.sin(m.rot), d * 1.6, a);
       } else if (m.kind === "sparkles") {
         const p = Math.sin(t * Math.PI), r = z * p;
-        fx.drawImage(glow(m.hue), x - r, y - r, r * 2, r * 2);
+        fx.drawImage(glow(m.t), x - r, y - r, r * 2, r * 2);
         fx.fillStyle = "#fff";
         fx.fillRect(x - r, y - d * 0.75, r * 2, d * 1.5);
         fx.fillRect(x - d * 0.75, y - r, d * 1.5, r * 2);
       } else if (m.kind === "comets") {
-        fx.strokeStyle = `hsla(${m.hue},100%,70%,0.8)`;
-        fx.lineWidth = z * 0.6;
-        fx.beginPath(); fx.moveTo(x, y); fx.lineTo(x - m.vx * 0.12 * d, y - m.vy * 0.12 * d); fx.stroke();
-        fx.drawImage(glow(m.hue), x - z * 3, y - z * 3, z * 6, z * 6);
+        // (a tail through the warm rainbow, a white hot head)
+        const tail = fx.createLinearGradient(x, y, x - m.vx * 0.16 * d, y - m.vy * 0.16 * d);
+        tail.addColorStop(0, ombre(m.t, 0.9, 0.3)); tail.addColorStop(0.5, ombre(m.t + 0.2, 0.5)); tail.addColorStop(1, ombre(m.t + 0.4, 0));
+        fx.strokeStyle = tail;
+        fx.lineWidth = z * 0.7;
+        fx.beginPath(); fx.moveTo(x, y); fx.lineTo(x - m.vx * 0.16 * d, y - m.vy * 0.16 * d); fx.stroke();
+        fx.drawImage(glow(m.t), x - z * 3, y - z * 3, z * 6, z * 6);
+        drawChromaSquare(fx, x, y, z * 0.9, ux, uy, d * 2.2, a);
+      } else if (m.kind === "embers") {
+        fx.drawImage(glow(m.t), x - z, y - z, z * 2, z * 2);
+        drawChromaSquare(fx, x, y, Math.max(d * 2, z * 0.28), ux, uy, d * 1.2, a);
       } else {
-        fx.drawImage(glow(m.kind === "snow" ? 210 : m.hue), x - z, y - z, z * 2, z * 2);
+        fx.drawImage(glow(m.t), x - z, y - z, z * 2, z * 2);
+        fx.fillStyle = "#fff";
+        fx.fillRect(x - z * 0.3, y - z * 0.3, z * 0.6, z * 0.6);
       }
     }
     motes.length = n;
@@ -544,13 +556,26 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
 
   /* ---------- the way into a game ---------- */
 
+  // Choosing a mode: the screen breaks into squares, in a wave going out from the button, and as
+  // the wave reaches each one it heats up white and shoots away from the button, faster and
+  // faster, out past the edges of the screen: split into the warm rainbow (pink, orange and gold
+  // trailing, cyan and violet ahead), leaving a glowing trail in the rainbow's colour for the way
+  // it's going (all of them together: a wheel of it). A ring of the rainbow and a flash of light
+  // go out from the button with the wave. Then dark, and the board switches on out of it like an
+  // old screen (finishStart: index.html .crtOn).
+  const TRAILS = 24; // (the trails' colours, a slice of the wheel each: drawn a slice at a time)
+  const trails = Array.from({ length: TRAILS }, () => []);
   const bits = [];
-  let startAt = 0, endAt = 0, playMode = null, darkTimer = null;
+  let startAt = 0, endAt = 0, playMode = null, darkTimer = null, warp = null;
 
   function burstFrom(cx, cy) {
     const W = view.w, Hh = view.h;
     bits.length = 0;
-    const g = Math.max(7, Math.round(Math.sqrt(W * Hh / 2600)));
+    const far = Math.max(Math.hypot(cx, cy), Math.hypot(W - cx, cy), Math.hypot(cx, Hh - cy), Math.hypot(W - cx, Hh - cy));
+    // (the wave gets to the furthest corner in waveS seconds; what it's reached speeds up by
+    // accel, in screen sizes a second each second)
+    warp = { cx, cy, far, speed: far / (H().warp?.waveS ?? 0.34), accel: Math.hypot(W, Hh) * (H().warp?.accel ?? 5), slow: 0 };
+    const g = Math.max(7, Math.round(Math.sqrt(W * Hh / (H().warp?.squares ?? 1800))));
     // the board behind, a square at a time
     const sw = Math.ceil(W / g), sh = Math.ceil(Hh / g);
     const small = document.createElement("canvas");
@@ -559,54 +584,130 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     sx.drawImage(bg, 0, 0, sw, sh);
     let px = null;
     try { px = sx.getImageData(0, 0, sw, sh).data; } catch { px = null; }
-    const add = (x, y, size, colour, kick = 1) => {
+    // (each square off the way it's facing from the button, give or take a little: straight out,
+    // the rows and columns either side of the button would open up into dark lines)
+    const add = (x, y, size, [r, gg, b], kick = 1) => {
       const dx = x - cx, dy = y - cy, dist = Math.hypot(dx, dy) || 1;
-      const sp = rand(260, 900) * kick * (0.45 + 0.55 * Math.exp(-dist / 600));
-      bits.push({ x, y, size, colour, vx: dx / dist * sp + rand(-80, 80), vy: dy / dist * sp - rand(120, 380), life: rand(0.7, 1.25), age: 0 });
+      const way = Math.atan2(dy, dx) + rand(-0.07, 0.07);
+      const turn = (way / (Math.PI * 2) + 1 + rand(-0.02, 0.02)) % 1;
+      bits.push({
+        x, y, size, fill: `rgb(${r},${gg},${b})`, ux: Math.cos(way), uy: Math.sin(way), trail: Math.floor(turn * TRAILS) % TRAILS,
+        v: rand(160, 460) * kick, at: dist / warp.speed + rand(0, 0.04),
+      });
     };
     if (px) for (let j = 0; j < sh; j++) for (let i = 0; i < sw; i++) {
       const k = (j * sw + i) * 4, r = px[k], gg = px[k + 1], b = px[k + 2];
       if (r + gg + b < 40 && Math.random() < 0.75) continue; // (most of the dark: the gaps between)
-      add((i + 0.5) * g, (j + 0.5) * g, g, `rgb(${r},${gg},${b})`, 0.8);
+      add((i + 0.5) * g, (j + 0.5) * g, g, [r, gg, b], 0.8);
     }
-    // ...and the logo and the buttons, in their colours
+    // ...and the logo, in its own colours, and the buttons, in the warm rainbow
     const pieces = document.querySelectorAll("#homeLogo span, #panelMenu button, #panelMenu .skipBox");
-    const f = Math.max(4, Math.round(g / 2));
+    const f = Math.max(5, Math.round(g * 0.6));
     for (const el of pieces) {
       const r = el.getBoundingClientRect();
       if (!r.width || !r.height) continue;
-      const own = getComputedStyle(el).color;
+      const own = el.tagName === "SPAN" ? (getComputedStyle(el).color.match(/[\d.]+/g) ?? [255, 255, 255]).slice(0, 3).map(Number) : null;
       for (let y = r.top; y < r.bottom; y += f) for (let x = r.left; x < r.right; x += f) {
-        const colour = el.tagName === "SPAN" ? own : RAINBOW[Math.floor(((x / W) * RAINBOW.length + performance.now() / 900) % RAINBOW.length)];
-        add(x + f / 2, y + f / 2, f, colour, 1.2);
+        add(x + f / 2, y + f / 2, f, own ?? ombreRGB(x / W + performance.now() / 4000, 0.1), 1.2);
       }
     }
     burstc.hidden = false;
+    bx.setTransform(1, 0, 0, 1, 0, 0);
+    bx.clearRect(0, 0, burstc.width, burstc.height);
   }
 
   function drawBurst(dt) {
-    const d = view.burst, s = dt / 1000;
+    const d = view.burst, s = dt / 1000, t = (performance.now() - startAt) / 1000, w = warp;
+    const W = view.w, Hh = view.h;
     bx.setTransform(1, 0, 0, 1, 0, 0);
-    bx.clearRect(0, 0, burstc.width, burstc.height);
+    // (last frame fades out rather than going: whatever moves leaves a trail)
+    bx.globalAlpha = 1;
+    bx.globalCompositeOperation = "destination-out";
+    bx.fillStyle = `rgba(0,0,0,${(1 - Math.pow(0.58, dt / 16.7)).toFixed(3)})`;
+    bx.fillRect(0, 0, burstc.width, burstc.height);
+    // the squares the wave hasn't got to yet: the screen as it was
+    bx.globalCompositeOperation = "source-over";
+    for (const b of bits) {
+      if (t >= b.at) continue;
+      bx.fillStyle = b.fill;
+      bx.fillRect((b.x - b.size / 2) * d, (b.y - b.size / 2) * d, b.size * d, b.size * d);
+    }
+    bx.globalCompositeOperation = "lighter";
+    // the flash at the button, and the ring of the rainbow going out with the wave
+    const R = t * w.speed;
+    if (t < 0.32) {
+      const k = 1 - t / 0.32, rr = (40 + t * 1500) * d;
+      const fl = bx.createRadialGradient(w.cx * d, w.cy * d, 0, w.cx * d, w.cy * d, rr);
+      fl.addColorStop(0, `rgba(255,255,255,${(0.5 * k).toFixed(3)})`);
+      fl.addColorStop(0.3, ombre(0.3, 0.32 * k));
+      fl.addColorStop(1, ombre(0, 0));
+      bx.fillStyle = fl;
+      bx.fillRect(w.cx * d - rr, w.cy * d - rr, rr * 2, rr * 2);
+    }
+    if (R < w.far * 1.15) {
+      const k = 1 - R / (w.far * 1.15), segs = 36;
+      for (const [width, alpha, lift] of [[26, 0.16, 0], [7, 0.75, 0.25]]) {
+        bx.lineWidth = Math.max(1, width * d * (0.4 + 0.6 * k));
+        for (let i = 0; i < segs; i++) {
+          const a0 = (i / segs) * Math.PI * 2 - t * 2.2;
+          bx.strokeStyle = ombre(i / segs, alpha * k, lift);
+          bx.beginPath(); bx.arc(w.cx * d, w.cy * d, R * d, a0, a0 + Math.PI * 2 / segs + 0.02); bx.stroke();
+        }
+      }
+    }
+    // the squares it's reached: white hot, shooting away, split into the rainbow, over the trails
+    // they leave (only white, and no trails, on a device that's falling behind: a few frames
+    // slower than slowMs)
+    if (dt > (H().warp?.slowMs ?? 30)) w.slow++;
+    const lite = w.slow >= 3;
     let n = 0;
     for (const b of bits) {
-      b.age += s;
-      if (b.age >= b.life) continue;
       bits[n++] = b;
-      b.vy += 1100 * s; b.vx *= 1 - 0.8 * s;
-      b.x += b.vx * s; b.y += b.vy * s;
-      const t = b.age / b.life, z = b.size * (1 - 0.6 * t) * d;
-      bx.globalAlpha = t < 0.6 ? 1 : 1 - (t - 0.6) / 0.4;
-      bx.fillStyle = b.colour;
-      bx.fillRect(b.x * d - z / 2, b.y * d - z / 2, z, z);
+      const age = t - b.at;
+      if (age < 0) continue;
+      const x0 = b.x, y0 = b.y;
+      b.v += w.accel * s;
+      b.x += b.ux * b.v * s; b.y += b.uy * b.v * s;
+      if (age > 0.04 && !lite) trails[b.trail].push(x0 * d, y0 * d, b.x * d, b.y * d);
+      const m = b.size; // (gone off the screen: done with, once its trail's drawn)
+      if (b.x < -m || b.y < -m || b.x > W + m || b.y > Hh + m) n--;
     }
     bits.length = n;
+    // (the trails, a slice of the wheel at a time)
     bx.globalAlpha = 1;
+    bx.lineCap = "butt";
+    bx.lineWidth = Math.max(1.5, 6 * d);
+    for (let i = 0; i < TRAILS; i++) {
+      const line = trails[i];
+      if (!line.length) continue;
+      bx.strokeStyle = ombre(i / TRAILS, 0.75, 0.12);
+      bx.beginPath();
+      for (let k = 0; k < line.length; k += 4) { bx.moveTo(line[k], line[k + 1]); bx.lineTo(line[k + 2], line[k + 3]); }
+      bx.stroke();
+      line.length = 0;
+    }
+    for (const b of bits) {
+      const age = t - b.at;
+      if (age < 0) continue;
+      const heat = Math.min(1, age / 0.12), z = b.size * (1 - 0.5 * heat) * d;
+      if (heat < 1) {
+        bx.globalAlpha = 1 - heat;
+        bx.fillStyle = b.fill;
+        bx.fillRect(b.x * d - z / 2, b.y * d - z / 2, z, z);
+      }
+      if (lite) {
+        bx.globalAlpha = heat;
+        bx.fillStyle = "#fff";
+        bx.fillRect(b.x * d - z / 2, b.y * d - z / 2, z, z);
+      } else drawChromaSquare(bx, b.x * d, b.y * d, z, b.ux, b.uy, Math.min(z * 1.5, b.v * 0.0035 * d), heat);
+    }
+    bx.globalAlpha = 1;
+    bx.globalCompositeOperation = "source-over";
   }
 
-  // Starting a mode from the home screen: it all bursts into pieces and fades to dark
-  // (CONFIG.home.burstMs in all, the last fadeMs of it the fade; from How to play, just the
-  // fade), and the game comes up out of the dark. From anywhere else, straight in.
+  // Starting a mode from the home screen: the screen breaks up and shoots away (above) and fades
+  // to dark (CONFIG.home.burstMs in all, the last fadeMs of it the fade; from How to play, just
+  // the fade), and the game comes up out of the dark. From anywhere else, straight in.
   function play(mode, { from = null, burst = true } = {}) {
     if (phase === "starting") return;
     if (phase !== "home") { onPlay(mode); return; }
@@ -635,15 +736,22 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     phase = "off";
     clearTimeout(darkTimer);
     body.classList.remove("home", "starting", "homeFade");
+    const warped = !!warp;
     bits.length = 0;
+    warp = null;
     burstc.hidden = true;
     restoreBoard();
     state.backdrop = false;
     onPlay(playMode);
-    // (and up it comes, out of the dark)
+    // (and up it comes, out of the dark: after the warp, switching on like an old screen)
     dark.classList.add("on");
     void dark.offsetWidth;
     dark.classList.remove("on");
+    if (warped) for (const el of [$("boardShell"), $("boardFrame")]) {
+      el?.classList.remove("crtOn");
+      void el?.offsetWidth;
+      el?.classList.add("crtOn");
+    }
   }
 
   /* ---------- in and out ---------- */
@@ -733,7 +841,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       // (the game over, left alone: no game going on behind it any more)
       if (now >= idleAt && !document.hidden && idleFrom()) goIdle();
     } else if (phase === "starting") {
-      if (bits.length) drawBurst(dt);
+      if (warp) drawBurst(dt);
       if (now >= endAt) finishStart();
     }
   }
