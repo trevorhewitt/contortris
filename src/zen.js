@@ -30,8 +30,9 @@
 // theirs until it lands, wherever they put it, and the next comes already where the computer
 // wants it on the board as it is then. While they're playing, the computer keeps its hands
 // off: one piece at a time, each straight in at the top and falling at a pace they can steer,
-// for them to take if they like; left alone, it's quicker again, and on a big board often a few
-// at once (a flock).
+// for them to take if they like, and once it has landed, a moment before it locks, as in the
+// other modes, to slide or turn it; left alone, it's quicker again, and on a big board often a
+// few at once (a flock).
 //
 // Nothing can top either out. If the player builds it up into danger, a big powerup comes
 // ("steady"; in zen, big enough to make some room but not to bring the whole board down), and
@@ -1674,17 +1675,26 @@ const autopilot = (state) => { const z = state.zen; return !!z && !z.userHas && 
 export function zenSteps(state) {
   return autopilot(state) && !isCalm(state) ? CONFIG.zen.maxStepsPerFrame : null;
 }
-// ...and how long it waits before it locks once it has landed (null: as usual). Turbo zen hardly
-// waits at all, for the player's piece as for its own, so the next comes promptly; but never
-// before the rest of a flock has landed.
+// ...and how long it waits before it locks once it has landed (null: as usual). Turbo zen's own
+// pieces hardly wait at all, so the next comes promptly; but with the player playing, a piece
+// waits a moment first, as in the other modes, so they can still slide or turn it (grace); and
+// never before the rest of a flock has landed.
 export function zenLockMs(state) {
   const z = state.zen, a = state.active;
   if (!z || !a || z.piece !== a) return null;
-  if (z.userHas) return isCalm(state) ? null : CONFIG.zen.playerLockMs;
+  if (z.userHas) return isCalm(state) ? null : grace(state);
   // (the rest of a flock: it clears their rows with its own; but a powerup goes off with them
   // still on the way)
   if (state.flock.length && !a.shape.powerup) return Infinity;
+  if (z.playing) return grace(state);
   return isCalm(state) && !dozing(state) ? null : CONFIG.zen.lockMs * z.pace;
+}
+// (turbo zen: as long as a piece waits on the ground in the other modes, but in real time, however
+// fast it's going: a little longer for a touch, and longer again once it has been slid or turned
+// along the ground; CONFIG.timing)
+function grace(state) {
+  const T = CONFIG.timing, ms = state.lastInputType === "touch" ? T.lockDelayMsTouch : T.lockDelayMsKeyboard;
+  return Math.max(ms, state.active?.groundMoved ? T.slideLockMs ?? 0 : 0) * timeScaleOf(state);
 }
 
 // Small and repetitive things come down faster, and so does the long build up from the bottom;

@@ -390,8 +390,10 @@ test("turbo zen: the player plays a few pieces, and the computer keeps its hands
       updateGame(state, 16);
       if (state.active === piece) assert.ok(piece.x === x && piece.rotIdx === rot, "nothing moves it but the player");
     }
-    // ...and once it has landed, it locks straight away and the next comes
-    assert.ok(gap != null && gap <= Z.playerLockMs + 32, `the next came ${gap}ms after it landed`);
+    // ...and once it has landed, it waits a moment, as in the other modes (in real time), and
+    // then the next comes promptly
+    const grace = CONFIG.timing.lockDelayMsKeyboard * CONFIG.modes.turbo.timeScale;
+    assert.ok(gap != null && gap >= grace - 32 && gap <= grace + 32, `the next came ${gap}ms after it landed`);
     // (and they play on, a few more, each moved over a column as it comes and dropped)
     for (let n = 0; n < 3; n++) {
       while (!ready()) updateGame(state, 16);
@@ -442,6 +444,49 @@ test("turbo zen: the piece after the player's is left to them too, however long 
   } finally {
     Z.playMs = was;
   }
+});
+
+test("turbo zen: with the player playing, a piece that lands waits a moment before it locks, as in the other modes, and longer once slid or turned along the ground", () => {
+  const T = CONFIG.timing, ts = CONFIG.modes.turbo.timeScale;
+  const { state } = zen(5, "turbo");
+  run(state, null, 4000);
+  const ready = () => { while (!(state.active && !state.effect && !state.hold && state.active.y >= 0 && !state.active.shape.powerup)) updateGame(state, 4); };
+  // (how long the falling piece waits on the ground before it locks, game time, from the moment
+  // it lands; `then`: what the player does to it as it lands)
+  const wait = (then = null) => {
+    const piece = state.active;
+    while (state.active === piece && !state.locking) updateGame(state, 4);
+    assert.equal(state.active, piece, `${piece.shape.id} locked as it landed`);
+    let t = 4;
+    then?.(piece);
+    while (state.active === piece) { updateGame(state, 4); t += 4; }
+    return t;
+  };
+  const near = (t, ms, what) => assert.ok(t >= ms && t < ms + 8, `${what}: waited ${t}ms, not ${ms.toFixed(0)}`);
+  // the player takes one and lets it land: it waits as long as a piece would in the other modes,
+  // in real time
+  ready();
+  markInput(state, "keyboard");
+  near(wait(), T.lockDelayMsKeyboard * ts, "theirs");
+  // ...and so does the next, the computer's, while they're playing
+  assert.equal(state.zen.userHas, false);
+  near(wait(), T.lockDelayMsKeyboard * ts, "the next");
+  // (by touch, a little longer)
+  ready();
+  markInput(state, "touch");
+  near(wait(), T.lockDelayMsTouch * ts, "by touch");
+  // slid or turned along the ground as it lands, it waits longer again, to be slid again
+  ready();
+  markInput(state, "keyboard");
+  let moved = false;
+  const t = wait(() => { markInput(state, "keyboard"); moved = tryMove(state, 1, 0) || tryMove(state, -1, 0) || tryRotate(state); });
+  assert.ok(moved, "it could be slid or turned");
+  assert.ok(t >= T.slideLockMs * ts, `slid, it waited ${t}ms`);
+  // left alone a while, the computer's own lock almost as soon as they land again
+  run(state, null, 30000);
+  ready();
+  assert.equal(state.zen.playing, false);
+  assert.ok(wait() < T.lockDelayMsKeyboard * ts / 2, "its own lock almost at once");
 });
 
 test("turbo zen: a plan the player steps into carries on while its pieces still land where it put them, then gives way to something new", () => {
