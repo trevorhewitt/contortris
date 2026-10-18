@@ -95,10 +95,12 @@ export const CONFIG = {
     // A while after the home screen comes up (firstMs), and every so often after that (everyMs),
     // the next cut is to a mosaic (src/mosaic.js): a grid cols × rows packed full of pieces on a
     // theme (themes: how likely each; tags: the kinds of thing that can be one), drawn cellPx a
-    // cell, swept across fast for a few shots (shots), each shotMs long, zooming between zoom
-    // times as close as filling the screen, turning up to maxTurn degrees.
+    // cell, repeating in every direction, swept across for a few shots (shots), each shotMs long:
+    // in a straight line at a steady speed from the first frame to the cut (speed: screens a
+    // second, the screen's longer side), zooming steadily between zoom times as close as filling
+    // the screen, turning steadily up to maxTurn degrees.
     mosaic: {
-      firstMs: [12000, 20000], everyMs: [30000, 45000], shots: [2, 4], shotMs: [1000, 1700], zoom: [1.15, 3.4], maxTurn: 32,
+      firstMs: [12000, 20000], everyMs: [30000, 45000], shots: [2, 4], shotMs: [1000, 1700], speed: [0.35, 0.9], zoom: [1.15, 3.4], maxTurn: 32,
       cols: 56, rows: 34, cellPx: 20,
       tags: ["food", "space", "tiles", "landmark", "surreal", "weather", "bugs"],
       themes: { everything: 3, powerups: 1.5, giants: 1.2, few: 1.6, food: 1, space: 0.8, tiles: 0.8, landmark: 0.5, surreal: 0.6, weather: 0.5, bugs: 0.5 },

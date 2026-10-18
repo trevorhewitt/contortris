@@ -5,7 +5,9 @@
 // a big grid packed with pieces, the biggest put down first wherever they fit and then smaller
 // and smaller ones in the gaps (a few gaps left is fine, as long as it looks full), all of them
 // on a theme: anything at all, one kind of thing (food, space...), the powerups, the giants, or
-// just a few pieces over and over. The camera sweeps across it fast, turning and zooming.
+// just a few pieces over and over. It repeats in every direction, and is packed that way, a piece
+// over one edge coming round on the other, so the repeats meet with no seam; the camera sweeps
+// across it, turning and zooming, and never comes to an edge.
 //
 // buildMosaic packs it (no DOM: a list of pieces where they go); paintMosaic paints it onto a
 // canvas the camera shows, a little each frame.
@@ -37,7 +39,8 @@ function themes(shapes, powerups, rng) {
   return out;
 }
 
-// Pack a grid `cols` × `rows`: { cols, rows, theme, pieces: [{ shape, rot, x, y }] }.
+// Pack a grid `cols` × `rows`: { cols, rows, theme, pieces: [{ shape, rot, x, y }] }. (A piece
+// can go over the right or bottom edge: what's over it comes round on the left, or at the top.)
 export function buildMosaic(shapes, powerups, { cols, rows, rng = Math.random, theme = null } = {}) {
   const pools = themes(shapes, powerups, rng);
   const names = Object.keys(pools);
@@ -54,17 +57,18 @@ export function buildMosaic(shapes, powerups, { cols, rows, rng = Math.random, t
   const fillers = little(pool).length >= 3 ? little(pool) : little(pools.everything);
   const occ = new Uint8Array(cols * rows);
   const pieces = [];
+  const at = (x, y) => (((y % rows) + rows) % rows) * cols + (((x % cols) + cols) % cols);
   const fits = (mat, x, y) => {
+    if (mat[0].length > cols || mat.length > rows) return false;
     for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) {
-      if (!mat[j][i]) continue;
-      const cx = x + i, cy = y + j;
-      if (cx < 0 || cy < 0 || cx >= cols || cy >= rows || occ[cy * cols + cx]) return false;
+      if (mat[j][i] && occ[at(x + i, y + j)]) return false;
     }
     return true;
   };
   const put = (shape, rot, x, y) => {
     const mat = shape.rotations[rot];
-    for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) if (mat[j][i]) occ[(y + j) * cols + x + i] = 1;
+    x = ((x % cols) + cols) % cols; y = ((y % rows) + rows) % rows;
+    for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) if (mat[j][i]) occ[at(x + i, y + j)] = 1;
     pieces.push({ shape, rot, x, y });
   };
   const any = (list) => list[Math.floor(rng() * list.length)];
@@ -79,7 +83,7 @@ export function buildMosaic(shapes, powerups, { cols, rows, rng = Math.random, t
       const tries = Math.round((cols * rows * share) / ((lo + Math.min(hi, lo * 2)) / 2)) * 3;
       for (let t = 0; t < tries; t++) {
         const s = any(band), rot = turnOf(s), mat = s.rotations[rot];
-        const x = Math.floor(rng() * (cols - mat[0].length + 1)), y = Math.floor(rng() * (rows - mat.length + 1));
+        const x = Math.floor(rng() * cols), y = Math.floor(rng() * rows);
         if (fits(mat, x, y)) put(s, rot, x, y);
       }
     } else {
@@ -113,8 +117,9 @@ export function paintMosaic(m, cellPx, canvas = document.createElement("canvas")
     const until = performance.now() + ms;
     while (i < m.pieces.length) {
       const p = m.pieces[i++], mat = p.shape.rotations[p.rot];
+      // (what's over the right or bottom edge, round on the left or at the top)
       for (let j = 0; j < mat.length; j++) for (let k = 0; k < mat[0].length; k++) {
-        if (mat[j][k]) drawBlockWithPaintStatic(ctx, (p.x + k) * cellPx, (p.y + j) * cellPx, cellPx, getShapePaint(p.shape, p.rot, k, j), p.shape.style ?? {});
+        if (mat[j][k]) drawBlockWithPaintStatic(ctx, ((p.x + k) % m.cols) * cellPx, ((p.y + j) % m.rows) * cellPx, cellPx, getShapePaint(p.shape, p.rot, k, j), p.shape.style ?? {});
       }
       if (performance.now() >= until) break;
     }

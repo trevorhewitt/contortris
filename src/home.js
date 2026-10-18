@@ -18,7 +18,8 @@
 // so a cut can be to somewhere else altogether, not just the same board from another angle. Only
 // the one on screen plays (main.js asks liveState()); the other waits where it was, which costs
 // nothing. And now and then a cut is to a mosaic instead (src/mosaic.js): a screen packed full of
-// pieces, swept across fast for a few shots, turning and zooming, then back to the boards.
+// pieces, repeating in every direction, swept across at a steady speed for a few shots, turning
+// and zooming, then back to the boards.
 
 import { CONFIG } from "../config.js";
 import { startRun, resetGame, updateGame, getGhostDropY, collides, createGameState, markBoardDirty } from "./game.js";
@@ -30,7 +31,6 @@ import { ombre, ombreRGB } from "./util.js";
 const H = () => CONFIG.home ?? {};
 const rand = (a, b) => a + Math.random() * (b - a);
 const pickIn = ([a, b]) => rand(a, b);
-const smooth = (t) => t * t * (3 - 2 * t);
 
 // The size of the board behind the menu, for a window this shape.
 export function homeBoardSize(w, h) {
@@ -54,6 +54,17 @@ export function viewOverlap(a, b, w, h) {
   const [ax0, ax1, ay0, ay1] = edges(a), [bx0, bx1, by0, by1] = edges(b);
   const both = Math.max(0, Math.min(ax1, bx1) - Math.max(ax0, bx0)) * Math.max(0, Math.min(ay1, by1) - Math.max(ay0, by0));
   return both / ((ax1 - ax0) * (ay1 - ay0) + (bx1 - bx0) * (by1 - by0) - both);
+}
+
+// Where the camera is, u (0 to 1) of the way through a shot of a mosaic, s: { a, b }, where it
+// starts and where it ends ({ x, y, z, rot }). Steady all the way, from the first frame to the
+// last: turning at a steady rate, zooming at a steady rate (as much closer each moment as the
+// moment before), and moving across the screen at a steady speed however close it is (across the
+// mosaic, then, the closer the slower).
+export function mosaicSweep(s, u) {
+  const { a, b } = s, r = b.z / a.z;
+  const g = Math.abs(r - 1) < 1e-9 ? u : (1 - r ** -u) / (1 - 1 / r);
+  return { x: a.x + (b.x - a.x) * g, y: a.y + (b.y - a.y) * g, z: a.z * r ** u, rot: a.rot + (b.rot - a.rot) * u };
 }
 
 export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, setWholeWindow, onPlay, onShowMenu, menuShowing, idleFrom = () => (menuShowing() ? "menu" : null), lastMode, hideOverlay }) {
@@ -396,35 +407,45 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       this.x = Math.max(hw, Math.min(cols - hw, s.a.x + (s.b.x - s.a.x) * u));
       this.y = Math.max(hh, Math.min(rows - hh, s.a.y + (s.b.y - s.a.y) * u));
     },
-    // A shot of the mosaic: a fast sweep from one spot to another across it, turning and zooming
-    // as it goes (CONFIG.home.mosaic), eased in and out. `after` another shot of it: from somewhere
-    // clearly different from where that one ended (unlike).
+    // A shot of the mosaic: a sweep across it in a straight line, turning and zooming as it goes
+    // (CONFIG.home.mosaic), at a steady speed from the first frame to the cut (mosaicSweep). The
+    // mosaic repeats in every direction, so a sweep can go anywhere and never comes to an edge.
+    // `after` another shot of it: from somewhere clearly different from where that one ended
+    // (unlike, by whichever of its repeats is nearest).
     mosaicShot(now, after = false) {
       const M = H().mosaic, m = mosaic.mosaic, turn = (M.maxTurn ?? 30) * Math.PI / 180;
       const [zl, zh] = M.zoom ?? [1.15, 3.4], [m0, m1] = M.shotMs ?? [1000, 1700];
-      const end = () => ({ x: rand(0, m.cols), y: rand(0, m.rows), z: rand(zl, zh), rot: rand(-turn, turn) });
-      const [a] = unlike(after && { x: this.x, y: this.y, S: this.S }, end, (p) => this.mosaicView(p)), b = end();
-      // (a pan, mostly; or a turn and a zoom about one spot)
-      if (Math.random() < 0.3) { b.x = a.x + rand(-3, 3); b.y = a.y + rand(-3, 3); b.z = a.z * (Math.random() < 0.5 ? 0.5 : 1.8); }
-      this.shot = { mosaic: true, start: now, end: now + rand(m0, m1), a, b };
-    },
-    // (the view of the mosaic from p, { x, y, z, rot }: never so far that anything beyond it shows)
-    mosaicView(p) {
-      const m = mosaic.mosaic, z = Math.max(1, p.z), S = coverScale(view.w, view.h, p.rot, m.cols, m.rows) * z;
-      const ca = Math.abs(Math.cos(p.rot)), sa = Math.abs(Math.sin(p.rot));
-      const hw = (view.w * ca + view.h * sa) / (2 * S), hh = (view.w * sa + view.h * ca) / (2 * S);
-      return { x: Math.max(hw, Math.min(m.cols - hw, p.x)), y: Math.max(hh, Math.min(m.rows - hh, p.y)), z, rot: p.rot, S };
+      // (a sweep, mostly, off in any direction at `speed` screens a second, the screen's longer
+      // side; or a turn and a zoom about one spot, in, or out from close enough that it ends up
+      // no wider than the mosaic filling the screen)
+      const zooming = Math.random() < 0.3, outward = zooming && Math.random() < 0.5;
+      const spot = (z = rand(zl, zh)) => ({ x: rand(0, m.cols), y: rand(0, m.rows), z, rot: rand(-turn, turn) });
+      const from = after && { x: this.x, y: this.y, S: this.S };
+      const near = (p, n, f) => f + ((((p - f) % n) + 1.5 * n) % n) - n / 2;
+      const seen = (p) => ({ x: from ? near(p.x, m.cols, from.x) : p.x, y: from ? near(p.y, m.rows, from.y) : p.y, S: coverScale(view.w, view.h, p.rot, m.cols, m.rows) * p.z });
+      const [a] = unlike(from, () => spot(outward ? rand(Math.min(2, zh), zh) : undefined), seen);
+      const T = rand(m0, m1), b = spot(zooming ? a.z * (outward ? 0.5 : 1.8) : undefined);
+      const v = (zooming ? 0.08 : pickIn(M.speed ?? [0.35, 0.9])) * Math.max(view.w, view.h);
+      // (as close as filling the screen with the mosaic at the shot's most turned, times z: so
+      // the screen never takes in more than one of its repeats, nor any piece twice)
+      const base = coverScale(view.w, view.h, Math.max(Math.abs(a.rot), Math.abs(b.rot)), m.cols, m.rows);
+      // (how far it goes, in cells, for that speed across the screen: mosaicSweep)
+      const r = b.z / a.z, S0 = base * a.z, way = rand(0, 2 * Math.PI);
+      const far = Math.abs(r - 1) < 1e-9 ? v * T / 1000 / S0 : v * T / 1000 * (1 - 1 / r) / (S0 * Math.log(r));
+      b.x = a.x + Math.cos(way) * far;
+      b.y = a.y + Math.sin(way) * far;
+      this.shot = { mosaic: true, start: now, end: now + T, a, b, base };
     },
     stepMosaic(now) {
-      const s = this.shot, u = smooth(Math.min(1, (now - s.start) / (s.end - s.start)));
-      const lerp = (k) => s.a[k] + (s.b[k] - s.a[k]) * u;
-      Object.assign(this, this.mosaicView({ x: lerp("x"), y: lerp("y"), z: lerp("z"), rot: lerp("rot") }));
+      const s = this.shot, p = mosaicSweep(s, Math.min(1, (now - s.start) / (s.end - s.start)));
+      Object.assign(this, p, { S: s.base * p.z });
     },
     draw() {
-      if (this.shot?.mosaic && mosaic) return this.drawImage(mosaic.canvas, mosaic.mosaic.cols);
+      if (this.shot?.mosaic && mosaic) return this.drawImage(mosaic.canvas, mosaic.mosaic.cols, this, mosaic);
       this.drawImage(boardCanvas, CONFIG.board.cols, this.hold ?? this);
     },
-    drawImage(img, cols, v = this) {
+    // (`tiled`: the mosaic, repeated in every direction, as much of it as the screen takes in)
+    drawImage(img, cols, v = this, tiled = null) {
       const pc = img.width / cols, d = view.dpr;
       bgx.setTransform(1, 0, 0, 1, 0, 0);
       bgx.fillStyle = "#000";
@@ -435,7 +456,11 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       const k = v.S * d / pc;
       bgx.scale(k, k);
       bgx.translate(-v.x * pc, -v.y * pc);
-      bgx.drawImage(img, 0, 0);
+      if (!tiled) { bgx.drawImage(img, 0, 0); return; }
+      const ca = Math.abs(Math.cos(v.rot)), sa = Math.abs(Math.sin(v.rot));
+      const hw = (view.w * ca + view.h * sa) / (2 * v.S) + 1, hh = (view.w * sa + view.h * ca) / (2 * v.S) + 1;
+      bgx.fillStyle = tiled.pattern ??= bgx.createPattern(img, "repeat");
+      bgx.fillRect((v.x - hw) * pc, (v.y - hh) * pc, 2 * hw * pc, 2 * hh * pc);
     },
   };
 
@@ -915,6 +940,6 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     warming: () => phase === "home" && warmLeft > 0,
     phase: () => phase,
     // (for looking at in dev mode: what the camera can see, and where the action is)
-    debug: () => ({ boards: { other: !!other, onOther, otherWarm, warmLeft }, x: camera.x, y: camera.y, z: camera.z, ...camera.half(camera.z), action: actionBox(true), reach: actionBox(), shot: camera.shot, sees: (b) => camera.sees(b, 0) }),
+    debug: () => ({ boards: { other: !!other, onOther, otherWarm, warmLeft }, x: camera.x, y: camera.y, z: camera.z, S: camera.S, rot: camera.rot, ...camera.half(camera.z), action: actionBox(true), reach: actionBox(), shot: camera.shot, sees: (b) => camera.sees(b, 0) }),
   };
 }

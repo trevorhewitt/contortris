@@ -3,7 +3,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CONFIG } from "../config.js";
-import { homeBoardSize, coverScale, viewOverlap } from "../src/home.js";
+import { homeBoardSize, coverScale, viewOverlap, mosaicSweep } from "../src/home.js";
 
 test("the board behind the home screen is the window's shape, within limits", () => {
   const H = CONFIG.home;
@@ -35,4 +35,28 @@ test("how alike two views are, for the cuts: the same view 1, nothing in common 
   assert.ok(Math.abs(viewOverlap(v, { ...v, x: 20 }, W, Hh) - 1 / 3) < 1e-9);
   assert.ok(Math.abs(viewOverlap(v, { ...v, S: 160 }, W, Hh) - 1 / 4) < 1e-9);
   assert.equal(viewOverlap(v, { ...v, x: 14, y: 3 }, W, Hh), viewOverlap({ ...v, x: 14, y: 3 }, v, W, Hh));
+});
+
+test("a shot of a mosaic is steady from its first frame to the cut: one speed across the screen, one rate of zoom, one of turn", () => {
+  const shots = [
+    { a: { x: 3, y: 4, z: 1.2, rot: -0.3 }, b: { x: 40, y: -9, z: 3.1, rot: 0.4 } }, // (a sweep, zooming in)
+    { a: { x: 50, y: 20, z: 3, rot: 0.2 }, b: { x: 20, y: 30, z: 1.25, rot: 0.2 } }, // (zooming out)
+    { a: { x: 0, y: 0, z: 2, rot: 0 }, b: { x: 30, y: 10, z: 2, rot: -0.5 } }, // (turning, no zoom)
+  ];
+  for (const s of shots) {
+    // (frame by frame: how far the middle of the view moves across the screen, at 25 screen
+    // pixels a cell times z, how much closer it gets, and how far it turns)
+    const n = 60, speed = [], zoom = [], turn = [];
+    for (let i = 0; i < n; i++) {
+      const p = mosaicSweep(s, i / n), q = mosaicSweep(s, (i + 1) / n);
+      speed.push(Math.hypot(q.x - p.x, q.y - p.y) * 25 * Math.sqrt(p.z * q.z));
+      zoom.push(Math.log(q.z / p.z));
+      turn.push(q.rot - p.rot);
+    }
+    const steady = (a) => Math.max(...a) - Math.min(...a) <= 1e-6 * Math.max(1, ...a.map(Math.abs));
+    assert.ok(steady(speed), `speed ${Math.min(...speed).toFixed(3)} to ${Math.max(...speed).toFixed(3)}`);
+    assert.ok(steady(zoom) && steady(turn));
+    // (and from just where it starts to just where it ends)
+    for (const [u, at] of [[0, s.a], [1, s.b]]) for (const k of ["x", "y", "z", "rot"]) assert.ok(Math.abs(mosaicSweep(s, u)[k] - at[k]) < 1e-9, `${k} at ${u}`);
+  }
 });
