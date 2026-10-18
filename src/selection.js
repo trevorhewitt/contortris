@@ -1059,6 +1059,13 @@ function maybeSelectPowerup(state, danger01) {
   candidates = candidates.filter(p => !introducing(p) || p.powerup.starter || !hasStarter.has(p.powerup.cls));
   if (!candidates.length) return null;
 
+  // Expanderz while they're the only class that can come (the first class, before another's been
+  // met): only so often (with no other class to come instead, no Shiny Piece at all), and the ones
+  // that fill down to the floor rarer (CONFIG...soleExpanders)
+  const sole = new Set(candidates.map(p => p.powerup.cls)).size === 1 && candidates[0].powerup.cls === "expander" ? cfg.soleExpanders : null;
+  if (sole && sel.dropIndex - (ps.classAt?.expander ?? -Infinity) < (sole.apart ?? 0)) return null;
+  const soleW = (p) => (sole && fillsToFloor(p) ? sole.floorFill ?? 1 : 1);
+
   // the first combo comes soon after they open, so everyone gets to see one
   const firstComboDue = !ps.shownClasses.has("combo") && ps.comboOpenedAt != null;
 
@@ -1092,10 +1099,11 @@ function maybeSelectPowerup(state, danger01) {
     const helpW = Math.pow((p.powerup.help ?? 3) / 3, power);
     const threadW = CONFIG.assist.threads?.powerups ? threadWeight(sel.currentThread, p, sel.servedCounts.get(p.id) ?? 0) : 1;
     // (kinds kept apart: CONFIG.assist.powerups.apart)
-    const apartW = (p.tags ?? []).reduce((w, t) => { const a = cfg.apart?.[t]; return a && sel.dropIndex - (ps.tagAt?.[t] ?? -Infinity) < a.drops ? w * a.weight : w; }, 1);
-    const w = clearerW(p) * (p.frequency ?? 1) * needW(p) * helpW * usableW(p) * wideW(p) * bigW(p) * rarerW(p) * varietyMultiplier(sel, p) * apartW;
+    const apartW = kindsOf(p).reduce((w, t) => { const a = cfg.apart?.[t]; return a && sel.dropIndex - (ps.tagAt?.[t] ?? -Infinity) < a.drops ? w * a.weight : w; }, 1);
+    const w = clearerW(p) * (p.frequency ?? 1) * needW(p) * helpW * usableW(p) * wideW(p) * bigW(p) * rarerW(p) * varietyMultiplier(sel, p) * apartW * soleW(p);
     plainW.set(p, w);
-    pieceW.set(p, w * threadW);
+    // (no thread pulls the Expanderz that fill down to the floor back in while they're the only class)
+    pieceW.set(p, soleW(p) < 1 ? w : w * threadW);
   }
   // Standard pools: the class first, then one of its pieces, so each class gets its share however
   // many pieces it has. A class's share: how often it comes at this stage of the game
@@ -1127,8 +1135,23 @@ function maybeSelectPowerup(state, danger01) {
   fs.had[cls] = (fs.had[cls] ?? 0) + 1;
   (ps.classAt ??= {})[cls] = sel.dropIndex;
   if (chosen && introducing(chosen)) { ps.lastIntroDrop = sel.dropIndex; ps.pendingIntro.add(chosen.powerup.cls); }
-  for (const t of chosen?.tags ?? []) if (cfg.apart?.[t]) (ps.tagAt ??= {})[t] = sel.dropIndex;
+  for (const t of chosen ? kindsOf(chosen) : []) if (cfg.apart?.[t]) (ps.tagAt ??= {})[t] = sel.dropIndex;
   return chosen;
+}
+
+// The kinds of powerup kept apart (CONFIG.assist.powerups.apart): its tags, and "floorFill" for an
+// Expanderz (or a combo's expanding part) that fills down to the floor, or whole columns.
+function kindsOf(p) {
+  return fillsToFloor(p) ? [...(p.tags ?? []), "floorFill"] : (p.tags ?? []);
+}
+const floorFill = new WeakMap();
+export function fillsToFloor(p) {
+  if (floorFill.has(p)) return floorFill.get(p);
+  const pu = p.powerup;
+  const v = !!pu && (pu.type === "combo" ? pu.parts ?? [] : [pu]).some(part => part.type === "expander"
+    && part.areaRotations.some(a => (a.downs?.length ?? 0) > 0 || a.cols.length > 0));
+  floorFill.set(p, v);
+  return v;
 }
 
 // How many rows tall the stack is (from its highest block to the floor)

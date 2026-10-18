@@ -269,3 +269,46 @@ test("a powerup's intro comes just before it falls, once a class, and nothing is
     assert.equal(new Set(intros).size, intros.length, `one intro a class: ${intros.join()}`);
   }
 });
+
+test("Expanderz as the only class: one only so often, and mostly not the ones that fill down to the floor", async () => {
+  const { fillsToFloor } = await import("../src/selection.js");
+  const { shapes, powerups } = loadShapes(SHAPES);
+  const cfg = CONFIG.assist.powerups, prog = cfg.progression, was = { order: prog.order, sole: cfg.soleExpanders };
+  const run = () => {
+    let floor = 0, all = 0, close = 0, gaps = 0;
+    for (let seed = 1; seed <= 10; seed++) {
+      const state = createGameState(shapes, powerups, { rng: makeRng(seed) });
+      const rng = makeRng(500 + seed);
+      let last = null;
+      on(state, (t, d) => {
+        if (t !== "spawn" || !d.shape.powerup) return;
+        all++;
+        if (fillsToFloor(d.shape)) floor++;
+        const at = state.pieceSel.dropIndex;
+        if (last != null) { gaps++; if (at - last < cfg.soleExpanders?.apart) close++; }
+        last = at;
+      });
+      startRun(state, "normal");
+      for (let i = 0; i < 150 && !state.gameOver; i++) {
+        // (a bumpy floor with air pockets in it, for them to fill)
+        state.board = state.board.map((r, y) => r.map(() => (y >= state.board.length - 5 && rng() < 0.7 ? { paint: "#888", pid: -1 } : null)));
+        hardDropAndLock(state);
+        for (let k = 0; k < 120 && state.effect; k++) updateGame(state, 16);
+      }
+    }
+    return { floor: floor / Math.max(1, all), close: close / Math.max(1, gaps), all };
+  };
+  try {
+    prog.order = ["expander"]; // (the Expanderz and nothing else, all game)
+    const usual = run();
+    cfg.soleExpanders = null;
+    const without = run();
+    assert.ok(usual.all >= 30 && without.all >= 30, `${usual.all} and ${without.all} came`);
+    assert.ok(usual.floor < without.floor * 0.5, `filling down to the floor: ${(usual.floor * 100).toFixed(0)}% of them, against ${(without.floor * 100).toFixed(0)}%`);
+    assert.ok(usual.close <= 0.05, `${(usual.close * 100).toFixed(0)}% within ${was.sole.apart} pieces of the last`);
+    assert.ok(usual.all < without.all, "fewer of them");
+  } finally {
+    prog.order = was.order;
+    cfg.soleExpanders = was.sole;
+  }
+});

@@ -854,8 +854,16 @@ export const CONFIG = {
       expanderMaxCols: 5,
       // ...and some kinds of powerup (by tag) kept apart: within `drops` pieces of one, another of
       // the kind is `weight` times as likely (the sinkhole-type: a column dug out, the ground
-      // either side filled in). Turbo zen keeps them apart as well (CONFIG.zen.apart).
-      apart: { sinkhole: { drops: 30, weight: 0.04 } },
+      // either side filled in; floorFill, not a tag: the Expanderz that fill down to the floor,
+      // two of which side by side filled whole stacks). Turbo zen keeps them apart as well
+      // (CONFIG.zen.apart).
+      apart: { sinkhole: { drops: 30, weight: 0.04 }, floorFill: { drops: 16, weight: 0.15 } },
+      // Expanderz while they're the only class that can come (the first class, before another's
+      // been met) are the strongest start of all, so: none comes within `apart` pieces of the
+      // last (with no other class to come instead, no Shiny Piece at all), and the ones that fill
+      // down to the floor are `floorFill` as likely as the ones that fill along a row, in a shape
+      // or round the piece (most of them fill down to the floor, so this has to be low).
+      soleExpanders: { apart: 12, floorFill: 0.06 },
       // Board clearers: a powerup whose area takes in `share` of the stack as it is now (its rows
       // times the board's width), or more, comes `weight` times as often: hardly ever, until the
       // stack is taller than it can clear. And one whose area is `hugeArea` of the whole board or
