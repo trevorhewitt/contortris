@@ -15345,6 +15345,220 @@ export const SHAPES = [
     claudeDraft: true,
   },
   {
+    id: "rolled_up_yoga_mat",
+    name: "a yoga mat, still rolled up",
+    grid: [
+        "XXX"
+      ],
+    color: [["#1d1430","#1d1430","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#262229","#262229","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#1d1430","#1d1430"],["#1d1430","#3a1f5c","#a87de0","#d4b8f6","#a87de0","#8150c0","#3a1f5c","#d4b8f6","#d4b8f6","#d4b8f6","#d4b8f6","#d4b8f6","#d4b8f6","#d4b8f6","#262229","#262229","#d4b8f6","#d4b8f6","#d4b8f6","#d4b8f6","#d4b8f6","#d4b8f6","#d4b8f6","#1d1430"],["#3a1f5c","#a87de0","#8150c0","#6a40a4","#6a40a4","#8150c0","#5c3590","#3a1f5c","#a87de0","#a87de0","#a87de0","#a87de0","#a87de0","#a87de0","#262229","#262229","#a87de0","#a87de0","#a87de0","#a87de0","#a87de0","#a87de0","#a87de0","#3a1f5c"],["#3a1f5c","#8150c0","#6a40a4","#5c3590","#a87de0","#6a40a4","#5c3590","#3a1f5c","#8150c0","#8150c0","#8150c0","#8150c0","#8150c0","#8150c0","#b8b8c4","#b8b8c4","#8150c0","#8150c0","#8150c0","#8150c0","#8150c0","#8150c0","#8150c0","#3a1f5c"],["#3a1f5c","#8150c0","#6a40a4","#a87de0","#5c3590","#6a40a4","#5c3590","#3a1f5c","#8150c0","#8150c0","#8150c0","#8150c0","#8150c0","#8150c0","#b8b8c4","#b8b8c4","#8150c0","#8150c0","#8150c0","#8150c0","#8150c0","#8150c0","#8150c0","#3a1f5c"],["#3a1f5c","#5c3590","#8150c0","#6a40a4","#6a40a4","#8150c0","#5c3590","#3a1f5c","#5c3590","#5c3590","#5c3590","#5c3590","#5c3590","#5c3590","#262229","#262229","#5c3590","#5c3590","#5c3590","#5c3590","#5c3590","#5c3590","#5c3590","#3a1f5c"],["#1d1430","#3a1f5c","#5c3590","#5c3590","#5c3590","#5c3590","#3a1f5c","#5c3590","#5c3590","#5c3590","#5c3590","#5c3590","#5c3590","#5c3590","#262229","#262229","#5c3590","#5c3590","#5c3590","#5c3590","#5c3590","#5c3590","#3a1f5c","#1d1430"],["#1d1430","#1d1430","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#262229","#262229","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#3a1f5c","#1d1430","#1d1430"]],
+    powerup: {
+        "type": "expander",
+        "tier": 1,
+        "area": {
+          "origin": [
+            0,
+            0
+          ],
+          "grid": [
+            "...",
+            "-.."
+          ]
+        },
+        "fill": {
+          "k": 8,
+          "palette": [
+            "#3a1f5c",
+            "#5c3590",
+            "#8150c0",
+            "#a87de0",
+            "#d4b8f6"
+          ],
+          "layers": [
+            {
+              "gen": "strata",
+              "thickness": 0.25,
+              "wobble": 0,
+              "speckle": 0,
+              "palette": [
+                "#8150c0",
+                "#7646b4"
+              ]
+            }
+          ],
+          "shade": {
+            "light": 0.25,
+            "dark": 0.3,
+            "width": 1
+          },
+          "edge": {
+            "color": "#3a1f5c",
+            "width": 1,
+            "alpha": 0.6
+          },
+          "join": true
+        },
+        "intro": "Unrolls along the row under it, wall to wall, into every empty cell. It's been going to start yoga since January.",
+        "help": 4.5,
+        "starter": true
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 1,
+    claudeDraft: true,
+    oops: {
+        "many": "yoga mats"
+      },
+  },
+  {
+    id: "startled_pufferfish",
+    name: "a startled pufferfish",
+    grid: [
+        "X"
+      ],
+    color: [["#1b4566","#1b4566","#efe2b6","#1b4566","#efe2b6","#1b4566","#efe2b6","#1b4566","#1b4566"],["#1b4566","#efe2b6","#1b4566","#7a5520","#7a5520","#7a5520","#1b4566","#efe2b6","#1b4566"],["#1b4566","#1b4566","#7a5520","#f8e28c","#f8e28c","#e9c24f","#7a5520","#1b4566","#1b4566"],["#efe2b6","#7a5520","#ffffff","#14141c","#f8e28c","#e9c24f","#b38a35","#7a5520","#efe2b6"],["#1b4566","#7a5520","#ffffff","#ffffff","#e9c24f","#e9c24f","#e9c24f","#7a5520","#d79a33"],["#efe2b6","#d4604a","#fff6d8","#fff6d8","#e9c24f","#b38a35","#e9c24f","#7a5520","#efe2b6"],["#1b4566","#1b4566","#7a5520","#fff6d8","#fff6d8","#e9c24f","#7a5520","#1b4566","#1b4566"],["#1b4566","#efe2b6","#1b4566","#7a5520","#7a5520","#7a5520","#1b4566","#efe2b6","#1b4566"],["#1b4566","#1b4566","#efe2b6","#1b4566","#efe2b6","#1b4566","#efe2b6","#1b4566","#1b4566"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "area": {
+          "origin": [
+            2,
+            2
+          ],
+          "grid": [
+            ".###.",
+            "#####",
+            "##.##",
+            "#####",
+            ".###."
+          ]
+        },
+        "fill": {
+          "k": 9,
+          "palette": [
+            "#8a6420",
+            "#c9a040",
+            "#e9c24f",
+            "#f8e28c",
+            "#fff6d8"
+          ],
+          "layers": [
+            {
+              "gen": "blob",
+              "mode": "sphere"
+            },
+            {
+              "gen": "rays",
+              "count": 18,
+              "duty": 0.18,
+              "falloff": 0.3,
+              "alpha": 0.35,
+              "palette": [
+                "#e9c24f",
+                "#efe2b6"
+              ]
+            },
+            {
+              "gen": "bubbles",
+              "size": 0.7,
+              "min": 0.16,
+              "max": 0.24,
+              "count": 0.45,
+              "background": false,
+              "palette": [
+                "#8a6420",
+                "#9c7428",
+                "#b38a35"
+              ]
+            }
+          ],
+          "edge": {
+            "color": "#7a5520",
+            "width": 1,
+            "alpha": 0.7
+          },
+          "smooth": true,
+          "join": true,
+          "vary": {
+            "light": 0.03
+          }
+        },
+        "intro": "Puffs up into a ball five across round itself, as much above it as below, into every empty cell. It's fine. It just needs a minute.",
+        "help": 4.5
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.8,
+    claudeDraft: true,
+    oops: {
+        "many": "pufferfish"
+      },
+  },
+  {
+    id: "pop_up_tent",
+    name: "a pop-up tent that won't go back in its bag",
+    grid: [
+        "X"
+      ],
+    color: [["#2f5a2a","#3f7436","#1f3a24","#1f3a24","#1f3a24","#1f3a24","#1f3a24","#3f7436","#2f5a2a"],["#3f7436","#1f3a24","#4fb08a","#8fe0bc","#4fb08a","#2f8a6a","#2f8a6a","#1f3a24","#3f7436"],["#1f3a24","#4fb08a","#8fe0bc","#4fb08a","#2f8a6a","#2f8a6a","#2f8a6a","#1f6a50","#1f3a24"],["#1f3a24","#4fb08a","#d8d8d8","#d8d8d8","#d8d8d8","#d8d8d8","#d8d8d8","#1f6a50","#1f3a24"],["#1f3a24","#2f8a6a","#2f8a6a","#f0a030","#f0a030","#f0a030","#2f8a6a","#1f6a50","#1f3a24"],["#1f3a24","#2f8a6a","#2f8a6a","#2f8a6a","#2f8a6a","#2f8a6a","#1f6a50","#1f6a50","#1f3a24"],["#3f7436","#1f3a24","#2f8a6a","#2f8a6a","#2f8a6a","#1f6a50","#1f6a50","#1f3a24","#3f7436"],["#2f5a2a","#3f7436","#1f3a24","#1f3a24","#1f3a24","#1f3a24","#1f3a24","#3f7436","#2f5a2a"],["#3f7436","#2f5a2a","#3f7436","#2f5a2a","#3f7436","#2f5a2a","#3f7436","#2f5a2a","#3f7436"]],
+    powerup: {
+        "type": "expander",
+        "tier": 2,
+        "area": {
+          "origin": [
+            3,
+            2
+          ],
+          "grid": [
+            "...#...",
+            "..###..",
+            ".##.##.",
+            "#######"
+          ]
+        },
+        "fill": {
+          "k": 9,
+          "palette": [
+            "#145a42",
+            "#1f7a5a",
+            "#2f9a72",
+            "#4fbf90",
+            "#8fe0bc"
+          ],
+          "layers": [
+            {
+              "gen": "rays",
+              "count": 6,
+              "duty": 0.5,
+              "falloff": 0.2
+            }
+          ],
+          "shade": {
+            "light": 0.2,
+            "dark": 0.3,
+            "width": 1
+          },
+          "edge": {
+            "color": "#0f3a2c",
+            "width": 1,
+            "alpha": 0.6
+          },
+          "join": true
+        },
+        "intro": "Springs out of its bag into a tent round itself, seven across at the bottom and two cells up above it, filling every empty cell. It will not go back in the bag. It will never go back in the bag.",
+        "help": 4
+      },
+    rotation: {
+        "mode": "any"
+      },
+    frequency: 0.8,
+    claudeDraft: true,
+    oops: {
+        "many": "pop-up tents"
+      },
+  },
+  {
     id: "ball_pit",
     name: "a ball pit",
     grid: [
