@@ -26,7 +26,7 @@ import { classOrder } from "./selection.js";
 import { bindTutorial } from "./tutorialui.js";
 import { bindOptions, favouritePool } from "./optionsui.js";
 import { getOption, setOption, applyOptions, favourite } from "./settings.js";
-import { createGallery, createSparkles } from "./pausemenu.js";
+import { createGallery, createSparkles, somePieces } from "./pausemenu.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -254,6 +254,8 @@ export function bindUI({ state, renderer, achievements }) {
   const pauseMenuUp = () => currentPanel === "pause" && !overlay.classList.contains("peek") && !overlay.classList.contains("zoomed");
   const gallery = createGallery({ state, root: $("pieceGallery") });
   const sparkles = createSparkles({ canvas: $("pauseFx"), panel: panels.pause, showing: pauseMenuUp });
+  // (and the game over page's: the piece that ended it, bigger, and some of the ones before it)
+  const overGallery = createGallery({ state, root: $("gameOverGallery"), picW: 260, picH: 200, cellMax: 40, spread: 0.44 });
 
   /* ---------- panels ---------- */
 
@@ -298,6 +300,7 @@ export function bindUI({ state, renderer, achievements }) {
     const dev = name === "pause" && !$("devTools").hidden;
     el.classList.toggle("scrolls", dev);
     if (name === "pause") gallery.render(); // (its strip is laid out to the menu's width)
+    if (name === "gameover") overGallery.render();
     // (paused, the dark is over the whole screen, but the menu's on the board, in the middle of it:
     // index.html)
     const on = name === "pause" ? boardShellEl : overlay;
@@ -450,20 +453,19 @@ export function bindUI({ state, renderer, achievements }) {
   function showGameOver() {
     newBest = bestScores.submit(state.mode, state.score);
     const killer = state.gameOverInfo.shape;
-    const killerName = state.gameOverInfo.pieceName || "Unknown";
     const unlocked = achievements.unlockedThisGame;
 
     $("gameOverStats").innerHTML =
-      `${escapeHtml(modeLabel(state.mode))} mode<br>` +
-      `Final score: ${state.score}${newBest ? " — new best!" : ""}<br>` +
-      `Rows destroyed: ${state.rowsDestroyed}<br>` +
-      `Blocks destroyed: ${state.blocksDestroyed}<br>` +
-      `The piece that killed you: ${escapeHtml(killerName)}`;
+      `<div>${escapeHtml(modeLabel(state.mode))} mode</div>` +
+      `<div class="goScore">Final score: ${state.score}${newBest ? " — new best!" : ""}</div>`;
 
-    const pieceWrap = $("gameOverPiece");
-    pieceWrap.innerHTML = "";
-    const cvs = makeShapePreviewCanvas(killer);
-    if (cvs) pieceWrap.appendChild(cvs);
+    // The piece that killed you, in the middle, and some of the pieces before it, each once, where
+    // it last fell, as in the pause menu (CONFIG.gameOver). (It may never have landed: it had no
+    // room to come in.)
+    const fell = gallery.pieces().filter(s => s.id !== killer?.id);
+    if (killer) fell.push(killer);
+    overGallery.set(somePieces(fell, CONFIG.gameOver));
+    $("gameOverLast").hidden = !killer;
 
     $("gameOverAch").textContent = unlocked.length
       ? `${unlocked.length} achievement${unlocked.length > 1 ? "s" : ""} unlocked this game!`
@@ -1352,8 +1354,10 @@ export function bindUI({ state, renderer, achievements }) {
       return;
     }
     // (paused, the arrows and A / D go through the pieces so far: src/pausemenu.js. Not in the
-    // developer tools' lists and sliders, which have their own uses for them)
+    // developer tools' lists and sliders, which have their own uses for them. And on the game over
+    // page, through the pieces there)
     if (pauseMenuUp() && !editable(e.target) && gallery.key(e)) { e.preventDefault(); return; }
+    if (currentPanel === "gameover" && overGallery.key(e)) { e.preventDefault(); return; }
 
     if (!state.running || state.gameOver || state.paused) return;
 

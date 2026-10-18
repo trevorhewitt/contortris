@@ -600,3 +600,18 @@ test("tiles never come in a game (only turbo zen builds with them)", async () =>
     }
   }
 });
+
+test("the game over page's pieces: the one that ended it and the few before it, and some from earlier, in order", async () => {
+  const { somePieces } = await import("../src/pausemenu.js");
+  const { pieces, last } = CONFIG.gameOver;
+  assert.deepEqual(somePieces([1, 2, 3], CONFIG.gameOver), [1, 2, 3], "a short game: all of them");
+  const list = Array.from({ length: 200 }, (_, i) => i), rng = makeRng(3), earlier = new Set();
+  for (let k = 0; k < 40; k++) {
+    const got = somePieces(list, CONFIG.gameOver, rng);
+    assert.equal(got.length, pieces);
+    assert.deepEqual(got.slice(-(last + 1)), list.slice(-(last + 1)), "ending with the last few, as they fell");
+    assert.ok(got.every((v, i) => !i || v > got[i - 1]), "in the order they fell, each once");
+    for (const v of got.slice(0, -(last + 1))) earlier.add(v);
+  }
+  assert.ok(earlier.size > 3 * pieces, `not the same few from earlier each time (${earlier.size})`);
+});

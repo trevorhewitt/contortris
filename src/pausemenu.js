@@ -5,9 +5,10 @@
 // each once, where it last fell: the newest in the middle when the menu opens, the ones before it
 // off to the left. Swipe or drag them along, tap the one either side, or use the arrows (the ones
 // on the screen, or ← → and A D on a keyboard). Each says what it is and how rare (src/rarity.js).
-// Behind the menu, sparkles drift up past it in the edge's colours, in chunky pixels like an old
-// screen's (toned down, they keep still: settings.js calmFx). The game knows nothing of any of it:
-// ui.js hands over each piece as it lands.
+// The game over page has one too, of some of the game's pieces (somePieces below), the one that
+// ended it in the middle, bigger. Behind the menu, sparkles drift up past it in the edge's
+// colours, in chunky pixels like an old screen's (toned down, they keep still: settings.js
+// calmFx). The game knows nothing of any of it: ui.js hands over each piece as it lands.
 
 import { makeShapePreviewCanvas } from "./render.js";
 import { rarity } from "./rarity.js";
@@ -19,14 +20,19 @@ import { calmFx } from "./settings.js";
 
 // In `root` (index.html #pieceGallery). add() each piece as it lands, clear() for a new game,
 // open() as the pause menu opens (the newest in the middle again), render() whenever it's shown
-// (its size may have changed), and key(e) for the keyboard (true: it was one of the gallery's).
-const MOST = 999;              // (turbo zen goes on for ever: the newest this many)
-const PIC_W = 112, PIC_H = 84; // the middle piece's picture fits in this (CSS pixels)
+// (its size may have changed), and key(e) for the keyboard (true: it was one of the gallery's);
+// pieces() for the list, and set(list) for another one (the game over page's). The middle piece's
+// picture fits in `picW` by `picH` (CSS pixels), its blocks at most `cellMax` across, and from one
+// place on the strip to the next is `spread` of its width. (On a narrow strip it's narrower than
+// `picW`, so the pieces either side, at half their size, stay clear of it.)
+const MOST = 999; // (turbo zen goes on for ever: the newest this many)
 
-export function createGallery({ state, root }) {
+export function createGallery({ state, root, picW = 112, picH = 84, cellMax = 32, spread = 0.38 }) {
   const q = (sel) => root.querySelector(sel);
   const stage = q(".pgStage"), track = q(".pgTrack"), prev = q(".pgPrev"), next = q(".pgNext");
-  const nameEl = q(".pgName"), rareEl = q(".pgRare");
+  // (under it, its name, and in the pause menu how rare it is; over it on the game over page, only
+  // with the newest in the middle, "the piece that killed you")
+  const nameEl = q(".pgName"), rareEl = q(".pgRare"), lastEl = q(".pgLast");
   const fallen = [];
   // (five places on the strip, the middle one and two either side, each with its own picture:
   // the pieces move through them)
@@ -38,18 +44,20 @@ export function createGallery({ state, root }) {
     return { k, el, c, shape: null };
   });
   // index: the piece in the middle; offset: how far along from it the strip is (dragged, or
-  // gliding home), in pieces, towards the newer end; spacing: from one place to the next
-  let index = 0, offset = 0, spacing = 100;
+  // gliding home), in pieces, towards the newer end; spacing: from one place to the next; wide:
+  // how wide the middle piece's picture can be
+  let index = 0, offset = 0, spacing = 100, wide = picW;
 
   // Each piece's picture, made once, as sharp as the screen's pixels. (Keyed by the piece as it
-  // came: one that comes back changed, a remix or under another name, has a picture of its own.)
-  const pics = new WeakMap();
+  // came: one that comes back changed, a remix or under another name, has a picture of its own.
+  // All made again if the strip's width changes how wide they can be.)
+  let pics = new WeakMap();
   function picture(shape) {
     let p = pics.get(shape);
     if (!p) {
       const dpr = Math.max(1, Math.min(3, Math.round(window.devicePixelRatio || 1)));
       const mat = shape.rotations[0];
-      const cell = Math.max(2, Math.min(32, Math.floor(Math.min(PIC_W / mat[0].length, PIC_H / mat.length))));
+      const cell = Math.max(2, Math.min(cellMax, Math.floor(Math.min(wide / mat[0].length, picH / mat.length))));
       p = { c: makeShapePreviewCanvas(shape, cell * dpr, 0), dpr };
       pics.set(shape, p);
     }
@@ -81,10 +89,11 @@ export function createGallery({ state, root }) {
     root.classList.toggle("empty", !n);
     prev.disabled = index <= 0;
     next.disabled = index >= n - 1;
+    if (lastEl) lastEl.style.visibility = index === n - 1 ? "" : "hidden";
     if (!shape) return;
     nameEl.textContent = shape.name;
     nameEl.className = "pgName" + (shape.powerup ? ` shiny cls-${shape.powerup.cls ?? "combo"}` : "");
-    rareEl.textContent = rareWords(shape);
+    if (rareEl) rareEl.textContent = rareWords(shape);
   }
 
   // Where each place on the strip goes, `offset` along: the middle one big and bright, the ones
@@ -211,9 +220,13 @@ export function createGallery({ state, root }) {
     },
     clear() { fallen.length = 0; index = 0; },
     open() { index = fallen.length - 1; },
+    pieces: () => [...fallen],
+    set(list) { fallen.length = 0; fallen.push(...list); index = fallen.length - 1; },
     render() {
       index = Math.max(0, Math.min(fallen.length - 1, index));
-      spacing = Math.round(Math.max(70, track.clientWidth * 0.38));
+      spacing = Math.round(Math.max(70, track.clientWidth * spread));
+      const w = Math.min(picW, Math.floor(spacing * 4 / 3));
+      if (w !== wide) { wide = w; pics = new WeakMap(); for (const s of slots) s.shape = undefined; }
       track.classList.remove("glide");
       offset = 0;
       for (const s of slots) fill(s);
@@ -227,6 +240,22 @@ export function createGallery({ state, root }) {
       return !!dir;
     },
   };
+}
+
+// Some of a game's pieces (`list`, in the order they fell), for its game over page: at most `most`
+// of them, always the last one (the one that ended it) and the `last` just before it, and the
+// rest picked at random from the ones before those, kept in the order they fell (so it's not just
+// the last so many). CONFIG.gameOver.
+export function somePieces(list, { pieces: most = 20, last = 4 } = {}, rng = Math.random) {
+  if (list.length <= most) return [...list];
+  const end = Math.min(most, last + 1), earlier = list.length - end;
+  // (as many of the earlier ones as there's room for, each as likely as any other)
+  const at = Array.from({ length: earlier }, (_, i) => i);
+  for (let i = 0; i < most - end; i++) {
+    const j = i + Math.floor(rng() * (earlier - i));
+    [at[i], at[j]] = [at[j], at[i]];
+  }
+  return [...at.slice(0, most - end).sort((a, b) => a - b).map(i => list[i]), ...list.slice(earlier)];
 }
 
 /* =========================

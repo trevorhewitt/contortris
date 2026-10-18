@@ -570,6 +570,12 @@ export const CONFIG = {
   // drag to look around. maxZoom: how far in it goes.
   pause: { hideShapes: false, pauseWhenHidden: true, maxZoom: 5 },
 
+  // The game over page: the piece that ended the game, big, and some of the pieces before it to
+  // step back through (src/pausemenu.js somePieces). At most `pieces` of them: always the one that
+  // ended it and the `last` just before it, and the rest picked at random from earlier in the game,
+  // in the order they fell (each piece once, where it last fell, as in the pause menu).
+  gameOver: { pieces: 20, last: 4 },
+
   // How rare a piece is, in words, on its card (src/rarity.js): by its rough chance of turning
   // up, the commonest 13% of the pieces are "common", the next ones up to 39% "fairly common", and
   // so on (spread as they come out in play). share: the giants' and the powerups' rough shares of
