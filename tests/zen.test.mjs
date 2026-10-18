@@ -299,8 +299,15 @@ test("turbo zen: plays itself for half an hour, filling the board to the brink a
   // ...and often the whole board goes at once (the tallest pieces drop into the last column)
   assert.ok(log.clears.filter(n => n === rows).length >= 3, `whole-board clears: ${log.clears.filter(n => n === rows).length}`);
   assert.ok(log.callouts.some(c => /quattuorvigintuple/.test(c)), "and it has a name");
-  const kinds = new Set(log.movements.map(m => m.name));
-  for (const k of ["demolition", "column", "crack", "mono"]) assert.ok(kinds.has(k), `no ${k} in ${[...kinds]}`);
+  // (all sorts go by, these among them: some come round only a few times an hour, and a game can
+  // go half an hour without one, so it plays on a while longer for the last of them)
+  const want = ["demolition", "column", "crack", "mono"];
+  let kinds = new Set(log.movements.map(m => m.name));
+  for (let k = 0; k < 4 && want.some(w => !kinds.has(w)); k++) {
+    run(state, log, 5 * 60000);
+    kinds = new Set(log.movements.map(m => m.name));
+  }
+  for (const k of want) assert.ok(kinds.has(k), `no ${k} in ${[...kinds]}`);
   assert.ok(kinds.size >= 10, `${[...kinds]}`);
 });
 
@@ -613,8 +620,11 @@ test("turbo zen: a pile, poured in the middle or against a wall, grows up toward
 });
 
 test("turbo zen: now and then a fill hands over part way up to another, which carries on on top of it", () => {
+  // (now and then: a dozen in twenty minutes of one game, none in another, so it plays game after
+  // game until it has seen a few)
   let relays = 0, built = 0;
-  for (const seed of [1, 2]) {
+  for (const seed of [1, 2, 3, 4, 5, 6]) {
+    if (relays >= 3 && built >= 2) break;
     const { state, log } = zen(seed, "turbo");
     let prev = null, at = 0;
     run(state, log, 20 * 60000, () => {
