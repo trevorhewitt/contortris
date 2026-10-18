@@ -224,7 +224,7 @@ test("rotation: a wide piece by the wall is pushed in, and snaps back on the nex
   state.board = state.board.map(r => r.fill(null));
   const [bar] = loadShapes([{ id: "bar6", name: "bar", grid: ["XXXXXX"], difficulty: 3, rotation: { mode: "any" } }]).shapes;
   state.active = { shape: bar, rotIdx: 0, x: 4, y: 5 };
-  // turn upright: big pieces turn about their centre
+  // turn upright (about its corner, like every piece that fits that way)
   assert.ok(tryRotate(state));
   assert.equal(state.active.rotIdx, 1);
   // move the upright bar to the right wall, then turn it flat: it must be pushed back in
@@ -259,6 +259,28 @@ test("rotation: a board-wide piece can turn and turn back; turning never walks i
   state.active = { shape: ell, rotIdx: 0, x: 5, y: 5 };
   assert.ok(tryRotate(state));
   assert.deepEqual({ x: state.active.x, y: state.active.y }, { x: 5, y: 5 });
+});
+
+test("rotation: a giant turned upright beside a high stack can still be turned back, but never climbs", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(1) });
+  startRun(state, "extreme");
+  // a high stack on the right, a low one on the left
+  state.board = state.board.map((row, y) => row.map((_, x) => ((x >= 9 && y >= 10) || (x < 9 && y >= 18) ? { ...filler } : null)));
+  const octopus = shapes.find(s => s.id === "invader_octopus_arcade");
+  const mid = () => state.active.y + (octopus.rotations[state.active.rotIdx].length - 1) / 2;
+  state.active = { shape: octopus, rotIdx: 0, x: 1, y: -2 };
+  const start = mid();
+  assert.ok(tryRotate(state), "turned upright");
+  while (tryMove(state, 0, 1));
+  const upright = { ...state.active };
+  // sideways again, its corner where it is: in the high stack. So it rises to turn
+  assert.ok(tryRotate(state), "turned back");
+  assert.equal(octopus.rotations[state.active.rotIdx][0].length, 12, "sideways again");
+  assert.ok(state.active.y < upright.y, "it rose to turn");
+  // and turning over and over never takes it above where it was before it first turned
+  let highest = mid();
+  for (let i = 0; i < 16; i++) { tryRotate(state); while (tryMove(state, 0, 1)); highest = Math.min(highest, mid()); }
+  assert.ok(highest >= start, `its middle up to row ${highest}, from ${start}`);
 });
 
 test("remixes: a new random blend each time, keeping the piece's id and level", () => {

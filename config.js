@@ -145,6 +145,17 @@ export const CONFIG = {
     lastChanceMs: 1000,
   },
 
+  // Turning (src/game.js tryRotate). A piece turns about its top-left corner, shifting a column or
+  // two if it must. A big one that won't turn that way gets more chances: about its middle too,
+  // moved up to `bigShift` columns sideways, `bigDrop` rows down or `bigLift` rows up (never
+  // higher than it was before it last turned, so it can't climb), or else back the way it came.
+  rotation: {
+    bigFrom: 7,   // this many cells long or more
+    bigShift: 2,
+    bigDrop: 2,
+    bigLift: 4,
+  },
+
   // Pieces come in at the centre ± a few random columns (most often near the middle), so
   // holding down, or looking away, builds a pile rather than one tower in the middle.
   spawn: {

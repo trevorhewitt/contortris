@@ -460,7 +460,8 @@ export function tryMove(state, dx, dy) {
 // never upwards. Only when the turned piece would stick out past a wall (a very long piece near
 // an edge, like the giant hot dog) is it pushed back inside, however far that takes; the next
 // turn then puts it back where it was, as long as the player hasn't moved it sideways in between
-// (active.unkickedX).
+// (active.unkickedX). A big piece that won't turn gets more chances (turnBig), so one that's just
+// been turned can always be turned back.
 export function tryRotate(state) {
   const a = state.active;
   if (!a) return false;
@@ -503,15 +504,69 @@ export function tryRotate(state) {
       continue;
     }
     if (k !== 0 && !canSlide(nx)) continue;
-    a.rotIdx = nextIdx;
-    a.x = nx;
-    a.unkickedX = pushed ? baseX : null;
-    a.steered = true;
-    if (state.locking) a.groundMoved = true;
-    if (!groundSpent(state)) cancelLock(state);
+    return turned(state, nextIdx, nx, a.y, pushed ? baseX : null);
+  }
+  const R = CONFIG.rotation;
+  if (phantom || Math.max(w, nextMat.length) < (R?.bigFrom ?? Infinity)) return false;
+  return turnBig(state, 1) || turnBig(state, -1);
+}
+
+// The falling piece turns to rotation idx, at (x, y). (Its middle just before, for turnBig.)
+function turned(state, idx, x, y, unkickedX) {
+  const a = state.active;
+  a.turnMid = a.y + (getActiveMatrix(state).length - 1) / 2;
+  a.rotIdx = idx;
+  a.x = x;
+  a.y = y;
+  a.unkickedX = unkickedX;
+  a.steered = true;
+  if (state.locking) a.groundMoved = true;
+  if (!groundSpent(state)) cancelLock(state);
+  return true;
+}
+
+// A big piece (CONFIG.rotation.bigFrom cells long or more) that won't turn the usual way: the
+// nearest spot it will turn in, about its corner or its middle, after a move it could make as it
+// is (a column or two sideways where it could slide, then straight down, or up through nothing).
+// It may rise, but its middle never ends up higher than it was just before it last turned (or
+// than it is now, if it hasn't turned yet), so turning can't make it climb. dir: 1 the usual way
+// round, -1 back the way it came.
+function turnBig(state, dir) {
+  const a = state.active, rots = a.shape.rotations, R = CONFIG.rotation;
+  const idx = (a.rotIdx + dir + rots.length) % rots.length;
+  const cur = rots[a.rotIdx], next = rots[idx];
+  const W = cur[0].length, H = cur.length, w = next[0].length, h = next.length;
+  const highest = a.turnMid ?? a.y + (H - 1) / 2;
+  const base = a.unkickedX ?? a.x; // (back where it was before a push)
+  const pivots = [[0, 0], [Math.trunc((W - w) / 2), Math.trunc((H - h) / 2)]];
+  // could the piece as it is move by (dx, 0), then by (0, dy), one cell at a time?
+  const path = (dx, dy) => {
+    for (let s = Math.sign(dx), x = s; x !== dx + s; x += s) if (collides(state, a.x + x, a.y, cur)) return false;
+    for (let s = Math.sign(dy), y = s; y !== dy + s; y += s) if (collides(state, a.x + dx, a.y + y, cur)) return false;
     return true;
+  };
+  for (const [dx, dy] of bigMoves(R)) {
+    if (!path(dx, dy)) continue;
+    for (const [px, py] of pivots) {
+      const free = base + dx + px, x = Math.max(0, Math.min(CONFIG.board.cols - w, free)), y = a.y + dy + py;
+      if (y + (h - 1) / 2 < highest || collides(state, x, y, next)) continue;
+      return turned(state, idx, x, y, x !== free ? free : null);
+    }
   }
   return false;
+}
+
+// The moves turnBig tries, nearest first (then down before up, and less sideways before more).
+const bigMovesMemo = new Map();
+function bigMoves(R) {
+  const key = `${R.bigShift},${R.bigDrop},${R.bigLift}`;
+  if (bigMovesMemo.has(key)) return bigMovesMemo.get(key);
+  const list = [];
+  for (let dy = -R.bigLift; dy <= R.bigDrop; dy++) for (let dx = -R.bigShift; dx <= R.bigShift; dx++) list.push([dx, dy]);
+  const rank = (dy) => (dy > 0 ? 2 * dy - 1 : -2 * dy);
+  list.sort((p, q) => Math.abs(p[0]) + Math.abs(p[1]) - Math.abs(q[0]) - Math.abs(q[1]) || rank(p[1]) - rank(q[1]) || Math.abs(p[0]) - Math.abs(q[0]) || p[0] - q[0]);
+  bigMovesMemo.set(key, list);
+  return list;
 }
 
 /* =========================
