@@ -1223,7 +1223,7 @@
   
     /* ---------- the tutorial (src/tutorial.js, src/tutorialui.js) ---------- */
     /* its bar takes the bottom bar's place, a little taller (the fit script makes room for it) */
-    body.tutorial{ --bottom-bar-h: 136px; }
+    body.tutorial{ --bottom-bar-h: 128px; }
     body.tutorial .bottomBar{ width: min(100vw, 600px); grid-template-columns: 1fr; padding-top: 7px; }
     body.tutorial .bottomBar > .bottomLeft, body.tutorial .bottomBar > .bottomCenter, body.tutorial .bottomBar > .bottomRight{ display: none; }
     .tutorialBar{ position: relative; display: flex; flex-direction: column; gap: 6px; min-height: 0; }
@@ -1232,24 +1232,94 @@
     .tutDots i{ width: 6px; height: 6px; background: rgba(255,255,255,0.16); box-shadow: 0 0 0 1px rgba(0,0,0,0.85); }
     .tutDots i.done{ background: rgba(255,255,255,0.42); }
     .tutDots i.on{ background: #ffffff; box-shadow: 0 0 0 1px #000, 0 0 8px rgba(255,255,255,0.85); }
-    .tutSay{ flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; gap: 12px; }
-    .tutText{
-      font-family: var(--font-body); font-size: clamp(12px, 3.4vw, 15px); line-height: 1.3;
-      text-align: center; color: var(--text); text-shadow: 0 1px 0 #000; max-width: 34em;
+    .tutSay{ flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; gap: 14px; }
+    /* what the page says, over the top of the board, where the pieces' names go in a game */
+    body.tutorial .nameLayer{ display: none; }
+    .tutTop{
+      position: absolute; left: 0; right: 0; top: 0; z-index: 5; pointer-events: none;
+      padding: 12px 48px 14px; box-sizing: border-box;
+      font-family: var(--font-body); font-size: clamp(14px, 3.9vw, 19px); line-height: 1.35; font-weight: 700;
+      text-align: center; color: #fff;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.82), rgba(0,0,0,0.62) 70%, rgba(0,0,0,0));
+      text-shadow: 0 2px 0 #000, -1px 0 0 rgba(255,31,75,0.55), 1px 0 0 rgba(47,107,255,0.55), 0 0 12px rgba(255,255,255,0.35);
     }
-    .tutText kbd{
-      display: inline-block; min-width: 1.2em; padding: 2px 4px 1px; margin: 0 1px;
-      font-family: var(--font-display); font-size: 8px; line-height: 1.4; text-align: center; vertical-align: 1px;
-      color: rgba(245,245,255,0.95); background: rgba(10,10,12,0.96);
-      border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 2px 0 rgba(0,0,0,0.8);
+    .tutTop[hidden]{ display: none; }
+    .tutTop.enter{ animation: tutTopIn 380ms cubic-bezier(.2, 1.2, .4, 1) both; }
+    @keyframes tutTopIn{
+      0%{ opacity: 0; transform: translateY(-10px); text-shadow: -6px 0 0 rgba(255,31,75,0.9), 6px 0 0 rgba(47,107,255,0.9); }
+      60%{ opacity: 1; }
+      100%{ opacity: 1; transform: none; }
     }
-    .tutText .tutName{ font-family: var(--font-display); font-weight: 400; font-size: 0.72em; letter-spacing: 0.04em; text-transform: uppercase; animation: rgbText 1.6s steps(12, end) infinite; }
-    .tutText .tutName.cls-destroyer{ animation-name: fireText; }
-    .tutText .tutName.cls-gravity{ animation-name: deepText; }
-    .tutText .tutName.cls-expander{ animation-name: growText; }
-    .tutText .tutName.cls-phantom{ animation-name: ghostText; }
-    /* the keys it presses (with a keyboard): WASD and the arrows, each lit as it's pressed */
-    .tutKeys{ display: flex; gap: 8px; flex: none; }
+    .tutTop kbd{
+      display: inline-block; min-width: 1.3em; padding: 3px 5px 2px; margin: 0 1px;
+      font-family: var(--font-display); font-size: 0.6em; line-height: 1.4; text-align: center; vertical-align: 2px;
+      color: #fff; background: #000; text-shadow: none;
+      border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 2px 0 rgba(255,255,255,0.25);
+    }
+    .tutTop .tutName{ font-family: var(--font-display); font-weight: 400; font-size: 0.72em; letter-spacing: 0.04em; text-transform: uppercase; animation: rgbText 1.6s steps(12, end) infinite; }
+    .tutTop .tutName.cls-destroyer{ animation-name: fireText; }
+    .tutTop .tutName.cls-gravity{ animation-name: deepText; }
+    .tutTop .tutName.cls-expander{ animation-name: growText; }
+    .tutTop .tutName.cls-phantom{ animation-name: ghostText; }
+    /* the X: home */
+    .tutX{
+      position: absolute; top: 8px; right: 8px; z-index: 6;
+      width: 34px; height: 34px; min-height: 0; padding: 0;
+      font-family: var(--font-display); font-size: 14px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tutX[hidden]{ display: none; }
+    /* the last page: the modes, over the board playing itself */
+    .tutModes{
+      position: absolute; inset: 0; z-index: 4; box-sizing: border-box;
+      padding: 76px 14px 14px; overflow-y: auto;
+      display: flex; flex-direction: column; justify-content: center; gap: 9px;
+      background: rgba(0,0,0,0.55);
+    }
+    .tutModes[hidden]{ display: none; }
+    .tutMode{
+      position: relative; flex: none; padding: 9px 12px; border: 0; color: #fff; text-align: left;
+      background: #000; isolation: isolate; overflow: hidden;
+      box-shadow: inset 0 0 0 2px #fff, -2px 0 0 rgba(255,31,75,0.8), 2px 0 0 rgba(47,107,255,0.8), 0 0 14px rgba(255,255,255,0.2);
+      display: flex; flex-direction: column; gap: 4px;
+      animation: tutModeIn 420ms cubic-bezier(.2, 1.2, .4, 1) both; animation-delay: calc(var(--n, 0) * 70ms);
+    }
+    .tutMode .tutModeName{ font-family: var(--font-display); font-size: clamp(11px, 3.2vw, 14px); letter-spacing: 0.05em; text-transform: uppercase; text-shadow: var(--rgb-split), 0 0 10px rgba(255,255,255,0.55); }
+    .tutMode .tutModeName::before{ content: "\25B6  "; font-size: 0.8em; }
+    .tutMode .tutModeSay{ font-family: var(--font-body); font-size: clamp(11px, 3vw, 13px); line-height: 1.3; text-transform: none; letter-spacing: 0; opacity: 0.9; }
+    @media (hover: hover) and (pointer: fine){ .tutMode:hover .tutModeName{ animation: textGlitch 0.9s steps(1, end) infinite; } }
+    @keyframes tutModeIn{ from{ opacity: 0; transform: translateX(-14px); } to{ opacity: 1; transform: none; } }
+    /* (God mode: the one to look at. Its frame torn into red, green and blue, light rolling
+       through it, its name glitching all the time) */
+    .tutMode.tutGod{
+      padding: 13px 12px;
+      box-shadow: inset 0 0 0 2px #fff, -4px 0 0 rgba(255,31,75,0.95), 4px 0 0 rgba(47,107,255,0.95), 0 3px 0 rgba(31,255,110,0.7), 0 0 26px rgba(255,255,255,0.45);
+      animation: tutModeIn 420ms cubic-bezier(.2, 1.2, .4, 1) both, tutGodFrame 2.2s steps(1, end) 420ms infinite;
+    }
+    .tutMode.tutGod::after{
+      content: ""; position: absolute; left: 0; right: 0; top: -100%; height: 300%; z-index: -1; pointer-events: none;
+      background:
+        repeating-linear-gradient(to bottom, rgba(255,255,255,0.06) 0 1px, transparent 1px 3px),
+        linear-gradient(to bottom, transparent 40%, rgba(255,31,75,0.28) 45%, rgba(31,255,110,0.28) 48%, rgba(47,107,255,0.28) 51%, transparent 56%);
+      animation: modeSlide 2.4s linear infinite;
+    }
+    .tutMode.tutGod .tutModeName{ font-size: clamp(14px, 4.2vw, 19px); animation: textGlitch 1.3s steps(1, end) infinite; }
+    @keyframes tutGodFrame{
+      0%, 100%{ box-shadow: inset 0 0 0 2px #fff, -4px 0 0 rgba(255,31,75,0.95), 4px 0 0 rgba(47,107,255,0.95), 0 3px 0 rgba(31,255,110,0.7), 0 0 26px rgba(255,255,255,0.45); }
+      47%{ box-shadow: inset 0 0 0 2px #fff, -8px 1px 0 rgba(255,31,75,0.95), 6px -1px 0 rgba(47,107,255,0.95), 0 4px 0 rgba(31,255,110,0.8), 0 0 40px rgba(255,255,255,0.7); }
+      52%{ box-shadow: inset 0 0 0 2px #fff, 3px 0 0 rgba(255,31,75,0.95), -3px 0 0 rgba(47,107,255,0.95), 0 -2px 0 rgba(31,255,110,0.8), 0 0 30px rgba(255,255,255,0.55); }
+    }
+    /* (Touch or Keys: which the tutorial shows) */
+    .tutView{ display: flex; flex: none; }
+    .tutNav .tutView button{ padding: 8px 9px; box-shadow: 0 0 0 2px rgba(0,0,0,0.88); opacity: 0.55; }
+    .tutNav .tutView button[aria-pressed="true"]{ opacity: 1; background: #fff; color: #000; text-shadow: none; }
+    .tutKeysNote{ align-self: center; font-family: var(--font-display); font-size: 7px; line-height: 1.6; color: rgba(245,245,255,0.7); text-align: left; }
+    .tutShelf{ height: 64px; width: min(62vw, 230px); padding: 4px; }
+    .tutShelf .k{ display: none; }
+    .tutShelf[hidden]{ display: none; }
+    .tutShelf .shelfSlot.aim{ outline: 2px solid #fff; outline-offset: 2px; }
+    /* the keys it presses (with a keyboard): the arrows (WASD works too), each lit as it's pressed */
+    .tutKeys{ display: flex; gap: 8px; flex: none; height: 100%; align-items: center; }
     .tutKeys[hidden]{ display: none; }
     .tutKeyset{ display: grid; grid-template-columns: repeat(3, 20px); grid-template-rows: repeat(2, 20px); gap: 2px; }
     .tutKeyset i{
@@ -1267,7 +1337,7 @@
     .tutNav button:disabled{ opacity: 0.35; cursor: default; }
     .tutNav .tutPause{ width: 52px; padding: 0; font-size: 13px; }
     /* (a phone: the last page's four buttons on one row) */
-    @media (max-width: 440px){ .tutNav{ gap: 5px; } .tutNav button{ padding: 8px 9px; font-size: 8px; } .tutNav .tutPause{ width: 44px; } }
+    @media (max-width: 440px){ .tutNav{ gap: 5px; } .tutNav button, .tutNav .tutView button{ padding: 8px 7px; font-size: 8px; } .tutNav .tutPause{ width: 40px; } }
     /* (more room: bigger keys) */
     @media (min-width: 600px){ .tutKeyset{ grid-template-columns: repeat(3, 23px); grid-template-rows: repeat(2, 23px); } .tutKeyset i{ font-size: 9px; } }
     #tutNext.nudge{ animation: tutNudge 1.1s ease-in-out infinite; }
@@ -1383,6 +1453,17 @@
       <div class="boardShell" id="boardShell">
         <div id="nameLayer" class="nameLayer"></div>
         <canvas id="boardCanvas"></canvas>
+        <!-- (the tutorial: what the page says, over the top of the board; on the last page, the
+             modes to pick from; and an X to go home) -->
+        <div id="tutTop" class="tutTop" aria-live="polite" hidden></div>
+        <div id="tutModes" class="tutModes" hidden>
+          <button class="tutMode" data-mode="normal"><span class="tutModeName">Classic</span><span class="tutModeSay">The full game: it starts easy, then the pieces get bigger, faster and stranger.</span></button>
+          <button class="tutMode tutGod" data-mode="god"><span class="tutModeName">God mode</span><span class="tutModeSay">Every powerup and every giant, right from the start. Total chaos.</span></button>
+          <button class="tutMode" data-mode="extreme"><span class="tutModeName">Extreme</span><span class="tutModeSay">No powerups. No help. Just you and the pieces.</span></button>
+          <button class="tutMode" data-mode="zen"><span class="tutModeName">Zen</span><span class="tutModeSay">Slow and easy: it plays itself, or you can take over.</span></button>
+          <button class="tutMode" data-mode="turbo"><span class="tutModeName">Turbo zen</span><span class="tutModeSay">It plays itself, fast, and never stops. Jump in any time.</span></button>
+        </div>
+        <button id="tutX" class="tutX" aria-label="Home" hidden>X</button>
 
         <div id="toasts" class="toasts" aria-live="polite"></div>
         <!-- (turbo zen filling the whole window: no bottom bar, so the pause button sits on the board) -->
@@ -1398,9 +1479,9 @@
               <button id="btnGod" class="modeBtn" style="--i:2" data-mode="god"><span class="modeName">God mode</span><span class="modeTag"></span></button>
               <button id="btnZen" class="modeBtn" style="--i:3" data-mode="zen"><span class="modeName">Zen</span><span class="modeTag"></span></button>
               <button id="btnTurbo" class="modeBtn" style="--i:4" data-mode="turbo"><span class="modeName">Turbo zen</span><span class="modeTag"></span></button>
+              <button id="btnTutorial" class="modeBtn" style="--i:5" data-mode="tutorial"><span class="modeName">Tutorial</span><span class="modeTag"></span></button>
             </div>
             <div class="menuRow homeRow">
-              <button id="btnTutorial" class="secondary small">Tutorial</button>
               <button id="btnHowTo" class="secondary small">How to play</button>
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
@@ -1573,18 +1654,20 @@
         <div class="tutCheer" id="tutCheer" aria-hidden="true">Nice!</div>
         <div class="tutSay">
           <div class="tutKeys" id="tutKeys" aria-hidden="true" hidden>
-            <div class="tutKeyset"><i data-k="w">W</i><i data-k="a">A</i><i data-k="s">S</i><i data-k="d">D</i></div>
             <div class="tutKeyset"><i data-k="up">&#8593;</i><i data-k="left">&#8592;</i><i data-k="down">&#8595;</i><i data-k="right">&#8594;</i></div>
+            <div class="tutKeysNote">WASD<br>too</div>
           </div>
-          <div class="tutText" id="tutText" aria-live="polite"></div>
+          <div class="shelf tutShelf" id="tutShelf" hidden><div class="k">Shelf</div><div class="shelfSlots"></div></div>
         </div>
         <div class="tutNav">
           <button id="tutBack" class="secondary">&#9664; Back</button>
           <span class="tutGap"></span>
+          <div class="tutView" role="group" aria-label="Controls">
+            <button id="tutViewTouch" class="secondary" aria-pressed="false">Touch</button>
+            <button id="tutViewKeys" class="secondary" aria-pressed="false">Keys</button>
+          </div>
           <button id="tutPause" class="tutPause" aria-label="Pause">&#10074;&#10074;</button>
           <span class="tutGap"></span>
-          <button id="tutHome" class="secondary" hidden>Home</button>
-          <button id="tutPlay" hidden>Play Classic</button>
           <button id="tutNext">Next &#9654;</button>
         </div>
       </div>

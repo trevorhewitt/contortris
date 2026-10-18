@@ -501,9 +501,9 @@ export function bindUI({ state, renderer, achievements }) {
         }
         break;
       case "spawn":
-        // (the tutorial: its pieces' names, and that's all; nothing counts as seen, and no intro
-        // screens: its pages say what each powerup does)
-        if (state.tutorial) { nameLayer.setShape(d.shape); break; }
+        // (the tutorial: no names, its page's words go there; nothing counts as seen, and no
+        // intro screens: its pages say what each powerup does)
+        if (state.tutorial) { nameLayer.clear(); break; }
         // (the turbo zen behind the home screen, or filling in for it: nobody's playing, so
         // nothing counts as seen, and there are no names to read)
         if (state.backdrop) { if (CONFIG.modes[state.mode]?.names !== false) nameLayer.setShape(d.shape, !!CONFIG.modes[state.mode]?.flashNames, d.label); break; }

@@ -13,15 +13,18 @@
 //
 // It starts quickly with the basics (moving, turning, coming down, rows going), as most people
 // will have played something like it, then takes more time over each class of powerup that's
-// switched on, one clear-cut example each on a board made to show it off, then the giants, and
-// last of all a board to play on for as long as you like.
+// switched on, a clear-cut example each on a board made to show it off and then more of the same
+// class until the board is nearly gone, then where to put which (a board with a place for each),
+// the powerup shelf, how the game goes on, and last of all the modes, to pick one and play it
+// (with a board playing itself behind them).
 //
 // game.js asks it for each piece (tutorialNext), lets it steer every frame (tutorialTick) and
 // tells it when the board has filled up (tutorialTopOut).
 
 import { CONFIG } from "../config.js";
-import { on, tryMove, tryRotate, beginLockIfNeeded, hardDropAndLock, collides, markBoardDirty, isPowerupEnabled } from "./game.js";
-import { reachableTurns, bestPlacement } from "./zen.js";
+import { on, tryMove, tryRotate, beginLockIfNeeded, hardDropAndLock, collides, markBoardDirty, isPowerupEnabled, useShelf } from "./game.js";
+import { createShelf } from "./shelf.js";
+import { reachableTurns, bestPlacement, tryPowerup } from "./zen.js";
 import { inGame } from "./selection.js";
 import { hash01 } from "./util.js";
 import { getShapePaint } from "./shapes.js";
@@ -33,23 +36,31 @@ const FILLER = ["#f4f4f6", "#c9c9ce", "#9c9ca3", "#e2e2e7", "#b3b3b9", "#85858c"
 
 // The pages, in order. Each one:
 //   text:   what it says ({ touch, keys }: on a touch screen, or with a keyboard; or the same for
-//           both). [x] is a key or button, {name} the powerup class's name, in its colours.
+//           both). [x] is a key or button, {name} the powerup class's name, in its colours (and
+//           {destroyer}, {gravity}, {expander}: that class's).
 //   more:   (a powerup page) a second sentence, left off on the first of them, which says what
 //           powerups are instead
 //   cls:    (a powerup page) its class; the page is only there if its piece can turn up in a game
 //   board:  the rows at the bottom of the board, top to bottom ("." empty; each run of one letter
 //           is a block of filler, joined up as one piece)
-//   pieces: what comes, in order: { id, rot, x: where it starts (the middle at the top), to: {
-//           rot, x }: where the autopilot takes it, then: what it does once it's there ("hold":
-//           holds it down a moment, "drop": the double tap that drops it straight down; nothing,
-//           and it just falls) }
+//   pieces: what comes, in order: { id, rot, x: where it starts (the middle at the top), firstMs:
+//           how long before the autopilot's first press, if not the usual, to: {
+//           rot, x } where the autopilot takes it, or "power": wherever it leaves the least on the
+//           board, then: what it does once it's there ("hold": holds it down a moment, "drop":
+//           the double tap that drops it straight down, "shelf": takes the shelf's powerup of
+//           the page's `shelf` class in its place; nothing, and it just falls) }
+//   again:  (a powerup page) more pieces of its class to come after those, each put where it does
+//           the most, for as long as there are more than `until` blocks left on the board
+//   powers: its pieces are powerups, though it isn't a class's page (where to put them, the shelf)
+//   shelf:  the class of the shelf's powerup it shows (the page has a shelf of its own)
+//   modes:  the last page: the modes, to pick one and play (src/tutorialui.js)
 //   dropMs: how fast its pieces fall, if not the usual (CONFIG.tutorial.dropMs)
 //   free:   no script: one friendly piece after another, for as long as you like, the autopilot
 //           putting each somewhere sensible
 export const PAGES = [
   {
     id: "move",
-    text: { touch: "Tap the left or right side of the board to move the piece.", keys: "Press [←] [→] or [A] [D] to move the piece." },
+    text: { touch: "Tap the left or right side of the board to move the piece.", keys: "Press [←] or [→] to move the piece." },
     board: [
       "....dd..ee....",
       "....abbbccc...",
@@ -58,7 +69,7 @@ export const PAGES = [
   },
   {
     id: "turn",
-    text: { touch: "Tap the top of the board to turn it.", keys: "Press [↑] or [W] to turn it." },
+    text: { touch: "Tap the top of the board to turn it.", keys: "Press [↑] to turn it." },
     board: [
       "aaabbbcc...ddd",
       "eeffggghh.iijj",
@@ -69,7 +80,7 @@ export const PAGES = [
     id: "down",
     text: {
       touch: "Hold the bottom middle to bring it down faster; double tap there to drop it straight down.",
-      keys: "Hold [↓] or [S] to bring it down faster; press it twice quickly to drop it straight down.",
+      keys: "Hold [↓] to bring it down faster; double press it to drop it straight down.",
     },
     dropMs: 420, // (slower, so you can see it speed up)
     // (a fat piece into a gap two wide: three rows go)
@@ -82,7 +93,7 @@ export const PAGES = [
   },
   {
     id: "rows",
-    text: "Fill a row all the way across and it disappears: the more at once, the better.",
+    text: "Fill a row all the way across and it disappears.",
     board: [
       "aa..bbb.cc.dd.",
       "ee..gghhiijjkk",
@@ -109,57 +120,99 @@ export const PAGES = [
       "yy.zvAAsBBxCCu",
     ],
     pieces: [{ id: "toadstool", to: { x: 7 }, then: ["drop"] }],
+    again: ["one_ring", "eye_of_sauron", "small_asteroid", "katana", "stomach"],
   },
   {
-    // (overhangs and holes in the anvil's five columns, just enough in each of them to fill the
-    // bottom four rows once it all comes down)
+    // (holes all through it, five blocks in every column: once it has all come down, five rows go)
     id: "gravity", cls: "gravity",
     text: "{name} drop the blocks in their highlight as far as they'll go, filling the holes under them.",
     more: "Good for holes you can't get at.",
     board: [
-      ".......a......",
-      ".......ab.....",
-      "......c.bd....",
-      "......c.b.e...",
-      "ffgggh...iejjj",
-      "flggmh.n..eDop",
-      "llqqmrsn.t.oop",
-      "uuvvwrs.xtyyzz",
+      "abcc.dde.fggg.",
+      "hhhhi..e.jgkk.",
+      "....l..mmj..kk",
+      "nop..qq.r.s.tt",
+      "..p.uuqqrr..tt",
+      "vw.xx.y.zrAA.B",
+      "v.xxCD....AA..",
+      ".E.F.DGGH..I.J",
     ],
     pieces: [{ id: "anvil", to: { x: 7 }, then: ["drop"] }],
+    again: ["hippo_bellyflop", "sumo_wrestler", "steamroller"],
   },
   {
-    // (a pile full of gaps, some of them covered over, all inside the foam's highlight)
+    // (a pile full of gaps, some of them covered over)
     id: "expander", cls: "expander",
     text: "{name} fill every empty cell in their highlight with new blocks.",
     more: "Drop one on a pile full of gaps.",
     board: [
-      "jjb..cc.dkkllm",
-      "jnbe..c.dkolmm",
-      "pn.ee..ffqoorr",
-      "ppg.eh..fqsstr",
-      "uugg.hhi.vsttw",
+      ".....a......b.",
+      "cd...e..f..gbb",
+      "cd.hii.j....k.",
+      "..lhii.j...m..",
+      "n..o..p.qr.m.s",
+      ".t.uuv.wrrrmx.",
     ],
     pieces: [{ id: "expanding_foam", to: { x: 5 }, then: ["drop"] }],
+    again: ["packing_peanuts", "spilled_paint", "storm_cloud", "microwave_popcorn"],
   },
   {
-    // (junk along the row it lands in, and gaps under it)
+    // (junk scattered about, and gaps all through it)
     id: "combo", cls: "combo",
     text: "{name} do two things at once, each in its own colours.",
     more: "This one burns away its row and fills in the gaps below.",
     board: [
-      "aa.b.....cc.dd",
-      "oppe.ff.g.qqrr",
-      "ospe..fhggtqur",
-      "ssv.ii.h.jtuuw",
-      "xvvki.ll.jyyzw",
-      "xxAkkm.ln.BBzz",
+      "..a......b.c..",
+      ".d.e.f.gghi...",
+      ".d.jj.kl..i.m.",
+      "nd.o...l.p....",
+      "nd..qr..spp.tt",
+      "...uqqq..pvvtt",
     ],
     pieces: [{ id: "jelly_mould", to: { x: 5 }, then: ["drop"] }],
+    again: ["wizard_all_trades", "mineshaft", "jelly_mould"],
+  },
+  {
+    // (overhangs on the left, everything in them just enough to fill the bottom four rows once
+    // it comes down; gaps on the right: the two together take the four rows away)
+    id: "plan", powers: true,
+    text: "Think about where each one goes: a {gravity} on the left drops those overhangs into their holes, and an {expander} on the right fills the gaps.",
+    board: [
+      ".a...cc.......",
+      "ddxbb.c.......",
+      "dd.eb..k.ll..m",
+      "ffge.h.k..n.mm",
+      "f.g.jhi.o.n..p",
+      "..gjjhioo..q.p",
+    ],
+    pieces: [{ id: "hippo_bellyflop", to: { x: 1 }, then: ["drop"] }, { id: "storm_cloud", to: { x: 9 }, then: ["drop"] }],
+  },
+  {
+    // (an awkward piece over a heap: the shelf's Dissolverz goes in its place, and takes the
+    // heap away)
+    id: "shelf", powers: true, shelf: "destroyer",
+    text: {
+      touch: "Every game you get one big powerup of each kind on your shelf: tap one and it takes the falling piece's place.",
+      keys: "Every game you get one big powerup of each kind on your shelf: press [1] [2] or [3] and it takes the falling piece's place.",
+    },
+    dropMs: 420,
+    board: [
+      "......ab......",
+      ".....cab......",
+      ".....cdde.....",
+      "....ffd.eg....",
+      "....h.ijjg....",
+      "...hh.iik.l...",
+      "...m.nn.kll...",
+      "..mm.o.ppqq...",
+      "..rsso.t.uqv..",
+      ".rr.wwxtt.uvv.",
+    ],
+    pieces: [{ id: "pyramid", firstMs: 1800, then: ["shelf"] }], // (a moment to see the finger go to the shelf)
   },
   {
     id: "giants",
-    text: "Later on, big awkward pieces turn up too: find them somewhere flat to land.",
+    text: "As the game goes on, the pieces get bigger and fall faster, but the shiny pieces get better too.",
     board: [
       "a.............",
       "abb...........",
@@ -169,9 +222,9 @@ export const PAGES = [
     pieces: [{ id: "pyramid", to: { x: 5 }, then: ["drop"] }],
   },
   {
-    id: "end", free: true,
+    id: "end", free: true, modes: true,
     dropMs: 380, // (gently: time for the autopilot, or the player, to get each one where it goes)
-    text: { touch: "That's it! Pause any time with [❚❚]; play on here, or start a game.", keys: "That's it! Press [Space] to pause any time; play on here, or start a game." },
+    text: "That's everything! Pick a mode and play.",
     board: [
       "a.....bb...cc.",
       "aadd..beeffcg.",
@@ -187,7 +240,7 @@ export function tutorialPages(state) {
     const s = state.allById.get(id);
     return !!s && (!s.powerup || (isPowerupEnabled(s) && (s.frequency ?? 1) > 0 && !s.powerup.setOnly));
   };
-  const pages = PAGES.filter(p => (p.pieces ?? []).every(q => live(q.id)));
+  const pages = PAGES.filter(p => (p.pieces ?? []).every(q => live(q.id)) && (!p.shelf || CONFIG.shelf?.pieces?.[p.shelf]?.some(id => state.allById.has(id))));
   const first = pages.find(p => p.cls);
   return pages.map(p => ({ ...p, first: p === first }));
 }
@@ -210,6 +263,7 @@ export function createTutorial(state, { page = 0 } = {}) {
     pages: tutorialPages(state),
     page: 0,
     queue: [],          // the page's pieces still to come
+    again: [],          // and more of its class, while there's plenty left on the board (`again`)
     spec: null,         // the one that came last, as the page has it (with its shape)
     fresh: false,       // (it has come, and the autopilot hasn't taken it in hand yet)
     active: null,       // the piece the autopilot is playing
@@ -291,7 +345,12 @@ export function tutorialNext(state) {
   const t = state.tutorial;
   if (!t || t.pending != null) return null;
   const page = t.pages[t.page];
-  const spec = page.free ? freePiece(state, t) : t.queue.shift();
+  let spec = page.free ? freePiece(state, t) : t.queue.shift();
+  // (a powerup page: more of its class, while the board has plenty left on it)
+  while (!spec && t.again.length && blocksLeft(state) > (page.until ?? 10)) {
+    const id = t.again.shift();
+    if (state.allById.get(id)) spec = { id, to: "power", then: ["drop"] };
+  }
   const shape = spec && (spec.shape ?? state.allById.get(spec.id));
   if (!shape) return null;
   const rot = Math.min(spec.rot ?? 0, shape.rotations.length - 1);
@@ -317,6 +376,9 @@ export function tutorialTick(state, dt) {
   state.dropMs = t.player ? T.playerDropMs : page.dropMs ?? T.dropMs;
   const a = state.active;
   if (t.fresh && a) begin(state, t, a);
+  // (one it didn't hand out: off the shelf, in place of the one that was falling. Wherever it
+  // does the most.)
+  else if (a && a !== t.active) { t.spec = { shape: a.shape, to: "power", then: ["drop"] }; begin(state, t, a); }
   if (!a) {
     // all landed and settled: a moment to take it in, and round it goes again
     if (!page.free && !t.queue.length && !t.fresh && settled(state) && (t.restMs += dt) >= T.restMs) {
@@ -350,6 +412,9 @@ function setUpPage(state, t, i) {
   clearBoard(state);
   buildBoard(state, page.board ?? []);
   t.queue = (page.pieces ?? []).map(p => ({ ...p }));
+  t.again = [...(page.again ?? [])];
+  // (the shelf's page has a shelf, full again each time round; no other page has one)
+  state.shelf = page.shelf ? createShelf(state, { demo: true }) : null;
   t.spec = null;
   t.fresh = false;
   t.active = null;
@@ -495,13 +560,15 @@ function begin(state, t, a) {
   t.active = a;
   t.stuck = 0;
   t.holding = 0;
-  t.wait = CONFIG.tutorial.firstMs;
   const spec = t.spec;
+  t.wait = spec.firstMs ?? CONFIG.tutorial.firstMs;
   // (the last page: where zen's autopilot would put it, playing as a person would, never in
   // under an overhang; or else somewhere sensible)
   // (with the piece after it in mind, as a person would: t.freeNext)
   const calm = spec.free ? bestPlacement({ board: state.board, mode: "zen" }, a.shape, undefined, 4, t.freeNext?.shape ?? null) : null;
-  const to = spec.free ? (calm && !calm.slide ? { rot: calm.rot, x: calm.x } : bestSpot(state, a.shape, a.x)) : spec.to;
+  const to = spec.free ? (calm && !calm.slide ? { rot: calm.rot, x: calm.x } : bestSpot(state, a.shape, a.x))
+    : spec.to === "power" ? powerSpot(state, a.shape) ?? bestSpot(state, a.shape, a.x)
+    : spec.to;
   t.goals = [...(spec.via ?? []), { rot: to?.rot ?? a.rotIdx, x: to?.x ?? a.x }].map(g => ({ rot: g.rot ?? a.rotIdx, x: g.x ?? a.x }));
   // ("drop" is however many taps it takes: CONFIG.timing.multiTaps, the last one the drop)
   const taps = Math.max(1, CONFIG.timing.multiTaps ?? 2);
@@ -562,7 +629,14 @@ function press(state, t, key) {
     case "down": if (!tryMove(state, 0, 1)) beginLockIfNeeded(state); break;
     case "hold": t.holding = CONFIG.tutorial.holdMs; t.hint.held = true; state.softDropping = true; break;
     case "drop": state.softDropping = false; hardDropAndLock(state, { lastChance: true }); break;
+    case "shelf": useShelf(state, shelfSlot(state, t)); break;
   }
+}
+
+// The slot of the shelf the page shows (its `shelf` class), or the first.
+export function shelfSlot(state, t = state.tutorial) {
+  const cls = t?.pages[t.page]?.shelf;
+  return Math.max(0, state.shelf?.slots.findIndex(s => s.cls === cls) ?? 0);
 }
 
 /* =========================
@@ -617,4 +691,32 @@ function bestSpot(state, shape, fromX) {
     }
   }
   return best;
+}
+
+// Where a powerup leaves the least on the board, once it has gone off and any rows it finishes
+// have gone (zen's own trial run of it), and then where it does the most. ({ rot, x }, or null.)
+function powerSpot(state, shape) {
+  if (!shape.powerup) return null;
+  const { rows } = CONFIG.board;
+  let best = null;
+  for (let r = 0; r < reachableTurns(shape); r++) {
+    const mat = shape.rotations[r], w = mat[0].length, h = mat.length;
+    for (let x = 0; x + w <= CONFIG.board.cols; x++) {
+      let y = -h;
+      while (y + h <= rows && !collides(state, x, y + 1, mat)) y++;
+      if (mat.some((row, j) => y + j < 0 && row.some(Boolean))) continue;
+      const res = tryPowerup(state, shape, r, x, y);
+      let left = 0;
+      for (const v of res.occ) left += v;
+      const s = -left + res.affected * 0.05 - r * 0.01;
+      if (!best || s > best.s) best = { rot: r, x, s };
+    }
+  }
+  return best;
+}
+
+function blocksLeft(state) {
+  let n = 0;
+  for (const row of state.board) for (const c of row) if (c) n++;
+  return n;
 }

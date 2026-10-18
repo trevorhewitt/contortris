@@ -54,29 +54,47 @@ test("tutorial: every page is set up right, and each powerup class that's on has
   assert.equal(pages[pages.length - 1], "end", "and a last page");
   // (the first powerup page says what powerups are)
   assert.match(tutorialText(t.pages.find(p => p.cls), "touch"), /powerups/);
+  // after the powerups, where to put them and the shelf; then how it goes on, and the modes
+  assert.deepEqual(pages.slice(-4), ["plan", "shelf", "giants", "end"]);
+  assert.ok(t.pages[t.pages.length - 1].modes, "the last page has the modes");
+  // (with a keyboard, only the arrows: the bar says WASD works too)
+  for (const p of PAGES) assert.doesNotMatch(tutorialText(p, "keys"), /\[[WASD]\]/, `${p.id}: arrows only`);
+  assert.match(tutorialText(PAGES.find(p => p.id === "down"), "keys"), /double press/);
+  assert.doesNotMatch(tutorialText(PAGES.find(p => p.id === "rows"), "keys"), /the more at once/);
 });
 
 test("tutorial: left to itself, each page does what it shows, and goes round again", () => {
   const { state, log, t } = tutorial(2);
+  let shelved = 0;
+  on(state, (type) => { if (type === "shelf") shelved++; });
+  const blocks = () => state.board.flat().filter(Boolean).length;
   for (let i = 0; i < t.pages.length; i++) {
     const page = t.pages[i];
     if (page.free) continue;
     tutorialGoTo(state, i);
     updateGame(state, 16);
-    const start = occupied(state), resets = t.resets, before = { ...log };
-    let presses = 0, seq = t.seq;
-    run(state, 60000, () => {
+    const start = occupied(state), resets = t.resets, before = { ...log, shelved }, full = blocks();
+    let presses = 0, seq = t.seq, least = full;
+    run(state, 90000, () => {
       if (t.seq !== seq) { presses++; seq = t.seq; }
+      if (t.resets === resets && !state.active && !state.effect) least = Math.min(least, blocks());
       return t.resets !== resets;
     });
     assert.equal(t.resets, resets + 1, `${page.id}: it went round again`);
     assert.equal(t.page, i, `${page.id}: on the same page`);
     assert.equal(occupied(state), start, `${page.id}: its board set up again as it was`);
     assert.ok(presses >= 1, `${page.id}: the autopilot pressed something (${presses})`);
-    assert.equal(log.locks - before.locks, page.pieces.length, `${page.id}: all its pieces came down`);
+    // (all its pieces came down; on the shelf's page the first goes, and the shelf's comes instead;
+    // a powerup page carries on with more of its class)
+    if (page.again) assert.ok(log.locks - before.locks >= page.pieces.length + 1, `${page.id}: more of its class came (${log.locks - before.locks})`);
+    else assert.equal(log.locks - before.locks, page.pieces.length, `${page.id}: all its pieces came down`);
     // what it shows: rows going (and for a powerup, the powerup doing something)
-    if (page.cls) assert.ok(log.fired > before.fired, `${page.id}: the powerup did something`);
+    if (page.cls || page.powers) assert.ok(log.fired > before.fired, `${page.id}: the powerup did something`);
     else assert.ok(log.rows > before.rows, `${page.id}: rows went`);
+    // (a powerup page: until the board is nearly gone)
+    if (page.again) assert.ok(least <= 12, `${page.id}: the board nearly gone (${least} of ${full} left)`);
+    if (page.id === "plan") assert.ok(log.rows - before.rows >= 4 && least <= 12, `${page.id}: the two together take the rows away (${least} left)`);
+    if (page.shelf) assert.equal(shelved - before.shelved, 1, `${page.id}: it used the shelf`);
   }
   assert.equal(log.over, 0, "never game over");
   assert.equal(state.gameOver, false);

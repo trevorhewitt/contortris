@@ -1726,7 +1726,7 @@ function intoWell(mat, x, weights) {
 }
 
 // A powerup's effect, tried on a copy of the board: { occ, lines, affected }.
-function tryPowerup(state, shape, rot, x, y) {
+export function tryPowerup(state, shape, rot, x, y) {
   const { cols, rows } = CONFIG.board;
   const board = state.board.map(r => r.slice());
   const mat = shape.rotations[rot], me = { pid: -1 }, placed = [];

@@ -1,23 +1,27 @@
 // ============================================================
 // TUTORIAL, ON THE PAGE — its bar under the board, the finger and the keys
 // ============================================================
-// src/tutorial.js plays each page; this shows it. The bar takes the bottom bar's place: the
-// page's sentence, Back and Next (and on the last page, Home and Play Classic), the pages as a
-// row of dots, and a pause button. And whatever the autopilot presses, as it presses it: on a
+// src/tutorial.js plays each page; this shows it. The page's sentence goes over the top of the
+// board, where a game shows the pieces' names, with an X beside it to go home. The bar takes the
+// bottom bar's place: Back and Next, Touch or Keys (which it shows), the pages as a row of dots,
+// and a pause button; on the shelf's page, the shelf. On the last page the modes cover the board,
+// each with a button to play it. And whatever the autopilot presses, as it presses it: on a
 // touch screen a finger tapping the part of the board that does it (the zones are ui.js
-// getZone's, each lit faintly in its own colour as the finger gets there); with a keyboard, a
-// little picture of the arrow keys and WASD in the bar, the key lighting up. It starts with
-// whichever the device looks like it has, and goes with whatever the player actually uses.
+// getZone's, each lit faintly in its own colour as the finger gets there) or the shelf; with a
+// keyboard, a little picture of the arrow keys in the bar, the key lighting up. It starts with
+// whichever the device looks like it has, goes with whatever the player actually uses, and
+// Touch and Keys switch it by hand.
 // Playing at all (a tap on the board, a key that moves the piece) takes the piece over
 // (tutorialTakeOver), and the hints go until the autopilot carries on.
 
 import { CONFIG } from "../config.js";
 import { on } from "./game.js";
-import { tutorialGoTo, tutorialTakeOver, tutorialText } from "./tutorial.js";
+import { tutorialGoTo, tutorialTakeOver, tutorialText, shelfSlot } from "./tutorial.js";
+import { bindShelf } from "./shelfui.js";
 import { CLASS_INFO } from "./powerups.js";
 import { escapeHtml } from "./util.js";
 
-// The finger: a pixel hand pointing up, its fingertip at the top (TIP), in a sleeve the game's cyan.
+// The finger: a pixel hand pointing up, its fingertip at the top (TIP), in a white sleeve.
 const HAND = [
   "......##........",
   ".....#ww#.......",
@@ -39,13 +43,13 @@ const HAND = [
   "....#cccccccd#..",
   "....##########..",
 ];
-const HAND_COLOURS = { "#": "#1a1428", w: "#fff4e6", s: "#e0c9b8", c: "#7bf7ff", d: "#38a9bd" };
+const HAND_COLOURS = { "#": "#1a1428", w: "#fff4e6", s: "#e0c9b8", c: "#ffffff", d: "#a9a9b4" };
 const PX = 3.5;           // (screen pixels to a pixel of it)
 const TIP = { x: 7, y: 0.4 };
 
-// What each press is: the zone of the board that does it, and the keys (an arrow and its letter).
-const ZONE_OF = { left: "left", right: "right", turn: "top", down: "bottom", hold: "bottom", drop: "bottom" };
-const KEYS_OF = { left: ["left", "a"], right: ["right", "d"], turn: ["up", "w"], down: ["down", "s"], hold: ["down", "s"], drop: ["down", "s"] };
+// What each press is: the zone of the board that does it (or the shelf), and the arrow key.
+const ZONE_OF = { left: "left", right: "right", turn: "top", down: "bottom", hold: "bottom", drop: "bottom", shelf: "shelf" };
+const KEYS_OF = { left: ["left"], right: ["right"], turn: ["up"], down: ["down"], hold: ["down"], drop: ["down"] };
 // (where in each zone the finger taps, as shares of the board across and down)
 const TIP_AT = { left: [0.25, 0.47], right: [0.75, 0.47], top: [0.5, 0.11], bottom: [0.5, 0.86] };
 // (the keys that move the piece: pressing one takes it over)
@@ -60,19 +64,25 @@ function handSvg() {
   return `<svg viewBox="0 0 ${w} ${h}" width="${w * PX}" height="${h * PX}" shape-rendering="crispEdges" aria-hidden="true">${rects.join("")}</svg>`;
 }
 
-// A page's words: [x] a key or a button, {name} the powerup class's name in its colours.
+// A page's words: [x] a key or a button, {name} the powerup class's name in its colours (and
+// {gravity} and so on, that class's).
 function markup(text, page) {
+  const name = (cls) => `<b class="tutName cls-${cls}">${escapeHtml(CLASS_INFO[cls]?.name ?? cls)}</b>`;
   return escapeHtml(text)
     .replace(/\[([^\]]+)\]/g, "<kbd>$1</kbd>")
-    .replace(/\{name\}/g, () => `<b class="tutName cls-${page.cls}">${escapeHtml(CLASS_INFO[page.cls]?.name ?? page.cls)}</b>`);
+    .replace(/\{name\}/g, () => name(page.cls))
+    .replace(/\{(destroyer|gravity|expander|combo)\}/g, (_, cls) => name(cls));
 }
 
 export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play }) {
   const $ = (id) => document.getElementById(id);
   const bar = $("tutorialBar"), shell = $("boardShell"), canvas = $("boardCanvas");
   if (!bar || !shell) return;
-  const textEl = $("tutText"), keysEl = $("tutKeys"), dotsEl = $("tutDots"), cheerEl = $("tutCheer");
-  const backBtn = $("tutBack"), nextBtn = $("tutNext"), pauseBtn = $("tutPause"), homeBtn = $("tutHome"), playBtn = $("tutPlay");
+  const textEl = $("tutTop"), keysEl = $("tutKeys"), dotsEl = $("tutDots"), cheerEl = $("tutCheer"), modesEl = $("tutModes");
+  const backBtn = $("tutBack"), nextBtn = $("tutNext"), pauseBtn = $("tutPause"), xBtn = $("tutX");
+  const viewBtns = { touch: $("tutViewTouch"), keys: $("tutViewKeys") };
+  const shelfRoot = $("tutShelf");
+  const shelf = bindShelf({ state, root: shelfRoot });
 
   // the zones, faintly, over the board (under the panels)
   const zonesEl = document.createElement("div");
@@ -100,6 +110,7 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
   // Touch or keyboard: what the device looks like it has, until the player shows otherwise.
   let view = window.matchMedia?.("(hover: hover) and (pointer: fine)").matches ? "keys" : "touch";
   const setView = (v) => { view = v; };
+  for (const [v, b] of Object.entries(viewBtns)) b.addEventListener("click", () => setView(v));
 
   let running = false, raf = 0;
   const shown = { page: -1, view: null, seq: 0, cheer: 0, resets: 0, zone: null, fingerOn: false, paused: null, count: 0 };
@@ -111,6 +122,9 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     running = onNow;
     document.body.classList.toggle("tutorial", onNow);
     bar.hidden = !onNow;
+    textEl.hidden = !onNow;
+    xBtn.hidden = !onNow;
+    if (!onNow) modesEl.hidden = true;
     shown.page = -1;
     shown.cheer = state.tutorial?.cheer ?? 0;
     window.__fitBoard?.(); // (the bar is taller than the usual one: the board makes room)
@@ -121,16 +135,25 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
   on(state, (type, d) => {
     if (type === "start") setOn(!!CONFIG.modes[d.mode]?.tutorial);
     else if (type === "reset") setOn(false);
+    else if (type === "shelf" && running) shelf.refresh();
   });
 
   /* ---------- the bar ---------- */
 
   function renderPage(t) {
+    const newPage = shown.page !== t.page;
     shown.page = t.page;
     shown.view = view;
     const page = t.pages[t.page], last = t.page === t.pages.length - 1;
     textEl.innerHTML = markup(tutorialText(page, view), page);
+    if (newPage) { textEl.classList.remove("enter"); void textEl.offsetWidth; textEl.classList.add("enter"); }
     keysEl.hidden = view !== "keys";
+    for (const [v, b] of Object.entries(viewBtns)) b.setAttribute("aria-pressed", String(v === view));
+    shelf.refresh();
+    if (newPage) {
+      modesEl.hidden = !page.modes;
+      [...modesEl.children].forEach((b, i) => b.style.setProperty("--n", i));
+    }
     if (shown.count !== t.pages.length) {
       shown.count = t.pages.length;
       dotsEl.innerHTML = t.pages.map(() => "<i></i>").join("");
@@ -139,8 +162,6 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     dotsEl.setAttribute("aria-label", `page ${t.page + 1} of ${t.pages.length}`);
     backBtn.disabled = t.page === 0;
     nextBtn.hidden = last;
-    homeBtn.hidden = !last;
-    playBtn.hidden = !last;
     nextBtn.classList.remove("nudge");
     cheerEl.classList.remove("on");
   }
@@ -161,9 +182,12 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
   backBtn.addEventListener("click", () => go(state.tutorial.page - 1));
   nextBtn.addEventListener("click", () => go(state.tutorial.page + 1));
   pauseBtn.addEventListener("click", (e) => { e.preventDefault(); togglePause(); });
-  homeBtn.addEventListener("click", () => goToMenu());
-  playBtn.addEventListener("click", () => play("normal"));
-  $("btnTutorial")?.addEventListener("click", (e) => play("tutorial", { from: e.currentTarget }));
+  xBtn.addEventListener("click", () => goToMenu());
+  xBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
+  for (const b of modesEl.querySelectorAll("[data-mode]")) {
+    b.addEventListener("pointerdown", (e) => e.stopPropagation());
+    b.addEventListener("click", () => play(b.dataset.mode, { from: b }));
+  }
   // (a tap on the bar is for the bar, not the board: ui.js would take it for the bottom of it)
   bar.addEventListener("pointerdown", (e) => e.stopPropagation());
 
@@ -188,14 +212,22 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     shown.fingerOn = false;
     for (const z of Object.values(zones)) z.classList.remove("on");
     for (const el of keyEls.values()) el.classList.remove("lit");
+    for (const el of shelfRoot.querySelectorAll(".aim")) el.classList.remove("aim");
     litUntil.clear();
   }
+
+  // (the shelf's slot the autopilot is going for)
+  const aimSlot = () => shelfRoot.querySelectorAll(".shelfSlot")[shelfSlot(state)] ?? null;
 
   // A press: the finger taps (a ripple where it touched, the edge of the board lights as it does
   // for the player's own taps), or the keys light up.
   function pressed(key, now) {
     const zone = ZONE_OF[key];
     lastPress = { at: now, zone };
+    if (key === "shelf") {
+      const b = aimSlot();
+      b?.classList.remove("pop"); void b?.offsetWidth; b?.classList.add("pop");
+    }
     if (view === "touch") {
       hand.classList.remove("tap");
       void hand.offsetWidth;
@@ -205,18 +237,22 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
       finger.appendChild(ring);
       ring.addEventListener("animationend", () => ring.remove(), { once: true });
       setTimeout(() => ring.remove(), 900);
-      shell.classList.add(`glow-${zone}`);
-      setTimeout(() => shell.classList.remove(`glow-${zone}`), 170);
       const z = zones[zone];
-      z.classList.remove("hit");
-      void z.offsetWidth;
-      z.classList.add("hit");
+      if (z) {
+        shell.classList.add(`glow-${zone}`);
+        setTimeout(() => shell.classList.remove(`glow-${zone}`), 170);
+        z.classList.remove("hit");
+        void z.offsetWidth;
+        z.classList.add("hit");
+      }
     }
     for (const k of KEYS_OF[key] ?? []) litUntil.set(k, now + 190);
   }
 
   function placeFinger(zone) {
-    const r = shell.getBoundingClientRect(), [fx, fy] = TIP_AT[zone];
+    // (the shelf: the middle of its slot)
+    const slot = zone === "shelf" ? aimSlot() : null;
+    const r = (slot ?? shell).getBoundingClientRect(), [fx, fy] = slot ? [0.5, 0.5] : TIP_AT[zone];
     const x = r.left + r.width * fx - TIP.x * PX, y = r.top + r.height * fy - TIP.y * PX;
     // (coming into view, it appears where it's going rather than flying in from wherever it was)
     if (!shown.fingerOn) {
@@ -243,6 +279,8 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     if (fingerOn !== shown.fingerOn) { finger.classList.toggle("on", fingerOn); shown.fingerOn = fingerOn; }
     hand.classList.toggle("hold", fingerOn && t.hint.held);
     for (const [z, el] of Object.entries(zones)) el.classList.toggle("on", view === "touch" && z === zone);
+    const slot = shelfRoot.hidden ? null : aimSlot();
+    slot?.classList.toggle("aim", aim === "shelf");
     const held = live && t.hint.held ? KEYS_OF.hold : [];
     for (const [k, el] of keyEls) el.classList.toggle("lit", live && (held.includes(k) || (litUntil.get(k) ?? 0) > now));
   }
@@ -256,6 +294,7 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     // (a page set up, or going round again: the board fades in)
     if (t.resets !== shown.resets) {
       shown.resets = t.resets;
+      shelf.refresh();
       canvas.classList.remove("tutFade");
       void canvas.offsetWidth;
       canvas.classList.add("tutFade");

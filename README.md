@@ -12,7 +12,7 @@ clears.
 - **Extreme**: no powerups, no mercy.
 - **God mode**: everything from the first piece; it gets harder too.
 - **Zen** and **Turbo zen**: it plays itself (slowly, or as a show), or you do.
-- **Tutorial**: the controls and every kind of powerup, page by page.
+- **Tutorial**: the controls, every kind of powerup (each until the board is nearly gone), where to put them, the shelf, and the modes to pick from, page by page.
 
 ## Where things are
 
@@ -39,7 +39,7 @@ clears.
 | `powerups.js` | Powerup areas and effects for every class (`computeEffect`). |
 | `demo.js` | The little looping powerup animations on the intro / help / How to play screens. |
 | `tutorial.js` | The tutorial's pages (each one's words, board and pieces) and the autopilot that plays them. No DOM. |
-| `tutorialui.js` | The tutorial on the page: its bar, the finger tapping the board, the keys lighting up. |
+| `tutorialui.js` | The tutorial on the page: its words over the board, its bar (Touch or Keys, the shelf), the finger tapping the board, the keys lighting up, the modes on its last page. |
 | `shapes.js` | Loads `shapes/main_shapes.js`. |
 | `achievements.js` | Tracks and unlocks achievements (saved in the browser). |
 | `render.js` | Draws everything on the board canvas. |

@@ -12,15 +12,16 @@ import { CONFIG } from "../config.js";
 
 // The shelf for a new game: { slots: [{ cls, shape, left }], pending: null } (pending: a powerup
 // taken off it while nothing was falling, to come next), or null in a mode without one.
-export function createShelf(state) {
+// (`demo`: the tutorial's page about it, in any mode, the first of each class's list every time)
+export function createShelf(state, { demo = false } = {}) {
   const cfg = CONFIG.shelf, mode = CONFIG.modes[state.mode] ?? {};
-  if (!cfg || !mode.shelf || !mode.powerups) return null;
+  if (!cfg || (!demo && (!mode.shelf || !mode.powerups))) return null;
   const slots = [];
   for (const cls of cfg.classes) {
     const options = (cfg.pieces[cls] ?? []).map(id => state.powerups.find(p => p.id === id)).filter(Boolean);
     if (!options.length) continue; // (a class that's switched off, or whose pieces are all gone)
     // (not the game's own dice: which one it is changes nothing about the pieces that come)
-    slots.push({ cls, shape: options[Math.floor(Math.random() * options.length)], left: cfg.perGame ?? 1 });
+    slots.push({ cls, shape: options[demo ? 0 : Math.floor(Math.random() * options.length)], left: cfg.perGame ?? 1 });
   }
   return slots.length ? { slots, pending: null } : null;
 }
