@@ -33,11 +33,11 @@ export const CONFIG = {
     zen: { label: "Zen", tagline: "slow and easy: it plays itself, or you do", warmup: "always", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
     turbo: { label: "Turbo zen", tagline: "it plays itself, and doesn't stop", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2], captions: false },
     // (behind the home screen, CONFIG.home: turbo zen with no words in it at all, no names, no
-    // callouts, at an easier pace so you see the pieces fall; never a pause, dramatic or for
+    // callouts, at an easier pace than turbo zen's so you see the pieces fall; never a pause, dramatic or for
     // breath (dramatic, rest: false), so something's always coming down; its demolitions leave
     // `keep` rows or so, so the board is seldom bare; and it stops while the page is hidden.
     // Never one to play.)
-    home: { label: "Home", hidden: true, powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 1, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, captions: false, callouts: false, names: false, home: true, keep: [6, 10], dramatic: false, rest: false },
+    home: { label: "Home", hidden: true, powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 1.75, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, captions: false, callouts: false, names: false, home: true, keep: [6, 10], dramatic: false, rest: false },
     // (Developer mode, for looking at what's new, CONFIG.devMode: hold God mode and Turbo zen down
     // together on the home screen, or shift-click God mode. God mode, with newest: the newest
     // things first; rescue: it won't let you lose, and no end game; steady: it never speeds up.)
@@ -78,6 +78,16 @@ export const CONFIG = {
     // with no palette (anything goes) paletteNone of the time, and a palette more kinds
     // (paletteKinds: the weights for 2, 3, 4, ... up to 15 of them).
     movements: { mono: 0.2, oops: 0.2, combo: 0.3, tiles: 0.1, squares: 0.25, colour: 0.35, chorus: 0.5, natural: 4, build: 4, mess: 2, small: 1.5, big: 1.5, beds: 1.3, column: 1.2 },
+    // Now and then, at a cut (chance), a mosaic instead (src/mosaic.js): a grid cols × rows packed
+    // full of pieces on a theme (themes: how likely each; tags: the kinds of thing that can be
+    // one), drawn cellPx a cell, swept across fast for a few shots (shots), each shotMs long,
+    // zooming between zoom times as close as filling the screen, turning up to maxTurn degrees.
+    mosaic: {
+      chance: 0.22, shots: [2, 4], shotMs: [1000, 1700], zoom: [1.15, 3.4], maxTurn: 32,
+      cols: 56, rows: 34, cellPx: 20,
+      tags: ["food", "space", "tiles", "landmark", "surreal", "weather", "bugs"],
+      themes: { everything: 3, powerups: 1.5, giants: 1.2, few: 1.6, food: 1, space: 0.8, tiles: 0.8, landmark: 0.5, surreal: 0.6, weather: 0.5, bugs: 0.5 },
+    },
     paletteNone: 0.6,
     paletteKinds: [0.02, 0.04, 0.06, 0.08, 0.1, 0.1, 0.1, 0.1, 0.09, 0.08, 0.07, 0.06, 0.05, 0.05],
   },

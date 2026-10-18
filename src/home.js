@@ -16,11 +16,13 @@
 // There are two of them, in fact: the camera cuts between the two boards as well as around each,
 // so a cut can be to somewhere else altogether, not just the same board from another angle. Only
 // the one on screen plays (main.js asks liveState()); the other waits where it was, which costs
-// nothing.
+// nothing. And now and then a cut is to a mosaic instead (src/mosaic.js): a screen packed full of
+// pieces, swept across fast for a few shots, turning and zooming, then back to the boards.
 
 import { CONFIG } from "../config.js";
 import { startRun, resetGame, updateGame, getGhostDropY, collides, createGameState, markBoardDirty } from "./game.js";
 import { resolvePowerupArea } from "./powerups.js";
+import { buildMosaic, paintMosaic } from "./mosaic.js";
 const H = () => CONFIG.home ?? {};
 const rand = (a, b) => a + Math.random() * (b - a);
 const pickIn = ([a, b]) => rand(a, b);
@@ -108,12 +110,24 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     onOther = false;
     otherWarm = 26000;
     camera.reset();
+    newMosaic();
+  }
+
+  // The next mosaic, packed now and painted a little each frame until it's ready (`mosaic.ready`);
+  // and whether the camera is on it, and for how many more shots.
+  let mosaic = null, onMosaic = 0;
+  function newMosaic() {
+    const M = H().mosaic;
+    if (!M || reduced) { mosaic = null; return; }
+    const m = buildMosaic(state.allShapes ?? state.shapes, state.allPowerups ?? state.powerups, { cols: M.cols ?? 56, rows: M.rows ?? 34 });
+    mosaic = { ...paintMosaic(m, M.cellPx ?? 20), ready: false };
   }
 
   function stopBackground() {
     if (state.mode === "home") resetGame(state);
     other = null;
     onOther = false;
+    onMosaic = 0;
     window.__homeShellPx = null;
   }
 
@@ -286,7 +300,21 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     },
     step(dt, now) {
       const s0 = this.shot;
-      if (!s0 || now >= s0.end) { if (s0) maybeSwitchBoards(now); this.frame(now); } // (a cut: now and then to the other board)
+      if (mosaic && !mosaic.ready) mosaic.ready = mosaic.step(3);
+      if (!s0 || now >= s0.end) {
+        // a cut: now and then to the other board, or for a few shots to a mosaic, and back
+        const M = H().mosaic;
+        if (onMosaic > 0 && --onMosaic > 0) { this.mosaicShot(now); return this.stepMosaic(now); }
+        if (onMosaic === 0 && s0 && !s0.mosaic && mosaic?.ready && Math.random() < (M?.chance ?? 0)) {
+          const [a, b] = M.shots ?? [2, 4];
+          onMosaic = a + Math.floor(Math.random() * (b - a + 1));
+          this.mosaicShot(now);
+          return this.stepMosaic(now);
+        }
+        if (s0?.mosaic) { newMosaic(); markBoardDirty(shown()); } // (back from one: a fresh one for next time)
+        else if (s0) maybeSwitchBoards(now);
+        this.frame(now);
+      } else if (s0.mosaic) return this.stepMosaic(now);
       else if (!reduced) {
         // the next thing to land, or go off, somewhere this shot can't see: cut to it (a new
         // piece the moment it comes, so you see it come down; never two cuts within minShotMs)
@@ -306,8 +334,36 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       this.x = Math.max(hw, Math.min(cols - hw, s.a.x + (s.b.x - s.a.x) * u));
       this.y = Math.max(hh, Math.min(rows - hh, s.a.y + (s.b.y - s.a.y) * u));
     },
+    // A shot of the mosaic: a fast sweep from one spot to another across it, turning and zooming
+    // as it goes (CONFIG.home.mosaic), eased in and out.
+    mosaicShot(now) {
+      const M = H().mosaic, m = mosaic.mosaic, turn = (M.maxTurn ?? 30) * Math.PI / 180;
+      const [zl, zh] = M.zoom ?? [1.15, 3.4], [m0, m1] = M.shotMs ?? [1000, 1700];
+      const end = () => ({ x: rand(0, m.cols), y: rand(0, m.rows), z: rand(zl, zh), rot: rand(-turn, turn) });
+      const a = end(), b = end();
+      // (a pan, mostly; or a turn and a zoom about one spot)
+      if (Math.random() < 0.3) { b.x = a.x + rand(-3, 3); b.y = a.y + rand(-3, 3); b.z = a.z * (Math.random() < 0.5 ? 0.5 : 1.8); }
+      this.shot = { mosaic: true, start: now, end: now + rand(m0, m1), a, b };
+    },
+    stepMosaic(now) {
+      const s = this.shot, m = mosaic.mosaic, u = smooth(Math.min(1, (now - s.start) / (s.end - s.start)));
+      const lerp = (k) => s.a[k] + (s.b[k] - s.a[k]) * u;
+      this.rot = lerp("rot");
+      const cover = coverScale(view.w, view.h, this.rot, m.cols, m.rows);
+      this.z = Math.max(1, lerp("z"));
+      this.S = cover * this.z;
+      // (never so far that anything beyond it shows)
+      const ca = Math.abs(Math.cos(this.rot)), sa = Math.abs(Math.sin(this.rot));
+      const hw = (view.w * ca + view.h * sa) / (2 * this.S), hh = (view.w * sa + view.h * ca) / (2 * this.S);
+      this.x = Math.max(hw, Math.min(m.cols - hw, lerp("x")));
+      this.y = Math.max(hh, Math.min(m.rows - hh, lerp("y")));
+    },
     draw() {
-      const { cols } = CONFIG.board, pc = boardCanvas.width / cols, d = view.dpr;
+      if (this.shot?.mosaic && mosaic) return this.drawImage(mosaic.canvas, mosaic.mosaic.cols);
+      this.drawImage(boardCanvas, CONFIG.board.cols);
+    },
+    drawImage(img, cols) {
+      const pc = img.width / cols, d = view.dpr;
       bgx.setTransform(1, 0, 0, 1, 0, 0);
       bgx.fillStyle = "#000";
       bgx.fillRect(0, 0, bg.width, bg.height);
@@ -317,7 +373,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       const k = this.S * d / pc;
       bgx.scale(k, k);
       bgx.translate(-this.x * pc, -this.y * pc);
-      bgx.drawImage(boardCanvas, 0, 0);
+      bgx.drawImage(img, 0, 0);
     },
   };
 
