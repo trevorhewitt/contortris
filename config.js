@@ -836,15 +836,15 @@ export const CONFIG = {
         // early: one of the first two classes is always this one (null: any, fully at random);
         // then the combos of those two, and only then (combosBeforeThird) the third class, or
         // after comboWaitDrops pieces anyway
-        early: null, combosBeforeThird: true, comboWaitDrops: 90,
+        early: null, combosBeforeThird: true, comboWaitDrops: 45,
         // ...or, in this order exactly (the developer tools set it): the classes one after
         // another, and "combo" where the combos may start (left out: no combos). null: as above.
         order: null,
-        newClassEvery: 6,          // after this many powerups, the next one opens a new class
-        newClassAfterDrops: 32,    // ...or after this many drops since the last new class
+        newClassEvery: 4,          // after this many powerups, the next one opens a new class
+        newClassAfterDrops: 18,    // ...or after this many drops since the last new class
         // intro screens interrupt the game: at least this many pieces between two of them
         // (new classes and the first combo). The first of a class is always a `starter`.
-        minDropsBetweenIntros: 18,
+        minDropsBetweenIntros: 12,
       },
 
       // Usability: before picking, every candidate powerup is tried on the current board.
