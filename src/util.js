@@ -79,10 +79,16 @@ export function makeRng(seed = 1) {
 }
 
 // Safe localStorage access (private mode / blocked storage must not break the game).
+// (Saved before the game was called Eztrix, a key began "extris.": read from there if it hasn't
+// been saved under its new name yet, so nobody loses their achievements or best scores.)
+const LEGACY_PREFIX = { "eztrix.": "extris." };
 export const store = {
   get(key, fallback = null) {
     try {
-      const v = globalThis.localStorage?.getItem(key);
+      let v = globalThis.localStorage?.getItem(key);
+      for (const [now, was] of Object.entries(LEGACY_PREFIX)) {
+        if (v == null && key.startsWith(now)) v = globalThis.localStorage?.getItem(was + key.slice(now.length));
+      }
       return v == null ? fallback : v;
     } catch { return fallback; }
   },

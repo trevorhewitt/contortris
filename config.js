@@ -3,6 +3,10 @@
 // ============================================================
 
 export const CONFIG = {
+  // The game's name, wherever the game shows it (the page's title, the logos, the footer). The
+  // name piece (shapes/main_shapes.js "eztrix") spells it in pixel art, so it is redrawn by hand.
+  name: "Eztrix",
+
   board: { cols: 14, rows: 24 },
 
   // Game modes. Extreme = the game with no powerups. Normal (Classic) = the same game plus powerups.
@@ -292,7 +296,7 @@ export const CONFIG = {
     cast: { few: 1, mix: 1.1, any: 0.35, mixKinds: [8, 20], keep: 0.3, oneOffs: [0.25, 0.35, 0.28, 0.12] },
     // What turbo zen has shown is remembered from one visit to the next (src/main.js), fading to
     // `fade` of itself each visit, so a visit doesn't open with the same few pieces as the last.
-    memory: { key: "extris.turboShown", fade: 0.5, saveMs: 20000 },
+    memory: { key: "eztrix.turboShown", fade: 0.5, saveMs: 20000 },
     // Now and then (chance, each piece of a fill; half that in a board of one family; never in
     // "Oops, all..."), something else altogether: one of the pieces turbo zen hardly uses, up to
     // maxDifficulty, the less it has been used since the page was loaded the likelier (to the

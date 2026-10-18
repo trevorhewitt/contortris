@@ -1557,10 +1557,20 @@
   // into the file removes its draft. Undo history is kept in memory for recently visited pieces.
   // record: { key, updated, sourceId, name, id, preview (the built entry), state (encoded) }
   // ============================================================
-  const DRAFT_PREFIX = "extris_block_designer_draft:";
-  const DRAFT_TOMBS_KEY = "extris_block_designer_draft_tombstones";
-  const LAST_PIECE_KEY = "extris_block_designer_last_piece";
-  const LIST_PREFS_KEY = "extris_block_designer_list_prefs";
+  // (saved before the game was called Eztrix, these began "extris_": moved over once, so no
+  // draft or setting is lost)
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (!k?.startsWith("extris_block_designer")) continue;
+      const now = "eztrix_" + k.slice("extris_".length);
+      if (localStorage.getItem(now) == null) localStorage.setItem(now, localStorage.getItem(k));
+    }
+  } catch { /* storage unavailable */ }
+  const DRAFT_PREFIX = "eztrix_block_designer_draft:";
+  const DRAFT_TOMBS_KEY = "eztrix_block_designer_draft_tombstones";
+  const LAST_PIECE_KEY = "eztrix_block_designer_last_piece";
+  const LIST_PREFS_KEY = "eztrix_block_designer_list_prefs";
   const drafts = new Map();
   const histCache = new Map();   // key -> { stamp, undo, redo } (most recent last)
   const HIST_CACHE_MAX = 24;
@@ -2348,7 +2358,7 @@
   // else edits those layers, the float is dropped (its pixels stay where they are). Arrays in a selection
   // are never mutated, so undo snapshots share them.
   // ============================================================
-  const SEL_CLIP_KEY = "extris_block_designer_pixel_clipboard";
+  const SEL_CLIP_KEY = "eztrix_block_designer_pixel_clipboard";
   const selOpts = { allLayers: false, opaque: false };
   const selPtr = { mode: null, start: null, origin: null, moved: false };
   const sctx = el.selCanvas.getContext("2d");
@@ -5296,7 +5306,7 @@
   const ACH = makeSlot("achievements", "Achievements", "shapes/achievements.js", "ACHIEVEMENTS");
   const SLOTS = { shapes: BLOCKS, achievements: ACH };
   BLOCKS.onLoaded = () => { renderList(); updateIdDatalist(); scheduleRender(); achBlocksChanged(); };
-  const HANDLE_DB = "extris_block_designer_handles", HANDLE_STORE = "handles";
+  const HANDLE_DB = "eztrix_block_designer_handles", HANDLE_STORE = "handles";
   const isServed = () => /^https?:$/.test(location.protocol);
 
   // opts.keepWorking: the text was just written from the editor's own data (don't reload the editor)
@@ -5385,7 +5395,7 @@
     }
     try {
       const [handle] = await window.showOpenFilePicker({
-        id: "extris_" + slot.key, multiple: false,
+        id: "eztrix_" + slot.key, multiple: false,
         types: [{ description: "JavaScript files", accept: { "text/javascript": [".js"] } }],
       });
       try { await handle.requestPermission({ mode: "readwrite" }); } catch {}
@@ -6165,7 +6175,7 @@
   function makeProjectObject(){
     const hex = (d) => Array.from(d, u => "0x" + (u >>> 0).toString(16).padStart(8, "0"));
     return {
-      version: 4, app: "extris_block_designer",
+      version: 4, app: "eztrix_block_designer",
       meta: {
         blocksW: state.blocksW, blocksH: state.blocksH, ppb: state.ppb, pxW: state.pxW, pxH: state.pxH,
         zoom: state.zoom, seed: state.seed, adj: { ...state.adj }, activeLayerId: state.activeLayerId,
@@ -6384,8 +6394,8 @@
   const ACH_MODES = ["any", "easy", "normal", "extreme", "powerups"];
   const ACH_MODE_NOTES = { easy: "Easy mode only.", normal: "Normal mode only.", extreme: "Extreme mode only.", powerups: "Only in modes with powerups (Easy or Normal)." };
   const ICON_MIN = 8, ICON_MAX = 32, ICON_DEFAULT = 12;
-  const RECENT_KEY = "extris_block_designer_recent_icon_colours";
-  const MODE_KEY = "extris_block_designer_mode";
+  const RECENT_KEY = "eztrix_block_designer_recent_icon_colours";
+  const MODE_KEY = "eztrix_block_designer_mode";
   const STARTER_COLOURS = ["#ffcf3f", "#c98d1d", "#fff6c8", "#1a1428", "#ffffff", "#9a9ab8", "#5c5c78", "#ff4d6d", "#ffb84d", "#4dff88", "#4dc3ff", "#b44dff"];
   // Every trigger type in the header of shapes/achievements.js. Param kinds: int, scope ("game" | "lifetime"),
   // match ({ ids, tags, types }), ids (ordered list of block ids), zone (zone name). def = the game's default.

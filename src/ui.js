@@ -141,7 +141,7 @@ function createNameLayer(nameLayerEl) {
 // ============================================================
 
 const bestScores = {
-  key: (mode) => `extris.best.${mode}`,
+  key: (mode) => `eztrix.best.${mode}`,
   get(mode) {
     const v = Number(store.get(this.key(mode), 0)) || 0;
     // Extreme mode used to be called Hard.
@@ -156,9 +156,31 @@ const bestScores = {
 };
 
 function loadLastMode() {
-  const m = store.get("extris.mode", CONFIG.defaultMode);
+  const m = store.get("eztrix.mode", CONFIG.defaultMode);
   if (m === "hard") return "extreme";
   return CONFIG.modes[m] && !CONFIG.modes[m].hidden ? m : CONFIG.defaultMode;
+}
+
+// The game's name (CONFIG.name) wherever the page shows it: the title, the two logos (a letter
+// each, in the logo's colours, which go round again for a longer name) and the footer.
+function showGameName() {
+  const name = CONFIG.name;
+  document.title = name;
+  for (const logo of document.querySelectorAll("#homeLogo, .hudLogo")) {
+    const hues = [...logo.children].map(s => s.style.getPropertyValue("--h"));
+    if (!hues.length || logo.textContent.trim() === name.toUpperCase()) continue;
+    const big = logo.id === "homeLogo";
+    logo.innerHTML = "";
+    [...name.toUpperCase()].forEach((ch, i) => {
+      const s = document.createElement("span");
+      if (big) s.style.setProperty("--i", String(i));
+      s.style.setProperty("--h", hues[i % hues.length]);
+      if (big) s.appendChild(document.createElement("b")).textContent = ch; else s.textContent = ch;
+      logo.appendChild(s);
+    });
+    if (big) logo.setAttribute("aria-label", name);
+  }
+  for (const el of document.querySelectorAll(".gameName")) el.textContent = name;
 }
 
 // ============================================================
@@ -167,6 +189,7 @@ function loadLastMode() {
 
 export function bindUI({ state, renderer, achievements }) {
   const $ = (id) => document.getElementById(id);
+  showGameName();
 
   const scoreText = $("scoreText");
   const overlay = $("overlay");
@@ -189,7 +212,7 @@ export function bindUI({ state, renderer, achievements }) {
   // The developer tools (src/devtools.js): on in this browser, or for this visit (?devmode=1)
   const devUrl = new URLSearchParams(location.search).get("devmode") === "1";
   let devmode = devUrl || devToolsOn();
-  const SKIP_KEY = "extris.skipIntros";
+  const SKIP_KEY = "eztrix.skipIntros";
   const skipIntros = () => { try { return sessionStorage.getItem(SKIP_KEY) === "1"; } catch { return false; } };
   const setSkipIntros = (on) => {
     try { sessionStorage.setItem(SKIP_KEY, on ? "1" : "0"); } catch { /* ignore */ }
@@ -295,7 +318,7 @@ export function bindUI({ state, renderer, achievements }) {
   }
 
   // A mode's speed setting (CONFIG.modes[mode].speeds: turbo zen), remembered in this browser.
-  const speedKey = (mode) => `extris.speed.${mode}`;
+  const speedKey = (mode) => `eztrix.speed.${mode}`;
   function savedSpeed(mode) {
     const v = Number(store.get(speedKey(mode), 1));
     return CONFIG.modes[mode]?.speeds?.includes(v) ? v : 1;
@@ -310,7 +333,7 @@ export function bindUI({ state, renderer, achievements }) {
   function startGame(mode = lastMode) {
     markInput(state, "touch");
     lastMode = CONFIG.modes[mode] ? mode : CONFIG.defaultMode;
-    store.set("extris.mode", lastMode);
+    store.set("eztrix.mode", lastMode);
     newBest = false;
     state.backdrop = false;
     hideBoard(false);
@@ -409,20 +432,20 @@ export function bindUI({ state, renderer, achievements }) {
   // Remember which pieces opened the last few games, so the next opening is different
   // (CONFIG.assist.variety.acrossGames).
   // Level 6: remember that it has unlocked in this browser (only used if level6.persist)
-  const LEVEL6_KEY = "extris.level6.v1";
+  const LEVEL6_KEY = "eztrix.level6.v1";
   state.level6Remembered = store.get(LEVEL6_KEY) === "1";
   // the last level 6 sets served, so the next game doesn't open with the same one
-  const LEVEL6_RECENT_KEY = "extris.level6.recent.v1";
+  const LEVEL6_RECENT_KEY = "eztrix.level6.recent.v1";
   state.level6Recent = store.getJSON(LEVEL6_RECENT_KEY, []);
   let savedRecent = state.level6Recent;
 
   // Developer mode puts the newest things first, and anything never seen in this browser comes up
   // more (CONFIG.devMode.novelty): what has been seen here, and how often
-  const SEEN_KEY = "extris.seen.v1", SEEN_SETS_KEY = "extris.seenSets.v1";
+  const SEEN_KEY = "eztrix.seen.v1", SEEN_SETS_KEY = "eztrix.seenSets.v1";
   state.seenEver = new Map(Object.entries(store.getJSON(SEEN_KEY, {})));
   state.seenSetsEver = new Map(Object.entries(store.getJSON(SEEN_SETS_KEY, {})));
   // (and which version of each set came last, so the next one is another)
-  const SET_VERSIONS_KEY = "extris.setVersions.v1";
+  const SET_VERSIONS_KEY = "eztrix.setVersions.v1";
   state.setVersions = new Map(Object.entries(store.getJSON(SET_VERSIONS_KEY, {})));
   // (and since the page was loaded: developer mode shows the newest things once each, then carries on as usual)
   state.shownThisLoad = new Map();
@@ -452,7 +475,7 @@ export function bindUI({ state, renderer, achievements }) {
   window.addEventListener("pagehide", saveSeen);
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") saveSeen(); });
 
-  const OPENINGS_KEY = "extris.openings.v1";
+  const OPENINGS_KEY = "eztrix.openings.v1";
   let opening = [];
   const agCfg = CONFIG.assist.variety.acrossGames;
   function saveOpening() {
@@ -824,7 +847,7 @@ export function bindUI({ state, renderer, achievements }) {
     // which powerups can turn up, and how often (remembered for this browser session)
     const dev = state.devPowerups;
     try {
-      const saved = JSON.parse(sessionStorage.getItem("extris.dev") ?? "null");
+      const saved = JSON.parse(sessionStorage.getItem("eztrix.dev") ?? "null");
       if (saved) {
         dev.disabled = new Set(saved.disabled ?? []);
         dev.rate = Number(saved.rate ?? 1);
@@ -833,7 +856,7 @@ export function bindUI({ state, renderer, achievements }) {
       }
     } catch { /* ignore */ }
     const saveDev = () => {
-      try { sessionStorage.setItem("extris.dev", JSON.stringify({ disabled: [...dev.disabled], rate: dev.rate, level6: state.devLevel6, endGame: state.devEndGame })); } catch { /* ignore */ }
+      try { sessionStorage.setItem("eztrix.dev", JSON.stringify({ disabled: [...dev.disabled], rate: dev.rate, level6: state.devLevel6, endGame: state.devEndGame })); } catch { /* ignore */ }
     };
 
     // level 6: force it on or off, or start a group as the next piece

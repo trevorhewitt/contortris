@@ -8,7 +8,7 @@ import { matchShape } from "./shapes.js";
 import { currentPool } from "./game.js";
 import { store } from "./util.js";
 
-const STORAGE_KEY = "extris.achievements.v1";
+const STORAGE_KEY = "eztrix.achievements.v1";
 
 export const localStorageAdapter = {
   load: () => store.getJSON(STORAGE_KEY, null),
