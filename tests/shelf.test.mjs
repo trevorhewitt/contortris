@@ -84,7 +84,7 @@ test("No shelf in Extreme or zen", () => {
 
 test("Classic: a class's piece comes into the bay the moment the class unlocks: its first piece down on the board, not before", () => {
   let checked = 0;
-  for (const seed of [3, 8, 21]) {
+  for (let seed = 1; seed <= 30 && checked < 3; seed++) {
     const state = game("normal", seed);
     let first = null;
     on(state, (t, d) => { if (t === "spawn" && d.isNew && !first) first = d.shape; });
@@ -94,7 +94,7 @@ test("Classic: a class's piece comes into the bay the moment the class unlocks: 
       for (let t = 0; t < 4000 && state.active && !first; t += 16) { state.softDropping = true; updateGame(state, 16); }
       for (let t = 0; t < 2000 && !state.active && !first; t += 16) updateGame(state, 16);
     }
-    assert.ok(first, `seed ${seed}: a Shiny Piece came`);
+    if (!first) continue; // (a tower of pieces dropped straight down can end the game first)
     const cls = first.powerup.cls, slot = state.shelf.slots.find(s => s.cls === cls);
     if (!slot) continue; // (a class the bay doesn't have: the combos)
     // (its intro: it's still above the board)
@@ -112,5 +112,5 @@ test("Classic: a class's piece comes into the bay the moment the class unlocks: 
     assert.equal(shelfCount(state), 1);
     checked++;
   }
-  assert.ok(checked > 0);
+  assert.equal(checked, 3);
 });

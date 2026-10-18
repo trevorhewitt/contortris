@@ -372,8 +372,8 @@ test("a giant or a set's piece that couldn't go anywhere without ending the game
   assert.notEqual(state.active.shape.id, "everest", "not the mountain");
   assert.ok(state.active.shape.powerup, "something to make room");
   assert.ok(events.some(e => e.type === "deferred"));
-  assert.equal(state.next.id, "everest", "it comes after that");
-  assert.equal(state.pieceSel.level6.queue[0].id, "everest_trash", "and then the rest of its set");
+  assert.equal(state.next, null, "nothing picked ahead");
+  assert.deepEqual(state.pieceSel.level6.queue.map(s => s.id), ["everest", "everest_trash"], "it comes after that, and then the rest of its set");
 });
 
 test("a piece's card says how rare it is, in words", async () => {

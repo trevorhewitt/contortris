@@ -245,21 +245,18 @@ test("powerup effects never rotate with the piece", () => {
   assert.equal(p.powerup.areaRotations[1].cells.filter(c => c.own).length, 2, "the two cells beside it where it lay");
 });
 
-test("a powerup's intro comes just before it falls, and until then the next-piece preview shows it as a plain piece", async () => {
+test("a powerup's intro comes just before it falls, once a class, and nothing is picked ahead of its turn", async () => {
   const { introduced } = await import("../src/game.js");
   const { shapes, powerups } = loadShapes(SHAPES);
   for (const seed of [1, 2, 3, 4, 5]) {
     const state = createGameState(shapes, powerups, { rng: makeRng(seed) });
     const intros = [];
-    let plainBefore = 0;
     on(state, (t, d) => {
       if (t !== "spawn") return;
+      // (each piece is picked as it comes, on the board as it is: no next piece waiting)
+      assert.equal(d.next, null);
       if (d.isNew) intros.push(d.shape.powerup.cls);
-      // (the next piece, shown in the preview: a class not yet introduced isn't given away)
-      if (d.next?.powerup && !state.pieceSel.powerup.shownClasses.has(d.next.powerup.cls)) {
-        assert.equal(introduced(state, d.next), false);
-        plainBefore++;
-      }
+      if (d.shape.powerup) assert.equal(introduced(state, d.shape), true, "met by the time it falls");
     });
     startRun(state, "normal");
     for (let i = 0; i < 200; i++) {
@@ -269,6 +266,6 @@ test("a powerup's intro comes just before it falls, and until then the next-piec
       if (state.gameOver) break;
     }
     assert.ok(intros.length >= 2, `intros ${intros.join()}`);
-    assert.ok(plainBefore >= 1, "a new class's first powerup was shown plain in the preview first");
+    assert.equal(new Set(intros).size, intros.length, `one intro a class: ${intros.join()}`);
   }
 });

@@ -364,6 +364,7 @@ function pickNextPiece(state) {
   const sel = state.pieceSel;
   sel.dropIndex += 1;
   sel.presence = computeBoardPresence(state);
+  sel.fromSet = false; // (one of a level 6 set's pieces: it comes as it is, stillUseful)
 
   const mixCfg = godConfig(state.mode, "pieceMix", CONFIG.assist.pieceMix); // (zen leans to the easy ones)
   const danger01 = computeStackDanger01(state);
@@ -398,6 +399,7 @@ function pickNextPiece(state) {
   const grouped = nextGroupPiece(state);
   if (grouped) {
     commitSelectedShape(sel, grouped);
+    sel.fromSet = true;
     if (!groupUnderWay(state)) { noteHardDropped(sel, LEVEL6); beginCalm(state, "afterSet"); } // the group is over: rest a while
     return grouped;
   }
@@ -447,6 +449,7 @@ function pickNextPiece(state) {
   const groupStart = waveEnding(state) ? null : maybeStartGroup(state);
   if (groupStart) {
     commitSelectedShape(sel, groupStart);
+    sel.fromSet = true;
     if (!groupUnderWay(state)) noteHardDropped(sel, LEVEL6);
     return groupStart;
   }
@@ -853,11 +856,11 @@ export function powerupUsefulness(board, shape) {
 /* =========================================
    A powerup made useless by the piece before it
    =========================================
-   The next piece is picked a turn ahead, on the board as it was then, so the piece in
-   between can leave a powerup with nothing to do (it filled the gap a phantom was going
-   to sink into, say). At spawn, one like that is swapped for a powerup of the same
-   outline that does still help, turned to match the preview, so whatever was planned for
-   it still fits. Returns { shape, rot } (rot: the turn to spawn in).
+   A powerup picked ahead of its turn (asked for by name, in dev mode: the rest are picked
+   as they spawn) can be left with nothing to do by the piece in between (it filled the gap a
+   phantom was going to sink into, say). At spawn, one like that is swapped for a powerup of
+   the same outline that does still help, turned the same way, so whatever was planned for it
+   still fits. Returns { shape, rot } (rot: the turn to spawn in).
 */
 const outlineOf = (mat) => mat.map(r => r.map(c => (c ? 1 : 0)).join("")).join("/");
 const turnsOf = (shape) => shape.rotations.map(outlineOf).sort().join("|");
@@ -865,7 +868,7 @@ export function stillUseful(state, shape) {
   const same = { shape, rot: 0 };
   const cfg = powerupCfg(state.mode), use = cfg.usability ?? {};
   if (!shape?.powerup || use.enabled === false || !state.pieceSel) return same;
-  if (shape.powerup.setOnly) return same; // (it's part of its set's story: it comes as it is)
+  if (shape.powerup.setOnly || state.pieceSel.fromSet) return same; // (it's part of its set's story: it comes as it is)
   const min = use.minUseful ?? 1;
   if (powerupUsefulnessCached(state, shape) >= min) return same;
   const sel = state.pieceSel, ps = sel.powerup;
@@ -882,12 +885,9 @@ export function stillUseful(state, shape) {
     }
     return out;
   };
-  // from the classes already met (no intro screens out of nowhere)... but the first of a class,
-  // seen as the next piece (as a plain piece: its intro comes when it falls), only ever for
-  // another of its class
+  // from the classes already met (no intro screens out of nowhere)
   const met = (cls) => cls === shape.powerup.cls || ps.shownClasses.has(cls);
-  const awaited = !!ps.previewed?.has(shape.powerup.cls);
-  let twins = twinsFrom(p => (awaited ? p.powerup.cls === shape.powerup.cls : met(p.powerup.cls)) && (!p.powerup.parts || p.powerup.parts.every(part => met(part.cls))));
+  let twins = twinsFrom(p => met(p.powerup.cls) && (!p.powerup.parts || p.powerup.parts.every(part => met(part.cls))));
   // ...or, early on, when the one class in so far has nothing that would help (gravity on a
   // tidy board), the next class can open a little early, with one of its starters
   // (a useless powerup is worse than an intro a little sooner than usual: half the usual gap;
@@ -895,7 +895,7 @@ export function stillUseful(state, shape) {
   const prog = cfg.progression, introGap = (prog?.minDropsBetweenIntros ?? 0) / 2;
   const intro = !ps.shownClasses.has(shape.powerup.cls);
   let opens = false;
-  if (!twins.length && !awaited && prog?.enabled && nextClassAllowed(state) && (intro || ps.lastIntroDrop == null || sel.dropIndex - ps.lastIntroDrop >= introGap)) {
+  if (!twins.length && prog?.enabled && nextClassAllowed(state) && (intro || ps.lastIntroDrop == null || sel.dropIndex - ps.lastIntroDrop >= introGap)) {
     const starters = new Set(live.filter(p => p.powerup.starter).map(p => p.powerup.cls));
     const first = ps.shownClasses.size ? null : prog.firstClassPool, must = mustOpen(ps);
     twins = twinsFrom(p => p.powerup.cls !== "combo" && !met(p.powerup.cls) && !p.powerup.bad

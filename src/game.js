@@ -528,8 +528,8 @@ function spawnPiece(state) {
   let shape, rotIdx = 0, at = null;
   const shelved = takeShelfPending(state);
   if (shelved) {
-    // a powerup off the shelf (useShelf, below), taken while nothing was falling: it comes now,
-    // and the next piece waits its turn
+    // a powerup off the shelf (useShelf, below), taken while nothing was falling: it comes now
+    // (and one waiting its turn, asked for by name, still waits)
     shape = prepareShape(state, shelved);
   } else if (state.tutorial) {
     // the tutorial: the page says what comes, turned and where (src/tutorial.js); with nothing
@@ -543,14 +543,16 @@ function spawnPiece(state) {
     shape = prepareShape(state, zenNext(state));
     state.next = zenPeek(state);
   } else {
-    if (!state.next) state.next = prepareShape(state, selectPiece(state));
-    shape = notDeadly(state, state.next);
-    // (a powerup the last piece left with nothing to do: one of the same outline that can,
-    // unless it was asked for by name)
+    // Picked now, on the board as it is: nothing shows what's coming, so nothing's picked ahead.
+    // (Unless one's waiting its turn: asked for by name, in dev mode and the tests.)
+    const waiting = state.next;
+    state.next = null;
+    shape = notDeadly(state, waiting ?? prepareShape(state, selectPiece(state)));
+    // (a powerup with nothing to do here, one asked for ahead of time: one of the same outline
+    // that can, unless it was asked for by name)
     const swap = state.nextChosen ? { shape } : stillUseful(state, shape);
     if (swap.shape !== shape) { shape = prepareShape(state, swap.shape); rotIdx = swap.rot; }
     state.nextChosen = false;
-    state.next = prepareShape(state, selectPiece(state));
   }
 
   const mat = shape.rotations[rotIdx];
@@ -575,15 +577,10 @@ function spawnPiece(state) {
   const ok = isPhantomPowerup(shape.powerup) || !collides(state, state.active.x, state.active.y, getActiveMatrix(state));
   if (ok) {
     // First powerup of a class in this game: the UI shows that class's intro screen now, just
-    // before it falls. (Until then the next-piece preview shows it as a plain piece: introduced,
-    // below, so it's never seen before its intro.)
-    const ps = state.pieceSel.powerup, isNew = introduce(state, shape);
+    // before it falls.
+    const isNew = introduce(state, shape);
     // (the first of its class: its piece in the bay waits until it's down on the board. shelf.js)
     if (isNew) state.active.firstOfClass = shape.powerup.cls;
-    // (a powerup that will introduce its class, once it shows as the next piece, is only ever
-    // swapped for another of its class: stillUseful. So the classes still come in their order.)
-    if (shape.powerup) ps.previewed?.delete(shape.powerup.cls);
-    if (!state.zen && state.next && !introduced(state, state.next)) (ps.previewed ??= new Set()).add(state.next.powerup.cls);
     // (zen can say something else in place of the name: "Oops, all bagpipes!")
     emit(state, "spawn", { shape, next: state.next, isNew, label: state.zen?.current?.label ?? null });
     // (turbo zen: a powerup that's about to take most of the board waits up there a moment first)
@@ -592,8 +589,8 @@ function spawnPiece(state) {
   return ok;
 }
 
-// Has this powerup's class been introduced yet in this game? (Before it has, the next-piece
-// preview shows it as a plain piece.)
+// Has this powerup's class been introduced yet in this game? (Before it has, a next-piece
+// preview, where there is one, shows it as a plain piece.)
 export function introduced(state, shape) {
   const cls = shape?.powerup?.cls;
   return !cls || !!state.zen || !!state.pieceSel?.powerup?.shownClasses?.has(cls);
@@ -666,7 +663,7 @@ export function useShelf(state, i) {
   return true;
 }
 
-// Debug helper: make `shape` the next piece.
+// Debug helper: make `shape` the next piece (it waits its turn: spawnPiece).
 export function setNextPiece(state, shape) {
   state.next = prepareShape(state, shape);
   state.nextChosen = true;
