@@ -10,7 +10,7 @@ import { THREADS, SET_THREADS } from "../shapes/threads.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, updateGame, hardDropAndLock, markInput, tryMove, tryRotate, on } from "../src/game.js";
-import { zenStart, zenIgnoreInput, pluralName, planTiles, oopsName, zenKeys, zenCombos, planPile, planSquares, palettePick, reachableTurns } from "../src/zen.js";
+import { zenStart, zenIgnoreInput, zenLockMs, pluralName, planTiles, oopsName, zenKeys, zenCombos, planPile, planSquares, palettePick, reachableTurns } from "../src/zen.js";
 import { COMBOS } from "../shapes/combos.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
@@ -354,8 +354,8 @@ test("turbo zen: the computer never moves or turns a piece on the board, nor sli
   }
 });
 
-test("turbo zen: the player plays a few pieces, and the computer keeps its hands off the next ones: already in place, but one at a time, in at the top and at their pace; left alone, quicker again, a few at once", () => {
-  const Z = CONFIG.zen;
+test("turbo zen: the player plays a few pieces, and the computer keeps its hands off the next ones: already in place, but one at a time, in at the top and at their pace; left alone, it takes back over gently, and then a few at once", () => {
+  const Z = CONFIG.zen, ts = CONFIG.modes.turbo.timeScale;
   const usual = { cols: CONFIG.board.cols, rows: CONFIG.board.rows };
   CONFIG.board.cols = 44; CONFIG.board.rows = 30; // (a big board, where it often drops a few at once)
   try {
@@ -381,9 +381,9 @@ test("turbo zen: the player plays a few pieces, and the computer keeps its hands
       if (t === "rowsDestroyed" || t === "powerupFire") busy = true;
       if (t !== "spawn") return;
       const a = state.active, want = state.zen.target, z = state.zen;
-      seen.push({ playing: z.playing, inPlace: !!want && a.x === want.x && a.rotIdx === want.rot,
+      seen.push({ hand: z.hand, inPlace: !!want && a.x === want.x && a.rotIdx === want.rot,
         flock: state.flock.length, dropMs: state.dropMs, quick: Math.max(8, Z.fallMs * z.pace), top: a.y >= -a.shape.rotations[a.rotIdx].length,
-        gap: lockedAt == null || busy ? null : z.clock - lockedAt, played: false });
+        lock: zenLockMs(state), ownLock: Z.lockMs * z.pace, gap: lockedAt == null || busy ? null : z.clock - lockedAt, played: false });
     });
     while (state.active === piece) {
       if (state.locking && landed == null) landed = state.zen.clock;
@@ -392,7 +392,7 @@ test("turbo zen: the player plays a few pieces, and the computer keeps its hands
     }
     // ...and once it has landed, it waits a moment, as in the other modes (in real time), and
     // then the next comes promptly
-    const grace = CONFIG.timing.lockDelayMsKeyboard * CONFIG.modes.turbo.timeScale;
+    const grace = CONFIG.timing.lockDelayMsKeyboard * ts;
     assert.ok(gap != null && gap >= grace - 32 && gap <= grace + 32, `the next came ${gap}ms after it landed`);
     // (and they play on, a few more, each moved over a column as it comes and dropped)
     for (let n = 0; n < 3; n++) {
@@ -403,21 +403,33 @@ test("turbo zen: the player plays a few pieces, and the computer keeps its hands
       hardDropAndLock(state);
     }
     // the ones that came while they played, and the next ones, with nobody touching anything:
-    // already in place as they come, and while the player's still about (they had the last one,
-    // or touched it in the last playMs), one at a time, in at the top, at their pace, each as soon
-    // as the last has locked (unless rows were clearing, or a powerup going off); after that,
-    // quicker, and often a few at once
-    // (60 of them left alone: a plan can go a while without a few at once)
-    for (let t = 0; t < 60000 && seen.filter(p => !p.playing).length < 60; t += 16) updateGame(state, 16);
+    // already in place as they come; while the player's still about (they had the last one, or
+    // touched it in the last playMs), one at a time, in at the top, at their pace, each as soon as
+    // the last has locked (unless rows were clearing, or a powerup going off), and waiting a
+    // moment on the ground; then the computer takes back over gently, over takeBack pieces, still
+    // one at a time, each falling a little quicker than the last and locking a little sooner; and
+    // after that, quicker again, and often a few at once
+    // (60 of them once it's all the computer's again: a plan can go a while without a few at once)
+    for (let t = 0; t < 60000 && seen.filter(p => p.hand >= 1).length < 60; t += 16) updateGame(state, 16);
     const last = seen.findLastIndex(p => p.played);
-    const playing = seen.filter(p => p.playing), idle = seen.filter(p => !p.playing);
-    assert.ok(last >= 2 && idle.length >= 30, `${last + 1} pieces played, ${idle.length} after`);
-    assert.ok(seen.slice(0, last + 2).every(p => p.playing), "hands off all the while they played, and the one after their last");
+    const playing = seen.filter(p => p.hand === 0), taking = seen.filter(p => p.hand > 0 && p.hand < 1), back = seen.filter(p => p.hand >= 1);
+    assert.ok(last >= 2 && back.length >= 30, `${last + 1} pieces played, ${back.length} after`);
+    assert.ok(seen.slice(0, last + 2).every(p => p.hand === 0), "hands off all the while they played, and the one after their last");
     assert.ok(seen.every(p => p.inPlace), "every one already in place");
     assert.ok(playing.every(p => p.flock === 0 && p.dropMs === Z.dropMs && p.top), "one at a time, at the top, at their pace");
     assert.ok(playing.every(p => p.gap === 0 || p.gap == null), "each straight after the last one locked");
-    assert.ok(idle.every(p => p.dropMs === p.quick), "quicker again");
-    assert.ok(idle.filter(p => p.flock > 0).length >= idle.length * 0.25, `${idle.filter(p => p.flock > 0).length} of ${idle.length} a few at once`);
+    assert.ok(playing.every(p => p.lock === grace), "each waiting a moment on the ground");
+    // (taking back over, in order: how far each has come, from the player's pace to the computer's
+    // own, and from the moment on the ground to its own quick lock)
+    const way = (p, from, to) => Math.log(from / p) / Math.log(from / to);
+    assert.equal(taking.length, Z.takeBack - 1, `back over ${Z.takeBack} pieces`);
+    assert.ok(seen.slice(last + 1).every((p, i, rest) => i === 0 || p.hand >= rest[i - 1].hand), "a little more each piece");
+    assert.ok(taking.every((p, i) => p.flock === 0 && p.dropMs < Z.dropMs && p.dropMs > p.quick && p.lock < grace && p.lock > p.ownLock
+      && (i === 0 || (way(p.dropMs, Z.dropMs, p.quick) > way(taking[i - 1].dropMs, Z.dropMs, taking[i - 1].quick)
+        && way(p.lock, grace, p.ownLock) > way(taking[i - 1].lock, grace, taking[i - 1].ownLock)))),
+      `one at a time, a little quicker each piece: ${taking.map(p => way(p.dropMs, Z.dropMs, p.quick).toFixed(2))}`);
+    assert.ok(back.every(p => p.dropMs === p.quick && (p.flock > 0 || p.lock === p.ownLock)), "quicker again");
+    assert.ok(back.filter(p => p.flock > 0).length >= back.length * 0.25, `${back.filter(p => p.flock > 0).length} of ${back.length} a few at once`);
   } finally {
     CONFIG.board.cols = usual.cols; CONFIG.board.rows = usual.rows;
   }
@@ -440,7 +452,7 @@ test("turbo zen: the piece after the player's is left to them too, however long 
     });
     while (seen.length < 3) updateGame(state, 16);
     assert.ok(seen[0].dropMs === Z.dropMs && seen[0].top && seen[0].flock === 0, "the one after theirs: in at the top, at their pace");
-    assert.equal(seen[1].dropMs, seen[1].quick, "and then it's the computer's again");
+    assert.ok(seen[1].dropMs < Z.dropMs && seen[1].dropMs > seen[1].quick, "and then the computer starts taking back over");
   } finally {
     Z.playMs = was;
   }
@@ -482,10 +494,11 @@ test("turbo zen: with the player playing, a piece that lands waits a moment befo
   const t = wait(() => { markInput(state, "keyboard"); moved = tryMove(state, 1, 0) || tryMove(state, -1, 0) || tryRotate(state); });
   assert.ok(moved, "it could be slid or turned");
   assert.ok(t >= T.slideLockMs * ts, `slid, it waited ${t}ms`);
-  // left alone a while, the computer's own lock almost as soon as they land again
+  // left alone until it has taken all the way back over, the computer's own lock almost as soon as
+  // they land again
   run(state, null, 30000);
   ready();
-  assert.equal(state.zen.playing, false);
+  assert.equal(state.zen.hand, 1);
   assert.ok(wait() < T.lockDelayMsKeyboard * ts / 2, "its own lock almost at once");
 });
 

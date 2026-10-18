@@ -31,7 +31,8 @@ clears.
   and over the place it's going, and drops straight into it, quickly; the computer never moves
   a piece once it's on the board. Step in whenever you like: the piece you touch is yours until
   it lands, and while you're playing the next ones come promptly, one at a time, at a pace you
-  can steer, each with a moment on the ground to slide or turn it (`zen` in `config.js`).
+  can steer, each with a moment on the ground to slide or turn it; stop, and the computer takes
+  back over gently, over a few pieces (`zen` in `config.js`).
 - **Options**: skip the Shiny Piece intro screens, a favourite piece that turns up a little more
   often, toned-down animations, high contrast, and whether Turbo zen fills the screen. Kept in
   the browser.

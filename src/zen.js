@@ -31,8 +31,8 @@
 // wants it on the board as it is then. While they're playing, the computer keeps its hands
 // off: one piece at a time, each straight in at the top and falling at a pace they can steer,
 // for them to take if they like, and once it has landed, a moment before it locks, as in the
-// other modes, to slide or turn it; left alone, it's quicker again, and on a big board often a
-// few at once (a flock).
+// other modes, to slide or turn it. Left alone, it takes back over gently, a little quicker
+// with each piece, and then on a big board often a few at once (a flock).
 //
 // Nothing can top either out. If the player builds it up into danger, a big powerup comes
 // ("steady"; in zen, big enough to make some room but not to bring the whole board down), and
@@ -119,6 +119,8 @@ export function createZen(state) {
     userAt: null,     // (the last time they did: state.drops)
     clock: 0, inputClock: 0, // (game time, and when the player last pressed anything: zen dozes off without them)
     playedAt: -Infinity, // (turbo zen: when they last did, coming back from a pause aside: playing)
+    alone: Infinity,  // (turbo zen: the pieces the computer has had to itself since they stopped playing...
+    hand: 1,          // ...and so how far it has taken back over, 0 to 1: CONFIG.zen.takeBack)
     helpedAt: -99,    // (zen: the last little help, state.drops)
     spots: [],        // (zen: the columns the last few pieces came in over, [from, to), to put the next somewhere else...
     shapes: [],       // ...and their shapes, for a new one each time...
@@ -1516,22 +1518,26 @@ export function zenSpawned(state) {
   if (isCalm(state)) z.spots = [...z.spots, [a.x, a.x + mat[0].length]].slice(-8);
   const land = isPhantomPowerup(a.shape.powerup) ? phantomLandingY(state.board, a.x, mat) : dropY(occupancy(state.board), mat, a.x, cols, rows);
   z.fall = Math.max(1, (land ?? 0) - a.y);
-  // (turbo zen, with the player playing, the one after theirs too: it comes straight in at the
-  // top for them to take if they like, falls at their pace, and nothing holds it up)
-  const play = !isCalm(state) && (theirs || playing(state));
-  z.playing = play;
+  // (turbo zen, with the player playing, the one after theirs too, the computer keeps its hands
+  // off: it comes straight in at the top for them to take if they like, falls at their pace, and
+  // nothing holds it up. Once they've stopped, it takes back over a little more with each piece
+  // it has to itself: CONFIG.zen.takeBack)
+  if (!isCalm(state)) {
+    z.alone = theirs || playing(state) ? 0 : z.alone + 1;
+    z.hand = Math.min(1, z.alone / Math.max(1, CONFIG.zen.takeBack ?? 1));
+  }
   // (a powerup about to bring most of the board down: the dramatic pause comes before it falls;
-  // game.js holds everything for it)
-  z.pauseFirst = !play && a.shape.powerup && land != null && bigMoment(state, a.shape, a.rotIdx, a.x, land) ? CONFIG.zen.dramatic.pauseMs * timeScaleOf(state) : 0;
+  // game.js holds everything for it. Only once the computer has it all back.)
+  z.pauseFirst = z.hand >= 1 && a.shape.powerup && land != null && bigMoment(state, a.shape, a.rotIdx, a.x, land) ? CONFIG.zen.dramatic.pauseMs * timeScaleOf(state) : 0;
   zenSpeed(state);
   // (each takes a moment at least, however short the way down, but it falls at the same speed
   // all the way: a short way down, it starts a little further up, out of sight)
-  if (!isCalm(state) && !play) {
+  if (!isCalm(state) && z.hand > 0) {
     const lead = Math.ceil(CONFIG.zen.pieceMs * z.pace / state.dropMs) - z.fall;
     if (lead > 0) a.y -= lead;
   }
   // (and after a big clearance it starts further up still)
-  if (z.rest > 0 && !play) a.y -= Math.round(z.rest / state.dropMs);
+  if (z.rest > 0 && z.hand > 0) a.y -= Math.round(z.rest / state.dropMs);
   // (on a big board, a few more of them might come down with it)
   formFlock(state, land);
 }
@@ -1548,13 +1554,14 @@ export function zenSpawned(state) {
    Never a powerup or a level 6 piece among them, and nothing jumps ahead of a powerup; but a
    powerup in a run of pieces (now and then: CONFIG.zen.flock.powerups) brings a few along,
    further up, so they're still coming down while it goes off, and they land on what it leaves.
-   Only while nobody's playing: with the player playing, it's one at a time.
+   Only while nobody's playing: with the player playing, it's one at a time, and so it stays
+   until the computer has taken all the way back over.
 */
 function formFlock(state, land) {
   const z = state.zen, F = CONFIG.zen.flock, a = state.active;
   const { cols, rows } = CONFIG.board;
   state.flock = [];
-  if (!F || isCalm(state) || z.userHas || z.playing || land == null || cols < F.minCols) return;
+  if (!F || isCalm(state) || z.userHas || z.hand < 1 || land == null || cols < F.minCols) return;
   // (a powerup: only in a run of pieces, not a plan, nor a big moment, nor one that falls through)
   const pu = a.shape.powerup;
   // (nor one that fills: the flock's spots are worked out on the board as it is, and it could
@@ -1663,13 +1670,17 @@ function flockSpot(occ, shape, weights, free, cols, rows, headroom, rng, maxTurn
 }
 
 // How fast the piece falls: turbo zen's quickly (but each takes a moment at least), and the
-// player's own, and the computer's while they're playing, at a pace they can steer; in zen,
-// easily either way, unless it's dozing (game.js asks)...
+// player's own, and the computer's while they're playing, at a pace they can steer (and taking
+// back over, from one to the other); in zen, easily either way, unless it's dozing (game.js
+// asks)...
 export function zenSpeed(state) {
   const z = state.zen, Z = CONFIG.zen;
   if (isCalm(state)) state.dropMs = !z.userHas && dozing(state) ? Z.calm.idleDropMs : Z.calm.dropMs;
-  else state.dropMs = z.userHas || z.playing ? Z.dropMs : Math.max(8, Z.fallMs * z.pace);
+  else state.dropMs = z.userHas ? Z.dropMs : handOver(z, Z.dropMs, Math.max(8, Z.fallMs * z.pace));
 }
+// (turbo zen taking back over: from the player's `slow` to the computer's own `quick`, a little
+// quicker with each piece it has to itself, gently at first, and its own once it has it all back)
+const handOver = (z, slow, quick) => (z.hand >= 1 ? quick : z.hand <= 0 ? slow : slow * (quick / slow) ** (z.hand ** 1.5));
 const autopilot = (state) => { const z = state.zen; return !!z && !z.userHas && !!state.active && z.piece === state.active; };
 // ...how many rows it can fall in one frame (null: as usual)...
 export function zenSteps(state) {
@@ -1677,8 +1688,9 @@ export function zenSteps(state) {
 }
 // ...and how long it waits before it locks once it has landed (null: as usual). Turbo zen's own
 // pieces hardly wait at all, so the next comes promptly; but with the player playing, a piece
-// waits a moment first, as in the other modes, so they can still slide or turn it (grace); and
-// never before the rest of a flock has landed.
+// waits a moment first, as in the other modes, so they can still slide or turn it (grace), and
+// taking back over, the computer's a little less each piece; and never before the rest of a
+// flock has landed.
 export function zenLockMs(state) {
   const z = state.zen, a = state.active;
   if (!z || !a || z.piece !== a) return null;
@@ -1686,8 +1698,8 @@ export function zenLockMs(state) {
   // (the rest of a flock: it clears their rows with its own; but a powerup goes off with them
   // still on the way)
   if (state.flock.length && !a.shape.powerup) return Infinity;
-  if (z.playing) return grace(state);
-  return isCalm(state) && !dozing(state) ? null : CONFIG.zen.lockMs * z.pace;
+  if (isCalm(state)) return dozing(state) ? CONFIG.zen.lockMs * z.pace : null;
+  return handOver(z, grace(state), CONFIG.zen.lockMs * z.pace);
 }
 // (turbo zen: as long as a piece waits on the ground in the other modes, but in real time, however
 // fast it's going: a little longer for a touch, and longer again once it has been slid or turned
@@ -1741,10 +1753,11 @@ export function zenTick(state, dt) {
 // The piece the director marked to bring the whole board down has landed (game.js
 // stepLockAndSpawn). If most of the board really is going (CONFIG.zen.dramatic: minRows full
 // rows), a dramatic pause first: how long (game time), or 0. (A powerup's pause comes before it
-// falls instead: zenSpawned.) Never while the player's playing: the next comes promptly.
+// falls instead: zenSpawned.) Never while the player's playing, the next coming promptly, nor
+// until the computer has taken all the way back over.
 export function zenDramatic(state, info) {
   const z = state.zen, D = CONFIG.zen.dramatic;
-  if (!D || CONFIG.modes[state.mode]?.dramatic === false || !z?.current?.dramatic || z.userHas || isCalm(state) || z.playing || info.shape.powerup) return 0;
+  if (!D || CONFIG.modes[state.mode]?.dramatic === false || !z?.current?.dramatic || z.userHas || isCalm(state) || z.hand < 1 || info.shape.powerup) return 0;
   const rows = CONFIG.board.rows; // (the numbers are for the usual board: as much of a bigger one)
   return state.board.filter(row => row.every(Boolean)).length >= D.minRows * Math.max(1, rows / 24) ? D.pauseMs * timeScaleOf(state) : 0;
 }

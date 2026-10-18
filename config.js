@@ -325,12 +325,16 @@ export const CONFIG = {
     // they're playing (they had the last piece, or touched it in the last playMs, real time), the
     // computer keeps its hands off: each piece still comes already where it wants it, on the
     // board as it is by then, but one at a time, straight in at the top, and falling at a pace
-    // they can steer, for them to take if they like; and no dramatic pauses. And landed, a piece
-    // doesn't lock straight away then: it waits as long as it would in the other modes
-    // (CONFIG.timing's lock delays, and the longer wait once slid or turned along the ground,
-    // in real time), so they can still slide or turn it:
+    // they can steer, for them to take if they like. And landed, a piece doesn't lock straight
+    // away then: it waits as long as it would in the other modes (CONFIG.timing's lock delays,
+    // and the longer wait once slid or turned along the ground, in real time), so they can
+    // still slide or turn it. Once they've stopped, the computer takes back over gently, over
+    // takeBack pieces: each falls a little quicker than the last and locks a little sooner, from
+    // the player's pace to its own, and a few at once and the dramatic pauses only once it has
+    // it all back:
     playMs: 4000,
     dropMs: 200,         // the player's pace: a row this often, their own piece and the computer's while they're playing
+    takeBack: 5,
     // The pace (times fallMs, lockMs and pieceMs): small things, repeats and the pieces that build
     // up the board come down faster; the pieces that bring it all down take their time. And from
     // low (an empty board) to high (a full one), it eases off a little as it nears the top.
