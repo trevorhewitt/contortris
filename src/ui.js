@@ -290,15 +290,24 @@ export function bindUI({ state, renderer, achievements }) {
   function fitPanel(name = currentPanel) {
     const el = panels[name];
     if (!el || !FIT_PANELS.has(name)) return;
-    if (name === "pause") gallery.render(); // (its strip is laid out to the menu's width)
-    if (name === "pause" && devmode) return; // the dev tools make it long: it scrolls
     el.style.transform = "";
+    el.style.maxHeight = "";
     el.classList.add("fit");
+    // (in developer mode the developer tools, under the rest of the pause menu, make it long: it's
+    // as big as it always is, the rest of it fitting as usual, and it scrolls on down to them)
+    const dev = name === "pause" && !$("devTools").hidden;
+    el.classList.toggle("scrolls", dev);
+    if (name === "pause") gallery.render(); // (its strip is laid out to the menu's width)
     // (paused, the dark is over the whole screen, but the menu's on the board, in the middle of it:
     // index.html)
     const on = name === "pause" ? boardShellEl : overlay;
     const room = on.clientHeight - 16, roomW = on.clientWidth - 16;
-    const s = Math.min(1, room / Math.max(1, el.scrollHeight), roomW / Math.max(1, el.scrollWidth));
+    const tall = dev ? $("devTools").offsetTop : el.scrollHeight;
+    const s = Math.min(1, room / Math.max(1, tall), roomW / Math.max(1, el.scrollWidth));
+    if (dev) {
+      el.style.maxHeight = `${Math.floor(room / s)}px`;
+      gallery.render(); // (a scroll bar may have taken some of its width)
+    }
     if (s < 0.995) el.style.transform = `scale(${s.toFixed(3)})`;
   }
   window.addEventListener("resize", () => fitPanel());
