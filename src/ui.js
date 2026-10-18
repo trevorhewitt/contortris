@@ -717,9 +717,9 @@ export function bindUI({ state, renderer, achievements }) {
   // How to play: each powerup class (its demo, its name, what it does), and each mode (a little
   // game of it, what it is, and a button to go and play it)
   const HOWTO_MODES = [
-    ["normal", "The full game: weird pieces, giants, and powerups to help you out."],
-    ["extreme", "The original. No powerups. No mercy."],
-    ["god", "Everything at once: the biggest pieces in the game, and powerups from the start."],
+    ["normal", "The full game: weird pieces, giants, and Shiny Pieces to help you out."],
+    ["extreme", "The original. No Shiny Pieces. No mercy."],
+    ["god", "Everything at once: the biggest pieces in the game, and Shiny Pieces from the start."],
     ["zen", "Slow and easy. It places each piece for you; take one over whenever you like."],
     ["turbo", "It plays itself, quickly, and never stops. Sit back and watch."],
   ];
@@ -809,7 +809,7 @@ export function bindUI({ state, renderer, achievements }) {
       list.appendChild(card.row);
       demos.push(card.demo);
     }
-    if (!demos.length) list.textContent = "No powerups yet this game.";
+    if (!demos.length) list.textContent = "No Shiny Pieces yet this game.";
     playDemos(demos);
   }
 
@@ -841,7 +841,7 @@ export function bindUI({ state, renderer, achievements }) {
       sel.appendChild(g);
     };
     for (const type of liveClasses()) {
-      add(`Powerups: ${CLASS_INFO[type].name}`, ofClass(type));
+      add(`Shiny Pieces: ${CLASS_INFO[type].name}`, ofClass(type));
     }
     for (let d = 0; d <= 5; d++) add(`Difficulty ${d}`, state.allShapes.filter(s => s.difficulty === d));
     add("Level 6 (groups only)", state.allShapes.filter(s => s.difficulty === 6));
@@ -868,7 +868,7 @@ export function bindUI({ state, renderer, achievements }) {
     });
     $("btnDevUnlockAll").addEventListener("click", () => {
       introduceAllPowerups(state);
-      $("devNextStatus").textContent = "all powerup classes unlocked";
+      $("devNextStatus").textContent = "all Shiny Piece classes unlocked";
     });
 
     // which powerups can turn up, and how often (remembered for this browser session)
@@ -989,9 +989,9 @@ export function bindUI({ state, renderer, achievements }) {
       ["drops / rows", `${state.drops} · ${state.rowsDestroyed}`],
       ["danger", `${computeStackDanger01(state).toFixed(2)} · ${z.zone}`],
       ["stack / holes", `${stats.stackHeight} · ${stats.holes}`],
-      ["powerup chance", ps && state.powerups.length ? `${(ps.lastChance * 100).toFixed(0)}% · cd ${ps.cooldown} · rate ×${state.devPowerups.rate}` : "off"],
+      ["shiny chance", ps && state.powerups.length ? `${(ps.lastChance * 100).toFixed(0)}% · cd ${ps.cooldown} · rate ×${state.devPowerups.rate}` : "off"],
       ["struggle", (state.pieceSel?.struggle ?? 0).toFixed(2)],
-      ["usable powerups", ps?.lastUsable ?? "–"],
+      ["usable shiny", ps?.lastUsable ?? "–"],
       ["first giant", state.pieceSel?.giantDueAt == null ? "none (easy)" : state.pieceSel.hadGiant ? "done" : `due at piece ${state.pieceSel.giantDueAt}`],
       ["difficulty", difficultyStatus(state)],
       ["classes now", ["destroyer", "gravity", "expander", "combo"].map(c => `${c.slice(0, 4)} ×${classWeight(state, c).toFixed(1)}`).join(" ")],
@@ -999,7 +999,7 @@ export function bindUI({ state, renderer, achievements }) {
       ["level 6", level6Status(state)],
       ["end game", endGameStatus(state)],
       ["classes", ps ? (ps.classes.join(", ") || "none yet") : "–"],
-      ["powerups seen", ps ? `${ps.shown.size}/${state.powerups.length} · ${state.devPowerups.disabled.size} disabled` : "–"],
+      ["shiny seen", ps ? `${ps.shown.size}/${state.powerups.length} · ${state.devPowerups.disabled.size} disabled` : "–"],
       ["pieces on board", String(state.instances.size)],
       ["look", `${CONFIG.render.cellStyle} · edges ${CONFIG.render.enhanced.edgeStrength}`],
     ];

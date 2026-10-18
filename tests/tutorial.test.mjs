@@ -30,10 +30,17 @@ const run = (state, ms, until = () => false) => {
 };
 const occupied = (state) => state.board.map(r => r.map(c => (c ? "#" : ".")).join("")).join("\n");
 
+// Everything a page puts in front of the player, as text: its words (either way), its title and
+// the line under it, and what the Shiny Pieces' page says about each class.
+const words = (p) => [tutorialText(p, "touch"), tutorialText(p, "keys")].flatMap(w => [w.title, w.say, w.more])
+  .concat((p.classes ?? []).map(c => c.say)).filter(Boolean).join(" ");
+
 test("tutorial: every page is set up right, and each powerup class that's on has one", () => {
   const all = new Map([...shapes, ...powerups].map(s => [s.id, s]));
   for (const p of PAGES) {
-    assert.ok(tutorialText(p, "touch") && tutorialText(p, "keys"), `${p.id}: something to say`);
+    assert.ok(tutorialText(p, "touch").say && tutorialText(p, "keys").say, `${p.id}: something to say`);
+    // (they're Shiny Pieces to the player, never "powerups")
+    assert.doesNotMatch(words(p), /power ?ups?/i, `${p.id}: "Shiny Pieces", not "powerups"`);
     assert.ok((p.board ?? []).length < rows - 6, `${p.id}: room above its board`);
     for (const line of p.board ?? []) assert.equal(line.length, cols, `${p.id}: "${line}" is ${cols} wide`);
     for (const q of p.pieces ?? []) {
@@ -51,16 +58,41 @@ test("tutorial: every page is set up right, and each powerup class that's on has
     if (on.has(cls)) assert.ok(pages.includes(cls), `a page for ${cls}`);
   }
   assert.deepEqual(pages.slice(0, 4), ["move", "turn", "down", "rows"], "the basics first");
-  assert.equal(pages[pages.length - 1], "end", "and a last page");
-  // (the first powerup page says what powerups are)
-  assert.match(tutorialText(t.pages.find(p => p.cls), "touch"), /powerups/);
-  // after the powerups, where to put them and the shelf; then how it goes on, and the modes
-  assert.deepEqual(pages.slice(-4), ["plan", "shelf", "giants", "end"]);
-  assert.ok(t.pages[t.pages.length - 1].modes, "the last page has the modes");
+  // then the Shiny Pieces: their three classes side by side, each with a piece of its own that
+  // can turn up, and then a page for each class
+  assert.equal(pages[4], "shiny", "the classes, before any class's page");
+  const shiny = t.pages[4];
+  assert.ok(shiny.still && !shiny.pieces, "nothing falls on it");
+  assert.deepEqual(shiny.classes.map(c => c.cls).sort(), ["destroyer", "expander", "gravity"].filter(c => on.has(c)).sort());
+  for (const c of shiny.classes) assert.equal(all.get(c.id)?.powerup?.cls, c.cls, `${c.id} is a ${c.cls}`);
+  assert.ok(pages.indexOf("destroyer") > 4, "and then each class's page");
+  // after the classes, where to put them and the shelf, how it goes on, and then a page for each
+  // mode there is to play, each with a title, in the order they're on the home screen
+  const modes = [["classic", "normal"], ["godmode", "god"], ["zen", "zen"], ["turbo", "turbo"], ["extreme", "extreme"]]
+    .filter(([, m]) => CONFIG.modes[m] && !CONFIG.modes[m].hidden);
+  assert.ok(modes.length >= 4, "the modes are there");
+  assert.deepEqual(pages.slice(-(modes.length + 3)), ["plan", "shelf", "giants", ...modes.map(([id]) => id)]);
+  for (const [id, m] of modes) {
+    const p = t.pages.find(q => q.id === id);
+    assert.equal(p.mode, m, `${id}: plays ${m}`);
+    assert.ok(p.title && p.free, `${id}: a title, and a board playing the way the mode does`);
+  }
   // (with a keyboard, only the arrows: the bar says WASD works too)
-  for (const p of PAGES) assert.doesNotMatch(tutorialText(p, "keys"), /\[[WASD]\]/, `${p.id}: arrows only`);
-  assert.match(tutorialText(PAGES.find(p => p.id === "down"), "keys"), /double press/);
-  assert.doesNotMatch(tutorialText(PAGES.find(p => p.id === "rows"), "keys"), /the more at once/);
+  for (const p of PAGES) assert.doesNotMatch(tutorialText(p, "keys").say, /\[[WASD]\]/, `${p.id}: arrows only`);
+  assert.match(tutorialText(PAGES.find(p => p.id === "down"), "keys").say, /double press/);
+  assert.doesNotMatch(tutorialText(PAGES.find(p => p.id === "rows"), "keys").say, /the more at once/);
+});
+
+test("tutorial: the Shiny Pieces' page just stays as it is", () => {
+  const { state, log, t } = tutorial(7);
+  tutorialGoTo(state, t.pages.findIndex(p => p.id === "shiny"));
+  updateGame(state, 16);
+  const start = occupied(state), resets = t.resets;
+  run(state, 20000);
+  assert.equal(state.active, null, "nothing falls");
+  assert.equal(log.locks, 0);
+  assert.equal(t.resets, resets, "and it isn't set up again");
+  assert.equal(occupied(state), start);
 });
 
 test("tutorial: left to itself, each page does what it shows, and goes round again", () => {
@@ -70,7 +102,7 @@ test("tutorial: left to itself, each page does what it shows, and goes round aga
   const blocks = () => state.board.flat().filter(Boolean).length;
   for (let i = 0; i < t.pages.length; i++) {
     const page = t.pages[i];
-    if (page.free) continue;
+    if (page.free || page.still) continue;
     tutorialGoTo(state, i);
     updateGame(state, 16);
     const start = occupied(state), resets = t.resets, before = { ...log, shelved }, full = blocks();
@@ -148,17 +180,34 @@ test("tutorial: it can't be lost: a board that fills up starts the page again", 
   assert.ok(state.running, "still going");
 });
 
-test("tutorial: the last page plays on, one friendly piece after another", () => {
+test("tutorial: the modes' pages play on, one piece after another, each the way its mode does", () => {
   const { state, log, t } = tutorial(5);
-  tutorialGoTo(state, t.pages.length - 1);
-  updateGame(state, 16);
-  const resets = t.resets;
-  run(state, 90000);
-  assert.ok(log.locks >= 12, `${log.locks} pieces`);
-  assert.ok(log.rows >= 2, `${log.rows} rows`);
-  assert.equal(t.resets, resets, "it never needed starting again");
-  const high = state.board.findIndex(r => r.some(Boolean));
-  assert.ok(high < 0 || rows - high <= 12, `kept low (${high < 0 ? 0 : rows - high} rows)`);
+  let fired = 0;
+  on(state, (type) => { if (type === "powerupFire") fired++; });
+  const seen = {};
+  for (let i = 0; i < t.pages.length; i++) {
+    const page = t.pages[i];
+    if (!page.mode) continue;
+    tutorialGoTo(state, i);
+    updateGame(state, 16);
+    const resets = t.resets, before = { ...log, fired };
+    let high = 0;
+    run(state, 90000, () => { const y = state.board.findIndex(r => r.some(Boolean)); if (y >= 0) high = Math.max(high, rows - y); });
+    const got = { locks: log.locks - before.locks, rows: log.rows - before.rows, shiny: fired - before.fired, high };
+    seen[page.id] = got;
+    assert.ok(got.locks >= 12, `${page.id}: ${got.locks} pieces`);
+    assert.ok(got.rows >= 2, `${page.id}: ${got.rows} rows`);
+    assert.equal(t.resets, resets, `${page.id}: it never needed starting again`);
+    assert.ok(high <= 20, `${page.id}: never near the top (${high} rows)`);
+    if (page.free.shiny) assert.ok(got.shiny >= 1, `${page.id}: Shiny Pieces turn up (${got.shiny})`);
+    else assert.equal(got.shiny, 0, `${page.id}: no Shiny Pieces`);
+  }
+  // (Classic and Zen gently, kept low; Turbo zen far quicker than Zen; God mode Shiny Pieces all
+  // the time)
+  assert.ok(seen.classic.high <= 13 && seen.zen.high <= 10, JSON.stringify(seen));
+  assert.ok(seen.turbo.locks >= seen.zen.locks * 3, `turbo ${seen.turbo.locks}, zen ${seen.zen.locks}`);
+  assert.ok(seen.godmode.shiny > seen.classic.shiny, `god ${seen.godmode.shiny}, classic ${seen.classic.shiny}`);
+  assert.equal(log.over, 0, "never game over");
 });
 
 test("tutorial: a powerup class that's switched off has no page", () => {

@@ -21,8 +21,8 @@ export function bindShelf({ state, root, onUse = () => {} }) {
   menu.className = "bayMenu";
   menu.hidden = true;
   menu.setAttribute("role", "menu");
-  menu.setAttribute("aria-label", "Shiny pieces");
-  menu.innerHTML = `<div class="bayTitle">Shiny pieces</div><div class="bayItems"></div>`;
+  menu.setAttribute("aria-label", "Shiny Pieces");
+  menu.innerHTML = `<div class="bayTitle">Shiny Pieces</div><div class="bayItems"></div>`;
   const items = menu.querySelector(".bayItems");
   host.appendChild(menu);
 
@@ -51,7 +51,7 @@ export function bindShelf({ state, root, onUse = () => {} }) {
       peek.replaceChildren(...now.map(({ slot }) => art(slot.shape, false)));
       const what = now.map(({ slot }) => slot.shape.name).join(", ");
       btn.setAttribute("aria-label", now.length ? `Bay: ${what}` : "Bay: empty");
-      btn.title = now.length ? "Open the bay" : "Shiny pieces land here once they've turned up in the game";
+      btn.title = now.length ? "Open the bay" : "Shiny Pieces land here once they've turned up in the game";
       // (one more than there was: the bay hops)
       if (now.length > count && state.shelf) { root.classList.remove("pop"); void root.offsetWidth; root.classList.add("pop"); }
       count = now.length;

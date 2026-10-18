@@ -20,9 +20,9 @@ export const CONFIG = {
     // hideOnPause: the board (and the next piece) can't be seen while it's paused, so nobody
     //         plans their next move with the clock stopped
     // (Easy is gone from the menu: kept here so a game remembered as Easy still means something)
-    easy: { label: "Easy", shelf: true, tagline: "powerups, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true, hidden: true, hideOnPause: true },
-    normal: { label: "Classic", shelf: true, tagline: "the full game, powerups and all", powerups: true, giants: true, level6: true, warmup: true, hideOnPause: true },
-    extreme: { label: "Extreme", tagline: "no powerups. no help.", powerups: false, giants: true, level6: true, hints: false, hideOnPause: true },
+    easy: { label: "Easy", shelf: true, tagline: "Shiny Pieces, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true, hidden: true, hideOnPause: true },
+    normal: { label: "Classic", shelf: true, tagline: "the full game, Shiny Pieces and all", powerups: true, giants: true, level6: true, warmup: true, hideOnPause: true },
+    extreme: { label: "Extreme", tagline: "no Shiny Pieces. no help.", powerups: false, giants: true, level6: true, hints: false, hideOnPause: true },
     god: { label: "God", shelf: true, tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true, hideOnPause: true },
     // speeds: a speed setting on the pause menu, these times timeScale (1 to start with).
     // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); calm: zen for playing, slow

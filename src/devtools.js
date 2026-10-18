@@ -52,15 +52,15 @@ const GROUPS = [
     ["difficulty.hard.hardCooldown", "giants: at least this far apart", 1, 15, 1],
     ["difficulty.hard.setRate", "level 6 sets: how often (×)", 0.5, 6, 0.1],
     ["difficulty.hard.setMaxStackRows", "level 6 sets: up to this tall a stack", 4, 18, 1],
-    ["difficulty.hard.powerupRate", "powerups: how often (×)", 0.1, 2, 0.05],
-    ["difficulty.hard.dangerBoost", "powerups: likelier when high up", 0, 6, 0.1],
-    ["difficulty.hard.afterGiant", "powerups: chance just after a giant", 0, 1, 0.05],
+    ["difficulty.hard.powerupRate", "Shiny Pieces: how often (×)", 0.1, 2, 0.05],
+    ["difficulty.hard.dangerBoost", "Shiny Pieces: likelier when high up", 0, 6, 0.1],
+    ["difficulty.hard.afterGiant", "Shiny Pieces: chance just after a giant", 0, 1, 0.05],
   ] },
   ...STAGES.map(([stage, when]) => ({
-    title: `Powerup classes ${when}`,
+    title: `Shiny Piece classes ${when}`,
     items: CLASSES.map(c => [`difficulty.classes.${stage}.${c}`, CLASS_INFO[c]?.name ?? c, 0, 4, 0.1]),
   })),
-  { title: "Powerups overall (all modes)", items: [
+  { title: "Shiny Pieces overall (all modes)", items: [
     ["assist.powerups.baseChance", "chance after one", 0, 0.6, 0.01],
     ["assist.powerups.chancePerDrop", "...going up each piece by", 0, 0.3, 0.005],
     ["assist.powerups.cooldownDrops", "at least this many pieces apart", 0, 10, 1],
@@ -135,7 +135,7 @@ export function buildDevTools(body, hooks = {}) {
 
   // powerup classes: which, and in what order (Classic)
   const cls = el("div", "devSection");
-  cls.appendChild(el("div", "devTitle", "Powerup classes in Classic"));
+  cls.appendChild(el("div", "devTitle", "Shiny Piece classes in Classic"));
   const usualOn = CLASSES.filter(c => !DEFAULT_OFF.includes(c));
   const classes = () => s.classes ?? { on: usualOn, order: null };
   const list = el("div", "devClassList");

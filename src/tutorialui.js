@@ -1,11 +1,13 @@
 // ============================================================
 // TUTORIAL, ON THE PAGE — its bar under the board, the finger and the keys
 // ============================================================
-// src/tutorial.js plays each page; this shows it. The page's sentence goes over the top of the
-// board, where a game shows the pieces' names, with an X beside it to go home. The bar takes the
-// bottom bar's place: Back and Next, Touch or Keys (which it shows), the pages as a row of dots,
-// and a pause button; on the bay's page, the bay. On the last page the modes cover the board,
-// each with a button to play it. And whatever the autopilot presses, as it presses it: on a
+// src/tutorial.js plays each page; this shows it. The page's words go on the board where a game
+// has the falling piece's name, in the same letters (a mode's page has its name over them, big),
+// with an X at the top to go home; under them, on the Shiny Pieces' page, a card for each class
+// with its little game going round (src/demo.js), and on a mode's page a button to go and play
+// it. The bar takes the bottom bar's place: Back and Next, Touch or Keys (which it shows), the
+// pages as a row of dots, and a pause button; on the bay's page, the bay. And whatever the
+// autopilot presses, as it presses it: on a
 // touch screen a finger tapping the part of the board that does it (the zones are ui.js
 // getZone's, each lit faintly in its own colour as the finger gets there); with a keyboard, a
 // little picture of the arrow keys in the bar, the key lighting up; and the bay, which has no
@@ -21,6 +23,7 @@ import { tutorialGoTo, tutorialTakeOver, tutorialText, shelfSlot } from "./tutor
 import { bindShelf } from "./shelfui.js";
 import { CLASS_INFO } from "./powerups.js";
 import { escapeHtml } from "./util.js";
+import { createDemo, runDemos } from "./demo.js";
 
 // The finger: a pixel hand pointing up, its fingertip at the top (TIP), in a white sleeve.
 const HAND = [
@@ -66,7 +69,7 @@ function handSvg() {
   return `<svg viewBox="0 0 ${w} ${h}" width="${w * PX}" height="${h * PX}" shape-rendering="crispEdges" aria-hidden="true">${rects.join("")}</svg>`;
 }
 
-// A page's words: [x] a key or a button, {name} the powerup class's name in its colours (and
+// A page's words: [x] a key or a button, {name} the Shiny Piece class's name in its colours (and
 // {gravity} and so on, that class's).
 function markup(text, page) {
   const name = (cls) => `<b class="tutName cls-${cls}">${escapeHtml(CLASS_INFO[cls]?.name ?? cls)}</b>`;
@@ -80,7 +83,8 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
   const $ = (id) => document.getElementById(id);
   const bar = $("tutorialBar"), shell = $("boardShell"), canvas = $("boardCanvas");
   if (!bar || !shell) return;
-  const textEl = $("tutTop"), keysEl = $("tutKeys"), dotsEl = $("tutDots"), cheerEl = $("tutCheer"), modesEl = $("tutModes");
+  const textEl = $("tutTop"), wordsEl = $("tutWords"), classesEl = $("tutClasses"), playBtn = $("tutPlay");
+  const keysEl = $("tutKeys"), dotsEl = $("tutDots"), cheerEl = $("tutCheer");
   const backBtn = $("tutBack"), nextBtn = $("tutNext"), pauseBtn = $("tutPause"), xBtn = $("tutX");
   const viewBtns = { touch: $("tutViewTouch"), keys: $("tutViewKeys") };
   const shelfRoot = $("tutShelf");
@@ -126,7 +130,7 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     bar.hidden = !onNow;
     textEl.hidden = !onNow;
     xBtn.hidden = !onNow;
-    if (!onNow) { modesEl.hidden = true; shell.classList.remove("tutPaused"); }
+    if (!onNow) { setExtras(null); shell.classList.remove("tutPaused"); }
     shown.page = -1;
     shown.paused = null;
     shown.cheer = state.tutorial?.cheer ?? 0;
@@ -148,15 +152,17 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     shown.page = t.page;
     shown.view = view;
     const page = t.pages[t.page], last = t.page === t.pages.length - 1;
-    textEl.innerHTML = markup(tutorialText(page, view), page);
-    if (newPage) { textEl.classList.remove("enter"); void textEl.offsetWidth; textEl.classList.add("enter"); }
+    const { title, say, more } = tutorialText(page, view);
+    wordsEl.innerHTML = (title ? `<span class="tutHead">${escapeHtml(title)}</span>` : "")
+      + `<span class="tutMain">${markup(say, page)}</span>`
+      + (more ? `<span class="tutMore">${markup(more, page)}</span>` : "");
+    if (newPage) {
+      textEl.classList.remove("enter"); void textEl.offsetWidth; textEl.classList.add("enter");
+      setExtras(page);
+    }
     keysEl.hidden = view !== "keys";
     for (const [v, b] of Object.entries(viewBtns)) b.setAttribute("aria-pressed", String(v === view));
     shelf.refresh();
-    if (newPage) {
-      modesEl.hidden = !page.modes;
-      [...modesEl.children].forEach((b, i) => b.style.setProperty("--n", i));
-    }
     if (shown.count !== t.pages.length) {
       shown.count = t.pages.length;
       dotsEl.innerHTML = t.pages.map(() => "<i></i>").join("");
@@ -167,6 +173,42 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     nextBtn.hidden = last;
     nextBtn.classList.remove("nudge");
     cheerEl.classList.remove("on");
+  }
+
+  // Under the words: the classes side by side, each its little game going round, sized to fit
+  // across the board (the Shiny Pieces' page); or the button to play the page's mode.
+  let extras = 0;
+  function setExtras(page) {
+    const mine = ++extras;
+    classesEl.replaceChildren();
+    playBtn.hidden = !page?.mode;
+    if (page?.mode) {
+      playBtn.textContent = `\u25B6 Play ${page.title ?? CONFIG.modes[page.mode]?.label ?? page.mode}`;
+      playBtn.dataset.mode = page.mode;
+      playBtn.classList.toggle("tutGod", page.mode === "god");
+    }
+    if (!page?.classes?.length) return;
+    const n = page.classes.length, room = shell.clientWidth - 24 - 8 * (n - 1);
+    const cell = Math.max(5, Math.min(13, Math.floor(Math.min(132, room / n) / 10)));
+    const demos = [];
+    page.classes.forEach((c, i) => {
+      const shape = state.allById.get(c.id);
+      if (!shape) return;
+      const card = document.createElement("div");
+      card.className = "tutClass omRing";
+      card.style.setProperty("--n", i);
+      const cvs = document.createElement("canvas");
+      const name = document.createElement("b");
+      name.className = `tutName cls-${c.cls}`;
+      name.textContent = CLASS_INFO[c.cls]?.name ?? c.cls;
+      const what = document.createElement("span");
+      what.className = "tutClassSay";
+      what.textContent = c.say;
+      card.append(cvs, name, what);
+      classesEl.appendChild(card);
+      demos.push(createDemo(cvs, shape, { cell }));
+    });
+    runDemos(demos, () => running && mine === extras);
   }
 
   // (the player did what the page shows: a cheer, and Next glows)
@@ -196,10 +238,8 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
   for (const b of [...bar.querySelectorAll("button"), xBtn]) b.addEventListener("pointerdown", (e) => {
     if (e.button === 0) try { b.setPointerCapture(e.pointerId); } catch { /* (not everywhere) */ }
   });
-  for (const b of modesEl.querySelectorAll("[data-mode]")) {
-    b.addEventListener("pointerdown", (e) => e.stopPropagation());
-    b.addEventListener("click", () => play(b.dataset.mode, { from: b }));
-  }
+  playBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
+  playBtn.addEventListener("click", () => play(playBtn.dataset.mode, { from: playBtn }));
   // (a tap on the bar is for the bar, not the board: ui.js would take it for the bottom of it)
   bar.addEventListener("pointerdown", (e) => e.stopPropagation());
 
@@ -279,7 +319,9 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
   }
 
   function showHints(t, now) {
-    const live = state.running && !state.paused && !t.player && !document.hidden;
+    // (a mode's page plays itself the way the mode does, with no finger or keys: its words and
+    // its button are what it's there for)
+    const live = state.running && !state.paused && !t.player && !document.hidden && !t.pages[t.page]?.free;
     const press = t.hint.press;
     if (press && press.seq !== shown.seq) {
       shown.seq = press.seq;

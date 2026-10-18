@@ -4734,8 +4734,8 @@ export const ACHIEVEMENTS = [
   },
   {
     id: "powerup_1",
-    name: "Power Up!",
-    description: "Use a powerup.",
+    name: "Shiny New Toy",
+    description: "Use a Shiny Piece.",
     icon: [
         [
           "",
@@ -4914,22 +4914,22 @@ export const ACHIEVEMENTS = [
     variants: [
         {
           "name": "With Great Power",
-          "description": "Use a powerup. You know the rest."
+          "description": "Use a Shiny Piece. You know the rest."
         },
         {
           "name": "Ooh, Shiny",
-          "description": "Use a powerup."
+          "description": "Use a Shiny Piece."
         },
         {
           "name": "Juiced",
-          "description": "Use a powerup."
+          "description": "Use a Shiny Piece."
         }
       ],
   },
   {
     id: "powerup_10",
     name: "Power Hungry",
-    description: "Use 10 powerups in one game.",
+    description: "Use 10 Shiny Pieces in one game.",
     icon: [
         [
           "#181425",
@@ -5108,18 +5108,18 @@ export const ACHIEVEMENTS = [
     variants: [
         {
           "name": "Power Ballad",
-          "description": "Use 10 powerups in one game."
+          "description": "Use 10 Shiny Pieces in one game."
         },
         {
           "name": "Powered Through",
-          "description": "Use 10 powerups in one game."
+          "description": "Use 10 Shiny Pieces in one game."
         }
       ],
   },
   {
     id: "powerup_100",
     name: "Unlimited Power",
-    description: "Use 100 powerups in total.",
+    description: "Use 100 Shiny Pieces in total.",
     icon: [
         [
           "",
@@ -5300,7 +5300,7 @@ export const ACHIEVEMENTS = [
   {
     id: "overkill",
     name: "Overkill",
-    description: "Destroy 20 blocks with a single powerup.",
+    description: "Destroy 20 blocks with a single Shiny Piece.",
     icon: [
         [
           "",
@@ -9616,7 +9616,7 @@ export const ACHIEVEMENTS = [
   {
     id: "acid_trip",
     name: "Acid Trip",
-    description: "Use an acid powerup.",
+    description: "Use an acid Shiny Piece.",
     icon: [
         [
           "",
@@ -9800,18 +9800,18 @@ export const ACHIEVEMENTS = [
     variants: [
         {
           "name": "Sour Power",
-          "description": "Use an acid powerup."
+          "description": "Use an acid Shiny Piece."
         },
         {
           "name": "Corrosive Personality",
-          "description": "Use an acid powerup."
+          "description": "Use an acid Shiny Piece."
         }
       ],
   },
   {
     id: "kaboom",
     name: "Kaboom",
-    description: "Use a blast powerup.",
+    description: "Use a blast Shiny Piece.",
     icon: [
         [
           "#181425",
@@ -9995,18 +9995,18 @@ export const ACHIEVEMENTS = [
     variants: [
         {
           "name": "Big Badaboom",
-          "description": "Use a blast powerup."
+          "description": "Use a blast Shiny Piece."
         },
         {
           "name": "Blast From the Past",
-          "description": "Use a blast powerup."
+          "description": "Use a blast Shiny Piece."
         }
       ],
   },
   {
     id: "goo_goo",
     name: "Goo Goo Ga Ga",
-    description: "Use a goo powerup.",
+    description: "Use a goo Shiny Piece.",
     icon: [
         [
           "",
@@ -10190,18 +10190,18 @@ export const ACHIEVEMENTS = [
     variants: [
         {
           "name": "Ooze Control",
-          "description": "Use a goo powerup."
+          "description": "Use a goo Shiny Piece."
         },
         {
           "name": "Slime Time",
-          "description": "Use a goo powerup."
+          "description": "Use a goo Shiny Piece."
         }
       ],
   },
   {
     id: "ghosted",
     name: "Ghosted",
-    description: "Use a phantom powerup.",
+    description: "Use a phantom Shiny Piece.",
     icon: [
         [
           "",
@@ -10385,18 +10385,18 @@ export const ACHIEVEMENTS = [
     variants: [
         {
           "name": "Who You Gonna Call",
-          "description": "Use a phantom powerup."
+          "description": "Use a phantom Shiny Piece."
         },
         {
           "name": "Boo!",
-          "description": "Use a phantom powerup."
+          "description": "Use a phantom Shiny Piece."
         }
       ],
   },
   {
     id: "full_set",
     name: "Full Set",
-    description: "Meet every single powerup in one game.",
+    description: "Meet every single Shiny Piece in one game.",
     icon: [
         [
           "",
@@ -12224,7 +12224,7 @@ export const ACHIEVEMENTS = [
   {
     id: "combo_1",
     name: "Combo Breaker",
-    description: "Use a combo powerup.",
+    description: "Use a combo Shiny Piece.",
     icon: [
         [
           "",
@@ -12407,14 +12407,14 @@ export const ACHIEVEMENTS = [
     variants: [
         {
           "name": "Two for the Price of One",
-          "description": "Use a combo powerup."
+          "description": "Use a combo Shiny Piece."
         }
       ],
   },
   {
     id: "combo_5",
     name: "C-C-C-Combo",
-    description: "Use 5 combo powerups in one game.",
+    description: "Use 5 combo Shiny Pieces in one game.",
     icon: [
         [
           "",

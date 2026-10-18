@@ -3,21 +3,25 @@
 A falling-block puzzle game where every piece is a silly pixel-art object: fill a row and it
 clears.
 
-- **Classic**: the game plus powerups, introduced one class at a time: Dissolverz (destroyers and
-  acid), Gravitizerz and Expanderz, plus Comboz once two classes are in. (Blasts, goo and phantoms
-  still exist in the code but are switched off: `assist.powerups.disabledTypes` in `config.js`.)
-  Each new class pauses the game with an intro screen (Options turns them off). The bay on the
-  left holds one big powerup ("shiny piece" in the game's own words) of each class per game, each
-  showing up there once its class has opened: tap the bay, pick one from its menu (the game slows
-  while it's open), and it takes the falling piece's place. No keys for it. It starts easy and
-  gets harder as it goes (`difficulty` in `config.js`, `src/difficulty.js`).
-- **Extreme**: no powerups, no mercy.
+- **Classic**: the game plus Shiny Pieces (powerups, in the code; the game itself never says
+  "powerup"), introduced one class at a time: Dissolverz (destroyers and acid), Gravitizerz and
+  Expanderz, plus Comboz once two classes are in. (Blasts, goo and phantoms still exist in the
+  code but are switched off: `assist.powerups.disabledTypes` in `config.js`.) Each new class
+  pauses the game with an intro screen (Options turns them off). The bay at the bottom left holds
+  one big Shiny Piece of each class per game, each showing up there once its class has opened:
+  tap the bay, pick one from its menu (the game slows while it's open), and it takes the falling
+  piece's place. No keys for it. It starts easy and gets harder as it goes (`difficulty` in
+  `config.js`, `src/difficulty.js`).
+- **Extreme**: no Shiny Pieces, no mercy.
 - **God mode**: everything from the first piece; it gets harder too.
 - **Zen** and **Turbo zen**: it plays itself (slowly, or as a show), or you do.
-- **Options**: skip the powerup intro screens, a favourite piece that turns up a little more
+- **Options**: skip the Shiny Piece intro screens, a favourite piece that turns up a little more
   often, toned-down animations, high contrast, and whether Turbo zen fills the screen. Kept in
   the browser.
-- **Tutorial**: the controls, every kind of powerup (each until the board is nearly gone), where to put them, the bay, and the modes to pick from, page by page.
+- **Tutorial**: the controls; the three classes of Shiny Piece side by side, each with its little
+  animation, and then a page for each (more of the class until the board is nearly gone); where
+  to put them; the bay; and last, a page for each mode, with a board playing the way it does
+  behind it and a button to go and play it.
 
 ## Where things are
 
@@ -44,7 +48,7 @@ clears.
 | `powerups.js` | Powerup areas and effects for every class (`computeEffect`). |
 | `demo.js` | The little looping powerup animations on the intro / help / How to play screens. |
 | `tutorial.js` | The tutorial's pages (each one's words, board and pieces) and the autopilot that plays them. No DOM. |
-| `tutorialui.js` | The tutorial on the page: its words over the board, its bar (Touch or Keys, the bay), the finger tapping the board, the keys lighting up, the modes on its last page. |
+| `tutorialui.js` | The tutorial on the page: its words where a piece's name goes, its bar (Touch or Keys, the bay), the finger tapping the board, the keys lighting up, the Shiny Pieces' classes side by side, and each mode's page's button to go and play it. |
 | `shelf.js`, `shelfui.js` | The bay of powerups: what's in it, and the bay in the bottom bar with its menu to pick from. |
 | `settings.js`, `optionsui.js` | The options (kept in the browser) and the Options page. |
 | `home.js` | The home screen: turbo zen behind the menu through a moving camera. |
@@ -108,18 +112,18 @@ them; while they're on, a "Developer tools" button on the home screen brings the
 page has:
 
 - **Developer game**: God mode with the newest pieces and sets first; it won't let you lose.
-- **Powerup classes in Classic**: which classes are in, and (ticked) the exact order they come in,
+- **Shiny Piece classes in Classic**: which classes are in, and (ticked) the exact order they come in,
   with "Comboz" where the combos may start.
 - **Sliders** for how Classic and God mode get harder, what "hard" means, how often each class
-  comes at the start, halfway and once it's hard, and powerups overall. Changed ones show in yellow.
+  comes at the start, halfway and once it's hard, and Shiny Pieces overall. Changed ones show in yellow.
 - **Copy settings**: copies just what you've changed, as text to paste into a message.
 - **Back to the usual** and **Turn developer tools off** (everything back to the game's own).
 
 While they're on, the game's numbers show at the side of the screen (where the game has got to:
 how hard, the classes in, level 6, the end game...; tap it to fold it away on a phone), and the
-pause menu has a dev section: pick exactly which piece comes next, unlock every powerup, clear the
-board or fill it with a messy stack, tick which powerups are enabled, and override how often
-powerups turn up. `index.html?devmode=1` turns them on from the start. The settings are kept for
+pause menu has a dev section: pick exactly which piece comes next, unlock every Shiny Piece, clear
+the board or fill it with a messy stack, tick which Shiny Pieces are enabled, and override how
+often they turn up. `index.html?devmode=1` turns them on from the start. The settings are kept for
 the tab: switch the tools on again after a reload and they're as you left them.
 
 ## Debug keys

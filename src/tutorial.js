@@ -12,11 +12,12 @@
 // lost: a board that fills up just starts the page again.
 //
 // It starts quickly with the basics (moving, turning, coming down, rows going), as most people
-// will have played something like it, then takes more time over each class of powerup that's
-// switched on, a clear-cut example each on a board made to show it off and then more of the same
-// class until the board is nearly gone, then where to put which (a board with a place for each),
-// the powerup shelf, how the game goes on, and last of all the modes, to pick one and play it
-// (with a board playing itself behind them).
+// will have played something like it, then the Shiny Pieces: their three classes side by side,
+// each doing its thing, and then a page for each class that's switched on, a clear-cut example
+// on a board made to show it off and then more of the same class until the board is nearly
+// gone; then where to put which (a board with a place for each), the bay, how the game goes on,
+// and last of all a page for each mode, what it is, with a board playing the way it does behind
+// it and a button to go and play it.
 //
 // game.js asks it for each piece (tutorialNext), lets it steer every frame (tutorialTick) and
 // tells it when the board has filled up (tutorialTopOut).
@@ -36,11 +37,14 @@ const FILLER = ["#f4f4f6", "#c9c9ce", "#9c9ca3", "#e2e2e7", "#b3b3b9", "#85858c"
 
 // The pages, in order. Each one:
 //   text:   what it says ({ touch, keys }: on a touch screen, or with a keyboard; or the same for
-//           both). [x] is a key or button, {name} the powerup class's name, in its colours (and
+//           both). [x] is a key or button, {name} the Shiny Piece class's name, in its colours (and
 //           {destroyer}, {gravity}, {expander}: that class's).
-//   more:   (a powerup page) a second sentence, left off on the first of them, which says what
-//           powerups are instead
-//   cls:    (a powerup page) its class; the page is only there if its piece can turn up in a game
+//   more:   a second, smaller line under it (as a piece's name has what it does under it)
+//   title:  a big first line over it instead, as a piece's name (the modes' pages)
+//   cls:    (a class's page) its class; the page is only there if its piece can turn up in a game
+//   classes: (the Shiny Pieces' page) the classes side by side, each { cls, id: the piece that
+//           shows it off, say: what it does, in a few words }, those that can turn up in a game
+//   still:  nothing falls: the page just stays as it is
 //   board:  the rows at the bottom of the board, top to bottom ("." empty; each run of one letter
 //           is a block of filler, joined up as one piece)
 //   pieces: what comes, in order: { id, rot, x: where it starts (the middle at the top), firstMs:
@@ -51,12 +55,14 @@ const FILLER = ["#f4f4f6", "#c9c9ce", "#9c9ca3", "#e2e2e7", "#b3b3b9", "#85858c"
 //           shiny piece of the page's `shelf` class in its place; nothing, and it just falls) }
 //   again:  (a powerup page) more pieces of its class to come after those, each put where it does
 //           the most, for as long as there are more than `until` blocks left on the board
-//   powers: its pieces are powerups, though it isn't a class's page (where to put them, the shelf)
-//   shelf:  the class of the shelf's powerup it shows (the page has a shelf of its own)
-//   modes:  the last page: the modes, to pick one and play (src/tutorialui.js)
+//   powers: its pieces are Shiny Pieces, though it isn't a class's page (where to put them, the bay)
+//   shelf:  the class of the bay's Shiny Piece it shows (the page has a bay of its own)
+//   mode:   (a mode's page) the mode, to go and play it (src/tutorialui.js)
 //   dropMs: how fast its pieces fall, if not the usual (CONFIG.tutorial.dropMs)
-//   free:   no script: one friendly piece after another, for as long as you like, the autopilot
-//           putting each somewhere sensible
+//   pace:   the autopilot's presses this many times as far apart as usual
+//   free:   no script: one piece after another, for as long as you like, the autopilot putting
+//           each somewhere sensible. { levels: the pieces' levels (difficulty), big: giants too,
+//           shiny: how often a Shiny Piece instead (each put where it leaves the least) }
 export const PAGES = [
   {
     id: "move",
@@ -101,6 +107,20 @@ export const PAGES = [
       "ff.llqqrrsstuu",
     ],
     pieces: [{ id: "candy_cane", to: { x: 2 }, then: ["drop"] }],
+  },
+  {
+    // (the three classes side by side, each doing its thing: src/tutorialui.js, src/demo.js)
+    id: "shiny", still: true,
+    text: "Shiny Pieces come in three classes, each with its own colours and its own trick.",
+    classes: [
+      { cls: "destroyer", id: "toadstool", say: "destroy what's in their highlight" },
+      { cls: "gravity", id: "anvil", say: "drop it down into the holes under it" },
+      { cls: "expander", id: "expanding_foam", say: "fill the gaps in it with new blocks" },
+    ],
+    board: [
+      "a..bb....cc..d",
+      "aee.bff.gcchdd",
+    ],
   },
   {
     // (a messy heap, most of it inside the toadstool's round highlight)
@@ -192,8 +212,8 @@ export const PAGES = [
     // heap away)
     id: "shelf", powers: true, shelf: "destroyer",
     text: {
-      touch: "Every game you get one big shiny piece of each kind in your bay: tap the bay, pick one, and it takes the falling piece's place.",
-      keys: "Every game you get one big shiny piece of each kind in your bay: click the bay, pick one, and it takes the falling piece's place.",
+      touch: "Every game you get one big Shiny Piece of each class in your bay: tap the bay, pick one, and it takes the falling piece's place.",
+      keys: "Every game you get one big Shiny Piece of each class in your bay: click the bay, pick one, and it takes the falling piece's place.",
     },
     dropMs: 420,
     board: [
@@ -212,7 +232,7 @@ export const PAGES = [
   },
   {
     id: "giants",
-    text: "As the game goes on, the pieces get bigger and fall faster, but the shiny pieces get better too.",
+    text: "As the game goes on, the pieces get bigger and fall faster, but the Shiny Pieces get better too.",
     board: [
       "a.............",
       "abb...........",
@@ -221,36 +241,92 @@ export const PAGES = [
     ],
     pieces: [{ id: "pyramid", to: { x: 5 }, then: ["drop"] }],
   },
+  // The modes, a page each: what it is, over a board playing the way it does, and a button to go
+  // and play it.
   {
-    id: "end", free: true, modes: true,
+    id: "classic", mode: "normal", title: "Classic",
+    text: "That's everything! Classic is the full game.",
+    more: "It starts easy, then the pieces get bigger, faster and stranger, and Shiny Pieces turn up to help.",
+    free: { levels: [1, 2], shiny: 0.16 },
     dropMs: 380, // (gently: time for the autopilot, or the player, to get each one where it goes)
-    text: "That's everything! Pick a mode and play.",
     board: [
       "a.....bb...cc.",
       "aadd..beeffcg.",
       "hhdii.jeekfggl",
     ],
   },
+  {
+    id: "godmode", mode: "god", title: "God mode",
+    text: "Every Shiny Piece and every giant, right from the start.",
+    more: "Total chaos.",
+    free: { levels: [3, 4], big: true, shiny: 0.45 },
+    dropMs: 300,
+    board: [
+      "..aa.....bbb..",
+      "c.aadd..eeb.ff",
+      "ccgdd.hheei.ff",
+    ],
+  },
+  {
+    id: "zen", mode: "zen", title: "Zen",
+    text: "Slow and easy: it plays itself.",
+    more: "Take a piece over whenever you like, and leave it be again.",
+    free: { levels: [1], shiny: 0.08 },
+    dropMs: 700, pace: 1.5,
+    board: [
+      "a............b",
+      "aa..cc...dd.bb",
+    ],
+  },
+  {
+    id: "turbo", mode: "turbo", title: "Turbo zen",
+    text: "It plays itself, fast, and never stops.",
+    more: "Jump in any time.",
+    free: { levels: [1, 2], shiny: 0.12 },
+    dropMs: 110, pace: 0.25,
+    board: [
+      "a..bb..cc..dd.",
+      "aeebff.gchhdii",
+    ],
+  },
+  {
+    id: "extreme", mode: "extreme", title: "Extreme",
+    text: "No Shiny Pieces. No help.",
+    more: "Just you and the pieces.",
+    free: { levels: [1, 2, 3] },
+    dropMs: 250,
+    board: [
+      "a...bb....cc..",
+      "aad.beef.gccc.",
+      "hhddiief.ggjj.",
+    ],
+  },
 ];
 
-// The pages for this game: a powerup page only if its piece can turn up (its class is switched
-// on: CONFIG.assist.powerups.disabledTypes), and any page whose pieces have gone missing left out.
+// The Shiny Pieces that can turn up in a game: switched on (CONFIG.assist.powerups.disabledTypes),
+// and not only ever part of a set.
+const liveShiny = (s) => !!s?.powerup && isPowerupEnabled(s) && (s.frequency ?? 1) > 0 && !s.powerup.setOnly;
+
+// The pages for this game: a class's page only if its piece can turn up (its class is switched
+// on), the Shiny Pieces' page with the classes that can, a mode's page only if the mode is there
+// to play, and any page whose pieces have gone missing left out.
 export function tutorialPages(state) {
   const live = (id) => {
     const s = state.allById.get(id);
-    return !!s && (!s.powerup || (isPowerupEnabled(s) && (s.frequency ?? 1) > 0 && !s.powerup.setOnly));
+    return !!s && (!s.powerup || liveShiny(s));
   };
-  const pages = PAGES.filter(p => (p.pieces ?? []).every(q => live(q.id)) && (!p.shelf || CONFIG.shelf?.pieces?.[p.shelf]?.some(id => state.allById.has(id))));
-  const first = pages.find(p => p.cls);
-  return pages.map(p => ({ ...p, first: p === first }));
+  return PAGES.map(p => (p.classes ? { ...p, classes: p.classes.filter(c => live(c.id)) } : p))
+    .filter(p => (p.pieces ?? []).every(q => live(q.id))
+      && (!p.shelf || CONFIG.shelf?.pieces?.[p.shelf]?.some(id => state.allById.has(id)))
+      && (!p.classes || p.classes.length > 0)
+      && (!p.mode || (CONFIG.modes[p.mode] && !CONFIG.modes[p.mode].hidden)));
 }
 
-// What a page says, with a keyboard ("keys") or on a touch screen ("touch").
+// What a page says, with a keyboard ("keys") or on a touch screen ("touch"): its sentence, and
+// the line under it.
 export function tutorialText(page, view = "touch") {
   const say = typeof page.text === "string" ? page.text : page.text?.[view] ?? page.text?.touch ?? "";
-  if (!page.cls) return say;
-  // (the first powerup page says what powerups are, in place of its second sentence)
-  return page.first ? `Shiny pieces are powerups. ${say}` : `${say} ${page.more ?? ""}`.trim();
+  return { title: page.title ?? null, say, more: page.more ?? null };
 }
 
 /* =========================
@@ -381,7 +457,7 @@ export function tutorialTick(state, dt) {
   else if (a && a !== t.active) { t.spec = { shape: a.shape, to: "power", then: ["drop"] }; begin(state, t, a); }
   if (!a) {
     // all landed and settled: a moment to take it in, and round it goes again
-    if (!page.free && !t.queue.length && !t.fresh && settled(state) && (t.restMs += dt) >= T.restMs) {
+    if (!page.free && !page.still && !t.queue.length && !t.fresh && settled(state) && (t.restMs += dt) >= T.restMs) {
       setUpPage(state, t, t.page);
       return true;
     }
@@ -561,11 +637,11 @@ function begin(state, t, a) {
   t.stuck = 0;
   t.holding = 0;
   const spec = t.spec;
-  t.wait = spec.firstMs ?? CONFIG.tutorial.firstMs;
-  // (the last page: where zen's autopilot would put it, playing as a person would, never in
+  t.wait = (spec.firstMs ?? CONFIG.tutorial.firstMs) * pace(t);
+  // (a mode's page: where zen's autopilot would put it, playing as a person would, never in
   // under an overhang; or else somewhere sensible)
   // (with the piece after it in mind, as a person would: t.freeNext)
-  const calm = spec.free ? bestPlacement({ board: state.board, mode: "zen" }, a.shape, undefined, 4, t.freeNext?.shape ?? null) : null;
+  const calm = spec.free ? bestPlacement({ board: state.board, mode: "zen" }, a.shape, undefined, 4, t.freeNext?.shape?.powerup ? null : t.freeNext?.shape ?? null) : null;
   const to = spec.free ? (calm && !calm.slide ? { rot: calm.rot, x: calm.x } : bestSpot(state, a.shape, a.x))
     : spec.to === "power" ? powerSpot(state, a.shape) ?? bestSpot(state, a.shape, a.x)
     : spec.to;
@@ -603,7 +679,7 @@ function steer(state, t, dt) {
     if ((t.holding -= dt) > 0) return;
     state.softDropping = false;
     t.hint.held = false;
-    t.wait = T.stepMs;
+    t.wait = T.stepMs * pace(t);
     t.hint.aim = nextKey(state, t);
     return;
   }
@@ -617,8 +693,11 @@ function steer(state, t, dt) {
   if (placing && state.active === a && `${a.rotIdx},${a.x}` === was) t.stuck++;
   if (state.active !== t.active) { t.hint.aim = null; return; } // (dropped: it has landed)
   t.hint.aim = nextKey(state, t);
-  t.wait = t.hint.aim === "drop" || (key === "down" && t.hint.aim === "down") ? T.tapGapMs : T.stepMs;
+  t.wait = (t.hint.aim === "drop" || (key === "down" && t.hint.aim === "down") ? T.tapGapMs : T.stepMs) * pace(t);
 }
+
+// (how far apart the autopilot's presses are on this page: its `pace`)
+const pace = (t) => t.pages[t.page]?.pace ?? 1;
 
 // Presses it, just as the player's own key or tap would (src/ui.js).
 function press(state, t, key) {
@@ -642,26 +721,46 @@ export function shelfSlot(state, t = state.tutorial) {
 }
 
 /* =========================
-   The last page: one friendly piece after another
+   The modes' pages: one piece after another, the way each mode has them
    ========================= */
 
-function freePiece(state, t) {
-  t.freePool ??= state.allShapes.filter(s => {
+// The pieces a mode's page plays with (its `free`): of its levels, and not too big for the board
+// (giants only if it says so); and its Shiny Pieces (of the three classes, small ones unless it
+// has giants). Made once a page.
+function freePools(state, t, page) {
+  t.freePools ??= new Map();
+  if (t.freePools.has(page.id)) return t.freePools.get(page.id);
+  const F = page.free === true ? {} : page.free, levels = F.levels ?? [1], big = !!F.big;
+  const fits = (s) => {
     const m = s.rotations[0], n = m.flat().filter(Boolean).length;
-    return (s.difficulty ?? 1) === 1 && (s.frequency ?? 1) >= 0.5 && inGame(s) && !s.powerup && n >= 3 && n <= 6 && m.length <= 4 && m[0].length <= 4;
-  });
-  const pool = t.freePool;
-  if (!pool.length) return null;
+    return n >= 3 && (big ? m.length <= 6 && m[0].length <= 8 && n <= 24 : n <= 6 && m.length <= 4 && m[0].length <= 4);
+  };
+  const pieces = state.allShapes.filter(s => levels.includes(s.difficulty ?? 1) && (s.frequency ?? 1) >= 0.3 && inGame(s) && !s.powerup && !s.remix && !s.seam && fits(s));
+  const shiny = F.shiny ? (state.allPowerups ?? state.powerups).filter(s => liveShiny(s) && ["destroyer", "gravity", "expander"].includes(s.powerup.cls) && !s.powerup.bad && fits(s)) : [];
+  const out = { pieces, shiny, chance: shiny.length ? F.shiny : 0 };
+  t.freePools.set(page.id, out);
+  return out;
+}
+
+function freePiece(state, t) {
+  const page = t.pages[t.page], { pieces, shiny, chance } = freePools(state, t, page);
+  if (!pieces.length) return null;
   // (one ahead, so the autopilot can play this one with the next in mind)
   const draw = () => {
-    let s = pool[0];
+    if (chance && state.rng() < chance) {
+      const s = shiny[Math.floor(state.rng() * shiny.length)];
+      return { id: s.id, shape: s, to: "power", then: ["drop"] };
+    }
+    let s = pieces[0];
     for (let k = 0; k < 8; k++) {
-      s = pool[Math.floor(state.rng() * pool.length)];
+      s = pieces[Math.floor(state.rng() * pieces.length)];
       if (!t.recent.includes(s.id)) break;
     }
     t.recent = [...t.recent.slice(-4), s.id];
     return { id: s.id, shape: s, free: true, then: ["drop"] };
   };
+  // (a new page: what was drawn ahead for the last one isn't this one's)
+  if (t.freeFor !== page.id) { t.freeFor = page.id; t.freeNext = null; }
   const now = t.freeNext ?? draw();
   t.freeNext = draw();
   return now;

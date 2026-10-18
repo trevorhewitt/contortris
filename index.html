@@ -17,6 +17,7 @@
       user-select: none;
       -webkit-touch-callout: none;
       -webkit-tap-highlight-color: transparent;
+      font-variant-ligatures: none; /* (the pixel font's "fi" reads as an "A": "fill" came out "All") */
     }
     input, textarea, select { -webkit-user-select: auto; user-select: auto; }
 
@@ -159,6 +160,17 @@
       --name-rgb-shift: 1px;
       --name-rgb-a1: 0.45;
       --name-rgb-a2: 0.4;
+      /* (the falling piece's name: a dark outline, fringed with the warm rainbow, glowing; the
+         tutorial's words have it too) */
+      --name-shadow:
+        0 0 1px rgba(0,0,0,0.95), 1px 1px 0 rgba(0,0,0,0.85), -1px -1px 0 rgba(0,0,0,0.6),
+        0 0 4px rgba(0,0,0,0.85), 0 2px 8px rgba(0,0,0,0.7),
+        calc(var(--name-rgb-shift) * -1) 0 0 rgba(var(--om-pink),var(--name-rgb-a1)),
+        calc(var(--name-rgb-shift) * -2) 0 1px rgba(var(--om-gold),var(--name-rgb-a1)),
+        var(--name-rgb-shift) 0 0 rgba(var(--om-cyan),var(--name-rgb-a2)),
+        calc(var(--name-rgb-shift) * 2) 0 1px rgba(var(--om-violet),var(--name-rgb-a2)),
+        0 0 12px rgba(255,255,255,var(--name-glow-a)),
+        0 0 24px rgba(var(--om-orange),var(--name-glow-b));
     }
   
     /* the rainbow turning round a ring: whatever has one runs omSpin */
@@ -327,15 +339,7 @@
       overflow: hidden;
       text-overflow: clip;
       user-select: none;
-      text-shadow:
-        0 0 1px rgba(0,0,0,0.95), 1px 1px 0 rgba(0,0,0,0.85), -1px -1px 0 rgba(0,0,0,0.6),
-        0 0 4px rgba(0,0,0,0.85), 0 2px 8px rgba(0,0,0,0.7),
-        calc(var(--name-rgb-shift) * -1) 0 0 rgba(var(--om-pink),var(--name-rgb-a1)),
-        calc(var(--name-rgb-shift) * -2) 0 1px rgba(var(--om-gold),var(--name-rgb-a1)),
-        var(--name-rgb-shift) 0 0 rgba(var(--om-cyan),var(--name-rgb-a2)),
-        calc(var(--name-rgb-shift) * 2) 0 1px rgba(var(--om-violet),var(--name-rgb-a2)),
-        0 0 12px rgba(255,255,255,var(--name-glow-a)),
-        0 0 24px rgba(var(--om-orange),var(--name-glow-b));
+      text-shadow: var(--name-shadow);
       image-rendering: pixelated;
       transform: translateX(0);
       opacity: 1;
@@ -667,7 +671,7 @@
     /* high contrast: the pieces bolder and brighter, the words pure white */
     body.highContrast canvas{ filter: contrast(1.45) saturate(1.3) brightness(1.06); }
     body.highContrast{ --text: #ffffff; }
-    body.highContrast .small, body.highContrast .modeTag, body.highContrast .tutModeSay{ opacity: 1; color: #fff; }
+    body.highContrast .small, body.highContrast .modeTag, body.highContrast .tutClassSay, body.highContrast .tutWords .tutMore{ opacity: 1; color: #fff; }
     .howDemoRow{ display: flex; justify-content: center; margin: 4px 0 10px; }
     /* the X in a panel's top right corner: back to where it came from */
     .overlay .msg.panel:has(> .panelX){ position: relative; }
@@ -1360,34 +1364,91 @@
     .tutDots i.done{ background: rgba(255,255,255,0.42); }
     .tutDots i.on{ background: #ffffff; box-shadow: 0 0 0 1px #000, 0 0 8px rgba(255,255,255,0.85); }
     .tutSay{ flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; gap: 14px; }
-    /* what the page says, over the top of the board, where the pieces' names go in a game */
+    /* what the page says, over the board where a game has the falling piece's name, in the same
+       letters, outline and glow, with a smaller line under it as a shiny piece has what it does;
+       a mode's page has its name over it, big, as a piece's (src/tutorialui.js). Under the words,
+       on the Shiny Pieces' page, the classes side by side, each doing its thing; on a mode's page,
+       the button to go and play it */
     body.tutorial .nameLayer{ display: none; }
     .tutTop{
-      position: absolute; left: 0; right: 0; top: 0; z-index: 5; pointer-events: none;
-      padding: 12px 48px 14px; box-sizing: border-box;
-      font-family: var(--font-body); font-size: clamp(14px, 3.9vw, 19px); line-height: 1.35; font-weight: 700;
-      text-align: center; color: #fff;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.82), rgba(0,0,0,0.62) 70%, rgba(0,0,0,0));
-      text-shadow: 0 2px 0 #000, -1px 0 0 rgba(var(--om-pink),0.7), -2px 0 1px rgba(var(--om-gold),0.4), 1px 0 0 rgba(var(--om-cyan),0.65), 0 0 12px rgba(var(--om-orange),0.4);
+      position: absolute; left: 0; right: 0; top: 30%; z-index: 5; pointer-events: none;
+      padding: 0 12px; box-sizing: border-box;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      text-align: center; user-select: none;
     }
     .tutTop[hidden]{ display: none; }
-    .tutTop.enter{ animation: tutTopIn 380ms cubic-bezier(.2, 1.2, .4, 1) both; }
+    .tutWords{
+      width: 100%; color: rgba(248,248,255,0.95);
+      font-family: var(--font-display); font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase;
+      overflow-wrap: anywhere; word-break: break-word;
+      text-shadow: var(--name-shadow);
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.22)) drop-shadow(0 0 26px rgba(var(--om-orange),0.22));
+    }
+    .tutWords .tutHead{ display: block; margin: 0 0 10px; font-size: 18px; line-height: 1.5; animation: rgbText 1.6s steps(12, end) infinite; }
+    .tutWords .tutMain{ display: block; font-size: clamp(10px, 2.9vw, 13px); line-height: 1.75; }
+    .tutWords .tutMore{ display: block; margin-top: 10px; font-size: 9px; line-height: 1.6; letter-spacing: 0.06em; color: rgba(245,245,255,0.82); }
+    .tutTop.enter .tutWords{ animation: tutTopIn 380ms cubic-bezier(.2, 1.2, .4, 1) both; }
     @keyframes tutTopIn{
-      0%{ opacity: 0; transform: translateY(-10px); text-shadow: -6px 0 0 rgba(var(--om-pink),0.9), -9px 0 2px rgba(var(--om-gold),0.6), 6px 0 0 rgba(var(--om-cyan),0.9), 9px 0 2px rgba(var(--om-violet),0.6); }
+      0%{ opacity: 0; transform: translateY(-10px); filter: none; }
       60%{ opacity: 1; }
       100%{ opacity: 1; transform: none; }
     }
-    .tutTop kbd{
-      display: inline-block; min-width: 1.3em; padding: 3px 5px 2px; margin: 0 1px;
-      font-family: var(--font-display); font-size: 0.6em; line-height: 1.4; text-align: center; vertical-align: 2px;
+    .tutWords kbd{
+      display: inline-block; min-width: 1.4em; padding: 3px 4px 2px; margin: 0 2px;
+      font-family: var(--font-display); font-size: 0.85em; line-height: 1.3; text-align: center; vertical-align: 1px;
       color: #fff; background: #000; text-shadow: none;
-      border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 2px 0 rgba(255,255,255,0.25);
+      border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 2px 0 rgba(255,255,255,0.3);
     }
-    .tutTop .tutName{ font-family: var(--font-display); font-weight: 400; font-size: 0.72em; letter-spacing: 0.04em; text-transform: uppercase; animation: rgbText 1.6s steps(12, end) infinite; }
-    .tutTop .tutName.cls-destroyer{ animation-name: fireText; }
-    .tutTop .tutName.cls-gravity{ animation-name: deepText; }
-    .tutTop .tutName.cls-expander{ animation-name: growText; }
-    .tutTop .tutName.cls-phantom{ animation-name: ghostText; }
+    .tutName{ font-family: var(--font-display); font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; animation: rgbText 1.6s steps(12, end) infinite; }
+    .tutName.cls-destroyer{ animation-name: fireText; }
+    .tutName.cls-gravity{ animation-name: deepText; }
+    .tutName.cls-expander{ animation-name: growText; }
+    .tutName.cls-phantom{ animation-name: ghostText; }
+    /* (the Shiny Pieces' page: a card for each class, its little game going round (src/demo.js),
+       its name and what it does) */
+    .tutClasses{ display: flex; justify-content: center; gap: 8px; width: 100%; }
+    .tutClasses:empty{ display: none; }
+    .tutClass{
+      position: relative; isolation: isolate; flex: 1 1 0; min-width: 0; max-width: 132px; box-sizing: border-box;
+      display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 9px 5px 10px;
+      background: rgba(0,0,0,0.78); box-shadow: var(--om-glow);
+      animation: tutCardIn 420ms cubic-bezier(.2, 1.3, .4, 1) both; animation-delay: calc(var(--n, 0) * 110ms + 120ms);
+    }
+    .tutClass::before{ animation-delay: calc(var(--n, 0) * -1.3s); }
+    .tutClass canvas{ display: block; image-rendering: pixelated; box-shadow: 0 0 0 1px rgba(255,255,255,0.12); }
+    .tutClass .tutName{ font-size: clamp(7px, 2.2vw, 10px); line-height: 1.4; }
+    .tutClassSay{ font-family: var(--font-body); font-size: clamp(10px, 2.8vw, 12px); line-height: 1.25; color: rgba(245,245,255,0.92); text-shadow: 0 1px 0 #000; }
+    @keyframes tutCardIn{ from{ opacity: 0; transform: translateY(12px) scale(0.92); } to{ opacity: 1; transform: none; } }
+    /* (a mode's page: the button to play it) */
+    .tutPlay{
+      position: relative; isolation: isolate; overflow: hidden; pointer-events: auto;
+      min-height: 0; padding: 13px 20px; border: 0;
+      font-family: var(--font-display); font-size: clamp(11px, 3.2vw, 14px); letter-spacing: 0.05em; text-transform: uppercase;
+      color: #fff; background: #000;
+      box-shadow: var(--om-split), var(--om-glow);
+      text-shadow: var(--rgb-split), 0 0 10px rgba(255,255,255,0.55);
+      animation: tutCardIn 420ms cubic-bezier(.2, 1.3, .4, 1) 160ms both;
+    }
+    .tutPlay[hidden]{ display: none; }
+    @media (hover: hover) and (pointer: fine){ .tutPlay:hover{ background: radial-gradient(120% 90% at 50% 50%, rgba(255,255,255,0.14), rgba(0,0,0,0) 70%) #000; } }
+    /* (God mode: the one to look at. Its frame torn into the rainbow, light rolling through it,
+       its name glitching all the time) */
+    .tutPlay.tutGod{
+      box-shadow: var(--om-tear-box), var(--om-glow), 0 0 26px rgba(255,255,255,0.45);
+      animation: tutCardIn 420ms cubic-bezier(.2, 1.3, .4, 1) 160ms both, tutGodFrame 2.2s steps(1, end) 600ms infinite, textGlitch 1.3s steps(1, end) infinite;
+    }
+    .tutPlay.tutGod::after{
+      content: ""; position: absolute; left: 0; right: 0; top: -100%; height: 300%; z-index: -1; pointer-events: none;
+      background:
+        repeating-linear-gradient(to bottom, rgba(255,255,255,0.06) 0 1px, transparent 1px 3px),
+        linear-gradient(to bottom, transparent 38%, rgba(var(--om-pink),0.3) 43%, rgba(var(--om-orange),0.3) 46%, rgba(var(--om-gold),0.32) 49%, rgba(var(--om-cyan),0.26) 52%, rgba(var(--om-violet),0.24) 55%, transparent 60%);
+      animation: modeSlide 2.4s linear infinite;
+    }
+    @keyframes tutGodFrame{
+      0%, 100%{ box-shadow: var(--om-tear-box), var(--om-glow), 0 0 26px rgba(255,255,255,0.45); }
+      47%{ box-shadow: -8px 1px 0 rgba(var(--om-pink),0.95), -12px 1px 0 rgba(var(--om-orange),0.6), 6px -1px 0 rgba(var(--om-cyan),0.95), 0 4px 0 rgba(var(--om-gold),0.8), var(--om-glow), 0 0 40px rgba(255,255,255,0.7); }
+      52%{ box-shadow: 3px 0 0 rgba(var(--om-gold),0.95), -3px 0 0 rgba(var(--om-violet),0.95), 0 -2px 0 rgba(var(--om-pink),0.8), var(--om-glow), 0 0 30px rgba(255,255,255,0.55); }
+    }
     /* the X: home */
     .tutX{
       position: absolute; top: 8px; right: 8px; z-index: 6;
@@ -1398,46 +1459,6 @@
     .tutX[hidden]{ display: none; }
     /* (paused: the pause menu over the board, with its own X) */
     .boardShell.tutPaused .tutTop, .boardShell.tutPaused .tutX{ visibility: hidden; }
-    /* the last page: the modes, over the board playing itself */
-    .tutModes{
-      position: absolute; inset: 0; z-index: 4; box-sizing: border-box;
-      padding: 76px 14px 14px; overflow-y: auto;
-      display: flex; flex-direction: column; justify-content: center; gap: 9px;
-      background: rgba(0,0,0,0.55);
-    }
-    .tutModes[hidden]{ display: none; }
-    .tutMode{
-      position: relative; flex: none; padding: 9px 12px; border: 0; color: #fff; text-align: left;
-      background: #000; isolation: isolate; overflow: hidden;
-      box-shadow: var(--om-split), var(--om-glow);
-      display: flex; flex-direction: column; gap: 4px;
-      animation: tutModeIn 420ms cubic-bezier(.2, 1.2, .4, 1) both; animation-delay: calc(var(--n, 0) * 70ms);
-    }
-    .tutMode .tutModeName{ font-family: var(--font-display); font-size: clamp(11px, 3.2vw, 14px); letter-spacing: 0.05em; text-transform: uppercase; text-shadow: var(--rgb-split), 0 0 10px rgba(255,255,255,0.55); }
-    .tutMode .tutModeName::before{ content: "\25B6  "; font-size: 0.8em; }
-    .tutMode .tutModeSay{ font-family: var(--font-body); font-size: clamp(11px, 3vw, 13px); line-height: 1.3; text-transform: none; letter-spacing: 0; opacity: 0.9; }
-    @media (hover: hover) and (pointer: fine){ .tutMode:hover .tutModeName{ animation: textGlitch 0.9s steps(1, end) infinite; } }
-    @keyframes tutModeIn{ from{ opacity: 0; transform: translateX(-14px); } to{ opacity: 1; transform: none; } }
-    /* (God mode: the one to look at. Its frame torn into the rainbow, light rolling through it,
-       its name glitching all the time) */
-    .tutMode.tutGod{
-      padding: 13px 12px;
-      box-shadow: var(--om-tear-box), var(--om-glow), 0 0 26px rgba(255,255,255,0.45);
-      animation: tutModeIn 420ms cubic-bezier(.2, 1.2, .4, 1) both, tutGodFrame 2.2s steps(1, end) 420ms infinite;
-    }
-    .tutMode.tutGod::after{
-      content: ""; position: absolute; left: 0; right: 0; top: -100%; height: 300%; z-index: -1; pointer-events: none;
-      background:
-        repeating-linear-gradient(to bottom, rgba(255,255,255,0.06) 0 1px, transparent 1px 3px),
-        linear-gradient(to bottom, transparent 38%, rgba(var(--om-pink),0.3) 43%, rgba(var(--om-orange),0.3) 46%, rgba(var(--om-gold),0.32) 49%, rgba(var(--om-cyan),0.26) 52%, rgba(var(--om-violet),0.24) 55%, transparent 60%);
-      animation: modeSlide 2.4s linear infinite;
-    }
-    .tutMode.tutGod .tutModeName{ font-size: clamp(14px, 4.2vw, 19px); animation: textGlitch 1.3s steps(1, end) infinite; }
-    @keyframes tutGodFrame{
-      0%, 100%{ box-shadow: var(--om-tear-box), var(--om-glow), 0 0 26px rgba(255,255,255,0.45); }
-      47%{ box-shadow: -8px 1px 0 rgba(var(--om-pink),0.95), -12px 1px 0 rgba(var(--om-orange),0.6), 6px -1px 0 rgba(var(--om-cyan),0.95), 0 4px 0 rgba(var(--om-gold),0.8), var(--om-glow), 0 0 40px rgba(255,255,255,0.7); }
-      52%{ box-shadow: 3px 0 0 rgba(var(--om-gold),0.95), -3px 0 0 rgba(var(--om-violet),0.95), 0 -2px 0 rgba(var(--om-pink),0.8), var(--om-glow), 0 0 30px rgba(255,255,255,0.55); }
-    }
     /* (Touch or Keys: which the tutorial shows) */
     .tutView{ display: flex; flex: none; }
     .tutNav .tutView button{ padding: 8px 9px; box-shadow: 0 0 0 2px rgba(0,0,0,0.88); opacity: 0.55; }
@@ -1580,15 +1601,12 @@
       <div class="boardShell" id="boardShell">
         <div id="nameLayer" class="nameLayer"></div>
         <canvas id="boardCanvas"></canvas>
-        <!-- (the tutorial: what the page says, over the top of the board; on the last page, the
-             modes to pick from; and an X to go home) -->
-        <div id="tutTop" class="tutTop" aria-live="polite" hidden></div>
-        <div id="tutModes" class="tutModes" hidden>
-          <button class="tutMode omRing" data-mode="normal"><span class="tutModeName">Classic</span><span class="tutModeSay">The full game: it starts easy, then the pieces get bigger, faster and stranger.</span></button>
-          <button class="tutMode omRing tutGod" data-mode="god"><span class="tutModeName">God mode</span><span class="tutModeSay">Every powerup and every giant, right from the start. Total chaos.</span></button>
-          <button class="tutMode omRing" data-mode="extreme"><span class="tutModeName">Extreme</span><span class="tutModeSay">No powerups. No help. Just you and the pieces.</span></button>
-          <button class="tutMode" data-mode="zen"><span class="tutModeName">Zen</span><span class="tutModeSay">Slow and easy: it plays itself, or you can take over.</span></button>
-          <button class="tutMode" data-mode="turbo"><span class="tutModeName">Turbo zen</span><span class="tutModeSay">It plays itself, fast, and never stops. Jump in any time.</span></button>
+        <!-- (the tutorial: what the page says, where a game has the piece's name; under it, the
+             Shiny Pieces' classes, or the button to play a mode; and an X to go home) -->
+        <div id="tutTop" class="tutTop" hidden>
+          <div class="tutWords" id="tutWords" aria-live="polite"></div>
+          <div class="tutClasses" id="tutClasses"></div>
+          <button class="tutPlay omRing" id="tutPlay" hidden></button>
         </div>
         <button id="tutX" class="tutX" aria-label="Home" hidden>X</button>
 
@@ -1628,7 +1646,7 @@
             <button class="panelX" data-back aria-label="Close">X</button>
             <div class="big">Options</div>
             <div class="optList">
-              <label class="skipBox"><input type="checkbox" class="skipIntros" data-opt="skipIntros"> Skip the powerup intro screens</label>
+              <label class="skipBox"><input type="checkbox" class="skipIntros" data-opt="skipIntros"> Skip the Shiny Piece intro screens</label>
               <label class="skipBox"><input type="checkbox" data-opt="calmFx"> Tone down the animations</label>
               <label class="skipBox"><input type="checkbox" data-opt="contrast"> High contrast</label>
               <label class="skipBox"><input type="checkbox" data-opt="turboWhole"> Turbo zen fills the screen</label>
@@ -1652,7 +1670,7 @@
               <p><b>Touch:</b> tap the left or right side to move, tap the top to rotate, tap the bottom middle to drop faster. Hold to keep going. Double tap the bottom to drop straight down.</p>
               <p><b>Keyboard:</b> <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> move, <kbd>↑</kbd> or <kbd>W</kbd> rotate, <kbd>↓</kbd> or <kbd>S</kbd> drop faster, <kbd>Space</kbd> pause. Double press <kbd>↓</kbd> or <kbd>S</kbd> to drop straight down.</p>
 
-              <h3>Powerups</h3>
+              <h3>Shiny Pieces</h3>
               <div id="howtoClasses"></div>
 
               <h3>Modes</h3>
@@ -1684,7 +1702,7 @@
               <button id="btnResume">Resume</button>
               <button id="btnWholeWindow" class="secondary" hidden>Fill the window</button>
               <button id="btnSpeed" class="secondary" hidden>Speed: 1×</button>
-              <button id="btnPowerupHelp" class="secondary" hidden>Powerups</button>
+              <button id="btnPowerupHelp" class="secondary" hidden>Shiny Pieces</button>
               <button id="btnPauseHowTo" class="secondary">How to play</button>
               <button id="btnPauseOptions" class="secondary">Options</button>
               <button id="btnQuit" class="secondary">Quit to menu</button>
@@ -1694,7 +1712,7 @@
               <select id="devNextPiece"></select>
               <div class="menuRow">
                 <button id="btnDevNext" class="small">Use as next</button>
-                <button id="btnDevUnlockAll" class="secondary small">Unlock all powerups</button>
+                <button id="btnDevUnlockAll" class="secondary small">Unlock all Shiny Pieces</button>
               </div>
               <div class="menuRow">
                 <button id="btnDevClear" class="secondary small">Clear board</button>
@@ -1722,9 +1740,9 @@
                 <option value="on">end game: on now</option>
                 <option value="off">end game: never</option>
               </select>
-              <div class="devTitle">dev: powerup frequency <span id="devRateValue"></span></div>
+              <div class="devTitle">dev: Shiny Piece frequency <span id="devRateValue"></span></div>
               <input type="range" id="devRate" min="0" max="5" step="0.25" value="1">
-              <div class="devTitle">dev: enabled powerups</div>
+              <div class="devTitle">dev: enabled Shiny Pieces</div>
               <div class="devEnabled" id="devEnabled"></div>
             </div>
           </div>
@@ -1738,11 +1756,11 @@
             <div class="panelBtns">
               <button id="btnIntroContinue">Got it</button>
             </div>
-            <label class="skipBox"><input type="checkbox" class="skipIntros"> skip powerup intro screens</label>
+            <label class="skipBox"><input type="checkbox" class="skipIntros"> skip Shiny Piece intro screens</label>
           </div>
 
           <div class="msg panel" id="panelPowerups" hidden>
-            <div class="big">Powerups</div>
+            <div class="big">Shiny Pieces</div>
             <div class="small">Everything you've met so far this game.</div>
             <div class="howto" id="powerupList"></div>
             <div class="panelBtns">
@@ -1767,7 +1785,7 @@
           <div><span class="k">Zone</span> <span id="dbgZone" class="v">normal</span></div>
           <div><span class="k">Piece difficulty</span> <span id="dbgPieceDiff" class="v">–</span></div>
           <div><span class="k">Base fall speed</span> <span id="dbgBaseSpeed" class="v">–</span></div>
-          <div><span class="k">Powerup chance</span> <span id="dbgPowerup" class="v">–</span></div>
+          <div><span class="k">Shiny Piece chance</span> <span id="dbgPowerup" class="v">–</span></div>
         </div>
       </div>
     </div>
