@@ -1914,7 +1914,7 @@ export function updateGame(state, dt) {
   if (state.flock.length) updateFlock(state, dt);
   if (!state.active) return;
 
-  const baseDropMs = state.dropMs;
+  const baseDropMs = fallMs(state);
   const effectiveDropMs = state.softDropping
     ? Math.max(16, Math.floor(baseDropMs * CONFIG.timing.softDropFactor))
     : baseDropMs;
@@ -1963,6 +1963,21 @@ export function updateGame(state, dt) {
     }
   }
 }
+
+// How long the falling piece takes to fall a row: the game's speed, but the biggest level 6
+// pieces a little slower, the bigger the slower, for the sense of scale (CONFIG.difficulty[mode]
+// .slowBig; not the small ones in a set). Never slower than the game was at the start.
+export function fallMs(state) {
+  const a = state.active, big = rampCfg(state)?.slowBig;
+  if (!a || !big || state.zen || (a.shape.difficulty ?? 1) !== LEVEL6) return state.dropMs;
+  const size = bigness(a.shape);
+  if (size < (big.size ?? Infinity)) return state.dropMs;
+  const t = clamp01((size - big.size) / Math.max(1, (big.full ?? big.size) - big.size));
+  const slow = lerp(big.least ?? 1, big.most ?? 1, t);
+  return Math.max(state.dropMs, Math.round(Math.min(state.dropMs * slow, rampCfg(state).speed?.fromMs ?? Infinity)));
+}
+// (its blocks, or half its width × height if that's more: a big sprawling one counts as big)
+const bigness = (shape) => { const m = shape.rotations[0]; return Math.max(blockCount(shape), 0.5 * m.length * m[0].length); };
 
 // Drop the active piece straight down and lock it now (the double tap; and for tests). With
 // `lastChance` (the player's own drop), a piece that would top out gets its last chance first.

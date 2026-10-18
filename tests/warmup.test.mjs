@@ -9,7 +9,7 @@ import { SHAPES } from "../shapes/main_shapes.js";
 import { GROUPS } from "../shapes/groups.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
-import { createGameState, startRun } from "../src/game.js";
+import { createGameState, startRun, fallMs } from "../src/game.js";
 import { selectPiece, fitBadness } from "../src/selection.js";
 import { warmth } from "../src/pacing.js";
 import { hardness, rampDropMs } from "../src/difficulty.js";
@@ -100,4 +100,20 @@ test("the speed goes by how far into the game it is, felt all the way: a bit fas
   assert.ok(at(end + 50) < at(end), "and faster after it");
   assert.equal(at(end + 5000), s.minMs, "down to the fastest");
   assert.equal(rampDropMs({ mode: "extreme", pieceSel: { dropIndex: 300 } }, 123), 123, "Extreme: by the rows, as ever");
+});
+
+test("the biggest level 6 pieces fall a little slower, for the sense of scale (not the small ones)", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(5), groups: GROUPS });
+  startRun(state, "normal");
+  state.dropMs = 100;
+  const big = shapes.find(s => s.difficulty === 6 && s.rotations[0].flat().filter(Boolean).length >= 60);
+  const small = shapes.find(s => s.difficulty === 6 && s.rotations[0].flat().filter(Boolean).length <= 4 && s.rotations[0].length * s.rotations[0][0].length <= 8);
+  const giant = shapes.find(s => s.difficulty === 5);
+  const fall = (shape) => { state.active = { shape, rotIdx: 0, x: 0, y: -shape.rotations[0].length }; return fallMs(state); };
+  const most = CONFIG.difficulty.normal.slowBig.most;
+  assert.equal(fall(big), Math.round(100 * most), `${big.id}: the slowest`);
+  assert.equal(fall(small), 100, `${small.id}: as fast as anything`);
+  assert.equal(fall(giant), 100, "a giant that isn't in a set: as fast as anything");
+  state.dropMs = CONFIG.difficulty.normal.speed.fromMs;
+  assert.equal(fall(big), state.dropMs, "never slower than at the start");
 });

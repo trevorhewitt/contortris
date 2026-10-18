@@ -43,10 +43,12 @@ const speed = (mode) => [
   [`difficulty.${mode}.speed.toMs`, "speed once it's hard (ms a row)", 40, 500, 5],
   [`difficulty.${mode}.speed.perPiece`, "after that, faster per piece", 0.98, 1, 0.001],
   [`difficulty.${mode}.speed.minMs`, "fastest (ms a row)", 30, 300, 5],
+  [`difficulty.${mode}.slowBig.most`, "the biggest set pieces: up to this much slower (×)", 1, 4, 0.05],
+  [`difficulty.${mode}.slowBig.least`, "...and the smallest of the big ones (×)", 1, 3, 0.05],
 ];
 const STAGES = [["early", "at the start"], ["middle", "halfway"], ["late", "once it's hard"]];
 const GROUPS = [
-  { title: "Classic: speed", items: speed("normal") },
+  { title: "Classic: speed", items: speed("normal"), open: true },
   { title: "Classic: getting harder", items: ramp("normal") },
   { title: "God mode: speed", items: speed("god") },
   { title: "God mode: getting harder", items: ramp("god") },
@@ -190,6 +192,7 @@ export function buildDevTools(body, hooks = {}) {
   const sliders = [];
   for (const g of GROUPS) {
     const sec = el("details", "devSection");
+    sec.open = !!g.open;
     sec.appendChild(el("summary", "devTitle", g.title));
     for (const [path, label, min, max, step] of g.items) {
       const row = el("label", "devSlider");
