@@ -384,7 +384,7 @@ const stackHeight = (state) => heightOf(occupancy(state.board), CONFIG.board.col
 
 // (one that only ever comes once: once since the page was loaded; and in Zen, not the pieces only
 // turbo zen builds with, the tiles: CONFIG.assist.turboOnlyTags)
-const regularPool = (state) => state.shapes.filter(s => !s.powerup && (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6 && (!s.once || !(state.zenUses?.get(s.id) > 0)) && (!isCalm(state) || inGame(s)));
+const regularPool = (state) => state.shapes.filter(s => !s.powerup && (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) !== LEVEL6 && (!s.once || !(state.zenUses?.get(s.id) > 0)) && (!isCalm(state) || inGame(s)) && !(CONFIG.modes[state.mode]?.home && blocks(s) === 1));
 const smallPool = (state) => regularPool(state).filter(s => (s.difficulty ?? 1) <= 1 && blocks(s) <= 4);
 const giantPool = (state) => regularPool(state).filter(s => (s.difficulty ?? 1) >= 4);
 const powerupPool = (state) => state.powerups.filter(p => (p.frequency ?? 1) > 0 && !keptApart(state, p));
@@ -682,12 +682,20 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
   // (`streaks`: how often a piece, when it's going quickly, comes two to four times running, so
   // there's time to read its name, and `repeats` times as likely as that, at most `longest` more
   // times; `strays`: how often something else altogether)
-  const again = { shape: null, left: 0 };
+  const again = { shape: null, left: 0, ones: 0 };
   const nextOne = (state) => {
-    if (again.left > 0 && fitsUnder(state, again.shape, 2)) { again.left--; return again.shape; }
+    const s = pickOne(state);
+    again.ones = s && !s.powerup && blocks(s) === 1 ? again.ones + 1 : 0;
+    return s;
+  };
+  const pickOne = (state) => {
+    // (behind the home screen, only a few one-cell pieces in a row, `next` told when that's
+    // enough: mostOnes)
+    const enough = again.ones >= mostOnes(state);
+    if (again.left > 0 && fitsUnder(state, again.shape, 2) && !(enough && blocks(again.shape) === 1)) { again.left--; return again.shape; }
     const odd = only ? null : stray(state, strays);
     if (odd) { again.stray = true; return odd; }
-    let s = next(state);
+    let s = next(state, { ones: !enough });
     // (one that ends the fill, `{ shape, last: true }`: never twice, and nothing after it)
     if (s?.last) { again.left = 0; again.last = true; return s.shape; }
     // (batches: as the mood takes it, likelier and longer when it's going quickly)
@@ -708,7 +716,7 @@ function fillThenBlast(caption, next, { target, weights = WEIGHTS.build, pace = 
       // (or one of the Expanderz, filling what it can of the gaps on the way up)
       if (kind === "grow") return growWith(state, this.weights);
       const res = kind === "bed" ? planNest(state, { weights: this.weights }) : planPatch(state, { weights: this.weights });
-      if (!res) return null;
+      if (!res || onesRun(state, res.items)) return null;
       if (res.caption) zenCaption(state, res.caption, kind, { quiet: true });
       return res.items;
     },
@@ -887,7 +895,7 @@ function planned(caption, plan, then = null) {
       this.pushed = true;
       const res = plan(state, this);
       const items = Array.isArray(res) ? res : res?.items;
-      if (!items?.length) return;
+      if (!items?.length || onesRun(state, items)) return;
       state.zen.queue.push(...items);
       const text = res.caption ?? caption;
       if (text) zenCaption(state, text, this.name);
@@ -898,6 +906,17 @@ function planned(caption, plan, then = null) {
     },
     done() { return this.pushed; },
   };
+}
+
+// Behind the home screen, never a long run of one-cell pieces one after another, slow and all much
+// the same: at most CONFIG.home.maxOnes in a row (anywhere else, any number); and a plan with more
+// than that in a row isn't used.
+const mostOnes = (state) => (CONFIG.modes[state.mode]?.home ? CONFIG.home?.maxOnes : null) ?? Infinity;
+function onesRun(state, items) {
+  const most = mostOnes(state);
+  let n = 0;
+  for (const it of items) if ((n = blocks(it.shape) === 1 ? n + 1 : 0) > most) return true;
+  return false;
 }
 
 // A short run of next() pieces, played to keep it low (zen).
@@ -983,7 +1002,7 @@ const MOVEMENTS = {
     const size = all.reduce((n, it) => n + it.w * blocks(it.s), 0) / wsum;
     const pace = Math.max(0.55, Math.min(1.05, 0.5 + size / 40));
     let prev = null, reached = -1;
-    return fillThenBlast(c.id, (st) => {
+    return fillThenBlast(c.id, (st, { ones = true } = {}) => {
       let list = c.pieces;
       if (c.stages) {
         // (the stage for how far up it's got; now and then one from the stage before, so the
@@ -1003,8 +1022,9 @@ const MOVEMENTS = {
         reached = Math.max(reached, i);
         list = c.stages[i];
       }
-      // (and not the same one twice running, if there's a choice)
-      let fits = list.filter(it => fitsUnder(st, it.s, 3));
+      // (and not the same one twice running, if there's a choice; nor another one-cell one, when
+      // that's enough)
+      let fits = list.filter(it => fitsUnder(st, it.s, 3) && (ones || blocks(it.s) > 1));
       if (fits.length > 1) fits = fits.filter(it => it.s !== prev);
       return fits.length ? (prev = sampleByWeight(fits, it => it.w * fresh(st, it.s), st.rng).s) : null;
     }, { target, pace, only: true, label, loose: true, turns: state.rng() < (c.upright ?? 0) ? 1 : null, keyChance: 0.35, streaks: 0.15,
@@ -1270,6 +1290,7 @@ function pickFamily(state, { calm = false } = {}) {
   const fams = [];
   const add = (caption, quiet, pieces, w) => {
     if (calm) pieces = pieces.filter(s => (s.difficulty ?? 1) <= 3 && blocks(s) <= 16);
+    if (CONFIG.modes[state.mode]?.home) pieces = pieces.filter(s => blocks(s) > 1); // (mostOnes)
     if (pieces.length >= (calm ? 3 : 1)) fams.push({ caption: calm ? quiet : caption, pieces, w });
   };
   const named = { spam: ["nothing but spam", "a little spam"], beans: ["nothing but beans", "a few beans"], spaghetti_os: ["nothing but Spaghetti-Os", "a few Spaghetti-Os"],
@@ -1309,7 +1330,9 @@ function pickFamily(state, { calm = false } = {}) {
 // is nearly empty.
 function sealWith(state, ids, caption) {
   const pool = ids.map(id => state.powerups.find(p => p.id === id)).filter(Boolean);
-  const most = CONFIG.zen.sealWith ?? 6;
+  // (behind the home screen, only a few one-cell ones in a row: mostOnes)
+  const ones = pool.length && pool.every(p => blocks(p) === 1);
+  const most = Math.min(CONFIG.zen.sealWith ?? 6, ones ? mostOnes(state) : Infinity);
   return {
     caption, used: 0,
     fill(state) {
@@ -2166,8 +2189,9 @@ export function planPatch(state, { weights = null } = {}) {
         caption = "a patch of tiles";
       }
     }
-    if (!steps) {
-      // little tiles in a pattern of glazes
+    if (!steps && !CONFIG.modes[state.mode]?.home) {
+      // little tiles in a pattern of glazes (never behind the home screen: only little ones, one
+      // at a time, is too slow)
       const pat = [(i, j) => (i + j) % 2, (i, j) => (i + j) % Math.min(3, glazes.length), (i, j) => (i >> 1) % 2, (i, j) => (j % 2)][Math.floor(rng() * 4)];
       const out = [];
       for (let i = 0; i < w; i++) for (let y = tops[i] - 1; y >= level; y--) {
@@ -3007,7 +3031,8 @@ export function planTiles(state, kind = null, { any = false } = {}) {
     const placed = tile(work.slice(), need, cands, rng, cols, rows, 6);
     return placed && { caption: "tiles, every which way", direct: placed.map(p => ({ ...p, pace: 0.6 })) };
   };
-  const names = Object.keys(kinds);
+  // (behind the home screen, never a floor of only little tiles, one at a time: too slow)
+  const names = Object.keys(kinds).filter(n => !(n === "floor" && CONFIG.modes[state.mode]?.home));
   // (the column left empty is the last one; one of the tallest pieces, a column wide, fills it)
   const key = zenKeys(state).find(k => k.rotations[0][0].length === 1);
   for (let tries = 0; tries < 4; tries++) {
