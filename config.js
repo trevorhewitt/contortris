@@ -957,16 +957,18 @@ export const CONFIG = {
       // they're easy to tell apart at a glance (combos show each part in its own colours).
       // hues: [from, to] in degrees (going round the colour wheel), sat/light in %.
       classColours: {
-        destroyer: { hues: [350, 45], sat: 100, light: 58 },   // Dissolverz: fire
-        gravity:   { hues: [215, 275], sat: 95, light: 62 },   // Gravitizerz: deep blue-violet
-        expander:  { hues: [80, 165], sat: 90, light: 55 },    // Expanderz: lime to teal
+        destroyer: { hues: [345, 8], sat: 100, light: 56 },    // Dissolverz: red
+        gravity:   { hues: [212, 232], sat: 100, light: 60 },  // Gravitizerz: blue
+        expander:  { hues: [122, 148], sat: 100, light: 52 },  // Expanderz: green
         phantom:   { hues: [175, 290], sat: 55, light: 80 },   // Phantomz: pale and ghostly
         blast:     { hues: [20, 50], sat: 100, light: 60 },
       },
       overlay: {
         periodMs: 900,           // one loop of the square / line animation
-        hueDegPerMs: 0.12,       // colour shimmer speed (rainbow for anything without classColours)
+        hueDegPerMs: 0.12,       // colour shimmer speed (red, green and blue in turn for anything without classColours)
         hueStepPerCell: 18,      // colour spread across cells
+        rgbSplit: 0.06,          // the marks' red and blue copies, pulled apart this much of a cell
+        rgbSplitAlpha: 0.6,      // ...and how strong they are (times the mark's own)
         fillAlpha: 0.30,         // cells the effect will change
         idleFillAlpha: 0.11,     // highlighted cells it won't change (e.g. empty cells for a destroyer)
         markAlpha: 0.95,

@@ -29,7 +29,7 @@ import { getShapePaint } from "./shapes.js";
 // The filler on a page's board: wherever one of the game's own pieces has a block's exact
 // outline, that piece (so the board looks like the game's); otherwise plain blocks in the powerup
 // demos' colours (src/demo.js).
-const FILLER = ["#e8794a", "#5fb0e8", "#9ad45b", "#e85fa8", "#e8d35f", "#9a7be8", "#5fd4c4", "#d45f5f"];
+const FILLER = ["#f4f4f6", "#c9c9ce", "#9c9ca3", "#e2e2e7", "#b3b3b9", "#85858c", "#d6d6db", "#a8a8ae"]; // (shades of white: the game's own colours are its pieces' art, and red, green and blue for the powerups)
 
 // The pages, in order. Each one:
 //   text:   what it says ({ touch, keys }: on a touch screen, or with a keyboard; or the same for

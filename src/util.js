@@ -15,6 +15,16 @@ export function easeOutBack(t) {
   return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
 }
 
+// The game's colours are red, green and blue, never the rainbow between them: any hue, as the
+// nearest of the three (the same red, green and blue as the powerup classes).
+const RGB_HUES = [350, 135, 222];
+export function rgbHue(h) {
+  h = ((h % 360) + 360) % 360;
+  let best = RGB_HUES[0], gap = 999;
+  for (const c of RGB_HUES) { const d = Math.min(Math.abs(h - c), 360 - Math.abs(h - c)); if (d < gap) { gap = d; best = c; } }
+  return best;
+}
+
 export function hsla(h, s, l, a) {
   return `hsla(${h | 0},${s}%,${l}%,${a.toFixed(3)})`;
 }

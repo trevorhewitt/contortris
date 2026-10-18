@@ -3,7 +3,7 @@
 // ============================================================
 
 import { CONFIG } from "../config.js";
-import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour } from "./util.js";
+import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour, rgbHue } from "./util.js";
 import { getShapePaint } from "./shapes.js";
 import { getActiveMatrix, getGhostDropY } from "./game.js";
 import { resolvePowerupArea, computeEffect, isPhantomPowerup, classOf } from "./powerups.js";
@@ -236,7 +236,8 @@ export function markColour(type, now, x, y) {
   const o = CONFIG.fx.powerup.overlay;
   const pal = CONFIG.fx.powerup.classColours?.[classOf(type)];
   const t = now * o.hueDegPerMs + (x + y) * o.hueStepPerCell;
-  if (!pal) return { h: t % 360, s: 100, l: 60 };
+  // (no colours of its own: red, green and blue in turn, never the rainbow between them)
+  if (!pal) return { h: [350, 135, 222][Math.floor(((t % 360) + 360) % 360 / 120)], s: 100, l: 58 };
   const [h0, h1] = pal.hues;
   const span = ((h1 - h0) % 360 + 360) % 360 || 360;
   const tri = 1 - Math.abs(((t / span) % 2) - 1); // 0 -> 1 -> 0 ...
@@ -245,7 +246,6 @@ export function markColour(type, now, x, y) {
 
 export function drawPowerupMark(ctx, { type, direction }, px, py, cell, now, x, y, dist, effective, intensity = 1, centre = null) {
   const o = CONFIG.fx.powerup.overlay;
-  const cycle = now / o.periodMs;
   const c = markColour(type, now, x, y);
   const fillA = clamp01((effective ? o.fillAlpha : o.idleFillAlpha) * intensity);
   const markA = clamp01((effective ? o.markAlpha : o.idleMarkAlpha) * intensity);
@@ -257,9 +257,34 @@ export function drawPowerupMark(ctx, { type, direction }, px, py, cell, now, x, 
   // marks glow additively so they stay visible over bright pixel art
   ctx.globalCompositeOperation = "lighter";
   const mark = hsla(c.h, c.s, Math.min(92, c.l + 2), markA);
+  // The mark, split into red, green and blue like an old screen: a red copy pulled one way and a
+  // blue one the other, as far as the cell's own little glitch has them (now and then they tear
+  // further apart for a moment), then the mark itself in its class's colour over them.
+  const split = o.rgbSplit ?? 0;
+  if (split > 0) {
+    const tick = Math.floor(now / 90), g = hash01(tick * 31 + x * 7 + y * 13);
+    const d = cell * split * (g > 0.93 ? 3.2 : g > 0.8 ? 1.8 : 1);
+    const dy = g > 0.93 ? cell * split * (hash01(tick + x) - 0.5) * 2 : 0;
+    const a = markA * (o.rgbSplitAlpha ?? 0.6);
+    for (const [dx, colour] of [[-d, `rgba(255,31,75,${a})`], [d, `rgba(47,107,255,${a})`]]) {
+      ctx.save();
+      ctx.translate(dx, dx > 0 ? dy : -dy);
+      ctx.strokeStyle = colour;
+      ctx.fillStyle = colour;
+      drawMarkShape(ctx, type, direction, px, py, cell, now, x, y, dist, centre);
+      ctx.restore();
+    }
+  }
   ctx.strokeStyle = mark;
   ctx.fillStyle = mark;
+  drawMarkShape(ctx, type, direction, px, py, cell, now, x, y, dist, centre);
+  ctx.globalCompositeOperation = "source-over";
+}
 
+// The shape of a powerup's mark in one cell (in whatever colour is set): squares, lines, rays...
+function drawMarkShape(ctx, type, direction, px, py, cell, now, x, y, dist, centre) {
+  const o = CONFIG.fx.powerup.overlay;
+  const cycle = now / o.periodMs;
   const style = MARK_STYLE[type] ?? "shrink";
   if (style === "line") {
     drawGravityMark(ctx, px, py, cell, direction, frac(cycle + hash01(x * 7 + y * 13) * 0.35));
@@ -324,7 +349,6 @@ export function drawPowerupMark(ctx, { type, direction }, px, py, cell, now, x, 
     const p = frac(cycle - dist * o.ripplePerCell);
     drawSquareMark(ctx, px, py, cell, p, p > 0.85 ? (1 - p) / 0.15 : 1);
   }
-  ctx.globalCompositeOperation = "source-over";
 }
 
 function drawSquareMark(ctx, px, py, cell, sizeFrac, alphaMul) {
@@ -1096,12 +1120,12 @@ export function createRenderer(boardCanvas, nextCanvas) {
       bctx.beginPath(); bctx.arc(cx, cy, r, 0, Math.PI * 2); bctx.stroke();
       bctx.setLineDash([]);
     } else if (w.kind === "rainbow") {
-      // a ring of every colour, turning as it spreads
+      // a ring of red, green and blue, turning as it spreads
       const segs = 24;
       bctx.lineWidth = Math.max(2, cell * 0.4 * fade);
       for (let k = 0; k < segs; k++) {
         const a0 = (k / segs) * Math.PI * 2 + now * 0.003, a1 = a0 + Math.PI * 2 / segs + 0.02;
-        bctx.strokeStyle = hsla((k / segs) * 360, 100, 62, 0.85 * fade);
+        bctx.strokeStyle = hsla(rgbHue((k / segs) * 360), 100, 62, 0.85 * fade);
         bctx.beginPath(); bctx.arc(cx, cy, r, a0, a1); bctx.stroke();
       }
     }
@@ -1314,7 +1338,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       bctx.lineWidth = 4;
       bctx.strokeStyle = "rgba(0,0,0,0.85)";
       bctx.strokeText(text, x, y);
-      bctx.fillStyle = c.color ?? (c.big ? hsla((now * 0.3) % 360, 100, 68, 1) : "#ffffff");
+      bctx.fillStyle = c.color ?? (c.big ? hsla(rgbHue(now * 0.3), 100, 68, 1) : "#ffffff");
       bctx.fillText(text, x, y);
     }
     bctx.restore();
@@ -1376,13 +1400,13 @@ export function createRenderer(boardCanvas, nextCanvas) {
     bctx.globalCompositeOperation = "lighter";
     for (const c of list) {
       const T = tiers[c.tier] ?? tiers[0], t = c.elapsedMs, mid = bw / 2;
-      const colour = (x, a, l = 70) => T.rainbow ? `hsla(${(c.hue + (x / bw) * 300 + t * 0.25) % 360}, 100%, ${l}%, ${a})` : `rgba(255,255,255,${a})`;
-      // a soft rainbow over the whole board, rising from the bottom
+      const colour = (x, a, l = 70) => T.rainbow ? `hsla(${rgbHue(c.hue + (x / bw) * 300 + t * 0.25)}, 100%, ${l}%, ${a})` : `rgba(255,255,255,${a})`;
+      // a soft wash of red, green and blue over the whole board, rising from the bottom
       if (T.wash) {
         const p = Math.min(1, t / (c.durationMs * 0.75)), yc = bh * (1.15 - 1.3 * p), half = bh * 0.22;
         const a = 0.22 * Math.sin(Math.PI * p);
         const g = bctx.createLinearGradient(0, yc - half, 0, yc + half);
-        for (let k = 0; k <= 6; k++) g.addColorStop(k / 6, `hsla(${(c.hue + k * 50) % 360}, 100%, 60%, ${(a * Math.sin(Math.PI * k / 6)).toFixed(3)})`);
+        for (let k = 0; k <= 6; k++) g.addColorStop(k / 6, `hsla(${rgbHue(c.hue + k * 50)}, 100%, 60%, ${(a * Math.sin(Math.PI * k / 6)).toFixed(3)})`);
         bctx.fillStyle = g;
         bctx.fillRect(0, yc - half, bw, half * 2);
       }
@@ -1428,7 +1452,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
           const p = tr / T.rippleMs, d = p * bh * 0.55, a = 0.5 * (1 - p);
           for (const yy of [yc - d, yc + d]) {
             if (yy < 0 || yy > bh) continue;
-            bctx.fillStyle = T.rainbow ? `hsla(${(c.hue + k * 70 + p * 120) % 360}, 100%, 70%, ${a.toFixed(3)})` : `rgba(200,245,255,${a.toFixed(3)})`;
+            bctx.fillStyle = T.rainbow ? `hsla(${rgbHue(c.hue + k * 70 + p * 120)}, 100%, 70%, ${a.toFixed(3)})` : `rgba(200,245,255,${a.toFixed(3)})`;
             bctx.fillRect(0, yy - 1, bw, 2);
           }
         }

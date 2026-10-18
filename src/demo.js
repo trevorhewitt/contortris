@@ -10,7 +10,7 @@ import { getShapePaint } from "./shapes.js";
 import { drawBlockWithPaintStatic, drawPowerupMark } from "./render.js";
 
 const COLS = 9, ROWS = 8;
-const PALETTE = ["#e8794a", "#5fb0e8", "#9ad45b", "#e85fa8", "#e8d35f", "#9a7be8", "#5fd4c4", "#d45f5f"];
+const PALETTE = ["#f4f4f6", "#c9c9ce", "#9c9ca3", "#e2e2e7", "#b3b3b9", "#85858c", "#d6d6db", "#a8a8ae"]; // (shades of white: the game's own colours are its pieces' art, and red, green and blue for the powerups)
 const T_FALL = 1000, T_CHARGE = 300, T_HOLD = 1300;
 const BLAST_TIME_SCALE = 1.7;
 

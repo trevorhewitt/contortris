@@ -1585,7 +1585,7 @@ function rowClearShow(state, fullRows, removed, dropDistances) {
       state.fx.particles.push({
         x: (x + vr()) * cellPx, y: (y + vr()) * cellPx, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 50,
         lifeMs: life, maxLifeMs: life, delayMs: delayOf(x, y), size: 2,
-        color: T.rainbow ? `hsl(${(vr() * 360) | 0}, 100%, 72%)` : vr() < 0.5 ? "#ffffff" : "#fff4b0",
+        color: T.rainbow ? `hsl(${[350, 135, 222][Math.floor(vr() * 3)]}, 100%, 72%)` : vr() < 0.5 ? "#ffffff" : "#fff4b0",
       });
     }
   }

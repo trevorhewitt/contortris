@@ -90,8 +90,15 @@
     }
   
     :root{
-      --bg: #0f1020;
-      --bg2: #070714;
+      --bg: #000;
+      --bg2: #000;
+      /* the game's look: glowing white on black, split into its red, green and blue like an old
+         screen; and the three powerup classes, one channel each (Dissolverz red, Expanderz green,
+         Gravitizerz blue) */
+      --rgb-r: #ff1f4b;
+      --rgb-g: #1fff6e;
+      --rgb-b: #2f6bff;
+      --rgb-split: -2px 0 0 rgba(255,31,75,0.85), 2px 0 0 rgba(47,107,255,0.85);
   
       --text: rgba(245,245,255,0.92);
       --muted: rgba(245,245,255,0.70);
@@ -119,7 +126,7 @@
       /* Retro styling controls */
       --ui-radius: 0px;
       --ui-border: rgba(255,255,255,0.18);
-      --ui-panel-bg: rgba(8,8,16,0.84);
+      --ui-panel-bg: rgba(0,0,0,0.84);
   
       /* Glow / RGB controls */
       --display-glow-a: 0.24;
@@ -145,7 +152,7 @@
       overflow: hidden;
       overscroll-behavior: none;
       touch-action: none;
-      background: radial-gradient(1200px 900px at 30% 10%, #2a2550 0%, var(--bg) 45%, var(--bg2) 100%);
+      background: #000;
       color: var(--text);
       font-family: var(--font-body);
     }
@@ -191,16 +198,23 @@
       overflow: hidden;
       box-shadow:
         0 18px 60px rgba(0,0,0,0.55),
-        0 0 0 2px var(--boardEdge),
+        0 0 0 2px rgba(255,255,255,0.55),
+        -2px 0 0 2px rgba(255,31,75,0.45),
+        2px 0 0 2px rgba(47,107,255,0.45),
         0 0 0 1px var(--boardEdgeInner) inset,
-        -6px 0 18px rgba(255,220,90,0.12),
-        6px 0 18px rgba(90,200,255,0.12),
-        0 -6px 18px rgba(110,255,140,0.10),
-        0 6px 18px rgba(255,90,90,0.10);
+        0 0 22px rgba(255,255,255,0.14);
       width: var(--natural-board-w);
       height: var(--natural-board-h);
     }
   
+    /* (over everything, faint scan lines, like an old screen: src/ui.js turns them off with the
+       animations toned down) */
+    body::after{
+      content: ""; position: fixed; inset: 0; z-index: 300; pointer-events: none;
+      background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0 1px, rgba(0,0,0,0.08) 1px 3px);
+      mix-blend-mode: overlay;
+    }
+
     canvas{
       width: var(--natural-board-w);
       height: var(--natural-board-h);
@@ -217,8 +231,8 @@
       opacity: 1;
       /* (no screen blend: it washed the names out over bright pieces; a dark outline instead) */
       filter:
-        drop-shadow(0 0 8px rgba(123,247,255,0.22))
-        drop-shadow(0 0 28px rgba(255,80,220,0.14));
+        drop-shadow(0 0 8px rgba(255,255,255,0.22))
+        drop-shadow(0 0 28px rgba(255,31,75,0.14));
     }
   
     .nameText{
@@ -246,10 +260,10 @@
       text-shadow:
         0 0 1px rgba(0,0,0,0.95), 1px 1px 0 rgba(0,0,0,0.85), -1px -1px 0 rgba(0,0,0,0.6),
         0 0 4px rgba(0,0,0,0.85), 0 2px 8px rgba(0,0,0,0.7),
-        var(--name-rgb-shift) 0 0 rgba(255,0,140,var(--name-rgb-a1)),
-        calc(var(--name-rgb-shift) * -1) 0 0 rgba(0,255,255,var(--name-rgb-a2)),
-        0 0 12px rgba(180,180,255,var(--name-glow-a)),
-        0 0 24px rgba(255,80,220,var(--name-glow-b));
+        var(--name-rgb-shift) 0 0 rgba(255,31,75,var(--name-rgb-a1)),
+        calc(var(--name-rgb-shift) * -1) 0 0 rgba(47,107,255,var(--name-rgb-a2)),
+        0 0 12px rgba(255,255,255,var(--name-glow-a)),
+        0 0 24px rgba(255,31,75,var(--name-glow-b));
       image-rendering: pixelated;
       transform: translateX(0);
       opacity: 1;
@@ -260,7 +274,7 @@
 
     /* Powerups: the name in its class's colours + the effect line underneath */
     .nameText.powerup .nameMain{
-      animation: rainbowText 1.6s steps(12, end) infinite;
+      animation: rgbText 1.6s steps(12, end) infinite;
     }
     .nameText .nameEffect{
       display: block;
@@ -270,30 +284,26 @@
       letter-spacing: 0.06em;
       color: rgba(245,245,255,0.82);
     }
-    @keyframes rainbowText{
-      0%   { color: rgba(255,110,140,0.85); }
-      20%  { color: rgba(255,200,100,0.85); }
-      40%  { color: rgba(240,255,110,0.85); }
-      60%  { color: rgba(110,255,160,0.85); }
-      80%  { color: rgba(110,200,255,0.85); }
-      100% { color: rgba(200,120,255,0.85); }
+    /* (white, its red, green and blue drifting apart and back: what a rainbow used to do) */
+    @keyframes rgbText{
+      0%, 100%{ color: #fff; text-shadow: -2px 0 0 rgba(255,31,75,0.9), 2px 0 0 rgba(47,107,255,0.9), 0 0 8px rgba(255,255,255,0.45); }
+      33%{ color: #fff; text-shadow: -1px 1px 0 rgba(31,255,110,0.9), 2px -1px 0 rgba(255,31,75,0.9), 0 0 8px rgba(255,255,255,0.45); }
+      66%{ color: #fff; text-shadow: 1px 0 0 rgba(47,107,255,0.9), -2px 1px 0 rgba(31,255,110,0.9), 0 0 8px rgba(255,255,255,0.45); }
+    }
     }
     /* each powerup class has its own colours (the same as its highlights on the board);
-       combos keep the rainbow */
+       combos are white, split into all three */
     @keyframes fireText{
-      0%, 100% { color: rgba(255,92,72,0.92); }
-      25%, 75% { color: rgba(255,146,58,0.92); }
-      50%      { color: rgba(255,206,92,0.92); }
+      0%, 100% { color: #ff1f4b; text-shadow: -2px 0 0 rgba(255,255,255,0.35), 2px 0 0 rgba(47,107,255,0.6), 0 0 8px rgba(255,31,75,0.7); }
+      50%      { color: #ff5a75; text-shadow: 2px 0 0 rgba(255,255,255,0.35), -2px 0 0 rgba(31,255,110,0.5), 0 0 10px rgba(255,31,75,0.8); }
     }
     @keyframes deepText{
-      0%, 100% { color: rgba(112,140,255,0.92); }
-      25%, 75% { color: rgba(146,116,255,0.92); }
-      50%      { color: rgba(190,128,255,0.92); }
+      0%, 100% { color: #3f7bff; text-shadow: -2px 0 0 rgba(255,31,75,0.6), 2px 0 0 rgba(255,255,255,0.35), 0 0 8px rgba(47,107,255,0.8); }
+      50%      { color: #7aa2ff; text-shadow: 2px 0 0 rgba(31,255,110,0.5), -2px 0 0 rgba(255,255,255,0.35), 0 0 10px rgba(47,107,255,0.9); }
     }
     @keyframes growText{
-      0%, 100% { color: rgba(170,240,80,0.92); }
-      25%, 75% { color: rgba(96,232,120,0.92); }
-      50%      { color: rgba(70,222,196,0.92); }
+      0%, 100% { color: #1fff6e; text-shadow: -2px 0 0 rgba(255,31,75,0.55), 2px 0 0 rgba(47,107,255,0.6), 0 0 8px rgba(31,255,110,0.7); }
+      50%      { color: #7dffad; text-shadow: 2px 0 0 rgba(255,31,75,0.55), -2px 0 0 rgba(255,255,255,0.35), 0 0 10px rgba(31,255,110,0.8); }
     }
     @keyframes ghostText{
       0%, 100% { color: rgba(196,240,255,0.80); }
@@ -308,7 +318,7 @@
     .demoName.cls-gravity{ animation: deepText 1.6s steps(12, end) infinite; }
     .demoName.cls-expander{ animation: growText 1.6s steps(12, end) infinite; }
     .demoName.cls-phantom{ animation: ghostText 1.6s steps(12, end) infinite; }
-    .demoName.cls-combo{ animation: rainbowText 1.6s steps(12, end) infinite; }
+    .demoName.cls-combo{ animation: rgbText 1.6s steps(12, end) infinite; }
 
     /* ---------- menu panels ---------- */
     .overlay .msg.panel{
@@ -366,24 +376,34 @@
       font-family: var(--font-display); font-size: clamp(34px, min(13.5vw, 15vh), 150px); line-height: 1.15;
       transform-style: preserve-3d;
     }
-    /* (each letter's colour goes round the rainbow a step at a time: --turn, from 0 to 360) */
-    @property --turn{ syntax: "<number>"; inherits: true; initial-value: 0; }
+    /* (glowing white, its red and blue pulled apart a little, and now and then a glitch that
+       tears them further apart: no colours of its own) */
     .homeLogo span{
       display: inline-block; perspective: 3em;
-      --hue: calc(var(--h) + var(--turn));
-      color: hsl(var(--hue), 100%, 62%);
+      color: #fff;
+      --sx: 0.035em;
       text-shadow:
-        0 0.05em 0 hsl(var(--hue), 85%, 40%),
-        0 0.10em 0 hsl(var(--hue), 85%, 28%),
+        calc(var(--sx) * -1) 0 0 rgba(255,31,75,0.9),
+        var(--sx) 0 0 rgba(47,107,255,0.9),
+        0 calc(var(--sx) * 0.5) 0 rgba(31,255,110,0.35),
+        0 0.10em 0 rgba(60,60,70,0.9),
         0 0.15em 0 rgba(0,0,0,0.9),
-        0 0 0.35em hsla(var(--hue), 100%, 60%, 0.7);
-      animation: letterHop 1.9s ease-in-out infinite, letterHue 5s steps(15) infinite;
-      animation-delay: calc(var(--i) * -0.16s), calc(var(--i) * -0.5s);
+        0 0 0.3em rgba(255,255,255,0.65);
+      animation: letterHop 1.9s ease-in-out infinite, rgbGlitch 3.7s steps(1, end) infinite;
+      animation-delay: calc(var(--i) * -0.16s), calc(var(--i) * -0.61s);
     }
     .homeLogo b{ display: inline-block; font-weight: inherit; }
+    @property --sx{ syntax: "<length>"; inherits: true; initial-value: 0.035em; }
+    @keyframes rgbGlitch{
+      0%, 100%{ --sx: 0.035em; }
+      61%{ --sx: 0.12em; transform: translateX(0.03em) skewX(-6deg); }
+      63%{ --sx: -0.06em; transform: translateX(-0.02em); }
+      65%{ --sx: 0.035em; }
+      88%{ --sx: 0.07em; }
+      89%{ --sx: 0.035em; }
+    }
     @keyframes logoZoom{ 0%, 100%{ transform: scale(0.94) rotate(-2.5deg); } 50%{ transform: scale(1.06) rotate(2.5deg); } }
     @keyframes letterHop{ 0%, 100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-0.08em) rotate(-4deg); } }
-    @keyframes letterHue{ from{ --turn: 0; } to{ --turn: 360; } }
     /* the moves (src/home.js picks one every few seconds), passed from letter to letter */
     .homeLogo[class*="fx-"] b{
       animation-duration: 620ms; animation-timing-function: cubic-bezier(.45, .05, .35, 1);
@@ -426,38 +446,51 @@
       border: 0; color: #fff;
       font-size: clamp(11px, min(2.2vw, 2.9vh), 20px); letter-spacing: 0.05em;
       text-shadow: 0 2px 0 #000, 0 0 8px rgba(0,0,0,0.85);
-      background: #222; overflow: hidden; isolation: isolate;
-      box-shadow: 0 0 0 3px rgba(0,0,0,0.9), 0 6px 0 rgba(0,0,0,0.55), 0 0 24px rgba(255,255,255,0.14);
+      background: #000; overflow: hidden; isolation: isolate;
+      box-shadow: inset 0 0 0 2px #fff, -2px 0 0 rgba(255,31,75,0.8), 2px 0 0 rgba(47,107,255,0.8), 0 0 18px rgba(255,255,255,0.22);
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5em;
       transition: transform 140ms ease, box-shadow 140ms ease;
     }
+    /* (scan lines, and a band of red, green and blue light rolling down through it now and then) */
     button.modeBtn::after{
-      content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 300%; z-index: -2; pointer-events: none;
-      background: linear-gradient(110deg, #ff4d6d, #ffb84d, #f9ff4d, #4dff88, #4dc3ff, #b44dff, #ff4d6d, #ffb84d, #f9ff4d, #4dff88, #4dc3ff, #b44dff, #ff4d6d);
-      animation: modeSlide 7s linear infinite; animation-delay: calc(var(--i) * -1.15s);
+      content: ""; position: absolute; left: 0; right: 0; top: -100%; height: 300%; z-index: -2; pointer-events: none;
+      background:
+        repeating-linear-gradient(to bottom, rgba(255,255,255,0.05) 0 1px, transparent 1px 3px),
+        linear-gradient(to bottom, transparent 40%, rgba(255,31,75,0.16) 45%, rgba(31,255,110,0.16) 48%, rgba(47,107,255,0.16) 51%, transparent 56%);
+      animation: modeSlide 5.5s linear infinite; animation-delay: calc(var(--i) * -1.15s);
       will-change: transform;
     }
-    button.modeBtn::before{ content: ""; position: absolute; inset: 4px; z-index: -1; background: rgba(12,10,28,0.62); pointer-events: none; }
+    button.modeBtn::before{ content: ""; position: absolute; inset: 2px; z-index: -1; background: radial-gradient(120% 90% at 50% 50%, rgba(255,255,255,0.07), rgba(0,0,0,0) 70%); pointer-events: none; }
+    button.modeBtn .modeName{ text-shadow: var(--rgb-split), 0 0 10px rgba(255,255,255,0.55); }
     button.modeBtn > *{ position: relative; }
     /* (every mode the same size, always: nothing grows or lifts on hover or focus, which a touch
        screen leaves stuck on the last one tapped; a glow only, and the hover one only where
        there's a real pointer) */
     @media (hover: hover) and (pointer: fine){
-      button.modeBtn:hover{ background: #222; box-shadow: 0 0 0 3px rgba(0,0,0,0.9), 0 6px 0 rgba(0,0,0,0.55), 0 0 34px rgba(255,255,255,0.4); }
-      button.modeBtn:hover::before{ background: rgba(12,10,28,0.42); }
+      button.modeBtn:hover{ background: #000; box-shadow: inset 0 0 0 2px #fff, -4px 0 0 rgba(255,31,75,0.9), 4px 0 0 rgba(47,107,255,0.9), 0 0 30px rgba(255,255,255,0.45); }
+      button.modeBtn:hover .modeName{ animation: textGlitch 0.9s steps(1, end) infinite; }
     }
-    button.modeBtn:focus-visible{ background: #222; box-shadow: 0 0 0 3px rgba(0,0,0,0.9), 0 6px 0 rgba(0,0,0,0.55), 0 0 0 6px rgba(123,247,255,0.55); }
+    button.modeBtn:focus-visible{ background: #000; box-shadow: inset 0 0 0 2px #fff, 0 0 0 4px rgba(255,255,255,0.55); }
     button.modeBtn:active{ transform: none; }
     /* (God mode and Turbo zen held down together: developer mode, on its way) */
-    button.modeBtn.chord{ box-shadow: 0 0 0 3px rgba(0,0,0,0.9), 0 6px 0 rgba(0,0,0,0.55), 0 0 0 6px rgba(255,255,255,0.75), 0 0 40px rgba(255,255,255,0.6); }
+    button.modeBtn.chord{ box-shadow: inset 0 0 0 2px #fff, 0 0 0 6px rgba(255,255,255,0.75), 0 0 40px rgba(255,255,255,0.6); }
     .modeTag{
       font-family: var(--font-body); font-size: clamp(9px, min(1.45vw, 2vh), 14px);
       text-transform: none; letter-spacing: 0; line-height: 1.25; opacity: 0.92;
     }
-    @keyframes modeSlide{ from{ transform: translateX(0); } to{ transform: translateX(-50%); } }
+    @keyframes modeSlide{ from{ transform: translateY(-33.3%); } to{ transform: translateY(33.3%); } }
+    /* (words that glitch: the red and blue tear apart, jump, and come back) */
+    @keyframes textGlitch{
+      0%, 100%{ text-shadow: var(--rgb-split), 0 0 10px rgba(255,255,255,0.55); transform: none; }
+      20%{ text-shadow: -4px 0 0 rgba(255,31,75,0.9), 3px 1px 0 rgba(47,107,255,0.9), 0 0 10px rgba(255,255,255,0.55); transform: translateX(1px); }
+      24%{ text-shadow: 2px 0 0 rgba(255,31,75,0.9), -2px 0 0 rgba(31,255,110,0.8), 0 0 10px rgba(255,255,255,0.55); transform: translateX(-1px) skewX(-8deg); }
+      28%{ text-shadow: var(--rgb-split), 0 0 10px rgba(255,255,255,0.55); transform: none; }
+      70%{ text-shadow: -1px 0 0 rgba(255,31,75,0.9), 5px 0 0 rgba(47,107,255,0.9), 0 0 10px rgba(255,255,255,0.55); }
+      73%{ text-shadow: var(--rgb-split), 0 0 10px rgba(255,255,255,0.55); }
+    }
     .homeRow{ margin: 0; }
-    body.home .overlay #panelMenu .skipBox{ margin: 0; padding: 6px 10px; background: rgba(8,8,16,0.72); box-shadow: 0 0 0 2px rgba(0,0,0,0.7); }
-    body.home .overlay #panelMenu #gameVersion{ margin: 0; padding: 3px 8px; background: rgba(8,8,16,0.6); color: rgba(245,245,255,0.6); }
+    body.home .overlay #panelMenu .skipBox{ margin: 0; padding: 6px 10px; background: rgba(0,0,0,0.72); box-shadow: 0 0 0 2px rgba(0,0,0,0.7); }
+    body.home .overlay #panelMenu #gameVersion{ margin: 0; padding: 3px 8px; background: rgba(0,0,0,0.6); color: rgba(245,245,255,0.6); }
     @media (max-height: 460px){ .modeTag{ display: none; } button.modeBtn{ min-height: 40px; padding: 0.5em; } }
 
     .homeDark{
@@ -538,20 +571,20 @@
       font-family: var(--font-display); font-weight: 400; font-size: 12px; line-height: 1.8;
       letter-spacing: 0.04em; text-transform: uppercase; text-align: center;
       color: #fff; margin: 4px 0 6px;
-      text-shadow: 0 2px 0 #000, 0 0 10px rgba(123,247,255,0.35);
+      text-shadow: 0 2px 0 #000, 0 0 10px rgba(255,255,255,0.35);
     }
     .modeRow{ grid-template-columns: auto 1fr; }
     .modeRow .modeText{ margin: 0 0 8px; }
     .modeRow button.small{ min-height: 30px; padding: 6px 12px; }
     /* scroll bars in the game's own look: a chunky pixel thumb on a dark track */
-    .panel, .howto, .achGrid{ scrollbar-color: #7bf7ff rgba(8,8,16,0.9); }
+    .panel, .howto, .achGrid{ scrollbar-color: #ffffff rgba(0,0,0,0.9); }
     .panel::-webkit-scrollbar, .achGrid::-webkit-scrollbar{ width: 12px; height: 12px; }
-    .panel::-webkit-scrollbar-track, .achGrid::-webkit-scrollbar-track{ background: rgba(8,8,16,0.9); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.08); }
+    .panel::-webkit-scrollbar-track, .achGrid::-webkit-scrollbar-track{ background: rgba(0,0,0,0.9); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.08); }
     .panel::-webkit-scrollbar-thumb, .achGrid::-webkit-scrollbar-thumb{
-      background: linear-gradient(180deg, #ff4dc4, #7bf7ff); border: 2px solid #000;
+      background: #fff; border: 2px solid #000;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5);
     }
-    .panel::-webkit-scrollbar-thumb:hover, .achGrid::-webkit-scrollbar-thumb:hover{ background: linear-gradient(180deg, #ff86d8, #b0fbff); }
+    .panel::-webkit-scrollbar-thumb:hover, .achGrid::-webkit-scrollbar-thumb:hover{ background: #fff; box-shadow: -2px 0 0 var(--rgb-r), 2px 0 0 var(--rgb-b); }
     .panel::-webkit-scrollbar-corner{ background: transparent; }
     .howto b{ color: rgba(245,245,255,0.92); font-weight: 600; }
     .howto kbd{
@@ -636,14 +669,14 @@
 
 
     /* Powerup intro screen */
-    #panelIntro, #panelPowerups{ background: rgba(8,8,20,0.97); }
+    #panelIntro, #panelPowerups{ background: rgba(0,0,0,0.97); }
     /* the intro slides straight over the board: no backdrop, no fade */
     .overlay.intro{ background: none; transition: none; }
     /* paused: the board stays in view, with a small panel at the top. Tap a piece for its card,
        an empty spot to hide the panel (and again to bring it back); pinch, double tap or the
        wheel to zoom in, drag to look around (src/ui.js) */
     .overlay.boardPause{ background: none; align-items: flex-start; padding-top: 8px; touch-action: none; }
-    .overlay.boardPause #panelPause{ padding: 8px 10px 2px; background: rgba(8,8,20,0.8); transition: opacity 120ms linear; }
+    .overlay.boardPause #panelPause{ padding: 8px 10px 2px; background: rgba(0,0,0,0.8); transition: opacity 120ms linear; }
     .overlay.boardPause #panelPause .big{ font-size: 12px; line-height: 1.4; margin: 0; }
     .overlay.boardPause #pauseMode{ font-size: 10px; margin-top: 2px; }
     /* (all the buttons flow together, in as few rows as fit) */
@@ -658,7 +691,7 @@
     .pieceCard{
       position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
       width: min(calc(100% - 20px), 340px); box-sizing: border-box; padding: 10px 12px 12px;
-      background: rgba(8,8,20,0.92); border: 2px solid var(--ui-border); border-radius: var(--ui-radius);
+      background: rgba(0,0,0,0.92); border: 2px solid var(--ui-border); border-radius: var(--ui-radius);
       box-shadow: 0 0 0 2px rgba(0,0,0,0.85) inset, 0 12px 40px rgba(0,0,0,0.55);
       text-align: center; pointer-events: auto; z-index: 3;
     }
@@ -669,7 +702,7 @@
     .pieceCard .pcName{ font-family: var(--font-display); font-size: 11px; line-height: 1.55; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(245,245,255,0.94); }
     .pieceCard .pcRarity{ font-family: var(--font-body); font-size: 12px; color: rgba(245,245,255,0.8); margin-top: 6px; }
     .pieceCard .pcNote{ font-family: var(--font-body); font-size: 11px; line-height: 1.4; color: var(--muted); margin-top: 4px; }
-    .pieceCard .pcPower{ font-family: var(--font-display); font-size: 10px; margin-top: 8px; animation: rainbowText 1.6s steps(12, end) infinite; }
+    .pieceCard .pcPower{ font-family: var(--font-display); font-size: 10px; margin-top: 8px; animation: rgbText 1.6s steps(12, end) infinite; }
     .pieceCard .pcPower.cls-destroyer{ animation-name: fireText; }
     .pieceCard .pcPower.cls-gravity{ animation-name: deepText; }
     .pieceCard .pcPower.cls-expander{ animation-name: growText; }
@@ -692,7 +725,7 @@
       font-size: 14px;
       line-height: 1.5;
       text-transform: uppercase;
-      animation: rainbowText 1.6s steps(12, end) infinite;
+      animation: rgbText 1.6s steps(12, end) infinite;
     }
     .introEffect{
       font-family: var(--font-display);
@@ -731,17 +764,17 @@
       margin: 0;
       border: 2px solid rgba(255,255,255,0.35);
       border-radius: 0;
-      background: rgba(34, 38, 68, 0.96);
-      box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 8px rgba(123,247,255,0.14);
+      background: rgba(10, 10, 12, 0.96);
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 8px rgba(255,255,255,0.14);
       cursor: pointer;
       image-rendering: pixelated;
     }
-    .skipBox:hover input[type=checkbox]{ border-color: rgba(123,247,255,0.75); }
-    .skipBox input[type=checkbox]:focus-visible{ outline: 2px solid rgba(123,247,255,0.9); outline-offset: 3px; }
+    .skipBox:hover input[type=checkbox]{ border-color: rgba(255,255,255,0.75); }
+    .skipBox input[type=checkbox]:focus-visible{ outline: 2px solid rgba(255,255,255,0.9); outline-offset: 3px; }
     .skipBox input[type=checkbox]:checked{
-      border-color: rgba(123,247,255,0.9);
-      background: rgba(20, 60, 80, 0.96);
-      box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 10px rgba(123,247,255,0.45);
+      border-color: rgba(255,255,255,0.9);
+      background: rgba(10, 10, 12, 0.96);
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 10px rgba(255,255,255,0.45);
     }
     /* the tick, drawn as 2px "pixels" */
     .skipBox input[type=checkbox]:checked::after{
@@ -753,8 +786,8 @@
       height: 2px;
       background: transparent;
       box-shadow:
-        0 6px 0 #7bf7ff, 2px 8px 0 #7bf7ff, 4px 8px 0 #7bf7ff,
-        6px 6px 0 #7bf7ff, 8px 4px 0 #7bf7ff, 10px 2px 0 #7bf7ff;
+        0 6px 0 #ffffff, 2px 8px 0 #ffffff, 4px 8px 0 #ffffff,
+        6px 6px 0 #ffffff, 8px 4px 0 #ffffff, 10px 2px 0 #ffffff;
     }
     .demoEg{ font-size: 11px; opacity: 0.75; margin-top: 2px; }
 
@@ -768,7 +801,7 @@
       max-width: calc(50vw - 16px);
       padding: 8px 10px;
       background: rgba(0,0,0,0.72);
-      border: 1px solid rgba(123,247,255,0.35);
+      border: 1px solid rgba(255,255,255,0.35);
       font-family: ui-monospace, monospace;
       font-size: 10px;
       line-height: 1.45;
@@ -778,21 +811,21 @@
     .devPanel.folded > :not(.devTitle){ display: none; }
     .devPanel.folded{ width: auto; opacity: 0.8; }
     @media (max-width: 759px){ .devPanel{ pointer-events: auto; cursor: pointer; } }
-    .devPanel .k{ color: rgba(123,247,255,0.8); }
+    .devPanel .k{ color: rgba(255,255,255,0.8); }
     .devPanel .v{ color: rgba(245,245,255,0.95); }
-    .devTitle{ font-family: var(--font-display); font-size: 8px; text-transform: uppercase; color: rgba(123,247,255,0.95); margin-bottom: 4px; }
+    .devTitle{ font-family: var(--font-display); font-size: 8px; text-transform: uppercase; color: rgba(255,255,255,0.95); margin-bottom: 4px; }
     .devHint{ margin-top: 4px; opacity: 0.7; }
     .devTools{
       margin-top: 12px;
       padding: 10px;
-      border: 1px dashed rgba(123,247,255,0.4);
+      border: 1px dashed rgba(255,255,255,0.4);
     }
     .devTools input[type=range]{ width: 100%; }
     /* the developer tools' own page (src/devtools.js) */
     .devToolsPanel{ text-align: left; max-height: 100%; overflow-y: auto; width: min(520px, 100%); }
     .devToolsPanel .big{ text-align: center; }
     .devNote{ margin: 6px 0 10px; opacity: 0.8; }
-    .devSection{ margin: 10px 0; padding: 8px 10px; border: 1px dashed rgba(123,247,255,0.35); }
+    .devSection{ margin: 10px 0; padding: 8px 10px; border: 1px dashed rgba(255,255,255,0.35); }
     .devSection > summary{ cursor: pointer; margin: 0; }
     .devClassRow{ display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 13px; }
     .devClassName{ flex: 1 1 auto; }
@@ -809,7 +842,7 @@
       width: 100%;
       margin: 6px 0 8px;
       padding: 6px;
-      background: #10101e;
+      background: #080808;
       color: #eee;
       border: 1px solid rgba(255,255,255,0.2);
       font-size: 12px;
@@ -836,7 +869,7 @@
       width: min(100%, 320px);
       box-sizing: border-box;
       padding: 8px 10px;
-      background: rgba(20,20,42,0.94);
+      background: rgba(8,8,10,0.94);
       border: 2px solid rgba(255,207,63,0.7);
       box-shadow:
         0 0 0 2px rgba(0,0,0,0.85),
@@ -934,10 +967,10 @@
       text-transform: uppercase;
       color: rgba(245,245,255,0.94);
       text-shadow:
-        var(--display-rgb-shift) 0 0 rgba(255,0,140,var(--display-rgb-a1)),
-        calc(var(--display-rgb-shift) * -1) 0 0 rgba(0,255,255,var(--display-rgb-a2)),
-        0 0 10px rgba(123,247,255,var(--display-glow-a)),
-        0 0 24px rgba(255,80,220,var(--display-glow-b));
+        var(--display-rgb-shift) 0 0 rgba(255,31,75,var(--display-rgb-a1)),
+        calc(var(--display-rgb-shift) * -1) 0 0 rgba(47,107,255,var(--display-rgb-a2)),
+        0 0 10px rgba(255,255,255,var(--display-glow-a)),
+        0 0 24px rgba(255,31,75,var(--display-glow-b));
     }
   
     .overlay .msg .small{
@@ -956,13 +989,13 @@
     min-height: 44px;
 
     color: rgba(245,245,255,0.96);
-    background: rgba(34, 38, 68, 0.96);
+    background: rgba(10, 10, 12, 0.96);
 
     box-shadow:
       0 0 0 2px rgba(0,0,0,0.88),
       0 0 0 4px rgba(255,255,255,0.05),
-      0 0 10px rgba(123,247,255,0.14),
-      0 0 24px rgba(255,80,220,0.10);
+      0 0 10px rgba(255,255,255,0.14),
+      0 0 24px rgba(255,31,75,0.10);
 
     font-family: var(--font-display);
     font-size: 10px;
@@ -976,9 +1009,9 @@
     user-select: none;
 
     text-shadow:
-      1px 0 0 rgba(255,0,140,0.14),
-      -1px 0 0 rgba(0,255,255,0.10),
-      0 0 8px rgba(123,247,255,var(--display-glow-a));
+      1px 0 0 rgba(255,31,75,0.14),
+      -1px 0 0 rgba(47,107,255,0.10),
+      0 0 8px rgba(255,255,255,var(--display-glow-a));
 
     transition:
       background-color 120ms linear,
@@ -990,24 +1023,25 @@
     }
 
     button:hover{
-      background: rgba(44, 50, 90, 0.98);
+      background: rgba(24, 24, 28, 0.98);
       border-color: rgba(255,255,255,0.30);
       box-shadow:
+        -2px 0 0 rgba(255,31,75,0.75), 2px 0 0 rgba(47,107,255,0.75),
         0 0 0 2px rgba(0,0,0,0.92),
         0 0 0 4px rgba(255,255,255,0.07),
-        0 0 14px rgba(123,247,255,0.24),
-        0 0 30px rgba(255,80,220,0.16);
+        0 0 14px rgba(255,255,255,0.24),
+        0 0 30px rgba(255,31,75,0.16);
     }
 
     button:active{
       transform: translateY(1px);
-      background: rgba(28, 32, 58, 0.98);
+      background: rgba(16, 16, 18, 0.98);
       border-color: rgba(255,255,255,0.22);
       box-shadow:
         0 0 0 2px rgba(0,0,0,0.94),
         0 0 0 4px rgba(255,255,255,0.04),
-        0 0 8px rgba(123,247,255,0.10),
-        0 0 18px rgba(255,80,220,0.08);
+        0 0 8px rgba(255,255,255,0.10),
+        0 0 18px rgba(255,31,75,0.08);
     }
 
     button:focus-visible{
@@ -1015,28 +1049,28 @@
       box-shadow:
         0 0 0 2px rgba(0,0,0,0.94),
         0 0 0 4px rgba(255,255,255,0.08),
-        0 0 0 6px rgba(123,247,255,0.45),
-        0 0 18px rgba(123,247,255,0.24),
-        0 0 34px rgba(255,80,220,0.14);
+        0 0 0 6px rgba(255,255,255,0.45),
+        0 0 18px rgba(255,255,255,0.24),
+        0 0 34px rgba(255,31,75,0.14);
     }
 
     button.secondary{
-      background: rgba(22, 24, 38, 0.96);
+      background: rgba(8, 8, 10, 0.96);
       border-color: rgba(255,255,255,0.14);
       color: rgba(245,245,255,0.88);
       box-shadow:
         0 0 0 2px rgba(0,0,0,0.90),
         0 0 0 4px rgba(255,255,255,0.04),
-        0 0 8px rgba(123,247,255,0.08);
+        0 0 8px rgba(255,255,255,0.08);
     }
 
     button.secondary:hover{
-      background: rgba(30, 34, 52, 0.98);
+      background: rgba(20, 20, 24, 0.98);
       border-color: rgba(255,255,255,0.24);
       box-shadow:
         0 0 0 2px rgba(0,0,0,0.92),
         0 0 0 4px rgba(255,255,255,0.06),
-        0 0 12px rgba(123,247,255,0.16);
+        0 0 12px rgba(255,255,255,0.16);
     }
     .bottomBar{
       width: min(100vw, calc(var(--natural-board-w) * 2));
@@ -1064,8 +1098,8 @@
       user-select: none; cursor: default;
     }
     .hudLogo span{
-      color: hsl(var(--h), 100%, 62%);
-      text-shadow: 0 0.12em 0 hsl(var(--h), 85%, 30%), 0 0 0.5em hsla(var(--h), 100%, 60%, 0.45);
+      color: #fff;
+      text-shadow: -1px 0 0 rgba(255,31,75,0.9), 1px 0 0 rgba(47,107,255,0.9), 0 0 0.5em rgba(255,255,255,0.5);
     }
     .bottomRight{ justify-content: flex-end; }
 
@@ -1108,29 +1142,18 @@
       width: clamp(92px, 30vw, 150px); min-width: 0;
       padding: 6px 6px 5px;
       border-radius: var(--ui-radius);
-      background: radial-gradient(160px 110px at 50% 30%, rgba(123,247,255,0.07), rgba(0,0,0,0.5));
+      background: radial-gradient(160px 110px at 50% 30%, rgba(255,255,255,0.07), rgba(0,0,0,0.5));
       border: 2px solid rgba(255,255,255,0.10);
       box-shadow: 0 0 0 2px rgba(0,0,0,0.55) inset;
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
       position: relative; overflow: hidden;
     }
-    /* the next piece (src/render.js drawNext): in its own art; a powerup's shell goes rainbow */
+    /* (the next piece is no longer shown: src/render.js still draws into this hidden canvas) */
     #nextCanvas{ flex: 1 1 auto; width: 100%; min-height: 0; display: block; image-rendering: pixelated; }
     #nextCanvas.pop{ animation: nextPop 280ms cubic-bezier(.2, 1.5, .4, 1) both; }
     /* (paused in Classic, God mode or Extreme: no peeking at the board or the next piece) */
     body.boardHidden #boardCanvas, body.boardHidden #nextCanvas, body.boardHidden #nameLayer{ visibility: hidden; }
     @keyframes nextPop{ from{ transform: scale(0.6); opacity: 0.3; } to{ transform: none; opacity: 1; } }
-    .nextMiniShell.power{
-      border-color: transparent;
-      background:
-        radial-gradient(160px 110px at 50% 30%, rgba(255,255,255,0.09), rgba(255,255,255,0)) padding-box,
-        linear-gradient(#0a0916, #0a0916) padding-box,
-        linear-gradient(110deg, #ff4d6d, #ffb84d, #f9ff4d, #4dff88, #4dc3ff, #b44dff, #ff4d6d, #ffb84d, #f9ff4d) border-box;
-      background-size: 100% 100%, 100% 100%, 300% 100%;
-      animation: powerEdge 2.4s linear infinite;
-      box-shadow: 0 0 0 2px rgba(0,0,0,0.55) inset, 0 0 14px rgba(255,255,255,0.18);
-    }
-    @keyframes powerEdge{ from{ background-position: 0 0, 0 0, 0 0; } to{ background-position: 0 0, 0 0, 75% 0; } }
 
     .pauseBtn{
       box-sizing: border-box; height: 44px; flex: 0 0 auto;
@@ -1167,9 +1190,9 @@
       text-align: center;
       color: rgba(245,245,255,0.96);
       text-shadow:
-        var(--display-rgb-shift) 0 0 rgba(255,0,140,var(--display-rgb-a4)),
-        calc(var(--display-rgb-shift) * -1) 0 0 rgba(0,255,255,0.10),
-        0 0 8px rgba(123,247,255,var(--display-glow-a));
+        var(--display-rgb-shift) 0 0 rgba(255,31,75,var(--display-rgb-a4)),
+        calc(var(--display-rgb-shift) * -1) 0 0 rgba(47,107,255,0.10),
+        0 0 8px rgba(255,255,255,var(--display-glow-a));
     }
   
     .debugPanel{
@@ -1207,8 +1230,8 @@
     .tutorialBar[hidden]{ display: none; }
     .tutDots{ display: flex; justify-content: center; gap: 5px; flex: none; }
     .tutDots i{ width: 6px; height: 6px; background: rgba(255,255,255,0.16); box-shadow: 0 0 0 1px rgba(0,0,0,0.85); }
-    .tutDots i.done{ background: rgba(123,247,255,0.42); }
-    .tutDots i.on{ background: #7bf7ff; box-shadow: 0 0 0 1px #000, 0 0 8px rgba(123,247,255,0.85); }
+    .tutDots i.done{ background: rgba(255,255,255,0.42); }
+    .tutDots i.on{ background: #ffffff; box-shadow: 0 0 0 1px #000, 0 0 8px rgba(255,255,255,0.85); }
     .tutSay{ flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; gap: 12px; }
     .tutText{
       font-family: var(--font-body); font-size: clamp(12px, 3.4vw, 15px); line-height: 1.3;
@@ -1217,10 +1240,10 @@
     .tutText kbd{
       display: inline-block; min-width: 1.2em; padding: 2px 4px 1px; margin: 0 1px;
       font-family: var(--font-display); font-size: 8px; line-height: 1.4; text-align: center; vertical-align: 1px;
-      color: rgba(245,245,255,0.95); background: rgba(34,38,68,0.96);
+      color: rgba(245,245,255,0.95); background: rgba(10,10,12,0.96);
       border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 2px 0 rgba(0,0,0,0.8);
     }
-    .tutText .tutName{ font-family: var(--font-display); font-weight: 400; font-size: 0.72em; letter-spacing: 0.04em; text-transform: uppercase; animation: rainbowText 1.6s steps(12, end) infinite; }
+    .tutText .tutName{ font-family: var(--font-display); font-weight: 400; font-size: 0.72em; letter-spacing: 0.04em; text-transform: uppercase; animation: rgbText 1.6s steps(12, end) infinite; }
     .tutText .tutName.cls-destroyer{ animation-name: fireText; }
     .tutText .tutName.cls-gravity{ animation-name: deepText; }
     .tutText .tutName.cls-expander{ animation-name: growText; }
@@ -1231,12 +1254,12 @@
     .tutKeyset{ display: grid; grid-template-columns: repeat(3, 20px); grid-template-rows: repeat(2, 20px); gap: 2px; }
     .tutKeyset i{
       display: grid; place-items: center; font-style: normal; font-family: var(--font-display); font-size: 8px;
-      color: rgba(245,245,255,0.75); background: rgba(34,38,68,0.96); border: 1px solid rgba(255,255,255,0.22);
+      color: rgba(245,245,255,0.75); background: rgba(10,10,12,0.96); border: 1px solid rgba(255,255,255,0.22);
       box-shadow: 0 2px 0 rgba(0,0,0,0.85); transition: background 60ms linear, color 60ms linear, transform 60ms linear, box-shadow 60ms linear;
     }
     .tutKeyset i:first-child{ grid-column: 2; }
     .tutKeyset i:nth-child(n+2){ grid-row: 2; }
-    .tutKeyset i.lit{ color: #0a0916; background: #7bf7ff; border-color: #fff; transform: translateY(2px); box-shadow: 0 0 0 rgba(0,0,0,0.85), 0 0 12px rgba(123,247,255,0.85); }
+    .tutKeyset i.lit{ color: #0a0916; background: #ffffff; border-color: #fff; transform: translateY(2px); box-shadow: 0 0 0 rgba(0,0,0,0.85), 0 0 12px rgba(255,255,255,0.85); }
     .tutNav{ display: flex; align-items: center; gap: 6px; flex: none; }
     .tutGap{ flex: 1 1 0; }
     .tutNav button{ min-height: 40px; padding: 8px 12px; font-size: 9px; white-space: nowrap; }
@@ -1249,17 +1272,17 @@
     @media (min-width: 600px){ .tutKeyset{ grid-template-columns: repeat(3, 23px); grid-template-rows: repeat(2, 23px); } .tutKeyset i{ font-size: 9px; } }
     #tutNext.nudge{ animation: tutNudge 1.1s ease-in-out infinite; }
     @keyframes tutNudge{
-      0%, 100%{ box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 10px rgba(123,247,255,0.2); }
-      50%{ box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 0 4px rgba(123,247,255,0.6), 0 0 22px rgba(123,247,255,0.6); }
+      0%, 100%{ box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 10px rgba(255,255,255,0.2); }
+      50%{ box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 0 4px rgba(255,255,255,0.6), 0 0 22px rgba(255,255,255,0.6); }
     }
     /* (the player did what the page shows) */
     .tutCheer{
       position: absolute; left: 50%; top: -5px; transform: translateX(-50%); pointer-events: none; opacity: 0;
-      padding: 3px 8px 2px; background: #0a0916; box-shadow: 0 0 0 2px #000, 0 0 12px rgba(123,247,255,0.45);
+      padding: 3px 8px 2px; background: #0a0916; box-shadow: 0 0 0 2px #000, 0 0 12px rgba(255,255,255,0.45);
       font-family: var(--font-display); font-size: 10px; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.08em;
-      text-shadow: 0 2px 0 #000; animation: rainbowText 1.6s steps(12, end) infinite;
+      text-shadow: 0 2px 0 #000; animation: rgbText 1.6s steps(12, end) infinite;
     }
-    .tutCheer.on{ animation: rainbowText 1.6s steps(12, end) infinite, tutCheer 1.6s ease-out both; }
+    .tutCheer.on{ animation: rgbText 1.6s steps(12, end) infinite, tutCheer 1.6s ease-out both; }
     @keyframes tutCheer{ 0%{ opacity: 0; transform: translate(-50%, 6px) scale(0.6); } 15%{ opacity: 1; transform: translate(-50%, 0) scale(1.15); } 25%, 75%{ opacity: 1; transform: translate(-50%, 0) scale(1); } 100%{ opacity: 0; transform: translate(-50%, -4px); } }
     /* the part of the board the finger is about to tap, faintly in its own colour (the zones are
        src/ui.js getZone's) */
@@ -1285,7 +1308,7 @@
     @keyframes tutTap{ 0%{ transform: none; } 35%{ transform: translateY(4px) scale(0.9); } 100%{ transform: none; } }
     .tutRipple{
       position: absolute; z-index: -1; left: 24.5px; top: 1.4px; width: 12px; height: 12px; margin: -6px 0 0 -6px;
-      box-sizing: border-box; border: 3px solid rgba(255,255,255,0.9); box-shadow: 0 0 10px rgba(123,247,255,0.8);
+      box-sizing: border-box; border: 3px solid rgba(255,255,255,0.9); box-shadow: 0 0 10px rgba(255,255,255,0.8);
       animation: tutRipple 440ms ease-out forwards;
     }
     @keyframes tutRipple{ from{ transform: scale(0.4); opacity: 1; } to{ transform: scale(3.6); opacity: 0; } }

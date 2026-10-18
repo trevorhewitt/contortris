@@ -376,7 +376,8 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     return g;
   }
   function spawnMote(kind, W, Hh, now) {
-    const hue = (now * 0.02 + rand(0, 120)) % 360;
+    // (red, green or blue: the game's colours, never the rainbow between them)
+    const hue = [350, 135, 222][Math.floor(rand(0, 3))];
     const m = { kind, hue, age: 0, rot: rand(0, 6.28), vr: rand(-2, 2) };
     if (kind === "embers") Object.assign(m, { x: rand(0, W), y: Hh + 10, vx: rand(-12, 12), vy: rand(-70, -30), size: rand(6, 16), life: rand(5, 9) });
     else if (kind === "sparkles") Object.assign(m, { x: rand(0, W), y: rand(0, Hh), vx: 0, vy: 0, size: rand(8, 22), life: rand(1.2, 2.4) });
