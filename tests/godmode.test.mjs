@@ -130,7 +130,10 @@ test("level 6: every set fits the board; the moon stands beside the earth", () =
 
 test("level 6: a set only starts if it has room", () => {
   const groups = normaliseGroups(GROUPS, shapes);
-  for (const rows of [4, 8, 10]) {
+  // (just the room: not how much lower the stack has to be as it gets harder, CONFIG.difficulty.hard)
+  const hard = CONFIG.difficulty.hard, was = hard.setMaxStackRows;
+  hard.setMaxStackRows = null;
+  try { for (const rows of [4, 8, 10]) {
     const room = CONFIG.board.rows - (CONFIG.assist.level6.headroom ?? 3) - rows;
     const state = createGameState(shapes, powerups, { rng: makeRng(rows), groups: GROUPS });
     state.devLevel6 = "on";
@@ -157,7 +160,7 @@ test("level 6: a set only starts if it has room", () => {
     const kind = (id) => kindOf.get(id) ?? id, came = new Set([...started].map(kind));
     const fit = groups.filter(g => (g.room || roomNeeded(expandGroup(g, makeRng(5)))) <= room - 1).map(g => g.id);
     for (const id of fit) assert.ok(came.has(kind(id)), `${id} never came on a ${rows}-row stack (${[...started]})`);
-  }
+  } } finally { hard.setMaxStackRows = was; }
 });
 
 test("after a level 6 set: a big destroyer comes soon", () => {
@@ -184,7 +187,8 @@ test("developer mode: the newest things come first, once each since the page was
   const d = CONFIG.devMode, newest = new Set([...d.newest.pieces, ...(d.latest?.pieces ?? [])]), newSets = new Set([...d.newest.sets, ...(d.latest?.sets ?? [])]);
   const share = ({ seenEver = new Map(), seenSetsEver = new Map(), shown = new Map(), setsShown = new Map(), mode = "dev" }) => {
     let fresh = 0, n = 0, firstNew = 0, games = 0;
-    for (const seed of [1, 2, 3, 4, 5, 6]) {
+    // (a dozen games each: a share of a hundred pieces or so is at the mercy of a few)
+    for (let seed = 1; seed <= 12; seed++) {
       const state = createGameState(shapes, powerups, { rng: makeRng(seed * 7), groups: GROUPS });
       state.seenEver = seenEver; state.seenSetsEver = seenSetsEver;
       state.shownThisLoad = shown; state.setsShownThisLoad = setsShown;
@@ -233,10 +237,11 @@ test("god mode: after a set, and after a few giants close together, a calm spell
     const { served } = play("god", seed * 7, 220);
     for (let i = 0; i < served.length; i++) {
       if (served[i].difficulty !== 6) continue;
-      // the whole run of this set's pieces (a set can have small pieces in it: Noah's raindrops)
-      const gs = sets.get(served[i].id);
+      // the whole run of this set's pieces (a set can have small pieces in it: Noah's raindrops;
+      // and a piece of it can wait a few pieces while the stack's too high for it, src/level6.js)
+      const gs = sets.get(served[i].id), ofSet = (k) => [...(sets.get(served[k].id) ?? [])].some(g => gs.has(g));
       let j = i;
-      while (j + 1 < served.length && [...(sets.get(served[j + 1].id) ?? [])].some(g => gs.has(g))) j++;
+      for (let k = i + 1; k < served.length && k <= j + 1 + CONFIG.assist.level6.waitPieces; k++) if (ofSet(k)) j = k;
       const after = served.slice(j + 1, j + lo); // (one short, in case an ordinary raindrop ran on)
       i = j;
       if (after.length < lo - 1) continue;

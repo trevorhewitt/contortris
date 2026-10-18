@@ -145,8 +145,9 @@ function matchSequenceAt(sequence, ids, at, cut) {
   const steps = sequence.map(st => {
     if (typeof st === "string") return { members: new Set([st]), lo: 1, hi: 1 };
     if (st.variant) return { members: new Set(st.variant), lo: 1, hi: 1 };
-    // (a chain's powerups can be left out where they can't come yet: as few as one of it)
-    if (st.chain) return { members: new Set([...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))]), lo: 1, hi: st.chain.max ?? 4 };
+    // (a chain's powerups can be left out where they can't come yet: all of it, even, when it was
+    // all powerups, Noah's storm clouds before the Expanderz have been met)
+    if (st.chain) return { members: new Set([...Object.keys(st.chain.start ?? {}), ...Object.values(st.chain.after ?? {}).flatMap(o => Object.keys(o))]), lo: 0, hi: st.chain.max ?? 4 };
     // (now and then one of them over and over, as itself or its echo)
     if (st.repeat) return { members: new Set([...st.repeat, ...st.repeat.map(id => shapes.find(s => s.id === id)?.echo).filter(Boolean)]), lo: 0, hi: [].concat(st.times).at(-1) };
     let [lo, hi] = Array.isArray(st.count) ? st.count : [st.count ?? 1, st.count ?? 1];

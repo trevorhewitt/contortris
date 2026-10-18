@@ -726,9 +726,10 @@ export const CONFIG = {
       roomFactor: 1.25,
       headroom: 3,
       // A set under way: its next piece waits while it couldn't come in with `waitHeadroom` rows
-      // clear above it (the stack's got too high), and ordinary pieces come meanwhile; after
-      // `waitPieces` of that, the set gives up. So a set never piles onto a stack near the top.
-      waitHeadroom: 5,
+      // clear above it (the stack's got higher than the set's room allowed for), and ordinary
+      // pieces come meanwhile; after `waitPieces` of that, the set gives up. So a set never piles
+      // onto a stack near the top.
+      waitHeadroom: 3,
       waitPieces: 8,
       // No set comes round again until every other one has had its turn this game, and the last
       // `rememberRecent` sets served (also in the previous game, in this browser), or if more
