@@ -126,11 +126,11 @@ export const CONFIG = {
     softDropFactor: 0.12,
     maxFallStepsPerFrame: 1,
     maxAccumulatedSteps: 2,
-    lockDelayMsKeyboard: 220,
-    lockDelayMsTouch: 520,
+    lockDelayMsKeyboard: 110,
+    lockDelayMsTouch: 260,
     // slid or turned along the ground, a piece waits at least this long before it locks, so it
     // can be slid again (until it has spent slideMaxMs on the ground in all)
-    slideLockMs: 500,
+    slideLockMs: 250,
     slideMaxMs: 3000,
     tapRepeatStartMs: 140,
     tapRepeatEveryMs: 55,

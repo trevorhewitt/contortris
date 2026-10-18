@@ -343,18 +343,21 @@ test("a piece slid along the ground waits a little longer, so it can be slid aga
     settle(state, CONFIG.timing.lockDelayMsKeyboard + 50);
     assert.notEqual(state.active, piece, "locked");
   }
-  // slid every 400ms, it's still sliding; let go, and it locks
+  // slid every little while (a bit sooner than it would lock), it's still sliding; let go, and
+  // it locks
+  const every = CONFIG.timing.slideLockMs - 60;
   {
     const state = fresh(), piece = state.active;
-    for (let i = 0; i < 4; i++) { assert.ok(tryMove(state, 1, 0)); settle(state, 400); assert.equal(state.active, piece, `still there after slide ${i + 1}`); }
-    settle(state, CONFIG.timing.slideLockMs + 50);
+    for (let i = 0; i < 4; i++) { assert.ok(tryMove(state, 1, 0)); settle(state, every); assert.equal(state.active, piece, `still there after slide ${i + 1}`); }
+    // (it starts to lock again at its next step down, then waits)
+    settle(state, state.dropMs + CONFIG.timing.slideLockMs + 50);
     assert.notEqual(state.active, piece, "then it locks");
   }
   // but not for ever
   {
     const state = fresh(), piece = state.active;
     let dir = 1;
-    for (let t = 0; t < CONFIG.timing.slideMaxMs + 1500 && state.active === piece; t += 300) { if (!tryMove(state, dir, 0)) { dir = -dir; tryMove(state, dir, 0); } settle(state, 300); }
+    for (let t = 0; t < CONFIG.timing.slideMaxMs + 1500 && state.active === piece; t += every) { if (!tryMove(state, dir, 0)) { dir = -dir; tryMove(state, dir, 0); } settle(state, every); }
     assert.notEqual(state.active, piece, "it locks in the end");
   }
 });
