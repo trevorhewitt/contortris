@@ -270,20 +270,22 @@ export const CONFIG = {
       powerups: { minDropIndex: 6, cooldownDrops: 4, baseChance: 0.08, chancePerDrop: 0.04, maxChance: 0.4 },
       pieceMix: { baseLevelWeight: { 0: 0.14, 1: 0.6, 2: 0.23, 3: 0.03 }, openingLevelWeight: { 0: 0, 1: 0.65, 2: 0.3, 3: 0.05 } },
     },
-    // Turbo zen is for watching. Each piece arrives already turned and over the place it's going,
-    // and falls quickly into it:
+    // Turbo zen is for watching, and for stepping into. Each piece arrives already turned and over
+    // the place it's going, and only ever falls straight down into it (the computer never moves
+    // a piece on the board); left alone, quickly:
     fallMs: 40,          // the autopilot's pieces fall a row this often (times the pace)...
-    lockMs: 100,         // ...and lock this soon after landing (times the pace)
+    lockMs: 50,          // ...and lock this soon after landing (times the pace)
     pieceMs: 650,        // (but each takes this long at least, however short the way down: it starts further up, out of sight)
-    restMs: 900,         // after a big clearance, a breath before the next piece
+    restMs: 300,         // after a big clearance, a moment's breath before the next piece (not while the player's playing)
     maxStepsPerFrame: 3, // (so a fast fall stays fast in turbo zen)
-    dropMs: 300,         // how fast a piece falls once the player has taken it over (turbo zen: still quick, times its pace)
-    // Turbo zen handing back to the computer: after the player has played a piece, it doesn't snap
-    // straight back. The next ones come in at the top as they would in a game, and the computer
-    // turns and moves them a step at a time (one every stepMs, slowest to quickest), falling at
-    // the player's pace and speeding back up, over `drops` pieces left alone, until it's fully
-    // the computer's again: arriving already in place, at full speed, flocks and all.
-    handBack: { drops: 6, stepMs: [230, 50] },
+    // The player touches a piece and it's theirs until it lands, wherever they put it; the next
+    // comes already where the computer wants it, on the board as it is by then. While they're
+    // playing (they touched it in the last playMs, real time), one piece at a time, a little
+    // slower, straight in at the top for them to take if they like, and no dramatic pauses:
+    playMs: 4000,
+    playFallMs: 60,      // (the autopilot's pieces fall a row this often then, whatever they are)
+    dropMs: 200,         // the player's own piece falls a row this often (still quick)...
+    playerLockMs: 80,    // ...and locks this soon after landing, so the next comes promptly
     // The pace (times fallMs, lockMs and pieceMs): small things, repeats and the pieces that build
     // up the board come down faster; the pieces that bring it all down take their time. And from
     // low (an empty board) to high (a full one), it eases off a little as it nears the top.
