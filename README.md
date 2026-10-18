@@ -77,7 +77,7 @@ clears.
 | `achievements.js` | Tracks and unlocks achievements (saved in the browser). |
 | `render.js` | Draws everything on the board canvas. |
 | `ui.js` | Menus, How to play, achievements page, toasts, HUD, touch + keyboard. |
-| `pausemenu.js` | The pause menu's gallery of the pieces so far, in the order they fell (swipe, or ← → and A D), each with its name and, in words, how hard and how rare it is; and the sparkles round the menu. |
+| `pausemenu.js` | The pause menu's gallery of the pieces so far, each once, where it last fell, newest first (swipe, or ← → and A D), each with its name and how rare it is; and the sparkles round the menu. |
 
 ## Running it
 

@@ -1,32 +1,17 @@
 // ============================================================
 // PAUSED — the pieces so far, and the sparkles round the pause menu (DOM)
 // ============================================================
-// Under the pause menu's buttons (src/ui.js), a gallery of every piece that has fallen this game,
-// in the order they came: the newest in the middle when the menu opens, the ones before it off to
-// the left. Swipe or drag them along, tap the one either side, or use the arrows (the ones on the
-// screen, or ← → and A D on a keyboard). Each says what it is and, in words, how hard it is and
-// how rare (hardWords below, and src/rarity.js). Behind the menu, sparkles drift up past it in the
-// edge's colours, in chunky pixels like an old screen's (toned down, they keep still: settings.js
-// calmFx). The game knows nothing of any of it: ui.js hands over each piece as it lands.
+// Under the pause menu's buttons (src/ui.js), a gallery of the pieces that have fallen this game,
+// each once, where it last fell: the newest in the middle when the menu opens, the ones before it
+// off to the left. Swipe or drag them along, tap the one either side, or use the arrows (the ones
+// on the screen, or ← → and A D on a keyboard). Each says what it is and how rare (src/rarity.js).
+// Behind the menu, sparkles drift up past it in the edge's colours, in chunky pixels like an old
+// screen's (toned down, they keep still: settings.js calmFx). The game knows nothing of any of it:
+// ui.js hands over each piece as it lands.
 
 import { makeShapePreviewCanvas } from "./render.js";
-import { CLASS_INFO } from "./powerups.js";
 import { rarity } from "./rarity.js";
 import { calmFx } from "./settings.js";
-
-// How hard a piece is, in words. An everyday piece by its level (difficulty: 0 to 3 the usual
-// ones, 4 and 5 the giants, 6 a level 6 set's); a Shiny Piece by how strong it is (its tier) and
-// its class, which the gallery shows in the class's colours (the few that mostly make things
-// worse, `bad`, own up to it).
-const LEVEL_WORDS = ["easy peasy", "easy", "a bit tricky", "tricky", "hard (a giant)", "very hard (a huge giant)", "fiendish"];
-const TIER_WORDS = { 1: "a gentle", 2: "a strong", 3: "a mighty" };
-export function hardWords(shape) {
-  const pu = shape?.powerup;
-  if (!pu) return { words: LEVEL_WORDS[Math.max(0, Math.min(6, Math.round(shape?.difficulty ?? 1)))] };
-  const lead = pu.bad ? "an unhelpful" : TIER_WORDS[pu.tier] ?? "a";
-  const name = CLASS_INFO[pu.cls]?.name ?? "Shiny Piece";
-  return { words: `${lead} ${name}`, lead, name, cls: pu.cls };
-}
 
 /* =========================
    The gallery
@@ -41,7 +26,7 @@ const PIC_W = 112, PIC_H = 84; // the middle piece's picture fits in this (CSS p
 export function createGallery({ state, root }) {
   const q = (sel) => root.querySelector(sel);
   const stage = q(".pgStage"), track = q(".pgTrack"), prev = q(".pgPrev"), next = q(".pgNext");
-  const nameEl = q(".pgName"), hardEl = q(".pgHard"), rareEl = q(".pgRare"), countEl = q(".pgCount");
+  const nameEl = q(".pgName"), rareEl = q(".pgRare");
   const fallen = [];
   // (five places on the strip, the middle one and two either side, each with its own picture:
   // the pieces move through them)
@@ -85,30 +70,21 @@ export function createGallery({ state, root }) {
   }
 
   // What the piece in the middle is: its name (a Shiny Piece's in its class's colours, as it
-  // falls), how hard and how rare, and where it comes in the game
-  const said = new WeakMap();
-  function words(shape) {
-    let w = said.get(shape);
-    if (!w) said.set(shape, w = { hard: hardWords(shape), rare: rarity(state, shape).words });
-    return w;
+  // falls) and how rare it is
+  const rare = new WeakMap();
+  function rareWords(shape) {
+    if (!rare.has(shape)) rare.set(shape, rarity(state, shape).words);
+    return rare.get(shape);
   }
   function info() {
     const n = fallen.length, shape = fallen[index];
     root.classList.toggle("empty", !n);
-    countEl.textContent = n ? `${index + 1} of ${n}` : "";
     prev.disabled = index <= 0;
     next.disabled = index >= n - 1;
     if (!shape) return;
-    const { hard, rare } = words(shape);
     nameEl.textContent = shape.name;
     nameEl.className = "pgName" + (shape.powerup ? ` shiny cls-${shape.powerup.cls ?? "combo"}` : "");
-    hardEl.textContent = hard.cls ? `${hard.lead} ` : hard.words;
-    if (hard.cls) {
-      const cls = hardEl.appendChild(document.createElement("span"));
-      cls.className = `pgCls cls-${hard.cls}`;
-      cls.textContent = hard.name;
-    }
-    rareEl.textContent = rare;
+    rareEl.textContent = rareWords(shape);
   }
 
   // Where each place on the strip goes, `offset` along: the middle one big and bright, the ones
@@ -224,10 +200,14 @@ export function createGallery({ state, root }) {
   next.addEventListener("click", () => step(1));
 
   return {
+    // (each piece once, where it last fell: one that comes again moves up to the newest, under
+    // the name and in the colours it came in this time)
     add(shape) {
       if (!shape) return;
+      const was = fallen.findIndex(s => s.id === shape.id);
+      if (was >= 0) fallen.splice(was, 1);
       fallen.push(shape);
-      if (fallen.length > MOST) { fallen.shift(); index = Math.max(0, index - 1); }
+      if (fallen.length > MOST) fallen.shift();
     },
     clear() { fallen.length = 0; index = 0; },
     open() { index = fallen.length - 1; },

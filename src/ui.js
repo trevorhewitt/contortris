@@ -284,9 +284,8 @@ export function bindUI({ state, renderer, achievements }) {
     }
   }
 
-  // The menu, pause and game over panels always fit on the board (the pause menu, on the screen):
-  // if there isn't room, they're scaled down rather than scrolled. (How to play and the lists
-  // scroll as usual.)
+  // The menu, pause and game over panels always fit on the board: if there isn't room, they're
+  // scaled down rather than scrolled. (How to play and the lists scroll as usual.)
   const FIT_PANELS = new Set(["pause", "gameover", "intro"]); // (the menu is the home screen: it fits itself)
   function fitPanel(name = currentPanel) {
     const el = panels[name];
@@ -295,7 +294,10 @@ export function bindUI({ state, renderer, achievements }) {
     if (name === "pause" && devmode) return; // the dev tools make it long: it scrolls
     el.style.transform = "";
     el.classList.add("fit");
-    const room = overlay.clientHeight - 16, roomW = overlay.clientWidth - 16;
+    // (paused, the dark is over the whole screen, but the menu's on the board, in the middle of it:
+    // index.html)
+    const on = name === "pause" ? boardShellEl : overlay;
+    const room = on.clientHeight - 16, roomW = on.clientWidth - 16;
     const s = Math.min(1, room / Math.max(1, el.scrollHeight), roomW / Math.max(1, el.scrollWidth));
     if (s < 0.995) el.style.transform = `scale(${s.toFixed(3)})`;
   }

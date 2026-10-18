@@ -782,12 +782,12 @@
     #panelIntro, #panelPowerups{ background: rgba(0,0,0,0.97); }
     /* the intro slides straight over the board: no backdrop, no fade */
     .overlay.intro{ background: none; transition: none; }
-    /* paused (src/ui.js): the whole screen, dark, and the menu in the middle of it, its buttons in
-       a column and the pieces so far under them (src/pausemenu.js), a glow breathing round it and
-       sparkles drifting up past it. Where the board stays in view (zen), a tap outside the menu,
-       or "Look at the board", puts the menu away to look at the board: tap a piece for its card,
-       pinch, double tap or the wheel to zoom in, drag to look around; then an empty spot, or
-       Done, and the menu's back */
+    /* paused (src/ui.js): the whole screen, dark, and the menu in the middle of the board, inside
+       it, its buttons in a column and the pieces so far under them (src/pausemenu.js), a glow
+       breathing round it and sparkles drifting up past it. Where the board stays in view (zen), a
+       tap outside the menu, or "Look at the board", puts the menu away to look at the board: tap
+       a piece for its card, pinch, double tap or the wheel to zoom in, drag to look around; then
+       an empty spot, or Done, and the menu's back */
     .overlay.boardPause{
       position: fixed; inset: 0; z-index: 15; touch-action: none;
       background: radial-gradient(ellipse 80% 62% at 50% 46%, rgba(24,18,44,0.62), rgba(0,0,0,0.9) 78%);
@@ -797,9 +797,12 @@
     body:has(.overlay.boardPause:not(.peek):not(.zoomed))::after{ -webkit-mask: none; mask: none; }
     .pauseFx{ display: none; position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; image-rendering: pixelated; transition: opacity 160ms linear; }
     .overlay.boardPause .pauseFx{ display: block; }
+    /* (where the board is: --board-x, -y, -w, -h, from the fit script below. If the board is too
+       small for it, it's scaled down to fit: ui.js fitPanel) */
     #panelPause.panel{
-      position: relative; isolation: isolate;
-      width: clamp(300px, calc(100% - 24px), 400px); padding: 20px 18px 16px;
+      position: absolute; isolation: isolate;
+      left: calc(var(--board-x, 0px) + var(--board-w, 100%) / 2); top: calc(var(--board-y, 0px) + var(--board-h, 100%) / 2); translate: -50% -50%;
+      width: clamp(300px, calc(var(--board-w, 100%) - 24px), 400px); padding: 20px 18px 16px;
       background: radial-gradient(130% 50% at 50% 0%, rgba(255,255,255,0.07), rgba(255,255,255,0) 70%), rgba(5,5,12,0.93);
       transition: opacity 140ms linear;
     }
@@ -834,19 +837,15 @@
       animation: modeSlide 4.2s linear infinite;
     }
     /* the pieces so far (src/pausemenu.js): the one in the middle big and lit, split into the
-       edge's colours, those either side smaller and dimmer; its name under it, then how hard
-       and how rare it is, in words */
+       edge's colours, those either side smaller and dimmer; its name under it, then how rare it
+       is */
     .pieceGallery{
       position: relative; box-sizing: border-box; padding: 7px 8px 10px;
       border: var(--edge-w) solid var(--edge-quiet-line); box-shadow: var(--edge-quiet);
       background: radial-gradient(70% 50% at 50% 36%, rgba(255,255,255,0.06), rgba(0,0,0,0) 70%), rgba(0,0,0,0.5);
     }
-    .pgHead{
-      display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
-      font-family: var(--font-display); font-size: 7px; line-height: 1.4; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
-    }
     /* (the strip cut off at its ends: the pieces further along, out of sight, don't stretch the menu) */
-    .pgStage{ position: relative; height: 104px; margin: 4px 0 2px; overflow: hidden; overflow: clip; touch-action: pan-y; cursor: grab; }
+    .pgStage{ position: relative; height: 104px; margin: 0 0 2px; overflow: hidden; overflow: clip; touch-action: pan-y; cursor: grab; }
     .pgStage.dragging{ cursor: grabbing; }
     .pgTrack{ position: absolute; inset: 0 30px; }
     /* (a soft light behind the one in the middle, breathing) */
@@ -869,24 +868,22 @@
     .pgNext{ right: 0; }
     /* (room for the longest name, three lines of it, and the words under it, so nothing moves as
        the pieces go by: the name and its words together in the middle of it) */
-    .pgSay{ display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 88px; }
+    .pgSay{ display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 68px; }
     .pgName{
       font-family: var(--font-display); font-size: 9px; line-height: 1.6; letter-spacing: 0.04em; text-transform: uppercase;
       text-align: center; overflow-wrap: anywhere; color: #fff;
       text-shadow: -1px 0 0 rgba(var(--om-pink),0.6), 1px 0 0 rgba(var(--om-cyan),0.55), 0 0 10px rgba(255,255,255,0.3);
     }
-    /* (a Shiny Piece's name and class in the class's colours, as its name is when it falls: still
-       its colour with the animations toned down) */
-    .pgName.shiny, .pgCls{ animation: rgbText 1.6s steps(12, end) infinite; }
-    .pgName.cls-destroyer, .pgCls.cls-destroyer{ animation-name: fireText; color: var(--rgb-r); }
-    .pgName.cls-gravity, .pgCls.cls-gravity{ animation-name: deepText; color: #3f7bff; }
-    .pgName.cls-expander, .pgCls.cls-expander{ animation-name: growText; color: var(--rgb-g); }
-    .pgStats{ display: grid; grid-template-columns: max-content minmax(0, max-content); justify-content: center; align-items: baseline; column-gap: 10px; row-gap: 3px; }
-    .pgK{ font-family: var(--font-display); font-size: 7px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-align: right; }
-    .pgV{ font-family: var(--font-body); font-size: 14px; line-height: 1.25; color: #fff; text-align: left; text-shadow: 0 0 8px rgba(255,255,255,0.25); }
-    .pgCls{ font-weight: 600; }
+    /* (a Shiny Piece's name in its class's colours, as it is when it falls: still its colour with
+       the animations toned down) */
+    .pgName.shiny{ animation: rgbText 1.6s steps(12, end) infinite; }
+    .pgName.cls-destroyer{ animation-name: fireText; color: var(--rgb-r); }
+    .pgName.cls-gravity{ animation-name: deepText; color: #3f7bff; }
+    .pgName.cls-expander{ animation-name: growText; color: var(--rgb-g); }
+    .pgRarity{ font-family: var(--font-body); font-size: 14px; line-height: 1.25; color: #fff; text-align: center; text-shadow: 0 0 8px rgba(255,255,255,0.25); }
+    .pgRarity .pgK{ color: var(--muted); }
     .pgNone{ display: none; padding: 14px 0 8px; font-family: var(--font-body); font-size: 13px; color: var(--muted); text-align: center; }
-    .pieceGallery.empty .pgStage, .pieceGallery.empty .pgSay, .pieceGallery.empty .pgCount{ display: none; }
+    .pieceGallery.empty .pgStage, .pieceGallery.empty .pgSay{ display: none; }
     .pieceGallery.empty .pgNone{ display: block; }
     /* looking at the board: what to do, and Done, at the top (not while a piece's card is up:
        the card may be there) */
@@ -1779,10 +1776,9 @@
               <button id="btnPauseOptions" class="secondary">Options</button>
               <button id="btnQuit" class="secondary">Quit to menu</button>
             </div>
-            <!-- the pieces so far, in the order they fell (src/pausemenu.js): swipe, the arrows, or
-                 ← → and A D -->
+            <!-- the pieces so far, each where it last fell, newest first (src/pausemenu.js): swipe,
+                 the arrows, or ← → and A D -->
             <div class="pieceGallery" id="pieceGallery" role="group" aria-label="The pieces so far">
-              <div class="pgHead"><span class="pgTitle">Pieces so far</span><span class="pgCount"></span></div>
               <div class="pgStage">
                 <button class="pgArrow pgPrev" aria-label="The piece before">&#9664;</button>
                 <div class="pgTrack"></div>
@@ -1790,10 +1786,7 @@
               </div>
               <div class="pgSay" aria-live="polite">
                 <div class="pgName"></div>
-                <div class="pgStats">
-                  <span class="pgK">How hard</span><span class="pgV pgHard"></span>
-                  <span class="pgK">How rare</span><span class="pgV pgRare"></span>
-                </div>
+                <div class="pgRarity"><span class="pgK">rarity:</span> <span class="pgRare"></span></div>
               </div>
               <div class="pgNone">Nothing's landed yet.</div>
             </div>
