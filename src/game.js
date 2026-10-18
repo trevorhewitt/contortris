@@ -20,6 +20,7 @@ import { CONFIG } from "../config.js";
 import { clamp01, lerp } from "./util.js";
 import { getShapePaint } from "./shapes.js";
 import { initPieceSelectionState, selectPiece, destroyerCells, stillUseful } from "./selection.js";
+import { createShelf, shelfReady, takeShelfPending } from "./shelf.js";
 import { gravityColumns } from "./godmode.js";
 import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
 import { normaliseGroups, trackLevel6, LEVEL6 } from "./level6.js";
@@ -251,6 +252,7 @@ export function resetGame(state) {
 
   state.zen = null;
   state.tutorial = null;
+  state.shelf = null;
   state.lastLockedShape = null;
   state.gameOverInfo.pieceName = "";
   state.gameOverInfo.shape = null;
@@ -290,6 +292,8 @@ export function startRun(state, mode) {
   if (state.zen) state.dropMs = CONFIG.zen.dropMs;
   // The tutorial: a page at a time, each with its own board and pieces (src/tutorial.js)
   state.tutorial = CONFIG.modes[state.mode]?.tutorial ? createTutorial(state) : null;
+  // The powerup shelf (src/shelf.js): one strong powerup of each class, to use when you choose
+  state.shelf = createShelf(state);
   state.running = true;
   state.paused = false;
   emit(state, "start", { mode: state.mode });
@@ -519,7 +523,12 @@ function spawnPiece(state) {
   // (the speed goes with how far into the game it is, as well as the rows: src/difficulty.js)
   if (rampCfg(state)?.speed && !state.zen) recomputeSpeed(state);
   let shape, rotIdx = 0, at = null;
-  if (state.tutorial) {
+  const shelved = takeShelfPending(state);
+  if (shelved) {
+    // a powerup off the shelf (useShelf, below), taken while nothing was falling: it comes now,
+    // and the next piece waits its turn
+    shape = prepareShape(state, shelved);
+  } else if (state.tutorial) {
     // the tutorial: the page says what comes, turned and where (src/tutorial.js); with nothing
     // more to come, the board waits for the page to go round again
     const t = tutorialNext(state);
@@ -632,6 +641,24 @@ function fitsSomewhere(state, shape) {
     }
   }
   return false;
+}
+
+// The player takes a powerup off the shelf (src/shelf.js): the falling piece goes, and the
+// powerup comes down in its place (or, with nothing falling just now, as the next thing to come).
+// True if it was taken.
+export function useShelf(state, i) {
+  const slot = state.shelf?.slots[i];
+  if (!shelfReady(state, slot) || state.paused || state.shelf.pending) return false;
+  slot.left--;
+  state.shelf.pending = slot.shape;
+  emit(state, "shelf", { slot, cls: slot.cls });
+  if (state.active && !state.effect && !state.hold) {
+    cancelLock(state);
+    state.softDropping = false;
+    state.active = null;
+    if (!spawnPiece(state)) setGameOver(state, slot.shape);
+  }
+  return true;
 }
 
 // Debug helper: make `shape` the next piece.

@@ -19,6 +19,7 @@ import { zenIgnoreInput, zenMovementChoices, zenStart } from "./zen.js";
 import { rarity } from "./rarity.js";
 import { createHome } from "./home.js";
 import { buildDevTools, devToolsOn, setDevTools } from "./devtools.js";
+import { bindShelf } from "./shelfui.js";
 import { difficultyStatus, classWeight } from "./difficulty.js";
 import { classOrder } from "./selection.js";
 import { bindTutorial } from "./tutorialui.js";
@@ -486,7 +487,11 @@ export function bindUI({ state, renderer, achievements }) {
     opening = [];
   }
 
+  // The powerup shelf, where the next piece was (src/shelfui.js)
+  const shelf = bindShelf({ state, root: $("shelf") });
+
   on(state, (type, d) => {
+    if (type === "start" || type === "spawn" || type === "reset" || type === "gameOver") shelf.refresh();
     switch (type) {
       case "start":
         setStarts = 0;
@@ -1283,6 +1288,10 @@ export function bindUI({ state, renderer, achievements }) {
     if (!state.running || state.gameOver || state.paused) return;
 
     markInput(state, "keyboard");
+
+    // (1, 2, 3: the powerups on the shelf)
+    const shelfKey = /^(?:Digit|Numpad)([1-9])$/.exec(e.code);
+    if (shelfKey && state.shelf) { e.preventDefault(); shelf.use(Number(shelfKey[1]) - 1); return; }
 
     // (the arrow keys, or W A S D)
     switch (e.code) {

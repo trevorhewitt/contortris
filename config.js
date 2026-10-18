@@ -16,13 +16,14 @@ export const CONFIG = {
     //         the first piece
     // everything: every powerup class and the combos are in from the first piece (no intro
     //         screens, nothing to wait for)
+    // shelf: the player has a powerup shelf (CONFIG.shelf) in place of the next piece
     // hideOnPause: the board (and the next piece) can't be seen while it's paused, so nobody
     //         plans their next move with the clock stopped
     // (Easy is gone from the menu: kept here so a game remembered as Easy still means something)
-    easy: { label: "Easy", tagline: "powerups, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true, hidden: true, hideOnPause: true },
-    normal: { label: "Classic", tagline: "the full game, powerups and all", powerups: true, giants: true, level6: true, warmup: true, hideOnPause: true },
+    easy: { label: "Easy", shelf: true, tagline: "powerups, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true, hidden: true, hideOnPause: true },
+    normal: { label: "Classic", shelf: true, tagline: "the full game, powerups and all", powerups: true, giants: true, level6: true, warmup: true, hideOnPause: true },
     extreme: { label: "Extreme", tagline: "no powerups. no help.", powerups: false, giants: true, level6: true, hints: false, hideOnPause: true },
-    god: { label: "God", tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true, hideOnPause: true },
+    god: { label: "God", shelf: true, tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true, hideOnPause: true },
     // speeds: a speed setting on the pause menu, these times timeScale (1 to start with).
     // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); calm: zen for playing, slow
     // and easy (CONFIG.zen.calm, which also has its own numbers for the pieces); timeScale: how fast it all runs;
@@ -40,7 +41,7 @@ export const CONFIG = {
     // (Developer mode, for looking at what's new, CONFIG.devMode: hold God mode and Turbo zen down
     // together on the home screen, or shift-click God mode. God mode, with newest: the newest
     // things first; rescue: it won't let you lose, and no end game; steady: it never speeds up.)
-    dev: { label: "Developer", hidden: true, powerups: true, giants: true, level6: "open", everything: true, newest: true, rescue: true, steady: true },
+    dev: { label: "Developer", shelf: true, hidden: true, powerups: true, giants: true, level6: "open", everything: true, newest: true, rescue: true, steady: true },
     // (The tutorial, CONFIG.tutorial: the controls and each kind of piece, a page at a time, on
     // the real board. It has a button of its own on the home screen, so it isn't one of the mode
     // buttons, nor the mode the menu remembers (hidden); no score, no game over, and nothing
@@ -79,6 +80,20 @@ export const CONFIG = {
     movements: { mono: 0.2, oops: 0.2, combo: 0.3, tiles: 0.1, squares: 0.25, colour: 0.35, chorus: 0.5, natural: 4, build: 4, mess: 2, small: 1.5, big: 1.5, beds: 1.3, column: 1.2 },
     paletteNone: 0.6,
     paletteKinds: [0.02, 0.04, 0.06, 0.08, 0.1, 0.1, 0.1, 0.1, 0.09, 0.08, 0.07, 0.06, 0.05, 0.05],
+  },
+
+  // The powerup shelf (src/shelf.js), in place of the next piece, in the modes marked shelf: true.
+  // classes: one slot each, in this order; pieces: the strong ones a slot can hold (one picked at
+  // random each game); perGame: how many of each the player has in a game (later on, the shelf
+  // will be the player's own, bought, kept from game to game).
+  shelf: {
+    classes: ["destroyer", "expander", "gravity"],
+    pieces: {
+      destroyer: ["dragon_with_hay_fever", "hole_in_one", "giant_eraser"],
+      expander: ["squat_volcano", "tipper_truck", "avalanche"],
+      gravity: ["steamroller", "blue_whale", "hippo_bellyflop"],
+    },
+    perGame: 1,
   },
 
   timing: {
