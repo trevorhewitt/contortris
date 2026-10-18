@@ -201,14 +201,15 @@ export const CONFIG = {
   // the start all the way; 1: the full challenge, `hard` below; more: harder still); and the
   // speed, by how far into the game it is: fromMs a row at the first piece, the same bit faster
   // with every piece to toMs at the end of the climb, then faster still with every piece
-  // (perPiece) down to minMs. And the biggest level 6 pieces fall a little slower than that, for
+  // (perPiece) down to minMs, quicker than anyone can keep up with: in the end it's the speed
+  // that beats even the best players. And the biggest level 6 pieces fall a little slower, for
   // the sense of scale (`slowBig`: a set's piece of `size` or more falls `least` times as slowly,
   // up to `most` times for one of `full` or more; its size is its blocks, or half its width ×
   // height if that's more; never slower than at the start). Extreme and the zen modes don't
   // change. (The developer tools have sliders for all of it.)
   difficulty: {
-    normal: { start: 30, length: 300, hardest: 1, speed: { fromMs: 500, toMs: 110, perPiece: 0.997, minMs: 70 }, slowBig: { size: 20, full: 60, least: 1.25, most: 2 } },
-    god: { start: 25, length: 500, hardest: 0.8, speed: { fromMs: 340, toMs: 140, perPiece: 0.997, minMs: 80 }, slowBig: { size: 20, full: 60, least: 1.25, most: 2 } },
+    normal: { start: 30, length: 300, hardest: 1, speed: { fromMs: 500, toMs: 110, perPiece: 0.997, minMs: 30 }, slowBig: { size: 20, full: 60, least: 1.25, most: 2 } },
+    god: { start: 25, length: 500, hardest: 0.8, speed: { fromMs: 340, toMs: 140, perPiece: 0.997, minMs: 30 }, slowBig: { size: 20, full: 60, least: 1.25, most: 2 } },
     // What hardness 1 means (at the start it's the usual numbers, in CONFIG.assist and God
     // mode's own; in between, part way):
     hard: {
