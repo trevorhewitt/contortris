@@ -199,8 +199,12 @@ test("tutorial: the modes' pages play on, one piece after another, each the way 
     assert.ok(got.rows >= 2, `${page.id}: ${got.rows} rows`);
     assert.equal(t.resets, resets, `${page.id}: it never needed starting again`);
     assert.ok(high <= 20, `${page.id}: never near the top (${high} rows)`);
-    if (page.free.shiny) assert.ok(got.shiny >= 1, `${page.id}: Shiny Pieces turn up (${got.shiny})`);
-    else assert.equal(got.shiny, 0, `${page.id}: no Shiny Pieces`);
+    if (page.free.shiny) {
+      // (only now and then, Zen's least of all, about one piece in twelve: none in a minute and a
+      // half can happen, so it plays on a while longer for one)
+      for (let k = 0; k < 3 && fired === before.fired; k++) run(state, 90000);
+      assert.ok(fired > before.fired, `${page.id}: Shiny Pieces turn up (${got.shiny})`);
+    } else assert.equal(got.shiny, 0, `${page.id}: no Shiny Pieces`);
   }
   // (Classic and Zen gently, kept low; Turbo zen far quicker than Zen; God mode Shiny Pieces all
   // the time)

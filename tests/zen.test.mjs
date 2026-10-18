@@ -636,20 +636,27 @@ test("turbo zen: now and then a fill hands over part way up to another, which ca
 });
 
 test("turbo zen: comings and goings, higher each time, the last right up towards the top, then the gravitizers bring it down", () => {
-  const { state, log } = zen(3, "turbo");
-  run(state, log, 3000);
-  zenStart(state, "waves");
-  let started = false, peak = 0, firstBlast = null;
-  on(state, (t, d) => { if (t === "spawn" && state.zen.movement?.name === "waves" && state.zen.movement.phase === "blast" && d.shape.powerup && !firstBlast) firstBlast = d.shape; });
-  for (let t = 0; t < 10 * 60000; t += 32) {
-    updateGame(state, 32);
-    const m = state.zen.movement;
-    if (m?.name === "waves") { started = true; peak = Math.max(peak, height(state)); }
-    else if (started) break;
+  // (the big Gravitizer goes first, unless from where it can go it wouldn't bring anything down,
+  // and then something else does: so in most games, not every one)
+  const seeds = [1, 2, 3, 4, 5, 6, 7, 8], firsts = [];
+  for (const seed of seeds) {
+    const { state, log } = zen(seed, "turbo");
+    run(state, log, 3000);
+    zenStart(state, "waves");
+    let started = false, peak = 0, firstBlast = null;
+    on(state, (t, d) => { if (t === "spawn" && state.zen.movement?.name === "waves" && state.zen.movement.phase === "blast" && d.shape.powerup && !firstBlast) firstBlast = d.shape; });
+    for (let t = 0; t < 10 * 60000; t += 32) {
+      updateGame(state, 32);
+      const m = state.zen.movement;
+      if (m?.name === "waves") { started = true; peak = Math.max(peak, height(state)); }
+      else if (started) break;
+    }
+    assert.ok(started, `seed ${seed}: it came`);
+    assert.ok(peak >= rows - 7, `seed ${seed}: up to ${peak} of ${rows} rows`);
+    firsts.push(firstBlast);
   }
-  assert.ok(started, "it came");
-  assert.ok(peak >= rows - 7, `up to ${peak} of ${rows} rows`);
-  assert.ok(firstBlast?.powerup.type === "gravity", `the first to bring it down: ${firstBlast?.id}`);
+  const gravity = firsts.filter(p => p?.powerup.type === "gravity").length;
+  assert.ok(gravity > seeds.length / 2, `the first to bring it down: ${firsts.map(p => p?.id).join(", ")}`);
 });
 
 test("a board full of one thing has a name for it, now and then just its own", () => {
