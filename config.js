@@ -75,8 +75,11 @@ export const CONFIG = {
   home: {
     rows: 24, minCols: 14, maxCols: 30, widthShare: 0.85,
     zoom: 2.6, shotMs: [2600, 4200], tiltChance: 0.3, maxTurn: 5, minView: [10, 9], minShotMs: 600,
-    // (at a cut, how often to the other of its two boards rather than somewhere else on this one)
-    otherBoard: 0.5,
+    // (at a cut, how often to the other of its two boards rather than somewhere else on this one;
+    // and somewhere else is clearly somewhere else: the views either side of a cut on the same
+    // board, or the mosaic, share no more than cutOverlap of what they show between them, by
+    // area; with nowhere like that, it's the other board, or no cut at all)
+    otherBoard: 0.5, cutOverlap: 0.35,
     fxEvery: [14000, 22000], logoEvery: 2600,
     idleMs: 30000,
     burstMs: 720, fadeMs: 240,

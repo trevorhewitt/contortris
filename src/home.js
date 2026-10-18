@@ -46,6 +46,16 @@ export function coverScale(w, h, rot, cols, rows) {
   return Math.max((w * c + h * s) / cols, (w * s + h * c) / rows);
 }
 
+// How alike two views are, a and b ({ x, y, S }: the middle, in cells, and screen pixels a cell)
+// on a screen w × h: the area both take in over the area either does (1 the same view, 0 nothing
+// in common; a turn makes no odds).
+export function viewOverlap(a, b, w, h) {
+  const edges = (v) => [v.x - w / (2 * v.S), v.x + w / (2 * v.S), v.y - h / (2 * v.S), v.y + h / (2 * v.S)];
+  const [ax0, ax1, ay0, ay1] = edges(a), [bx0, bx1, by0, by1] = edges(b);
+  const both = Math.max(0, Math.min(ax1, bx1) - Math.max(ax0, bx0)) * Math.max(0, Math.min(ay1, by1) - Math.max(ay0, by0));
+  return both / ((ax1 - ax0) * (ay1 - ay0) + (bx1 - bx0) * (by1 - by0) - both);
+}
+
 export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, setWholeWindow, onPlay, onShowMenu, menuShowing, idleFrom = () => (menuShowing() ? "menu" : null), lastMode, hideOverlay }) {
   const $ = (id) => document.getElementById(id);
   // (the effects are drawn over the board on the same canvas: one layer for the browser to put
@@ -137,14 +147,28 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   }
 
   // (at a cut, now and then, to the other board: once it has something on it, and never in the
-  // middle of a powerup going off on this one, nor after only a moment on it)
+  // middle of a powerup going off on this one, nor after only a moment on it; true if it did)
   let boardSince = 0;
-  function maybeSwitchBoards(now) {
-    if (!other || otherWarm > 0 || shown().effect || now - boardSince < (H().otherBoardAfterMs ?? 1800)) return;
-    if (Math.random() >= (H().otherBoard ?? 0.5)) return;
+  function maybeSwitchBoards(now, chance = H().otherBoard ?? 0.5) {
+    if (!other || otherWarm > 0 || shown().effect || now - boardSince < (H().otherBoardAfterMs ?? 1800)) return false;
+    if (Math.random() >= chance) return false;
     onOther = !onOther;
     boardSince = now;
     markBoardDirty(shown());
+    return true;
+  }
+
+  // (of a few goes at make(), the first that looks clearly different from the view `from`, no
+  // more of it the same than CONFIG.home.cutOverlap, or else the least like it: [it, whether it
+  // is different enough]; seen(it) is its view, { x, y, S })
+  function unlike(from, make, seen) {
+    const most = H().cutOverlap ?? 0.35;
+    let best = null, same = Infinity;
+    for (let i = 0; i < 16 && same > most; i++) {
+      const it = make(), o = from ? viewOverlap(from, seen(it), view.w, view.h) : 0;
+      if (o < same) { best = it; same = o; }
+    }
+    return [best, same <= most];
   }
 
   // (sets served and their versions: the next real game shouldn't care what went by back here)
@@ -228,7 +252,10 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   // the action is: a pan past it, or a push in on it, or a pull back from it, now and then at a
   // slight tilt; never quite still. Then a cut to the next. And the moment the action is
   // somewhere the shot can't see (the next piece lands further along, a powerup's about to go
-  // off out of frame), a cut to it, so nothing happens just out of sight.
+  // off out of frame), a cut to it, so little happens out of sight. Every cut is to something
+  // clearly different: the other board, the mosaic, or somewhere else on this board, never much
+  // the same view from another angle (CONFIG.home.cutOverlap); with nowhere like that to go, no
+  // cut, and the shot goes on from where it is.
   const SHOTS = ["pan", "pan", "pan", "push", "pull"];
   const camera = {
     shot: null, x: 0, y: 0, z: 1, rot: 0, S: 1,
@@ -244,17 +271,28 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       return Math.max(0, b.x0 - m) >= this.x - hw - e && Math.min(cols, b.x1 + m) <= this.x + hw + e
         && Math.max(0, b.y0 - m) >= this.y - hh - e && Math.min(rows, b.y1 + m) <= this.y + hh + e;
     },
-    frame(now, want = null) {
+    // Frames the next shot, on the board on screen: given `from`, the view on screen just before a
+    // cut, the least like it of a few goes (unlike), and with `strict`, none at all if even that
+    // is much the same view (false). `keep`: no cut, the shot going on from just where the view is.
+    frame(now, { from = null, strict = false, keep = false } = {}) {
+      const must = actionBox(true), next = nextBox();
+      const boxes = { must, wants: [union(actionBox(), next), union(must, next), must], stack: stackBox() };
+      const [shot, ok] = unlike(from, () => this.plan(now, boxes, keep), (s) => ({ x: s.a.x, y: s.a.y, S: s.cover * s.z0 }));
+      if (strict && !ok) return false;
+      this.shot = shot;
+      return true;
+    },
+    // (a go at the next shot, around where the action is: `boxes`, from frame)
+    plan(now, { must, wants, stack }, keep) {
       const c = H(), { cols, rows } = CONFIG.board, m = 1.2;
       const turn = (c.maxTurn ?? 5) * Math.PI / 180;
-      const rot = reduced || Math.random() > (c.tiltChance ?? 0.3) ? 0 : rand(-turn, turn);
+      const rot = keep ? this.rot : reduced || Math.random() > (c.tiltChance ?? 0.3) ? 0 : rand(-turn, turn);
       const cover = coverScale(view.w, view.h, rot, cols, rows), zMax = c.zoom ?? 2.6;
       const half = (z) => this.half(z, rot, cover);
       // what to frame: all of the action and the next landings; or, if that's more than the view
       // can take in, the landings without all a powerup will reach; or just where things land
       const fits = (f) => { const h = half(1); return f && Math.min(cols, f.x1 + m) - Math.max(0, f.x0 - m) <= 2 * h.hw && Math.min(rows, f.y1 + m) - Math.max(0, f.y0 - m) <= 2 * h.hh; };
-      const must = actionBox(true);
-      const focus = [want, union(actionBox(), nextBox()), union(must, nextBox()), must].find(fits) ?? must ?? stackBox();
+      const focus = wants.find(fits) ?? must ?? stack;
       // the closest it can be with all of the action in view, with room to spare (but never so
       // close that the next piece is likely to land out of sight: at least CONFIG.home.minView
       // cells across and down, or the whole board where that's smaller)
@@ -300,45 +338,55 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
         z0 = z; z1 = Math.min(zMax, z * 1.05);
         a = at(range(z0)); b = at(range(z1));
       }
+      if (keep) { a = { x: this.x, y: this.y }; z0 = this.z; }
       const [m0, m1] = c.shotMs ?? [2600, 4200];
-      this.shot = { start: now, end: now + rand(m0, m1), a, b, z0, z1, rot, cover, kind, focus };
+      return { start: now, end: now + rand(m0, m1), a, b, z0, z1, rot, cover, kind, focus };
     },
-    // (a cut to the mosaic, when it's time for one: at any cut, but not in the middle of a powerup
-    // going off, nor straight after another cut; true if it did)
-    toMosaic(now) {
+    // A cut from the boards: to the mosaic when it's time for one (but not in the middle of a
+    // powerup going off, nor straight after another cut); now and then to the other board; or
+    // else to somewhere on this one clearly different from what's on screen, or failing that, to
+    // the other board after all. False if there's nowhere to go.
+    cut(now) {
       const M = H().mosaic;
-      if (!mosaic?.ready || reduced || now < mosaicAt || shown().effect || now - this.shot.start <= (H().minShotMs ?? 600)) return false;
-      const [a, b] = M.shots ?? [2, 4];
-      onMosaic = a + Math.floor(Math.random() * (b - a + 1));
-      mosaicAt = now + pickIn(M.everyMs ?? [30000, 45000]);
-      this.mosaicShot(now);
-      return true;
+      if (mosaic?.ready && !reduced && now >= mosaicAt && !shown().effect && now - this.shot.start > (H().minShotMs ?? 600)) {
+        const [a, b] = M.shots ?? [2, 4];
+        onMosaic = a + Math.floor(Math.random() * (b - a + 1));
+        mosaicAt = now + pickIn(M.everyMs ?? [30000, 45000]);
+        this.mosaicShot(now);
+        return true;
+      }
+      const from = { x: this.x, y: this.y, S: this.S };
+      if (maybeSwitchBoards(now)) return this.frame(now, { from });
+      return this.frame(now, { from, strict: true }) || (maybeSwitchBoards(now, 1) && this.frame(now, { from }));
     },
     step(dt, now) {
-      const s0 = this.shot;
+      const s0 = this.shot, was = shown(), last = { x: this.x, y: this.y, rot: this.rot, S: this.S };
       if (mosaic && !mosaic.ready) mosaic.ready = mosaic.step(3);
-      if (!s0 || now >= s0.end) {
-        // a cut: now and then to the other board, or for a few shots to a mosaic, and back
-        if (onMosaic > 0 && --onMosaic > 0) { this.mosaicShot(now); return this.stepMosaic(now); }
-        if (s0 && !s0.mosaic && this.toMosaic(now)) return this.stepMosaic(now);
-        if (s0?.mosaic) { newMosaic(); markBoardDirty(shown()); } // (back from one: a fresh one for next time)
-        else if (s0) maybeSwitchBoards(now);
-        this.frame(now);
-      } else if (s0.mosaic) return this.stepMosaic(now);
-      else if (!reduced) {
+      if (!s0) this.frame(now);
+      else if (now >= s0.end) {
+        // a cut: to the next shot of a mosaic, or back from it; or from the boards, wherever cut()
+        // says, and with nowhere clearly different to go, no cut: on from just here
+        if (onMosaic > 0 && --onMosaic > 0) this.mosaicShot(now, true);
+        else if (s0.mosaic) { newMosaic(); markBoardDirty(shown()); this.frame(now); } // (back from one: a fresh one for next time)
+        else if (!this.cut(now)) this.frame(now, { keep: true });
+      } else if (!s0.mosaic && !reduced) {
         // the next thing to land, or go off, somewhere this shot can't see: cut to it (a new
-        // piece the moment it comes, so you see it come down; never two cuts within minShotMs)
+        // piece the moment it comes, so you see it come down, and a powerup the moment it goes
+        // off; otherwise never two cuts within minShotMs)
         const B = shown(), b = actionBox(true), piece = B.active?.shape ?? null;
-        const fresh = piece !== this.piece;
+        const fresh = piece !== this.piece, fired = !!B.effect && B.effect !== this.effect;
         this.piece = piece;
-        if (b && !this.sees(b, 0.2) && (fresh || B.effect || now - s0.start > (H().minShotMs ?? 600))) {
-          if (now - s0.start > (H().minShotMs ?? 600) || B.effect || piece?.powerup) {
-            if (this.toMosaic(now)) return this.stepMosaic(now);
-            maybeSwitchBoards(now);
-            this.frame(now);
-          }
+        this.effect = B.effect;
+        if (b && !this.sees(b, 0.2) && (fresh || fired || now - s0.start > (H().minShotMs ?? 600))) {
+          if (now - s0.start > (H().minShotMs ?? 600) || fired || piece?.powerup) this.cut(now);
         }
       }
+      // (a cut to the other board: until the next frame the board canvas still has the one it's
+      // leaving on it, so this frame keeps the view it had, not that board from the new angle;
+      // and the piece coming down on the other isn't a new one just because it's new to the camera)
+      this.hold = shown() !== was ? last : null;
+      if (this.hold) this.piece = shown().active?.shape ?? null;
+      if (this.shot.mosaic) return this.stepMosaic(now);
       const s = this.shot, u = Math.min(1, (now - s.start) / (s.end - s.start));
       this.rot = s.rot;
       this.z = s.z0 + (s.z1 - s.z0) * u;
@@ -349,44 +397,44 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       this.y = Math.max(hh, Math.min(rows - hh, s.a.y + (s.b.y - s.a.y) * u));
     },
     // A shot of the mosaic: a fast sweep from one spot to another across it, turning and zooming
-    // as it goes (CONFIG.home.mosaic), eased in and out.
-    mosaicShot(now) {
+    // as it goes (CONFIG.home.mosaic), eased in and out. `after` another shot of it: from somewhere
+    // clearly different from where that one ended (unlike).
+    mosaicShot(now, after = false) {
       const M = H().mosaic, m = mosaic.mosaic, turn = (M.maxTurn ?? 30) * Math.PI / 180;
       const [zl, zh] = M.zoom ?? [1.15, 3.4], [m0, m1] = M.shotMs ?? [1000, 1700];
       const end = () => ({ x: rand(0, m.cols), y: rand(0, m.rows), z: rand(zl, zh), rot: rand(-turn, turn) });
-      const a = end(), b = end();
+      const [a] = unlike(after && { x: this.x, y: this.y, S: this.S }, end, (p) => this.mosaicView(p)), b = end();
       // (a pan, mostly; or a turn and a zoom about one spot)
       if (Math.random() < 0.3) { b.x = a.x + rand(-3, 3); b.y = a.y + rand(-3, 3); b.z = a.z * (Math.random() < 0.5 ? 0.5 : 1.8); }
       this.shot = { mosaic: true, start: now, end: now + rand(m0, m1), a, b };
     },
+    // (the view of the mosaic from p, { x, y, z, rot }: never so far that anything beyond it shows)
+    mosaicView(p) {
+      const m = mosaic.mosaic, z = Math.max(1, p.z), S = coverScale(view.w, view.h, p.rot, m.cols, m.rows) * z;
+      const ca = Math.abs(Math.cos(p.rot)), sa = Math.abs(Math.sin(p.rot));
+      const hw = (view.w * ca + view.h * sa) / (2 * S), hh = (view.w * sa + view.h * ca) / (2 * S);
+      return { x: Math.max(hw, Math.min(m.cols - hw, p.x)), y: Math.max(hh, Math.min(m.rows - hh, p.y)), z, rot: p.rot, S };
+    },
     stepMosaic(now) {
-      const s = this.shot, m = mosaic.mosaic, u = smooth(Math.min(1, (now - s.start) / (s.end - s.start)));
+      const s = this.shot, u = smooth(Math.min(1, (now - s.start) / (s.end - s.start)));
       const lerp = (k) => s.a[k] + (s.b[k] - s.a[k]) * u;
-      this.rot = lerp("rot");
-      const cover = coverScale(view.w, view.h, this.rot, m.cols, m.rows);
-      this.z = Math.max(1, lerp("z"));
-      this.S = cover * this.z;
-      // (never so far that anything beyond it shows)
-      const ca = Math.abs(Math.cos(this.rot)), sa = Math.abs(Math.sin(this.rot));
-      const hw = (view.w * ca + view.h * sa) / (2 * this.S), hh = (view.w * sa + view.h * ca) / (2 * this.S);
-      this.x = Math.max(hw, Math.min(m.cols - hw, lerp("x")));
-      this.y = Math.max(hh, Math.min(m.rows - hh, lerp("y")));
+      Object.assign(this, this.mosaicView({ x: lerp("x"), y: lerp("y"), z: lerp("z"), rot: lerp("rot") }));
     },
     draw() {
       if (this.shot?.mosaic && mosaic) return this.drawImage(mosaic.canvas, mosaic.mosaic.cols);
-      this.drawImage(boardCanvas, CONFIG.board.cols);
+      this.drawImage(boardCanvas, CONFIG.board.cols, this.hold ?? this);
     },
-    drawImage(img, cols) {
+    drawImage(img, cols, v = this) {
       const pc = img.width / cols, d = view.dpr;
       bgx.setTransform(1, 0, 0, 1, 0, 0);
       bgx.fillStyle = "#000";
       bgx.fillRect(0, 0, bg.width, bg.height);
       bgx.imageSmoothingEnabled = false;
       bgx.translate(bg.width / 2, bg.height / 2);
-      bgx.rotate(this.rot);
-      const k = this.S * d / pc;
+      bgx.rotate(v.rot);
+      const k = v.S * d / pc;
       bgx.scale(k, k);
-      bgx.translate(-this.x * pc, -this.y * pc);
+      bgx.translate(-v.x * pc, -v.y * pc);
       bgx.drawImage(img, 0, 0);
     },
   };
