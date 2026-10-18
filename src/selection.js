@@ -5,7 +5,7 @@
 //   0. a level 6 group that is under way carries on (src/level6.js)
 //   1. linked shapes (prev.nextShapes / nextShapeProbs) — "back to back" pieces
 //   2. a wave's big Gravitizer, once its stretch of awkward pieces is over (src/waves.js)
-//   3. a level 6 group may start (once unlocked)
+//   3. a level 6 group may start (once unlocked; not while a wave's big Gravitizer is due)
 //   4. powerup scheduler (Normal mode only): the class first, then one of its pieces
 //   5. regular level mix: (a) choose a difficulty level, (b) choose a shape in that
 //      level by frequency × variety (recently served / already on the board)
@@ -20,7 +20,7 @@ import { isGodMode, godConfig, gravityColumns } from "./godmode.js";
 import { pickThread, threadWeight } from "./threads.js";
 import { warmth, alwaysWarm } from "./pacing.js";
 import { hardness, eased, classWeight } from "./difficulty.js";
-import { initWaves, waveTense, waveLevels, waveStep } from "./waves.js";
+import { initWaves, waveTense, waveEnding, waveLevels, waveStep } from "./waves.js";
 
 const DEBUG_LINK = false; // verbose console logging for linked shapes
 
@@ -443,8 +443,8 @@ function pickNextPiece(state) {
     return relief;
   }
 
-  // Level 6: maybe a group starts here.
-  const groupStart = maybeStartGroup(state);
+  // Level 6: maybe a group starts here (not on a wave's mess before its big Gravitizer has come).
+  const groupStart = waveEnding(state) ? null : maybeStartGroup(state);
   if (groupStart) {
     commitSelectedShape(sel, groupStart);
     if (!groupUnderWay(state)) noteHardDropped(sel, LEVEL6);

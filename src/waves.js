@@ -8,7 +8,8 @@
 // bring down (not one wasted on a tidy board), and the whole mess drops into its holes. The
 // further into the game it is, the closer together the waves come and the longer they last. None
 // in the end game, during a level 6 set or a calm spell, or (in Classic) before the Gravitizerz
-// have been met: the first of a class is always one of its starters.
+// have been met: the first of a class is always one of its starters. A set waits for the big
+// Gravitizer, and a wave's giants keep to the usual rules (src/selection.js).
 
 import { CONFIG } from "../config.js";
 import { lerp } from "./util.js";
@@ -31,6 +32,11 @@ export function initWaves(state) {
 // In the middle of a stretch: the awkward pieces, and hardly any Shiny Pieces.
 export function waveTense(state) {
   return state.pieceSel?.waves?.phase === "tense";
+}
+
+// The stretch over, and its big Gravitizer still to come (a level 6 set waits for it).
+export function waveEnding(state) {
+  return state.pieceSel?.waves?.phase === "relief";
 }
 
 // While a stretch lasts, the level mix leans its way (`levelW`, changed in place): its giants
