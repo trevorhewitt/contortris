@@ -627,6 +627,9 @@ function spawnPiece(state) {
   // (zen: it starts out already turned, over the place it's going)
   if (state.zen) zenSpawned(state);
   if (at != null) state.active.x = at; // (the tutorial's pieces start where the page says)
+  // (with no room for any of it to come onto the board there, under a stack right up to the top,
+  // it comes down somewhere it can: the piece that ends a game is one the player sees)
+  else if (!state.zen && !isPhantomPowerup(shape.powerup)) state.active.x = roomToEnter(state, mat, state.active.x);
   const pauseFirst = state.zen?.pauseFirst ?? 0;
 
   const ok = isPhantomPowerup(shape.powerup) || !collides(state, state.active.x, state.active.y, getActiveMatrix(state));
@@ -642,6 +645,29 @@ function spawnPiece(state) {
     if (pauseFirst > 0) dramaticPause(state, pauseFirst, null);
   }
   return ok;
+}
+
+// Where a piece can come down onto the board from, starting at column x0: x0, if any of it would
+// get onto the board there, dropped straight down; or else the nearest column where it would land
+// without sticking out over the top, and failing that, where the most of it would get on. (Nowhere
+// at all: x0.)
+function roomToEnter(state, mat, x0) {
+  const cols = CONFIG.board.cols, w = mat[0].length;
+  const onBoard = (x) => {
+    let y = -mat.length;
+    while (!collides(state, x, y + 1, mat)) y++;
+    return mat.reduce((n, row, j) => n + (y + j >= 0 ? row.filter(Boolean).length : 0), 0);
+  };
+  if (onBoard(x0) > 0) return x0;
+  const all = mat.reduce((n, row) => n + row.filter(Boolean).length, 0);
+  let best = x0, most = 0;
+  for (let d = 1; d < cols; d++) for (const x of [x0 - d, x0 + d]) {
+    if (x < 0 || x + w > cols) continue;
+    const n = onBoard(x);
+    if (n === all) return x;
+    if (n > most) { best = x; most = n; }
+  }
+  return best;
 }
 
 // Has this powerup's class been introduced yet in this game? (Before it has, a next-piece

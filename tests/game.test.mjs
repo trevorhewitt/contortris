@@ -357,6 +357,32 @@ test("a piece about to top out gets a last chance: it can still be moved out of 
   }
 });
 
+test("a piece comes down where it can get onto the board, not over a stack right up to the top", () => {
+  // (an Expander's tower right up to the top in the middle, say: the next piece used to come down
+  // on top of it, out of sight, and end the game)
+  const tower = [...Array(COLS).keys()].filter(x => Math.abs(x - (COLS - 1) / 2) < 3);
+  for (let seed = 1; seed <= 12; seed++) {
+    const { state } = newGame("extreme", seed);
+    state.board.forEach(row => row.fill(null));
+    for (let y = 0; y < ROWS; y++) for (const x of tower) state.board[y][x] = filler();
+    placeActive(state, "pea", 0, 0);
+    setNextPiece(state, byId("square"));
+    hardDropAndLock(state);
+    const a = state.active, w = a.shape.rotations[a.rotIdx][0].length;
+    assert.equal(a.shape.id, "square");
+    assert.ok(a.x + w <= tower[0] || a.x > tower.at(-1), `seed ${seed}: it comes down clear of the tower (x ${a.x})`);
+    settle(state, 4000);
+    assert.equal(state.gameOver, false, `seed ${seed}: and lands on the board`);
+  }
+  // (with room where it would come down anyway, it comes down there, as always)
+  const { state } = newGame("extreme", 1);
+  state.board.forEach(row => row.fill(null));
+  placeActive(state, "pea", 0, 0);
+  setNextPiece(state, byId("square"));
+  hardDropAndLock(state);
+  assert.ok(Math.abs(state.active.x - (COLS - 2) / 2) <= 3, "near the middle");
+});
+
 test("a piece slid along the ground waits a little longer, so it can be slid again (up to a point)", () => {
   const fresh = () => {
     const { state } = newGame("extreme", 5);
