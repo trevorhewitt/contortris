@@ -158,7 +158,7 @@ export const THREADS = {
     "florgnorfepus_egg", "snorfwiggle", "plorbs", "grumblesac", "schlopwort", "squonch", "blibbets",
     "mumblethorpe", "stomach", "liquid_cat", "jelly_mould",
     "emotion_plorch", "emotion_glumpf", "stapler_in_jello", "slumped_beanbag"],
-  feelings: ["happy_pills_2", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy", "emotion_inner_emptiness", "emotion_playing_eztrix", "emotion_winning_eztrix", "emotion_urge_to_rotate", "emotion_long_piece", "emotion_being_a_piece", "emotion_row_grief", "emotion_fear_of_ceiling", "heart", "smiley", "capacity", "hug_cactus", "thirsty_plant", "lone_sprinkle",
+  feelings: ["happy_pills_2", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy", "emotion_inner_emptiness", "emotion_playing_eztrix", "emotion_winning_eztrix", "emotion_long_piece", "emotion_being_a_piece", "emotion_row_grief", "emotion_fear_of_ceiling", "heart", "smiley", "capacity", "hug_cactus", "thirsty_plant", "lone_sprinkle",
     "sad_asteroid", "tiniest", "happy_pills", "support_brick", "emotion_happiness",
     "emotion_sadness", "emotion_anger", "emotion_deja_vu", "emotion_someone_behind_you",
     "emotion_ear_itch", "emotion_oven", "emotion_nostalgia", "emotion_cold_pillow",
