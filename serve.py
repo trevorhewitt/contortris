@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Local Eztrix server: serves the game and the block designer, and lets the designer
+Local Estrix server: serves the game and the block designer, and lets the designer
 save straight into your files (no downloads).
 
     python3 serve.py            # then open http://localhost:8000/block_designer.html

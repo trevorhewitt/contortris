@@ -1,5 +1,5 @@
 // ============================================================
-// EZTRIX — boot: load the blocks + achievements, wire everything up, run the loop
+// ESTRIX — boot: load the blocks + achievements, wire everything up, run the loop
 // ============================================================
 
 import { CONFIG } from "../config.js";

@@ -1,4 +1,4 @@
-# Eztrix
+# Estrix
 
 A falling-block puzzle game where every piece is a silly pixel-art object: fill a row and it
 clears.

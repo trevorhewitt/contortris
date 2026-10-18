@@ -1,5 +1,5 @@
 /**
- * EZTRIX THREADS: loose themes that pieces (and powerups, and level 6 sets) share.
+ * ESTRIX THREADS: loose themes that pieces (and powerups, and level 6 sets) share.
  * Edit by hand. A thread is a name and the ids on it; a piece can be on several.
  *
  * Often the next piece follows a thread from the last piece or two (CONFIG.assist.threads),
@@ -83,14 +83,14 @@ export const THREADS = {
     "heavy_news", "old_testament", "new_testament", "spam_spam_and_spam", "spm", "maps",
     "spaaaaaaaam", "babel_lower", "babel_middle", "babel_top", "schnauzers", "schnerzgerberz",
     "hergrr", "emotion_forglavedness", "emotion_wibberance", "emotion_snerk", "emotion_sprongle",
-    "emotion_halvering", "britannica", "oed", "last_straw", "elephant_in_the_room", "stop_sign", "giant_eraser", "mountain_of_post", "eztrix"],
+    "emotion_halvering", "britannica", "oed", "last_straw", "elephant_in_the_room", "stop_sign", "giant_eraser", "mountain_of_post", "estrix"],
   home: ["tile_square_blue", "tile_square_green", "tile_square_terracotta", "tile_square_gold", "tile_big_blue", "tile_big_green", "tile_big_terracotta", "tile_big_gold", "tile_l_blue", "tile_l_green", "tile_l_terracotta", "tile_l_gold", "tile_t_blue", "tile_t_green", "tile_t_terracotta", "tile_t_gold", "tile_s_blue", "tile_s_green", "tile_s_terracotta", "tile_s_gold", "tile_lizard_blue", "tile_lizard_green", "tile_lizard_terracotta", "tile_lizard_gold", "cracked_pot", "doorway", "another", "sofa_remote", "thirsty_plant", "mirrormean", "morrrocan",
     "expanding_foam", "leaky_tap", "wall_filler", "weighted_blanket", "foam_cousin", "plunger",
     "poltergeist", "townhouses", "emotion_missing_step", "santa_chimney", "elephant_on_chair",
     "elephant_in_the_room", "bath_left_running", "memory_foam_mattress", "week_of_laundry", "last_jigsaw_piece", "slumped_beanbag", "unravelling_yarn", "patchwork_quilt", "spilled_paint", "mountain_of_post", "wandering_washing_machine", "spare_allen_key", "bathroom_tiles", "herringbone_floor", "hexagonal_tiles", "fish_scale_tiles", "moroccan_mosaic", "terrazzo_slab", "chequered_marble", "lego_bucket"],
   toys: ["kite_in_a_storm", "juggling", "rubber_chicken", "die_of_ones", "blank_domino", "unicycle", "model_railway",
     "seen_things", "chattering_teeth", "floor_is_lava", "lost_marbles", "ball_pit", "lego_brick",
-    "pacman", "santa_chimney", "giant_rubber_duck", "rubiks_cube", "lego_brick_2x4", "last_jigsaw_piece", "unwanted_present", "lego_cube_2x2_red", "lego_cube_2x2_blue", "lego_cube_3x3", "lego_cube_4x4", "lego_slab_2x4", "lego_block_3x2", "big_hug", "eztrix", "present_small", "present_long", "present_tall", "present_wide", "present_big", "big_green_pipe", "inflating_bouncy_castle", "lego_few_bricks", "lego_heap", "lego_tub", "lego_bucket"],
+    "pacman", "santa_chimney", "giant_rubber_duck", "rubiks_cube", "lego_brick_2x4", "last_jigsaw_piece", "unwanted_present", "lego_cube_2x2_red", "lego_cube_2x2_blue", "lego_cube_3x3", "lego_cube_4x4", "lego_slab_2x4", "lego_block_3x2", "big_hug", "estrix", "present_small", "present_long", "present_tall", "present_wide", "present_big", "big_green_pipe", "inflating_bouncy_castle", "lego_few_bricks", "lego_heap", "lego_tub", "lego_bucket"],
   heavy: ["anvil_of_feathers", "dumbbell", "steel", "boulder", "large_black_hole", "heavy_book", "wrecking_ball",
     "anvil", "existential_sigh", "sumo_wrestler", "potato_sack", "weighted_blanket", "heavy_news",
     "steamroller", "blue_whale", "grand_piano", "ton_of_bricks", "pile_driver", "tiptoe_elephant",
@@ -158,7 +158,7 @@ export const THREADS = {
     "florgnorfepus_egg", "snorfwiggle", "plorbs", "grumblesac", "schlopwort", "squonch", "blibbets",
     "mumblethorpe", "stomach", "liquid_cat", "jelly_mould",
     "emotion_plorch", "emotion_glumpf", "stapler_in_jello", "slumped_beanbag"],
-  feelings: ["happy_pills_2", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy", "emotion_inner_emptiness", "emotion_playing_eztrix", "emotion_winning_eztrix", "emotion_long_piece", "emotion_being_a_piece", "emotion_row_grief", "emotion_fear_of_ceiling", "heart", "smiley", "capacity", "hug_cactus", "thirsty_plant", "lone_sprinkle",
+  feelings: ["happy_pills_2", "emotion_fear", "emotion_surprise", "emotion_boredom", "emotion_calm", "emotion_jealousy", "emotion_inner_emptiness", "emotion_playing_estrix", "emotion_winning_estrix", "emotion_long_piece", "emotion_being_a_piece", "emotion_row_grief", "emotion_fear_of_ceiling", "heart", "smiley", "capacity", "hug_cactus", "thirsty_plant", "lone_sprinkle",
     "sad_asteroid", "tiniest", "happy_pills", "support_brick", "emotion_happiness",
     "emotion_sadness", "emotion_anger", "emotion_deja_vu", "emotion_someone_behind_you",
     "emotion_ear_itch", "emotion_oven", "emotion_nostalgia", "emotion_cold_pillow",

@@ -1,5 +1,5 @@
 /**
- * EZTRIX ACHIEVEMENTS
+ * ESTRIX ACHIEVEMENTS
  * Edit by hand or with block_designer.html (Achievements tab; it keeps this comment when saving).
  *
  * Each entry:
