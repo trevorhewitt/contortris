@@ -140,7 +140,8 @@ page has:
   with "Comboz" where the combos may start.
 - **Sliders** for how fast Classic and God mode fall (at the start, once it's hard, and faster
   per piece after that), how they get harder, what "hard" means, how often each class comes at
-  the start, halfway and once it's hard, and Shiny Pieces overall. Changed ones show in yellow.
+  the start, halfway and once it's hard, and Shiny Pieces overall (how often, and how fast they
+  go off). Changed ones show in yellow.
 - **Copy settings**: copies just what you've changed, as text to paste into a message.
 - **Back to the usual** and **Turn developer tools off** (everything back to the game's own).
 

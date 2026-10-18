@@ -9,7 +9,7 @@ import { ACHIEVEMENTS } from "../shapes/achievements.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import {
-  createGameState, startRun, updateGame, hardDropAndLock, setNextPiece, on, insidePairs, tryMove, tryRotate,
+  createGameState, startRun, updateGame, hardDropAndLock, setNextPiece, on, insidePairs, tryMove, tryRotate, showSpeed,
 } from "../src/game.js";
 import { computeBoardPresence, varietyMultiplier, powerupUsefulness } from "../src/selection.js";
 import { createAchievements } from "../src/achievements.js";
@@ -163,6 +163,34 @@ test("a destroyer powerup fires through the real game loop", () => {
   assert.ok(state.blocksDestroyed >= fire.d.affected);
   assert.ok(state.active, "next piece spawned");
   assert.ok(![...state.instances.values()].some(i => i.shape.id === "small_black_hole"), "consumed");
+});
+
+test("a Shiny Piece goes off faster the faster the pieces fall, but only so fast", () => {
+  const P = CONFIG.fx.powerup, start = CONFIG.difficulty.normal.speed.fromMs;
+  // with the pieces falling a row every `dropMs`: how long it holds the next piece back, and how
+  // long until the last of its show has gone (ms of game time), and both as planned (at 1×)
+  const goOff = (dropMs) => {
+    const { state, events } = newGame("normal");
+    for (let y = ROWS - 4; y < ROWS; y++) for (let x = 0; x < COLS - 1; x++) state.board[y][x] = filler();
+    state.dropMs = dropMs;
+    placeActive(state, "small_black_hole", 6, 0);
+    hardDropAndLock(state);
+    let held = 0, gone = 0;
+    for (; state.effect; held += 16) updateGame(state, 16);
+    for (gone = held; state.fx.show; gone += 16) updateGame(state, 16);
+    assert.ok(state.active, "and the next piece comes");
+    const show = events.find(e => e.type === "powerupFire").d.show;
+    return { held, gone, plan: P.chargeMs + show.settleMs, all: P.chargeMs + show.durationMs };
+  };
+  const near = (got, want, what) => assert.ok(Math.abs(got - want) <= 40, `${what}: ${got} ms, not about ${Math.round(want)}`);
+  const first = goOff(start), quicker = goOff(start / 1.25), quickest = goOff(start / 20);
+  near(first.held, first.plan / P.speed, "at the start of a game");
+  near(quicker.held, quicker.plan / Math.min(P.maxSpeed, P.speed * 1.25), "falling a quarter faster, a quarter faster");
+  near(quickest.held, quickest.plan / P.maxSpeed, "falling far faster, no faster than maxSpeed");
+  near(quickest.gone, quickest.all / P.maxSpeed, "its rings and glows go in step");
+  assert.ok(quickest.held < quicker.held && quicker.held < first.held);
+  // (turbo zen keeps to its own pace)
+  assert.equal(showSpeed(newGame("turbo").state), 1);
 });
 
 test("gravity powerup keeps a piece that slides as one block intact", () => {

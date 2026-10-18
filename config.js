@@ -1040,6 +1040,13 @@ export const CONFIG = {
     },
 
     powerup: {
+      // How fast it all plays (the glow, the show, and the wait for it before the next piece):
+      // `speed` times as fast as the timings below, and faster as the game gets faster, in step
+      // with the fall (with the pieces falling twice as fast as at the start, twice as fast
+      // again), up to `maxSpeed` times as fast. (The zen modes keep their own pace.)
+      speed: 1.5,
+      maxSpeed: 3,
+
       // Locked powerup glows for this long before it fires.
       chargeMs: 260,
 

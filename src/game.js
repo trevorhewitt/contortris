@@ -1057,6 +1057,7 @@ function countFallingBlocksAfterClear(oldBoard, fullRowsSet) {
    Sequence after a powerup locks:
      "charge" (piece + highlighted cells glow)  ->  fire the effect
      "settle" (blocks fly / slide / grow)       ->  line clears, next piece
+   (both at the show's speed: showSpeed)
 */
 
 function beginPowerupEffect(state, lockInfo) {
@@ -1072,6 +1073,7 @@ function beginPowerupEffect(state, lockInfo) {
     phase: "charge",
     elapsedMs: 0,
     durationMs: CONFIG.fx.powerup.chargeMs,
+    speed: showSpeed(state),
     quakeOnSettle: 0,
   };
   emit(state, "powerupCharge", { shape });
@@ -1079,7 +1081,7 @@ function beginPowerupEffect(state, lockInfo) {
 
 function updatePowerupEffect(state, dt) {
   const e = state.effect;
-  e.elapsedMs += dt;
+  e.elapsedMs += dt * e.speed;
   if (e.elapsedMs < e.durationMs) return;
 
   if (e.phase === "charge") {
@@ -1200,15 +1202,30 @@ function wobble(x, y, k = 0) {
   return s - Math.floor(s);
 }
 
+// How fast it all plays (CONFIG.fx.powerup.speed): its timings this many times as fast, and as
+// the game gets faster, faster in step with the fall (the speed now against the speed it started
+// at: CONFIG.difficulty's in Classic and God mode, CONFIG.timing's in the others), up to maxSpeed.
+// The zen modes keep their own pace (turbo zen's is timed round its shows), and the tutorial,
+// its pages each falling at a pace of their own, plays it as at the start of a game.
+export function showSpeed(state) {
+  const P = CONFIG.fx.powerup;
+  if (state.zen) return 1;
+  const start = rampCfg(state)?.speed?.fromMs ?? CONFIG.timing.baseDropMs;
+  const faster = state.tutorial ? 1 : Math.max(1, start / state.dropMs);
+  return Math.min(P.maxSpeed ?? Infinity, (P.speed ?? 1) * faster);
+}
+
 // Plans the show for a powerup that has just fired, and starts its block animations. Each
 // class has its own: destroyers pull everything into a core that bursts, gravity trembles and
 // drops with a thud, expanders sprout outwards from a pulse, phantoms flicker into being, and
 // combos play their parts one after another and finish in a rainbow. The more blocks it
 // changes, the bigger the show: big ones freeze for a moment, punch the board, play a little
-// slower and leave a moment to take it in (CONFIG.fx.powerup.show).
+// slower and leave a moment to take it in (CONFIG.fx.powerup.show). All of it plays at the
+// effect's speed (showSpeed).
 function planShow(state, e, fx, affected, reach) {
   const S = CONFIG.fx.powerup.show;
   const pu = e.pu;
+  const { particles, shockwaves } = state.fx, had = [particles.length, shockwaves.length];
   const power = clamp01((affected - S.bigFrom) / Math.max(1, S.bigAt - S.bigFrom));
   const hold = Math.round(S.holdMs * power);
   const slow = 1 + S.slowdown * power;
@@ -1223,7 +1240,7 @@ function planShow(state, e, fx, affected, reach) {
     blocks: [],   // blocks no longer on the board that it still draws (pulled in, fading away)
     pull: null, ghost: null, fills: null, trails: false, tremble: 0, land: null,
     phases: [], quakes: [], finaleAt: null,
-    elapsedMs: 0, durationMs: 0, settleMs: 0,
+    elapsedMs: 0, durationMs: 0, settleMs: 0, speed: e.speed,
   };
   // (goo flows from where the piece melted to where it settles)
   const gooMoves = fx.filled.filter(f => f.fromX != null).map(f => ({ fromX: f.fromX, fromY: f.fromY, toX: f.x, toY: f.y }));
@@ -1264,6 +1281,9 @@ function planShow(state, e, fx, affected, reach) {
     confetti(state, show.centre, Math.round(10 + 40 * power), at);
     end = Math.max(end, at + 240, show.sweep.last + show.sweep.ms * 0.6);
   }
+  // (the particles and rings it set going play at its speed too: updateFX)
+  for (let i = had[0]; i < particles.length; i++) particles[i].speed = show.speed;
+  for (let i = had[1]; i < shockwaves.length; i++) shockwaves[i].speed = show.speed;
   show.settleMs = Math.round(Math.max(S.minSettleMs, end) + S.extraMs * power);
   show.durationMs = show.settleMs + S.tailMs;
   state.fx.show = show;
@@ -1346,6 +1366,7 @@ function startMoveAnim(state, moves, { start = 0, power = 0, slow = 1, show = nu
   const anim = state.fx.moveAnim;
   anim.byIndex.clear();
   anim.elapsedMs = 0;
+  anim.speed = show?.speed ?? 1;
   const shake = show && moves.length >= G.trembleFrom ? Math.max(0.35, power) : 0;
   const tremble = shake ? G.trembleMs * shake : 0;
   const go = start + tremble;
@@ -1398,6 +1419,7 @@ function startGrowAnim(state, filled, centre, { start = 0, show = null, from = n
   const anim = state.fx.growAnim;
   anim.byIndex.clear();
   anim.elapsedMs = 0;
+  anim.speed = show?.speed ?? 1;
   anim.growMs = cfg.expandGrowMs;
   let maxDelay = 0, reach = 1;
 
@@ -1705,19 +1727,19 @@ function updateFX(state, dt) {
   const parts = state.fx.particles;
   if (parts.length) {
     const cfg = CONFIG.fx.lineClear;
-    const drag = Math.max(0, 1 - cfg.dragPerSecond * dtSec);
     let n = 0;
     for (let i = 0; i < parts.length; i++) {
       const p = parts[i];
-      if (p.delayMs > 0) { p.delayMs -= dt; parts[n++] = p; continue; } // (not yet)
-      p.lifeMs -= dt;
+      const t = dt * (p.speed ?? 1), sec = t / 1000; // (a show's, at its speed: planShow)
+      if (p.delayMs > 0) { p.delayMs -= t; parts[n++] = p; continue; } // (not yet)
+      p.lifeMs -= t;
       if (p.lifeMs <= 0) continue;
 
-      const k = p.drag != null ? Math.max(0, 1 - p.drag * dtSec) : drag;
+      const k = Math.max(0, 1 - (p.drag ?? cfg.dragPerSecond) * sec);
       p.vx *= k;
-      p.vy = p.vy * k + (p.g ?? cfg.gravityPxPerSec2) * dtSec;
-      p.x += p.vx * dtSec;
-      p.y += p.vy * dtSec;
+      p.vy = p.vy * k + (p.g ?? cfg.gravityPxPerSec2) * sec;
+      p.x += p.vx * sec;
+      p.y += p.vy * sec;
 
       parts[n++] = p;
     }
@@ -1730,7 +1752,7 @@ function updateFX(state, dt) {
 
   const sh = state.fx.show;
   if (sh) {
-    sh.elapsedMs += dt;
+    sh.elapsedMs += dt * sh.speed;
     for (const q of sh.quakes) if (!q.done && sh.elapsedMs >= q.at) { q.done = true; addQuakeFromBlocks(state, q.blocks); }
     if (sh.elapsedMs >= sh.durationMs) state.fx.show = null;
   }
@@ -1745,7 +1767,7 @@ function updateFX(state, dt) {
   const sw = state.fx.shockwaves;
   if (sw.length) {
     let n = 0;
-    for (const w of sw) { w.elapsedMs += dt; if (w.elapsedMs < w.durationMs) sw[n++] = w; }
+    for (const w of sw) { w.elapsedMs += dt * (w.speed ?? 1); if (w.elapsedMs < w.durationMs) sw[n++] = w; }
     sw.length = n;
   }
 
@@ -1771,7 +1793,7 @@ function updateFX(state, dt) {
 
   for (const anim of [state.fx.moveAnim, state.fx.growAnim, state.fx.flash]) {
     if (!anim.active) continue;
-    anim.elapsedMs += dt;
+    anim.elapsedMs += dt * (anim.speed ?? 1);
     if (anim.elapsedMs >= anim.durationMs) anim.active = false;
   }
 

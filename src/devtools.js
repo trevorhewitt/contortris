@@ -75,6 +75,8 @@ const GROUPS = [
     ["assist.powerups.baseChance", "chance after one", 0, 0.6, 0.01],
     ["assist.powerups.chancePerDrop", "...going up each piece by", 0, 0.3, 0.005],
     ["assist.powerups.cooldownDrops", "at least this many pieces apart", 0, 10, 1],
+    ["fx.powerup.speed", "how fast they go off, at the start (×)", 0.5, 3, 0.05],
+    ["fx.powerup.maxSpeed", "...and at most, as the game speeds up (×)", 1, 5, 0.1],
   ] },
 ];
 
