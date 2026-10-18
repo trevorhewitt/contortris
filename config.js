@@ -477,11 +477,11 @@ export const CONFIG = {
     // all of those (latestBoost, latestSetBoost). Anything never seen in this browser at all
     // comes up unseenBoost times as often.
     latest: {
-      sets: ["great_and_terrible", "spam", "beans", "spaghetti_os", "tower_of_babel"],
+      sets: ["great_and_terrible"],
       pieces: ["unread_dictionary", "sphinx", "sphinx_nose", "big_green_pipe"],
     },
     newest: {
-      sets: ["sunshine", "trees", "great_and_terrible", "space", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
+      sets: ["sunshine", "trees", "great_and_terrible", "space", "emotions_british", "emotions_online", "emotions_ascent", "spam", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
       pieces: [
         "storm_cloud", "big_storm_cloud", "rumbling_storm_cloud", "monsoon", "cats_and_dogs_cloud",
         "crying_cloud", "silver_lining_cloud", "expanding_foam", "leaky_tap", "wall_filler", "sourdough",

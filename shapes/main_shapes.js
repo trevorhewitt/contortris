@@ -130184,24 +130184,22 @@ export const SHAPES = [
     color: [["#8a5cb8","#8a5cb8","#8a5cb8","#8a5cb8","#8a5cb8","#8a5cb8","#6c4498","#6c4498","#8a5cb8"],["#8a5cb8","#ffd84a","#52307a","#52307a","#6c4498","#8a5cb8","#6c4498","#ffd84a","#8a5cb8"],["#6c4498","#52307a","#52307a","#52307a","#3d2458","#6c4498","#6c4498","#52307a","#6c4498"],["#6c4498","#6c4498","#c99a30","#fff6d0","#ffd84a","#ffd84a","#c99a30","#52307a","#6c4498"],["#6c4498","#8a5cb8","#ffd84a","#1a0c14","#1a0c14","#1a0c14","#ffd84a","#3d2458","#ffd84a"],["#8a5cb8","#6c4498","#c99a30","#ffd84a","#ffd84a","#ffd84a","#c99a30","#52307a","#8a5cb8"],["#8a5cb8","#6c4498","#3d2458","#52307a","#6c4498","#6c4498","#6c4498","#8a5cb8","#8a5cb8"],["#8a5cb8","#ffd84a","#52307a","#3d2458","#52307a","#6c4498","#6c4498","#ffd84a","#6c4498"],["#6c4498","#8a5cb8","#8a5cb8","#6c4498","#ffd84a","#6c4498","#6c4498","#6c4498","#6c4498"]],
     powerup: {
         "type": "destroyer",
-        "tier": 3,
-        "help": 5,
+        "tier": 1,
+        "help": 3.5,
         "area": {
           "origin": [
-            3,
-            3
+            2,
+            2
           ],
           "grid": [
-            "..###..",
-            ".#####.",
-            "#######",
-            "###.###",
-            "#######",
-            ".#####.",
-            "..###.."
+            ".###.",
+            "#####",
+            "##.##",
+            "#####",
+            ".###."
           ]
         },
-        "intro": "Destroys every block in a solid disc seven across, centred on it. All of its eyes are open. All of them are on you.",
+        "intro": "Destroys every block in a solid disc five across, centred on it. All of its eyes are open. All of them are on you.",
         "setOnly": true
       },
     rotation: {
@@ -130219,26 +130217,23 @@ export const SHAPES = [
     color: [["#4b3591","#8b79c7","#ffffff","#ffffff","#937fd3","#6246b3","#cabcf8","#ffffff","#ffffff","#937fd3","#917dcf","#ffffff","#ffffff","#8977c2"],["#4d3795","#bfb0ef","#ffffff","#c0b2f2","#6347b6","#674abc","#9a84dc","#ffffff","#ffffff","#c1b3f3","#c0b2f2","#ffffff","#bfb0ef","#4d3795"],["#4f3898","#8f7ccb","#ffffff","#ffffff","#ffffff","#b5a3ed","#7050c9","#c4b4f6","#ffffff","#c2b3f4","#9580d5","#ffffff","#ffffff","#beb0ee"],["#503999","#573da3","#b09fe6","#ffffff","#b4a3ec","#7050c9","#7555d1","#fff2c0","#7050c9","#6a4cc0","#6347b6","#b09fe6","#ffffff","#ac9de0"],["#503999","#8f7ccc","#ffffff","#9681d7","#6a4cc0","#7050c9","#ffd06a","#fff2c0","#dca040","#6a4cc0","#6347b6","#ecdfdc","#ffffff","#8b79c7"],["#4f3898","#ffd06a","#fff2c0","#dca040","#674abc","#6c4ec4","#ffd06a","#ffd06a","#dca040","#674abc","#ffd06a","#fff2c0","#dca040","#4f3898"],["#4d3795","#ffd06a","#ffd06a","#dca040","#6347b6","#ffd06a","#ffd06a","#ffd06a","#dca040","#dca040","#ffd06a","#ffd06a","#dca040","#4d3795"],["#ffd06a","#ffd06a","#ffd06a","#dca040","#dca040","#ffd06a","#ffd06a","#ffd06a","#dca040","#ffd06a","#ffd06a","#ffd06a","#dca040","#dca040"],["#ffd06a","#ffd06a","#ffd06a","#dca040","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#dca040","#ffd06a","#ffd06a","#ffd06a","#dca040","#dca040"],["#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a"],["#dca040","#dca040","#dca040","#ff9a8a","#dca040","#dca040","#dca040","#ff9a8a","#dca040","#dca040","#ff9a8a","#dca040","#dca040","#dca040"],["#dca040","#dca040","#dca040","#d03c3c","#dca040","#dca040","#dca040","#d03c3c","#dca040","#dca040","#d03c3c","#dca040","#dca040","#dca040"],["#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024"],["#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412"]],
     powerup: {
         "type": "destroyer",
-        "tier": 3,
-        "help": 5,
+        "tier": 2,
+        "help": 4,
         "area": {
           "origin": [
-            4,
-            3
+            2,
+            2
           ],
           "grid": [
-            "..#####..",
-            ".#######.",
-            "#########",
-            "####..###",
-            "####..###",
-            "#########",
-            "#########",
-            ".#######.",
-            "..#####.."
+            ".####.",
+            "######",
+            "##..##",
+            "##..##",
+            "######",
+            ".####."
           ]
         },
-        "intro": "Destroys every block in a solid disc nine across, centred on it. Whatever it belongs to will be back for it.",
+        "intro": "Destroys every block in a solid disc six across, centred on it. Whatever it belongs to will be back for it.",
         "setOnly": true
       },
     rotation: {
@@ -130256,28 +130251,25 @@ export const SHAPES = [
     color: [["#b8382a","#be3d2a","#c7462a","#cf4c2a","#d3502a","#d4512a","#d3502a","#d24f2a","#d6532a","#de5a2a","#e05b2a","#d5522a","#c3422a","#b8382a","#b8382a","#b8382a"],["#c1402a","#cb492a","#d6522a","#df5b2a","#e7622a","#a8641c","#a8641c","#a8641c","#ffd24a","#a8641c","#a8641c","#a8641c","#d3502a","#c3422a","#bf3e2a","#be3d2a"],["#c3422a","#cd4b2a","#d7542a","#e25e2a","#a8641c","#2a3fb8","#fffaf0","#ffd24a","#ffd24a","#ffd24a","#fffaf0","#2a3fb8","#a8641c","#ce4c2a","#c9472a","#c8462a"],["#c2412a","#cd4b2a","#d9552a","#a8641c","#ffd24a","#ffd24a","#a8641c","#fba33a","#f89135","#f47f30","#a8641c","#a8641c","#a8641c","#a8641c","#d3502a","#d14e2a"],["#c8462a","#d8542a","#a8641c","#ffd24a","#a8641c","#f68b33","#f99837","#feb53f","#a8641c","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#a8641c","#d9562a"],["#d6532a","#a8641c","#2a3fb8","#fffaf0","#fca83b","#ffb640","#a8641c","#ffd24a","#ffd24a","#a8641c","#ffb740","#faa039","#f2762d","#fffaf0","#2a3fb8","#a8641c"],["#e35e2a","#a8641c","#ffd24a","#a8641c","#fba53b","#a8641c","#ffd24a","#ffd24a","#a8641c","#ffc252","#ffc354","#fa9c38","#f48030","#ffd24a","#a8641c","#a8641c"],["#e45f2a","#a8641c","#ffd24a","#f58431","#a8641c","#ffd24a","#a8641c","#ffffff","#ffffff","#ffffff","#ffb840","#fa9f39","#a8641c","#ffd24a","#ffd24a","#a8641c"],["#dc582a","#ffd24a","#ffd24a","#a8641c","#ffd24a","#a8641c","#ffc85c","#ffffff","#2a3fb8","#ffffff","#ffc557","#a8641c","#ffd24a","#a8641c","#ffd24a","#ffd24a"],["#d3502a","#a8641c","#ffd24a","#ffd24a","#a8641c","#fdad3d","#ffcb62","#ffffff","#ffffff","#ffffff","#a8641c","#ffd24a","#a8641c","#f06c2b","#ffd24a","#a8641c"],["#cc4a2a","#a8641c","#2a3fb8","#fffaf0","#f89235","#faa039","#ffc455","#ffb740","#a8641c","#ffd24a","#ffd24a","#a8641c","#f2752d","#fffaf0","#2a3fb8","#a8641c"],["#c7462a","#a8641c","#ffd24a","#a8641c","#f37b2f","#f89336","#feb53f","#a8641c","#ffd24a","#ffd24a","#a8641c","#f79135","#f37b2f","#ffd24a","#ffd24a","#a8641c"],["#c1402a","#d8552a","#a8641c","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#a8641c","#f68732","#f68b33","#f58431","#a8641c","#ffd24a","#a8641c","#d14e2a"],["#ba3a2a","#d04e2a","#e15d2a","#a8641c","#a8641c","#2a3fb8","#fffaf0","#f68732","#f2752d","#ee682a","#fffaf0","#2a3fb8","#ffd24a","#a8641c","#cd4a2a","#be3e2a"],["#b8382a","#c6442a","#d6532a","#d9562a","#a8641c","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#a8641c","#c4432a","#b9392a","#b8382a"],["#b8382a","#b9392a","#ca482a","#cf4d2a","#cc4a2a","#a8641c","#a8641c","#a8641c","#ffd24a","#a8641c","#a8641c","#a8641c","#c4422a","#ba3a2a","#b8382a","#b8382a"]],
     powerup: {
         "type": "destroyer",
-        "tier": 3,
-        "help": 5,
+        "tier": 2,
+        "help": 4.5,
         "area": {
           "origin": [
-            5,
-            4
+            3,
+            3
           ],
           "grid": [
-            "...#####...",
-            "..#######..",
-            ".#########.",
-            "###########",
-            "#####..####",
-            "#####..####",
-            "###########",
-            "###########",
-            ".#########.",
-            "..#######..",
-            "...#####..."
+            "..####..",
+            ".######.",
+            "########",
+            "###..###",
+            "###..###",
+            "########",
+            ".######.",
+            "..####.."
           ]
         },
-        "intro": "Destroys every block in a solid disc eleven across, centred on it. \"Be not afraid,\" it says, from every direction at once.",
+        "intro": "Destroys every block in a solid disc eight across, centred on it. \"Be not afraid,\" it says, from every direction at once.",
         "setOnly": true
       },
     rotation: {
@@ -130298,26 +130290,22 @@ export const SHAPES = [
         "help": 5,
         "area": {
           "origin": [
-            6,
-            6
+            4,
+            4
           ],
           "grid": [
-            "....#####....",
-            "..#########..",
-            ".###########.",
-            ".###########.",
-            "#############",
-            "#############",
-            "######.######",
-            "#############",
-            "#############",
-            ".###########.",
-            ".###########.",
-            "..#########..",
-            "....#####...."
+            "..#####..",
+            ".#######.",
+            "#########",
+            "#########",
+            "####.####",
+            "#########",
+            "#########",
+            ".#######.",
+            "..#####.."
           ]
         },
-        "intro": "Destroys every block in a solid disc thirteen across, centred on it. It's in the box. Nobody is opening the box.",
+        "intro": "Destroys every block in a solid disc nine across, centred on it. It's in the box. Nobody is opening the box.",
         "setOnly": true
       },
     rotation: {
@@ -130335,26 +130323,23 @@ export const SHAPES = [
     color: [["#4b3591","#8b79c7","#ffffff","#ffffff","#937fd3","#6246b3","#cabcf8","#ffffff","#ffffff","#937fd3","#917dcf","#ffffff","#ffffff","#8977c2"],["#4d3795","#bfb0ef","#ffffff","#c0b2f2","#6347b6","#674abc","#9a84dc","#ffffff","#ffffff","#c1b3f3","#c0b2f2","#ffffff","#bfb0ef","#4d3795"],["#4f3898","#8f7ccb","#ffffff","#ffffff","#ffffff","#b5a3ed","#7050c9","#c4b4f6","#ffffff","#c2b3f4","#9580d5","#ffffff","#ffffff","#beb0ee"],["#503999","#573da3","#b09fe6","#ffffff","#b4a3ec","#7050c9","#7555d1","#fff2c0","#7050c9","#6a4cc0","#6347b6","#b09fe6","#ffffff","#ac9de0"],["#503999","#8f7ccc","#ffffff","#9681d7","#6a4cc0","#7050c9","#ffd06a","#fff2c0","#dca040","#6a4cc0","#6347b6","#ecdfdc","#ffffff","#8b79c7"],["#4f3898","#ffd06a","#fff2c0","#dca040","#674abc","#6c4ec4","#ffd06a","#ffd06a","#dca040","#674abc","#ffd06a","#fff2c0","#dca040","#4f3898"],["#4d3795","#ffd06a","#ffd06a","#dca040","#6347b6","#ffd06a","#ffd06a","#ffd06a","#dca040","#dca040","#ffd06a","#ffd06a","#dca040","#4d3795"],["#ffd06a","#ffd06a","#ffd06a","#dca040","#dca040","#ffd06a","#ffd06a","#ffd06a","#dca040","#ffd06a","#ffd06a","#ffd06a","#dca040","#dca040"],["#ffd06a","#ffd06a","#ffd06a","#dca040","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#dca040","#ffd06a","#ffd06a","#ffd06a","#dca040","#dca040"],["#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a"],["#dca040","#dca040","#dca040","#ff9a8a","#dca040","#dca040","#dca040","#ff9a8a","#dca040","#dca040","#ff9a8a","#dca040","#dca040","#dca040"],["#dca040","#dca040","#dca040","#d03c3c","#dca040","#dca040","#dca040","#d03c3c","#dca040","#dca040","#d03c3c","#dca040","#dca040","#dca040"],["#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024"],["#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412"]],
     powerup: {
         "type": "destroyer",
-        "tier": 3,
-        "help": 5,
+        "tier": 2,
+        "help": 4,
         "area": {
           "origin": [
-            4,
-            3
+            2,
+            2
           ],
           "grid": [
-            "..#####..",
-            ".#######.",
-            "#########",
-            "####..###",
-            "####..###",
-            "#########",
-            "#########",
-            ".#######.",
-            "..#####.."
+            ".####.",
+            "######",
+            "##..##",
+            "##..##",
+            "######",
+            ".####."
           ]
         },
-        "intro": "Destroys every block in a solid disc nine across, centred on it. Whatever it belongs to will be back for it.",
+        "intro": "Destroys every block in a solid disc six across, centred on it. Whatever it belongs to will be back for it.",
         "setOnly": true
       },
     rotation: {
@@ -130371,24 +130356,22 @@ export const SHAPES = [
     color: [["#8a5cb8","#8a5cb8","#8a5cb8","#8a5cb8","#8a5cb8","#8a5cb8","#6c4498","#6c4498","#8a5cb8"],["#8a5cb8","#ffd84a","#52307a","#52307a","#6c4498","#8a5cb8","#6c4498","#ffd84a","#8a5cb8"],["#6c4498","#52307a","#52307a","#52307a","#3d2458","#6c4498","#6c4498","#52307a","#6c4498"],["#6c4498","#6c4498","#c99a30","#fff6d0","#ffd84a","#ffd84a","#c99a30","#52307a","#6c4498"],["#6c4498","#8a5cb8","#ffd84a","#1a0c14","#1a0c14","#1a0c14","#ffd84a","#3d2458","#ffd84a"],["#8a5cb8","#6c4498","#c99a30","#ffd84a","#ffd84a","#ffd84a","#c99a30","#52307a","#8a5cb8"],["#8a5cb8","#6c4498","#3d2458","#52307a","#6c4498","#6c4498","#6c4498","#8a5cb8","#8a5cb8"],["#8a5cb8","#ffd84a","#52307a","#3d2458","#52307a","#6c4498","#6c4498","#ffd84a","#6c4498"],["#6c4498","#8a5cb8","#8a5cb8","#6c4498","#ffd84a","#6c4498","#6c4498","#6c4498","#6c4498"]],
     powerup: {
         "type": "destroyer",
-        "tier": 3,
-        "help": 5,
+        "tier": 1,
+        "help": 3.5,
         "area": {
           "origin": [
-            3,
-            3
+            2,
+            2
           ],
           "grid": [
-            "..###..",
-            ".#####.",
-            "#######",
-            "###.###",
-            "#######",
-            ".#####.",
-            "..###.."
+            ".###.",
+            "#####",
+            "##.##",
+            "#####",
+            ".###."
           ]
         },
-        "intro": "Destroys every block in a solid disc seven across, centred on it. All of its eyes are open. All of them are on you.",
+        "intro": "Destroys every block in a solid disc five across, centred on it. All of its eyes are open. All of them are on you.",
         "setOnly": true
       },
     rotation: {
@@ -130406,28 +130389,25 @@ export const SHAPES = [
     color: [["#b8382a","#be3d2a","#c7462a","#cf4c2a","#d3502a","#d4512a","#d3502a","#d24f2a","#d6532a","#de5a2a","#e05b2a","#d5522a","#c3422a","#b8382a","#b8382a","#b8382a"],["#c1402a","#cb492a","#d6522a","#df5b2a","#e7622a","#a8641c","#a8641c","#a8641c","#ffd24a","#a8641c","#a8641c","#a8641c","#d3502a","#c3422a","#bf3e2a","#be3d2a"],["#c3422a","#cd4b2a","#d7542a","#e25e2a","#a8641c","#2a3fb8","#fffaf0","#ffd24a","#ffd24a","#ffd24a","#fffaf0","#2a3fb8","#a8641c","#ce4c2a","#c9472a","#c8462a"],["#c2412a","#cd4b2a","#d9552a","#a8641c","#ffd24a","#ffd24a","#a8641c","#fba33a","#f89135","#f47f30","#a8641c","#a8641c","#a8641c","#a8641c","#d3502a","#d14e2a"],["#c8462a","#d8542a","#a8641c","#ffd24a","#a8641c","#f68b33","#f99837","#feb53f","#a8641c","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#a8641c","#d9562a"],["#d6532a","#a8641c","#2a3fb8","#fffaf0","#fca83b","#ffb640","#a8641c","#ffd24a","#ffd24a","#a8641c","#ffb740","#faa039","#f2762d","#fffaf0","#2a3fb8","#a8641c"],["#e35e2a","#a8641c","#ffd24a","#a8641c","#fba53b","#a8641c","#ffd24a","#ffd24a","#a8641c","#ffc252","#ffc354","#fa9c38","#f48030","#ffd24a","#a8641c","#a8641c"],["#e45f2a","#a8641c","#ffd24a","#f58431","#a8641c","#ffd24a","#a8641c","#ffffff","#ffffff","#ffffff","#ffb840","#fa9f39","#a8641c","#ffd24a","#ffd24a","#a8641c"],["#dc582a","#ffd24a","#ffd24a","#a8641c","#ffd24a","#a8641c","#ffc85c","#ffffff","#2a3fb8","#ffffff","#ffc557","#a8641c","#ffd24a","#a8641c","#ffd24a","#ffd24a"],["#d3502a","#a8641c","#ffd24a","#ffd24a","#a8641c","#fdad3d","#ffcb62","#ffffff","#ffffff","#ffffff","#a8641c","#ffd24a","#a8641c","#f06c2b","#ffd24a","#a8641c"],["#cc4a2a","#a8641c","#2a3fb8","#fffaf0","#f89235","#faa039","#ffc455","#ffb740","#a8641c","#ffd24a","#ffd24a","#a8641c","#f2752d","#fffaf0","#2a3fb8","#a8641c"],["#c7462a","#a8641c","#ffd24a","#a8641c","#f37b2f","#f89336","#feb53f","#a8641c","#ffd24a","#ffd24a","#a8641c","#f79135","#f37b2f","#ffd24a","#ffd24a","#a8641c"],["#c1402a","#d8552a","#a8641c","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#a8641c","#f68732","#f68b33","#f58431","#a8641c","#ffd24a","#a8641c","#d14e2a"],["#ba3a2a","#d04e2a","#e15d2a","#a8641c","#a8641c","#2a3fb8","#fffaf0","#f68732","#f2752d","#ee682a","#fffaf0","#2a3fb8","#ffd24a","#a8641c","#cd4a2a","#be3e2a"],["#b8382a","#c6442a","#d6532a","#d9562a","#a8641c","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#ffd24a","#a8641c","#c4432a","#b9392a","#b8382a"],["#b8382a","#b9392a","#ca482a","#cf4d2a","#cc4a2a","#a8641c","#a8641c","#a8641c","#ffd24a","#a8641c","#a8641c","#a8641c","#c4422a","#ba3a2a","#b8382a","#b8382a"]],
     powerup: {
         "type": "destroyer",
-        "tier": 3,
-        "help": 5,
+        "tier": 2,
+        "help": 4.5,
         "area": {
           "origin": [
-            5,
-            4
+            3,
+            3
           ],
           "grid": [
-            "...#####...",
-            "..#######..",
-            ".#########.",
-            "###########",
-            "#####..####",
-            "#####..####",
-            "###########",
-            "###########",
-            ".#########.",
-            "..#######..",
-            "...#####..."
+            "..####..",
+            ".######.",
+            "########",
+            "###..###",
+            "###..###",
+            "########",
+            ".######.",
+            "..####.."
           ]
         },
-        "intro": "Destroys every block in a solid disc eleven across, centred on it. \"Be not afraid,\" it says, from every direction at once.",
+        "intro": "Destroys every block in a solid disc eight across, centred on it. \"Be not afraid,\" it says, from every direction at once.",
         "setOnly": true
       },
     rotation: {
@@ -130448,26 +130428,22 @@ export const SHAPES = [
         "help": 5,
         "area": {
           "origin": [
-            6,
-            6
+            4,
+            4
           ],
           "grid": [
-            "....#####....",
-            "..#########..",
-            ".###########.",
-            ".###########.",
-            "#############",
-            "#############",
-            "######.######",
-            "#############",
-            "#############",
-            ".###########.",
-            ".###########.",
-            "..#########..",
-            "....#####...."
+            "..#####..",
+            ".#######.",
+            "#########",
+            "#########",
+            "####.####",
+            "#########",
+            "#########",
+            ".#######.",
+            "..#####.."
           ]
         },
-        "intro": "Destroys every block in a solid disc thirteen across, centred on it. It's in the box. Nobody is opening the box.",
+        "intro": "Destroys every block in a solid disc nine across, centred on it. It's in the box. Nobody is opening the box.",
         "setOnly": true
       },
     rotation: {
@@ -130485,26 +130461,23 @@ export const SHAPES = [
     color: [["#4b3591","#8b79c7","#ffffff","#ffffff","#937fd3","#6246b3","#cabcf8","#ffffff","#ffffff","#937fd3","#917dcf","#ffffff","#ffffff","#8977c2"],["#4d3795","#bfb0ef","#ffffff","#c0b2f2","#6347b6","#674abc","#9a84dc","#ffffff","#ffffff","#c1b3f3","#c0b2f2","#ffffff","#bfb0ef","#4d3795"],["#4f3898","#8f7ccb","#ffffff","#ffffff","#ffffff","#b5a3ed","#7050c9","#c4b4f6","#ffffff","#c2b3f4","#9580d5","#ffffff","#ffffff","#beb0ee"],["#503999","#573da3","#b09fe6","#ffffff","#b4a3ec","#7050c9","#7555d1","#fff2c0","#7050c9","#6a4cc0","#6347b6","#b09fe6","#ffffff","#ac9de0"],["#503999","#8f7ccc","#ffffff","#9681d7","#6a4cc0","#7050c9","#ffd06a","#fff2c0","#dca040","#6a4cc0","#6347b6","#ecdfdc","#ffffff","#8b79c7"],["#4f3898","#ffd06a","#fff2c0","#dca040","#674abc","#6c4ec4","#ffd06a","#ffd06a","#dca040","#674abc","#ffd06a","#fff2c0","#dca040","#4f3898"],["#4d3795","#ffd06a","#ffd06a","#dca040","#6347b6","#ffd06a","#ffd06a","#ffd06a","#dca040","#dca040","#ffd06a","#ffd06a","#dca040","#4d3795"],["#ffd06a","#ffd06a","#ffd06a","#dca040","#dca040","#ffd06a","#ffd06a","#ffd06a","#dca040","#ffd06a","#ffd06a","#ffd06a","#dca040","#dca040"],["#ffd06a","#ffd06a","#ffd06a","#dca040","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#dca040","#ffd06a","#ffd06a","#ffd06a","#dca040","#dca040"],["#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a","#ffd06a"],["#dca040","#dca040","#dca040","#ff9a8a","#dca040","#dca040","#dca040","#ff9a8a","#dca040","#dca040","#ff9a8a","#dca040","#dca040","#dca040"],["#dca040","#dca040","#dca040","#d03c3c","#dca040","#dca040","#dca040","#d03c3c","#dca040","#dca040","#d03c3c","#dca040","#dca040","#dca040"],["#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024","#a87024"],["#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412","#6e4412"]],
     powerup: {
         "type": "destroyer",
-        "tier": 3,
-        "help": 5,
+        "tier": 2,
+        "help": 4,
         "area": {
           "origin": [
-            4,
-            3
+            2,
+            2
           ],
           "grid": [
-            "..#####..",
-            ".#######.",
-            "#########",
-            "####..###",
-            "####..###",
-            "#########",
-            "#########",
-            ".#######.",
-            "..#####.."
+            ".####.",
+            "######",
+            "##..##",
+            "##..##",
+            "######",
+            ".####."
           ]
         },
-        "intro": "Destroys every block in a solid disc nine across, centred on it. Whatever it belongs to will be back for it.",
+        "intro": "Destroys every block in a solid disc six across, centred on it. Whatever it belongs to will be back for it.",
         "setOnly": true
       },
     rotation: {
