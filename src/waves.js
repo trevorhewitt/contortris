@@ -33,12 +33,15 @@ export function waveTense(state) {
   return state.pieceSel?.waves?.phase === "tense";
 }
 
-// While a stretch lasts, the level mix leans its way (`levelW`, changed in place).
-export function waveLevels(state, levelW) {
+// While a stretch lasts, the level mix leans its way (`levelW`, changed in place): its giants
+// (levels 4 and 5) only where one could come anyway (`giants`: not in a calm spell, nor straight
+// after another, nor on a stack too high for one), and the awkward ones in their place.
+export function waveLevels(state, levelW, giants = true) {
   const c = cfgOf(state);
   if (!c || !waveTense(state)) return;
-  const sum = Object.values(c.levels).reduce((a, b) => a + b, 0) || 1;
-  for (const k of [0, 1, 2, 3, 4, 5]) levelW[k] = lerp(levelW[k] ?? 0, (c.levels[k] ?? 0) / sum, c.mix ?? 1);
+  const want = [0, 1, 2, 3, 4, 5].map(k => (giants || k < 4 ? c.levels[k] ?? 0 : 0));
+  const sum = want.reduce((a, b) => a + b, 0) || 1;
+  for (const k of [0, 1, 2, 3, 4, 5]) levelW[k] = lerp(levelW[k] ?? 0, want[k] / sum, c.mix ?? 1);
 }
 
 // Every piece the picker chooses (src/selection.js): the waves move on, and when one is due, the

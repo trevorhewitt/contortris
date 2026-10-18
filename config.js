@@ -837,7 +837,8 @@ export const CONFIG = {
       classApart: { expander: { drops: 10, weight: 0.12 } },
       // An expander's fill (a combo's too) never reaches more than this many columns across,
       // centred on the piece, whatever its area as drawn in the designer (src/powerups.js): two
-      // side by side can't fill rows from wall to wall. null: as drawn.
+      // side by side can't fill rows from wall to wall. (Not the ground either side of the shaft
+      // a mineshaft or a canyon digs: the shaft's in the way.) null: as drawn.
       expanderMaxCols: 5,
       // ...and some kinds of powerup (by tag) kept apart: within `drops` pieces of one, another of
       // the kind is `weight` times as likely (the sinkhole-type: a column dug out, the ground

@@ -133,12 +133,13 @@ test("easy mode never unlocks level 6; dev override forces it either way", () =>
 // How many pieces of `ids` (from `at`) make one whole pass through group `g`: its fixed pieces
 // exactly, each pick step a number of its pieces within the count, each chain step up to `max`
 // of its pieces, and an echo (déjà vu) of an earlier piece anywhere after it. -1 if they don't.
+// (`cut`: or as much of one as there was before `ids` ran out)
 const echoOf = new Map(shapes.filter(s => s.echo).map(s => [s.echo, s.id]));
-function matchGroupAt(g, ids, at = 0) {
+function matchGroupAt(g, ids, at = 0, cut = false) {
   // (a set with versions: whichever of them it is)
-  return Math.max(...sequencesOf(g).map(seq => matchSequenceAt(seq, ids, at)));
+  return Math.max(...sequencesOf(g).map(seq => matchSequenceAt(seq, ids, at, cut)));
 }
-function matchSequenceAt(sequence, ids, at) {
+function matchSequenceAt(sequence, ids, at, cut) {
   // every way of sharing the pieces out between the steps (a step's count can vary), the most
   // pieces first; an echo can turn up anywhere after its original
   const steps = sequence.map(st => {
@@ -160,7 +161,7 @@ function matchSequenceAt(sequence, ids, at) {
   let best = -1;
   const go = (si, i, n, echoed) => {
     if (!echoed && i < ids.length && echoOf.has(ids[i]) && ids.slice(at, i).includes(echoOf.get(ids[i])) && go(si, i + 1, n, true)) return true;
-    if (si === steps.length) { best = i - at; return true; }
+    if (si === steps.length || (cut && i === ids.length && i > at)) { best = i - at; return true; }
     const st = steps[si];
     if (n < st.hi && i < ids.length && st.members.has(ids[i]) && go(si, i + 1, n + 1, echoed)) return true;
     return n >= st.lo && go(si + 1, i, 0, echoed);
@@ -196,9 +197,10 @@ test("level 6 pieces never turn up outside a group", () => {
       const gs = firstIds.get(ids[i]) ?? [];
       // (a set can open with an ordinary piece, like the small piece of the sky; and sets can
       // share an opening, like the emotions charts: the one that matches the most of it)
-      const best = gs.map(g => [g, matchGroupAt(g, ids, i)]).sort((a, b) => b[1] - a[1])[0];
+      // (the last one can be cut short by the end of the loop)
+      const best = gs.map(g => [g, matchGroupAt(g, ids, i, true)]).sort((a, b) => b[1] - a[1])[0];
       const g = best && best[1] > 0 ? best[0] : gs[0];
-      const m = best && best[1] > 0 ? best[1] : g ? matchGroupAt(g, ids, i) : -1;
+      const m = best && best[1] > 0 ? best[1] : g ? matchGroupAt(g, ids, i, true) : -1;
       if (g && (served[i].difficulty === 6 || m > 0)) {
         const n = m;
         if (n < 0 && ids.length - i < 40) break;

@@ -553,8 +553,9 @@ function pickNextPiece(state) {
   // Softly suppress level 3 in danger to prevent “still awkward at the top”.
   levelW[3] *= (1 - 0.65 * danger);
 
-  // ...unless it's a wave's stretch of awkward pieces (src/waves.js: until the stack's too high)
-  waveLevels(state, levelW);
+  // ...unless it's a wave's stretch of awkward pieces (src/waves.js: until the stack's too high;
+  // giants only where one could come anyway)
+  waveLevels(state, levelW, allowHard);
 
   // Hard-ban level 0 for the first few drops.
   if (sel.dropIndex <= (CONFIG.assist.openingNoLevel0UntilDrop ?? 0)) {

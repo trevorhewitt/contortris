@@ -134,6 +134,8 @@ export function areaRotationsFor(area, rotations, trim = { top: 0, left: 0 }) {
 // An expander's fill (a combo's too) never reaches more than CONFIG.assist.powerups.expanderMaxCols
 // columns across, centred on the piece as it first comes, whatever its area as drawn: two of them
 // side by side can't fill whole rows from wall to wall. (Its other turns follow from that one.)
+// A combo's fill that's the ground either side of a hole it digs to the floor stays as it is (a
+// mineshaft, a canyon): the hole's in the way of its ever filling a row across.
 function narrowFill(areaRotations, rotations) {
   const max = CONFIG.assist?.powerups?.expanderMaxCols;
   if (!(max > 0)) return areaRotations;
@@ -147,11 +149,20 @@ function narrowFill(areaRotations, rotations) {
     cols: a.cols.filter(keep),
     downs: (a.downs ?? []).filter(q => keep(q.dx)),
   }];
-  // (a combo's fill that's all off to the sides, the ground either side of the hole it digs,
-  // stays as it is: it never fills a row across, the hole's in the way)
+  // (and one that would be left with nothing at all stays as it is)
   if (isEmptyArea(out[0])) return areaRotations;
   for (let i = 1; i < rotations.length; i++) out.push(rotateArea90CW(out[i - 1], rotations[i - 1].length));
   return out;
+}
+
+// A combo's parts: its fill narrowed, unless one of its destroyers digs a column to the floor
+// that the fill leaves be (the hole's in the way).
+function narrowComboFill(parts, rotations) {
+  const dug = parts.filter(p => p.type === "destroyer").flatMap(p => p.areaRotations[0].downs ?? []);
+  const covers = (a, dx) => a.rows.length > 0 || a.cols.includes(dx) || a.cells.some(q => q.dx === dx) || (a.downs ?? []).some(q => q.dx === dx);
+  for (const p of parts) {
+    if (p.type === "expander" && !dug.some(q => !covers(p.areaRotations[0], q.dx))) p.areaRotations = narrowFill(p.areaRotations, rotations);
+  }
 }
 
 export function isEmptyArea(a) {
@@ -160,7 +171,7 @@ export function isEmptyArea(a) {
 
 // Normalise a raw `powerup` object. `rotations` are the piece's boolean
 // matrices (one per allowed rotation), `trim` comes from the grid parser.
-export function normalisePowerup(raw, rotations, trim, id = "?") {
+export function normalisePowerup(raw, rotations, trim, id = "?", inCombo = false) {
   if (!raw || typeof raw !== "object") return null;
 
   const type = POWERUP_TYPES.includes(raw.type) ? raw.type : null;
@@ -181,9 +192,10 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
     const strip = CONFIG.assist?.powerups?.stripFromCombos ?? [];
     parts = (Array.isArray(raw.parts) ? raw.parts : [])
       .filter(p => p && COMBO_PART_TYPES.includes(p.type) && !strip.includes(p.type))
-      .map(p => normalisePowerup({ ...p, consume: false, tier: raw.tier, area: p.type === "phantom" ? undefined : p.area }, rotations, trim, `${id}/${p.type}`))
+      .map(p => normalisePowerup({ ...p, consume: false, tier: raw.tier, area: p.type === "phantom" ? undefined : p.area }, rotations, trim, `${id}/${p.type}`, true))
       .filter(Boolean)
       .sort((a, b) => COMBO_PART_TYPES.indexOf(a.type) - COMBO_PART_TYPES.indexOf(b.type));
+    narrowComboFill(parts, rotations);
     if ((raw.parts?.length ?? 0) < 2) console.warn(`[${id}] a combo needs at least two parts.`);
     // (with only one part left, it's just a powerup of that kind now, in the combo's words)
     if (parts.length === 1) {
@@ -225,7 +237,8 @@ export function normalisePowerup(raw, rotations, trim, id = "?") {
     areaRotations = scatterAreas(rotations, raw.scatter, makeRng([...String(id)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7)));
   } else {
     areaRotations = areaRotationsFor(raw.area, rotations, trim);
-    if (type === "expander") areaRotations = narrowFill(areaRotations, rotations);
+    // (a combo's part: the combo sees to it, narrowComboFill)
+    if (type === "expander" && !inCombo) areaRotations = narrowFill(areaRotations, rotations);
     if (isEmptyArea(areaRotations[0])) {
       console.warn(`[${id}] powerup has an empty area; it will do nothing.`);
     }
