@@ -509,12 +509,13 @@
     @keyframes fxSpinAll{ from{ transform: rotateY(0deg); } to{ transform: rotateY(360deg); } }
     @keyframes fxGrowAll{ 0%, 100%{ transform: scale(1); } 35%{ transform: scale(1.16); } 70%{ transform: scale(0.95); } }
 
+    /* (every row the same height, the tallest of them: one mode's words going onto another line
+       makes all six taller, not just its row) */
     .homeModes{
       --gap: clamp(8px, 1.8vmin, 18px); --per: 3;
-      display: flex; flex-wrap: wrap; justify-content: center;
+      display: grid; grid-template-columns: repeat(var(--per), minmax(0, 1fr)); grid-auto-rows: 1fr;
       gap: var(--gap); width: min(92vw, 880px);
     }
-    .homeModes > button.modeBtn{ flex: 0 0 calc((100% - (var(--per) - 1) * var(--gap)) / var(--per)); }
     @media (max-aspect-ratio: 5/6){ .homeModes{ --per: 2; width: min(94vw, 540px); } }
     button.modeBtn{
       position: relative; min-height: clamp(52px, 10vmin, 96px); padding: 0.8em 0.6em;
