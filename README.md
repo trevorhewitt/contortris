@@ -23,11 +23,15 @@ clears.
   back, until a big Gravitizer brings the mess down (`waves`, `src/waves.js`).
 - **Extreme**: no Shiny Pieces, no mercy.
 - **God mode**: everything from the first piece; it gets harder too.
-- **Zen** and **Turbo zen**: it plays itself (slowly, or as a show), or you do. In Turbo zen
-  every piece arrives already turned and over the place it's going, and drops straight into it,
-  quickly; the computer never moves a piece once it's on the board. Step in whenever you like:
-  the piece you touch is yours until it lands, and the next comes promptly, one at a time while
-  you're playing (`zen` in `config.js`).
+- **Zen** and **Turbo zen**: it plays itself (slowly, or as a show), or you do. In Zen each piece
+  comes in over a different place from the last few and is a new shape each time; move one
+  away from where it was going and it won't keep putting things there. You can build the board
+  most of the way up if you like: no Shiny Piece of its own takes much of it, and help only
+  comes near the top (it still can't be lost). In Turbo zen every piece arrives already turned
+  and over the place it's going, and drops straight into it, quickly; the computer never moves
+  a piece once it's on the board. Step in whenever you like: the piece you touch is yours until
+  it lands, and the next comes promptly, one at a time while you're playing (`zen` in
+  `config.js`).
 - **Options**: skip the Shiny Piece intro screens, a favourite piece that turns up a little more
   often, toned-down animations, high contrast, and whether Turbo zen fills the screen. Kept in
   the browser.

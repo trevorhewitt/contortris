@@ -10,12 +10,15 @@ import { THREADS, SET_THREADS } from "../shapes/threads.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, updateGame, hardDropAndLock, markInput, tryMove, tryRotate, on } from "../src/game.js";
-import { zenStart, zenIgnoreInput, pluralName, planTiles, oopsName, zenKeys, zenCombos, planPile, planSquares, palettePick } from "../src/zen.js";
+import { zenStart, zenIgnoreInput, pluralName, planTiles, oopsName, zenKeys, zenCombos, planPile, planSquares, palettePick, reachableTurns } from "../src/zen.js";
 import { COMBOS } from "../shapes/combos.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const { rows, cols } = CONFIG.board;
 const height = (state) => { const y = state.board.findIndex(r => r.some(Boolean)); return y < 0 ? 0 : rows - y; };
+const blocksOn = (state) => state.board.reduce((n, r) => n + r.filter(Boolean).length, 0);
+// (a piece's outline, whichever way it's turned)
+const outline = (s) => s.rotations.slice(0, reachableTurns(s)).map(m => m.map(r => r.map(c => (c ? 1 : 0)).join("")).join("/")).sort()[0];
 
 function zen(seed, mode = "zen") {
   const state = createGameState(shapes, powerups, { rng: makeRng(seed), groups: GROUPS, threads: { threads: THREADS, sets: SET_THREADS } });
@@ -57,7 +60,7 @@ test("zen: slow and easy — it plays itself, keeps the board low, and never end
   assert.ok(Math.max(0, ...log.helped) <= 12, `a powerup's help, ${Math.max(0, ...log.helped)} rows at once`);
   const kinds = new Set(log.movements.map(m => m.name));
   for (const k of ["column", "beds", "crack", "mess", "build", "demolition", "mono", "waves"]) assert.ok(!kinds.has(k), `${k} in zen`);
-  assert.ok(["family", "colours", "twos", "rain"].filter(k => kinds.has(k)).length >= 3, `${[...kinds]}`);
+  assert.ok(["family", "colours", "rain"].filter(k => kinds.has(k)).length >= 2, `${[...kinds]}`);
 });
 
 test("zen: each piece comes in already turned and over its place, as a person would play it (never in under an overhang), now and then leaving a hole", () => {
@@ -78,11 +81,13 @@ test("zen: each piece comes in already turned and over its place, as a person wo
     }
     if (t === "lock" && want?.slip && piece.x === want.x && holes() > before) slipHoles++;
   });
-  run(state, null, 6 * 60000, () => {
+  // (a good while: it only slips while the board has few holes, and its own play, not too perfect,
+  // leaves a few now and then anyway)
+  run(state, null, 15 * 60000, () => {
     // (and it stays where it came in: nothing moves it over on the way down)
     if (piece && state.active === piece && want && !state.zen.userHas) assert.ok(piece.x === want.x && piece.rotIdx === want.rot, piece.shape.id);
   });
-  assert.ok(checked > 60, `${checked} pieces`);
+  assert.ok(checked > 150, `${checked} pieces`);
   assert.ok(slips >= 2 && slipHoles >= 1, `${slips} slips, ${slipHoles} of them left a hole`);
 });
 
@@ -147,6 +152,121 @@ test("zen: once the player touches a piece it's theirs, and the next one is the 
   zenIgnoreInput(state);
   updateGame(state, 16);
   assert.equal(state.zen.userHas, false);
+});
+
+test("zen: each piece is a new shape, and comes in somewhere other than the last few", () => {
+  const N = CONFIG.zen.calm.newShapes;
+  const { state, log } = zen(2);
+  const shapes = [], pieces = [];
+  let repeats = 0, checked = 0;
+  on(state, (t, d) => {
+    if (t === "rowsDestroyed" && d.source === "clear" && pieces.length) pieces[pieces.length - 1].cleared = true;
+    if (t !== "spawn") return;
+    const a = state.active, s = a.shape;
+    pieces.push({ from: a.x, to: a.x + s.rotations[a.rotIdx][0].length, cleared: false, powerup: !!s.powerup });
+    if (s.powerup) return;
+    // (a level 6 set is a set: its pieces can all be of a kind)
+    if ((s.difficulty ?? 1) !== 6) { checked++; if (shapes.slice(-N).includes(outline(s))) repeats++; }
+    shapes.push(outline(s));
+  });
+  run(state, log, 15 * 60000);
+  assert.ok(checked > 150, `${checked} pieces`);
+  assert.equal(repeats, 0, `${repeats} of ${checked} the shape of one of the last ${N}`);
+  // (of the ones that clear nothing, only a few come in over the columns of any of the last three:
+  // a row it can clear, it clears wherever it is)
+  let near = 0, n = 0;
+  for (let i = 3; i < pieces.length; i++) {
+    const p = pieces[i];
+    if (p.cleared || p.powerup) continue;
+    n++;
+    if (pieces.slice(i - 3, i).some(q => q.from < p.to && p.from < q.to)) near++;
+  }
+  assert.ok(n > 100 && near / n < 0.35, `${near} of ${n} over the columns of one of the last three`);
+});
+
+test("zen: it doesn't push: where the player has just moved a piece away from, it aims somewhere else for the next two, and comes back to it with another shape", () => {
+  const P = CONFIG.zen.calm.pushed;
+  let pushes = 0;
+  for (const seed of [3, 4]) {
+    const { state } = zen(seed);
+    run(state, null, 3000);
+    // a row it would love to finish: the bottom two full but for one column, open all the way up
+    const gap = 9;
+    for (const row of state.board) row.fill(null);
+    for (let y = rows - 2; y < rows; y++) for (let x = 0; x < cols; x++) if (x !== gap) state.board[y][x] = { pid: 900 + y };
+    const came = [];
+    on(state, (t) => {
+      if (t !== "spawn") return;
+      const a = state.active, w = a.shape.rotations[a.rotIdx][0].length;
+      came.push({ piece: a, shape: outline(a.shape), aimed: a.x <= gap && gap < a.x + w, steady: !!state.zen.current?.emergency, pushed: false });
+    });
+    // the player doesn't want anything there: each piece that comes in over it, they move over to
+    // the left wall and drop
+    const done = new Set();
+    run(state, null, 4 * 60000, () => {
+      const a = state.active;
+      if (!a || done.has(a) || state.effect || state.hold || a.y < 0 || came.length > 40 || came.at(-1)?.piece !== a) return;
+      done.add(a);
+      if (!came.at(-1).aimed || a.shape.powerup || state.board[rows - 1][gap]) return;
+      came.at(-1).pushed = true;
+      markInput(state, "keyboard");
+      while (tryMove(state, -1, 0)) { /* to the wall */ }
+      hardDropAndLock(state);
+    });
+    came.forEach((c, i) => {
+      if (!c.pushed) return;
+      pushes++;
+      // the next two go somewhere else (unless it's a big powerup to steady it)...
+      for (const d of came.slice(i + 1, i + 1 + P.pieces)) assert.ok(!d.aimed || d.steady, `seed ${seed}: aimed there again straight after: ${came.map(e => (e.aimed ? "A" : ".") + (e.pushed ? "!" : "")).join("")}`);
+      // ...and when it comes back to it, it's with another shape
+      for (const d of came.slice(i + 1, i + P.shape)) assert.ok(!d.aimed || d.steady || d.shape !== c.shape, `seed ${seed}: the same shape again`);
+    });
+  }
+  assert.ok(pushes >= 6, `it kept coming back to it, with something else: ${pushes} times moved away`);
+});
+
+test("zen: the player can build it right up and fill most of the board: a little help only near the top, and never a powerup of its own that takes much of it", () => {
+  const H = CONFIG.zen.calm.help, B = CONFIG.zen.calm.bite;
+  const { state, log } = zen(1);
+  // (what each of the game's own powerups took, not the help or the steadying ones)
+  const bites = [];
+  let pu = null, said = null;
+  on(state, (t, d) => {
+    if (t === "zenMovement") said = d.name;
+    if (t !== "spawn") return;
+    if (pu) bites.push(pu.before - blocksOn(state));
+    pu = state.active.shape.powerup && said !== "help" && said !== "steady" ? { before: blocksOn(state) } : null;
+    said = null;
+  });
+  // the builder: every piece stacked on the left, as low as it will go, never in the three
+  // columns on the right, so nothing ever clears
+  let above = 0, frames = 0;
+  run(state, log, 15 * 60000, () => {
+    const a = state.active;
+    frames++;
+    if (height(state) > rows / 2) above++;
+    if (!a || state.effect || state.hold || a.shape.powerup || a.y < 0 || a.built) return;
+    a.built = true;
+    markInput(state, "keyboard");
+    const w = a.shape.rotations[a.rotIdx][0].length;
+    let best = null;
+    for (let x = 0; x + w <= cols - 3; x++) {
+      let top = rows;
+      for (let i = 0; i < w; i++) for (let y = 0; y < rows; y++) if (state.board[y][x + i]) { top = Math.min(top, y); break; }
+      if (!best || top > best.top) best = { x, top };
+    }
+    while (best && a.x > best.x && tryMove(state, -1, 0)) { /* left */ }
+    while (best && a.x < best.x && tryMove(state, 1, 0)) { /* right */ }
+    hardDropAndLock(state);
+  });
+  assert.equal(log.over, false);
+  assert.ok(log.maxHeight >= rows * 0.8, `built up to ${log.maxHeight} rows`);
+  assert.ok(above / frames > 0.6, `more than half way up ${(above / frames * 100).toFixed(0)}% of the time`);
+  const helps = log.movements.filter(m => m.name === "help"), steadies = log.movements.filter(m => m.name === "steady");
+  assert.ok(helps.length > 0 && helps.every(m => m.height > rows * H.height), `help only near the top: ${helps.map(m => m.height)}`);
+  assert.ok(steadies.every(m => m.height >= rows - CONFIG.zen.calm.dangerRows), `steadied only at the top: ${steadies.map(m => m.height)}`);
+  assert.ok(bites.length >= 5, `${bites.length} powerups of its own`);
+  assert.ok(bites.every(n => n <= B.most), `its own powerups took ${bites.filter(n => n > B.most).join(", ")} blocks`);
 });
 
 test("zen: nothing the player does can end it, and a little help comes when it's left in a mess", () => {
@@ -272,7 +392,8 @@ test("turbo zen: the player plays a piece, and the next comes promptly, already 
         flock: state.flock.length, dropMs: state.dropMs, quick: Math.max(8, Z.fallMs * z.pace), top: a.y >= -a.shape.rotations[a.rotIdx].length,
         gap: lockedAt == null || busy ? null : z.clock - lockedAt, mine: z.userHas });
     });
-    for (let t = 0; t < 60000 && seen.filter(p => !p.playing).length < 30; t += 16) updateGame(state, 16);
+    // (60 of them left alone: a plan can go a while without a few at once)
+    for (let t = 0; t < 60000 && seen.filter(p => !p.playing).length < 60; t += 16) updateGame(state, 16);
     const playing = seen.filter(p => p.playing), idle = seen.filter(p => !p.playing);
     assert.ok(playing.length >= 3 && idle.length >= 30, `${playing.length} pieces while playing, ${idle.length} after`);
     assert.ok(seen.every(p => !p.mine && p.inPlace), "every one already in place");
