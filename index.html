@@ -649,7 +649,7 @@
     .favRow{ display: flex; align-items: center; justify-content: center; gap: 12px; margin: 0 0 10px; }
     .favWhat{ text-align: left; }
     .favNow{ display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 10px; min-width: 96px; }
-    .favNow canvas{ image-rendering: pixelated; max-width: 84px; max-height: 64px; }
+    .favNow canvas{ image-rendering: pixelated; width: 84px; height: 64px; object-fit: contain; }
     .favName{ font-size: 8px; max-width: 110px; white-space: normal; line-height: 1.4; }
     .favGrid{
       display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px;
@@ -659,7 +659,7 @@
     .favGrid[hidden]{ display: none; }
     .favGrid button{ min-height: 0; padding: 4px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #000; box-shadow: 0 0 0 1px rgba(255,255,255,0.18); }
     .favGrid button.on{ box-shadow: 0 0 0 2px #fff, -2px 0 0 2px rgba(var(--om-pink),0.85), 2px 0 0 2px rgba(var(--om-cyan),0.8), 0 0 14px rgba(var(--om-orange),0.5); }
-    .favGrid canvas{ image-rendering: pixelated; max-width: 100%; max-height: 100%; }
+    .favGrid canvas{ image-rendering: pixelated; width: 100%; height: 100%; object-fit: contain; } /* (each piece as it's drawn, not squared) */
     /* toned down (an option, or the device asks for less motion): no scan lines, no glitching or
        rolling light, the logo still */
     body.calmFx::after{ display: none; }
