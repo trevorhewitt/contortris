@@ -116148,7 +116148,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 0.3,
+    frequency: 0.1,
   },
   {
     id: "tidal_wave",

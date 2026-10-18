@@ -99,10 +99,10 @@ test("progression: classes open one at a time, starting with a simple one", () =
     // combos only once two classes are in
     const firstCombo = seen.indexOf("combo");
     if (firstCombo >= 0) assert.ok(new Set(seen.slice(0, firstCombo)).size >= 2, "combo before two classes");
-    // the gravitizers are always one of the first two, and the third class waits for the combos
-    // of the first two (CONFIG.assist.powerups.progression: early, combosBeforeThird)
+    // (progression.early, if set, is always one of the first two; it's null now: fully at random),
+    // and the third class waits for the combos of the first two (combosBeforeThird)
     const classes = news.filter(c => c !== "combo");
-    if (classes.length >= 2) assert.ok(classes.slice(0, 2).includes(prog.early), `${prog.early} in the first two: ${news.join(" > ")}`);
+    if (classes.length >= 2 && prog.early) assert.ok(classes.slice(0, 2).includes(prog.early), `${prog.early} in the first two: ${news.join(" > ")}`);
     // (where there's a combo of just those two, that is: none is left of the Expanderz and the
     // gravitizers, say, if they're all banished)
     if (classes.length >= 3 && pairHasCombo(powerups, classes[0], classes[1])) assert.ok(news.indexOf("combo") >= 0 && news.indexOf("combo") < news.indexOf(classes[2]), `combos before the third class: ${news.join(" > ")}`);

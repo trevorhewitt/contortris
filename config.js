@@ -159,13 +159,14 @@ export const CONFIG = {
   // How Classic and God mode get harder as the game goes on (src/difficulty.js). Per mode: the
   // easy start (`start` pieces), then the climb (`length` pieces) to `hardest` (0: as easy as
   // the start all the way; 1: the full challenge, `hard` below; more: harder still); and the
-  // speed: during the climb never quicker than a limit that comes down from capStartMs to
-  // capEndMs a row, and once the climb is over, quicker with every piece (perPiece) down to
+  // speed: faster with every piece from the very first, from fromMs a row at the start to capEndMs
+  // at the end of the climb (or faster, if the rows cleared say so), but during the climb never
+  // quicker than a limit that comes down from capStartMs to capEndMs; once the climb is over, quicker with every piece (perPiece) down to
   // minMs. Extreme and the zen modes don't change. (The developer tools have sliders for all of
   // it.)
   difficulty: {
-    normal: { start: 40, length: 360, hardest: 1, speed: { capStartMs: 320, capEndMs: 150, perPiece: 0.996, minMs: 75 } },
-    god: { start: 25, length: 500, hardest: 0.8, speed: { capStartMs: 280, capEndMs: 140, perPiece: 0.997, minMs: 80 } },
+    normal: { start: 40, length: 360, hardest: 1, speed: { fromMs: 500, capStartMs: 320, capEndMs: 150, perPiece: 0.996, minMs: 75 } },
+    god: { start: 25, length: 500, hardest: 0.8, speed: { fromMs: 420, capStartMs: 280, capEndMs: 140, perPiece: 0.997, minMs: 80 } },
     // What hardness 1 means (at the start it's the usual numbers, in CONFIG.assist and God
     // mode's own; in between, part way):
     hard: {
@@ -655,8 +656,8 @@ export const CONFIG = {
       chancePerDrop: 0.07,      // after that: the chance a group starts on any given piece...
       cooldownDrops: 20,        // ...once this many pieces have passed since the last group...
       maxStackRows: 10,         // ...and only while the stack is this many rows tall or less
-      afterClass: "gravity",    // (where powerups come in one class at a time: not before the
-                                // gravitizers have been met, which tidy up after a set)
+      afterClass: 2,            // (where powerups come in one class at a time: not before this many
+                                // classes have been met, to tidy up after a set; or a class's name)
       // A group only starts if the board has room for all of it: its blocks spread over the
       // width × roomFactor (for the gaps they leave), with `headroom` rows to spare at the top.
       // (Three townhouses in a row need about 15 rows.)
@@ -719,10 +720,10 @@ export const CONFIG = {
         // the first class is picked at random from these (the simpler ones), so every
         // game starts differently
         firstClassPool: ["destroyer", "gravity", "expander"],
-        // one of the first two classes is always this one (if the first wasn't it, the second);
+        // early: one of the first two classes is always this one (null: any, fully at random);
         // then the combos of those two, and only then (combosBeforeThird) the third class, or
         // after comboWaitDrops pieces anyway
-        early: "gravity", combosBeforeThird: true, comboWaitDrops: 90,
+        early: null, combosBeforeThird: true, comboWaitDrops: 90,
         // ...or, in this order exactly (the developer tools set it): the classes one after
         // another, and "combo" where the combos may start (left out: no combos). null: as above.
         order: null,
@@ -776,6 +777,11 @@ export const CONFIG = {
       // the kind is `weight` times as likely (the sinkhole-type: a column dug out, the ground
       // either side filled in). Turbo zen keeps them apart as well (CONFIG.zen.apart).
       apart: { sinkhole: { drops: 30, weight: 0.04 } },
+      // Board clearers: a powerup whose area takes in `share` of the stack as it is now (its rows
+      // times the board's width), or more, comes `weight` times as often: hardly ever, until the
+      // stack is taller than it can clear. And one whose area is `hugeArea` of the whole board or
+      // more comes `hugeWeight` times as often anyway. (The shelf's powerups don't count.)
+      clearers: { share: 0.85, weight: 0.06, hugeArea: 0.4, hugeWeight: 0.35 },
 
       // After a level 6 set: the next few pieces are very likely a powerup, and the big
       // destroyers (two rows or more, a wide area, several columns; never the bad ones) are the

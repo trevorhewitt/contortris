@@ -54,15 +54,21 @@ export function classWeight(state, cls) {
   return p < 0.5 ? lerp(w("early"), w("middle"), p * 2) : lerp(w("middle"), w("late"), (p - 0.5) * 2);
 }
 
-// How fast it falls (ms a row), given the usual speed for the rows cleared so far: during the
-// climb no quicker than a limit that comes down from capStartMs to capEndMs; after it, quicker
-// with every piece (perPiece), down to minMs.
+// How fast it falls (ms a row), given the usual speed for the rows cleared so far. It gets
+// faster from the very first piece: a little with every piece, from fromMs at the start down to
+// capEndMs at the end of the climb, or faster still if the rows cleared say so; but during the
+// climb never quicker than a limit that comes down from capStartMs to capEndMs. After the climb,
+// quicker with every piece (perPiece), down to minMs.
 export function rampDropMs(state, ms) {
   const s = rampCfg(state)?.speed;
   if (!s) return ms;
+  const c = rampCfg(state), end = (c.start ?? 0) + (c.length ?? 0);
   const cap = lerp(s.capStartMs ?? ms, s.capEndMs ?? ms, rampProgress(state));
-  if (!rampDone(state)) return Math.max(ms, Math.round(cap));
-  const c = rampCfg(state), past = drops(state) - (c.start ?? 0) - (c.length ?? 0);
+  if (!rampDone(state)) {
+    const byPieces = lerp(s.fromMs ?? ms, s.capEndMs ?? ms, clamp01(drops(state) / Math.max(1, end)));
+    return Math.max(Math.round(cap), Math.round(Math.min(ms, byPieces)));
+  }
+  const past = drops(state) - end;
   return Math.max(s.minMs ?? 60, Math.round(Math.min(ms, cap) * Math.pow(s.perPiece ?? 1, past)));
 }
 

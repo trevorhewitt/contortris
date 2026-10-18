@@ -90,15 +90,15 @@ test("level 6 is locked until the comeback: above row 10, then back down to row 
   state.pieceSel.dropIndex = Math.max(state.pieceSel.dropIndex, CONFIG.assist.warmup.goneBy);
   const served = [];
   on(state, (t, d) => { if (t === "spawn") served.push(d.shape); });
-  // not before the gravitizers have been met (CONFIG.assist.level6.afterClass)...
+  // not before two classes have been met (CONFIG.assist.level6.afterClass)...
   const ps = state.pieceSel.powerup, after = CONFIG.assist.level6.afterClass;
-  ps.classes = ps.classes.filter(c => c !== after); ps.shownClasses.delete(after);
+  ps.classes = ps.classes.slice(0, 1); ps.shownClasses = new Set(ps.classes);
   ps.cooldown = 1e9; // (no powerups in the meantime, so they aren't met yet)
   for (let i = 0; i < 12 && !state.gameOver; i++) { setStack(state, 2); drop(state); }
   ps.cooldown = 0;
   assert.ok(!served.some(s => s.difficulty === 6), `not before the ${after} class: ${served.map(s => s.id)}`);
   // ...and then the first group arrives within a few pieces, whole and in order, nothing in between
-  ps.shownClasses.add(after);
+  for (const c of ["destroyer", "gravity", "expander"]) if (ps.shownClasses.size < after) ps.shownClasses.add(c);
   served.length = 0;
   for (let i = 0; i < 25 && !state.gameOver; i++) { setStack(state, 2); drop(state); }
   const first = served.findIndex(s => s.difficulty === 6);

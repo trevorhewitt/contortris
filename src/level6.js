@@ -285,13 +285,20 @@ export function groupUnderWay(state) {
   return (state.pieceSel?.level6?.queue.length ?? 0) > 0;
 }
 
-// Where powerups come in one class at a time, no sets before the gravitizers have been met
-// (they're what tidies up after one): CONFIG.assist.level6.afterClass.
+// Where powerups come in one class at a time, no sets before the player has something to tidy up
+// after one with: CONFIG.assist.level6.afterClass, a class that has to have been met, or how
+// many classes have.
 function afterClassMet(state) {
   const cls = CONFIG.assist.level6?.afterClass, mode = CONFIG.modes[state.mode] ?? {};
   if (!cls || !mode.powerups || mode.everything || !CONFIG.assist.powerups.progression?.enabled) return true;
-  if ((CONFIG.assist.powerups.disabledTypes ?? []).includes(cls) || state.devLevel6 === "on") return true;
-  return !!state.pieceSel?.powerup?.shownClasses.has(cls);
+  if (state.devLevel6 === "on") return true;
+  const shown = state.pieceSel?.powerup?.shownClasses ?? new Set();
+  if (typeof cls === "number") {
+    const on = ["destroyer", "gravity", "expander"].filter(c => !(CONFIG.assist.powerups.disabledTypes ?? []).includes(c));
+    return [...shown].filter(c => c !== "combo").length >= Math.min(cls, on.length);
+  }
+  if ((CONFIG.assist.powerups.disabledTypes ?? []).includes(cls)) return true;
+  return shown.has(cls);
 }
 
 // Maybe start a group on this piece: returns its first piece, or null.

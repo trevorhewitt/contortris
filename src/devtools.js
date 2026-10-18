@@ -25,6 +25,7 @@ const ramp = (mode) => [
   [`difficulty.${mode}.start`, "easy start (pieces)", 0, 300, 5],
   [`difficulty.${mode}.length`, "then gets harder over (pieces)", 0, 1500, 10],
   [`difficulty.${mode}.hardest`, "how hard it gets (1 = full)", 0, 1.5, 0.05],
+  [`difficulty.${mode}.speed.fromMs`, "speed at the very start (ms a row)", 200, 800, 10],
   [`difficulty.${mode}.speed.capStartMs`, "speed limit at the start (ms a row)", 100, 600, 10],
   [`difficulty.${mode}.speed.capEndMs`, "speed limit once it's hard (ms a row)", 40, 400, 5],
   [`difficulty.${mode}.speed.perPiece`, "after that, faster per piece", 0.98, 1, 0.001],
@@ -101,7 +102,7 @@ export function devSettingsText() {
   const s = load(), changed = {};
   for (const [p, v] of Object.entries(s.values)) if (v !== DEFAULTS[p]) changed[p] = v;
   const out = { eztrixDevSettings: 1, changed };
-  if (s.classes) out.powerupClasses = { on: s.classes.on, order: s.classes.order ?? "usual (random, gravitizers in the first two)" };
+  if (s.classes) out.powerupClasses = { on: s.classes.on, order: s.classes.order ?? "usual (random)" };
   return JSON.stringify(out, null, 2);
 }
 
@@ -129,7 +130,7 @@ export function buildDevTools(body, hooks = {}) {
   const list = el("div", "devClassList");
   const orderBox = el("label", "devCheck");
   const orderCb = el("input"); orderCb.type = "checkbox";
-  orderBox.append(orderCb, document.createTextNode(" in this order (else: the usual, random, with the Gravitizerz in the first two)"));
+  orderBox.append(orderCb, document.createTextNode(" in this order (else: the usual, at random)"));
   const drawClasses = () => {
     const c = classes(), order = c.order ?? [...CLASSES];
     orderCb.checked = !!c.order;

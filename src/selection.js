@@ -344,6 +344,14 @@ function tryLinkedNextShape(state, prevShape, idToShape, debug = false) {
    ========================= */
 
 export function selectPiece(state) {
+  const shape = pickNextPiece(state);
+  // (a level 6 piece on its own, not in a set, rests a while after it too, as a set does: God
+  // mode's calm spell; the end of a set has begun one already)
+  if ((shape?.difficulty ?? 1) === LEVEL6 && !groupUnderWay(state) && !inCalm(state)) beginCalm(state, "afterSet");
+  return shape;
+}
+
+function pickNextPiece(state) {
   if (!state.pieceSel) initPieceSelectionState(state);
 
   const sel = state.pieceSel;
@@ -390,7 +398,7 @@ export function selectPiece(state) {
 
   // The first giant: always somewhere in CONFIG...hard.firstGiantBetween (unless it would
   // land on an already dangerous stack, then as soon as things calm down a bit).
-  if (sel.giantDueAt != null && !sel.hadGiant && sel.dropIndex >= sel.giantDueAt && !sel.lastWasHard && danger01 < 0.55) {
+  if (sel.giantDueAt != null && !sel.hadGiant && sel.dropIndex >= sel.giantDueAt && !sel.lastWasHard && danger01 < 0.55 && !calm) {
     const giants = state.shapes.filter(s => (s.difficulty ?? 1) === 5 && (s.frequency ?? 1) > 0 && fitsNow(state, s));
     if (giants.length) {
       // (one that sits well on the board as it is: the first one's a laugh, not a disaster)
@@ -1022,6 +1030,19 @@ function maybeSelectPowerup(state, danger01) {
   // the first combo comes soon after they open, so everyone gets to see one
   const firstComboDue = !ps.shownClasses.has("combo") && ps.comboOpenedAt != null;
 
+  // Board clearers are rare (CONFIG.assist.powerups.clearers): one whose area could take in about
+  // the whole stack as it is now hardly ever comes (so a tidal wave only comes once the stack is
+  // taller than it can clear), and the huge ones are rarer anyway. (Not in God mode: it's meant
+  // to be spectacular, and has its own list of the rarer big ones, CONFIG.godMode.rarer.)
+  const clr = god ? {} : cfg.clearers ?? {};
+  const stackCells = stackHeight(state.board) * CONFIG.board.cols;
+  const clearerW = (p) => {
+    const a = powerupReach(p);
+    let w = a >= (clr.share ?? Infinity) * stackCells ? (clr.weight ?? 1) : 1;
+    if (a >= (clr.hugeArea ?? Infinity) * CONFIG.board.cols * CONFIG.board.rows) w *= clr.hugeWeight ?? 1;
+    return w;
+  };
+
   ps.sinceClass++;
   const chosen = sampleByWeight(candidates, (p) => {
     // (useless: rare; a little use: less likely; a lot of use: full weight)
@@ -1042,11 +1063,31 @@ function maybeSelectPowerup(state, danger01) {
     // (kinds kept apart: CONFIG.assist.powerups.apart)
     const apartW = (p.tags ?? []).reduce((w, t) => { const a = cfg.apart?.[t]; return a && sel.dropIndex - (ps.tagAt?.[t] ?? -Infinity) < a.drops ? w * a.weight : w; }, 1);
     // (and how often its class comes at this stage of the game: CONFIG.difficulty.classes)
-    return (p.frequency ?? 1) * needW * helpW * comboW * usableW * runW * wideW(p) * bigW(p) * rarerW(p) * varietyMultiplier(sel, p) * threadW * apartW * (6 / (classSize + 5)) * classWeight(state, p.powerup.cls);
+    return clearerW(p) * (p.frequency ?? 1) * needW * helpW * comboW * usableW * runW * wideW(p) * bigW(p) * rarerW(p) * varietyMultiplier(sel, p) * threadW * apartW * (6 / (classSize + 5)) * classWeight(state, p.powerup.cls);
   }, state.rng);
   if (chosen && introducing(chosen)) { ps.lastIntroDrop = sel.dropIndex; ps.pendingIntro.add(chosen.powerup.cls); }
   for (const t of chosen?.tags ?? []) if (cfg.apart?.[t]) (ps.tagAt ??= {})[t] = sel.dropIndex;
   return chosen;
+}
+
+// How many rows tall the stack is (from its highest block to the floor)
+function stackHeight(board) {
+  const top = board.findIndex(row => row.some(Boolean));
+  return top < 0 ? 0 : board.length - top;
+}
+
+// Roughly how many cells a powerup's area takes in (all its parts), on a full board: what it
+// could clear, settle or fill at most.
+export function powerupReach(shape) {
+  const pu = shape?.powerup;
+  if (!pu) return 0;
+  const { cols, rows } = CONFIG.board;
+  let n = 0;
+  for (const p of pu.type === "combo" ? (pu.parts ?? []) : [pu]) {
+    const a = p.areaRotations?.[0];
+    if (a) n += a.cells.length + a.rows.length * cols + a.cols.length * rows + (a.downs?.length ?? 0) * rows / 2;
+  }
+  return n;
 }
 
 // Roughly how many cells a destroyer (or a combo's destroying part) wipes on a full board.
