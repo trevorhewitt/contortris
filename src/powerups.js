@@ -137,9 +137,10 @@ export function areaRotationsFor(area, rotations, trim = { top: 0, left: 0 }) {
 // (Its other turns follow from that one.) A fill along a row, or in a shape of its own, is as
 // drawn: a row's worth is what makes those worth having. A combo's fill that's the ground either
 // side of a hole it digs to the floor stays as it is (a mineshaft, a canyon): the hole's in the
-// way of its ever filling a row across.
-function narrowFill(areaRotations, rotations) {
-  const max = CONFIG.assist?.powerups?.expanderMaxCols;
+// way of its ever filling a row across. A piece can be allowed more (its `maxCols`: the volcano,
+// the tiles).
+function narrowFill(areaRotations, rotations, own = null) {
+  const max = own ?? CONFIG.assist?.powerups?.expanderMaxCols;
   if (!(max > 0)) return areaRotations;
   const c = (rotations[0][0].length - 1) / 2, keep = (dx) => Math.abs(dx - c) < max / 2;
   const a = areaRotations[0];
@@ -239,7 +240,7 @@ export function normalisePowerup(raw, rotations, trim, id = "?", inCombo = false
   } else {
     areaRotations = areaRotationsFor(raw.area, rotations, trim);
     // (a combo's part: the combo sees to it, narrowComboFill)
-    if (type === "expander" && !inCombo) areaRotations = narrowFill(areaRotations, rotations);
+    if (type === "expander" && !inCombo) areaRotations = narrowFill(areaRotations, rotations, raw.maxCols > 0 ? raw.maxCols : null);
     if (isEmptyArea(areaRotations[0])) {
       console.warn(`[${id}] powerup has an empty area; it will do nothing.`);
     }

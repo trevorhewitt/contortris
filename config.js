@@ -900,8 +900,8 @@ export const CONFIG = {
       // columns across, centred on the piece, whatever its area as drawn in the designer
       // (src/powerups.js): two side by side can't fill the stack from wall to wall. (Only the
       // fills down to the floor: a fill along a row or in a shape is as drawn. Nor the ground
-      // either side of the shaft a mineshaft or a canyon digs: the shaft's in the way.) null: as
-      // drawn.
+      // either side of the shaft a mineshaft or a canyon digs: the shaft's in the way. And a piece
+      // can be allowed more, its own `maxCols`: the volcano, the tiles.) null: as drawn.
       expanderMaxCols: 5,
       // ...and some kinds of powerup (by tag) kept apart: within `drops` pieces of one, another of
       // the kind is `weight` times as likely (the sinkhole-type: a column dug out, the ground

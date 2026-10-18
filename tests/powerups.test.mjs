@@ -165,7 +165,7 @@ test("expander fills only empty affected cells", () => {
 });
 
 test("Expanderz: only a fill down to the floor is kept narrow; one along a row, or in a shape, is as drawn", () => {
-  const ids = ["lost_marbles", "tipped_honey_jar", "beans_tin_on_its_side", "spam_tin_opened", "liquid_cat"];
+  const ids = ["lost_marbles", "tipped_honey_jar", "beans_tin_on_its_side", "spam_tin_opened", "liquid_cat", "squat_volcano", "chequered_marble"];
   const { powerups } = loadShapes(SHAPES.filter(s => ids.includes(s.id)));
   const area = Object.fromEntries(powerups.map(s => [s.id, s.powerup.areaRotations[0]]));
   const wide = (xs) => Math.max(...xs) - Math.min(...xs) + 1;
@@ -176,6 +176,9 @@ test("Expanderz: only a fill down to the floor is kept narrow; one along a row, 
   // (down to the floor: no wider than the cap, though drawn wider)
   assert.ok(wide(parseArea(SHAPES.find(s => s.id === "liquid_cat").powerup.area).downs.map(q => q.dx)) > CONFIG.assist.powerups.expanderMaxCols);
   assert.ok(wide(area.liquid_cat.downs.map(q => q.dx)) <= CONFIG.assist.powerups.expanderMaxCols);
+  // (unless the piece is allowed more, its own maxCols: the volcano as drawn, the marble floor six wide)
+  assert.equal(wide(area.squat_volcano.downs.map(q => q.dx)), 9);
+  assert.equal(wide(area.chequered_marble.downs.map(q => q.dx)), 6);
 });
 
 test("collapseRows removes rows and drops everything above", () => {
