@@ -5126,14 +5126,14 @@ export const SHAPES = [
         "tier": 3,
         "area": {
           "origin": [
-            13,
+            4,
             0
           ],
           "grid": [
-            "|||||||||||||||||||||||||||"
+            "||||||||||"
           ]
         },
-        "intro": "Every column on the board collapses. Nobody was hurt. Some blocks were mildly inconvenienced.",
+        "intro": "Everything in the 10 columns around it collapses into the gaps. Nobody was hurt. Some blocks were mildly inconvenienced.",
         "help": 2
       },
     rotation: {
@@ -12775,14 +12775,14 @@ export const SHAPES = [
         "type": "gravity",
         "direction": "down",
         "tier": 3,
-        "intro": "Everything in the 11 columns around it drops down into the gaps. It goes at walking pace and still nobody gets out of the way.",
+        "intro": "Everything in the 10 columns around it drops down into the gaps. It goes at walking pace and still nobody gets out of the way.",
         "area": {
           "origin": [
-            4,
+            3,
             0
           ],
           "grid": [
-            "|||||||||||"
+            "||||||||||"
           ]
         },
         "help": 3.5
@@ -12804,14 +12804,14 @@ export const SHAPES = [
         "type": "gravity",
         "direction": "down",
         "tier": 3,
-        "intro": "Everything in the 12 columns around it drops down into the gaps. It has swum a very long way and would like a minute.",
+        "intro": "Everything in the 10 columns around it drops down into the gaps. It has swum a very long way and would like a minute.",
         "area": {
           "origin": [
-            4,
+            3,
             0
           ],
           "grid": [
-            "||||||||||||"
+            "||||||||||"
           ]
         },
         "help": 4
