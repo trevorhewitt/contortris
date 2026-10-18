@@ -142601,7 +142601,7 @@ export const SHAPES = [
         "type": "combo",
         "tier": 2,
         "help": 3,
-        "intro": "Every block in the two columns inside it is destroyed, all the way down to the floor, and the column either side fills in with pipe, top to bottom. It has always been there.",
+        "intro": "Every block in the two columns inside it is destroyed, all the way down to the floor, and the column either side fills in with pipe, from the floor to three cells above it, so you can see it. It has always been there.",
         "parts": [
           {
             "type": "destroyer",
@@ -142620,9 +142620,12 @@ export const SHAPES = [
             "area": {
               "origin": [
                 0,
-                0
+                3
               ],
               "grid": [
+                "#..#",
+                "#..#",
+                "#..#",
                 "v..v"
               ]
             },

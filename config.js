@@ -478,7 +478,7 @@ export const CONFIG = {
     // comes up unseenBoost times as often.
     latest: {
       sets: ["great_and_terrible", "spam", "beans", "spaghetti_os", "tower_of_babel"],
-      pieces: ["unread_dictionary", "sphinx", "sphinx_nose"],
+      pieces: ["unread_dictionary", "sphinx", "sphinx_nose", "big_green_pipe"],
     },
     newest: {
       sets: ["sunshine", "trees", "great_and_terrible", "space", "emotions_british", "emotions_online", "emotions_ascent", "beans", "spaghetti_os", "townhouses", "space", "trees", "loch_ness", "universe", "loch_ness_wee", "tower_of_babel", "noahs_ark", "dinosaur_bones", "loch_ness_wee", "sky_evening", "sky_sunset", "sky_night", "emotions", "existence", "universe"],
