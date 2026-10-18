@@ -3424,7 +3424,7 @@ export const ACHIEVEMENTS = [
   {
     id: "spam",
     name: "Spam!",
-    description: "Get spam.",
+    description: "Spam spam spam.",
     icon: [
         [
           "",
@@ -3608,7 +3608,7 @@ export const ACHIEVEMENTS = [
   {
     id: "spam_spam",
     name: "Spam Spam!",
-    description: "Get a lot of spam in one game.",
+    description: "Spam spam spam spam spam spam spam spam.",
     icon: [
         [
           "",
@@ -3805,8 +3805,8 @@ export const ACHIEVEMENTS = [
   },
   {
     id: "spam_3",
-    name: "Lovely Spam, Wonderful Spam",
-    description: "Get spam three times in a row.",
+    name: "Spam Spam Spam!",
+    description: "Spam. Spam. Spam.",
     icon: [
         [
           "",
@@ -3985,6 +3985,190 @@ export const ACHIEVEMENTS = [
           "spam",
           "spam"
         ]
+      },
+  },
+  {
+    id: "beans",
+    name: "Beans!",
+    description: "Beans beans beans.",
+    icon: [
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          ""
+        ],
+        [
+          "#181425",
+          "#c0cbdc",
+          "#f77622",
+          "#be4a2f",
+          "#f77622",
+          "#f77622",
+          "#be4a2f",
+          "#f77622",
+          "#be4a2f",
+          "#f77622",
+          "#c0cbdc",
+          "#181425"
+        ],
+        [
+          "#181425",
+          "#c0cbdc",
+          "#be4a2f",
+          "#f77622",
+          "#f77622",
+          "#be4a2f",
+          "#f77622",
+          "#f77622",
+          "#f77622",
+          "#be4a2f",
+          "#c0cbdc",
+          "#181425"
+        ],
+        [
+          "",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          ""
+        ],
+        [
+          "#181425",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#181425"
+        ],
+        [
+          "#181425",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#181425"
+        ],
+        [
+          "#181425",
+          "#3e8948",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#3e8948",
+          "#181425"
+        ],
+        [
+          "#181425",
+          "#3e8948",
+          "#f77622",
+          "#f77622",
+          "#3e8948",
+          "#f77622",
+          "#f77622",
+          "#3e8948",
+          "#f77622",
+          "#f77622",
+          "#3e8948",
+          "#181425"
+        ],
+        [
+          "#181425",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#3e8948",
+          "#181425"
+        ],
+        [
+          "#181425",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#c0cbdc",
+          "#181425"
+        ],
+        [
+          "",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          "#181425",
+          ""
+        ]
+      ],
+    trigger: {
+        "type": "pieceServed",
+        "match": {
+          "ids": [
+            "beans",
+            "beans_beans_and_beans"
+          ]
+        }
       },
   },
   {
