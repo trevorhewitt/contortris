@@ -1595,7 +1595,7 @@ export const SHAPES = [
   },
   {
     id: "disguise",
-    name: "a disguise",
+    name: "an ingenious disguise",
     grid: [
         "XXXX",
         ".XX."
