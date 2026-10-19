@@ -357,9 +357,13 @@ function currentLockDelayMs(state) {
   // treat as touch if touch input occurred recently
   const now = performance.now();
   const recentTouch = (state.lastInputType === "touch") && (now - state.lastInputAt < 1200);
-  let delay = recentTouch ? CONFIG.timing.lockDelayMsTouch : CONFIG.timing.lockDelayMsKeyboard;
+  const T = CONFIG.timing;
+  let delay = recentTouch ? T.lockDelayMsTouch : T.lockDelayMsKeyboard;
+  // (the faster they fall, the longer: there's less time to set a piece right on its way down)
+  const fast = recentTouch ? T.lockFastMsTouch : T.lockFastMsKeyboard;
+  if (fast > delay && T.lockFastAtMs) delay = lerp(delay, fast, clamp01(Math.log(T.baseDropMs / fallMs(state)) / Math.log(T.baseDropMs / T.lockFastAtMs)));
   // (slid or turned along the ground: a little longer, so it can be slid again, up to a point)
-  const a = state.active, T = CONFIG.timing;
+  const a = state.active;
   if (a?.groundMoved && !groundSpent(state)) delay = Math.max(delay, T.slideLockMs ?? 0);
   // (on its last chance, while it would still top out: whatever's left of it)
   const lc = a?.lastChance;

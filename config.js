@@ -142,6 +142,11 @@ export const CONFIG = {
     maxAccumulatedSteps: 2,
     lockDelayMsKeyboard: 110,
     lockDelayMsTouch: 260,
+    // ...and longer as the game speeds up: these with the pieces falling a row every lockFastAtMs
+    // or quicker (part way in between), as there's less time to set a piece right on its way down
+    lockFastMsKeyboard: 260,
+    lockFastMsTouch: 380,
+    lockFastAtMs: 80,
     // slid or turned along the ground, a piece waits at least this long before it locks, so it
     // can be slid again (until it has spent slideMaxMs on the ground in all)
     slideLockMs: 250,
