@@ -1,7 +1,7 @@
 // Run with:  node --test tests/*.test.mjs
 // The powerup shelf: one strong powerup of each class each game, the same ones every game, which
-// takes the falling piece's place when it's used; in Classic a class's slot opens the moment the
-// class unlocks.
+// takes the falling piece's place when it's used (a tap on the bay: the next in its queue, the
+// order they came in); in Classic a class's slot opens the moment the class unlocks.
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CONFIG } from "../config.js";
@@ -10,7 +10,7 @@ import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { classOf } from "../src/powerups.js";
 import { createGameState, startRun, updateGame, useShelf, on } from "../src/game.js";
-import { shelfReady, shelfCount, pieceReach } from "../src/shelf.js";
+import { shelfReady, shelfCount, shelfQueue, pieceReach } from "../src/shelf.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const game = (mode, seed = 3) => {
@@ -99,6 +99,27 @@ test("the bay: one of each of the three classes, never a combo, once each", () =
     assert.ok(!s.shape.powerup.parts, `${s.shape.id}: not a combo`);
     assert.equal(s.left, 1);
   }
+});
+
+test("a tap on the bay uses the next one: they go in the order they came", () => {
+  // (God mode: all at once, in the order of CONFIG.shelf.classes)
+  const god = game("god");
+  assert.deepEqual(shelfQueue(god).map(s => s.cls), CONFIG.shelf.classes);
+  // (Classic: in the order the classes unlock)
+  const state = game("normal");
+  const met = state.pieceSel.powerup.shownClasses;
+  const order = ["gravity", "destroyer", "expander"];
+  order.forEach((cls, i) => {
+    met.add(cls);
+    assert.deepEqual(shelfQueue(state).map(s => s.cls), order.slice(0, i + 1));
+  });
+  for (const cls of order) {
+    const piece = state.shelf.slots.find(s => s.cls === cls).shape;
+    assert.ok(useShelf(state), `${cls}: used`);
+    assert.equal(state.active.shape.id, piece.id, `${cls}'s piece came`);
+  }
+  assert.deepEqual(shelfQueue(state), []);
+  assert.equal(useShelf(state), false, "none left");
 });
 
 test("Taken while nothing is falling, it comes next", () => {

@@ -4,19 +4,20 @@
 // In place of the next piece, the player has a bay of Extra Shiny Pieces (CONFIG.shelf): one
 // strong one of each of the three classes (Destroyerz, Gravitizerz, Expanderz; never a combo) in
 // every game, the same ones every time, each to use once. The bay on the page (src/shelfui.js)
-// shows how many can be used now, and a tap on it opens its menu, to pick one: the falling piece
-// goes and that one falls in its place (game.js useShelf). In Classic a class's piece only comes
-// into the bay once the class has been unlocked: the first of its class is down on the board (its
-// intro first), so nothing in it is a surprise, and using it never brings anything in sooner (the
-// combos come once two classes have been met: a piece from the bay is never the one that meets
-// one). (Later the bay will be the player's own, bought, kept from game to game: `left` is how many
-// of each are in it.)
+// shows how many can be used now, and a tap on it uses the next in its queue (shelfQueue): the
+// falling piece goes and that one falls in its place (game.js useShelf). In Classic a class's
+// piece only comes into the bay once the class has been unlocked: the first of its class is down
+// on the board (its intro first), so nothing in it is a surprise, and using it never brings
+// anything in sooner (the combos come once two classes have been met: a piece from the bay is
+// never the one that meets one). (Later the bay will be the player's own, bought, kept from game
+// to game: `left` is how many of each are in it.)
 
 import { CONFIG } from "../config.js";
 import { classOf, resolvePowerupArea } from "./powerups.js";
 
-// The shelf for a new game: { slots: [{ cls, shape, left }], pending: null } (pending: a powerup
-// taken off it while nothing was falling, to come next), or null in a mode without one.
+// The shelf for a new game: { slots: [{ cls, shape, left }], order: [], pending: null } (order:
+// the queue, the slots' numbers in the order they're used, shelfQueue; pending: a powerup taken
+// off it while nothing was falling, to come next), or null in a mode without one.
 // (`demo`: the tutorial's page about it, in any mode)
 export function createShelf(state, { demo = false } = {}) {
   const cfg = CONFIG.shelf, mode = CONFIG.modes[state.mode] ?? {};
@@ -29,7 +30,7 @@ export function createShelf(state, { demo = false } = {}) {
     if (!shape || !(shape.powerup.cls === cls || shape.powerup.parts?.some(q => classOf(q.type) === cls))) continue; // (a class that's switched off, or its piece gone)
     slots.push({ cls, shape, left: Math.max(1, cfg.perGame ?? 1) });
   }
-  return slots.length ? { slots, pending: null } : null;
+  return slots.length ? { slots, order: [], pending: null } : null;
 }
 
 // The bay's classes: one slot each, whatever CONFIG.shelf.classes says beyond these.
@@ -41,6 +42,17 @@ export function shelfReady(state, slot) {
   if (CONFIG.modes[state.mode]?.everything || state.tutorial) return true;
   // (a combo in it, from the developer tools: once the combos have come too)
   return unlocked(state, slot.cls) && unlocked(state, slot.shape.powerup.cls);
+}
+
+// The queue: the slots that can be used now, in the order a tap on the bay uses them: the order
+// they came into the bay in (in Classic, the order their classes unlocked; all at once, the order
+// of CONFIG.shelf.classes).
+export function shelfQueue(state) {
+  const sh = state.shelf;
+  if (!sh) return [];
+  // (one that's just come goes on the end)
+  sh.slots.forEach((slot, i) => { if (!sh.order.includes(i) && shelfReady(state, slot)) sh.order.push(i); });
+  return sh.order.map(i => sh.slots[i]).filter(slot => shelfReady(state, slot));
 }
 
 // How many Extra Shiny Pieces can be used now (0 in a mode without a bay).

@@ -51,8 +51,8 @@ const FILLER = ["#f4f4f6", "#c9c9ce", "#9c9ca3", "#e2e2e7", "#b3b3b9", "#85858c"
 //           how long before the autopilot's first press, if not the usual, to: {
 //           rot, x } where the autopilot takes it, or "power": wherever it leaves the least on the
 //           board, then: what it does once it's there ("hold": holds it down a moment, "drop":
-//           the double tap that drops it straight down, "shelf": opens the bay and takes the
-//           shiny piece of the page's `shelf` class in its place; nothing, and it just falls) }
+//           the double tap that drops it straight down, "shelf": a tap on the bay, and the
+//           shiny piece of the page's `shelf` class comes in its place; nothing, and it just falls) }
 //   again:  (a powerup page) more pieces of its class to come after those, each put where it does
 //           the most, for as long as there are more than `until` blocks left on the board
 //   powers: its pieces are Shiny Pieces, though it isn't a class's page (where to put them, the bay)
@@ -214,8 +214,8 @@ export const PAGES = [
     // hole in the heap, all but its edges)
     id: "shelf", powers: true, shelf: "destroyer",
     text: {
-      touch: "Every game you get an Extra Shiny Piece of each class to keep for when you need it: tap Extra Shiny Pieces, pick one, and it takes the falling piece's place.",
-      keys: "Every game you get an Extra Shiny Piece of each class to keep for when you need it: click Extra Shiny Pieces, pick one, and it takes the falling piece's place.",
+      touch: "Every game you get an Extra Shiny Piece of each class to keep for when you need it: tap Extra Shiny Pieces and the next one takes the falling piece's place.",
+      keys: "Every game you get an Extra Shiny Piece of each class to keep for when you need it: click Extra Shiny Pieces and the next one takes the falling piece's place.",
     },
     dropMs: 420,
     board: [
@@ -644,10 +644,9 @@ function begin(state, t, a) {
     : spec.to === "power" ? powerSpot(state, a.shape) ?? bestSpot(state, a.shape, a.x)
     : spec.to;
   t.goals = [...(spec.via ?? []), { rot: to?.rot ?? a.rotIdx, x: to?.x ?? a.x }].map(g => ({ rot: g.rot ?? a.rotIdx, x: g.x ?? a.x }));
-  // ("drop" is however many taps it takes: CONFIG.timing.multiTaps, the last one the drop;
-  // "shelf", a tap on the bay to open it and then one on the piece)
+  // ("drop" is however many taps it takes: CONFIG.timing.multiTaps, the last one the drop)
   const taps = Math.max(1, CONFIG.timing.multiTaps ?? 2);
-  t.then = (spec.then ?? []).flatMap(s => (s === "drop" ? [...Array(taps - 1).fill("down"), "drop"] : s === "shelf" ? ["bay", "shelf"] : [s]));
+  t.then = (spec.then ?? []).flatMap(s => (s === "drop" ? [...Array(taps - 1).fill("down"), "drop"] : [s]));
   t.hint.aim = nextKey(state, t);
   t.hint.held = false;
 }
@@ -707,7 +706,6 @@ function press(state, t, key) {
     case "down": if (!tryMove(state, 0, 1)) beginLockIfNeeded(state); break;
     case "hold": t.holding = CONFIG.tutorial.holdMs; t.hint.held = true; state.softDropping = true; break;
     case "drop": state.softDropping = false; hardDropAndLock(state, { lastChance: true }); break;
-    case "bay": break; // (its menu opens: src/tutorialui.js)
     case "shelf": useShelf(state, shelfSlot(state, t)); break;
   }
 }

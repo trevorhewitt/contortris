@@ -12,8 +12,8 @@ clears.
   mode, says how many you have (×0 when none): one strong Shiny Piece of each of the three
   classes per game, the same ones every game (a tidal wave, bathroom tiles and a hippo in a tutu:
   never a combo), each added the moment its class unlocks (its first piece down on the board,
-  after its intro), the number hopping up as it comes. Tap it, pick one from its
-  menu (the game slows while it's open), and it takes the falling piece's place. No keys for it.
+  after its intro), the number hopping up as it comes. Tap it and the next one takes the falling
+  piece's place: they go in the order they came. No keys for it.
   It starts easy and gets harder as it goes (`difficulty` in `config.js`, `src/difficulty.js`):
   a bit faster with every piece all the way, fewer Shiny Pieces and less rescue, and more awkward
   pieces; giants and level 6 sets come more often, but only while the stack is low, never near
@@ -69,7 +69,7 @@ clears.
 | `demo.js` | The little looping powerup animations on the intro / help / How to play screens. |
 | `tutorial.js` | The tutorial's pages (each one's words, board and pieces) and the autopilot that plays them. No DOM. |
 | `tutorialui.js` | The tutorial on the page: its words where a piece's name goes, its bar (Touch or Keys, the bay), the finger tapping the board, the keys lighting up, the Shiny Pieces' classes side by side, and each mode's page's button to go and play it. |
-| `shelf.js`, `shelfui.js` | The bay of Extra Shiny Pieces: what's in it and when each comes, and the bay in the bottom bar (a Shiny Piece × how many) with its menu to pick from. |
+| `shelf.js`, `shelfui.js` | The bay of Extra Shiny Pieces: what's in it and when each comes, and the bay in the bottom bar (a Shiny Piece × how many), a tap on it using the next. |
 | `settings.js`, `optionsui.js` | The options (kept in the browser) and the Options page. |
 | `home.js` | The home screen: turbo zen behind the menu through a moving camera. |
 | `mosaic.js` | The home screen's packed screens of pieces the camera sweeps across now and then. |

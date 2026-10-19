@@ -406,7 +406,6 @@ export function bindUI({ state, renderer, achievements }) {
 
   function pauseGame() {
     if (state.gameOver || !state.running) return;
-    shelf.close();
     state.paused = true;
     state.softDropping = false;
     $("pauseMode").textContent = `${modeLabel(state.mode)} mode`;

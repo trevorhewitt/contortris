@@ -20,7 +20,7 @@ import { CONFIG } from "../config.js";
 import { clamp01, lerp } from "./util.js";
 import { getShapePaint } from "./shapes.js";
 import { initPieceSelectionState, selectPiece, destroyerCells, stillUseful } from "./selection.js";
-import { createShelf, shelfReady, takeShelfPending } from "./shelf.js";
+import { createShelf, shelfReady, shelfQueue, takeShelfPending } from "./shelf.js";
 import { gravityColumns } from "./godmode.js";
 import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
 import { normaliseGroups, trackLevel6, cutGroup, LEVEL6 } from "./level6.js";
@@ -254,7 +254,6 @@ export function resetGame(state) {
   state.zen = null;
   state.tutorial = null;
   state.shelf = null;
-  state.bayOpen = false;
   state.lastLockedShape = null;
   state.gameOverInfo.pieceName = "";
   state.gameOverInfo.shape = null;
@@ -340,9 +339,7 @@ export function collides(state, px, py, mat) {
 
 // How fast the game runs in this mode, times the speed setting (turbo zen's pause menu).
 export function timeScaleOf(state) {
-  // (the bay's menu open: slower, to choose in. src/shelfui.js)
-  const bay = state.bayOpen && !state.paused ? CONFIG.shelf?.bayTimeScale ?? 1 : 1;
-  return (CONFIG.modes[state.mode]?.timeScale ?? 1) * (state.speed ?? 1) * bay;
+  return (CONFIG.modes[state.mode]?.timeScale ?? 1) * (state.speed ?? 1);
 }
 
 export function markInput(state, type) {
@@ -734,9 +731,9 @@ function fitsSomewhere(state, shape) {
 
 // The player takes a powerup off the shelf (src/shelf.js): the falling piece goes, and the
 // powerup comes down in its place (or, with nothing falling just now, as the next thing to come).
-// True if it was taken.
+// `i`: the slot; left out, the next in the bay's queue (shelfQueue). True if it was taken.
 export function useShelf(state, i) {
-  const slot = state.shelf?.slots[i];
+  const slot = i == null ? shelfQueue(state)[0] : state.shelf?.slots[i];
   if (!shelfReady(state, slot) || state.paused || state.shelf.pending) return false;
   slot.left--;
   state.shelf.pending = slot.shape;

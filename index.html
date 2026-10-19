@@ -1289,8 +1289,8 @@
     }
     .bottomRight{ justify-content: flex-end; }
 
-    /* the bay: the Extra Shiny Pieces, a Shiny Piece × how many can be used now, and a tap opens
-       its menu (src/shelfui.js). Dressed like the score beside it */
+    /* the bay: the Extra Shiny Pieces, a Shiny Piece × how many can be used now, and a tap uses
+       the next (src/shelfui.js). Dressed like the score beside it */
     .shelf{
       box-sizing: border-box; height: 100%;
       width: clamp(118px, 34vw, 170px); min-width: 0;
@@ -1335,32 +1335,6 @@
       100%{ transform: none; }
     }
     @keyframes bayHop{ 30%{ transform: translateY(-0.3em) rotate(-12deg) scale(1.25); } 100%{ transform: none; } }
-    .shelf.open .bayBtn{ background: rgba(255,255,255,0.08); }
-    /* its menu, over the bottom of the board: one of each, bigger, its name and class under it */
-    .bayMenu{
-      position: absolute; left: 50%; bottom: 10px; z-index: 8; transform: translateX(-50%);
-      width: max-content; max-width: calc(100% - 16px); box-sizing: border-box; padding: 8px 8px 10px;
-      background: rgba(5,5,9,0.95);
-      animation: bayIn 160ms cubic-bezier(.2, 1.4, .4, 1) both;
-    }
-    .bayMenu[hidden]{ display: none; }
-    @keyframes bayIn{ from{ transform: translateX(-50%) translateY(14px) scale(0.92); opacity: 0; } }
-    .bayTitle{ font-family: var(--font-display); font-size: 8px; line-height: 1.4; letter-spacing: 0.04em; text-transform: uppercase; text-align: center; color: var(--muted); margin: 0 0 8px; }
-    .bayItems{ display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-    .bayItem{
-      position: relative; width: 98px; min-height: 0; padding: 7px 5px 6px;
-      display: flex; flex-direction: column; align-items: center; gap: 5px;
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.22); border-radius: var(--ui-radius);
-      box-shadow: none; text-shadow: none; color: var(--text);
-      touch-action: manipulation;
-    }
-    .bayItem:hover, .bayItem:focus-visible{ background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.7); box-shadow: none; }
-    .bayItem:active{ transform: none; }
-    .bayItem .bayArt{ max-width: 76px; max-height: 60px; image-rendering: pixelated; }
-    .bayName{ font-family: var(--font-display); font-size: 7px; line-height: 1.5; letter-spacing: 0.02em; text-transform: uppercase; text-align: center; overflow-wrap: break-word; }
-    .bayClass{ font-family: var(--font-display); font-size: 6px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
-    .bayLeft{ position: absolute; right: 4px; top: 3px; font-family: var(--font-display); font-size: 7px; }
-    .bayItem.aim{ outline: 2px solid #fff; outline-offset: 2px; }
 
     .nextMiniShell, .statPill{
       box-sizing: border-box; height: 100%;
@@ -1922,7 +1896,7 @@
         <!-- the bay (src/shelfui.js), where the next piece used to be: the Extra Shiny Pieces, a
              plus made of blocks × how many -->
         <div class="shelf edge" id="shelf">
-          <button type="button" class="bayBtn" aria-haspopup="menu" aria-expanded="false"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 11 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M4 0h3v3H4zM0 4h3v3H0zM4 4h3v3H4zM8 4h3v3H8zM4 8h3v3H4z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span></button>
+          <button type="button" class="bayBtn"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 11 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M4 0h3v3H4zM0 4h3v3H0zM4 4h3v3H4zM8 4h3v3H8zM4 8h3v3H4z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span></button>
         </div>
         <canvas id="nextCanvas" hidden></canvas>
       </div>
@@ -1948,7 +1922,7 @@
           <div class="tutKeys" id="tutKeys" aria-hidden="true" hidden>
             <div class="tutKeyset"><i data-k="up">&#8593;</i><i data-k="left">&#8592;</i><i data-k="down">&#8595;</i><i data-k="right">&#8594;</i></div>
           </div>
-          <div class="shelf tutShelf edge" id="tutShelf" hidden><button type="button" class="bayBtn" aria-haspopup="menu" aria-expanded="false"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 11 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M4 0h3v3H4zM0 4h3v3H0zM4 4h3v3H4zM8 4h3v3H8zM4 8h3v3H4z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span></button></div>
+          <div class="shelf tutShelf edge" id="tutShelf" hidden><button type="button" class="bayBtn"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 11 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M4 0h3v3H4zM0 4h3v3H0zM4 4h3v3H4zM8 4h3v3H8zM4 8h3v3H4z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span></button></div>
         </div>
         <div class="tutNav">
           <button id="tutBack" class="secondary">&#9664; Back</button>

@@ -117,19 +117,17 @@ export const CONFIG = {
   },
 
   // The powerup shelf (src/shelf.js), in place of the next piece, in the modes marked shelf: true.
-  // classes: one slot each, in this order (only these three: never a combo); pieces: the one each
-  // slot holds, the same every game (the tutorial's too): close to the best of its class, not the
-  // best, by how much of the board it reaches (the tidal wave's ten rows, not the black hole's
-  // whole board, nor the katana's three; the hippo's nine columns, not the steamroller's ten; the
-  // tiles' six columns filled, not the volcano's nine); perGame: how many of each the player has
-  // in a game (later on, the shelf will be the player's own, bought, kept from game to game).
+  // classes: one slot each, in this order (the queue's, when they come all at once; only these
+  // three: never a combo); pieces: the one each slot holds, the same every game (the tutorial's
+  // too): close to the best of its class, not the best, by how much of the board it reaches (the
+  // tidal wave's ten rows, not the black hole's whole board, nor the katana's three; the hippo's
+  // nine columns, not the steamroller's ten; the tiles' six columns filled, not the volcano's
+  // nine); perGame: how many of each the player has in a game (later on, the shelf will be the
+  // player's own, bought, kept from game to game).
   shelf: {
     classes: ["destroyer", "expander", "gravity"],
     pieces: { destroyer: "tidal_wave", expander: "bathroom_tiles", gravity: "hippo_bellyflop" },
     perGame: 1,
-    // The bay on the page (src/shelfui.js): a tap opens its menu, and while it's open the game
-    // runs at this speed (1: no slower), to choose in.
-    bayTimeScale: 0.3,
   },
 
   timing: {

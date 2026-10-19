@@ -11,7 +11,7 @@
 // touch screen a finger tapping the part of the board that does it (the zones are ui.js
 // getZone's, each lit faintly in its own colour as the finger gets there); with a keyboard, a
 // little picture of the arrow keys in the bar, the key lighting up; and the bay, which has no
-// keys, the finger either way, tapping it and then the piece in its menu. It starts with
+// keys, the finger either way, tapping it. It starts with
 // whichever the device looks like it has, goes with whatever the player actually uses, and
 // Touch and Keys switch it by hand.
 // Playing at all (a tap on the board, a key that moves the piece) takes the piece over
@@ -336,7 +336,7 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     if (fingerOn !== shown.fingerOn) { finger.classList.toggle("on", fingerOn); shown.fingerOn = fingerOn; }
     hand.classList.toggle("hold", fingerOn && t.hint.held);
     for (const [z, el] of Object.entries(zones)) el.classList.toggle("on", view === "touch" && z === zone);
-    shelfRoot.classList.toggle("aim", aim === "bay" && !shelfRoot.hidden);
+    shelfRoot.classList.toggle("aim", (aim === "bay" || aim === "shelf") && !shelfRoot.hidden);
     shelf.item(shelfSlot(state))?.classList.toggle("aim", aim === "shelf");
     const held = live && t.hint.held ? KEYS_OF.hold : [];
     for (const [k, el] of keyEls) el.classList.toggle("lit", live && (held.includes(k) || (litUntil.get(k) ?? 0) > now));
