@@ -229,7 +229,7 @@ export const CONFIG = {
   // height if that's more; never slower than at the start). Extreme and the zen modes don't
   // change. (The developer tools have sliders for all of it.)
   difficulty: {
-    normal: { start: 30, length: 300, hardest: 1, speed: { fromMs: 500, toMs: 80, perPiece: 0.995, minMs: 30 }, slowBig: { size: 20, full: 60, least: 1.25, most: 2 } },
+    normal: { start: 30, length: 330, hardest: 1, speed: { fromMs: 500, toMs: 80, perPiece: 0.9955, minMs: 30 }, slowBig: { size: 20, full: 60, least: 1.25, most: 2 } },
     god: { start: 25, length: 500, hardest: 0.8, speed: { fromMs: 340, toMs: 100, perPiece: 0.995, minMs: 30 }, slowBig: { size: 20, full: 60, least: 1.25, most: 2 } },
     // What hardness 1 means (at the start it's the usual numbers, in CONFIG.assist and God
     // mode's own; in between, part way):
