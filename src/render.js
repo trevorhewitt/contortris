@@ -8,6 +8,7 @@ import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour, om
 import { getShapePaint } from "./shapes.js";
 import { getActiveMatrix, getGhostDropY } from "./game.js";
 import { resolvePowerupArea, computeEffect, isPhantomPowerup, classOf } from "./powerups.js";
+import { drawRemains, remainsKey, remainsShaken } from "./remains.js";
 
 const DEFAULT_STYLE = {};
 
@@ -466,6 +467,10 @@ export function createRenderer(boardCanvas, nextCanvas) {
   let spriteObjCache = new WeakMap(); // paint object -> canvas
   let spriteStrCache = new WeakMap(); // style object -> Map(colour -> canvas)
   const boardCache = { canvas: document.createElement("canvas"), version: -1, styleKey: "" };
+  // (what destroyed blocks left behind, src/remains.js: on the background, and the blocks on their
+  // own, for over it while the board shakes)
+  const remainsCache = { canvas: document.createElement("canvas"), key: "" };
+  const blocksCache = { canvas: document.createElement("canvas"), version: -1, styleKey: "" };
   let staticLayers = null; // { bg, screen, classicTop } pre-rendered layers
   let lastStyleKey = styleKey();
   const overlayCache = { key: "", area: null };
@@ -635,11 +640,12 @@ export function createRenderer(boardCanvas, nextCanvas) {
     return startOffset * (1 - eased);
   }
 
-  function quakeTransform(ctx, state) {
+  // (k: this much of the shake, for what's further back: src/remains.js)
+  function quakeTransform(ctx, state, k = 1) {
     const q = state.fx?.quake;
     if (!q || q.trauma <= 0.0001) return;
 
-    const trauma2 = q.trauma * q.trauma * (calmFx() ? 0.25 : 1); // (toned down: gentler)
+    const trauma2 = q.trauma * q.trauma * (calmFx() ? 0.25 : 1) * k; // (toned down: gentler)
     const maxOffset = CONFIG.fx.quake.maxOffsetPx * trauma2;
     const maxRot = (CONFIG.fx.quake.rotationalDegrees * Math.PI / 180) * trauma2;
 
@@ -834,29 +840,77 @@ export function createRenderer(boardCanvas, nextCanvas) {
     }
   }
 
+  // What destroyed blocks left behind, for src/remains.js to draw as the board's blocks are drawn,
+  // and (place) the board with its shake k of the way, for each layer of it (none: at rest).
+  function remainsView(state) {
+    return {
+      cell, scale, look: styleKey(), sprite: getSprite,
+      place: state && ((ctx, k) => { ctx.setTransform(scale, 0, 0, scale, 0, 0); quakeTransform(ctx, state, k); punchTransform(ctx, state); }),
+    };
+  }
+
+  // Under the blocks: the background, and what destroyed blocks left behind on it (src/remains.js),
+  // cached together, and drawn again only when what's left changes. (`shaken`: the board's shaking
+  // enough for its layers to be seen to move apart, so they're drawn each where it is.)
+  function drawUnderBlocks(ctx, state, shaken) {
+    const key = remainsKey(state);
+    if (shaken || !key) {
+      drawBackground(ctx);
+      if (shaken) drawRemains(ctx, state, remainsView(state));
+      return;
+    }
+    const c = remainsCache.canvas, full = `${styleKey()}|${key}`;
+    if (c.width !== bw * scale || c.height !== bh * scale) {
+      c.width = bw * scale;
+      c.height = bh * scale;
+      remainsCache.key = "";
+    }
+    if (remainsCache.key !== full) {
+      const g = c.getContext("2d");
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.clearRect(0, 0, c.width, c.height);
+      g.setTransform(scale, 0, 0, scale, 0, 0);
+      g.imageSmoothingEnabled = false;
+      drawBackground(g);
+      drawRemains(g, state, remainsView(null));
+      remainsCache.key = full;
+    }
+    ctx.drawImage(c, 0, 0, bw, bh);
+  }
+
   // Background + locked blocks. Cached as one opaque layer while nothing moves.
+  // (Under the blocks, what destroyed blocks left behind, src/remains.js: when the board shakes it
+  // moves a little less than the board does, so then the blocks come from a cache of their own.)
   function drawBoard(ctx, state) {
     const fx = state.fx;
+    const shaken = remainsShaken(state);
     const animating = fx.rowFall.active || fx.moveAnim.active || fx.growAnim.active || !!fx.ghosts;
     if (animating) {
-      drawBackground(ctx);
+      drawUnderBlocks(ctx, state, shaken);
       drawBlockList(ctx, collectBoardBlocks(state, true));
       return;
     }
 
-    const key = styleKey();
-    if (boardCache.version !== state.boardVersion || boardCache.styleKey !== key) {
-      const g = boardCache.canvas.getContext("2d");
+    const cache = shaken ? blocksCache : boardCache;
+    const key = shaken ? styleKey() : `${styleKey()}|${remainsKey(state)}`;
+    if (cache.canvas.width !== bw * scale || cache.canvas.height !== bh * scale) {
+      cache.canvas.width = bw * scale;
+      cache.canvas.height = bh * scale;
+      cache.version = -1;
+    }
+    if (cache.version !== state.boardVersion || cache.styleKey !== key) {
+      const g = cache.canvas.getContext("2d");
       g.setTransform(1, 0, 0, 1, 0, 0);
-      g.clearRect(0, 0, boardCache.canvas.width, boardCache.canvas.height);
+      g.clearRect(0, 0, cache.canvas.width, cache.canvas.height);
       g.setTransform(scale, 0, 0, scale, 0, 0);
       g.imageSmoothingEnabled = false;
-      drawBackground(g);
+      if (!shaken) drawUnderBlocks(g, state, false);
       drawBlockList(g, collectBoardBlocks(state, false));
-      boardCache.version = state.boardVersion;
-      boardCache.styleKey = key;
+      cache.version = state.boardVersion;
+      cache.styleKey = key;
     }
-    ctx.drawImage(boardCache.canvas, 0, 0, bw, bh);
+    if (shaken) drawUnderBlocks(ctx, state, true);
+    ctx.drawImage(cache.canvas, 0, 0, bw, bh);
   }
 
   function drawGhostPiece(state, ghostY) {

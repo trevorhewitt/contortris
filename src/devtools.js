@@ -7,7 +7,7 @@
 // which powerup classes Classic has and in what order they come, the bay's Extra Shiny Pieces
 // (CONFIG.shelf.pieces: which one each of its classes has), sliders for how fast Classic and
 // God mode fall and how they get harder (CONFIG.difficulty) and how often each class comes at
-// each stage, and a
+// each stage, and how what destroyed blocks leave behind looks (src/remains.js), and a
 // button that copies the settings, to hand on. While they're on, the settings apply to every
 // game, and the game's numbers show at the side of the screen (src/ui.js updateDevPanel).
 // Turning them off, or leaving, puts everything back as it was. (The settings are kept for the
@@ -79,6 +79,16 @@ const GROUPS = [
     ["assist.powerups.cooldownDrops", "at least this many pieces apart", 0, 10, 1],
     ["fx.powerup.speed", "how fast they go off, at the start (×)", 0.5, 3, 0.05],
     ["fx.powerup.maxSpeed", "...and at most, as the game speeds up (×)", 1, 5, 0.1],
+  ] },
+  // (what destroyed blocks leave behind: src/remains.js; these change it at once)
+  { title: "What destroyed blocks leave behind", items: [
+    ["remains.enabled", "on"],
+    ["remains.darker", "how much darker (0 as it was, 1 black)", 0, 1, 0.05],
+    ["remains.faded", "how faded (0 solid, 1 gone)", 0, 1, 0.05],
+    ["remains.saturation", "colour (0 grey, 1 as it was, 2 twice as strong)", 0, 2, 0.05],
+    ["remains.fadeAwaySec", "fade away over (seconds)", 5, 600, 5],
+    ["remains.forever", "...or last for good"],
+    ["remains.parallax", "parallax when the board shakes (1: the oldest keep still)", 0, 1, 0.05],
   ] },
 ];
 
@@ -237,20 +247,25 @@ export function buildDevTools(body, hooks = {}, powerups = []) {
     sec.open = !!g.open;
     sec.appendChild(el("summary", "devTitle", g.title));
     for (const [path, label, min, max, step] of g.items) {
+      // (a setting that's on or off: a box to tick)
+      const flag = typeof DEFAULTS[path] === "boolean";
       const row = el("label", "devSlider");
       const text = el("span", "devSliderLabel");
-      const input = el("input"); input.type = "range"; input.min = min; input.max = max; input.step = step;
+      const input = el("input");
+      if (flag) { input.type = "checkbox"; input.style.width = "auto"; } else { input.type = "range"; input.min = min; input.max = max; input.step = step; }
+      const value = () => (flag ? input.checked : Number(input.value));
+      const put = (v) => { if (flag) input.checked = !!v; else input.value = String(v); };
       const show = () => {
-        const v = Number(input.value), d = DEFAULTS[path];
-        text.textContent = `${label}: ${+v.toFixed(4)}${v !== d ? ` (usually ${d})` : ""}`;
+        const v = value(), d = DEFAULTS[path];
+        text.textContent = flag ? ` ${label}${v !== d ? ` (usually ${d ? "on" : "off"})` : ""}` : `${label}: ${+v.toFixed(4)}${v !== d ? ` (usually ${d})` : ""}`;
         row.classList.toggle("changed", v !== d);
       };
-      input.value = String(path in s.values ? s.values[path] : DEFAULTS[path]);
-      input.addEventListener("input", () => { s.values[path] = Number(input.value); show(); changed(); });
+      put(path in s.values ? s.values[path] : DEFAULTS[path]);
+      input.addEventListener(flag ? "change" : "input", () => { s.values[path] = value(); show(); changed(); });
       show();
-      row.append(text, input);
+      if (flag) row.append(input, text); else row.append(text, input);
       sec.appendChild(row);
-      sliders.push({ path, input, show });
+      sliders.push({ path, put, show });
     }
     body.appendChild(sec);
   }
@@ -268,7 +283,7 @@ export function buildDevTools(body, hooks = {}, powerups = []) {
   reset.addEventListener("click", () => {
     s = { values: {}, classes: null };
     changed();
-    for (const sl of sliders) { sl.input.value = String(DEFAULTS[sl.path]); sl.show(); }
+    for (const sl of sliders) { sl.put(DEFAULTS[sl.path]); sl.show(); }
     for (const b of bay) { b.select.value = DEFAULTS[b.path]; b.show(); }
     drawClasses();
     status.textContent = "Everything is back to the game's own settings.";

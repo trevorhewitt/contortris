@@ -22,7 +22,7 @@ import { getShapePaint } from "./shapes.js";
 import { initPieceSelectionState, selectPiece, destroyerCells, stillUseful } from "./selection.js";
 import { createShelf, shelfReady, shelfQueue, takeShelfPending } from "./shelf.js";
 import { gravityColumns } from "./godmode.js";
-import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
+import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup, rollScatter, classOf } from "./powerups.js";
 import { normaliseGroups, trackLevel6, cutGroup, LEVEL6 } from "./level6.js";
 import { trackEndGame, endGameOn, spawnJitter, noteLanding } from "./endgame.js";
 import { remixShape } from "./remix.js";
@@ -31,6 +31,7 @@ import { buildThreads } from "./threads.js";
 import { rampCfg, rampDropMs } from "./difficulty.js";
 import { createTutorial, tutorialNext, tutorialTick, tutorialTopOut } from "./tutorial.js";
 import { keepParticle, particleLot, alive } from "./particles.js";
+import { leaveRemains, ageRemains } from "./remains.js";
 
 /* =========================
    State
@@ -1034,6 +1035,7 @@ function clearFullLines(state, alsoRows = null) {
   }
 
   const { removed, dropDistances } = collapseRows(state.board, fullRows, cols);
+  leaveRemains(state, rowsToCells(removed)); // (their art stays where they were: src/remains.js)
   markBoardDirty(state);
   instancesAfterCollapse(state, fullRows);
 
@@ -1221,6 +1223,10 @@ function firePowerupEffect(state, e) {
     area: e.area, placed: e.placed, pid: e.pid, centre: e.centre, cols, rows, rng: state.rng, keepRows,
     makeFill: () => ({ paint: pu.fillPaint, style: pu.fillStyle, pid: fillPid }), at: { rot: e.rotIdx, x: e.x, y: e.y },
   });
+  // (the art of the blocks it destroyed stays where they were, a Destroyerz's own too, as it goes
+  // with everything else in its area: src/remains.js)
+  const ownGone = [pu, ...(pu.parts ?? [])].some(p => classOf(p.type) === "destroyer") ? fx.consumed : [];
+  leaveRemains(state, [...ownGone, ...fx.destroyed, ...rowsToCells(fx.collapsed?.removed ?? [])]);
   // (rows the effect itself collapsed are gone already; the ones above them moved down)
   const gone = new Set(fx.collapsed?.rows ?? []);
   e.keepRows = new Set([...keepRows].filter(y => !gone.has(y)).map(y => y + [...gone].filter(r => r > y).length));
@@ -2023,6 +2029,7 @@ export function zenRescue(state) {
     if (c) { gone.push({ x, y, cell: c }); state.board[y][x] = null; }
   }
   if (!gone.length) return;
+  leaveRemains(state, gone); // (their art stays where they were: src/remains.js)
   instancesAfterRemoval(state, gone);
   spawnCellParticles(state, gone, 0.5);
   addQuakeFromBlocks(state, gone.length);
@@ -2050,6 +2057,7 @@ export function updateGame(state, dt) {
 
   if (!state.running || state.gameOver) return;
   if (state.paused) return;
+  ageRemains(state, dt / timeScaleOf(state)); // (what destroyed blocks left fades away: src/remains.js)
 
   if (state.zen) zenTick(state, dt); // zen: the autopilot steers (unless the player is)
   // (the tutorial: its autopilot shows the moves, and when a page starts or goes round again,

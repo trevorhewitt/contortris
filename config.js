@@ -650,6 +650,29 @@ export const CONFIG = {
     },
   },
 
+  // What destroyed blocks leave behind (src/remains.js): a block destroyed (its row cleared, a
+  // Destroyerz going off, zen dissolving the top of the board) leaves its art where it was, under
+  // everything still on the board, `darker` (0 as it was, 1 black), `faded` (0 solid, 1 not there
+  // at all) and its colour `saturation` times as strong (0 grey, 1 as it was); the last destroyed
+  // in a cell is the one that shows there. They fade away over fadeAwaySec seconds, or last for
+  // good (forever: until something else is destroyed there). They come in layers, newest on top,
+  // a new one every layerSec at most, and no more than `layers` of them (the oldest go into the
+  // one after them); when the board shakes, each moves less than the board does, the older the
+  // less, the oldest (1 - parallax) of the way with it. Not in the modes in notIn. (On for now, to
+  // try out: the developer tools can change all this, and switch it off.)
+  remains: {
+    enabled: true,
+    darker: 0.6,
+    faded: 0.5,
+    saturation: 0.6,
+    fadeAwaySec: 90,
+    forever: true,
+    parallax: 0.6,
+    layers: 4,
+    layerSec: 4,
+    notIn: ["tutorial"],
+  },
+
   assist: {
     // Threads (shapes/threads.js, src/threads.js): pieces share loose themes, and often the next
     // piece follows one from the last piece or two, so they come in drifting, poetic runs, with
