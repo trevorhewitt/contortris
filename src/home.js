@@ -14,12 +14,12 @@
 //
 // The board behind the menu is the game's own (state, drawn by the renderer onto the board
 // canvas as usual); the home screen only shows it through the camera, on a canvas of its own.
-// There are two of them, in fact: the camera cuts between the two boards as well as around each,
-// so a cut can be to somewhere else altogether, not just the same board from another angle. Only
-// the one on screen plays (main.js asks liveState()); the other waits where it was, which costs
-// nothing. And now and then a cut is to a mosaic instead (src/mosaic.js): a screen packed full of
-// pieces, repeating in every direction, swept across at a steady speed for a few shots, turning
-// and zooming, then back to the boards.
+// There are two of them, in fact: the camera cuts between the two boards, mostly, rather than
+// around each, so nearly every cut is to somewhere else altogether, as if to another game, not
+// just the same board from another angle. Only the one on screen plays (main.js asks
+// liveState()); the other waits where it was, which costs nothing. And often a cut is to a mosaic
+// instead (src/mosaic.js): a screen packed full of pieces, repeating in every direction, swept
+// across at a steady speed, turning and zooming, then back to the boards.
 
 import { CONFIG } from "../config.js";
 import { startRun, resetGame, updateGame, getGhostDropY, collides, createGameState, markBoardDirty } from "./game.js";
@@ -136,7 +136,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     otherWarm = 26000;
     camera.reset();
     newMosaic();
-    mosaicAt = performance.now() + pickIn(H().mosaic?.firstMs ?? [12000, 20000]);
+    mosaicAt = performance.now() + pickIn(H().mosaic?.firstMs ?? [4000, 7000]);
   }
 
   // The next mosaic, packed now and painted a little each frame until it's ready (`mosaic.ready`);
@@ -157,11 +157,13 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     window.__homeShellPx = null;
   }
 
-  // (at a cut, now and then, to the other board: once it has something on it, and never in the
-  // middle of a powerup going off on this one, nor after only a moment on it; true if it did)
+  // (at a cut, most of the time, to the other board (with calmer animations, now and then): once
+  // it has something on it, and never in the middle of a powerup going off on this one (unless
+  // the camera's on a mosaic, not watching it), nor after only a moment on it; true if it did)
   let boardSince = 0;
-  function maybeSwitchBoards(now, chance = H().otherBoard ?? 0.5) {
-    if (!other || otherWarm > 0 || shown().effect || now - boardSince < (H().otherBoardAfterMs ?? 1800)) return false;
+  const justSwitched = (now) => now - boardSince < (H().otherBoardAfterMs ?? 1500);
+  function maybeSwitchBoards(now, chance = reduced ? H().calmOtherBoard ?? 0.5 : H().otherBoard ?? 0.9) {
+    if (!other || otherWarm > 0 || (shown().effect && !camera.shot?.mosaic) || justSwitched(now)) return false;
     if (Math.random() >= chance) return false;
     onOther = !onOther;
     boardSince = now;
@@ -264,9 +266,10 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   // slight tilt; never quite still. Then a cut to the next. And the moment the action is
   // somewhere the shot can't see (the next piece lands further along, a powerup's about to go
   // off out of frame), a cut to it, so little happens out of sight. Every cut is to something
-  // clearly different: the other board, the mosaic, or somewhere else on this board, never much
-  // the same view from another angle (CONFIG.home.cutOverlap); with nowhere like that to go, no
-  // cut, and the shot goes on from where it is.
+  // clearly different, as if to another game: the other board, mostly, or a mosaic, and only now
+  // and then somewhere else on this board, never much the same view from another angle
+  // (CONFIG.home.cutOverlap); with nowhere like that to go, no cut, and the shot goes on from
+  // where it is.
   const SHOTS = ["pan", "pan", "pan", "push", "pull"];
   const camera = {
     shot: null, x: 0, y: 0, z: 1, rot: 0, S: 1,
@@ -354,32 +357,37 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       return { start: now, end: now + rand(m0, m1), a, b, z0, z1, rot, cover, kind, focus };
     },
     // A cut from the boards: to the mosaic when it's time for one (but not in the middle of a
-    // powerup going off, nor straight after another cut); now and then to the other board; or
+    // powerup going off, nor straight after another cut); most of the time to the other board; or
     // else to somewhere on this one clearly different from what's on screen, or failing that, to
-    // the other board after all. False if there's nowhere to go.
-    cut(now) {
+    // the other board after all. False if there's nowhere to go. `wait`: a cut that can wait (at
+    // the end of a shot, or to where the next piece lands, when it isn't a powerup), which only
+    // just after a cut to this board, or with a powerup going off on it, waits until it can be to
+    // the other, rather than be to this one again (false).
+    cut(now, wait = false) {
       const M = H().mosaic;
       if (mosaic?.ready && !reduced && now >= mosaicAt && !shown().effect && now - this.shot.start > (H().minShotMs ?? 600)) {
-        const [a, b] = M.shots ?? [2, 4];
+        const [a, b] = M.shots ?? [1, 1];
         onMosaic = a + Math.floor(Math.random() * (b - a + 1));
-        mosaicAt = now + pickIn(M.everyMs ?? [30000, 45000]);
+        mosaicAt = now + pickIn(M.everyMs ?? [8000, 13000]);
         this.mosaicShot(now);
         return true;
       }
       const from = { x: this.x, y: this.y, S: this.S };
       if (maybeSwitchBoards(now)) return this.frame(now, { from });
+      if (wait && (justSwitched(now) || shown().effect)) return false;
       return this.frame(now, { from, strict: true }) || (maybeSwitchBoards(now, 1) && this.frame(now, { from }));
     },
     step(dt, now) {
-      const s0 = this.shot, was = shown(), last = { x: this.x, y: this.y, rot: this.rot, S: this.S };
+      const s0 = this.shot, was = shown(), last = { x: this.x, y: this.y, rot: this.rot, S: this.S, tiles: s0?.mosaic ? mosaic : null };
       if (mosaic && !mosaic.ready) mosaic.ready = mosaic.step(3);
       if (!s0) this.frame(now);
       else if (now >= s0.end) {
-        // a cut: to the next shot of a mosaic, or back from it; or from the boards, wherever cut()
-        // says, and with nowhere clearly different to go, no cut: on from just here
+        // a cut: to the next shot of a mosaic, or back from it (to the other board, mostly, as at
+        // any cut); or from the boards, wherever cut() says, and with nowhere clearly different to
+        // go (or a cut that waits), no cut: on from just here
         if (onMosaic > 0 && --onMosaic > 0) this.mosaicShot(now, true);
-        else if (s0.mosaic) { newMosaic(); markBoardDirty(shown()); this.frame(now); } // (back from one: a fresh one for next time)
-        else if (!this.cut(now)) this.frame(now, { keep: true });
+        else if (s0.mosaic) { newMosaic(); maybeSwitchBoards(now); markBoardDirty(shown()); this.frame(now); } // (and a fresh one for next time)
+        else if (!this.cut(now, !reduced)) this.frame(now, { keep: true });
       } else if (!s0.mosaic && !reduced) {
         // the next thing to land, or go off, somewhere this shot can't see: cut to it (a new
         // piece the moment it comes, so you see it come down, and a powerup the moment it goes
@@ -389,12 +397,13 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
         this.piece = piece;
         this.effect = B.effect;
         if (b && !this.sees(b, 0.2) && (fresh || fired || now - s0.start > (H().minShotMs ?? 600))) {
-          if (now - s0.start > (H().minShotMs ?? 600) || fired || piece?.powerup) this.cut(now);
+          if (now - s0.start > (H().minShotMs ?? 600) || fired || piece?.powerup) this.cut(now, !fired && !piece?.powerup);
         }
       }
       // (a cut to the other board: until the next frame the board canvas still has the one it's
-      // leaving on it, so this frame keeps the view it had, not that board from the new angle;
-      // and the piece coming down on the other isn't a new one just because it's new to the camera)
+      // leaving on it, so this frame keeps the view it had, of that board or of the mosaic, not
+      // that board from the new angle; and the piece coming down on the other isn't a new one just
+      // because it's new to the camera)
       this.hold = shown() !== was ? last : null;
       if (this.hold) this.piece = shown().active?.shape ?? null;
       if (this.shot.mosaic) return this.stepMosaic(now);
@@ -441,8 +450,10 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       Object.assign(this, p, { S: s.base * p.z });
     },
     draw() {
+      const h = this.hold;
+      if (h?.tiles) return this.drawImage(h.tiles.canvas, h.tiles.mosaic.cols, h, h.tiles);
       if (this.shot?.mosaic && mosaic) return this.drawImage(mosaic.canvas, mosaic.mosaic.cols, this, mosaic);
-      this.drawImage(boardCanvas, CONFIG.board.cols, this.hold ?? this);
+      this.drawImage(boardCanvas, CONFIG.board.cols, h ?? this);
     },
     // (`tiled`: the mosaic, repeated in every direction, as much of it as the screen takes in)
     drawImage(img, cols, v = this, tiled = null) {

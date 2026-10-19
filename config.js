@@ -75,11 +75,15 @@ export const CONFIG = {
   home: {
     rows: 24, minCols: 14, maxCols: 30, widthShare: 0.85,
     zoom: 2.6, shotMs: [2600, 4200], tiltChance: 0.3, maxTurn: 5, minView: [10, 9], minShotMs: 600,
-    // (at a cut, how often to the other of its two boards rather than somewhere else on this one;
-    // and somewhere else is clearly somewhere else: the views either side of a cut on the same
-    // board, or the mosaic, share no more than cutOverlap of what they show between them, by
-    // area; with nowhere like that, it's the other board, or no cut at all)
-    otherBoard: 0.5, cutOverlap: 0.35,
+    // (at a cut, how often to the other of its two boards rather than somewhere else on this one,
+    // so that with the mosaics, nearly every cut looks like a cut to another game (otherBoard;
+    // with calmer animations, whose shots are slow drifts, calmOtherBoard); never to the other,
+    // though, after less than otherBoardAfterMs on one, nor while a powerup goes off on it, and
+    // till then a cut waits, unless it's to a powerup; and somewhere else is clearly somewhere
+    // else: the views either side of a cut on the same board, or the mosaic, share no more than
+    // cutOverlap of what they show between them, by area; with nowhere like that, it's the other
+    // board, or no cut at all)
+    otherBoard: 0.9, calmOtherBoard: 0.5, otherBoardAfterMs: 1500, cutOverlap: 0.35,
     fxEvery: [14000, 22000], logoEvery: 2600,
     idleMs: 30000,
     burstMs: 720, fadeMs: 240,
@@ -92,15 +96,15 @@ export const CONFIG = {
     // ...and never more than maxOnes one-cell pieces in a row, slow and all much the same (and
     // none picked just at random: only as part of a plan or a combination)
     maxOnes: 3,
-    // A while after the home screen comes up (firstMs), and every so often after that (everyMs),
-    // the next cut is to a mosaic (src/mosaic.js): a grid cols × rows packed full of pieces on a
-    // theme (themes: how likely each; tags: the kinds of thing that can be one), drawn cellPx a
-    // cell, repeating in every direction, swept across for a few shots (shots), each shotMs long:
-    // in a straight line at a steady speed from the first frame to the cut (speed: screens a
-    // second, the screen's longer side), zooming steadily between zoom times as close as filling
-    // the screen, turning steadily up to maxTurn degrees.
+    // A few seconds after the home screen comes up (firstMs), and often after that (everyMs), the
+    // next cut is to a mosaic (src/mosaic.js), a new one each time: a grid cols × rows packed full
+    // of pieces on a theme (themes: how likely each; tags: the kinds of thing that can be one),
+    // drawn cellPx a cell, repeating in every direction, swept across in a shot (shots: how many,
+    // at the fewest and the most), shotMs long: in a straight line at a steady speed from the
+    // first frame to the cut (speed: screens a second, the screen's longer side), zooming steadily
+    // between zoom times as close as filling the screen, turning steadily up to maxTurn degrees.
     mosaic: {
-      firstMs: [12000, 20000], everyMs: [30000, 45000], shots: [2, 4], shotMs: [1000, 1700], speed: [0.35, 0.9], zoom: [1.15, 3.4], maxTurn: 32,
+      firstMs: [4000, 7000], everyMs: [8000, 13000], shots: [1, 1], shotMs: [1000, 1700], speed: [0.35, 0.9], zoom: [1.15, 3.4], maxTurn: 32,
       cols: 56, rows: 34, cellPx: 20,
       tags: ["food", "space", "tiles", "landmark", "surreal", "weather", "bugs"],
       themes: { everything: 3, powerups: 1.5, giants: 1.2, few: 1.6, food: 1, space: 0.8, tiles: 0.8, landmark: 0.5, surreal: 0.6, weather: 0.5, bugs: 0.5 },
