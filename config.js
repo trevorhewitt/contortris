@@ -28,12 +28,13 @@ export const CONFIG = {
     extreme: { label: "Extreme", tagline: "no Shiny Pieces. no help.", powerups: false, giants: true, level6: true, hints: false, hideOnPause: true },
     god: { label: "God", shelf: true, tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true, hideOnPause: true },
     // speeds: a speed setting on the pause menu, these times timeScale (1 to start with).
-    // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); calm: zen for playing, slow
-    // and easy (CONFIG.zen.calm, which also has its own numbers for the pieces); timeScale: how fast it all runs;
+    // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); calm: zen for playing, a bit
+    // like a game of Classic that can't be lost (CONFIG.zen.calm, which also has its own numbers
+    // for the pieces); timeScale: how fast it all runs;
     // zenMovements: "turbo" for turbo zen's own mix of movements; flashNames: the falling piece's
     // name just appears, no sliding in and out; captions: false, no words over the board for what
     // zen's director is up to
-    zen: { label: "Zen", tagline: "slow and easy: it plays itself, or you do", warmup: "always", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
+    zen: { label: "Zen", tagline: "endless play: it plays itself, or you do", warmup: "always", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
     turbo: { label: "Turbo zen", tagline: "it plays itself, and doesn't stop", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2], captions: false },
     // (behind the home screen, CONFIG.home: turbo zen with no words in it at all, no names, no
     // callouts, at an easier pace than turbo zen's so you see the pieces fall; never a pause, dramatic or for
