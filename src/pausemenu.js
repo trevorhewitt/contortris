@@ -163,9 +163,11 @@ export function createGallery({ state, root, picW = 112, picH = 84, cellMax = 32
       drag.moved = true;
       stage.classList.add("dragging");
     }
+    // (recentred once it's 0.7 of the way along, so that wherever it's let go, a third of the way
+    // or more goes on to the next: letGo)
     let o = drag.from - dx / (spacing * drag.scale);
-    while (o > 0.5 && index < fallen.length - 1) { recentre(1); drag.from -= 1; o -= 1; }
-    while (o < -0.5 && index > 0) { recentre(-1); drag.from += 1; o += 1; }
+    while (o > 0.7 && index < fallen.length - 1) { recentre(1); drag.from -= 1; o -= 1; }
+    while (o < -0.7 && index > 0) { recentre(-1); drag.from += 1; o += 1; }
     // (past either end it gives, but only a little)
     offset = (o < 0 && index === 0) || (o > 0 && index === fallen.length - 1) ? o * 0.3 : o;
     place();
