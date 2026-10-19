@@ -147,6 +147,7 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
 
   /* ---------- the bar ---------- */
 
+  let onLast = false; // (the last page is up: its Next is Play)
   function renderPage(t) {
     const newPage = shown.page !== t.page;
     shown.page = t.page;
@@ -170,7 +171,9 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     [...dotsEl.children].forEach((d, i) => { d.classList.toggle("on", i === t.page); d.classList.toggle("done", i < t.page); });
     dotsEl.setAttribute("aria-label", `page ${t.page + 1} of ${t.pages.length}`);
     backBtn.disabled = t.page === 0;
-    nextBtn.hidden = last;
+    // (the last page's Next is Play, into Classic)
+    onLast = last;
+    nextBtn.innerHTML = last ? "Play &#9654;" : "Next &#9654;";
     nextBtn.classList.remove("nudge");
     cheerEl.classList.remove("on");
   }
@@ -228,7 +231,7 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
     tutorialGoTo(state, (t.pending ?? t.page) + d);
   };
   backBtn.addEventListener("click", () => go(-1));
-  nextBtn.addEventListener("click", () => go(1));
+  nextBtn.addEventListener("click", () => (onLast ? play("normal", { from: nextBtn }) : go(1)));
   pauseBtn.addEventListener("click", (e) => { e.preventDefault(); togglePause(); });
   // (paused, the pause menu has its own X; this one is the tutorial's, out of it)
   xBtn.addEventListener("click", () => { if (state.paused) resumeGame(); else goToMenu(); });
