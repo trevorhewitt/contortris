@@ -10,7 +10,7 @@ import { THREADS, SET_THREADS } from "../shapes/threads.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, updateGame, hardDropAndLock, markInput, tryMove, tryRotate, on } from "../src/game.js";
-import { zenStart, zenIgnoreInput, zenLockMs, pluralName, planTiles, oopsName, zenKeys, zenCombos, planPile, planSquares, palettePick, reachableTurns } from "../src/zen.js";
+import { zenStart, zenIgnoreInput, zenLockMs, pluralName, planTiles, oopsName, zenKeys, zenCombos, planPile, planSquares, palettePick, reachableTurns, upright } from "../src/zen.js";
 import { COMBOS } from "../shapes/combos.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
@@ -559,6 +559,52 @@ test("turbo zen: every piece starts out over the place it's going, already turne
   zenStart(state, "column");
   run(state, log, 3 * 60000);
   assert.ok(checked > 100 && planned > 30, `${checked} pieces, ${planned} of them planned`);
+});
+
+test("zen: a piece that fits just the same upside down comes the way it was drawn; in turbo zen only now and then, and the ESTRIX piece mostly", () => {
+  const key = (m) => m.map(r => r.map(c => (c ? 1 : 0)).join("")).join("/");
+  // (the turns of a piece with the same outline as the way it was drawn: two, or four for a square)
+  const asDrawn = (s) => s.rotations.map((m, r) => r).filter(r => key(s.rotations[r]) === key(s.rotations[0]));
+  const count = (mode, seed, minutes) => {
+    const { state } = zen(seed, mode);
+    const n = { 2: 0, 4: 0, planned: 0 }, turned = { 2: 0, 4: 0, planned: 0 };
+    on(state, (t) => {
+      if (t !== "spawn") return;
+      const a = state.active, same = asDrawn(a.shape);
+      if (same.length < 2 || !same.includes(a.rotIdx) || a.shape.id === "estrix") return;
+      const k = state.zen.current?.target ? "planned" : same.length;
+      n[k]++;
+      if (a.rotIdx !== 0) turned[k]++;
+    });
+    run(state, null, minutes * 60000);
+    return { n, turned };
+  };
+  const calm = count("zen", 2, 12);
+  const all = (o) => o[2] + o[4] + o.planned;
+  assert.ok(all(calm.n) > 50, `${all(calm.n)} pieces`);
+  assert.equal(all(calm.turned), 0, "zen: none upside down (or a square on its side)");
+  // (by chance, half of them would come upside down, and three in four squares turned)
+  const turbo = count("turbo", 1, 6);
+  const two = turbo.turned[2] / turbo.n[2], four = turbo.turned[4] / turbo.n[4];
+  assert.ok(turbo.n[2] > 60 && two > 0.15 && two < 0.42, `turbo zen: ${turbo.turned[2]} of ${turbo.n[2]} upside down`);
+  assert.ok(turbo.n[4] > 60 && four > 0.3 && four < 0.62, `turbo zen: ${turbo.turned[4]} of ${turbo.n[4]} squares turned`);
+  assert.equal(turbo.turned.planned, 0, `turbo zen: a planned piece is never turned for nothing (${turbo.n.planned} of them)`);
+  // (and one at a time: in zen always the way it was drawn, in turbo zen `share` of the time, ESTRIX more)
+  const U = CONFIG.zen.upright;
+  const estrix = shapes.find(s => s.id === "estrix");
+  const plain = shapes.find(s => !s.powerup && s !== estrix && asDrawn(s).length === 2);
+  const square = shapes.find(s => !s.powerup && asDrawn(s).length === 4);
+  const odd = shapes.find(s => !s.powerup && asDrawn(s).length === 1);
+  const zenState = zen(9).state, turboState = zen(9, "turbo").state;
+  for (const s of [estrix, plain, square]) assert.equal(upright(zenState, s, { rot: 2, x: 3 }).rot, 0, s.id);
+  for (const rot of [1, 3]) assert.equal(upright(zenState, square, { rot, x: 3 }).rot, 0, `${square.id} on its side`);
+  assert.equal(upright(zenState, estrix, { rot: 1, x: 3 }).rot, 1, "standing on end is another outline");
+  assert.equal(upright(zenState, odd, { rot: 2, x: 3 }).rot, 2, `${odd.id} upside down is another outline`);
+  assert.equal(upright(zenState, plain, null), null);
+  const share = (s) => { let k = 0; for (let i = 0; i < 2000; i++) if (upright(turboState, s, { rot: 2, x: 3 }).rot === 0) k++; return k / 2000; };
+  assert.ok(Math.abs(share(plain) - U.share) < 0.05, `${plain.id}: ${share(plain)}`);
+  assert.ok(Math.abs(share(estrix) - U.pieces.estrix) < 0.04, `estrix: ${share(estrix)}`);
+  assert.equal(share(odd), 0);
 });
 
 test("turbo zen: each planned movement builds right up and then clears what it built", () => {

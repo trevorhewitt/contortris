@@ -29,15 +29,17 @@ clears.
 - **Extreme**: no Shiny Pieces, no mercy.
 - **God mode**: everything from the first piece; it gets harder too.
 - **Zen** and **Turbo zen**: it plays itself (slowly, or as a show), or you do. In Zen each piece
-  comes in over a different place from the last few and is a new shape each time; move one
-  away from where it was going and it won't keep putting things there. You can build the board
-  most of the way up if you like: no Shiny Piece of its own takes much of it, and help only
-  comes near the top (it still can't be lost). In Turbo zen every piece arrives already turned
-  and over the place it's going, and drops straight into it, quickly; the computer never moves
-  a piece once it's on the board. Step in whenever you like: the piece you touch is yours until
-  it lands, and while you're playing the next ones come promptly, one at a time, at a pace you
-  can steer, each with a moment on the ground to slide or turn it; stop, and the computer takes
-  back over gently, over a few pieces (`zen` in `config.js`).
+  comes in over a different place from the last few and is a new shape each time, and one that
+  fits just the same upside down comes the way it was drawn; move one away from where it was
+  going and it won't keep putting things there. You can build the board most of the way up if
+  you like: no Shiny Piece of its own takes much of it, and help only comes near the top (it
+  still can't be lost). In Turbo zen every piece arrives already turned and over the place it's
+  going (often upside down, though the ESTRIX piece mostly reads the right way), and drops
+  straight into it, quickly; the computer never moves a piece once it's on the board. Step in
+  whenever you like: the piece you touch is yours until it lands, and while you're playing the
+  next ones come promptly, one at a time, at a pace you can steer, each with a moment on the
+  ground to slide or turn it; stop, and the computer takes back over gently, over a few pieces
+  (`zen` in `config.js`).
 - **Options**: skip the Shiny Piece intro screens, a favourite piece that turns up a little more
   often, toned-down animations, high contrast, and whether Turbo zen fills the screen. Kept in
   the browser.

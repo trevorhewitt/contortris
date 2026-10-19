@@ -1465,7 +1465,7 @@ function calmPowerup(state, pool, tries, maxLines, maxBite, steady = false) {
     for (const c of placesFor(state, p, WEIGHTS.clear, 4)) if (c.lines <= maxLines && c.took <= maxBite) ok.push({ ...c, p });
   }
   const c = steady ? bestOf(ok) : calmBest(state, ok);
-  return c && { shape: c.p, target: { rot: c.rot, x: c.x } };
+  return c && { shape: c.p, target: upright(state, c.p, { rot: c.rot, x: c.x }) };
 }
 
 // On the way up a fill: one of the Expanderz (the bigger ones likelier) put where it fills the
@@ -1500,7 +1500,7 @@ export function zenSpawned(state) {
   // (anything pressed since the last piece came was the player playing that one, not this one)
   if (state.lastInputAt !== z.inputAt) { z.userAt = state.drops; z.inputClock = z.playedAt = z.clock; }
   z.inputAt = state.lastInputAt;
-  z.target = targetFor(state);
+  z.target = upright(state, a.shape, targetFor(state));
   const t = z.target;
   if (t) {
     const mat = a.shape.rotations[t.rot];
@@ -1592,7 +1592,7 @@ function formFlock(state, land) {
     let spot = null;
     if (!item.key && !item.dramatic && !item.emergency && (item.shape.difficulty !== LEVEL6 || item.loose)) {
       spot = item.target ? { rot: item.target.rot, x: item.target.x }
-        : flockSpot(occ, item.shape, item.weights ?? WEIGHTS.clear, (x0, x1) => apart(x0, x1, taken), cols, rows, F.headroom, z.simRng, item.turns ?? 4);
+        : upright(state, item.shape, flockSpot(occ, item.shape, item.weights ?? WEIGHTS.clear, (x0, x1) => apart(x0, x1, taken), cols, rows, F.headroom, z.simRng, item.turns ?? 4));
     }
     const m = spot && item.shape.rotations[spot.rot];
     const fits = m && apart(spot.x, spot.x + m[0].length, taken) && apart(spot.x, spot.x + m[0].length, passed);
@@ -1798,6 +1798,17 @@ function targetFor(state) {
   return best ? { rot: best.rot, x: best.x } : null;
 }
 
+// A piece going somewhere turned for nothing, the same shape as the way it was drawn but upside
+// down (or a square on its side), goes there the way it was drawn instead: in zen always, in turbo
+// zen now and then, and some pieces more often (CONFIG.zen.upright). (The planners already use
+// the first turn of each outline.) `t`: { rot, x } (or null), as it was or turned back.
+export function upright(state, shape, t) {
+  const U = isCalm(state) ? CONFIG.zen.calm.upright : CONFIG.zen.upright;
+  const share = Math.max(U?.share ?? 0, U?.pieces?.[shape.id] ?? 0);
+  if (!t?.rot || !(share > 0) || firstTurn(shape, t.rot) !== 0) return t;
+  return share >= 1 || z01(state) < share ? { ...t, rot: 0 } : t;
+}
+
 // Zen: where to put it, as a person might, and not always just so (CONFIG.zen.calm.place). Of the
 // places the autopilot would think of (placesFor: with the next piece in mind, if it's known),
 // never where the player has just moved a piece away from (pushedAway) if anywhere else will do;
@@ -1990,6 +2001,9 @@ export function reachableTurns(shape) {
   while (n < shape.rotations.length && shape.rotations[n][0].length <= cols) n++;
   return n;
 }
+// The first of a piece's turns with the same outline as turn `r` (another turn of the same outline
+// lands just the same, only with its picture turned: upside down, say).
+const firstTurn = (shape, r) => shape.rotations.findIndex(m => outlineKey(m) === outlineKey(shape.rotations[r]));
 
 /* =========================
    The planned movements
@@ -2032,7 +2046,8 @@ export function planFall(state) {
     s.rotations.forEach((mat, rot) => {
       const h = mat.length, w = mat[0].length;
       if (rot >= turns || h < 5 || w > cols - 2 || h > rows - 3) return;
-      if (flatTopSolidColumns(mat)) keys.push({ shape: s, rot, mat, h, w });
+      // (in the first turn of its outline: firstTurn)
+      if (flatTopSolidColumns(mat)) keys.push({ shape: s, rot: firstTurn(s, rot), mat, h, w });
     });
   }
   for (let tries = 0; tries < 6 && keys.length; tries++) {
@@ -2524,7 +2539,8 @@ function floodOver(state, gaps, top) {
         const y = dropY(occ, mat, x, cols, rows);
         if (y == null || y < 1) continue;
         const area = resolvePowerupArea(p.powerup, r, x, y, cols, rows);
-        if (want.every(i => area.flags[i])) options.push({ p, r, x, spare: area.indices.length - want.length });
+        // (in the first turn of its outline: firstTurn)
+        if (want.every(i => area.flags[i])) options.push({ p, r: firstTurn(p, r), x, spare: area.indices.length - want.length });
       }
     }
   }

@@ -296,6 +296,9 @@ export const CONFIG = {
     // the rows above them.
     // Each piece is a new shape: never the shape of any of the last newShapes pieces (if anything
     // else will do), and `random` of the time any piece of its level, not one picked to fit.
+    // A piece that would come turned for nothing, the same shape as the way it was drawn but upside
+    // down (or a square on its side), comes the way it was drawn instead (upright: `share` of those
+    // times, here all of them; turbo zen's is softer).
     // When the player moves a piece away from where it was going, the computer doesn't push it
     // on them (pushed): it aims somewhere else for the next `pieces` pieces, and a piece of that
     // shape somewhere else for `shape` pieces in all (so when it comes back to it, it's with
@@ -316,7 +319,7 @@ export const CONFIG = {
       dropMs: 700, idleMs: 20000, idleDropMs: 170,
       place: { within: 0.3, away: 1, temper: 0.5, spread: 3 },
       slips: { chance: 0.12, holes: 2, within: 3, height: 0.4, most: 3 },
-      newShapes: 6, random: 0.3,
+      newShapes: 6, random: 0.3, upright: { share: 1 },
       pushed: { pieces: 2, shape: 8 },
       bite: { most: 24, share: 0.3, least: 8 },
       help: { height: 0.7, played: 10, every: 12, rows: 6, blocks: 30, alone: { height: 0.4, gaps: 12 } },
@@ -334,6 +337,12 @@ export const CONFIG = {
     pieceMs: 650,        // (but each takes this long at least, however short the way down: it starts further up, out of sight)
     restMs: 300,         // after a big clearance, a moment's breath before the next piece (not while the player's playing)
     maxStepsPerFrame: 3, // (so a fast fall stays fast in turbo zen)
+    // A piece that's the same shape turned all the way round as the way it was drawn (or turned
+    // any way at all: a square) would often come turned for nothing, its picture upside down: this
+    // share of those times it comes the way it was drawn instead (so plenty still come upside
+    // down), and some pieces more often (`pieces`: the ESTRIX piece, which spells the name). (Zen's
+    // own: calm.upright.)
+    upright: { share: 0.4, pieces: { estrix: 0.9 } },
     // The player touches a piece and it's theirs until it lands, wherever they put it. While
     // they're playing (they had the last piece, or touched it in the last playMs, real time), the
     // computer keeps its hands off: each piece still comes already where it wants it, on the
