@@ -28,6 +28,7 @@ import { buildMosaic, paintMosaic } from "./mosaic.js";
 import { calmFx } from "./settings.js";
 import { drawChromaSquare } from "./render.js";
 import { ombre, ombreRGB } from "./util.js";
+import { particleShare, particleLot, alive } from "./particles.js";
 const H = () => CONFIG.home ?? {};
 const rand = (a, b) => a + Math.random() * (b - a);
 const pickIn = ([a, b]) => rand(a, b);
@@ -532,7 +533,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   }
   // (each of them white, split into the warm rainbow, and glowing one of its colours: t)
   function spawnMote(kind, W, Hh, now) {
-    const m = { kind, t: Math.random(), age: 0, rot: rand(0, 6.28), vr: rand(-2, 2) };
+    const m = { kind, t: Math.random(), age: 0, rot: rand(0, 6.28), vr: rand(-2, 2), lot: particleLot() };
     if (kind === "embers") Object.assign(m, { x: rand(0, W), y: Hh + 10, vx: rand(-12, 12), vy: rand(-70, -30), size: rand(6, 16), life: rand(5, 9), t: rand(0, 0.45) });
     else if (kind === "sparkles") Object.assign(m, { x: rand(0, W), y: rand(0, Hh), vx: 0, vy: 0, size: rand(8, 22), life: rand(1.2, 2.4) });
     else if (kind === "confetti") Object.assign(m, { x: rand(0, W), y: -10, vx: rand(-25, 25), vy: rand(30, 80), size: rand(4, 9), life: rand(7, 12) });
@@ -548,8 +549,9 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       mood = others[Math.floor(Math.random() * others.length)];
       moodUntil = now + pickIn(H().fxEvery ?? [14000, 22000]);
     }
+    // (fewer of them while the frames lag, and those going thin out: src/particles.js)
     const area = (W * Hh) / 700000;
-    spawnAcc += (RATE[mood] ?? 6) * area * s * (reduced ? 0.3 : 1);
+    spawnAcc += (RATE[mood] ?? 6) * area * s * (reduced ? 0.3 : 1) * particleShare();
     while (spawnAcc >= 1 && motes.length < 260) { spawnAcc--; motes.push(spawnMote(mood, W, Hh, now)); }
     fx.setTransform(1, 0, 0, 1, 0, 0);
     fx.imageSmoothingEnabled = true;
@@ -558,7 +560,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     let n = 0;
     for (const m of motes) {
       m.age += s;
-      if (m.age >= m.life) continue;
+      if (m.age >= m.life || !alive(m)) continue;
       motes[n++] = m;
       const t = m.age / m.life, fade = Math.min(1, t * 5, (1 - t) * 3);
       if (m.kind === "snow") m.x += Math.sin(m.age * 2 + m.phase) * 18 * s;
@@ -669,7 +671,8 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     // (the wave gets to the furthest corner in waveS seconds; what it's reached speeds up by
     // accel, in screen sizes a second each second)
     warp = { cx, cy, far, speed: far / (H().warp?.waveS ?? 0.34), accel: Math.hypot(W, Hh) * (H().warp?.accel ?? 5), slow: 0 };
-    const g = Math.max(7, Math.round(Math.sqrt(W * Hh / (H().warp?.squares ?? 1800))));
+    // (fewer of them, and bigger, while the frames lag: src/particles.js)
+    const g = Math.max(7, Math.round(Math.sqrt(W * Hh / ((H().warp?.squares ?? 1800) * particleShare()))));
     // the board behind, a square at a time
     const sw = Math.ceil(W / g), sh = Math.ceil(Hh / g);
     const small = document.createElement("canvas");
@@ -686,7 +689,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       const turn = (way / (Math.PI * 2) + 1 + rand(-0.02, 0.02)) % 1;
       bits.push({
         x, y, size, fill: `rgb(${r},${gg},${b})`, ux: Math.cos(way), uy: Math.sin(way), trail: Math.floor(turn * TRAILS) % TRAILS,
-        v: rand(160, 460) * kick, at: dist / warp.speed + rand(0, 0.04),
+        v: rand(160, 460) * kick, at: dist / warp.speed + rand(0, 0.04), lot: particleLot(),
       });
     };
     if (px) for (let j = 0; j < sh; j++) for (let i = 0; i < sw; i++) {
@@ -751,7 +754,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     }
     // the squares it's reached: white hot, shooting away, split into the rainbow, over the trails
     // they leave (only white, and no trails, on a device that's falling behind: a few frames
-    // slower than slowMs)
+    // slower than slowMs; and fewer of them, while the frames lag: src/particles.js)
     if (dt > (H().warp?.slowMs ?? 30)) w.slow++;
     const lite = w.slow >= 3;
     let n = 0;
@@ -759,6 +762,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       bits[n++] = b;
       const age = t - b.at;
       if (age < 0) continue;
+      if (!alive(b)) { n--; continue; }
       const x0 = b.x, y0 = b.y;
       b.v += w.accel * s;
       b.x += b.ux * b.v * s; b.y += b.uy * b.v * s;

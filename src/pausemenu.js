@@ -13,6 +13,7 @@
 import { makeShapePreviewCanvas } from "./render.js";
 import { rarity } from "./rarity.js";
 import { calmFx } from "./settings.js";
+import { particleShare, particleLot, alive } from "./particles.js";
 
 /* =========================
    The gallery
@@ -293,15 +294,16 @@ export function createSparkles({ canvas, panel, showing }) {
     else if ((d -= b.h) < b.w) { x = b.x + b.w - d; y = b.y + b.h; ny = 1; }
     else { x = b.x; y = b.y + b.h - (d - b.w); nx = -1; }
     const out = rnd(1, 7), life = rnd(1.4, 3.4);
-    return { x: x + nx * out, y: y + ny * out, vx: nx * rnd(2, 7) + rnd(-1.5, 1.5), vy: ny * rnd(2, 6) - rnd(3, 9), age: age * life, life, phase: rnd(0, 7), big: Math.random() < 0.2 };
+    return { x: x + nx * out, y: y + ny * out, vx: nx * rnd(2, 7) + rnd(-1.5, 1.5), vy: ny * rnd(2, 6) - rnd(3, 9), age: age * life, life, phase: rnd(0, 7), big: Math.random() < 0.2, lot: particleLot() };
   }
   // A speck anywhere, rising
   function newSpeck(age = 0) {
     const life = rnd(4, 10);
-    return { x: rnd(0, w), y: rnd(h * 0.15, h), vy: -rnd(2, 7), sway: rnd(0.4, 1.6), phase: rnd(0, 7), age: age * life, life, rgb: SPECKS[(Math.random() * SPECKS.length) | 0], a: rnd(0.25, 0.7) };
+    return { x: rnd(0, w), y: rnd(h * 0.15, h), vy: -rnd(2, 7), sway: rnd(0.4, 1.6), phase: rnd(0, 7), age: age * life, life, rgb: SPECKS[(Math.random() * SPECKS.length) | 0], a: rnd(0.25, 0.7), lot: particleLot() };
   }
-  const starCount = (b) => Math.round(Math.max(14, Math.min(40, (b.w + b.h) / 9)));
-  const speckCount = () => Math.round(Math.max(24, Math.min(110, w * h / 2600)));
+  // (fewer of them while the frames lag, and those going thin out: src/particles.js)
+  const starCount = (b) => Math.round(Math.max(14, Math.min(40, (b.w + b.h) / 9)) * particleShare());
+  const speckCount = () => Math.round(Math.max(24, Math.min(110, w * h / 2600)) * particleShare());
   function seed() {
     const b = box();
     stars.length = 0;
@@ -318,16 +320,18 @@ export function createSparkles({ canvas, panel, showing }) {
       s.age += dt;
       s.x += s.vx * dt;
       s.y += s.vy * dt;
-      if (s.age >= s.life) stars.splice(i, 1);
+      if (s.age >= s.life || !alive(s)) stars.splice(i, 1);
     }
     for (let i = starCount(b) - stars.length; i > 0; i--) stars.push(newStar(b));
-    for (let i = 0; i < specks.length; i++) {
-      const p = specks[i];
+    let n = 0;
+    for (const p of specks) {
       p.age += dt;
       p.y += p.vy * dt;
       p.x += Math.sin(clock * p.sway + p.phase) * 1.2 * dt;
-      if (p.age >= p.life || p.y < -2) specks[i] = newSpeck();
+      if (alive(p)) specks[n++] = p.age >= p.life || p.y < -2 ? newSpeck() : p;
     }
+    specks.length = n;
+    for (let i = speckCount() - specks.length; i > 0; i--) specks.push(newSpeck());
   }
 
   const dot = (x, y, rgb, a) => {

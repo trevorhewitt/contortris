@@ -1,0 +1,128 @@
+// Run with:  node --test tests/*.test.mjs
+// Fewer particles when the frames lag (src/particles.js), in every effect made of them.
+import test from "node:test";
+import assert from "node:assert/strict";
+import { CONFIG } from "../config.js";
+import { SHAPES } from "../shapes/main_shapes.js";
+import { loadShapes } from "../src/shapes.js";
+import { makeRng } from "../src/util.js";
+import { createGameState, startRun, hardDropAndLock } from "../src/game.js";
+import { noteFrame, particleShare, keepParticle, particleLot, alive, resetParticles } from "../src/particles.js";
+
+const C = CONFIG.fx.particles;
+const frames = (ms, n) => { for (let i = 0; i < n; i++) noteFrame(ms); };
+const near = (a, b, d) => Math.abs(a - b) <= d;
+
+test("particles: all of them while the frames keep up, at 60 frames a second or 120", () => {
+  for (const ms of [1000 / 60, 1000 / 120]) {
+    resetParticles();
+    frames(ms, 600);
+    assert.equal(particleShare(), 1);
+    assert.ok(keepParticle());
+  }
+});
+
+test("particles: frames that lag cut them, the slower the more, down to the least; quick frames bring them back, slowly", () => {
+  resetParticles();
+  frames(1000 / 60, 120);
+  // twice as slow as slowMs: down from the second slow frame, and on down to the least while it lags
+  frames(2 * C.slowMs, 2);
+  const early = particleShare();
+  assert.ok(early < 0.9 && early > C.least, `after 2 slow frames ${early.toFixed(2)}`);
+  frames(2 * C.slowMs, 40);
+  assert.equal(particleShare(), C.least);
+  // (how many of a lot made one at a time, now: about the least of them)
+  let kept = 0;
+  for (let i = 0; i < 4000; i++) kept += keepParticle();
+  assert.ok(near(kept / 4000, C.least, 0.03), `${kept} of 4000 kept`);
+  // a little slow, a little less cut than very slow
+  resetParticles();
+  frames(1000 / 60, 120);
+  frames(1.2 * C.slowMs, 8);
+  const mild = particleShare();
+  resetParticles();
+  frames(1000 / 60, 120);
+  frames(3 * C.slowMs, 8);
+  assert.ok(mild > particleShare(), `${mild.toFixed(2)} a little slow, ${particleShare().toFixed(2)} very slow`);
+  // quick again: back up by `recover` a second, to all of them
+  frames(1000 / 60, 120);
+  const after2s = particleShare();
+  assert.ok(after2s > C.least && after2s <= C.least + 2 * C.recover + 0.05, `two seconds on ${after2s.toFixed(2)}`);
+  frames(1000 / 60, 60 * Math.ceil(1 / C.recover + 1));
+  assert.equal(particleShare(), 1);
+});
+
+test("particles: one long frame on its own hardly changes how many, only a few slow frames together", () => {
+  resetParticles();
+  frames(1000 / 60, 120);
+  noteFrame(300);
+  frames(1000 / 60, 3);
+  assert.ok(particleShare() > 0.9, `${particleShare().toFixed(2)} after one frame of 300ms`);
+  frames(300, 4);
+  assert.ok(particleShare() < 0.5, `${particleShare().toFixed(2)} after four more`);
+});
+
+test("particles: a screen that only ever goes at 30 frames a second isn't behind, nor is the page hidden for a while", () => {
+  resetParticles();
+  frames(1000 / 30, 600);
+  assert.equal(particleShare(), 1);
+  // (slower than it usually goes, though, is)
+  frames(1000 / 12, 20);
+  assert.ok(particleShare() < 0.5);
+  resetParticles();
+  frames(1000 / 60, 120);
+  noteFrame(20000);
+  frames(1000 / 60, 3);
+  assert.equal(particleShare(), 1);
+});
+
+test("particles: those already going thin out as the share goes down, in proportion to how many were made, and none come back", () => {
+  resetParticles();
+  frames(1000 / 60, 60);
+  // (an effect's own loop, dropping those no longer to be)
+  let list = Array.from({ length: 4000 }, () => ({ lot: particleLot() }));
+  const live = () => (list = list.filter(alive)).length;
+  assert.equal(live(), 4000);
+  frames(3 * C.slowMs, 60);
+  assert.equal(particleShare(), C.least);
+  assert.ok(near(live(), 4000 * C.least, 120), `${list.length} left`);
+  assert.ok(alive({}), "one without a lot is always to be");
+  const n = list.length;
+  frames(1000 / 60, 600);
+  assert.equal(particleShare(), 1);
+  assert.equal(live(), n, "none back as it comes back up");
+  // made at a share already down a little, a fall to the least thins them by as much again
+  resetParticles();
+  frames(1000 / 60, 120);
+  frames(1.2 * C.slowMs, 6);
+  const made = particleShare();
+  assert.ok(made < 0.95 && made > 2 * C.least, `made at ${made.toFixed(2)}`);
+  list = Array.from({ length: 4000 }, () => ({ lot: particleLot() }));
+  frames(3 * C.slowMs, 60);
+  assert.ok(near(live(), 4000 * C.least / made, 150), `${list.length} of 4000 made at ${made.toFixed(2)}`);
+});
+
+test("particles: a row clearing makes fewer of them when the frames lag, and the game's own random numbers go on just the same", () => {
+  const { shapes, powerups } = loadShapes(SHAPES);
+  const { cols, rows } = CONFIG.board;
+  const clear = () => {
+    const state = createGameState(shapes, powerups, { rng: makeRng(4) });
+    startRun(state, "normal");
+    state.fx.particles.length = 0;
+    // four rows full but for the left column, and a long thin piece down it
+    for (let y = rows - 4; y < rows; y++) for (let x = 1; x < cols; x++) state.board[y][x] = { paint: "#808080", style: { baseColor: "#808080" }, pid: 99999 };
+    const tall = shapes.find(s => s.rotations.some(m => m[0].length === 1 && m.length === 4));
+    state.active = { shape: tall, rotIdx: tall.rotations.findIndex(m => m[0].length === 1 && m.length === 4), x: 0, y: 0 };
+    hardDropAndLock(state);
+    return { n: state.fx.particles.length, next: state.rng() };
+  };
+  resetParticles();
+  frames(1000 / 60, 60);
+  const all = clear();
+  assert.ok(all.n > 300, `${all.n} particles`);
+  frames(3 * C.slowMs, 60);
+  const few = clear();
+  resetParticles();
+  assert.ok(near(few.n / all.n, C.least, 0.08), `${few.n} of ${all.n}`);
+  assert.equal(few.next, all.next);
+});

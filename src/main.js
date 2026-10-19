@@ -9,6 +9,7 @@ import { GROUPS } from "../shapes/groups.js";
 import { THREADS, SET_THREADS } from "../shapes/threads.js";
 import { loadShapes } from "./shapes.js";
 import { createGameState, on, updateGame, hardDropAndLock, setNextPiece, timeScaleOf } from "./game.js";
+import { noteFrame } from "./particles.js";
 import { createRenderer } from "./render.js";
 import { createAchievements } from "./achievements.js";
 import { bindUI } from "./ui.js";
@@ -91,6 +92,7 @@ document.addEventListener("visibilitychange", () => {
 
 function tick(now) {
   const dt = Math.min(50, now - last);
+  noteFrame(now - last); // (fewer particles while the frames lag: src/particles.js)
   last = now;
 
   // (the board on screen: the game's own, or behind the home screen, either of its two boards)

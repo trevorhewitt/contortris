@@ -70,8 +70,9 @@ export const CONFIG = {
   // to dark (`burstMs` in all, the last `fadeMs` of it the fade), and the game comes up out of the
   // dark (`fadeMs`), switching on like an old screen. warp: the wave breaking it up gets to the
   // furthest corner in waveS seconds; the squares it's reached speed up by `accel` screen sizes a
-  // second, each second; and the screen breaks into about `squares` of them (src/home.js). A
-  // device that's falling behind (a few frames slower than slowMs) gets it simpler.
+  // second, each second; and the screen breaks into about `squares` of them (src/home.js), or
+  // fewer and bigger while the frames lag (fx.particles). A device that's falling behind (a few
+  // frames slower than slowMs) gets it simpler.
   home: {
     rows: 24, minCols: 14, maxCols: 30, widthShare: 0.85,
     zoom: 2.6, shotMs: [2600, 4200], tiltChance: 0.3, maxTurn: 5, minView: [10, 9], minShotMs: 600,
@@ -993,6 +994,14 @@ export const CONFIG = {
   },
 
   fx: {
+    // Every effect made of particles (src/particles.js: the bits and sparks off the board, the
+    // home screen's drifting effects and its warp into a game, the pause menu's sparkles) makes
+    // fewer of them while the frames lag: two or more in a row taking longer than slowMs, or than
+    // `behind` times as long as the quickest this device goes (whichever is longer), the share of
+    // them made goes down with each, the slower the more, to `least` at the fewest, and those
+    // already going thin out with it; when the frames keep up again, it comes back up by `recover`
+    // a second. (A frame after more than gapMs, the page hidden, say, doesn't count.)
+    particles: { slowMs: 25, behind: 1.5, least: 0.15, recover: 0.3, gapMs: 1000 },
     quake: {
       enabled: true,
 

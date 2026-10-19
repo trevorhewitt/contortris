@@ -30,6 +30,7 @@ import { createZen, zenNext, zenPeek, zenTick, zenSpawned, zenSpeed, zenSteps, z
 import { buildThreads } from "./threads.js";
 import { rampCfg, rampDropMs } from "./difficulty.js";
 import { createTutorial, tutorialNext, tutorialTick, tutorialTopOut } from "./tutorial.js";
+import { keepParticle, particleLot, alive } from "./particles.js";
 
 /* =========================
    State
@@ -1568,8 +1569,10 @@ function admire(state, dt) {
   }
 }
 
+// (fewer of them while the frames lag: src/particles.js)
 function addParticle(state, p) {
-  state.fx.particles.push({ size: CONFIG.fx.lineClear.particleSizePx, ...p, maxLifeMs: p.lifeMs });
+  if (!keepParticle()) return;
+  state.fx.particles.push({ size: CONFIG.fx.lineClear.particleSizePx, ...p, maxLifeMs: p.lifeMs, lot: particleLot() });
 }
 const hsl = (h, s, l) => `hsl(${Math.round(h)},${Math.round(s)}%,${Math.round(l)}%)`;
 
@@ -1722,11 +1725,12 @@ function rowClearShow(state, fullRows, removed, dropDistances) {
   if (T.sparks) {
     const cellPx = CONFIG.render.cellPx;
     for (const y of order) for (let x = 0; x < cols; x++) for (let k = 0; k < T.sparks; k++) {
+      if (!keepParticle()) continue; // (fewer while the frames lag: src/particles.js)
       const a = vr() * Math.PI * 2, sp = 60 + vr() * 160 * (T.speed ?? 1), life = 260 + vr() * 380;
       state.fx.particles.push({
         x: (x + vr()) * cellPx, y: (y + vr()) * cellPx, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 50,
         lifeMs: life, maxLifeMs: life, delayMs: delayOf(x, y), size: T.rainbow && vr() < 0.35 ? 3 : 2,
-        color: "#ffffff", chroma: true, glow: true,
+        color: "#ffffff", chroma: true, glow: true, lot: particleLot(),
       });
     }
   }
@@ -1786,17 +1790,23 @@ function spawnCellParticles(state, cells, mult = 1, delayMs = 0, opts = {}) {
       const vx = Math.cos(angle) * speed;
       const vy = Math.sin(angle) * speed - speed * (cfg.upwardBias ?? 0.18);
       const lifeMs = lerp(cfg.lifeMinMs, cfg.lifeMaxMs, state.rng());
+      const x0 = px + state.rng() * cellPx, y0 = py + state.rng() * cellPx;
+      const color = colours[Math.floor(state.rng() * colours.length)];
+      // (fewer while the frames lag, src/particles.js; but the game's own random numbers drawn
+      // for every one all the same, so the game goes on just as it would have)
+      if (!keepParticle()) continue;
 
       state.fx.particles.push({
-        x: px + state.rng() * cellPx,
-        y: py + state.rng() * cellPx,
+        x: x0,
+        y: y0,
         vx,
         vy,
         lifeMs,
         maxLifeMs: lifeMs,
         delayMs: at,
         size: cfg.particleSizePx,
-        color: colours[Math.floor(state.rng() * colours.length)],
+        color,
+        lot: particleLot(),
       });
     }
   }
@@ -1811,6 +1821,7 @@ function updateFX(state, dt) {
     let n = 0;
     for (let i = 0; i < parts.length; i++) {
       const p = parts[i];
+      if (!alive(p)) continue; // (thinning out while the frames lag: src/particles.js)
       const t = dt * (p.speed ?? 1), sec = t / 1000; // (a show's, at its speed: planShow)
       if (p.delayMs > 0) { p.delayMs -= t; parts[n++] = p; continue; } // (not yet)
       p.lifeMs -= t;
