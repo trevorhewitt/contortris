@@ -293,7 +293,7 @@ export function bindUI({ state, renderer, achievements }) {
     const el = panels[name];
     if (!el || !FIT_PANELS.has(name)) return;
     el.style.transform = "";
-    el.style.maxHeight = "";
+    el.style.removeProperty("--fit");
     el.classList.add("fit");
     // (in developer mode the developer tools, under the rest of the pause menu, make it long: it's
     // as big as it always is, the rest of it fitting as usual, and it scrolls on down to them)
@@ -301,17 +301,20 @@ export function bindUI({ state, renderer, achievements }) {
     el.classList.toggle("scrolls", dev);
     if (name === "pause") gallery.render(); // (its strip is laid out to the menu's width)
     if (name === "gameover") overGallery.render();
-    // (paused, the dark is over the whole screen, but the menu's on the board, in the middle of it:
-    // index.html)
-    const on = name === "pause" ? boardShellEl : overlay;
-    const room = on.clientHeight - 16, roomW = on.clientWidth - 16;
+    // (paused, the dark is over the whole screen, but the menu's where the board is, the same size,
+    // inside its edge: index.html)
+    const pause = name === "pause", on = pause ? boardShellEl : overlay, margin = pause ? 0 : 16;
+    const room = on.clientHeight - margin, roomW = on.clientWidth - margin;
     const tall = dev ? $("devTools").offsetTop : el.scrollHeight;
     const s = Math.min(1, room / Math.max(1, tall), roomW / Math.max(1, el.scrollWidth));
-    if (dev) {
-      el.style.maxHeight = `${Math.floor(room / s)}px`;
-      gallery.render(); // (a scroll bar may have taken some of its width)
+    if (s >= 0.995) return;
+    el.style.transform = `scale(${s.toFixed(3)})`;
+    // (scaled down, the pause menu's made as much bigger, so it's still the board's size, and its
+    // strip is laid out again to its new width)
+    if (pause) {
+      el.style.setProperty("--fit", s.toFixed(3));
+      gallery.render();
     }
-    if (s < 0.995) el.style.transform = `scale(${s.toFixed(3)})`;
   }
   window.addEventListener("resize", () => fitPanel());
   document.fonts?.ready?.then(() => fitPanel());

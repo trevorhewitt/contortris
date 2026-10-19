@@ -782,12 +782,12 @@
     #panelIntro, #panelPowerups{ background: rgba(0,0,0,0.97); }
     /* the intro slides straight over the board: no backdrop, no fade */
     .overlay.intro{ background: none; transition: none; }
-    /* paused (src/ui.js): the whole screen, dark, and the menu in the middle of the board, inside
-       it, its buttons in a column and the pieces so far under them (src/pausemenu.js), a glow
-       breathing round it and sparkles drifting up past it. Where the board stays in view (zen), a
-       tap outside the menu, or "Look at the board", puts the menu away to look at the board: tap
-       a piece for its card, pinch, double tap or the wheel to zoom in, drag to look around; then
-       an empty spot, or Done, and the menu's back */
+    /* paused (src/ui.js): the whole screen, dark, and the menu where the board is, the same size
+       and its edge the board's edge, its buttons in a column and the pieces so far under them
+       (src/pausemenu.js), a glow breathing round it and sparkles drifting up past it. Where the
+       board stays in view (zen), a tap outside the menu, or "Look at the board", puts the menu
+       away to look at the board: tap a piece for its card, pinch, double tap or the wheel to zoom
+       in, drag to look around; then an empty spot, or Done, and the menu's back */
     .overlay.boardPause{
       position: fixed; inset: 0; z-index: 15; touch-action: none;
       background: radial-gradient(ellipse 80% 62% at 50% 46%, rgba(24,18,44,0.62), rgba(0,0,0,0.9) 78%);
@@ -797,38 +797,47 @@
     body:has(.overlay.boardPause:not(.peek):not(.zoomed))::after{ -webkit-mask: none; mask: none; }
     .pauseFx{ display: none; position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; image-rendering: pixelated; transition: opacity 160ms linear; }
     .overlay.boardPause .pauseFx{ display: block; }
-    /* (where the board is: --board-x, -y, -w, -h, from the fit script below. If the board is too
-       small for it, it's scaled down to fit: ui.js fitPanel) */
-    #panelPause.panel{
-      position: absolute; isolation: isolate;
-      left: calc(var(--board-x, 0px) + var(--board-w, 100%) / 2); top: calc(var(--board-y, 0px) + var(--board-h, 100%) / 2); translate: -50% -50%;
-      width: clamp(300px, calc(var(--board-w, 100%) - 24px), 400px); padding: 20px 18px 16px;
+    /* (the menu's edge and its dark, just where the board's edge is, over it: --board-x, -y, -w,
+       -h, from the fit script below) */
+    .pauseFrame{
+      display: none; position: absolute; isolation: isolate; box-sizing: border-box; pointer-events: none;
+      left: var(--board-x, 0px); top: var(--board-y, 0px); width: var(--board-w, 100%); height: var(--board-h, 100%);
+      border: var(--edge-w) solid var(--edge-line); box-shadow: var(--edge-split), var(--edge-glow);
       background: radial-gradient(130% 50% at 50% 0%, rgba(255,255,255,0.07), rgba(255,255,255,0) 70%), rgba(5,5,12,0.93);
       transition: opacity 140ms linear;
     }
+    .overlay.boardPause .pauseFrame{ display: block; }
+    /* (and what's in it, over the board inside its edge, in the middle of it, and no wider than
+       360 across on a wide board. If the board is too small for it, it's scaled down to fit, and
+       made as much bigger as it's scaled down, so it's still the board's size: ui.js fitPanel) */
+    #panelPause.panel{
+      --menu-w: calc((var(--board-w, 100%) - var(--edge-w) * 2) / var(--fit, 1));
+      --menu-h: calc((var(--board-h, 100%) - var(--edge-w) * 2) / var(--fit, 1));
+      position: absolute; display: flex; flex-direction: column; justify-content: center;
+      left: calc(var(--board-x, 0px) + var(--board-w, 100%) / 2); top: calc(var(--board-y, 0px) + var(--board-h, 100%) / 2); translate: -50% -50%;
+      width: max(300px, var(--menu-w)); min-height: var(--menu-h);
+      padding: 20px max(18px, calc(var(--menu-w) / 2 - 180px)) 16px;
+      background: none; border: 0; box-shadow: none;
+      transition: opacity 140ms linear;
+    }
     .overlay.boardPause.peek #panelPause, .overlay.boardPause.zoomed #panelPause,
+    .overlay.boardPause.peek .pauseFrame, .overlay.boardPause.zoomed .pauseFrame,
     .overlay.boardPause.peek .pauseFx, .overlay.boardPause.zoomed .pauseFx{ opacity: 0; pointer-events: none; }
     /* (its glow: wide and soft in the edge's colours, warm off the left and cool off the right,
        and a white one close in, the two breathing out of step) */
-    #panelPause::before, #panelPause::after{ content: ""; position: absolute; inset: calc(var(--edge-w) * -1); z-index: -1; pointer-events: none; }
-    #panelPause::before{
+    .pauseFrame::before, .pauseFrame::after{ content: ""; position: absolute; inset: calc(var(--edge-w) * -1); z-index: -1; pointer-events: none; }
+    .pauseFrame::before{
       box-shadow:
         -16px 0 52px -10px rgba(var(--om-orange),0.6), 16px 0 52px -10px rgba(var(--om-violet),0.6),
         0 -14px 46px -16px rgba(var(--om-gold),0.45), 0 14px 46px -16px rgba(var(--om-cyan),0.45),
         0 0 90px rgba(var(--om-pink),0.16);
       animation: pauseBreathe 4.4s ease-in-out infinite;
     }
-    #panelPause::after{ border: 3px solid rgba(255,255,255,0.5); filter: blur(7px); animation: pauseBreathe 3.1s ease-in-out infinite reverse; }
+    .pauseFrame::after{ border: 3px solid rgba(255,255,255,0.5); filter: blur(7px); animation: pauseBreathe 3.1s ease-in-out infinite reverse; }
     @keyframes pauseBreathe{ 0%, 100%{ opacity: 0.45; } 50%{ opacity: 1; } }
     /* (developer mode: the developer tools under the rest, and the menu scrolls on down to them,
-       no taller than the board: ui.js fitPanel. Its glow, which would scroll with it, is still) */
-    #panelPause.scrolls{
-      overflow-y: auto;
-      box-shadow: var(--edge-split), var(--edge-glow),
-        -16px 0 52px -10px rgba(var(--om-orange),0.45), 16px 0 52px -10px rgba(var(--om-violet),0.45),
-        0 -14px 46px -16px rgba(var(--om-gold),0.35), 0 14px 46px -16px rgba(var(--om-cyan),0.35);
-    }
-    #panelPause.scrolls::before, #panelPause.scrolls::after{ display: none; }
+       no taller than the board: ui.js fitPanel) */
+    #panelPause.scrolls{ height: var(--menu-h); justify-content: flex-start; overflow-y: auto; }
     /* (its name torn a little further apart, now and then) */
     #panelPause .big{ font-size: 20px; margin: 0 0 4px; animation: pauseTear 5.3s steps(1, end) infinite; }
     @keyframes pauseTear{
@@ -1773,9 +1782,11 @@
             </div>
           </div>
 
-          <!-- paused: the sparkles behind the menu (src/pausemenu.js), and, looking at the board in
-               a mode that leaves it in view, what to do and the way back to the menu -->
+          <!-- paused: the sparkles behind the menu (src/pausemenu.js), the menu's edge over the
+               board's, and, looking at the board in a mode that leaves it in view, what to do and
+               the way back to the menu -->
           <canvas id="pauseFx" class="pauseFx" aria-hidden="true"></canvas>
+          <div class="pauseFrame" aria-hidden="true"></div>
           <div class="pauseLook edge" id="pauseLook">
             <span class="small">tap a piece to look at it · pinch or double tap to zoom</span>
             <button id="btnLookDone" class="small">Done</button>
