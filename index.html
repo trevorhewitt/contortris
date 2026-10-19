@@ -904,10 +904,11 @@
     /* the game over page (src/ui.js): no box, its words straight over the board going round
        behind it (src/render.js drawGameOverBackdrop), bold and white with a dark edge to them so
        they read over anything; and the piece that ended the game, big, with some of the pieces
-       before it to step back through (src/pausemenu.js), drawn as they are */
+       before it to step back through (src/pausemenu.js), drawn as they are, each with its name
+       and how rare it is under it */
     #panelGameOver.panel{ padding: 12px 0; background: none; border: 0; box-shadow: none; }
     #panelGameOver .big{ font-size: 24px; margin-bottom: 8px; text-shadow: var(--name-shadow); }
-    .goStats, .pgLast, .goAch{
+    .goStats, .pgLast, .goAch, #gameOverGallery .pgRarity{
       font-family: var(--font-body); font-weight: 600; color: #fff;
       text-shadow: 0 0 1px #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 8px rgba(0,0,0,0.9);
     }
@@ -918,7 +919,7 @@
     #gameOverGallery .pgStage{ height: 220px; }
     /* (behind the pieces here, a soft dark pool, still, so they stand out from the board behind) */
     #gameOverGallery .pgTrack::before{ width: 300px; height: 220px; animation: none; background: radial-gradient(closest-side, rgba(0,0,0,0.72), rgba(0,0,0,0.5) 55%, rgba(0,0,0,0)); }
-    #gameOverGallery .pgSay{ min-height: 54px; }
+    #gameOverGallery .pgSay{ min-height: 78px; }
     #gameOverGallery .pgName{ font-size: 11px; text-shadow: var(--name-shadow); }
     .goAch{ margin-top: 6px; font-size: 15px; color: rgb(255,207,63); }
     /* looking at the board: what to do, and Done, at the top (not while a piece's card is up:
@@ -1718,7 +1719,7 @@
               <button id="btnOptions" class="secondary small">Options</button>
             </div>
             <div class="menuRow homeRow" id="devRow" hidden><button id="btnDevTools" class="secondary small">Developer tools</button></div>
-            <div class="small" id="gameVersion">version 202610191221</div>
+            <div class="small" id="gameVersion">version 202610191239</div>
           </div>
 
           <div class="msg panel devToolsPanel" id="panelDevTools" hidden>
@@ -1762,7 +1763,7 @@
               <h3>Modes</h3>
               <div id="howtoModes"></div>
 
-              <p class="small menuFoot">[<span class="gameName">Estrix</span> version 202610191221 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[<span class="gameName">Estrix</span> version 202610191239 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>
@@ -1891,7 +1892,10 @@
                 <div class="pgTrack"></div>
                 <button class="pgArrow pgNext" aria-label="The piece after">&#9654;</button>
               </div>
-              <div class="pgSay" aria-live="polite"><div class="pgName"></div></div>
+              <div class="pgSay" aria-live="polite">
+                <div class="pgName"></div>
+                <div class="pgRarity"><span class="pgK">rarity:</span> <span class="pgRare"></span></div>
+              </div>
             </div>
             <div class="goAch" id="gameOverAch"></div>
             <div class="panelBtns">

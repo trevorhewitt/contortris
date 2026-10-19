@@ -31,8 +31,8 @@ const MOST = 999; // (turbo zen goes on for ever: the newest this many)
 export function createGallery({ state, root, picW = 112, picH = 84, cellMax = 32, spread = 0.38 }) {
   const q = (sel) => root.querySelector(sel);
   const stage = q(".pgStage"), track = q(".pgTrack"), prev = q(".pgPrev"), next = q(".pgNext");
-  // (under it, its name, and in the pause menu how rare it is; over it on the game over page, only
-  // with the newest in the middle, "the piece that killed you")
+  // (under it, its name and how rare it is; over it on the game over page, only with the newest in
+  // the middle, "the piece that killed you")
   const nameEl = q(".pgName"), rareEl = q(".pgRare"), lastEl = q(".pgLast");
   const fallen = [];
   // (five places on the strip, the middle one and two either side, each with its own picture:
@@ -94,7 +94,7 @@ export function createGallery({ state, root, picW = 112, picH = 84, cellMax = 32
     if (!shape) return;
     nameEl.textContent = shape.name;
     nameEl.className = "pgName" + (shape.powerup ? ` shiny cls-${shape.powerup.cls ?? "combo"}` : "");
-    if (rareEl) rareEl.textContent = rareWords(shape);
+    rareEl.textContent = rareWords(shape);
   }
 
   // Where each place on the strip goes, `offset` along: the middle one big and bright, the ones
