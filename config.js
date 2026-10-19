@@ -22,7 +22,9 @@ export const CONFIG = {
     //         plans their next move with the clock stopped
     // (Easy is gone from the menu: kept here so a game remembered as Easy still means something)
     easy: { label: "Easy", shelf: true, tagline: "Shiny Pieces, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true, hidden: true, hideOnPause: true },
-    normal: { label: "Classic", shelf: true, tagline: "the full game, Shiny Pieces and all", powerups: true, giants: true, level6: true, warmup: true, hideOnPause: true },
+    // bigAfterRows: none of the big pieces (level 4 and up) until the player has destroyed this
+    //         many rows (CONFIG.assist.firstRows helps them get there)
+    normal: { label: "Classic", shelf: true, tagline: "the full game, Shiny Pieces and all", powerups: true, giants: true, level6: true, warmup: true, hideOnPause: true, bigAfterRows: 2 },
     extreme: { label: "Extreme", tagline: "no Shiny Pieces. no help.", powerups: false, giants: true, level6: true, hints: false, hideOnPause: true },
     god: { label: "God", shelf: true, tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true, hideOnPause: true },
     // speeds: a speed setting on the pause menu, these times timeScale (1 to start with).
@@ -682,6 +684,9 @@ export const CONFIG = {
     // first while it's still funny), but ones that fit; a level 6 set only now and then
     // (`sets`: this much of the time it would have, at the start).
     warmup: { fullUntil: 25, goneBy: 90, strength: 2.5, draws: 8, sets: 0.1, levelWeight: { 0: 0.08, 1: 0.6, 2: 0.27, 3: 0.05 } },
+    // Before the player's first few rows (CONFIG.modes[mode].bigAfterRows): from piece `from`, a
+    // piece that would finish a row somewhere this often, if any would
+    firstRows: { from: 6, chance: 0.4 },
 
     // “Danger” bands (rows-from-top). Higher = assistance kicks in earlier.
     topRowsForDiff2Only: 19,  // (scaled with the board: it was 22 of 28 rows)

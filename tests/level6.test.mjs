@@ -440,6 +440,40 @@ test("late in a game, giants only with the stack low, and a set under way ends i
   }
 });
 
+test("Classic: no big pieces before the first two rows, and meanwhile now and then one that finishes a row", async () => {
+  const { rowsFinished } = await import("../src/selection.js");
+  const need = CONFIG.modes.normal.bigAfterRows, help = CONFIG.assist.firstRows;
+  assert.ok(need >= 1 && help.chance > 0);
+  // the bottom row full but for a gap two wide at the left, and nothing else
+  const nearlyRow = (state) => {
+    const R = state.board.length, C = state.board[0].length;
+    state.board = Array.from({ length: R }, (_, y) => Array.from({ length: C }, (_, x) => (y === R - 1 && x >= 2 ? { ...filler } : null)));
+    state.instances.clear();
+  };
+  let big = 0, finishers = 0, picks = 0, after = 0;
+  for (const seed of [61, 62, 63]) {
+    const state = createGameState(shapes, powerups, { rng: makeRng(seed), groups: GROUPS });
+    startRun(state, "normal");
+    state.devEndGame = "off";
+    for (let i = 0; i < 60; i++) {
+      nearlyRow(state);
+      const s = selectPiece(state);
+      if (!s.powerup && (s.difficulty ?? 1) >= 4) big++;
+      if (state.pieceSel.dropIndex > help.from && !s.powerup) { picks++; if (rowsFinished(state.board, s) > 0) finishers++; }
+    }
+    // once they've destroyed two rows, the big ones come as usual
+    state.rowsDestroyed = need;
+    for (let i = 0; i < 120; i++) {
+      setStack(state, 2);
+      const s = selectPiece(state);
+      if (!s.powerup && (s.difficulty ?? 1) >= 4) after++;
+    }
+  }
+  assert.equal(big, 0, "no big piece before the first rows");
+  assert.ok(finishers / picks >= help.chance * 0.8, `${finishers} of ${picks} would finish the row`);
+  assert.ok(after > 0, "and then they come");
+});
+
 test("end game: a single tall giant on its end doesn't count as a full board", () => {
   const state = createGameState(shapes, powerups, { rng: makeRng(4) });
   const R = state.board.length;

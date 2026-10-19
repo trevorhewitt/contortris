@@ -415,7 +415,7 @@ function pickNextPiece(state) {
 
   // The first giant: always somewhere in CONFIG...hard.firstGiantBetween (unless the stack's
   // too high for one, then as soon as it's back down).
-  if (sel.giantDueAt != null && !sel.hadGiant && sel.dropIndex >= sel.giantDueAt && !sel.lastWasHard && giantRoom && !calm) {
+  if (sel.giantDueAt != null && !sel.hadGiant && sel.dropIndex >= sel.giantDueAt && !sel.lastWasHard && giantRoom && !calm && !bigsWait(state)) {
     const giants = state.shapes.filter(s => (s.difficulty ?? 1) === 5 && (s.frequency ?? 1) > 0 && giantFits(s));
     if (giants.length) {
       // (one that sits well on the board as it is: the first one's a laugh, not a disaster)
@@ -427,8 +427,8 @@ function pickNextPiece(state) {
   }
 
   let linked = tryLinkedNextShape(state, prevShape, idToShape, DEBUG_LINK);
-  // (no giant in a calm spell, nor on a stack too high for one)
-  if (linked && !linked.powerup && (linked.difficulty ?? 1) >= 4 && (calm || !giantRoom || !giantFits(linked))) linked = null;
+  // (no giant in a calm spell, nor on a stack too high for one, nor before the first few rows)
+  if (linked && !linked.powerup && (linked.difficulty ?? 1) >= 4 && (calm || !giantRoom || !giantFits(linked) || bigsWait(state))) linked = null;
 
   if (linked) {
     commitSelectedShape(sel, linked);
@@ -455,7 +455,7 @@ function pickNextPiece(state) {
   }
 
   // Level 6: maybe a group starts here (not on a wave's mess before its big Gravitizer has come).
-  const groupStart = waveEnding(state) ? null : maybeStartGroup(state);
+  const groupStart = waveEnding(state) || bigsWait(state) ? null : maybeStartGroup(state);
   if (groupStart) {
     commitSelectedShape(sel, groupStart);
     sel.fromSet = true;
@@ -471,6 +471,13 @@ function pickNextPiece(state) {
       notePowerupDropped(sel);
       return pu;
     }
+  }
+
+  // (and until they've destroyed their first few rows, now and then one that would finish a row)
+  const finisher = bigsWait(state) && !endGame ? rowFinisher(state) : null;
+  if (finisher) {
+    commitSelectedShape(sel, finisher);
+    return finisher;
   }
 
   // Keys for level weights (0–5).
@@ -520,7 +527,7 @@ function pickNextPiece(state) {
   const cooldownAllowsHard = (sel.cooldown.hard ?? 0) <= 0 && !sel.lastWasHard;
 
   const modeHasGiants = CONFIG.modes[state.mode]?.giants !== false;
-  const allowHard = modeHasGiants && pastMinHard && dangerAllowsHard && cooldownAllowsHard && !calm;
+  const allowHard = modeHasGiants && pastMinHard && dangerAllowsHard && cooldownAllowsHard && !calm && !bigsWait(state);
 
   // Update shared hard urge every call.
   const inWindow =
@@ -617,6 +624,47 @@ function pickNextPiece(state) {
   if (lvl === 4 || lvl === 5) noteHardDropped(sel, lvl);
 
   return chosenShape;
+}
+
+// Classic: none of the big pieces (level 4 and up, and the level 6 sets) until the player has
+// destroyed a few rows (CONFIG.modes[mode].bigAfterRows), so a game doesn't pile a huge piece on
+// someone who hasn't got going yet...
+export function bigsWait(state) {
+  const need = CONFIG.modes[state.mode]?.bigAfterRows ?? 0;
+  return need > 0 && (state.rowsDestroyed ?? 0) < need;
+}
+
+// ...and meanwhile, from a few pieces in, now and then a piece that would finish a row somewhere
+// on the board as it is (CONFIG.assist.firstRows), if any would.
+function rowFinisher(state) {
+  const cfg = CONFIG.assist.firstRows ?? {}, sel = state.pieceSel;
+  if (sel.dropIndex < (cfg.from ?? 0) || state.rng() >= (cfg.chance ?? 0)) return null;
+  const pool = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) <= 3 && (!s.once || !(sel.servedCounts.get(s.id) > 0)) && inGame(s) && rowsFinished(state.board, s) > 0);
+  if (!pool.length) return null;
+  return sampleByWeight(pool, s => (s.frequency ?? 1) * varietyMultiplier(sel, s), state.rng);
+}
+
+// The most rows a piece would finish, dropped straight down somewhere (any turn, any column).
+export function rowsFinished(board, shape) {
+  const rows = board.length, cols = board[0].length;
+  const top = new Array(cols).fill(rows), fill = new Array(rows).fill(0);
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) if (board[y][x]) { fill[y]++; if (top[x] === rows) top[x] = y; }
+  let best = 0;
+  for (const mat of shape.rotations) {
+    const h = mat.length, w = mat[0].length;
+    const low = [], per = [];
+    for (let c = 0; c < w; c++) { let lo = -1; for (let r = 0; r < h; r++) if (mat[r][c]) lo = r; low.push(lo); }
+    for (let r = 0; r < h; r++) per.push(mat[r].filter(Boolean).length);
+    for (let x = 0; x + w <= cols; x++) {
+      let y = rows;
+      for (let c = 0; c < w; c++) if (low[c] >= 0) y = Math.min(y, top[x + c] - 1 - low[c]);
+      if (y < 0) continue;
+      let n = 0;
+      for (let r = 0; r < h; r++) if (per[r] && fill[y + r] + per[r] === cols) n++;
+      if (n > best) best = n;
+    }
+  }
+  return best;
 }
 
 // Not one of the pieces only turbo zen builds with (CONFIG.assist.turboOnlyTags: the tiles).
