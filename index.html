@@ -1335,6 +1335,18 @@
       100%{ transform: none; }
     }
     @keyframes bayHop{ 30%{ transform: translateY(-0.3em) rotate(-12deg) scale(1.25); } 100%{ transform: none; } }
+    /* (along the bottom, an icon for each one in it, the next on the left: its class's colours,
+       quiet. Its height kept, empty or not, so nothing jumps when one comes) */
+    .bayNext{
+      --bay-u: clamp(9px, 2.4vw, 18px);
+      display: flex; justify-content: center; align-items: center; gap: calc(var(--bay-u) * 0.5);
+      height: var(--bay-u); max-width: 100%; opacity: 0.6;
+    }
+    .bayNext svg{ height: 100%; width: auto; flex: 0 1 auto; min-width: 0; } /* (all combos: smaller, to fit) */
+    .bayGlyph.cls-destroyer{ fill: var(--rgb-r); }
+    .bayGlyph.cls-expander{ fill: var(--rgb-g); }
+    .bayGlyph.cls-gravity{ fill: #3f7bff; }
+    .bayPlate{ fill: rgba(255,255,255,0.16); }
 
     .nextMiniShell, .statPill{
       box-sizing: border-box; height: 100%;
@@ -1896,7 +1908,7 @@
         <!-- the bay (src/shelfui.js), where the next piece used to be: the Extra Shiny Pieces, a
              plus made of blocks × how many -->
         <div class="shelf edge" id="shelf">
-          <button type="button" class="bayBtn"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 11 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M4 0h3v3H4zM0 4h3v3H0zM4 4h3v3H4zM8 4h3v3H8zM4 8h3v3H4z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span></button>
+          <button type="button" class="bayBtn"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 11 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M4 0h3v3H4zM0 4h3v3H0zM4 4h3v3H4zM8 4h3v3H8zM4 8h3v3H4z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span><span class="bayNext" aria-hidden="true"></span></button>
         </div>
         <canvas id="nextCanvas" hidden></canvas>
       </div>
@@ -1922,7 +1934,7 @@
           <div class="tutKeys" id="tutKeys" aria-hidden="true" hidden>
             <div class="tutKeyset"><i data-k="up">&#8593;</i><i data-k="left">&#8592;</i><i data-k="down">&#8595;</i><i data-k="right">&#8594;</i></div>
           </div>
-          <div class="shelf tutShelf edge" id="tutShelf" hidden><button type="button" class="bayBtn"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 11 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M4 0h3v3H4zM0 4h3v3H0zM4 4h3v3H4zM8 4h3v3H8zM4 8h3v3H4z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span></button></div>
+          <div class="shelf tutShelf edge" id="tutShelf" hidden><button type="button" class="bayBtn"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 11 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M4 0h3v3H4zM0 4h3v3H0zM4 4h3v3H4zM8 4h3v3H8zM4 8h3v3H4z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span><span class="bayNext" aria-hidden="true"></span></button></div>
         </div>
         <div class="tutNav">
           <button id="tutBack" class="secondary">&#9664; Back</button>

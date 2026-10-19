@@ -11,6 +11,7 @@ import { makeRng } from "../src/util.js";
 import { classOf } from "../src/powerups.js";
 import { createGameState, startRun, updateGame, useShelf, on } from "../src/game.js";
 import { shelfReady, shelfCount, shelfQueue, pieceReach } from "../src/shelf.js";
+import { pieceIcon } from "../src/shelfui.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const game = (mode, seed = 3) => {
@@ -120,6 +121,18 @@ test("a tap on the bay uses the next one: they go in the order they came", () =>
   }
   assert.deepEqual(shelfQueue(state), []);
   assert.equal(useShelf(state), false, "none left");
+});
+
+test("the bay's icons: each class its own, and a combo's each of its classes', in the order they go off", () => {
+  const classesIn = (svg) => [...svg.matchAll(/bayGlyph cls-(\w+)/g)].map(m => m[1]);
+  for (const cls of ["destroyer", "expander", "gravity"]) {
+    const p = powerups.find(s => s.powerup.cls === cls && !s.powerup.parts);
+    assert.deepEqual(classesIn(pieceIcon(p)), [cls]);
+    assert.ok(!pieceIcon(p).includes("bayPlate"), "no plate of its own");
+  }
+  const all = powerups.find(s => new Set((s.powerup.parts ?? []).map(q => classOf(q.type))).size === 3);
+  assert.deepEqual(classesIn(pieceIcon(all)), ["destroyer", "gravity", "expander"]);
+  assert.ok(pieceIcon(all).includes("bayPlate"), "on a plate together");
 });
 
 test("Taken while nothing is falling, it comes next", () => {
