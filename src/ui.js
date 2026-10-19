@@ -852,7 +852,7 @@ export function bindUI({ state, renderer, achievements }) {
   function setupDevMode() {
     if (!devmode) return;
     $("devRow").hidden = false;
-    if (devSetUp) { devPanel.hidden = false; document.body.classList.add("devmode"); return; }
+    if (devSetUp) { devPanel.hidden = false; $("devTools").hidden = false; document.body.classList.add("devmode"); return; }
     devSetUp = true;
     document.body.classList.add("devmode");
     devPanel.hidden = false;
@@ -1079,7 +1079,7 @@ export function bindUI({ state, renderer, achievements }) {
       onPlayDev: () => home.play("dev", { from: chordBtns[0] }),
       onClose: () => {
         devmode = devUrl;
-        if (!devmode) { $("devRow").hidden = true; devPanel.hidden = true; document.body.classList.remove("devmode"); }
+        if (!devmode) { $("devRow").hidden = true; devPanel.hidden = true; $("devTools").hidden = true; document.body.classList.remove("devmode"); }
         showPanel("menu");
       },
     });
