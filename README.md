@@ -13,7 +13,8 @@ clears.
   classes per game, the same ones every game (a tidal wave, bathroom tiles and a hippo in a tutu:
   never a combo), each added the moment its class unlocks (its first piece down on the board,
   after its intro), the number hopping up as it comes. Tap it (or press Space; Escape pauses) and
-  the next one takes the falling piece's place: they go in the order they came, shown along its
+  the next one takes the falling piece's place, put straight in at the top of the board in rays
+  of light as the falling piece bursts into bits. They go in the order they came, shown along its
   bottom by their classes' icons (the Destroyerz' square, the Expanderz' star, the Gravitizerz'
   arrow; a combo's side by side), the next on the left. The pause menu shows them in that order,
   and the button between two swaps them.

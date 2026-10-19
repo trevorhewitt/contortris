@@ -134,6 +134,7 @@ export function createGameState(shapes, powerups, { rng = Math.random, groups = 
       rowClears: [],   // the light sweeping along rows as they go (CONFIG.fx.rowClear)
       show: null,      // the powerup show playing now (planShow; render.js drawShow)
       admire: null,    // the dramatic pause: the board glowing and sparkling (CONFIG.fx.admire)
+      ace: null,       // an Extra Shiny Piece coming in: rays of light behind it (CONFIG.fx.ace)
       ghosts: null,    // a combo's blocks, still there until they crumble, bottom up (rowClearShow)
       quake: {
         trauma: 0,
@@ -265,6 +266,7 @@ export function resetGame(state) {
   fx.rowClears.length = 0;
   fx.show = null;
   fx.admire = null;
+  fx.ace = null;
   fx.ghosts = null;
   fx.rowFall.active = false;
   fx.rowFall.elapsedMs = 0;
@@ -638,10 +640,14 @@ function spawnPiece(state) {
   // (with no room for any of it to come onto the board there, under a stack right up to the top,
   // it comes down somewhere it can: the piece that ends a game is one the player sees)
   else if (!state.zen && !isPhantomPowerup(shape.powerup)) state.active.x = roomToEnter(state, mat, state.active.x);
+  // (an Extra Shiny Piece is put straight onto the top of the board, if there's room for it there)
+  if (shelved && !collides(state, state.active.x, 0, mat)) state.active.y = 0;
   const pauseFirst = state.zen?.pauseFirst ?? 0;
 
   const ok = isPhantomPowerup(shape.powerup) || !collides(state, state.active.x, state.active.y, getActiveMatrix(state));
   if (ok) {
+    // (an Extra Shiny Piece: it comes in with rays of light behind it. render.js drawAce)
+    if (shelved) state.fx.ace = { piece: state.active, elapsedMs: 0, seed: Math.random() * 1000, ...pieceCentre(state.active) };
     // First powerup of a class in this game: the UI shows that class's intro screen now, just
     // before it falls.
     const isNew = introduce(state, shape);
@@ -729,8 +735,9 @@ function fitsSomewhere(state, shape) {
   return false;
 }
 
-// The player takes a powerup off the shelf (src/shelf.js): the falling piece goes, and the
-// powerup comes down in its place (or, with nothing falling just now, as the next thing to come).
+// The player takes a powerup off the shelf (src/shelf.js): the falling piece bursts into bits, and
+// the powerup comes in at the top in its place (or, with nothing falling just now, as the next
+// thing to come).
 // `i`: the slot; left out, the next in the bay's queue (shelfQueue). True if it was taken.
 export function useShelf(state, i) {
   const slot = i == null ? shelfQueue(state)[0] : state.shelf?.slots[i];
@@ -741,6 +748,7 @@ export function useShelf(state, i) {
   if (state.active && !state.effect && !state.hold) {
     cancelLock(state);
     state.softDropping = false;
+    shatter(state, state.active); // (it bursts into bits: the show only)
     state.active = null;
     if (!spawnPiece(state)) setGameOver(state, slot.shape);
   }
@@ -1650,6 +1658,40 @@ function wisps(state, cells, at, power) {
   }
 }
 
+// The falling piece an Extra Shiny Piece takes the place of (useShelf): it bursts into bits, each
+// block's own colours flying out from the middle of it, and sparks (CONFIG.fx.ace).
+function shatter(state, piece) {
+  const A = CONFIG.fx.ace, cellPx = CONFIG.render.cellPx;
+  const { shape, rotIdx } = piece, mat = shape.rotations[rotIdx];
+  const { x: cx, y: cy } = pieceCentre(piece);
+  const blocks = mat.flat().filter(Boolean).length;
+  const each = Math.max(1, Math.min(A.bits, Math.round(A.maxBits / Math.max(1, blocks))));
+  const r = (lo, hi) => lo + Math.random() * (hi - lo);
+  for (let y = 0; y < mat.length; y++) for (let x = 0; x < mat[y].length; x++) {
+    if (!mat[y][x]) continue;
+    const paint = getShapePaint(shape, rotIdx, x, y);
+    const own = typeof paint === "string" ? [paint] : (paint?.pixels ?? []).flat().filter(c => typeof c === "string");
+    for (let i = 0; i < each + A.sparks; i++) {
+      const bx = piece.x + x + Math.random(), by = piece.y + y + Math.random();
+      const d = Math.hypot(bx - cx, by - cy) || 1, sp = r(A.speed[0], A.speed[1]);
+      const spark = i >= each; // (the last ones: sparks)
+      addParticle(state, {
+        x: bx * cellPx, y: by * cellPx,
+        vx: (bx - cx) / d * sp + r(-40, 40), vy: (by - cy) / d * sp - r(40, 120),
+        lifeMs: r(A.lifeMs[0], A.lifeMs[1]),
+        ...(spark ? { color: "#ffffff", chroma: true, glow: true, g: 220, drag: 1.5, size: 2 }
+          : { color: own.length ? own[(Math.random() * own.length) | 0] : shape.style?.baseColor ?? "#ffffff", g: 380, drag: 1.3, size: Math.random() < 0.4 ? 4 : 3 }),
+      });
+    }
+  }
+}
+
+// The middle of a piece, in cells (as it's turned now)
+function pieceCentre(piece) {
+  const mat = piece.shape.rotations[piece.rotIdx];
+  return { x: piece.x + mat[0].length / 2, y: piece.y + mat.length / 2 };
+}
+
 // Combos: confetti, white squares split into the warm rainbow (render.js drawChromaSquare).
 function confetti(state, centre, n, at) {
   const cellPx = CONFIG.render.cellPx;
@@ -1841,6 +1883,10 @@ function updateFX(state, dt) {
   }
 
   if (state.fx.admire) admire(state, dt);
+  // (an Extra Shiny Piece coming in: its rays go with it while it falls, and stay where it landed)
+  const ace = state.fx.ace;
+  if (ace && (ace.elapsedMs += dt) >= CONFIG.fx.ace.ms) state.fx.ace = null;
+  else if (ace && state.active === ace.piece) Object.assign(ace, pieceCentre(state.active));
   const gh = state.fx.ghosts;
   if (gh && (gh.elapsedMs += dt) >= gh.durationMs) state.fx.ghosts = null;
 

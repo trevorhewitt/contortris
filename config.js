@@ -1045,6 +1045,20 @@ export const CONFIG = {
     // colours of the pieces they come from (perSec a second, real time; lifeMs; size in px).
     admire: { glow: 0.34, perSec: 150, lifeMs: [450, 1100], size: [2, 4.5] },
 
+    // An Extra Shiny Piece coming in, the ace up the sleeve (game.js useShelf, render.js drawAce):
+    // the falling piece it takes the place of bursts into bits (`bits` a block, at most `maxBits`
+    // in all, flying out at `speed` px a second for `lifeMs`, and `sparks` a block), and the new
+    // one is put at the top of the board with rays of light fanning out behind it for `ms`:
+    // `rays` of them, reaching `reach` cells (each its own, between the two), up to `width` cells
+    // wide at the far end, white split into the warm rainbow (`split` cells apart a step), turning
+    // (`spin` turns a second) and glitching (a new glitch every `glitchMs`) as they fade; the piece
+    // itself lit up (`glow`), fading over `glowMs`. (Toned down, in Options: half the rays,
+    // fainter, still and with no glitching)
+    ace: {
+      ms: 1300, rays: 14, reach: [5, 12], width: 0.9, split: 0.14, spin: 0.06, glitchMs: 70, glow: 0.85, glowMs: 360,
+      bits: 10, sparks: 2, maxBits: 260, speed: [90, 380], lifeMs: [450, 1000],
+    },
+
     // Rows going: a band of light sweeps along each row, and the row scatters as it passes
     // (game.js rowClearShow, render.js drawRowClears). One family of looks, more of it the more
     // rows go at once: each tier from `rows` rows. patterns: which way the light goes, one at

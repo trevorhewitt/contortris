@@ -954,6 +954,73 @@ export function createRenderer(boardCanvas, nextCanvas) {
     }
   }
 
+  // An Extra Shiny Piece coming in, the ace up the sleeve (CONFIG.fx.ace, game.js useShelf): rays
+  // of light fanning out from behind it, turning slowly as they fade, each white at its heart with
+  // the warm rainbow either side of it (WARM_SPLIT), and glitching like an old screen now and then:
+  // a ray torn further apart, jumping aside, or gone for a moment. (Toned down: half as many,
+  // fainter, still, and no glitching)
+  function drawAce(state, now) {
+    const a = state.fx.ace, A = CONFIG.fx.ace;
+    if (!a) return;
+    const calm = calmFx(), t = clamp01(a.elapsedMs / A.ms);
+    const fade = Math.min(1, a.elapsedMs / 80) * Math.pow(1 - t, 1.5) * (calm ? 0.4 : 1);
+    if (fade < 0.004) return;
+    const cx = a.x * cell, cy = a.y * cell, n = calm ? Math.ceil(A.rays / 2) : A.rays;
+    const turn = a.seed + (calm ? 0 : A.spin * 2 * Math.PI * a.elapsedMs / 1000);
+    const grow = 0.5 + 0.5 * Math.min(1, a.elapsedMs / 260); // (shooting out at first)
+    const tick = Math.floor(now / A.glitchMs);
+    bctx.save();
+    bctx.globalCompositeOperation = "lighter";
+    // (a soft light round it)
+    const R = cell * 3.5, halo = bctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+    halo.addColorStop(0, `rgba(255,255,255,${(0.4 * fade).toFixed(3)})`);
+    halo.addColorStop(1, "rgba(255,255,255,0)");
+    bctx.fillStyle = halo;
+    bctx.fillRect(cx - R, cy - R, R * 2, R * 2);
+    for (let k = 0; k < n; k++) {
+      const g = calm ? 0.5 : hash01(tick * 131 + k * 17 + a.seed);
+      if (g < 0.07) continue; // (gone for a moment)
+      const ang = turn + k * 2 * Math.PI / n;
+      const ux = Math.cos(ang), uy = Math.sin(ang), px = -uy, py = ux;
+      const len = (A.reach[0] + (A.reach[1] - A.reach[0]) * hash01(k * 7 + a.seed)) * cell * grow;
+      const w = A.width * cell * (0.5 + 0.5 * hash01(k * 3 + a.seed));
+      // (torn further apart, or jumping aside)
+      const o = cell * A.split * (g > 0.88 ? 3 : 1), jump = g > 0.95 ? (hash01(tick + k) - 0.5) * cell * 1.4 : 0;
+      const ray = (off, colour, alpha) => {
+        const bx = cx + px * (off + jump), by = cy + py * (off + jump), ex = bx + ux * len, ey = by + uy * len;
+        const fall = bctx.createLinearGradient(bx, by, ex, ey);
+        fall.addColorStop(0, colour);
+        fall.addColorStop(1, "rgba(0,0,0,0)");
+        bctx.globalAlpha = alpha;
+        bctx.fillStyle = fall;
+        bctx.beginPath();
+        bctx.moveTo(bx, by);
+        bctx.lineTo(ex + px * w / 2, ey + py * w / 2);
+        bctx.lineTo(ex - px * w / 2, ey - py * w / 2);
+        bctx.closePath();
+        bctx.fill();
+      };
+      for (const [step, colour, strength] of WARM_SPLIT) ray(step * o, colour, fade * strength * 0.7);
+      ray(0, "#ffffff", fade * 0.55);
+    }
+    bctx.restore();
+  }
+
+  // ...and the piece itself, lit up white as it comes, fading to its own look.
+  function drawAceGlow(state) {
+    const a = state.fx.ace, A = CONFIG.fx.ace, p = state.active;
+    if (!a || !p || p !== a.piece || a.elapsedMs >= A.glowMs) return;
+    const mat = p.shape.rotations[p.rotIdx];
+    bctx.save();
+    bctx.globalCompositeOperation = "lighter";
+    bctx.globalAlpha = A.glow * (1 - a.elapsedMs / A.glowMs) * (calmFx() ? 0.5 : 1);
+    bctx.fillStyle = "#ffffff";
+    for (let y = 0; y < mat.length; y++) for (let x = 0; x < mat[y].length; x++) {
+      if (mat[y][x] && p.y + y >= 0) bctx.fillRect((p.x + x) * cell, (p.y + y) * cell, cell, cell);
+    }
+    bctx.restore();
+  }
+
   // Danger: a piece on its last chance. A soft red glow along the top of the board.
   function drawDanger(state) {
     const lc = state.active?.lastChance;
@@ -1623,8 +1690,10 @@ export function createRenderer(boardCanvas, nextCanvas) {
       const ghostBehind = CONFIG.render.ghost?.drawBehindActive ?? true;
 
       if (state.active && ghostBehind) drawGhostPiece(state, ghostY);
+      drawAce(state, now); // (behind the piece coming in)
       for (const f of state.flock ?? []) drawActivePiece(state, f);
       if (state.active) drawActivePiece(state);
+      drawAceGlow(state);
       if (state.active && !ghostBehind) drawGhostPiece(state, ghostY);
 
       drawPowerupOverlay(state, ghostY, now);

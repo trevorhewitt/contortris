@@ -12,6 +12,7 @@ import { classOf } from "../src/powerups.js";
 import { createGameState, startRun, updateGame, useShelf, on } from "../src/game.js";
 import { shelfReady, shelfCount, shelfQueue, moveShelf, pieceReach } from "../src/shelf.js";
 import { pieceIcon } from "../src/shelfui.js";
+import { resetParticles } from "../src/particles.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const game = (mode, seed = 3) => {
@@ -171,6 +172,26 @@ test("Taken while nothing is falling, it comes next", () => {
   for (let t = 0; t < 60000 && !spawned; t += 16) updateGame(state, 16);
   assert.equal(spawned?.id, slot.shape.id);
   assert.equal(state.shelf.pending, null);
+});
+
+test("Used, the falling piece bursts into bits, and the Extra Shiny Piece is put at the top of the board in rays of light", () => {
+  resetParticles();
+  const state = game("god");
+  state.active.y = 6; // (well onto the board)
+  const bits = state.fx.particles.length;
+  assert.ok(useShelf(state));
+  assert.ok(state.fx.particles.length > bits, "the bits of the piece it took the place of");
+  assert.equal(state.active.y, 0, "at the top of the board");
+  assert.equal(state.fx.ace?.piece, state.active, "rays of light behind it");
+  for (let t = 0; t < 5000 && state.fx.ace; t += 16) updateGame(state, 16);
+  assert.equal(state.fx.ace, null, "for a moment");
+  // (with no room for it at the top, it comes in from above the board, as any piece does)
+  const full = game("god");
+  const { cols } = CONFIG.board;
+  for (let y = 0; y < 4; y++) for (let x = 1; x < cols; x++) full.board[y][x] = { pid: 1 };
+  assert.ok(useShelf(full));
+  assert.ok(full.active.y < 0, "above the board");
+  assert.equal(full.fx.ace?.piece, full.active);
 });
 
 test("No shelf in Extreme or zen", () => {
