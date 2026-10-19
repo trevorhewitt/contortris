@@ -226,7 +226,8 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
         if (powerup.under) powerup.areaRotations = allowed.map(i => underArea(allRotations[i]));
         // (and where the piece was before it turned goes with it: no blank, or block left standing)
         else allowed.forEach((i, k) => withOwnCells(powerup, k, allRotations[0], allRotations[i]));
-        // (a Destroyerz is in its own area, however it's turned: it goes with what it destroys)
+        // (a Destroyerz is in its own area, however it's turned: it goes with what it destroys; and
+        // a Gravitizerz in its own zone, with everything under it: it comes down with all of that)
         allowed.forEach((i, k) => withinOwnArea(powerup, k, allRotations[i]));
       }
     }

@@ -12,6 +12,7 @@ import {
   createGameState, startRun, updateGame, hardDropAndLock, setNextPiece, on, insidePairs, tryMove, tryRotate, showSpeed,
 } from "../src/game.js";
 import { computeBoardPresence, varietyMultiplier, powerupUsefulness } from "../src/selection.js";
+import { resolvePowerupArea, comesDown } from "../src/powerups.js";
 import { createAchievements } from "../src/achievements.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
@@ -396,6 +397,58 @@ test("a Gravitizer that lands sticking out above the top only ends the game if i
     goesOff(state);
     assert.ok(events.some(e => e.type === "powerupFire"));
     assert.equal(state.gameOver, true, "then it's over");
+  }
+});
+
+test("a Gravitizer is always in its own zone, however it's turned, with everything under it, and comes down with it", () => {
+  // (every one, and a combo's dropping part if the combo stays)
+  const staying = powerups.filter(p => comesDown(p.powerup));
+  assert.ok(staying.filter(p => p.powerup.type === "gravity").length >= 20, `${staying.length} of them`);
+  for (const p of staying) for (let r = 0; r < p.rotations.length; r++) {
+    const what = `${p.id} (turn ${r})`;
+    const { state } = newGame("normal");
+    // the same stack full of gaps as above
+    for (let y = ROWS - 6; y < ROWS; y++) for (let x = 1; x < COLS; x++) if ((x + y) % 3) state.board[y][x] = filler();
+    const mat = p.rotations[r], had = state.board.flat().filter(Boolean).length + mat.flat().filter(Boolean).length;
+    placeActive(state, p.id, Math.max(1, Math.floor((COLS - mat[0].length) / 2)), 0, r);
+    hardDropAndLock(state);
+    // where it lands, its zone (a combo's dropping part's) has every block of it in it, and
+    // everything under them down to the floor (sliding sideways, just its blocks)
+    const [, inst] = inOnePiece(state, p.id, `${what} as it lands`);
+    const { x, y } = inst, parts = p.powerup.parts ?? [p.powerup];
+    const area = resolvePowerupArea(p.powerup, r, x, y, COLS, ROWS);
+    const zone = new Set(parts.flatMap((q, i) => q.type === "gravity" ? (area.parts?.[i] ?? area).indices : []));
+    const dir = parts.find(q => q.type === "gravity").direction ?? "down";
+    mat.forEach((row, j) => row.forEach((on, i) => {
+      if (!on) return;
+      assert.ok(zone.has((y + j) * COLS + x + i), `${what}: its block at ${x + i},${y + j} in its zone`);
+      if (dir === "down") for (let below = y + j + 1; below < ROWS; below++) assert.ok(zone.has(below * COLS + x + i), `${what}: ${x + i},${below}, under it, in its zone`);
+    }));
+    if (p.powerup.type !== "gravity") continue; // (a combo's other parts can fill, or clear, round it after)
+    settle(state, 2500);
+    assert.equal(state.effect, null, `${what}: it went off`);
+    const [, now] = inOnePiece(state, p.id, what);
+    const moved = { down: now.y > y, up: now.y < y, left: now.x < x, right: now.x > x }[dir];
+    assert.ok(moved, `${what}: it came ${dir} with its zone (it landed at ${x},${y}, and is at ${now.x},${now.y})`);
+    assert.equal(state.board.flat().filter(Boolean).length, had, `${what}: nothing gone`);
+  }
+});
+
+test("a Gravitizer holds up what's on top of it, which comes down after it: nothing comes into its place and goes", () => {
+  const p = byId("sumo_wrestler"), mat = p.rotations[0], { state } = newGame("normal");
+  // a solid floor (the left column empty, so no row clears), and a shelf over it on a pillar
+  for (let y = ROWS - 4; y < ROWS; y++) for (let x = 1; x < COLS; x++) state.board[y][x] = filler();
+  for (let y = ROWS - 9; y < ROWS - 4; y++) state.board[y][0] = filler();
+  for (let x = 0; x <= 8; x++) state.board[ROWS - 9][x] = filler();
+  const had = state.board.flat().filter(Boolean).length + mat.flat().filter(Boolean).length;
+  // he's slid in under the shelf, onto the floor, and goes off: the shelf over him falls onto him
+  placeActive(state, p.id, 5, ROWS - 4 - mat.length);
+  hardDropAndLock(state);
+  settle(state, 2500);
+  const [pid, inst] = inOnePiece(state, p.id, "the sumo wrestler");
+  assert.equal(state.board.flat().filter(Boolean).length, had, "nothing gone");
+  for (const { x, y } of inst.cells) {
+    if (y === inst.y) assert.ok(state.board[y - 1][x] && state.board[y - 1][x].pid !== pid, `the shelf's block on top of him at ${x},${y - 1}`);
   }
 });
 

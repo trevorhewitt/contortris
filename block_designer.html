@@ -1088,7 +1088,7 @@
   // What each type does (shown under the type select)
   const PU_TYPE_DOC = {
     destroyer: "Destroys every block in its area. Its own blocks are always in it (the game adds them), so it goes too.",
-    gravity: "Blocks in its area fall (or slide) until they hit something, then the piece itself, if it stays, comes down after them in one piece, as far as it goes.",
+    gravity: "Blocks in its area fall (or slide) until they hit something, then the piece itself, if it stays, comes down after them in one piece, as far as it goes. It and everything under it are always in its area (the game adds them), however it's turned.",
     expander: "Fills every empty cell in its area with its fill art.",
     acid: "Dissolves every block it touches: its area is every cell within reach steps of its blocks, plus any extra area, and its own blocks.",
     blast: "Throws the blocks in its area outwards by up to push cells, then they fall.",
@@ -3739,7 +3739,7 @@
     drawRegionBase(ctx, v, cs, cells, tgt && tgt.part ? rgba(partColour(tgt.part.type), 0.08) : "rgba(255,207,106,0.07)");
     for (const p of others){
       const col = partColour(p.type);
-      const pc = regionCellList(p.cells).concat(p.type === "acid" ? touchCells(pieceCells, p.reach) : [], rainbowType(p.type) === "destroyer" ? pieceCells.map(c => ({ ...c, ch: "#" })) : []);
+      const pc = regionCellList(p.cells).concat(p.type === "acid" ? touchCells(pieceCells, p.reach) : [], ownAreaCells(p.type, p.direction, pieceCells));
       const set = new Set([...affectedCells(pc, v.x0, v.y0, v.cols, v.rows)].map(k => { const [x, y] = parseKey(k); return areaKey(x - v.x0, y - v.y0); }));
       ctx.fillStyle = rgba(col, 0.13);
       for (const k of set){ const [x, y] = parseKey(k); ctx.fillRect(x * cs, y * cs, cs, cs); }
@@ -3761,8 +3761,9 @@
       drawSetOutline(ctx, tset, (x) => x * cs, (y) => y * cs, cs, "rgba(140,255,110,0.85)", [4, 3]);
     }
 
-    // rainbow highlight (what the game shows: a destroyer's own blocks are always in it)
-    const own = rainbowType(type) === "destroyer" ? pieceCells.map(c => ({ ...c, ch: "#" })) : [];
+    // rainbow highlight (what the game shows: a destroyer's own blocks are always in it, and a
+    // gravity area's too, with everything under them, if the piece stays)
+    const own = ownAreaCells(type, tgt ? tgt.direction : state.pu.direction, pieceCells);
     const aff = affectedCells(cells.concat(touch, own), v.x0, v.y0, v.cols, v.rows);
     const ctr = { x: (pieceBox().x0 + pieceBox().x1 + 1) / 2, y: (pieceBox().y0 + pieceBox().y1 + 1) / 2 };
     for (const k of aff){
@@ -3782,6 +3783,14 @@
     return out;
   }
   const rainbowType = (type) => type === "acid" ? "destroyer" : type;
+  // The piece's own blocks in an area of this type, as the game has them (withinOwnArea): always a
+  // destroyer's, and a gravity area's with everything under them if the piece stays (sliding
+  // sideways or up, just its blocks)
+  function ownAreaCells(type, direction, pieceCells){
+    if (rainbowType(type) === "destroyer") return pieceCells.map(c => ({ ...c, ch: "#" }));
+    if (type === "gravity" && !puConsumeEffective()) return pieceCells.map(c => ({ ...c, ch: (direction || "down") === "down" ? "v" : "#" }));
+    return [];
+  }
   // unit vector pointing away from the piece centre ({0,0} at the centre)
   function outward(dx, dy){
     const l = Math.hypot(dx, dy);
@@ -4248,6 +4257,13 @@
       const first = parts && parts.find(q => q.type === "destroyer" || q.type === "acid");
       if (first) first.cells = first.cells.concat(own);
       else if (area && (powerup.type === "destroyer" || powerup.type === "acid")) area = area.concat(own);
+      // (and if it stays, so are a gravity area's, with everything under them: a combo's go in its
+      // first gravity part's)
+      const stays = !(powerup.consume == null ? puDefaultConsume(powerup.type, powerup.parts) : powerup.consume === true);
+      const grav = parts && parts.find(q => q.type === "gravity");
+      const under = (dir) => blocks.map(b => ({ x: b.x, y: b.y, ch: (dir || "down") === "down" ? "v" : "#" }));
+      if (stays && grav) grav.cells = grav.cells.concat(under(grav.direction));
+      else if (stays && area && powerup.type === "gravity") area = area.concat(under(powerup.direction));
     }
     const zones = shape && isPlainObject(shape.zones)
       ? Object.entries(shape.zones).filter(([, z]) => isPlainObject(z)).map(([name, z]) => ({ name, cells: regionObjectCells(z, tx0, ty0) }))

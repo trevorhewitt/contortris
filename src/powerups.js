@@ -410,14 +410,33 @@ function inArea(a, x, y) {
 // everything else it will destroy, and goes with it (none destroys only something away from
 // itself). Its blocks in turn `k` (`mat`) that the area as drawn leaves out go in (`own`, as
 // above); a combo's go to its destroying part, and to the combo's whole area too.
+// So is a Gravitizerz that stays (comesDown), and everything under it too, down to the floor: it
+// comes down with what's under it, so nothing its zone leaves out holds it up. Its columns the
+// zone as drawn leaves out go in from its top block down (`own` too; sliding sideways or up,
+// just its blocks), to its gravity part, and to a combo's whole area too.
 export function withinOwnArea(pu, k, mat) {
-  const parts = (pu?.parts?.length ? pu.parts : [pu]).filter(p => p?.areaRotations?.[k] && classOf(p.type) === "destroyer");
-  if (!parts.length) return;
-  mat.forEach((row, y) => row.forEach((on, x) => {
-    if (!on || parts.some(p => inArea(p.areaRotations[k], x, y))) return;
-    parts[0].areaRotations[k].cells.push({ dx: x, dy: y, own: true });
-    if (parts[0] !== pu) pu.areaRotations[k].cells.push({ dx: x, dy: y, own: true }); // (a combo's whole area too)
+  const all = (pu?.parts?.length ? pu.parts : [pu]).filter(p => p?.areaRotations?.[k]);
+  const add = (part, key, entry) => {
+    (part.areaRotations[k][key] ??= []).push(entry);
+    if (part !== pu) (pu.areaRotations[k][key] ??= []).push(entry); // (a combo's whole area too)
+  };
+  const parts = all.filter(p => classOf(p.type) === "destroyer");
+  if (parts.length) mat.forEach((row, y) => row.forEach((on, x) => {
+    if (on && !parts.some(p => inArea(p.areaRotations[k], x, y))) add(parts[0], "cells", { dx: x, dy: y, own: true });
   }));
+  const drops = comesDown(pu) ? all.filter(p => p.type === "gravity") : [];
+  if (!drops.length) return;
+  if ((drops[0].direction ?? "down") !== "down") {
+    mat.forEach((row, y) => row.forEach((on, x) => {
+      if (on && !drops.some(p => inArea(p.areaRotations[k], x, y))) add(drops[0], "cells", { dx: x, dy: y, own: true });
+    }));
+    return;
+  }
+  for (let x = 0; x < mat[0].length; x++) {
+    const top = mat.findIndex(row => row[x]);
+    const down = (a) => a.cols.includes(x) || (a.downs ?? []).some(c => c.dx === x && c.dy <= top);
+    if (top >= 0 && !drops.some(p => down(p.areaRotations[k]))) add(drops[0], "downs", { dx: x, dy: top, own: true });
+  }
 }
 
 // Cells within `reach` (Manhattan) steps of the piece's blocks, not the blocks themselves.
@@ -496,9 +515,10 @@ export function applyDestroy(board, area, cols) {
 
 // Gravity: every affected block moves in `direction` until it hits a wall or
 // another block. Blocks closest to the "floor" settle first, so stacked blocks
-// land on each other. Unaffected blocks stay put and act as obstacles.
+// land on each other. Unaffected blocks stay put and act as obstacles (and so do
+// the cells in `hold`, affected or not).
 // Returns moves [{fromX, fromY, toX, toY, cell}] (only blocks that moved).
-export function applyGravity(board, area, cols, rows, direction = "down") {
+export function applyGravity(board, area, cols, rows, direction = "down", hold = null) {
   const dir = DIRECTIONS[direction] ?? DIRECTIONS.down;
   const moves = [];
 
@@ -519,7 +539,7 @@ export function applyGravity(board, area, cols, rows, direction = "down") {
   for (const [x, y] of order) {
     if (!area.flags[y * cols + x]) continue;
     const cell = board[y][x];
-    if (!cell) continue;
+    if (!cell || hold?.has(cell)) continue;
 
     let tx = x, ty = y;
     while (true) {
@@ -537,32 +557,41 @@ export function applyGravity(board, area, cols, rows, direction = "down") {
   return moves;
 }
 
-// A Gravitizerz that stays: its blocks come off the board while everything else in its area
-// settles, then it comes down after them in one piece, as far as it goes (onto whatever is under
-// it now: it doesn't come apart, or hang in the air), its blocks above the top (`above`: it
-// locked sticking out) with it. Returns { moves (its own last), placed (where it is now on the
-// board), overTop (its blocks still above the top) }.
+// A Gravitizerz that stays: everything else in its area settles first (what's behind it, it holds
+// up), then it comes off the board and comes down after them in one piece, as far as it goes
+// (onto whatever is under it now: it doesn't come apart, or hang in the air), its blocks above
+// the top (`above`: it locked sticking out) with it, and what it held up comes after it. Returns
+// { moves (its own last), placed (where it is now on the board), overTop (its blocks still above
+// the top) }.
 function fallAsOne(board, area, { placed, pid, cols, rows, above = [] }, direction) {
   const dir = DIRECTIONS[direction] ?? DIRECTIONS.down;
   const piece = [...above];
   for (const { x, y } of placed) {
     const c = board[y]?.[x];
-    if (c && (pid == null || c.pid === pid)) { piece.push({ x, y, cell: c }); board[y][x] = null; }
+    if (c && (pid == null || c.pid === pid)) piece.push({ x, y, cell: c });
   }
-  const moves = applyGravity(board, area, cols, rows, direction);
+  const hold = new Set(piece.map(b => b.cell));
+  const moves = applyGravity(board, area, cols, rows, direction, hold);
+  for (const b of piece) if (b.y >= 0) board[b.y][b.x] = null;
   // (not through a wall, the floor or another block; above the top is open air, unless it's going up)
   const open = (x, y) => x >= 0 && x < cols && y < rows && (y < 0 ? dir.dy >= 0 : !board[y][x]);
   let n = 0;
   while (piece.length && piece.every(b => open(b.x + dir.dx * (n + 1), b.y + dir.dy * (n + 1)))) n++;
-  const now = [], overTop = [];
+  const now = [], overTop = [], own = [];
   for (const b of piece) {
     const x = b.x + dir.dx * n, y = b.y + dir.dy * n;
     if (y < 0) { overTop.push({ x, y, cell: b.cell }); continue; }
     board[y][x] = b.cell;
     now.push({ x, y });
-    if (n) moves.push({ fromX: b.x, fromY: b.y, toX: x, toY: y, cell: b.cell });
+    if (n) own.push({ fromX: b.x, fromY: b.y, toX: x, toY: y, cell: b.cell });
   }
-  return { moves, placed: now, overTop };
+  // (what it held up, from where it was to where it ends up)
+  for (const m of applyGravity(board, area, cols, rows, direction, hold)) {
+    const i = moves.findIndex(p => p.toX === m.fromX && p.toY === m.fromY);
+    if (i >= 0) moves[i] = { ...m, fromX: moves[i].fromX, fromY: moves[i].fromY };
+    else moves.push(m);
+  }
+  return { moves: moves.concat(own), placed: now, overTop };
 }
 
 // Expander: fills every empty affected cell with makeCell(x, y).

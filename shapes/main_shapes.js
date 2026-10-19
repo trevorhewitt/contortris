@@ -56,7 +56,8 @@
  *                it's turned, whatever the area as drawn: it goes too)
  *     gravity:   blocks in its area fall (or slide) until they hit something, then the piece
  *                itself (it stays, as an expander does) comes down after them the same way, in
- *                one piece, as far as it goes
+ *                one piece, as far as it goes. It's always in its own area, however it's turned,
+ *                and so is everything under it (the game adds them, whatever the area as drawn)
  *     expander:  fills every empty cell in its area with `fill`
  *     acid:      dissolves every block it touches (its area is worked out from its shape:
  *                every cell within `reach` steps of one of its blocks, plus any `area`, and
@@ -12575,7 +12576,7 @@ export const SHAPES = [
     powerup: {
         "type": "gravity",
         "tier": 1,
-        "intro": "Only the unlucky blocks fall: every other cell, in a chequerboard across the 6x6 patch under it, drops down. Seven years of this.",
+        "intro": "Only the unlucky blocks fall: every other cell, in a chequerboard across the 6x6 patch under it, drops down, and so does everything straight under the cat. Seven years of this.",
         "area": {
           "origin": [
             2,
@@ -12611,7 +12612,7 @@ export const SHAPES = [
     powerup: {
         "type": "gravity",
         "tier": 1,
-        "intro": "Boings straight down: every block in its own column below it drops into the gaps. Just the one column. It is only a small pogo stick.",
+        "intro": "Boings straight down: every block under it drops into the gaps. Just the one column, unless it's lying down. It is only a small pogo stick.",
         "area": {
           "origin": [
             0,
@@ -32792,7 +32793,7 @@ export const SHAPES = [
         "type": "gravity",
         "direction": "down",
         "tier": 1,
-        "intro": "Every block in the 10-wide, 3-row band around and under it (its own row and the two below) drops down into the gaps. Leaves a fine white dust on everything.",
+        "intro": "Every block in the 10-wide, 3-row band around and under it (its own row and the two below) drops down into the gaps, and so does everything straight under the sack. Leaves a fine white dust on everything.",
         "area": {
           "origin": [
             4,
@@ -32823,7 +32824,7 @@ export const SHAPES = [
         "type": "gravity",
         "direction": "down",
         "tier": 2,
-        "intro": "Only every other column goes: four columns across the 7 cells under it, including the two under its feet. Everything in them drops into the gaps. It is trying so hard to be quiet.",
+        "intro": "Only every other column goes: four columns across the 7 cells under it, including the two under its feet. Everything in them, and everything straight under the elephant, drops into the gaps. It is trying so hard to be quiet.",
         "area": {
           "origin": [
             2,
@@ -32852,7 +32853,7 @@ export const SHAPES = [
         "type": "gravity",
         "direction": "down",
         "tier": 2,
-        "intro": "Kicks down a staircase to its right: blocks fall in three 2-wide steps, 2, 4 and 6 rows deep, starting just under its sole. The opposite of moon boots.",
+        "intro": "Kicks down a staircase to its right: blocks fall in three 2-wide steps, 2, 4 and 6 rows deep, starting just under its sole, and everything straight under the boot falls too. The opposite of moon boots.",
         "area": {
           "origin": [
             0,
@@ -32887,7 +32888,7 @@ export const SHAPES = [
         "type": "gravity",
         "direction": "down",
         "tier": 1,
-        "intro": "Goes down like a lead balloon: blocks in a V right under it (two diagonal strokes, 9 cells wide at the top, meeting 5 rows down) drop into the gaps. Nobody laughed at the party either.",
+        "intro": "Goes down like a lead balloon: blocks in a V right under it (two diagonal strokes, 9 cells wide at the top, meeting 5 rows down), and everything straight under it, drop into the gaps. Nobody laughed at the party either.",
         "area": {
           "origin": [
             4,
@@ -32978,7 +32979,7 @@ export const SHAPES = [
         "type": "gravity",
         "direction": "down",
         "tier": 2,
-        "intro": "Presses down in a T: the 7-wide strip two rows deep right under it, plus its own column down to 8 rows below it, drops into the gaps. It used to hold down one letter. Now it wants the whole stack.",
+        "intro": "Presses down in a T: the 7-wide strip two rows deep right under it, plus its own column all the way down, drops into the gaps. It used to hold down one letter. Now it wants the whole stack.",
         "area": {
           "origin": [
             3,
@@ -33044,7 +33045,7 @@ export const SHAPES = [
         "type": "gravity",
         "direction": "down",
         "tier": 2,
-        "intro": "Squeezes every other row: rows 1, 3, 5 and 7 under it, 7 cells wide, drop into the gaps. A piano's little cousin. It falls just as hard, only wheezier.",
+        "intro": "Squeezes every other row: rows 1, 3, 5 and 7 under it, 7 cells wide, drop into the gaps, and so does everything straight under it. A piano's little cousin. It falls just as hard, only wheezier.",
         "area": {
           "origin": [
             2,

@@ -7,7 +7,7 @@
 // Turbo zen's quick fill to the brink and the big powerup that brings it all down. It places
 // them itself (a simple autopilot) and runs the real powerup effects (computeEffect).
 
-import { resolvePowerupArea, computeEffect, classOf } from "./powerups.js";
+import { resolvePowerupArea, computeEffect, classOf, comesDown } from "./powerups.js";
 import { getShapePaint } from "./shapes.js";
 import { drawBlockWithPaintStatic, drawPowerupMark } from "./render.js";
 import { makeRng, clamp01 } from "./util.js";
@@ -201,9 +201,10 @@ export function createModeDemo(canvas, mode, { shapes, powerups, cell = 12, seed
         const centre = { x: cur.place.x + (mat[0].length - 1) / 2, y: cur.place.y + (mat.length - 1) / 2 };
         for (const i of area.indices) {
           const x = i % COLS, y = (i / COLS) | 0, filled = !!board[y][x];
-          // (where it lands, a Destroyerz's own blocks: they go with everything else there)
+          // (where it lands, a Destroyerz's own blocks: they go with everything else there; a
+          // Gravitizerz's come down with it)
           const eff = shape.powerup.type === "expander" ? !filled
-            : filled || (classOf(shape.powerup.type) === "destroyer" && !!mat[y - cur.place.y]?.[x - cur.place.x]);
+            : filled || ((classOf(shape.powerup.type) === "destroyer" || comesDown(shape.powerup)) && !!mat[y - cur.place.y]?.[x - cur.place.x]);
           drawPowerupMark(ctx, shape.powerup, x * cell, y * cell, cell, now, x, y, Math.hypot(x - centre.x, y - centre.y), eff, 1, centre);
         }
       }

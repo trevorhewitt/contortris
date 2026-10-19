@@ -7,7 +7,7 @@ import { CONFIG } from "../config.js";
 import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour, ombre, OMBRE } from "./util.js";
 import { getShapePaint } from "./shapes.js";
 import { getActiveMatrix, getGhostDropY } from "./game.js";
-import { resolvePowerupArea, computeEffect, isPhantomPowerup, classOf } from "./powerups.js";
+import { resolvePowerupArea, computeEffect, isPhantomPowerup, classOf, comesDown } from "./powerups.js";
 import { drawRemains, remainsKey, remainsShaken } from "./remains.js";
 
 const DEFAULT_STYLE = {};
@@ -1215,9 +1215,10 @@ export function createRenderer(boardCanvas, nextCanvas) {
         const isPiece = pieceCells.has(i);
         if (isPiece && lp.type === "expander") continue; // (a fill down to the floor passes through it: nothing to mark)
         const filled = !!board[y][x] && !isPiece;
-        // (a Destroyerz's own blocks are in its area, and go with everything else there)
+        // (a Destroyerz's own blocks are in its area, and go with everything else there; a
+        // Gravitizerz's come down with everything there)
         const effective = (lp.type === "goo" || lp.type === "phantom") ? true
-          : lp.type === "expander" ? (!filled && !isPiece) : filled || (isPiece && classOf(lp.type) === "destroyer");
+          : lp.type === "expander" ? (!filled && !isPiece) : filled || (isPiece && (classOf(lp.type) === "destroyer" || (lp.type === "gravity" && comesDown(pu))));
         const dist = Math.hypot(x - centre.x, y - centre.y);
         drawPowerupMark(bctx, lp, x * cell, y * cell, cell, at, x, y, dist, effective, intensity, centre);
       }
