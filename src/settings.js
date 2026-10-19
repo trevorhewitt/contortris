@@ -5,10 +5,12 @@
 //   skipIntros: no intro screen when a class of powerup first turns up
 //   favourite:  a piece that comes a little more often in a game (CONFIG.assist.variety.favourite);
 //               one at random to start with, kept from then on
-//   calmFx:     toned-down animations: no scan lines or glitching, gentler shakes and flashes,
-//               and the home screen's camera keeps still (also on when the device asks for less
-//               motion)
-//   contrast:   a high contrast filter over the game
+//   calmFx:     toned-down animations: no scan lines or glitching, no shaking, a Shiny Piece's
+//               highlight holds still, destroyed blocks just fade (no bits flying, no rings),
+//               gentler flashes, and the home screen's camera keeps still (also on when the
+//               device asks for less motion)
+//   contrast:   a high contrast filter over the game, every cell's border clear on the board,
+//               and no glow
 //   turboWhole: turbo zen fills the window (or plays on the usual board)
 
 import { store } from "./util.js";

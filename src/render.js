@@ -645,7 +645,8 @@ export function createRenderer(boardCanvas, nextCanvas) {
     const q = state.fx?.quake;
     if (!q || q.trauma <= 0.0001) return;
 
-    const trauma2 = q.trauma * q.trauma * (calmFx() ? 0.25 : 1) * k; // (toned down: gentler)
+    if (calmFx()) return; // (calmer animations: the board never shakes)
+    const trauma2 = q.trauma * q.trauma * k;
     const maxOffset = CONFIG.fx.quake.maxOffsetPx * trauma2;
     const maxRot = (CONFIG.fx.quake.rotationalDegrees * Math.PI / 180) * trauma2;
 
@@ -1170,7 +1171,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       pieceCells = new Set(e.placed.map(({ x, y }) => y * cols + x));
       centre = e.centre;
       chargeT = clamp01(e.elapsedMs / e.durationMs);
-      intensity = 1 + 0.9 * chargeT + 0.35 * Math.sin(chargeT * Math.PI * 6);
+      intensity = 1 + 0.9 * chargeT + (calmFx() ? 0 : 0.35 * Math.sin(chargeT * Math.PI * 6));
     } else if (state.active?.shape.powerup && ghostY != null) {
       const a = state.active;
       pu = a.shape.powerup;
@@ -1202,6 +1203,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     }
 
     const board = state.board;
+    const at = calmFx() ? 0 : now; // (calmer animations: the highlight holds still)
     bctx.save();
     // combos: each part draws its own kind of highlight over its own area
     const layers = pu.parts && area.parts
@@ -1217,7 +1219,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
         const effective = (lp.type === "goo" || lp.type === "phantom") ? true
           : lp.type === "expander" ? (!filled && !isPiece) : filled || (isPiece && classOf(lp.type) === "destroyer");
         const dist = Math.hypot(x - centre.x, y - centre.y);
-        drawPowerupMark(bctx, lp, x * cell, y * cell, cell, now, x, y, dist, effective, intensity, centre);
+        drawPowerupMark(bctx, lp, x * cell, y * cell, cell, at, x, y, dist, effective, intensity, centre);
       }
     }
 
@@ -1241,7 +1243,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   // fiery burst, an expander's pulse, a phantom's ripple, a combo's rainbow.
   function drawShockwaves(state, now) {
     const list = state.fx.shockwaves;
-    if (!list.length) return;
+    if (!list.length || calmFx()) return; // (calmer animations: no rings)
     bctx.save();
     for (const w of list) {
       if (w.elapsedMs < 0) continue; // (not yet)
@@ -1318,7 +1320,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     }
 
     // gravity: streaks of light behind the falling blocks
-    if (sh.trails) drawTrails(state, now);
+    if (sh.trails && !calmFx()) drawTrails(state, now);
 
     // expanders: each new block glows as it sprouts
     if (sh.fills) {
@@ -1389,7 +1391,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     for (const b of sh.blocks) drawGone(b, t, cx, cy, now);
 
     // destroyers: the core that swallows them, and bursts
-    if (sh.pull) drawCore(sh, t, cx, cy, now);
+    if (sh.pull && !calmFx()) drawCore(sh, t, cx, cy, now); // (calmer animations: no core)
     bctx.restore();
   }
 
@@ -1398,7 +1400,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     if (local >= b.dur) return;
     const spr = getSprite(b.paint, b.style);
     const px = b.x * cell, py = b.y * cell;
-    if (b.fade) {
+    if (b.fade || calmFx()) { // (calmer animations: every one just fades where it was)
       const u = clamp01(local / b.dur), d = cell * (1 - 0.6 * u);
       bctx.globalAlpha = 1 - u;
       bctx.drawImage(spr, px + (cell - d) / 2, py + (cell - d) / 2, d, d);
@@ -1490,7 +1492,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   // The board leans in a little for a big one.
   function punchTransform(ctx, state) {
     const sh = state.fx.show;
-    if (!sh || !sh.punch) return;
+    if (!sh || !sh.punch || calmFx()) return; // (calmer animations: no lurch)
     const t = sh.elapsedMs, h = Math.max(1, sh.holdMs);
     const env = t < h ? Math.sin((t / h) * Math.PI / 2) : Math.exp(-(t - h) / 240);
     const z = 1 + sh.punch * env;
@@ -1693,7 +1695,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
 
   function drawParticles(state) {
     const parts = state.fx.particles;
-    if (!parts.length) return;
+    if (!parts.length || calmFx()) return; // (calmer animations: no bits flying)
 
     bctx.save();
     for (const glow of [false, true]) {
