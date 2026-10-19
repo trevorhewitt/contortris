@@ -233,11 +233,12 @@ export const PAGES = [
     again: ["pile_driver", "jelly_mould"],
   },
   {
-    // (overhangs on the left, enough to fill it to halfway once they come down; gaps on the right;
-    // and the middle, where neither reaches, solid but for a hole in each of the bottom two rows:
-    // the two together take the four rows over those away)
+    // (it says no more than that: the board shows it. Overhangs on the left, for a Gravitizerz to
+    // bring down, enough to fill it to halfway; gaps on the right, for an Expanderz to fill; and
+    // the middle, where neither reaches, solid but for a hole in each of the bottom two rows: the
+    // two together take the four rows over those away)
     id: "plan", powers: true,
-    text: "Think about where each one goes: a {gravity} on the left drops those overhangs into their holes, and an {expander} on the right fills the gaps.",
+    text: "Strategise about where to put your Shiny Pieces.",
     board: [
       ".a.b..........",
       "aaab..........",
