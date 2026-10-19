@@ -239,11 +239,11 @@ test("god mode: after a set, and after a few giants close together, a calm spell
     const { served } = play("god", seed * 7, 220);
     for (let i = 0; i < served.length; i++) {
       if (served[i].difficulty !== 6) continue;
-      // the whole run of this set's pieces (a set can have small pieces in it: Noah's raindrops;
-      // and a piece of it can wait a few pieces while the stack's too high for it, src/level6.js)
+      // the whole run of this set's pieces, one after another (a set can have small pieces in it:
+      // Noah's raindrops)
       const gs = sets.get(served[i].id), ofSet = (k) => [...(sets.get(served[k].id) ?? [])].some(g => gs.has(g));
       let j = i;
-      for (let k = i + 1; k < served.length && k <= j + 1 + CONFIG.assist.level6.waitPieces; k++) if (ofSet(k)) j = k;
+      for (let k = i + 1; k < served.length && k <= j + 1; k++) if (ofSet(k)) j = k;
       const after = served.slice(j + 1, j + lo); // (one short, in case an ordinary raindrop ran on)
       i = j;
       if (after.length < lo - 1) continue;

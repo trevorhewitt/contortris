@@ -23,7 +23,7 @@ import { initPieceSelectionState, selectPiece, destroyerCells, stillUseful } fro
 import { createShelf, shelfReady, takeShelfPending } from "./shelf.js";
 import { gravityColumns } from "./godmode.js";
 import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
-import { normaliseGroups, trackLevel6, LEVEL6 } from "./level6.js";
+import { normaliseGroups, trackLevel6, cutGroup, LEVEL6 } from "./level6.js";
 import { trackEndGame, endGameOn, spawnJitter, noteLanding } from "./endgame.js";
 import { remixShape } from "./remix.js";
 import { createZen, zenNext, zenPeek, zenTick, zenSpawned, zenSpeed, zenSteps, zenLockMs, zenDramatic, reachableTurns } from "./zen.js";
@@ -701,17 +701,12 @@ function introduce(state, shape) {
 }
 
 // A giant, or a level 6 set's piece, that couldn't go anywhere without sticking out over the top
-// (an instant game over) waits: a set's piece goes back to the front of its set, and something to
-// make room comes first (a big destroyer, or a small piece without powerups). After a few goes,
-// the set gives up.
+// (an instant game over) doesn't come: something to make room comes instead (a big destroyer, or
+// a small piece without powerups). A set ends there, and doesn't come back.
 function notDeadly(state, shape) {
   if (shape.powerup || (shape.difficulty ?? 1) < 4) return shape;
-  const l6 = state.pieceSel?.level6, set = (shape.difficulty ?? 1) === LEVEL6 && l6;
-  if (fitsSomewhere(state, shape)) { if (set) l6.waited = 0; return shape; }
-  if (set) {
-    if ((l6.waited = (l6.waited ?? 0) + 1) <= 3) l6.queue.unshift(shape);
-    else { l6.queue = []; l6.group = null; l6.lastEnd = state.pieceSel.dropIndex; l6.waited = 0; }
-  }
+  if (fitsSomewhere(state, shape)) return shape;
+  if ((shape.difficulty ?? 1) === LEVEL6 && state.pieceSel?.level6) cutGroup(state);
   emit(state, "deferred", { shape });
   return prepareShape(state, roomMaker(state));
 }

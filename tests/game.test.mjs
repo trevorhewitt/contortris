@@ -416,7 +416,7 @@ test("a piece slid along the ground waits a little longer, so it can be slid aga
   }
 });
 
-test("a giant or a set's piece that couldn't go anywhere without ending the game waits", () => {
+test("a giant or a set's piece that couldn't go anywhere without ending the game doesn't come (a set ends there)", () => {
   const { state, events } = newGame("normal", 6);
   // the board full nearly to the top, but for a narrow gap
   for (let y = 3; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (x !== y % COLS) state.board[y][x] = filler();
@@ -430,7 +430,7 @@ test("a giant or a set's piece that couldn't go anywhere without ending the game
   assert.ok(state.active.shape.powerup, "something to make room");
   assert.ok(events.some(e => e.type === "deferred"));
   assert.equal(state.next, null, "nothing picked ahead");
-  assert.deepEqual(state.pieceSel.level6.queue.map(s => s.id), ["everest", "everest_trash"], "it comes after that, and then the rest of its set");
+  assert.deepEqual(state.pieceSel.level6.queue, [], "nor the rest of its set, ever");
 });
 
 test("a piece's card says how rare it is, in words", async () => {

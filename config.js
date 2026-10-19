@@ -797,12 +797,10 @@ export const CONFIG = {
       // (Three townhouses in a row need about 15 rows.)
       roomFactor: 1.25,
       headroom: 3,
-      // A set under way: its next piece waits while it couldn't come in with `waitHeadroom` rows
-      // clear above it (the stack's got higher than the set's room allowed for), and ordinary
-      // pieces come meanwhile; after `waitPieces` of that, the set gives up. So a set never piles
-      // onto a stack near the top.
-      waitHeadroom: 3,
-      waitPieces: 8,
+      // A set under way ends there and then if its next piece couldn't come in with `headroomToGo`
+      // rows clear above it (the stack's got higher than the set's room allowed for), and doesn't
+      // come back. So a set never piles onto a stack near the top.
+      headroomToGo: 3,
       // No set comes round again until every other one has had its turn this game, and the last
       // `rememberRecent` sets served (also in the previous game, in this browser), or if more
       // the last restShare of all the others, wait if any other set can go: so once they've all

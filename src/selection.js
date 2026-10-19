@@ -396,7 +396,8 @@ function pickNextPiece(state) {
   }
 
   // A level 6 group that has started carries on, piece after piece, whatever else is going on
-  // (unless the stack's got too high for its next piece, which then waits: src/level6.js)
+  // (unless the stack's got too high for its next piece: then it ends there, src/level6.js)
+  const underWay = groupUnderWay(state);
   const grouped = groupPieceReady(state, (s, rows) => fitsNow(state, s, rows)) ? nextGroupPiece(state) : null;
   if (grouped) {
     commitSelectedShape(sel, grouped);
@@ -404,6 +405,7 @@ function pickNextPiece(state) {
     if (!groupUnderWay(state)) { noteHardDropped(sel, LEVEL6); beginCalm(state, "afterSet"); } // the group is over: rest a while
     return grouped;
   }
+  if (underWay) beginCalm(state, "afterSet"); // (cut short: a rest all the same)
   const calm = inCalm(state);
   // (the giants only with the stack low enough, the lower the harder it's got: never near the
   // top, src/difficulty.js; and only one that could go somewhere with room to spare above it)

@@ -265,24 +265,28 @@ export function nextGroupPiece(state) {
   return shape;
 }
 
-// Can the group's next piece come now? Not while the stack's got too high for it to come in with
+// Can the group's next piece come now? Not if the stack's got too high for it to come in with
 // room to spare (`fits(shape, rows)`: could it go somewhere with that many rows clear above it?
-// CONFIG.assist.level6.waitHeadroom): then it waits, and ordinary pieces come meanwhile, until
-// there's room again; after `waitPieces` of waiting, the set gives up. So a set never piles its
-// big pieces onto a stack that's near the top.
+// CONFIG.assist.level6.headroomToGo): then the set ends there, and doesn't come back. So a set
+// never piles its big pieces onto a stack that's near the top.
 export function groupPieceReady(state, fits) {
   const l6 = state.pieceSel.level6, cfg = level6Cfg(state);
   if (!l6.queue.length) return false;
-  if (fits(l6.queue[0], cfg.waitHeadroom ?? 0)) { l6.held = 0; return true; }
-  if ((l6.held = (l6.held ?? 0) + 1) > (cfg.waitPieces ?? 6)) { l6.queue = []; endGroup(state); }
+  if (fits(l6.queue[0], cfg.headroomToGo ?? 0)) return true;
+  cutGroup(state);
   return false;
+}
+
+// The set under way ends now, whatever's left of it (the player's in trouble).
+export function cutGroup(state) {
+  state.pieceSel.level6.queue = [];
+  endGroup(state);
 }
 
 function endGroup(state) {
   const l6 = state.pieceSel.level6;
   l6.lastEnd = state.pieceSel.dropIndex;
   l6.group = null;
-  l6.held = 0;
 }
 
 // Can this set come now? Not banished; and one with powerups in it only where there are

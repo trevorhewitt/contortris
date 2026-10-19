@@ -401,7 +401,7 @@ test("end game while they're still steering: faster and worse, but never a giant
   assert.equal(served.filter(s => !s.powerup && s.difficulty >= 4).length, 0, served.map(s => s.id).join());
 });
 
-test("late in a game, giants only with the stack low, and a set under way waits while it's high (then gives up)", () => {
+test("late in a game, giants only with the stack low, and a set under way ends if it gets too high (for good)", () => {
   const D = CONFIG.difficulty.normal, end = D.start + D.length, cfg = CONFIG.assist.level6;
   const giantsWith = (rows) => {
     let n = 0;
@@ -426,18 +426,18 @@ test("late in a game, giants only with the stack low, and a set under way waits 
   state.devLevel6 = "on";
   state.devEndGame = "off";
   startGroup(state, normaliseGroups(GROUPS, shapes).find(g => g.id === "townhouses"));
-  const left = state.pieceSel.level6.queue.length;
-  assert.ok(left > 0);
-  for (let i = 0; i < cfg.waitPieces; i++) {
-    setStack(state, 17);
-    state.pieceSel.dropIndex = end;
-    const s = selectPiece(state);
-    assert.ok((s.difficulty ?? 1) < 4 || s.powerup, `${s.id} on a stack 17 rows tall`);
-    assert.equal(state.pieceSel.level6.queue.length, left, "the set waits");
-  }
+  assert.ok(state.pieceSel.level6.queue.length > 0);
   setStack(state, 17);
-  selectPiece(state);
-  assert.equal(state.pieceSel.level6.queue.length, 0, "and in the end gives up");
+  state.pieceSel.dropIndex = end;
+  const s = selectPiece(state);
+  assert.ok((s.difficulty ?? 1) < 4 || s.powerup, `${s.id} on a stack 17 rows tall`);
+  assert.equal(state.pieceSel.level6.queue.length, 0, "the set ends there");
+  // ...and none of it comes back once the stack's low again
+  for (let i = 0; i < 12; i++) {
+    setStack(state, 2);
+    const s = selectPiece(state);
+    assert.notEqual(s.difficulty, 6, `${s.id} after the set ended`);
+  }
 });
 
 test("end game: a single tall giant on its end doesn't count as a full board", () => {
