@@ -115967,16 +115967,12 @@ export const SHAPES = [
     nextShapeProbs: [
         0.12,
         0.12,
-        0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
         "tulip",
         "dandelion_clock",
-        "stone_path",
-        "watering_can",
-        "cracked_pot"
+        "stone_path"
       ],
     oops: {
         "many": "daisies"
@@ -115998,16 +115994,12 @@ export const SHAPES = [
     nextShapeProbs: [
         0.12,
         0.12,
-        0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
         "bluebell",
         "poppy",
-        "rusty_trowel",
-        "bird_bath",
-        "compost_heap"
+        "bird_bath"
       ],
     oops: {
         "many": "tulips"
@@ -116029,15 +116021,13 @@ export const SHAPES = [
         0.12,
         0.12,
         0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
         "dandelion_clock",
         "forget_me_not",
         "garden_gnome",
-        "stone_path",
-        "watering_can"
+        "stone_path"
       ],
     oops: {
         "many": "bluebells"
@@ -116059,15 +116049,11 @@ export const SHAPES = [
     nextShapeProbs: [
         0.12,
         0.12,
-        0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
         "poppy",
         "lavender",
-        "cracked_pot",
-        "rusty_trowel",
         "bird_bath"
       ],
     oops: {
@@ -116091,13 +116077,11 @@ export const SHAPES = [
         0.12,
         0.12,
         0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
         "forget_me_not",
         "snowdrop",
-        "compost_heap",
         "garden_gnome",
         "stone_path"
       ],
@@ -116119,17 +116103,11 @@ export const SHAPES = [
     frequency: 0.3,
     nextShapeProbs: [
         0.12,
-        0.12,
-        0.04,
-        0.04,
-        0.04
+        0.12
       ],
     nextShapes: [
         "lavender",
-        "daisy",
-        "watering_can",
-        "cracked_pot",
-        "rusty_trowel"
+        "daisy"
       ],
     oops: {
         "many": "forget-me-nots"
@@ -116153,14 +116131,12 @@ export const SHAPES = [
         0.12,
         0.12,
         0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
         "snowdrop",
         "tulip",
         "bird_bath",
-        "compost_heap",
         "garden_gnome"
       ],
     oops: {
@@ -116183,16 +116159,12 @@ export const SHAPES = [
     nextShapeProbs: [
         0.12,
         0.12,
-        0.04,
-        0.04,
         0.04
       ],
     nextShapes: [
         "daisy",
         "bluebell",
-        "stone_path",
-        "watering_can",
-        "cracked_pot"
+        "stone_path"
       ],
     oops: {
         "many": "snowdrops"
@@ -116213,12 +116185,6 @@ export const SHAPES = [
       },
     frequency: 0,
     claudeDraft: true,
-    nextShapeProbs: [
-        0.08
-      ],
-    nextShapes: [
-        "compost_heap"
-      ],
   },
   {
     id: "stone_path",
@@ -116304,12 +116270,6 @@ export const SHAPES = [
       },
     frequency: 0,
     claudeDraft: true,
-    nextShapeProbs: [
-        0.08
-      ],
-    nextShapes: [
-        "watering_can"
-      ],
   },
   {
     id: "rusty_trowel",
