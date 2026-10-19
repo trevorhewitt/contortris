@@ -344,7 +344,23 @@ function inOnePiece(state, id, what) {
   return [pid, inst];
 }
 
-test("a Gravitizer stays, and comes down after everything else in one piece, its art whole, onto whatever is under it", () => {
+// Every block of the piece `id` still on the board, wherever each has come down to, with its own
+// bit of its art. Returns [pid, its instance].
+function allOfIt(state, id, what) {
+  const [pid, inst] = [...state.instances].find(([, i]) => i.shape?.id === id) ?? [];
+  assert.ok(inst, `${what}: still on the board`);
+  const paints = new Set(inst.shape.cellPaints[inst.rotIdx].flat()), n = inst.shape.rotations[inst.rotIdx].flat().filter(Boolean).length;
+  assert.equal(inst.cells.length, n, `${what}: all ${n} of its blocks`);
+  for (const { x, y } of inst.cells) {
+    const c = state.board[y]?.[x];
+    assert.ok(c?.pid === pid && paints.has(c.paint), `${what}: its block at ${x},${y}, with its art`);
+  }
+  return [pid, inst];
+}
+// (every block of it on the floor or on another block: none left hanging over a gap)
+const resting = (state, inst) => inst.cells.every(({ x, y }) => y === ROWS - 1 || !!state.board[y + 1][x]);
+
+test("a Gravitizer stays, and its blocks come down with everything else in its zone, each into the gaps under it", () => {
   const gravitizers = powerups.filter(p => p.powerup.type === "gravity" && (p.frequency ?? 1) > 0);
   assert.ok(gravitizers.length >= 10, `${gravitizers.length} of them`);
   for (const p of gravitizers) for (let r = 0; r < p.rotations.length; r++) {
@@ -358,8 +374,8 @@ test("a Gravitizer stays, and comes down after everything else in one piece, its
     hardDropAndLock(state);
     settle(state, 2500);
     assert.equal(state.effect, null, `${what}: it went off`);
-    const [pid, inst] = inOnePiece(state, p.id, what);
-    assert.ok(inst.cells.some(({ x, y }) => y === ROWS - 1 || (state.board[y + 1][x] && state.board[y + 1][x].pid !== pid)), `${what}: resting on something`);
+    const [, inst] = allOfIt(state, p.id, what);
+    assert.ok(resting(state, inst), `${what}: every block of it resting on something`);
     assert.equal(state.board.flat().filter(Boolean).length, had + n, `${what}: nothing gone`);
   }
 });
@@ -384,8 +400,8 @@ test("a Gravitizer that lands sticking out above the top only ends the game if i
     goesOff(state);
     assert.ok(events.some(e => e.type === "powerupFire"));
     assert.equal(state.gameOver, false, "the game goes on");
-    const [, inst] = inOnePiece(state, p.id, "the sumo wrestler");
-    assert.ok(inst.y >= 0, "all of him on the board");
+    const [, inst] = allOfIt(state, p.id, "the sumo wrestler");
+    assert.ok(inst.cells.every(c => c.y >= 0), "all of him on the board");
   }
   // nothing comes down: he's left sticking out above the top, and that's the end, once he's gone off
   {
@@ -415,7 +431,7 @@ test("a Gravitizer is always in its own zone, however it's turned, with everythi
     // where it lands, its zone (a combo's dropping part's) has every block of it in it, and
     // everything under them down to the floor (sliding sideways, just its blocks)
     const [, inst] = inOnePiece(state, p.id, `${what} as it lands`);
-    const { x, y } = inst, parts = p.powerup.parts ?? [p.powerup];
+    const { x, y } = inst, from = inst.cells.map(c => ({ ...c })), parts = p.powerup.parts ?? [p.powerup];
     const area = resolvePowerupArea(p.powerup, r, x, y, COLS, ROWS);
     const zone = new Set(parts.flatMap((q, i) => q.type === "gravity" ? (area.parts?.[i] ?? area).indices : []));
     const dir = parts.find(q => q.type === "gravity").direction ?? "down";
@@ -427,9 +443,35 @@ test("a Gravitizer is always in its own zone, however it's turned, with everythi
     if (p.powerup.type !== "gravity") continue; // (a combo's other parts can fill, or clear, round it after)
     settle(state, 2500);
     assert.equal(state.effect, null, `${what}: it went off`);
-    const [, now] = inOnePiece(state, p.id, what);
-    const moved = { down: now.y > y, up: now.y < y, left: now.x < x, right: now.x > x }[dir];
-    assert.ok(moved, `${what}: it came ${dir} with its zone (it landed at ${x},${y}, and is at ${now.x},${now.y})`);
+    const [, now] = allOfIt(state, p.id, what);
+    const d = { down: [0, 1], up: [0, -1], left: [-1, 0], right: [1, 0] }[dir], along = (cells) => cells.reduce((n, c) => n + c.x * d[0] + c.y * d[1], 0);
+    assert.ok(along(now.cells) > along(from), `${what}: it came ${dir} with its zone`);
+    if (dir === "down") assert.ok(resting(state, now), `${what}: every block of it resting on something`);
+    assert.equal(state.board.flat().filter(Boolean).length, had, `${what}: nothing gone`);
+  }
+});
+
+test("a Gravitizer that lands on an uneven stack: its blocks over a gap fall into it, however it's turned", () => {
+  const gravitizers = powerups.filter(p => p.powerup.type === "gravity" && comesDown(p.powerup) && (p.powerup.direction ?? "down") === "down");
+  assert.ok(gravitizers.length >= 20, `${gravitizers.length} of them`);
+  for (const p of gravitizers) for (let r = 0; r < p.rotations.length; r++) {
+    const what = `${p.id} (turn ${r})`;
+    const { state } = newGame("normal");
+    // a solid floor (the left column empty, so no row clears), and one block standing on it, under
+    // the first block of the piece's bottom row: the rest of it lands over gaps
+    for (let y = ROWS - 3; y < ROWS; y++) for (let x = 1; x < COLS; x++) state.board[y][x] = filler();
+    const mat = p.rotations[r], x0 = Math.max(1, Math.floor((COLS - mat[0].length) / 2));
+    state.board[ROWS - 4][x0 + mat[mat.length - 1].findIndex(Boolean)] = filler();
+    const had = state.board.flat().filter(Boolean).length + mat.flat().filter(Boolean).length;
+    placeActive(state, p.id, x0, 0, r);
+    hardDropAndLock(state);
+    const [, inst] = inOnePiece(state, p.id, `${what} as it lands`);
+    const hanging = !resting(state, inst);
+    settle(state, 2500);
+    assert.equal(state.effect, null, `${what}: it went off`);
+    const [, now] = allOfIt(state, p.id, what);
+    assert.ok(resting(state, now), `${what}: every block of it resting on something, none left over a gap`);
+    if (hanging) assert.equal(now.intact, false, `${what}: it came apart to fill the gaps`);
     assert.equal(state.board.flat().filter(Boolean).length, had, `${what}: nothing gone`);
   }
 });
