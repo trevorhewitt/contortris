@@ -1027,11 +1027,13 @@ function maybeSelectPowerup(state, danger01) {
   const afterGiant = !endGame && sel.lastHardAt != null && sel.dropIndex - sel.lastHardAt <= 2 ? eased(state, "afterGiant", 0) : 0;
   // (in a wave's stretch of awkward pieces, hardly any: src/waves.js)
   const held = waveTense(state) ? CONFIG.waves?.[state.mode]?.shiny ?? 1 : 1;
-  const chance = clamp01(Math.max(ps.chance * boost * rate, afterSet ? afterSetChance : 0, afterGiant * rate) * held);
+  // (fewer at the start of a game: cfg.opening)
+  const op = cfg.opening, opening = op ? lerp(op.rate ?? 1, 1, clamp01(sel.dropIndex / Math.max(1, op.until ?? 1))) : 1;
+  const chance = clamp01(Math.max(ps.chance * boost * rate * opening, afterSet ? afterSetChance : 0, afterGiant * rate) * held);
   ps.lastChance = chance;
 
   if (state.rng() >= chance) {
-    ps.chance = Math.min(cfg.maxChance ?? 0.6, ps.chance + (cfg.chancePerDrop ?? 0.03));
+    ps.chance = Math.min(cfg.maxChance ?? 0.6, ps.chance + (cfg.chancePerDrop ?? 0.03) * opening);
     return null;
   }
 

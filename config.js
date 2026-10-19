@@ -256,7 +256,7 @@ export const CONFIG = {
     // the powerup classes: how often each comes at the start of a game, halfway through the
     // climb, and at the end of it (blended in between)
     classes: {
-      early: { destroyer: 1, gravity: 1, expander: 0.8, combo: 1 },
+      early: { destroyer: 0.6, gravity: 0.6, expander: 0.7, combo: 0.7 },
       middle: { destroyer: 1, gravity: 1, expander: 0.8, combo: 1 },
       late: { destroyer: 1, gravity: 1, expander: 0.8, combo: 1 },
     },
@@ -337,7 +337,7 @@ export const CONFIG = {
       dangerRows: 4, steady: { rows: 10, blocks: 80 },
       hard: { minDropIndex: 12, firstGiantBetween: [18, 36], softWindowStart: 18, rechargePerDrop: 0.004, cooldownDrops: 30, hardMaxDanger: 0.25 },
       level6: { firstAfter: [25, 45], cooldownDrops: 50, chancePerDrop: 0.04 },
-      powerups: { minDropIndex: 4, cooldownDrops: 2, baseChance: 0.12, chancePerDrop: 0.07, maxChance: 0.8, combos: { minDrop: 15, weight: 0.5 }, bad: { minDrop: 40 }, dangerBoost: 0, holesBoost: 0, struggle: { chanceBoost: 0 } },
+      powerups: { minDropIndex: 4, cooldownDrops: 2, baseChance: 0.12, chancePerDrop: 0.07, maxChance: 0.8, opening: null, combos: { minDrop: 15, weight: 0.5 }, bad: { minDrop: 40 }, dangerBoost: 0, holesBoost: 0, struggle: { chanceBoost: 0 } },
       pieceMix: { baseLevelWeight: { 0: 0.14, 1: 0.6, 2: 0.23, 3: 0.03 }, openingLevelWeight: { 0: 0, 1: 0.65, 2: 0.3, 3: 0.05 } },
     },
     // Turbo zen is for watching, and for stepping into. Each piece arrives already turned and over
@@ -503,6 +503,7 @@ export const CONFIG = {
       baseChance: 0.18,
       chancePerDrop: 0.075,
       maxChance: 0.65,
+      opening: null,
       combos: { minDrop: 0, weight: 1 },
       bad: { minDrop: 0 },
     },
@@ -896,6 +897,9 @@ export const CONFIG = {
       baseChance: 0.12,
       chancePerDrop: 0.07,
       maxChance: 0.8,
+      // ...but fewer at the start of a game, while the board's still easy: the chance, and how
+      // fast it grows, times `rate` at first, rising evenly to the full amount by piece `until`
+      opening: { rate: 0.3, until: 60 },
 
       // Powerup types that are switched off: their pieces stay in shapes/main_shapes.js but are
       // never served (combos with a part of these types are off too, unless that part is taken

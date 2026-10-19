@@ -70,13 +70,15 @@ const GROUPS = [
     ["difficulty.hard.afterSet", "Shiny Pieces: chance just after a set", 0, 1, 0.05],
   ] },
   ...STAGES.map(([stage, when]) => ({
-    title: `Shiny Piece classes ${when}`,
+    title: `Shiny Piece classes ${when} (each against the others, not how many)`,
     items: CLASSES.map(c => [`difficulty.classes.${stage}.${c}`, CLASS_INFO[c]?.name ?? c, 0, 4, 0.1]),
   })),
   { title: "Shiny Pieces overall (all modes)", items: [
     ["assist.powerups.baseChance", "chance after one", 0, 0.6, 0.01],
     ["assist.powerups.chancePerDrop", "...going up each piece by", 0, 0.3, 0.005],
     ["assist.powerups.cooldownDrops", "at least this many pieces apart", 0, 10, 1],
+    ["assist.powerups.opening.rate", "fewer at the start of Classic (×)", 0, 1, 0.05],
+    ["assist.powerups.opening.until", "...up to the full number by piece", 1, 200, 5],
     ["fx.powerup.speed", "how fast they go off, at the start (×)", 0.5, 3, 0.05],
     ["fx.powerup.maxSpeed", "...and at most, as the game speeds up (×)", 1, 5, 0.1],
   ] },
