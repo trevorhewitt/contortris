@@ -10,7 +10,7 @@ import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { classOf } from "../src/powerups.js";
 import { createGameState, startRun, updateGame, useShelf, on } from "../src/game.js";
-import { shelfReady, shelfCount, shelfQueue, pieceReach } from "../src/shelf.js";
+import { shelfReady, shelfCount, shelfQueue, moveShelf, pieceReach } from "../src/shelf.js";
 import { pieceIcon } from "../src/shelfui.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
@@ -121,6 +121,29 @@ test("a tap on the bay uses the next one: they go in the order they came", () =>
   }
   assert.deepEqual(shelfQueue(state), []);
   assert.equal(useShelf(state), false, "none left");
+});
+
+test("the queue can be put in another order (the pause menu), and a tap on the bay goes by it", () => {
+  const state = game("god");
+  const order = (st = state) => shelfQueue(st).map(s => s.cls);
+  assert.deepEqual(order(), ["destroyer", "expander", "gravity"]);
+  assert.ok(moveShelf(state, 1, 2), "a swap");
+  assert.deepEqual(order(), ["destroyer", "gravity", "expander"]);
+  assert.ok(moveShelf(state, 2, 0), "the last to the front");
+  assert.deepEqual(order(), ["expander", "destroyer", "gravity"]);
+  assert.equal(moveShelf(state, 0, 3), false, "nowhere to go");
+  assert.equal(moveShelf(state, 1, 1), false);
+  assert.ok(useShelf(state));
+  assert.equal(state.active.shape.id, CONFIG.shelf.pieces.expander);
+  assert.deepEqual(order(), ["destroyer", "gravity"]);
+  // (Classic: one that comes after still goes on the end)
+  const classic = game("normal");
+  const met = classic.pieceSel.powerup.shownClasses;
+  met.add("destroyer"); met.add("gravity");
+  assert.ok(moveShelf(classic, 0, 1));
+  assert.deepEqual(order(classic), ["gravity", "destroyer"]);
+  met.add("expander");
+  assert.deepEqual(order(classic), ["gravity", "destroyer", "expander"]);
 });
 
 test("the bay's icons: each class its own, and a combo's each of its classes', in the order they go off", () => {

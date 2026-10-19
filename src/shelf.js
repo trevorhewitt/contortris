@@ -4,13 +4,13 @@
 // In place of the next piece, the player has a bay of Extra Shiny Pieces (CONFIG.shelf): one
 // strong one of each of the three classes (Destroyerz, Gravitizerz, Expanderz; never a combo) in
 // every game, the same ones every time, each to use once. The bay on the page (src/shelfui.js)
-// shows how many can be used now, and a tap on it uses the next in its queue (shelfQueue): the
-// falling piece goes and that one falls in its place (game.js useShelf). In Classic a class's
-// piece only comes into the bay once the class has been unlocked: the first of its class is down
-// on the board (its intro first), so nothing in it is a surprise, and using it never brings
-// anything in sooner (the combos come once two classes have been met: a piece from the bay is
-// never the one that meets one). (Later the bay will be the player's own, bought, kept from game
-// to game: `left` is how many of each are in it.)
+// shows how many can be used now, and a tap on it uses the next in its queue (shelfQueue; the
+// pause menu puts them in another order: moveShelf): the falling piece goes and that one falls in
+// its place (game.js useShelf). In Classic a class's piece only comes into the bay once the class
+// has been unlocked: the first of its class is down on the board (its intro first), so nothing in
+// it is a surprise, and using it never brings anything in sooner (the combos come once two
+// classes have been met: a piece from the bay is never the one that meets one). (Later the bay
+// will be the player's own, bought, kept from game to game: `left` is how many of each are in it.)
 
 import { CONFIG } from "../config.js";
 import { classOf, resolvePowerupArea } from "./powerups.js";
@@ -46,13 +46,23 @@ export function shelfReady(state, slot) {
 
 // The queue: the slots that can be used now, in the order a tap on the bay uses them: the order
 // they came into the bay in (in Classic, the order their classes unlocked; all at once, the order
-// of CONFIG.shelf.classes).
+// of CONFIG.shelf.classes), or whatever order the player has put them in since (moveShelf).
 export function shelfQueue(state) {
   const sh = state.shelf;
   if (!sh) return [];
   // (one that's just come goes on the end)
   sh.slots.forEach((slot, i) => { if (!sh.order.includes(i) && shelfReady(state, slot)) sh.order.push(i); });
   return sh.order.map(i => sh.slots[i]).filter(slot => shelfReady(state, slot));
+}
+
+// The player puts the queue in another order (the pause menu): the one at `from` in it goes to
+// `to`, the others keeping theirs (one that comes after still goes on the end). True if it moved.
+export function moveShelf(state, from, to) {
+  const sh = state.shelf, q = shelfQueue(state).map(slot => sh.slots.indexOf(slot));
+  if (from === to || !(from >= 0 && from < q.length) || !(to >= 0 && to < q.length)) return false;
+  q.splice(to, 0, q.splice(from, 1)[0]);
+  sh.order = [...q, ...sh.order.filter(i => !q.includes(i))];
+  return true;
 }
 
 // How many Extra Shiny Pieces can be used now (0 in a mode without a bay).

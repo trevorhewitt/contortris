@@ -20,7 +20,7 @@ import { zenIgnoreInput, zenMovementChoices, zenStart } from "./zen.js";
 import { rarity } from "./rarity.js";
 import { createHome } from "./home.js";
 import { buildDevTools, devToolsOn, setDevTools } from "./devtools.js";
-import { bindShelf } from "./shelfui.js";
+import { bindShelf, bindShelfQueue } from "./shelfui.js";
 import { difficultyStatus, classWeight } from "./difficulty.js";
 import { classOrder } from "./selection.js";
 import { bindTutorial } from "./tutorialui.js";
@@ -415,6 +415,7 @@ export function bindUI({ state, renderer, achievements }) {
     $("btnSpeed").textContent = speedText();
     hideBoard(CONFIG.modes[state.mode]?.hideOnPause);
     $("btnLookBoard").hidden = boardHidden();
+    bayQueue.refresh();
     gallery.open(); // (the newest piece in the middle)
     showPanel("pause");
   }
@@ -537,6 +538,8 @@ export function bindUI({ state, renderer, achievements }) {
   // The bay, where the next piece was: the Extra Shiny Pieces, in every mode (src/shelfui.js;
   // it keeps up every frame: updateHUD)
   const shelf = bindShelf({ state, root: $("shelf"), always: true });
+  // (and in the pause menu, their order, to change)
+  const bayQueue = bindShelfQueue({ state, root: $("bayQueue") });
 
   on(state, (type, d) => {
     switch (type) {

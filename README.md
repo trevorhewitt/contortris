@@ -15,7 +15,8 @@ clears.
   after its intro), the number hopping up as it comes. Tap it and the next one takes the falling
   piece's place: they go in the order they came, shown along its bottom by their classes' icons
   (the Destroyerz' square, the Expanderz' star, the Gravitizerz' arrow; a combo's side by side),
-  the next on the left. No keys for it.
+  the next on the left. The pause menu shows them in that order, and the button between two swaps
+  them. No keys for it.
   It starts easy and gets harder as it goes (`difficulty` in `config.js`, `src/difficulty.js`):
   a bit faster with every piece all the way, fewer Shiny Pieces and less rescue, and more awkward
   pieces; giants and level 6 sets come more often, but only while the stack is low, never near
@@ -71,7 +72,7 @@ clears.
 | `demo.js` | The little looping powerup animations on the intro / help / How to play screens. |
 | `tutorial.js` | The tutorial's pages (each one's words, board and pieces) and the autopilot that plays them. No DOM. |
 | `tutorialui.js` | The tutorial on the page: its words where a piece's name goes, its bar (Touch or Keys, the bay), the finger tapping the board, the keys lighting up, the Shiny Pieces' classes side by side, and each mode's page's button to go and play it. |
-| `shelf.js`, `shelfui.js` | The bay of Extra Shiny Pieces: what's in it and when each comes, and the bay in the bottom bar (a Shiny Piece × how many, and its pieces' icons in the order they'll come), a tap on it using the next. |
+| `shelf.js`, `shelfui.js` | The bay of Extra Shiny Pieces: what's in it and when each comes, and the bay in the bottom bar (a Shiny Piece × how many, and its pieces' icons in the order they'll come), a tap on it using the next; and that order in the pause menu, to change. |
 | `settings.js`, `optionsui.js` | The options (kept in the browser) and the Options page. |
 | `home.js` | The home screen: turbo zen behind the menu through a moving camera. |
 | `mosaic.js` | The home screen's packed screens of pieces the camera sweeps across now and then. |

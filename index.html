@@ -901,6 +901,34 @@
     .pgNone{ display: none; padding: 14px 0 8px; font-family: var(--font-body); font-size: 13px; color: var(--muted); text-align: center; }
     .pieceGallery.empty .pgStage, .pieceGallery.empty .pgSay, .pieceGallery.empty .pgLast{ display: none; }
     .pieceGallery.empty .pgNone{ display: block; }
+    /* the Extra Shiny Pieces in the pause menu (src/shelfui.js bindShelfQueue): a card for each
+       one in the bay, in the order they'll come, the next on the left (tagged), with its icon in
+       its class's colours, its picture and its name; between two, a button that swaps them, the
+       two sliding into their places */
+    .bayQueue{ margin: 0 0 14px; }
+    .bayQueue[hidden]{ display: none; }
+    .bqTitle{ font-family: var(--font-display); font-size: 8px; line-height: 1.4; letter-spacing: 0.04em; text-transform: uppercase; text-align: center; color: var(--muted); margin: 0 0 10px; }
+    .bqList{ display: flex; align-items: stretch; justify-content: center; gap: 3px; }
+    .bqCard{
+      position: relative; flex: 0 1 96px; min-width: 0; box-sizing: border-box; padding: 10px 3px 7px;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px;
+      border: var(--edge-w) solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.03);
+    }
+    .bqCard.next{ border-color: var(--edge-quiet-line); box-shadow: var(--edge-quiet); background: rgba(255,255,255,0.07); }
+    .bqTag{
+      position: absolute; top: -6px; left: 50%; translate: -50% 0; padding: 2px 4px 1px;
+      font-family: var(--font-display); font-size: 6px; line-height: 1.2; letter-spacing: 0.06em; text-transform: uppercase;
+      color: #000; background: #fff;
+    }
+    .bqIcon svg{ display: block; height: 18px; width: auto; filter: drop-shadow(0 0 4px rgba(255,255,255,0.18)); }
+    .bqArt{ display: block; max-width: 100%; max-height: 36px; image-rendering: pixelated; }
+    .bqName{ font-family: var(--font-display); font-size: 7px; line-height: 1.5; letter-spacing: 0.02em; text-transform: uppercase; text-align: center; overflow-wrap: break-word; color: var(--text); }
+    .bqSwap{ flex: none; align-self: center; width: 26px; min-width: 0; height: 44px; min-height: 0; padding: 0; display: flex; align-items: center; justify-content: center; }
+    .bqSwap svg{ display: block; height: 11px; width: auto; fill: currentColor; }
+    .bqCard.fromLeft{ animation: bqFromLeft 240ms cubic-bezier(.2, .8, .3, 1); }
+    .bqCard.fromRight{ animation: bqFromRight 240ms cubic-bezier(.2, .8, .3, 1); }
+    @keyframes bqFromLeft{ from{ transform: translateX(-125%); opacity: 0.4; } }
+    @keyframes bqFromRight{ from{ transform: translateX(125%); opacity: 0.4; } }
     /* the game over page (src/ui.js): no box, its words straight over the board going round
        behind it (src/render.js drawGameOverBackdrop), bold and white with a dark edge to them so
        they read over anything; and the piece that ended the game, big, with some of the pieces
@@ -1791,6 +1819,12 @@
               <button id="btnPauseHowTo" class="secondary">How to play</button>
               <button id="btnPauseOptions" class="secondary">Options</button>
               <button id="btnQuit" class="secondary">Quit to menu</button>
+            </div>
+            <!-- the Extra Shiny Pieces in the bay, in the order they'll come, the next on the left:
+                 the button between two swaps them (src/shelfui.js bindShelfQueue) -->
+            <div class="bayQueue" id="bayQueue" role="group" aria-labelledby="bqTitle" hidden>
+              <div class="bqTitle" id="bqTitle">Extra Shiny Pieces</div>
+              <div class="bqList"></div>
             </div>
             <!-- the pieces so far, each where it last fell, newest first (src/pausemenu.js): swipe,
                  the arrows, or ← → and A D -->

@@ -7,11 +7,13 @@
 // tutorial's only on its page). Along its bottom, a little icon for each one in it, in the order
 // they'll come, the next on the left: its class's (pieceIcon). A tap on it uses the next one in
 // its queue (shelf.js shelfQueue): the falling piece goes, and that one comes down in its place
-// (game.js useShelf). No keys for it.
+// (game.js useShelf). No keys for it. And in the pause menu, the queue to put in another order
+// (bindShelfQueue).
 
 import { useShelf } from "./game.js";
-import { shelfCount, shelfQueue } from "./shelf.js";
+import { shelfCount, shelfQueue, moveShelf } from "./shelf.js";
 import { classOf } from "./powerups.js";
+import { makeShapePreviewCanvas } from "./render.js";
 
 // The classes' icons, made from the marks their pieces put on the board (src/render.js
 // drawMarkShape): the Destroyerz' squares closing in, the Expanderz' star bursting out, the
@@ -85,3 +87,54 @@ export function bindShelf({ state, root, onUse = () => {}, always = false }) {
     button: btn,
   };
 }
+
+// (the swap button's icon: two arrows, one over the other)
+const SWAP_ICON = `<svg viewBox="0 0 9 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M5 0h1v1H5zM6 1h1v1H6zM0 2h8v1H0zM6 3h1v1H6zM5 4h1v1H5zM3 6h1v1H3zM2 7h1v1H2zM1 8h8v1H1zM2 9h1v1H2zM3 10h1v1H3z"/></svg>`;
+
+// The queue in the pause menu (`root`: #bayQueue, index.html): the Extra Shiny Pieces in the bay,
+// in the order they'll come, the next on the left, each a card with its icon, its picture and its
+// name; between two, a button that swaps them (a tap, a click, or Tab to it and Enter). Hidden
+// with nothing in the bay. (ui.js refreshes it as the game pauses)
+export function bindShelfQueue({ state, root }) {
+  const list = root.querySelector(".bqList");
+  // (each piece's picture, made once)
+  const arts = new Map();
+  function art(shape) {
+    if (!arts.has(shape.id)) {
+      const c = makeShapePreviewCanvas(shape, 12, 1);
+      c.removeAttribute("style");
+      c.className = "bqArt";
+      arts.set(shape.id, c);
+    }
+    return arts.get(shape.id);
+  }
+  const el = (tag, cls, text) => { const e = document.createElement(tag); e.className = cls; if (text != null) e.textContent = text; return e; };
+
+  // (`swapped`: the swap button just pressed, the k-th: the two either side of it slide into
+  // their places, and it keeps the focus)
+  function refresh(swapped = -1) {
+    const queue = shelfQueue(state);
+    root.hidden = !queue.length;
+    list.replaceChildren(...queue.flatMap((slot, i) => {
+      const card = el("div", `bqCard${i ? "" : " next"}`);
+      if (!i) card.appendChild(el("span", "bqTag", "next"));
+      const icon = el("span", "bqIcon");
+      icon.innerHTML = pieceIcon(slot.shape);
+      card.append(icon, art(slot.shape), el("span", "bqName", slot.shape.name));
+      if (swapped >= 0 && (i === swapped || i === swapped + 1)) card.classList.add(i === swapped ? "fromRight" : "fromLeft");
+      if (!i) return [card];
+      const swap = el("button", "bqSwap secondary");
+      swap.type = "button";
+      swap.innerHTML = SWAP_ICON;
+      const what = `Swap ${queue[i - 1].shape.name} and ${slot.shape.name}`;
+      swap.setAttribute("aria-label", what);
+      swap.title = what;
+      swap.addEventListener("click", () => { if (moveShelf(state, i - 1, i)) refresh(i - 1); });
+      return [swap, card];
+    }));
+    if (swapped >= 0) list.querySelectorAll(".bqSwap")[swapped]?.focus({ preventScroll: true });
+  }
+
+  return { refresh: () => refresh() };
+}
+
