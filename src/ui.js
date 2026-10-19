@@ -757,7 +757,7 @@ export function bindUI({ state, renderer, achievements }) {
     ["normal", "The full game: weird pieces, giants, and Shiny Pieces to help you out."],
     ["extreme", "The original. No Shiny Pieces. No mercy."],
     ["god", "Everything at once: the biggest pieces in the game, and Shiny Pieces from the start."],
-    ["zen", "Slow and easy. It places each piece for you; take one over whenever you like."],
+    ["zen", "Endless play. It places each piece for you; take one over whenever you like."],
     ["turbo", "It plays itself, quickly, and never stops. Sit back and watch."],
   ];
   let howToBuilt = null;
