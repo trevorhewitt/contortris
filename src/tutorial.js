@@ -274,15 +274,23 @@ export const PAGES = [
     pieces: [{ id: "pyramid", firstMs: 1800, then: ["shelf"] }], // (a moment to see the finger go to the bay)
   },
   {
+    // (a giant onto a high pile, and then a tidal wave beside it: it washes away the ten rows
+    // under it, the giant's bottom half with them, and the rest of the giant comes down)
     id: "giants",
     text: "As the game goes on, the pieces get bigger and fall faster, but the Shiny Pieces get better too.",
     board: [
-      "a.............",
-      "abb...........",
-      "accd..........",
-      "eccdd.........",
+      ".....a....b...",
+      "....caa..bbd..",
+      ".e..ccff.bddg.",
+      "hei.jc.ffklgg.",
+      "hhii.mnn.kkgop",
+      "h.qimmm.rks.oo",
+      "ttq.uvvrrss.wo",
+      ".tquu.vvrxs.wy",
+      "zzqu.AAAB.CCwy",
+      "Dzz.EEABBB.Cwy",
     ],
-    pieces: [{ id: "pyramid", to: { x: 5 }, then: ["drop"] }],
+    pieces: [{ id: "double_rainbow", to: { x: 0 }, then: ["drop"] }, { id: "tidal_wave", rot: 2, x: 10, then: ["drop"] }],
   },
   // The modes, a page each: what it is, over a board playing the way it does, and a button to go
   // and play it.

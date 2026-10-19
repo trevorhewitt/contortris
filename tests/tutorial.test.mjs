@@ -133,6 +133,8 @@ test("tutorial: left to itself, each page does what it shows, and goes round aga
     // (a powerup page: until the board is nearly gone)
     if (page.again) assert.ok(least <= 12, `${page.id}: the board nearly gone (${least} of ${full} left)`);
     if (page.id === "plan") assert.ok(log.rows - before.rows >= 4, `${page.id}: the two together take four rows away (${log.rows - before.rows})`);
+    // (how the game goes on: a giant, and then a Shiny Piece that does even more)
+    if (page.id === "giants") assert.ok(log.fired > before.fired && log.rows - before.rows >= 6, `${page.id}: the Shiny Piece after the giant (${log.rows - before.rows} rows)`);
     if (page.shelf) assert.equal(shelved - before.shelved, 1, `${page.id}: it used the shelf`);
   }
   assert.equal(log.over, 0, "never game over");
