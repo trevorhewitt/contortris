@@ -624,7 +624,7 @@ test("zen: a piece that fits just the same upside down comes the way it was draw
   assert.ok(all(calm.n) > 50, `${all(calm.n)} pieces`);
   assert.equal(all(calm.turned), 0, "zen: none upside down (or a square on its side)");
   // (by chance, half of them would come upside down, and three in four squares turned)
-  const turbo = count("turbo", 1, 6);
+  const turbo = count("turbo", 1, 12);
   const two = turbo.turned[2] / turbo.n[2], four = turbo.turned[4] / turbo.n[4];
   assert.ok(turbo.n[2] > 60 && two > 0.15 && two < 0.42, `turbo zen: ${turbo.turned[2]} of ${turbo.n[2]} upside down`);
   assert.ok(turbo.n[4] > 60 && four > 0.3 && four < 0.62, `turbo zen: ${turbo.turned[4]} of ${turbo.n[4]} squares turned`);
