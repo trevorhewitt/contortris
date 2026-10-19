@@ -273,7 +273,7 @@ export function seedRemains(state, pieces, { rng = Math.random, wrap = 0, newest
 // in every browser: no canvas filters), each size made once, when it's first needed; a blur
 // between two sizes is the two, one faded into the other. Red and blue apart: the size split into
 // its red, its green and its blue, each drawn where it goes.
-const drawn = new WeakMap(); // layer -> { px, levels (0 the full one), lowest, ch (n -> [r, g, b]), cells, version, key, x0, y0, x1, y1 (its canvas's cells), tight (just its own), bw, bh }
+const drawn = new WeakMap(); // layer -> { px, levels (0 the full one), lowest, up (n -> as it's drawn), ch (n -> [r, g, b]), cells, version, key, x0, y0, x1, y1 (its canvas's cells), tight (just its own), bw, bh }
 let smaller = null; // (the canvas the blurs are drawn onto, smaller than the board)
 let blurred = null; // (what's on it: { key, x0, y0, x1, y1 (the cells they're over), depth })
 let front = null; // (with scanlines, the canvas they're all drawn onto first)
@@ -401,21 +401,36 @@ function scanPattern(g, pitch) {
 // A layer's art at size n onto g, `alpha` strong; red and blue `shift` cells apart, if that's a
 // pixel or more.
 function put(g, r, layer, d, view, n, alpha, shift = 0) {
-  const img = level(r, layer, d, view, n), X = d.x0 * view.cell, Y = d.y0 * view.cell;
+  const img = drawable(r, layer, d, view, n), X = d.x0 * view.cell, Y = d.y0 * view.cell;
   const s = shift * view.cell / 2;
-  // (much smaller than it's drawn, four times, half its pixel apart each way, a quarter as strong
-  // each: smoother than once)
-  const half = n >= 2 ? d.bw / img.width / 2 : 0;
-  const taps = half ? TAPS : [[0, 0]];
-  g.globalAlpha = Math.min(1, alpha) / taps.length;
-  const art = shift * view.cell * view.scale < 1 ? [[img, 0]] : channels(d, n).map((ch, k) => [ch, (1 - k) * s]);
+  g.globalAlpha = Math.min(1, alpha);
+  const art = shift * view.cell * view.scale < 1 ? [[img, 0]] : channels(d, n, img).map((ch, k) => [ch, (1 - k) * s]);
   if (n === 0) {
     // (full size, just its cells, not the room round them)
     const [x0, y0, x1, y1] = d.tight, sx = (x0 - d.x0) * d.px, sy = (y0 - d.y0) * d.px, w = x1 - x0 + 1, h = y1 - y0 + 1;
     for (const [im, dx] of art) g.drawImage(im, sx, sy, w * d.px, h * d.px, x0 * view.cell + dx, y0 * view.cell, w * view.cell, h * view.cell);
     return;
   }
-  for (const [ox, oy] of taps) for (const [im, dx] of art) g.drawImage(im, X + dx + ox * half * 2, Y + oy * half * 2, d.bw, d.bh);
+  for (const [im, dx] of art) g.drawImage(im, X + dx, Y, d.bw, d.bh);
+}
+
+// A layer's art at size n as it's drawn: past the second halving, made twice the size again,
+// four times, half its pixel apart each way, a quarter as strong each, added (much smaller than
+// it's drawn, smoother so than once), the first time it's wanted.
+function drawable(r, layer, d, view, n) {
+  const img = level(r, layer, d, view, n);
+  if (n < 2) return img;
+  let up = d.up.get(n);
+  if (!up) {
+    up = canvas(null, img.width * 2, img.height * 2);
+    const g = up.getContext("2d");
+    g.imageSmoothingEnabled = true;
+    g.globalCompositeOperation = "lighter";
+    g.globalAlpha = 0.25;
+    for (const [ox, oy] of TAPS) g.drawImage(img, 2 * ox, 2 * oy, up.width, up.height);
+    d.up.set(n, up);
+  }
+  return up;
 }
 
 // A layer's art at full size (its cells, px pixels each, greyer), drawn again only where it has
@@ -444,8 +459,8 @@ function layerArt(r, layer, view, px) {
     const unit = 2 ** halvings, cv = document.createElement("canvas");
     cv.width = Math.ceil((x1 - x0 + 1) * px / unit) * unit;
     cv.height = Math.ceil((y1 - y0 + 1) * px / unit) * unit;
-    Object.assign(d, { px, levels: [cv], lowest: 0, ch: new Map(), cells: new Map(), x0, y0, x1, y1, bw: cv.width * view.cell / px, bh: cv.height * view.cell / px });
-  } else { d.levels.length = 1; d.ch = new Map(); }
+    Object.assign(d, { px, levels: [cv], lowest: 0, up: new Map(), ch: new Map(), cells: new Map(), x0, y0, x1, y1, bw: cv.width * view.cell / px, bh: cv.height * view.cell / px });
+  } else { d.levels.length = 1; d.up = new Map(); d.ch = new Map(); }
   const g = d.levels[0].getContext("2d"), added = new Path2D();
   let any = false;
   g.imageSmoothingEnabled = true; // (the art made smaller, if it is: smoothed)
@@ -494,11 +509,12 @@ function level(r, layer, d, view, n) {
   return d.levels[n];
 }
 
-// Size n split into its red, its green and its blue (made the first time they're wanted).
-function channels(d, n) {
+// Size n (src: as it's drawn) split into its red, its green and its blue (made the first time
+// they're wanted).
+function channels(d, n, src) {
   let ch = d.ch.get(n);
   if (ch) return ch;
-  const src = d.levels[n], w = src.width, h = src.height;
+  const w = src.width, h = src.height;
   if (n === 0) {
     // (full size, its pixels solid or not there at all: each the art multiplied by the colour,
     // then cut back to its shape; quicker than reading every pixel of something that big)
@@ -533,6 +549,7 @@ function letGo(d, n) {
   for (let j = d.lowest; j < upTo; j++) {
     if (d.levels[j]) d.levels[j].width = d.levels[j].height = 0;
     d.levels[j] = null;
+    d.up.delete(j);
     d.ch.delete(j);
   }
   d.lowest = Math.max(d.lowest, upTo);
@@ -597,7 +614,7 @@ function ready(r, layer, view) {
   for (const [blur, strength] of [[num(c.softBlur, 0.2), lk.soft], [num(c.glowBlur, 2.5), lk.glow]]) {
     if (strength < FAINT) continue;
     const lo = Math.floor(Math.log2(Math.max(1, blur * d.px)));
-    for (const n of [lo, lo + 1]) { level(r, layer, d, view, n); if (split) channels(d, n); }
+    for (const n of [lo, lo + 1]) { const img = drawable(r, layer, d, view, n); if (split) channels(d, n, img); }
   }
-  if (lk.sharp >= FAINT && split) channels(d, 0);
+  if (lk.sharp >= FAINT && split) channels(d, 0, drawable(r, layer, d, view, 0));
 }
