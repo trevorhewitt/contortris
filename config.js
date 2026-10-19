@@ -113,6 +113,10 @@ export const CONFIG = {
       tags: ["food", "space", "tiles", "landmark", "surreal", "weather", "bugs"],
       themes: { everything: 3, powerups: 1.5, giants: 1.2, few: 1.6, food: 1, space: 0.8, tiles: 0.8, landmark: 0.5, surreal: 0.6, weather: 0.5, bugs: 0.5 },
     },
+    // With calmer animations (the options), none of that: no board playing, no camera moving,
+    // just a mosaic, still, zoom times as close as filling the screen, and after holdMs a new one
+    // fading in over it, slowly (fadeMs)
+    calm: { holdMs: 9000, fadeMs: 3000, zoom: 1.6 },
     paletteNone: 0.6,
     paletteKinds: [0.02, 0.04, 0.06, 0.08, 0.1, 0.1, 0.1, 0.1, 0.09, 0.08, 0.07, 0.06, 0.05, 0.05],
   },

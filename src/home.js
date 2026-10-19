@@ -476,6 +476,50 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     },
   };
 
+  /* ---------- calmer animations: tiled boards, fading ---------- */
+
+  // With calmer animations (src/settings.js): no board playing behind it and no camera moving,
+  // just a mosaic, still and straight, and every so often a new one fading in over it, slowly
+  // (CONFIG.home.calm).
+  const calm = { cur: null, next: null, since: 0, fadeFrom: null };
+  function calmMosaic() {
+    const M = H().mosaic ?? {};
+    const m = buildMosaic(state.allShapes ?? state.shapes, state.allPowerups ?? state.powerups, { cols: M.cols ?? 56, rows: M.rows ?? 34 });
+    return { ...paintMosaic(m, M.cellPx ?? 20), ready: false, x: rand(0, m.cols), y: rand(0, m.rows) };
+  }
+  function drawCalm(now) {
+    const C = H().calm ?? {}, hold = C.holdMs ?? 9000, fade = C.fadeMs ?? 3000;
+    if (!calm.cur) {
+      calm.cur = calmMosaic();
+      while (!calm.cur.ready) calm.cur.ready = calm.cur.step(50);
+      calm.since = now;
+    }
+    // (the next one packed and painted a little each frame, well before it's due)
+    if (!calm.next && now - calm.since > hold / 2) calm.next = calmMosaic();
+    if (calm.next && !calm.next.ready) calm.next.ready = calm.next.step(3);
+    if (calm.next?.ready && calm.fadeFrom == null && now - calm.since >= hold) calm.fadeFrom = now;
+    const u = calm.fadeFrom == null ? 0 : Math.min(1, (now - calm.fadeFrom) / fade);
+    drawTiles(calm.cur, 1, C.zoom ?? 1.6, true);
+    if (u > 0) drawTiles(calm.next, u * u * (3 - 2 * u), C.zoom ?? 1.6, false);
+    if (u >= 1) { calm.cur = calm.next; calm.next = null; calm.fadeFrom = null; calm.since = now; }
+  }
+  // (a mosaic filling the screen, repeated in every direction, at `alpha`; `clear`: on black)
+  function drawTiles(t, alpha, z, clear) {
+    const m = t.mosaic, pc = t.canvas.width / m.cols, S = coverScale(view.w, view.h, 0, m.cols, m.rows) * z;
+    bgx.setTransform(1, 0, 0, 1, 0, 0);
+    if (clear) { bgx.fillStyle = "#000"; bgx.fillRect(0, 0, bg.width, bg.height); }
+    bgx.globalAlpha = alpha;
+    bgx.imageSmoothingEnabled = false;
+    bgx.translate(bg.width / 2, bg.height / 2);
+    const k = S * view.dpr / pc;
+    bgx.scale(k, k);
+    bgx.translate(-t.x * pc, -t.y * pc);
+    const hw = view.w / (2 * S) + 1, hh = view.h / (2 * S) + 1;
+    bgx.fillStyle = t.pattern ??= bgx.createPattern(t.canvas, "repeat");
+    bgx.fillRect((t.x - hw) * pc, (t.y - hh) * pc, 2 * hw * pc, 2 * hh * pc);
+    bgx.globalAlpha = 1;
+  }
+
   /* ---------- the logo ---------- */
 
   // A different move every few seconds, passed from letter to letter along the word: a spin on
@@ -926,8 +970,8 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       for (let i = 0; warmLeft > 0 && i < 8; i++) { updateGame(state, 50); warmLeft -= 50; }
       // (and the other board's, a little at a time, once the first has had its own)
       if (warmLeft <= 0 && other && otherWarm > 0) for (let i = 0; otherWarm > 0 && i < 2; i++) { updateGame(other, 50); otherWarm -= 50; }
-      camera.step(dt, now);
-      camera.draw();
+      if (reduced) drawCalm(now); // (calmer animations: tiled boards, fading)
+      else { camera.step(dt, now); camera.draw(); }
       stepFx(dt, now);
       stepLogo(now);
       if (phase === "home" && now >= idleAt && !document.hidden && idleFrom()) goIdle();
