@@ -945,9 +945,9 @@ export function createRenderer(boardCanvas, nextCanvas) {
     if (phantom) bctx.globalAlpha = 0.7;
     drawBlockList(bctx, list);
     bctx.globalAlpha = 1;
-    // on its last chance (about to top out): it flashes red
+    // on its last chance (about to top out): it flashes red, until it's on its way somewhere safe
     const lc = piece.lastChance;
-    if (lc && lc.elapsedMs < lc.durationMs) {
+    if (lc && !lc.safe && lc.elapsedMs < lc.durationMs) {
       const a = 0.25 + 0.3 * (0.5 + 0.5 * Math.sin(lc.elapsedMs * 0.022));
       bctx.fillStyle = `rgba(255,40,40,${a.toFixed(3)})`;
       for (const b of list) bctx.fillRect(b.px, b.py, cell, cell);
@@ -957,7 +957,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   // Danger: a piece on its last chance. A soft red glow along the top of the board.
   function drawDanger(state) {
     const lc = state.active?.lastChance;
-    if (!lc || lc.elapsedMs >= lc.durationMs) return;
+    if (!lc || lc.safe || lc.elapsedMs >= lc.durationMs) return;
     const pulse = 0.5 + 0.5 * Math.sin(lc.elapsedMs * 0.012);
     const g = bctx.createLinearGradient(0, 0, 0, cell * 3);
     g.addColorStop(0, `rgba(255,40,40,${(0.2 + 0.14 * pulse).toFixed(3)})`);

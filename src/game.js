@@ -366,11 +366,17 @@ function currentLockDelayMs(state) {
   return lc && topsOut(state) ? Math.max(delay, lc.durationMs - lc.elapsedMs) : delay;
 }
 
-// Would the falling piece, locked where it is now, stick out above the top (game over)?
-function topsOut(state) {
-  const a = state.active, mat = getActiveMatrix(state);
-  for (let y = 0; y < mat.length; y++) if (a.y + y < 0 && mat[y].some(Boolean)) return true;
+// Would the falling piece, locked where it is now (or `y`), stick out above the top (game over)?
+function topsOut(state, y = state.active.y) {
+  const mat = getActiveMatrix(state);
+  for (let j = 0; j < mat.length; j++) if (y + j < 0 && mat[j].some(Boolean)) return true;
   return false;
+}
+
+// ...or where it would land, dropped straight down from here? (Not: it's safe now, on its way down
+// to somewhere with room. Its last chance stops flashing.)
+function landsOverTop(state) {
+  return topsOut(state, Math.max(state.active.y, getGhostDropY(state) ?? state.active.y));
 }
 
 // About to lock sticking out above the top? Once per piece, it gets another moment
@@ -2007,7 +2013,11 @@ export function updateGame(state, dt) {
   // (the tutorial: its autopilot shows the moves, and when a page starts or goes round again,
   // its first piece comes now)
   if (state.tutorial && tutorialTick(state, dt)) spawnPiece(state);
-  if (state.active?.lastChance) state.active.lastChance.elapsedMs += dt;
+  if (state.active?.lastChance) {
+    const lc = state.active.lastChance;
+    lc.elapsedMs += dt;
+    lc.safe = !landsOverTop(state);
+  }
 
   // (a dramatic pause: everything waits but the sparkles)
   if (state.hold) {
