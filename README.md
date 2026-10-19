@@ -43,8 +43,8 @@ clears.
   the browser.
 - **Tutorial**: the controls; the three classes of Shiny Piece side by side, each with its little
   animation, and then a page for each (more of the class until the board is nearly gone); where
-  to put them; the bay; and last, a page for each mode, with a board playing the way it does
-  behind it and a button to go and play it.
+  to put them; the bay; and last, the modes: a page saying there are different ones, then a page
+  for each, with a board playing the way it does behind it and a button to go and play it.
 
 ## Where things are
 

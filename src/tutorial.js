@@ -16,8 +16,8 @@
 // each doing its thing, and then a page for each class that's switched on, a clear-cut example
 // on a board made to show it off and then more of the same class until the board is nearly
 // gone; then where to put which (a board with a place for each), the bay, how the game goes on,
-// and last of all a page for each mode, what it is, with a board playing the way it does behind
-// it and a button to go and play it.
+// and last of all the modes: a page saying there are different ones to play, and then a page for
+// each, what it is, with a board playing the way it does behind it and a button to go and play it.
 //
 // game.js asks it for each piece (tutorialNext), lets it steer every frame (tutorialTick) and
 // tells it when the board has filled up (tutorialTopOut).
@@ -292,12 +292,22 @@ export const PAGES = [
     ],
     pieces: [{ id: "double_rainbow", to: { x: 0 }, then: ["drop"] }, { id: "tidal_wave", rot: 2, x: 10, then: ["drop"] }],
   },
-  // The modes, a page each: what it is, over a board playing the way it does, and a button to go
-  // and play it.
+  // Then the modes: a page saying there are different ones to play, and then a page for each, what
+  // it is, over a board playing the way it does, and a button to go and play it.
+  {
+    id: "modes", still: true,
+    text: "That's everything! There are different modes you can play.",
+    board: [
+      ".aa........b..",
+      "cdaa..e..ffb.g",
+      "cchii.ee.ffbgg",
+      "jch.iiekkl.bgm",
+      "jjhnnn.okkpppm",
+    ],
+  },
   {
     id: "classic", mode: "normal", title: "Classic",
-    text: "That's everything! Classic is the full game.",
-    more: "It starts easy, then the pieces get bigger, faster and stranger, and Shiny Pieces turn up to help.",
+    text: "The full game. Starts easy. Gets hard.",
     free: { levels: [1, 2], shiny: 0.16 },
     dropMs: 380, // (gently: time for the autopilot, or the player, to get each one where it goes)
     board: [
@@ -308,8 +318,8 @@ export const PAGES = [
   },
   {
     id: "godmode", mode: "god", title: "God mode",
-    text: "Every Shiny Piece and every giant, right from the start.",
-    more: "Total chaos.",
+    text: "Instant endgame.",
+    more: "Start the game with every huge piece and every Shiny Piece already unlocked.",
     free: { levels: [3, 4], big: true, shiny: 0.45 },
     dropMs: 300,
     board: [
@@ -319,9 +329,19 @@ export const PAGES = [
     ],
   },
   {
+    id: "extreme", mode: "extreme", title: "Extreme",
+    text: "No Shiny Pieces. No mercy.",
+    free: { levels: [1, 2, 3] },
+    dropMs: 250,
+    board: [
+      "a...bb....cc..",
+      "aad.beef.gccc.",
+      "hhddiief.ggjj.",
+    ],
+  },
+  {
     id: "zen", mode: "zen", title: "Zen",
-    text: "Slow and easy: it plays itself.",
-    more: "Take a piece over whenever you like, and leave it be again.",
+    text: "Endless play.",
     free: { levels: [1], shiny: 0.08 },
     dropMs: 700, pace: 1.5,
     board: [
@@ -331,25 +351,12 @@ export const PAGES = [
   },
   {
     id: "turbo", mode: "turbo", title: "Turbo zen",
-    text: "It plays itself, fast, and never stops.",
-    more: "Jump in any time.",
+    text: "If you just want to, like, zone out.",
     free: { levels: [1, 2], shiny: 0.12 },
     dropMs: 110, pace: 0.25,
     board: [
       "a..bb..cc..dd.",
       "aeebff.gchhdii",
-    ],
-  },
-  {
-    id: "extreme", mode: "extreme", title: "Extreme",
-    text: "No Shiny Pieces. No help.",
-    more: "Just you and the pieces.",
-    free: { levels: [1, 2, 3] },
-    dropMs: 250,
-    board: [
-      "a...bb....cc..",
-      "aad.beef.gccc.",
-      "hhddiief.ggjj.",
     ],
   },
 ];

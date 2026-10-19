@@ -67,12 +67,12 @@ test("tutorial: every page is set up right, and each powerup class that's on has
   assert.deepEqual(shiny.classes.map(c => c.cls).sort(), ["destroyer", "expander", "gravity"].filter(c => on.has(c)).sort());
   for (const c of shiny.classes) assert.equal(all.get(c.id)?.powerup?.cls, c.cls, `${c.id} is a ${c.cls}`);
   assert.ok(pages.indexOf("destroyer") > 4, "and then each class's page");
-  // after the classes, where to put them and the shelf, how it goes on, and then a page for each
-  // mode there is to play, each with a title, in the order they're on the home screen
-  const modes = [["classic", "normal"], ["godmode", "god"], ["zen", "zen"], ["turbo", "turbo"], ["extreme", "extreme"]]
+  // after the classes, where to put them and the shelf, how it goes on, and then a page saying
+  // there are modes to play, and a page for each mode there is, each with a title
+  const modes = [["classic", "normal"], ["godmode", "god"], ["extreme", "extreme"], ["zen", "zen"], ["turbo", "turbo"]]
     .filter(([, m]) => CONFIG.modes[m] && !CONFIG.modes[m].hidden);
   assert.ok(modes.length >= 4, "the modes are there");
-  assert.deepEqual(pages.slice(-(modes.length + 3)), ["plan", "shelf", "giants", ...modes.map(([id]) => id)]);
+  assert.deepEqual(pages.slice(-(modes.length + 4)), ["plan", "shelf", "giants", "modes", ...modes.map(([id]) => id)]);
   for (const [id, m] of modes) {
     const p = t.pages.find(q => q.id === id);
     assert.equal(p.mode, m, `${id}: plays ${m}`);
