@@ -12576,7 +12576,7 @@ export const SHAPES = [
     powerup: {
         "type": "gravity",
         "tier": 1,
-        "intro": "Only the unlucky blocks fall: every other cell, in a chequerboard across the 6x6 patch under it, drops down, and so does everything straight under the cat. Seven years of this.",
+        "intro": "Bad luck for everything under it: every block in the 6-wide patch under it, seven rows deep (a row for each year), drops into the gaps, and so does everything straight under the cat.",
         "area": {
           "origin": [
             2,
@@ -12584,12 +12584,13 @@ export const SHAPES = [
           ],
           "grid": [
             "......",
-            "#.#.#.",
-            ".#.#.#",
-            "#.#.#.",
-            ".#.#.#",
-            "#.#.#.",
-            ".#.#.#"
+            "######",
+            "######",
+            "######",
+            "######",
+            "######",
+            "######",
+            "######"
           ]
         },
         "help": 1,
@@ -32888,7 +32889,7 @@ export const SHAPES = [
         "type": "gravity",
         "direction": "down",
         "tier": 1,
-        "intro": "Goes down like a lead balloon: blocks in a V right under it (two diagonal strokes, 9 cells wide at the top, meeting 5 rows down), and everything straight under it, drop into the gaps. Nobody laughed at the party either.",
+        "intro": "Goes down like a lead balloon: everything in the funnel under it (9 wide right under it, narrowing to the three columns straight under it, which go all the way down) drops into the gaps. Nobody laughed at the party either.",
         "area": {
           "origin": [
             4,
@@ -32896,12 +32897,10 @@ export const SHAPES = [
           ],
           "grid": [
             ".........",
-            ".........",
-            "##.....##",
-            ".##...##.",
-            "..##.##..",
-            "...###...",
-            "....#...."
+            "#########",
+            ".#######.",
+            "..#####..",
+            "...vvv..."
           ]
         },
         "help": 1,
