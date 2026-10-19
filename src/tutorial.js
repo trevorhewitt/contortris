@@ -821,9 +821,9 @@ function freePiece(state, t) {
   if (!pieces.length) return null;
   // (one ahead, so the autopilot can play this one with the next in mind)
   const draw = () => {
-    // (a Shiny Piece now and then; or, taking turns, after every piece)
+    // (a Shiny Piece now and then; or, taking turns, after every piece, each of them in turn)
     if (chance && (alternate ? !t.freeShiny : state.rng() < chance)) {
-      const s = shiny[Math.floor(state.rng() * shiny.length)];
+      const s = alternate ? shiny[(t.freeShinyN = (t.freeShinyN ?? -1) + 1) % shiny.length] : shiny[Math.floor(state.rng() * shiny.length)];
       t.freeShiny = true;
       return { id: s.id, shape: s, to: "power", then: ["drop"] };
     }
