@@ -5052,7 +5052,7 @@ export const SHAPES = [
   },
   {
     id: "unread_dictionary",
-    name: "the Oxford English Dictionary that no one's read",
+    name: "the Oxford English Dictionary",
     grid: [
         ".XXXX",
         "XXXX.",
