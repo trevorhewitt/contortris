@@ -54,7 +54,8 @@
  *   type: "destroyer" | "gravity" | "expander" | "acid" | "blast" | "goo" | "phantom" | "combo",
  *     destroyer: destroys every block in its area (its own blocks are always in it, however
  *                it's turned, whatever the area as drawn: it goes too)
- *     gravity:   blocks in its area fall (or slide) until they hit something
+ *     gravity:   blocks in its area fall (or slide) until they hit something (its own blocks
+ *                stay, as an expander's do, wherever that leaves them)
  *     expander:  fills every empty cell in its area with `fill`
  *     acid:      dissolves every block it touches (its area is worked out from its shape:
  *                every cell within `reach` steps of one of its blocks, plus any `area`, and
@@ -112,7 +113,8 @@
  *                             cover: true (the piece's own cells are part of it: repainted, or
  *                             filled in where it vanished), join: true (no edge between the piece
  *                             and its fill). Every setting is described at the top of src/fillart.js.
- *   consume: true,            optional: vanish when fired (default: yes, except expanders)
+ *   consume: true,            optional: vanish when fired (default: yes, except expanders and
+ *                             gravity, whose blocks stay; a combo, if one of its parts would)
  *   collapse: false,          destroyer / acid: wiped wall-to-wall rows close up like a line clear
  *   scatter: { radius: 6, density: 0.6 },  destroyer only: instead of `area`, a random spray of
  *                             cells around the piece (thinning out from the centre, in streaks
@@ -33987,7 +33989,7 @@ export const SHAPES = [
     powerup: {
         "type": "combo",
         "tier": 2,
-        "intro": "Lands, and everything in its two columns and two either side drops down into the gaps. Then it goes off to rearrange someone else's furniture.",
+        "intro": "Lands, and everything in its two columns and two either side drops down into the gaps. Then it moves in.",
         "parts": [
           {
             "type": "phantom"

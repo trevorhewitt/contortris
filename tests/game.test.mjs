@@ -313,7 +313,7 @@ test("only big pieces shake the board: not two kangaroos, nor anything marked no
 });
 
 test("a powerup that vanishes when it fires still clears the rows it completed", () => {
-  for (const id of ["infectious_sand", "small_black_hole"]) {
+  for (const id of ["plunger", "small_black_hole"]) {
     const { state } = newGame("normal");
     const p = byId(id), mat = p.rotations[0], H = mat.length, x0 = 4;
     assert.ok(p.powerup.consume, `${id} vanishes`);
@@ -324,6 +324,27 @@ test("a powerup that vanishes when it fires still clears the rows it completed",
     settle(state, 2500);
     assert.equal(state.lines, 1, `${id}: the row cleared`);
     assert.ok(state.board.every(row => row.every(c => !c)), `${id}: nothing left behind`);
+  }
+});
+
+test("a Gravitizer stays: its blocks are on the board after it goes off, with its art, wherever it left them", () => {
+  const gravitizers = powerups.filter(p => p.powerup.type === "gravity" && (p.frequency ?? 1) > 0);
+  assert.ok(gravitizers.length >= 10, `${gravitizers.length} of them`);
+  for (const p of gravitizers) {
+    assert.equal(p.powerup.consume, false, `${p.id} stays`);
+    const { state } = newGame("normal");
+    // a stack full of gaps (the left column empty all the way down, so no row clears)
+    for (let y = ROWS - 6; y < ROWS; y++) for (let x = 1; x < COLS; x++) if ((x + y) % 3) state.board[y][x] = filler();
+    const mat = p.rotations[0], n = mat.flat().filter(Boolean).length, had = state.board.flat().filter(Boolean).length;
+    placeActive(state, p.id, Math.max(1, Math.floor((COLS - mat[0].length) / 2)), 0);
+    hardDropAndLock(state);
+    settle(state, 2500);
+    assert.equal(state.effect, null, `${p.id}: it went off`);
+    const [pid, inst] = [...state.instances].find(([, i]) => i.shape?.id === p.id) ?? [];
+    assert.ok(inst, `${p.id}: still on the board`);
+    assert.equal(inst.cells.length, n, `${p.id}: all ${n} of its blocks`);
+    for (const { x, y } of inst.cells) assert.ok(state.board[y][x]?.pid === pid && state.board[y][x].paint, `${p.id}: its block at ${x},${y}, with its art`);
+    assert.equal(state.board.flat().filter(Boolean).length, had + n, `${p.id}: nothing gone`);
   }
 });
 

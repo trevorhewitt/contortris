@@ -29,8 +29,10 @@ function zen(seed, mode = "zen") {
     if (t === "zenMovement") log.movements.push({ name: d.name, caption: d.caption, drops: state.drops, lines: state.lines, height: height(state) });
     if (t === "zenRescue") log.rescues++;
     if (t === "gameOver") log.over = true;
-    // (the stack: a powerup that vanishes when it fires sits on top only for a moment)
-    if (t === "lock" && !d.shape.powerup?.consume) log.maxHeight = Math.max(log.maxHeight, height(state));
+    // (the stack: a powerup that vanishes when it fires sits on top only for a moment; a
+    // Gravitizerz, which stays, as it is once it has gone off and things have come down)
+    if (t === "lock" && !d.shape.powerup?.consume && d.shape.powerup?.type !== "gravity") log.maxHeight = Math.max(log.maxHeight, height(state));
+    if (t === "powerupFire" && d.type === "gravity") log.maxHeight = Math.max(log.maxHeight, height(state));
     // (rows a powerup filled in, apart: a big filler on a gappy stack can bring a lot down at once)
     if (t === "rowsDestroyed" && d.source === "clear") { (lastLock?.powerup ? log.helped : log.clears).push(d.count); log.callouts.push(...state.fx.callouts.map(c => c.text)); }
   });

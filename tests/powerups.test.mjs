@@ -63,13 +63,16 @@ test("every bundled powerup normalises with a non-empty area", () => {
   }
 });
 
-test("default consume: destroyer/gravity vanish, expander stays", () => {
+test("default consume: destroyer vanishes, gravity and expander stay, a combo goes if a part would", () => {
   const rot = [[[true]]];
   assert.equal(normalisePowerup({ type: "destroyer", area: { grid: ["#"] } }, rot).consume, true);
-  assert.equal(normalisePowerup({ type: "gravity", area: { grid: ["#"] } }, rot).consume, true);
+  assert.equal(normalisePowerup({ type: "gravity", area: { grid: ["#"] } }, rot).consume, false);
   assert.equal(normalisePowerup({ type: "expander", area: { grid: ["#"] } }, rot).consume, false);
   assert.equal(normalisePowerup({ type: "expander", consume: true, area: { grid: ["#"] } }, rot).consume, true);
   assert.equal(normalisePowerup({ type: "nope", area: { grid: ["#"] } }, rot), null);
+  const combo = (...types) => normalisePowerup({ type: "combo", parts: types.map(type => ({ type, area: { grid: ["#"] } })) }, rot).consume;
+  assert.equal(combo("destroyer", "gravity"), true, "its destroying part takes it too");
+  assert.equal(combo("gravity", "expander"), false, "neither part goes");
 });
 
 test("resolveArea clips to the board and reports full rows", () => {

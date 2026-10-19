@@ -44,8 +44,10 @@ export const CLASS_INFO = {
 };
 
 // Which consume by default (vanish when they fire). (A Destroyerz is always in its own area,
-// withinOwnArea: it goes with everything else there.)
-const CONSUMES = { destroyer: true, gravity: true, expander: false, acid: true, blast: true, goo: true, phantom: false, combo: true };
+// withinOwnArea: it goes with everything else there. A Gravitizerz stays, as an Expanderz does:
+// its blocks are left wherever its own effect leaves them. A combo goes if one of its parts would,
+// unless it has a phantom part.)
+const CONSUMES = { destroyer: true, gravity: false, expander: false, acid: true, blast: true, goo: true, phantom: false };
 
 // How helpful a powerup is (1 = barely, 5 = a lifesaver) when the data doesn't say.
 const DEFAULT_HELP_BY_TIER = { 1: 2, 2: 3, 3: 4.5 };
@@ -258,7 +260,7 @@ export function normalisePowerup(raw, rotations, trim, id = "?", inCombo = false
       : DEFAULT_EFFECT_TEXT[type],
     intro: typeof raw.intro === "string" ? raw.intro.trim() : "",
     consume: (typeof raw.consume === "boolean") ? raw.consume
-      : (type === "combo" && parts?.some(p => p.type === "phantom")) ? false
+      : type === "combo" ? !parts.some(p => p.type === "phantom") && parts.some(p => CONSUMES[p.type])
       : CONSUMES[type],
     collapse: (type === "destroyer" || type === "acid") && raw.collapse === true,
     reach: Math.max(1, Math.round(Number(raw.reach) || 1)),

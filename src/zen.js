@@ -220,9 +220,11 @@ export function zenNext(state) {
   } else if (isCalm(state) && !z.queue[0].shape.powerup && needsHelp(state, occ)) {
     // zen: built right up (or left to itself, high or full of gaps), a little help now and then:
     // never one that brings much of the board down at once (CONFIG.zen.calm.help: rows, blocks);
-    // with a lot of gaps, one to close them
+    // with a lot of gaps, one to close them (one that stays, a Gravitizerz, only with room for it
+    // on the stack, as for any piece)
     const H = CONFIG.zen.calm.help;
-    const help = calmPowerup(state, gaps(state) > 6 ? closers(state) : powerupPool(state), CONFIG.zen.powerupChoices, H.rows, H.blocks);
+    const pool = gaps(state) > 6 ? closers(state).filter(p => p.powerup.consume || fitsUnder(state, p)) : powerupPool(state);
+    const help = calmPowerup(state, pool, CONFIG.zen.powerupChoices, H.rows, H.blocks);
     z.helpedAt = state.drops;
     if (help) {
       z.queue.unshift({ ...help, weights: WEIGHTS.clear, help: true });

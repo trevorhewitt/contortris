@@ -1078,7 +1078,13 @@
     phantom: "falls through blocks into the deepest gap",
     combo: "does several things at once",
   };
-  const PU_DEFAULT_CONSUME = { destroyer: true, gravity: true, expander: false, acid: true, blast: true, goo: true, phantom: false, combo: true };
+  const PU_DEFAULT_CONSUME = { destroyer: true, gravity: false, expander: false, acid: true, blast: true, goo: true, phantom: false };
+  // (a combo goes if one of its parts would, as in the game; not a phantom part, which the game
+  // takes out of combos)
+  function puDefaultConsume(type, parts){
+    if (type !== "combo") return PU_DEFAULT_CONSUME[type] ?? true;
+    return (parts || []).some(q => q && q.type !== "phantom" && PU_DEFAULT_CONSUME[q.type]);
+  }
   // What each type does (shown under the type select)
   const PU_TYPE_DOC = {
     destroyer: "Destroys every block in its area. Its own blocks are always in it (the game adds them), so it goes too.",
@@ -3187,7 +3193,7 @@
   // Powerup settings UI
   // ============================================================
   function puConsumeEffective(){
-    const def = PU_DEFAULT_CONSUME[state.pu.type] ?? true;
+    const def = puDefaultConsume(state.pu.type, state.pu.parts);
     return state.pu.consume === null ? def : state.pu.consume;
   }
   function syncPowerupUI(){
@@ -3429,7 +3435,7 @@
   el.puTier.addEventListener("change", () => { state.pu.tier = clamp(parseInt(el.puTier.value, 10) || 1, 1, 3); setDirty(true); scheduleRender(); });
   el.puDescription.addEventListener("input", () => { state.pu.description = el.puDescription.value; setDirty(true); scheduleRender(); });
   el.puConsume.addEventListener("change", () => {
-    const def = PU_DEFAULT_CONSUME[state.pu.type] ?? true;
+    const def = puDefaultConsume(state.pu.type, state.pu.parts);
     state.pu.consume = el.puConsume.checked === def ? null : el.puConsume.checked;
     setDirty(true); syncPowerupUI(); scheduleRender();
   });
@@ -4492,7 +4498,7 @@
     // (its parts in firing order, fill last; one part if it's not a combo)
     const parts = m.parts ? m.parts.slice().sort((a, b) => COMBO_PART_TYPES.indexOf(a.type) - COMBO_PART_TYPES.indexOf(b.type))
       : [{ type, cells: m.area, touch: m.touch, fill: pu.fill }];
-    const consumed = pu.consume == null ? (PU_DEFAULT_CONSUME[type] ?? true) : pu.consume === true;
+    const consumed = pu.consume == null ? puDefaultConsume(type, pu.parts) : pu.consume === true;
     const art = new Map(); // cell -> paint
     let joined = false;
     for (const part of parts){
@@ -4806,7 +4812,7 @@
         pu.fill = exportFill();
         if (Array.isArray(pu.fill) && pu.fill.some(r => r.some(c => !c))) warnings.push("Fill art has transparent pixels.");
       }
-      const def = PU_DEFAULT_CONSUME[p.type] ?? true;
+      const def = puDefaultConsume(p.type, p.parts);
       if (p.consume !== null && p.consume !== def) pu.consume = p.consume;
       else if (origPu && origPu.consume === def) pu.consume = def; // a default the file spelled out stays
       if (PU_COLLAPSE_TYPES.includes(p.type) && p.collapse) pu.collapse = true;
@@ -5075,7 +5081,7 @@
       };
       adoptPuExtras();
       if (typeof pu.consume === "boolean"){
-        const def = PU_DEFAULT_CONSUME[state.pu.type] ?? true;
+        const def = puDefaultConsume(state.pu.type, state.pu.parts);
         state.pu.consume = pu.consume === def ? null : pu.consume;
       }
       const a = combo ? undefined : pu.area;

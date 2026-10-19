@@ -98,8 +98,10 @@ test("tutorial: the Shiny Pieces' page just stays as it is", () => {
 test("tutorial: left to itself, each page does what it shows, and goes round again", () => {
   const { state, log, t } = tutorial(2);
   let shelved = 0;
-  on(state, (type) => { if (type === "shelf") shelved++; });
-  const blocks = () => state.board.flat().filter(Boolean).length;
+  // (what was on the board: not the pieces that came down, a Gravitizerz staying as an Expanderz does)
+  const landed = new Set();
+  on(state, (type, d) => { if (type === "shelf") shelved++; if (type === "lock") landed.add(d.pid); });
+  const blocks = () => state.board.flat().filter(c => c && !landed.has(c.pid)).length;
   for (let i = 0; i < t.pages.length; i++) {
     const page = t.pages[i];
     if (page.free || page.still) continue;
