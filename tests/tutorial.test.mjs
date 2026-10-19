@@ -8,6 +8,7 @@ import { SHAPES } from "../shapes/main_shapes.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, updateGame, on, isPowerupEnabled } from "../src/game.js";
+import { computeEffect } from "../src/powerups.js";
 import { PAGES, tutorialPages, tutorialText, tutorialGoTo, tutorialTakeOver } from "../src/tutorial.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
@@ -132,6 +133,35 @@ test("tutorial: left to itself, each page does what it shows, and goes round aga
   }
   assert.equal(log.over, 0, "never game over");
   assert.equal(state.gameOver, false);
+});
+
+test("tutorial: every part of each combo on the combos' page does something you can see", () => {
+  const { state, t } = tutorial(8);
+  tutorialGoTo(state, t.pages.findIndex(p => p.id === "combo"));
+  updateGame(state, 16);
+  const resets = t.resets, did = [];
+  let seen = null;
+  run(state, 90000, () => {
+    const e = state.effect;
+    if (e && e !== seen && e.phase === "charge") {
+      seen = e;
+      // (its parts one after another on a copy of the board, as the combo has them, its own
+      // blocks gone first: src/powerups.js computeEffect)
+      const board = state.board.map(r => r.slice());
+      for (const { x, y } of e.placed) if (board[y]?.[x]?.pid === e.pid) board[y][x] = null;
+      e.pu.parts.forEach((part, i) => {
+        if (part.type === "phantom") return; // (nothing to see but where it lands)
+        const fx = computeEffect(board, { ...part, consume: false }, {
+          area: e.area.parts[i], placed: e.placed, pid: e.pid, centre: e.centre, cols, rows, rng: makeRng(1),
+          makeFill: () => ({ paint: "#888", style: {} }), at: { rot: e.rotIdx, x: e.x, y: e.y },
+        });
+        did.push([`${e.shape.id}'s ${part.type}`, fx.destroyed.length + fx.moves.length + fx.filled.length]);
+      });
+    }
+    return t.resets !== resets;
+  });
+  assert.ok(did.length >= 4, `two combos at least (${did.map(([w]) => w).join(", ")})`);
+  for (const [what, n] of did) assert.ok(n >= 3, `${what}: ${n} blocks`);
 });
 
 test("tutorial: the player takes over, and left alone the autopilot carries on", () => {

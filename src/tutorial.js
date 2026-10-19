@@ -178,21 +178,27 @@ export const PAGES = [
     again: ["packing_peanuts", "spilled_paint", "storm_cloud", "microwave_popcorn"],
   },
   {
-    // (junk scattered over a pile full of gaps: it burns away its row and fills the gaps under
-    // it, and four rows go; the junk left is the next one's)
+    // (a row of junk halfway up a pile full of gaps: it burns that row away and fills the gaps
+    // under it, and four rows go; then a pile driver on what's left on the right burns away the
+    // row under it and drops what's over the holes into them. Every part of each one does
+    // something you can see)
     id: "combo", cls: "combo",
     text: "{name} do two things at once, each in its own colours.",
     more: "This one burns away its row and fills in the gaps below.",
     board: [
-      "..a.....F.b.c.",
-      "Gd.e....H.ff.g",
-      "hh.i.....jk.ll",
-      "mnnp..o..qqrst",
-      "mupp.v..wxyrst",
-      "zuAA.B.C.xDDEE",
+      ".ab......ccccd",
+      ".aa........ef.",
+      "gah......iiee.",
+      "gghhj...kiielm",
+      "gnho.p..kkqllm",
+      "rnoo.pp.skqtlm",
+      "rruo.p.v.wqttm",
+      "ruuxy.z..wqtAA",
+      "BBux.CzD..EEAA",
+      "BBFFCC.DGG..HH",
     ],
     pieces: [{ id: "jelly_mould", to: { x: 5 }, then: ["drop"] }],
-    again: ["wizard_all_trades", "mineshaft", "jelly_mould"],
+    again: ["pile_driver", "jelly_mould"],
   },
   {
     // (overhangs on the left, everything in them just enough to fill the bottom four rows once
