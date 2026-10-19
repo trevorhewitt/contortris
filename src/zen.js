@@ -1,7 +1,8 @@
 // ============================================================
 // ZEN MODE — the game plays itself, and never ends (no DOM)
 // ============================================================
-// Zen is for playing, slowly. Each piece comes down at an easy pace, already turned and over
+// Zen is for playing: a bit like a game of Classic that can't be lost. Each piece comes down
+// at an easy pace (a little quicker with every piece, but never fast), already turned and over
 // the place the computer would put it; it's in the computer's hands until the player touches
 // it, and then it's theirs (the game never moves it back) until the next piece. Left alone a
 // while, it carries on by itself, a little quicker. It plays like a person would, and not too
@@ -12,10 +13,12 @@
 // often do better. Each piece is a new shape, not the shape of any of the last few. And it
 // doesn't push: where the player has just moved a piece away from, it doesn't aim again for a
 // piece or two, and when it does, it's with another shape. Now and then a little run of
-// something (a few bees, a red patch) or a powerup, never one that takes much of the board; and
-// a little help, left to itself to keep it low and tidy, but with the player playing only once
-// they've built it right up near the top: they can fill most of the board if they like
-// (CONFIG.zen.calm).
+// something (a few bees, a red patch). Its powerups come about as often as at the start of a
+// game of Classic, but never one that takes much of the board (a gentler one comes in its
+// place), and with the player playing, each comes aimed where it takes hardly anything, for
+// them to put where they like; and a little help, left to itself to keep it low and tidy, but
+// with the player playing only once they've built it right up near the top: they can fill most
+// of the board if they like (CONFIG.zen.calm).
 //
 // Turbo zen is for watching, and for stepping into. Each piece arrives already turned and over
 // the place it's going, and falls quickly straight down into it: the computer never moves or
@@ -43,7 +46,7 @@
 
 import { CONFIG } from "../config.js";
 import { zenCaption, timeScaleOf, settleFlock } from "./game.js";
-import { selectPiece, destroyerCells, pickFitting, inGame } from "./selection.js";
+import { selectPiece, duePowerup, destroyerCells, pickFitting, inGame } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
 import { expandGroup, roomNeeded, groupUnderWay, lastVersion, noteVersion, groupPlayable, playableRun, groupMembers, versionShare } from "./level6.js";
@@ -91,7 +94,7 @@ const PLANNED = new Set(["column", "beds", "crack", "fall", "well", "mess", "sta
 const BLENDS = new Set(["build", "chorus", "mono", "small", "big", "waves", "expanders", "blackholes", "oops"]);
 
 const zenSet = (state) => (CONFIG.modes[state.mode]?.zenMovements === "turbo" ? "turbo" : "zen");
-// (zen itself, slow and easy, as opposed to turbo zen)
+// (zen itself, for playing, as opposed to turbo zen)
 const isCalm = (state) => !!CONFIG.modes[state.mode]?.calm;
 // Left alone long enough, zen carries on by itself, a little quicker.
 const dozing = (state) => { const z = state.zen; return isCalm(state) && z.clock - z.inputClock >= CONFIG.zen.calm.idleMs; };
@@ -238,9 +241,9 @@ export function zenNext(state) {
     item = { ...item, shape: pick(state, smallPool(state)), label: null };
   }
   // (and in zen, one of its own powerups picked a piece ago that would take too much of the
-  // board as it is now: something small instead)
+  // board as it is now: a gentler one, or something small instead)
   if (isCalm(state) && item.shape.powerup && !item.emergency && !item.help && tooBig(state, item.shape)) {
-    item = { ...item, shape: pick(state, smallPool(state)) };
+    item = { ...item, shape: gentler(state, item.shape) ?? pick(state, smallPool(state)) };
   }
   if (item.caption) zenCaption(state, item.caption, "finale", { quiet: true }); // (what happens next, as it starts)
   // (after a big clearance, a breath before the next piece)
@@ -400,15 +403,33 @@ const isTile = (s) => !!s?.tags?.some(t => t === "tiles" || t === "lego_tiles");
 
 // The game's own choice of piece (links, sets, powerups and all), passing over any that would
 // stand too tall on the stack as it is (Big Ben only stands upright). A set always carries on.
-// (Zen passes over a powerup that would take much of the board, too: tooBig; and see calmPiece.)
+// (Zen has a gentler powerup in place of one that would take much of the board, too: tooBig,
+// gentler; and see calmPiece.)
 function naturalPiece(state) {
   let s = null;
   for (let i = 0; i < 5; i++) {
     s = selectPiece(state);
-    if (isCalm(state) && s.powerup && tooBig(state, s)) continue;
+    if (isCalm(state) && s.powerup && tooBig(state, s)) s = gentler(state, s);
+    if (!s) continue;
     if (s.difficulty === LEVEL6 || fitsUnder(state, s)) return isCalm(state) ? calmPiece(state, s) : s;
   }
-  return s.difficulty === LEVEL6 ? s : pick(state, smallPool(state));
+  return s?.difficulty === LEVEL6 ? s : pick(state, smallPool(state));
+}
+
+// Zen: in place of a powerup that would take too much of the board (tooBig), a gentler one: of
+// the same class if one of a few of those (picked at random) will do, or else of another class
+// (the class first, then one of its pieces, as in a game). Or null, if none of those will.
+function gentler(state, shape) {
+  const pool = powerupPool(state).filter(p => p !== shape && !p.powerup.bad && fitsUnder(state, p));
+  const own = shape.powerup.cls, others = shuffle([...new Set(pool.map(p => p.powerup.cls))].filter(c => c !== own), state.rng);
+  for (const cls of [own, ...others]) {
+    const list = pool.filter(p => p.powerup.cls === cls);
+    for (let i = 0; i < CONFIG.zen.powerupChoices / (cls === own ? 1 : 2) && list.length; i++) {
+      const p = sampleByWeight(list, q => q.frequency ?? 1, state.rng);
+      if (!tooBig(state, p)) return p;
+    }
+  }
+  return null;
 }
 
 // Zen: the game's own choice, but a new shape each time (never the shape of one of the last few:
@@ -925,12 +946,20 @@ function onesRun(state, items) {
   return false;
 }
 
-// A short run of next() pieces, played to keep it low (zen).
+// A short run of next() pieces, played to keep it low (zen). (Now and then a powerup in it, as in
+// a game: runPowerup.)
 const run = (caption, next, left) => ({
   caption, left,
-  fill(state) { state.zen.queue.push({ shape: next(state), weights: WEIGHTS.clear }); this.left--; },
+  fill(state) { state.zen.queue.push({ shape: runPowerup(state) ?? next(state), weights: WEIGHTS.clear }); this.left--; },
   done() { return this.left <= 0; },
 });
+// Zen: a powerup in place of one of a run's pieces, whenever the game would have one due there
+// (duePowerup), a gentler one if it would take too much of the board (tooBig, gentler); or null.
+function runPowerup(state) {
+  let p = isCalm(state) ? duePowerup(state) : null;
+  if (p && tooBig(state, p)) p = gentler(state, p);
+  return p && fitsUnder(state, p) ? p : null;
+}
 // (any of `list` that sits well under the top, and in zen a new shape, or else something small)
 const easyOf = (state, list) => { const fits = list.filter(s => fitsUnder(state, s, 6) && !recentShape(state, s)); return fits.length ? pick(state, fits) : pick(state, smallPool(state)); };
 const easyPool = (state) => regularPool(state).filter(s => (s.difficulty ?? 1) <= 3 && blocks(s) <= 16);
@@ -948,7 +977,7 @@ const MOVEMENTS = {
     const pool = smallPool(state), pal = palettePick(state, pool);
     return {
       caption: "light rain", left: int(state, 14, 24), pace: 0.8,
-      fill(state) { state.zen.queue.push({ shape: isCalm(state) ? pick(state, pool) : fromPalette(state, pal, pool), weights: WEIGHTS.clear }); this.left--; },
+      fill(state) { state.zen.queue.push({ shape: isCalm(state) ? runPowerup(state) ?? pick(state, pool) : fromPalette(state, pal, pool), weights: WEIGHTS.clear }); this.left--; },
       done() { return this.left <= 0; },
     };
   },
@@ -1673,13 +1702,19 @@ function flockSpot(occ, shape, weights, free, cols, rows, headroom, rng, maxTurn
 
 // How fast the piece falls: turbo zen's quickly (but each takes a moment at least), and the
 // player's own, and the computer's while they're playing, at a pace they can steer (and taking
-// back over, from one to the other); in zen, easily either way, unless it's dozing (game.js
-// asks)...
+// back over, from one to the other); in zen, easily either way (calmDropMs), unless it's dozing
+// (game.js asks)...
 export function zenSpeed(state) {
   const z = state.zen, Z = CONFIG.zen;
-  if (isCalm(state)) state.dropMs = !z.userHas && dozing(state) ? Z.calm.idleDropMs : Z.calm.dropMs;
+  if (isCalm(state)) state.dropMs = !z.userHas && dozing(state) ? Z.calm.idleDropMs : calmDropMs(state);
   else state.dropMs = z.userHas ? Z.dropMs : handOver(z, Z.dropMs, Math.max(8, Z.fallMs * z.pace));
 }
+// (zen: dropMs at the first piece, the same bit quicker with every piece, and once it's had
+// speedUp.pieces of them, speedUp.toMs from then on: CONFIG.zen.calm)
+const calmDropMs = (state) => {
+  const C = CONFIG.zen.calm, S = C.speedUp;
+  return S ? Math.round(C.dropMs * (S.toMs / C.dropMs) ** Math.min(1, state.drops / Math.max(1, S.pieces))) : C.dropMs;
+};
 // (turbo zen taking back over: from the player's `slow` to the computer's own `quick`, a little
 // quicker with each piece it has to itself, gently at first, and its own once it has it all back)
 const handOver = (z, slow, quick) => (z.hand >= 1 ? quick : z.hand <= 0 ? slow : slow * (quick / slow) ** (z.hand ** 1.5));
@@ -1839,9 +1874,18 @@ function calmPlacement(state, shape, maxTurns) {
 }
 
 // Zen: where one of its own powerups goes: where it does the most good, on any turn it has, as
-// calmBest picks it. (tooBig judges it here too.) { rot, x, y, s, lines, took } or null.
+// calmBest picks it; but with the player playing (they've had one of the last help.played
+// pieces), only where it takes at most bite.playing blocks, if anywhere: what they build stays
+// theirs, and they can put it where they like. (tooBig judges it here too.) { rot, x, y, s,
+// lines, took } or null.
 function powerupPlace(state, shape, item = null) {
-  return calmBest(state, placesFor(state, shape, item?.weights ?? WEIGHTS.clear, item?.turns ?? 4).map(c => ({ ...c, p: shape })));
+  let list = placesFor(state, shape, item?.weights ?? WEIGHTS.clear, item?.turns ?? 4).map(c => ({ ...c, p: shape }));
+  const C = CONFIG.zen.calm, z = state.zen;
+  if (C.bite?.playing != null && z.userAt != null && state.drops - z.userAt <= (C.help?.played ?? 0)) {
+    const little = list.filter(c => c.took <= C.bite.playing);
+    if (little.length) list = little;
+  }
+  return calmBest(state, list);
 }
 
 // Zen, for a powerup: of these places (each with its piece, `p`), the best that isn't where the

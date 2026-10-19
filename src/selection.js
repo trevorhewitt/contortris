@@ -358,6 +358,18 @@ export function selectPiece(state) {
   return shape;
 }
 
+// Zen's little runs of one kind of piece (src/zen.js) count as pieces too: a powerup, if one's
+// due now, picked and booked as pickNextPiece would; or null.
+export function duePowerup(state) {
+  if (!state.pieceSel) initPieceSelectionState(state);
+  const sel = state.pieceSel;
+  sel.dropIndex += 1;
+  if (sel.powerup.cooldown > 0) sel.powerup.cooldown -= 1;
+  const pu = state.powerups.length ? maybeSelectPowerup(state, computeStackDanger01(state)) : null;
+  if (pu) { commitSelectedShape(sel, pu); notePowerupDropped(sel); }
+  return pu;
+}
+
 function pickNextPiece(state) {
   if (!state.pieceSel) initPieceSelectionState(state);
 

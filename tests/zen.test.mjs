@@ -112,8 +112,10 @@ test("zen: it gets back down to a hole by clearing the rows above it", () => {
 test("zen: left alone it dozes off and carries on a little quicker, and a touch wakes it", () => {
   const C = CONFIG.zen.calm;
   const { state } = zen(3);
+  // (an easy pace: dropMs, a little quicker with each piece)
+  const easy = () => state.dropMs <= C.dropMs && state.dropMs > C.dropMs * 0.97;
   run(state, null, 3000);
-  assert.equal(state.dropMs, C.dropMs, "an easy pace to start with");
+  assert.ok(easy(), `an easy pace to start with: ${state.dropMs}`);
   run(state, null, C.idleMs + 8000);
   assert.equal(state.dropMs, C.idleDropMs, "dozing");
   while (!state.active || state.effect || state.active.y < 0) updateGame(state, 16);
@@ -121,12 +123,31 @@ test("zen: left alone it dozes off and carries on a little quicker, and a touch 
   tryMove(state, 1, 0);
   updateGame(state, 16);
   assert.equal(state.zen.userHas, true);
-  assert.equal(state.dropMs, C.dropMs, "awake, and it's the player's");
+  assert.ok(easy(), `awake, and it's the player's: ${state.dropMs}`);
   const piece = state.active;
   while (state.active === piece) updateGame(state, 16);
   while (!state.active) updateGame(state, 16);
   assert.equal(state.zen.userHas, false, "the next piece is the computer's");
-  assert.equal(state.dropMs, C.dropMs, "still awake");
+  assert.ok(easy(), `still awake: ${state.dropMs}`);
+});
+
+test("zen: a little quicker with every piece, but never fast", () => {
+  const C = CONFIG.zen.calm, S = C.speedUp;
+  const { state } = zen(5);
+  const paces = [];
+  on(state, (t) => { if (t === "spawn") paces.push({ drops: state.drops, ms: state.dropMs }); });
+  // the player drops every piece where it comes (so it never dozes off)
+  for (let t = 0; t < 60 * 60000 && state.drops <= S.pieces + 40; t += 32) {
+    if (state.active && !state.effect) { markInput(state, "keyboard"); hardDropAndLock(state); }
+    updateGame(state, 32);
+  }
+  assert.ok(state.drops > S.pieces + 40, `${state.drops} pieces`);
+  assert.ok(paces[0].drops <= 1 && paces[0].ms >= C.dropMs - 1, `the first at dropMs: ${paces[0].ms}`);
+  for (let i = 1; i < paces.length; i++) assert.ok(paces[i].ms <= paces[i - 1].ms, `slower again after ${paces[i].drops} pieces`);
+  const half = paces.find(p => p.drops >= S.pieces / 2);
+  assert.ok(half.ms < C.dropMs - 30 && half.ms > S.toMs + 30, `half way: ${half.ms}`);
+  assert.ok(paces.every(p => p.ms >= S.toMs), "never quicker than toMs");
+  assert.ok(paces.filter(p => p.drops >= S.pieces).every(p => p.ms === S.toMs), `toMs from ${S.pieces} pieces on`);
 });
 
 test("zen: once the player touches a piece it's theirs, and the next one is the computer's again", () => {
@@ -140,7 +161,7 @@ test("zen: once the player touches a piece it's theirs, and the next one is the 
   const x = piece.x, rot = piece.rotIdx;
   updateGame(state, 16);
   assert.equal(state.zen.userHas, true);
-  assert.equal(state.dropMs, CONFIG.zen.calm.dropMs, "it falls at the player's pace");
+  assert.ok(state.dropMs <= CONFIG.zen.calm.dropMs && state.dropMs > CONFIG.zen.calm.dropMs * 0.97, `it falls at the player's pace: ${state.dropMs}`);
   for (let t = 0; t < 60000 && state.active === piece; t += 16) {
     updateGame(state, 16);
     if (state.active !== piece) break;
@@ -227,6 +248,23 @@ test("zen: it doesn't push: where the player has just moved a piece away from, i
   assert.ok(pushes >= 6, `it kept coming back to it, with something else: ${pushes} times moved away`);
 });
 
+test("zen: Shiny Pieces of its own about as often as at the start of a game of Classic, in its little runs too", () => {
+  const { state, log } = zen(6);
+  let pieces = 0, own = 0, inRuns = 0;
+  on(state, (t) => {
+    if (t !== "spawn") return;
+    pieces++;
+    const z = state.zen;
+    if (!state.active.shape.powerup || z.current?.help || z.current?.emergency) return;
+    own++;
+    if (["rain", "family", "colours"].includes(z.movement?.name)) inRuns++;
+  });
+  run(state, log, 20 * 60000);
+  assert.ok(pieces > 200, `${pieces} pieces`);
+  assert.ok(own / pieces > 0.12 && own / pieces < 0.3, `${own} of ${pieces}`);
+  assert.ok(inRuns >= 5, `${inRuns} of them in a run`);
+});
+
 test("zen: the player can build it right up and fill most of the board: a little help only near the top, and never a powerup of its own that takes much of it", () => {
   const H = CONFIG.zen.calm.help, B = CONFIG.zen.calm.bite;
   const { state, log } = zen(1);
@@ -269,6 +307,8 @@ test("zen: the player can build it right up and fill most of the board: a little
   assert.ok(steadies.every(m => m.height >= rows - CONFIG.zen.calm.dangerRows), `steadied only at the top: ${steadies.map(m => m.height)}`);
   assert.ok(bites.length >= 5, `${bites.length} powerups of its own`);
   assert.ok(bites.every(n => n <= B.most), `its own powerups took ${bites.filter(n => n > B.most).join(", ")} blocks`);
+  // (with the player playing, each aimed where it takes hardly anything, if there's anywhere)
+  assert.ok(bites.filter(n => n <= B.playing).length >= bites.length * 0.8, `its own powerups took ${bites.join(", ")} blocks`);
 });
 
 test("zen: nothing the player does can end it, and a little help comes when it's left in a mess", () => {

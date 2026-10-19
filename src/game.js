@@ -1127,7 +1127,7 @@ function startRowFall(state, dropDistances, delays = null) {
 }
 
 function recomputeSpeed(state) {
-  if (state.zen) { zenSpeed(state); return; } // (zen: it never speeds up)
+  if (state.zen) { zenSpeed(state); return; } // (zen: its own pace, src/zen.js)
   // (nor developer mode: CONFIG.modes.dev.steady)
   const mult = Math.pow(CONFIG.timing.speedMultiplierPerLevel, CONFIG.modes[state.mode]?.steady ? 0 : state.level - 1);
   // (Classic and God mode: limited during the climb, and quicker every piece after it:

@@ -280,20 +280,21 @@ export const CONFIG = {
   // Zen mode (src/zen.js): the director decides what comes next, the autopilot plays each piece
   // unless the player takes it over, and it never ends.
   zen: {
-    // Zen itself is for playing: slow and easy, and it can't be lost. Each piece comes down at an
-    // easy pace (dropMs a row), already turned and over the place the computer would put it;
-    // touch it and it's yours. Leave it alone for idleMs and it carries on by itself a little
-    // quicker (idleDropMs a row) until it's touched again. It plays as a person would, and not
-    // too perfectly: it keeps the board low and never builds anything up, never slides a piece
-    // in under an overhang, and of the places about as good as its best (place: within that much
-    // of it; or, to put it somewhere other than over the columns of the last `spread` pieces,
-    // within `away` of it), it picks one at random, the better the likelier (one worth `temper`
-    // less is about a third as likely; a row it would clear goes anywhere; a powerup, or a little
-    // help, goes to the best of those away from the last few). Now and then (slips:
-    // chance a piece) it leaves a hole or two (at most `holes`) with a piece nearly as good as
-    // its best (within that much of it), while the board's below `height` of the way up with
-    // fewer than `most` holes; it gets back down to holes, its own and the player's, by clearing
-    // the rows above them.
+    // Zen itself is for playing: a bit like a game of Classic, but one that can't be lost. Each
+    // piece comes down at an easy pace (dropMs a row, the same bit quicker with every piece, but
+    // never fast: speedUp, toMs a row after `pieces` pieces and no quicker), already turned and
+    // over the place the computer would put it; touch it and it's yours. Leave it alone for idleMs
+    // and it carries on by itself a little quicker (idleDropMs a row) until it's touched again. It
+    // plays as a person would, and not too perfectly: it keeps the board low and never builds
+    // anything up, never slides a piece in under an overhang, and of the places about as good as
+    // its best (place: within that much of it; or, to put it somewhere other than over the columns
+    // of the last `spread` pieces, within `away` of it), it picks one at random, the better the
+    // likelier (one worth `temper` less is about a third as likely; a row it would clear goes
+    // anywhere; a powerup, or a little help, goes to the best of those away from the last few). Now
+    // and then (slips: chance a piece) it leaves a hole or two (at most `holes`) with a piece
+    // nearly as good as its best (within that much of it), while the board's below `height` of the
+    // way up with fewer than `most` holes; it gets back down to holes, its own and the player's, by
+    // clearing the rows above them.
     // Each piece is a new shape: never the shape of any of the last newShapes pieces (if anything
     // else will do), and `random` of the time any piece of its level, not one picked to fit.
     // A piece that would come turned for nothing, the same shape as the way it was drawn but upside
@@ -303,30 +304,35 @@ export const CONFIG = {
     // on them (pushed): it aims somewhere else for the next `pieces` pieces, and a piece of that
     // shape somewhere else for `shape` pieces in all (so when it comes back to it, it's with
     // another shape).
-    // Now and then a little run of something, or a powerup, but never one that would take more
-    // than `most` blocks at once where it would go, or more than `share` of what's on the board
-    // (bite; `least` is always all right). A little help (help: a powerup that brings down at
-    // most `rows` rows or `blocks` blocks at once, one every `every` pieces at most): with the
-    // player playing (they've had one of the last `played` pieces), only once they've built it
-    // right up past `height` of the board, so they can fill most of it if they like; left to
-    // itself, sooner, to keep it low and tidy (alone: past its `height`, or with more than `gaps`
-    // gaps; the rest as with the player playing). Built up within dangerRows of the top, a
-    // bigger one (steady: at most `rows` rows or `blocks` blocks), and if anything ever tops out
-    // the board's rescued, so it still can't be lost. The rest (hard, level6, powerups, pieceMix)
-    // replace the same numbers in CONFIG.assist, as God mode's do: fewer giants and sets than God
-    // mode, later on, fewer powerups, and mostly the easier pieces.
+    // Now and then a little run of something. Its own powerups come as in a game (in a run too),
+    // but never one that would take more than `most` blocks at once where it would go, or more than
+    // `share` of what's on the board (bite; `least` is always all right): a gentler one comes in
+    // its place. With the player playing (they've had one of the last help.played pieces), it goes
+    // where it takes at most `playing` blocks, if anywhere, so what they build stays theirs (and
+    // they can put it where they like). A little help (help: a powerup that brings down at most
+    // `rows` rows or `blocks` blocks at once, one every `every` pieces at most): with the player
+    // playing (they've had one of the last `played` pieces), only once they've built it right up
+    // past `height` of the board, so they can fill most of it if they like; left to itself, sooner,
+    // to keep it low and tidy (alone: past its `height`, or with more than `gaps` gaps; the rest as
+    // with the player playing). Built up within dangerRows of the top, a bigger one (steady: at
+    // most `rows` rows or `blocks` blocks), and if anything ever tops out the board's rescued, so
+    // it still can't be lost. The rest (hard, level6, powerups, pieceMix) replace the same numbers
+    // in CONFIG.assist, as God mode's do: fewer giants and sets than God mode, later on; powerups
+    // as often as at the start of a game of Classic (Classic's numbers in place of God mode's), but
+    // none the more for a stack up high, gaps or a struggle (in zen, that's what the help is for);
+    // and mostly the easier pieces.
     calm: {
-      dropMs: 700, idleMs: 20000, idleDropMs: 170,
+      dropMs: 700, speedUp: { toMs: 500, pieces: 300 }, idleMs: 20000, idleDropMs: 170,
       place: { within: 0.3, away: 1, temper: 0.5, spread: 3 },
       slips: { chance: 0.12, holes: 2, within: 3, height: 0.4, most: 3 },
       newShapes: 6, random: 0.3, upright: { share: 1 },
       pushed: { pieces: 2, shape: 8 },
-      bite: { most: 24, share: 0.3, least: 8 },
+      bite: { most: 24, share: 0.3, least: 8, playing: 8 },
       help: { height: 0.7, played: 10, every: 12, rows: 6, blocks: 30, alone: { height: 0.4, gaps: 12 } },
       dangerRows: 4, steady: { rows: 10, blocks: 80 },
       hard: { minDropIndex: 12, firstGiantBetween: [18, 36], softWindowStart: 18, rechargePerDrop: 0.004, cooldownDrops: 30, hardMaxDanger: 0.25 },
       level6: { firstAfter: [25, 45], cooldownDrops: 50, chancePerDrop: 0.04 },
-      powerups: { minDropIndex: 6, cooldownDrops: 5, baseChance: 0.06, chancePerDrop: 0.03, maxChance: 0.3, dangerBoost: 0.5, holesBoost: 0.3, struggle: { chanceBoost: 0.2 } },
+      powerups: { minDropIndex: 4, cooldownDrops: 2, baseChance: 0.12, chancePerDrop: 0.07, maxChance: 0.8, combos: { minDrop: 15, weight: 0.5 }, bad: { minDrop: 40 }, dangerBoost: 0, holesBoost: 0, struggle: { chanceBoost: 0 } },
       pieceMix: { baseLevelWeight: { 0: 0.14, 1: 0.6, 2: 0.23, 3: 0.03 }, openingLevelWeight: { 0: 0, 1: 0.65, 2: 0.3, 3: 0.05 } },
     },
     // Turbo zen is for watching, and for stepping into. Each piece arrives already turned and over
