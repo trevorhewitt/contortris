@@ -96,6 +96,8 @@ const GROUPS = [
     ["remains.glowStrength", "...how strong", 0, 1, 0.05],
     ["remains.fadeAwaySec", "...lingers (seconds)", 5, 600, 5],
     ["remains.forever", "...or all of it for good"],
+    ["remains.rgbShift", "red and blue apart, as they get older (cells)", 0, 0.5, 0.01],
+    ["remains.scanlines", "scanlines (0 none)", 0, 1, 0.05],
     ["remains.parallax", "parallax when the board shakes (1: the oldest keep still)", 0, 1, 0.05],
     ["remains.liveLift", "the blocks in play lighter (gamma: 1 as they are)", 1, 2, 0.05],
   ] },

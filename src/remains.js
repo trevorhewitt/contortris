@@ -6,10 +6,12 @@
 // light rather than paint: three of it, added together, each fading at its own rate. The art
 // itself, sharp, darker and greyer than the blocks in play, goes first; a soft blur of it goes
 // next; and a wide glow of it, rising as the sharp art goes, lingers longest, a faint colour
-// spread across the board long after the shapes in it can be made out. A block destroyed where one
-// was before takes its place. They come in layers, a new one every few seconds; when the board
-// shakes, each layer moves a little less than the board does, the older the less (parallax). The
-// blocks still in play are drawn a little lighter (liveLift), to stand out.
+// spread across the board long after the shapes in it can be made out. As it gets older its red
+// and blue drift apart (an old screen's colour fringes), and it can have faint scanlines. A block
+// destroyed where one was before takes its place. They come in layers, a new one every few
+// seconds; when the board shakes, each layer moves a little less than the board does, the older
+// the less (parallax). The blocks still in play are drawn a little lighter (liveLift), to stand
+// out.
 //
 // It's on to try out, and it's all in here, so it's easy to take out: this file, CONFIG.remains,
 // its section of the developer tools (src/devtools.js), and the hooks, each marked
@@ -17,7 +19,7 @@
 // firePowerupEffect, zenRescue) and ageRemains (updateGame); in src/render.js, drawUnderBlocks
 // and drawBoard (drawRemains, remainsKey, remainsShaken; remainsView, remainsCache and
 // blocksCache for them), quakeTransform's `k`, and liveLift and liftColour (styleKey, getSprite
-// and renderSprite, drawPixelArtDevice's `tone`).
+// and renderSprite, drawPixelArtDevice's `tone`), and remainsView's `calm`.
 
 import { CONFIG } from "../config.js";
 import { clamp01 } from "./util.js";
@@ -140,9 +142,9 @@ export function ageRemains(state, dt) {
 const smooth01 = (x) => { const t = clamp01(x); return t * t * (3 - 2 * t); };
 
 // How a layer looks, as old as it is: { age (0 new, 1 gone), sharp, soft, glow (how strongly each
-// of the three shows: 0 not at all, 1 as bright as the art in play), depth (0 at the front, 1 at
-// the back: when the board shakes, it goes 1 - parallax × depth of the way with it) }. There for
-// good, it stops getting older once the sharp art has gone.
+// of the three shows: 0 not at all, 1 as bright as the art in play), shift (cells red and blue
+// are apart), depth (0 at the front, 1 at the back: when the board shakes, it goes 1 - parallax ×
+// depth of the way with it) }. There for good, it stops getting older once the sharp art has gone.
 function look(r, layer) {
   const c = cfg(), life = lifeMs();
   const age = lasting() ? Math.min(r.clock - layer.born, sharpMs()) : r.clock - layer.born;
@@ -153,12 +155,13 @@ function look(r, layer) {
     soft: clamp01(num(c.softStrength, 0.1)) * (1 - smooth01(age / softMs())),
     // (rising as the sharp art goes, then the long, slow tail)
     glow: clamp01(num(c.glowStrength, 0.2)) * (0.3 + 0.7 * smooth01(age / sharpMs())) * (1 - smooth01(u)),
+    shift: Math.max(0, num(c.rgbShift, 0)) * clamp01(age / sharpMs()),
     depth: 0.25 + 0.75 * u,
   };
 }
 
 // What's left in a cell (no more than one: a newer takes the place of an older): [{ paint, style,
-// depth (its layer: 0 the newest), age, sharp, soft, glow }] (none: empty).
+// depth (its layer: 0 the newest), age, sharp, soft, glow, shift }] (none: empty).
 export function remainsAt(state, x, y) {
   const r = remainsOf(state);
   if (!r) return [];
@@ -166,8 +169,8 @@ export function remainsAt(state, x, y) {
   return r.layers.flatMap((layer, depth) => {
     const e = layer.cells.get(i);
     if (!e) return [];
-    const { age, sharp, soft, glow } = look(r, layer);
-    return [{ paint: e.paint, style: e.style, depth, age, sharp, soft, glow }];
+    const { age, sharp, soft, glow, shift } = look(r, layer);
+    return [{ paint: e.paint, style: e.style, depth, age, sharp, soft, glow, shift }];
   });
 }
 
@@ -182,7 +185,7 @@ export function remainsKey(state) {
   const ageing = !lasting() || youngest < sharpMs();
   const step = youngest < sharpMs() ? sharpMs() / 40 : youngest < softMs() ? softMs() / 40 : lifeMs() / 60;
   return [r.version, c.darker, c.faded, c.saturation, c.sharpSec, c.softBlur, c.softStrength, c.softSec, c.glowBlur,
-    c.glowStrength, c.fadeAwaySec, c.forever,
+    c.glowStrength, c.fadeAwaySec, c.forever, c.rgbShift, c.scanlines,
     ageing ? Math.floor(r.clock / Math.max(100, step)) : ""].join("|");
 }
 
@@ -208,10 +211,12 @@ export function remainsShaken(state) {
 // at the board's size while its sharp art still shows and smaller after. Blurred, it's that made
 // smaller and smaller, halving each time, smoothed, and drawn back up to size, smoothed (so it works
 // in every browser: no canvas filters), each size made once, when it's first needed; a blur
-// between two sizes is the two, one faded into the other.
-const drawn = new WeakMap(); // layer -> { px, levels (0 the full one), lowest, cells, version, key, x0, y0, x1, y1 (its canvas's cells), tight (just its own), bw, bh }
+// between two sizes is the two, one faded into the other. Red and blue apart: the size split into
+// its red, its green and its blue, each drawn where it goes.
+const drawn = new WeakMap(); // layer -> { px, levels (0 the full one), lowest, ch (n -> [r, g, b]), cells, version, key, x0, y0, x1, y1 (its canvas's cells), tight (just its own), bw, bh }
 let smaller = null; // (the canvas the blurs are drawn onto, smaller than the board)
 let blurred = null; // (what's on it: { key, x0, y0, x1, y1 (the cells they're over), depth })
+let front = null; // (with scanlines, the canvas they're all drawn onto first)
 const FAINT = 0.004;
 const TAPS = [[-0.5, -0.5], [0.5, -0.5], [-0.5, 0.5], [0.5, 0.5]];
 
@@ -232,13 +237,20 @@ const canvas = (cv, w, h) => {
 // (device pixels a board pixel), look (the renderer's look: the sprites are its own),
 // sprite(paint, style) (a block's art, cell × scale pixels, as it is: not the lighter one),
 // place(ctx, k, s) (puts ctx, s pixels a board pixel, where the board is, its shake k of the way;
-// none for the board at rest) }
+// none for the board at rest), calm (calmer animations: src/settings.js) }
 export function drawRemains(ctx, state, view) {
   const r = remainsOf(state);
   if (!r?.layers.length || !remainsOn(state)) return;
   const c = cfg(), par = clamp01(c.parallax ?? 0), full = view.cell * view.scale, px = blurPixels(full);
+  const scan = view.calm ? 0 : clamp01(num(c.scanlines, 0)); // (calmer animations: no scanlines, as anywhere)
   const shaking = !!view.place;
-  const out = ctx;
+  // where the sharp art goes (with scanlines, a canvas of their own first), and the blurs
+  let out = ctx;
+  if (scan > 0.01) {
+    out = (front = canvas(front, Math.round(r.cols * full), Math.round(r.rows * full))).getContext("2d");
+    out.setTransform(1, 0, 0, 1, 0, 0);
+    out.clearRect(0, 0, front.width, front.height);
+  }
   // (the blurs drawn again only when they've changed: not for every frame of the board shaking)
   const key = `${remainsKey(state)}|${view.cell}|${view.scale}|${view.look}|${px}`;
   const blurs = blurred?.key !== key;
@@ -267,7 +279,7 @@ export function drawRemains(ctx, state, view) {
       g.setTransform(px / view.cell, 0, 0, px / view.cell, 0, 0);
       g.globalCompositeOperation = "lighter";
       g.imageSmoothingEnabled = true;
-      for (const [n, w] of sizes) put(g, r, layer, d, view, n, strength * w);
+      for (const [n, w] of sizes) put(g, r, layer, d, view, n, strength * w, lk.shift);
       g.restore();
       const b = blurred;
       b.x0 = Math.min(b.x0, d.x0); b.y0 = Math.min(b.y0, d.y0); b.x1 = Math.max(b.x1, d.x1); b.y1 = Math.max(b.y1, d.y1);
@@ -280,13 +292,13 @@ export function drawRemains(ctx, state, view) {
       if (shaking) view.place(out, 1 - par * lk.depth, view.scale); else out.setTransform(view.scale, 0, 0, view.scale, 0, 0);
       out.globalCompositeOperation = "lighter";
       out.imageSmoothingEnabled = false;
-      put(out, r, layer, d, view, 0, lk.sharp);
+      put(out, r, layer, d, view, 0, lk.sharp, shaking ? 0 : lk.shift); // (shaking, drawn every frame: red and blue together)
       out.restore();
     } else if (i > 0 && blurs) letGo(d, need); // (only ever blurrier from now on: the sharper sizes can go)
   }
   if (blurs) blurred.depth = weight ? deep / weight : 0.5;
-  // the blurs onto the board: the cells they were drawn over (shaking, all together, as far back
-  // as they are on average)
+  // the blurs onto the board (or the scanlines' canvas): the cells they were drawn over (shaking,
+  // all together, as far back as they are on average)
   const { x0, y0, x1, y1 } = blurred;
   if (x1 >= x0) {
     out.save();
@@ -297,23 +309,53 @@ export function drawRemains(ctx, state, view) {
     out.drawImage(smaller, x0 * px, y0 * px, w * px, h * px, x0 * view.cell, y0 * view.cell, w * view.cell, h * view.cell);
     out.restore();
   }
+  if (out === ctx) return;
+  // scanlines: every few pixels a line of them taken out, then all of it onto the board
+  const pitch = Math.max(2, Math.round(full / 8));
+  out.save();
+  out.setTransform(1, 0, 0, 1, 0, 0);
+  out.globalCompositeOperation = "destination-out";
+  out.globalAlpha = scan;
+  out.fillStyle = scanPattern(out, pitch);
+  out.fillRect(0, 0, front.width, front.height);
+  out.restore();
+  ctx.save();
+  ctx.setTransform(view.scale, 0, 0, view.scale, 0, 0);
+  ctx.globalCompositeOperation = "lighter";
+  ctx.drawImage(front, 0, 0, r.cols * view.cell, r.rows * view.cell);
+  ctx.restore();
 }
 
-// A layer's art at size n onto g, `alpha` strong.
-function put(g, r, layer, d, view, n, alpha) {
+// (lines `pitch` apart, half as thick)
+let scanned = null;
+function scanPattern(g, pitch) {
+  if (scanned?.pitch !== pitch) {
+    const cv = canvas(null, 1, pitch), x = cv.getContext("2d");
+    x.fillStyle = "#000";
+    x.fillRect(0, pitch - Math.max(1, pitch >> 1), 1, Math.max(1, pitch >> 1));
+    scanned = { pitch, cv, pattern: null };
+  }
+  return (scanned.pattern ??= g.createPattern(scanned.cv, "repeat"));
+}
+
+// A layer's art at size n onto g, `alpha` strong; red and blue `shift` cells apart, if that's a
+// pixel or more.
+function put(g, r, layer, d, view, n, alpha, shift = 0) {
   const img = level(r, layer, d, view, n), X = d.x0 * view.cell, Y = d.y0 * view.cell;
+  const s = shift * view.cell / 2;
   // (much smaller than it's drawn, four times, half its pixel apart each way, a quarter as strong
   // each: smoother than once)
   const half = n >= 2 ? d.bw / img.width / 2 : 0;
   const taps = half ? TAPS : [[0, 0]];
   g.globalAlpha = Math.min(1, alpha) / taps.length;
+  const art = shift * view.cell * view.scale < 1 ? [[img, 0]] : channels(d, n).map((ch, k) => [ch, (1 - k) * s]);
   if (n === 0) {
     // (full size, just its cells, not the room round them)
     const [x0, y0, x1, y1] = d.tight, sx = (x0 - d.x0) * d.px, sy = (y0 - d.y0) * d.px, w = x1 - x0 + 1, h = y1 - y0 + 1;
-    g.drawImage(img, sx, sy, w * d.px, h * d.px, x0 * view.cell, y0 * view.cell, w * view.cell, h * view.cell);
+    for (const [im, dx] of art) g.drawImage(im, sx, sy, w * d.px, h * d.px, x0 * view.cell + dx, y0 * view.cell, w * view.cell, h * view.cell);
     return;
   }
-  for (const [ox, oy] of taps) g.drawImage(img, X + ox * half * 2, Y + oy * half * 2, d.bw, d.bh);
+  for (const [ox, oy] of taps) for (const [im, dx] of art) g.drawImage(im, X + dx + ox * half * 2, Y + oy * half * 2, d.bw, d.bh);
 }
 
 // A layer's art at full size (its cells, px pixels each, greyer), drawn again only where it has
@@ -342,8 +384,8 @@ function layerArt(r, layer, view, px) {
     const unit = 2 ** halvings, cv = document.createElement("canvas");
     cv.width = Math.ceil((x1 - x0 + 1) * px / unit) * unit;
     cv.height = Math.ceil((y1 - y0 + 1) * px / unit) * unit;
-    Object.assign(d, { px, levels: [cv], lowest: 0, cells: new Map(), x0, y0, x1, y1, bw: cv.width * view.cell / px, bh: cv.height * view.cell / px });
-  } else d.levels.length = 1;
+    Object.assign(d, { px, levels: [cv], lowest: 0, ch: new Map(), cells: new Map(), x0, y0, x1, y1, bw: cv.width * view.cell / px, bh: cv.height * view.cell / px });
+  } else { d.levels.length = 1; d.ch = new Map(); }
   const g = d.levels[0].getContext("2d"), added = new Path2D();
   let any = false;
   g.imageSmoothingEnabled = true; // (the art made smaller, if it is: smoothed)
@@ -392,12 +434,46 @@ function level(r, layer, d, view, n) {
   return d.levels[n];
 }
 
+// Size n split into its red, its green and its blue (made the first time they're wanted).
+function channels(d, n) {
+  let ch = d.ch.get(n);
+  if (ch) return ch;
+  const src = d.levels[n], w = src.width, h = src.height;
+  if (n === 0) {
+    // (full size, its pixels solid or not there at all: each the art multiplied by the colour,
+    // then cut back to its shape; quicker than reading every pixel of something that big)
+    ch = ["#ff0000", "#00ff00", "#0000ff"].map(colour => {
+      const cv = canvas(null, w, h), g = cv.getContext("2d");
+      g.drawImage(src, 0, 0);
+      g.globalCompositeOperation = "multiply";
+      g.fillStyle = colour;
+      g.fillRect(0, 0, w, h);
+      g.globalCompositeOperation = "destination-in";
+      g.drawImage(src, 0, 0);
+      return cv;
+    });
+    d.ch.set(n, ch);
+    return ch;
+  }
+  const data = src.getContext("2d").getImageData(0, 0, w, h);
+  ch = [0, 1, 2].map(k => {
+    const img = new ImageData(new Uint8ClampedArray(data.data), w, h), p = img.data;
+    for (let j = 0; j < p.length; j += 4) for (let q = 0; q < 3; q++) if (q !== k) p[j + q] = 0;
+    const cv = canvas(null, w, h);
+    cv.getContext("2d").putImageData(img, 0, 0);
+    return cv;
+  });
+  d.ch.set(n, ch);
+  return ch;
+}
+
 // The sizes below n let go (all but the smallest made so far, which the rest are made from).
 function letGo(d, n) {
   const upTo = Math.min(n, d.levels.length - 1);
   for (let j = d.lowest; j < upTo; j++) {
     if (d.levels[j]) d.levels[j].width = d.levels[j].height = 0;
     d.levels[j] = null;
+    d.ch.delete(j);
   }
   d.lowest = Math.max(d.lowest, upTo);
 }

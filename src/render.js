@@ -857,7 +857,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   // (none: at rest).
   function remainsView(state) {
     return {
-      cell, scale, look: styleKey(), sprite: (paint, style) => getSprite(paint, style, true),
+      cell, scale, look: styleKey(), calm: calmFx(), sprite: (paint, style) => getSprite(paint, style, true),
       place: state && ((ctx, k, s = scale) => { ctx.setTransform(s, 0, 0, s, 0, 0); quakeTransform(ctx, state, k); punchTransform(ctx, state); }),
     };
   }

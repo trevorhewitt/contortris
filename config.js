@@ -681,13 +681,15 @@ export const CONFIG = {
   // sharpSec seconds; a soft blur of it (softBlur cells wide, softStrength strong: 1 as bright as
   // the art in play), gone over softSec; and a wide glow of it (glowBlur cells wide, glowStrength
   // strong), rising as the sharp art goes, then a long, slow tail, gone after fadeAwaySec seconds
-  // (or, forever, they stop getting older once the sharp art has gone, and stay). A block destroyed
-  // where one was before takes its place. They come in layers, a new one every layerSec seconds, no
-  // more than `layers` of them (the two nearest in age merged into one). When the board shakes,
-  // each layer moves less than the board does, the older the less, the oldest (1 - parallax) of
-  // the way with it. While this is on, the blocks still in play are a little lighter (liveLift: a
-  // gamma, 1 as they are), to stand out. Not in the modes in notIn. (On for now, to try out: the
-  // developer tools can change all this, and switch it off.)
+  // (or, forever, they stop getting older once the sharp art has gone, and stay). As it gets older
+  // its red and blue drift apart, rgbShift cells by the time the sharp art has gone; scanlines:
+  // lines through it, that strong (0 none). A block destroyed where one was before takes its place.
+  // They come in layers, a new one every layerSec seconds, no more than `layers` of them (the two
+  // nearest in age merged into one). When the board shakes, each layer moves less than the board
+  // does, the older the less, the oldest (1 - parallax) of the way with it. While this is on, the
+  // blocks still in play are a little lighter (liveLift: a gamma, 1 as they are), to stand out. Not
+  // in the modes in notIn. (On for now, to try out: the developer tools can change all this, and
+  // switch it off.)
   remains: {
     enabled: true,
     darker: 0.7,
@@ -701,6 +703,8 @@ export const CONFIG = {
     glowStrength: 0.2,
     fadeAwaySec: 160,
     forever: false,
+    rgbShift: 0.2,
+    scanlines: 0,
     parallax: 0.3,
     layers: 12,
     layerSec: 4,

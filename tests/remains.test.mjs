@@ -150,8 +150,8 @@ test("no more than `layers` layers: the two nearest in age (for the look of them
   });
 });
 
-test("the sharp art goes first, then the soft blur; the glow rises as the sharp art goes and lingers longest", () => {
-  withRemains({ forever: false, darker: 0.6, faded: 0.5, sharpSec: 10, softSec: 30, softStrength: 0.3, glowStrength: 0.5, fadeAwaySec: 100 }, () => {
+test("the sharp art goes first, then the soft blur; the glow rises as the sharp art goes and lingers longest; red and blue drift apart", () => {
+  withRemains({ forever: false, darker: 0.6, faded: 0.5, sharpSec: 10, softSec: 30, softStrength: 0.3, glowStrength: 0.5, fadeAwaySec: 100, rgbShift: 0.2 }, () => {
     const state = boardOnly();
     leaveRemains(state, [{ x: 0, y: 3, cell: block("#aa0000") }]);
     const looks = [];
@@ -162,13 +162,16 @@ test("the sharp art goes first, then the soft blur; the glow rises as the sharp 
     const near = (a, b) => Math.abs(a - b) < 1e-9;
     assert.ok(near(looks[0].sharp, 0.4 * 0.5), `new: the sharp art (1 - darker) × (1 - faded): ${looks[0].sharp}`);
     assert.ok(near(looks[0].soft, 0.3) && near(looks[0].glow, 0.5 * 0.3), "the soft blur at softStrength, the glow a little of glowStrength");
+    assert.equal(looks[0].shift, 0, "and red and blue together");
     for (let s = 1; s < 10; s++) {
       assert.ok(looks[s].sharp < looks[s - 1].sharp, `${s} s: the sharp art fainter`);
       assert.ok(looks[s].glow > looks[s - 1].glow, `${s} s: the glow stronger`);
     }
     assert.ok(looks[10].sharp < 1e-9 && looks[10].soft > 0.1, "10 s: the sharp art gone, the soft blur not yet");
     for (let s = 1; s < 30; s++) assert.ok(looks[s].soft < looks[s - 1].soft, `${s} s: the soft blur fainter`);
+    for (let s = 1; s < 10; s++) assert.ok(looks[s].shift > looks[s - 1].shift, `${s} s: red and blue further apart`);
     assert.ok(looks[30].soft < 1e-9 && looks[30].glow > 0.3, `30 s: the soft blur gone, the glow still strong: ${looks[30].glow}`);
+    assert.ok(near(looks[60].shift, 0.2), "red and blue rgbShift apart");
     for (let s = 11; s < 100; s++) assert.ok(looks[s].glow < looks[s - 1].glow, `${s} s: the glow fading`);
     assert.ok(looks[80].glow > 0.02, `80 s: a little of it still: ${looks[80].glow}`);
     assert.ok(looks[99].glow < 0.001, `nearly gone: ${looks[99].glow}`);
