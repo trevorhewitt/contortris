@@ -140,6 +140,8 @@ page has:
 - **Developer game**: God mode with the newest pieces and sets first; it won't let you lose.
 - **Shiny Piece classes in Classic**: which classes are in, and (ticked) the exact order they come in,
   with "Comboz" where the combos may start.
+- **Extra Shiny Pieces (the bay)**: which piece each of its three classes has, from that class's
+  pieces or the combos with it in, strongest first (how much of the board each one reaches).
 - **Sliders** for how fast Classic and God mode fall (at the start, once it's hard, and faster
   per piece after that), how they get harder, what "hard" means, how often each class comes at
   the start, halfway and once it's hard, and Shiny Pieces overall (how often, and how fast they

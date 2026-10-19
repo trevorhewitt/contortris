@@ -4,7 +4,8 @@
 // Holding God mode and Turbo zen down together on the home screen switches the developer tools
 // on, for this visit only (never remembered: the next visit starts without them), and opens
 // their page: a developer game (new things first),
-// which powerup classes Classic has and in what order they come, sliders for how fast Classic and
+// which powerup classes Classic has and in what order they come, the bay's Extra Shiny Pieces
+// (CONFIG.shelf.pieces: which one each of its classes has), sliders for how fast Classic and
 // God mode fall and how they get harder (CONFIG.difficulty) and how often each class comes at
 // each stage, and a
 // button that copies the settings, to hand on. While they're on, the settings apply to every
@@ -13,7 +14,8 @@
 // tab, so switching them on again after a reload brings the same ones back.)
 
 import { CONFIG } from "../config.js";
-import { CLASS_INFO } from "./powerups.js";
+import { CLASS_INFO, classOf } from "./powerups.js";
+import { pieceReach } from "./shelf.js";
 
 const SETTINGS_KEY = "eztrix.devSettings";
 // (they used to be remembered in the browser, on and their settings both: gone, so nobody is
@@ -86,8 +88,10 @@ function set(path, v) {
   for (const k of ks.slice(0, -1)) o = o[k] ??= {};
   o[ks.at(-1)] = v;
 }
+// The bay's pieces (CONFIG.shelf.pieces): [path in CONFIG, class], each chosen from a list
+const BAY = Object.keys(CONFIG.shelf?.pieces ?? {}).map(cls => [`shelf.pieces.${cls}`, cls]);
 // (the game's own settings, before anything here changed them)
-const DEFAULTS = Object.fromEntries(GROUPS.flatMap(g => g.items).map(([p]) => [p, get(p)]));
+const DEFAULTS = Object.fromEntries([...GROUPS.flatMap(g => g.items), ...BAY].map(([p]) => [p, get(p)]));
 const DEFAULT_OFF = [...(CONFIG.assist.powerups.disabledTypes ?? [])];
 const DEFAULT_ORDER = CONFIG.assist.powerups.progression?.order ?? null;
 
@@ -130,8 +134,9 @@ export function devSettingsText() {
   return JSON.stringify(out, null, 2);
 }
 
-// Build the developer tools page into `body`. `hooks`: { onPlayDev(), onClose(), onChange() }
-export function buildDevTools(body, hooks = {}) {
+// Build the developer tools page into `body`. `hooks`: { onPlayDev(), onClose(), onChange() };
+// `powerups`: every Shiny Piece there is (the bay's to choose from)
+export function buildDevTools(body, hooks = {}, powerups = []) {
   let s = load();
   const changed = () => { save(s); apply(s); hooks.onChange?.(); };
   body.innerHTML = "";
@@ -190,6 +195,41 @@ export function buildDevTools(body, hooks = {}) {
   body.appendChild(cls);
   drawClasses();
 
+  // the bay's pieces: which one each of its classes has, from that class's pieces and then the
+  // combos with it in (only these lists have combos: the game's own never does), strongest first
+  const baySec = el("div", "devSection");
+  baySec.appendChild(el("div", "devTitle", "Extra Shiny Pieces (the bay)"));
+  baySec.appendChild(el("div", "small devNote", "Strongest first: how much of the board each one reaches, put down in the middle of it."));
+  const types = (p) => [p.powerup.type, ...(p.powerup.parts ?? []).map(q => q.type)];
+  const choices = powerups.filter(p => !p.powerup.setOnly && !types(p).some(t => ALWAYS_OFF.includes(t)))
+    .map(p => ({ p, reach: pieceReach(p) })).sort((a, b) => b.reach - a.reach);
+  const bay = BAY.map(([path, k]) => {
+    const name = CLASS_INFO[k]?.name ?? k;
+    const row = el("label", "devBayRow");
+    const text = el("span", "devBayName");
+    const select = el("select");
+    const group = (label, list) => {
+      if (!list.length) return;
+      const g = el("optgroup"); g.label = label;
+      for (const { p, reach } of list) g.appendChild(new Option(`${p.name}: ${Math.round(reach * 100)}%${p.id === DEFAULTS[path] ? " (usual)" : ""}`, p.id));
+      select.appendChild(g);
+    };
+    group(name, choices.filter(c => c.p.powerup.cls === k));
+    group(`${CLASS_INFO.combo.name} with ${name} in`, choices.filter(c => c.p.powerup.parts?.some(q => classOf(q.type) === k)));
+    const show = () => {
+      const v = select.value;
+      text.textContent = `${name}${v !== DEFAULTS[path] ? ` (usually ${powerups.find(p => p.id === DEFAULTS[path])?.name ?? DEFAULTS[path]})` : ""}`;
+      row.classList.toggle("changed", v !== DEFAULTS[path]);
+    };
+    select.value = String(s.values[path] ?? DEFAULTS[path]);
+    select.addEventListener("change", () => { s.values[path] = select.value; show(); changed(); });
+    show();
+    row.append(text, select);
+    baySec.appendChild(row);
+    return { path, select, show };
+  });
+  if (bay.length) body.appendChild(baySec);
+
   // the sliders
   const sliders = [];
   for (const g of GROUPS) {
@@ -229,6 +269,7 @@ export function buildDevTools(body, hooks = {}) {
     s = { values: {}, classes: null };
     changed();
     for (const sl of sliders) { sl.input.value = String(DEFAULTS[sl.path]); sl.show(); }
+    for (const b of bay) { b.select.value = DEFAULTS[b.path]; b.show(); }
     drawClasses();
     status.textContent = "Everything is back to the game's own settings.";
   });

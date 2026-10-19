@@ -1085,7 +1085,7 @@ export function bindUI({ state, renderer, achievements }) {
         if (!devmode) { $("devRow").hidden = true; devPanel.hidden = true; $("devTools").hidden = true; document.body.classList.remove("devmode"); }
         showPanel("menu");
       },
-    });
+    }, state.allPowerups);
     panelBack = "menu";
     showPanel("devtools");
   }

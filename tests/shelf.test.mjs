@@ -8,9 +8,9 @@ import { CONFIG } from "../config.js";
 import { SHAPES } from "../shapes/main_shapes.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
-import { resolvePowerupArea } from "../src/powerups.js";
+import { classOf } from "../src/powerups.js";
 import { createGameState, startRun, updateGame, useShelf, on } from "../src/game.js";
-import { shelfReady, shelfCount } from "../src/shelf.js";
+import { shelfReady, shelfCount, pieceReach } from "../src/shelf.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const game = (mode, seed = 3) => {
@@ -36,19 +36,31 @@ test("the bay has the same pieces every game", () => {
 
 test("each of the bay's pieces is close to the best of its class, but not the best", () => {
   // (by how much of the board it reaches, put down in the middle of it)
-  const { cols, rows } = CONFIG.board;
-  const reach = (p) => {
-    const m = p.rotations[0];
-    const area = resolvePowerupArea(p.powerup, 0, Math.floor((cols - m[0].length) / 2), Math.floor(rows / 2) - m.length, cols, rows);
-    return area.flags.reduce((n, f) => n + (f ? 1 : 0), 0);
-  };
   const state = game("normal");
   for (const [cls, id] of Object.entries(CONFIG.shelf.pieces)) {
-    const mine = reach(state.powerups.find(p => p.id === id));
-    const all = state.powerups.filter(p => p.powerup.cls === cls && (p.frequency ?? 1) > 0).map(reach);
+    const mine = pieceReach(state.powerups.find(p => p.id === id));
+    const all = state.powerups.filter(p => p.powerup.cls === cls && (p.frequency ?? 1) > 0).map(pieceReach);
     const better = all.filter(n => n > mine).length;
     assert.ok(better >= 1, `${id}: not the best ${cls}`);
     assert.ok(better < all.length / 4, `${id}: in the top quarter of the ${all.length} ${cls}s (${better} reach further)`);
+  }
+});
+
+test("a combo chosen for a slot (the developer tools) is in it, and in Classic comes once the combos have too", () => {
+  const usual = CONFIG.shelf.pieces.destroyer;
+  const combo = powerups.find(p => p.powerup.parts?.some(q => classOf(q.type) === "destroyer") && !p.powerup.setOnly);
+  CONFIG.shelf.pieces.destroyer = combo.id;
+  try {
+    const state = game("normal");
+    const slot = state.shelf.slots.find(s => s.cls === "destroyer");
+    assert.equal(slot?.shape.id, combo.id);
+    const met = state.pieceSel.powerup.shownClasses;
+    met.add("destroyer");
+    assert.equal(shelfReady(state, slot), false, "not before the combos");
+    met.add("combo");
+    assert.equal(shelfReady(state, slot), true);
+  } finally {
+    CONFIG.shelf.pieces.destroyer = usual;
   }
 });
 
