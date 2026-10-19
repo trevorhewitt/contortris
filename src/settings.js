@@ -37,6 +37,11 @@ export function calmFx() {
   return device || !!load().calmFx;
 }
 
+// (high contrast: clearer cell borders on the board, and no glow)
+export function highContrast() {
+  return !!load().contrast;
+}
+
 // The favourite piece: the one chosen, while it's still one that can be; or else one of `pool` at
 // random, kept from then on.
 export function favourite(pool) {

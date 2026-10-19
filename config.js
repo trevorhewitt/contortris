@@ -634,6 +634,8 @@ export const CONFIG = {
     cellPx: 18,
     maxScale: 3, // max backing-store pixels per board pixel (crispness vs cost)
     gridLineAlpha: 0.22,
+    // high contrast (the options): every cell's border on the board, in this (src/render.js)
+    highContrastGrid: "rgba(255,255,255,0.3)",
     bg: "#000000",
 
     ghost: {

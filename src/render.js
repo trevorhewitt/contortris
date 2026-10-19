@@ -2,7 +2,7 @@
 // RENDERER — draws the board, pieces, powerup highlights and effects
 // ============================================================
 
-import { calmFx } from "./settings.js";
+import { calmFx, highContrast } from "./settings.js";
 import { CONFIG } from "../config.js";
 import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour, ombre, OMBRE } from "./util.js";
 import { getShapePaint } from "./shapes.js";
@@ -477,7 +477,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   const backdrop = { cut: -1, canvas: null };
 
   const isEnhanced = () => CONFIG.render.cellStyle !== "classic";
-  function styleKey() { return `${CONFIG.render.cellStyle}|${CONFIG.render.enhanced.edgeStrength}`; }
+  function styleKey() { return `${CONFIG.render.cellStyle}|${CONFIG.render.enhanced.edgeStrength}|${highContrast() ? "hc" : ""}`; }
 
   function computeScale() {
     // Integer backing scale so cells land on whole device pixels; the browser
@@ -852,11 +852,26 @@ export function createRenderer(boardCanvas, nextCanvas) {
   // Under the blocks: the background, and what destroyed blocks left behind on it (src/remains.js),
   // cached together, and drawn again only when what's left changes. (`shaken`: the board's shaking
   // enough for its layers to be seen to move apart, so they're drawn each where it is.)
+  // High contrast (src/settings.js): every cell's border, clear, over the background and what
+  // destroyed blocks left, under the blocks.
+  function drawCellBorders(ctx) {
+    if (!highContrast()) return;
+    ctx.save();
+    ctx.strokeStyle = CONFIG.render.highContrastGrid ?? "rgba(255,255,255,0.3)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let x = 0; x <= bw; x += cell) { ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, bh); }
+    for (let y = 0; y <= bh; y += cell) { ctx.moveTo(0, y + 0.5); ctx.lineTo(bw, y + 0.5); }
+    ctx.stroke();
+    ctx.restore();
+  }
+
   function drawUnderBlocks(ctx, state, shaken) {
     const key = remainsKey(state);
     if (shaken || !key) {
       drawBackground(ctx);
       if (shaken) drawRemains(ctx, state, remainsView(state));
+      drawCellBorders(ctx);
       return;
     }
     const c = remainsCache.canvas, full = `${styleKey()}|${key}`;
@@ -873,6 +888,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       g.imageSmoothingEnabled = false;
       drawBackground(g);
       drawRemains(g, state, remainsView(null));
+      drawCellBorders(g);
       remainsCache.key = full;
     }
     ctx.drawImage(c, 0, 0, bw, bh);
@@ -1606,7 +1622,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
           bctx.fillRect(lo, top, w, h);
           // the head itself, while it's still moving: white hot, with a glow and fringes
           if (s < 1) {
-            if (T.glow) { bctx.shadowColor = T.rainbow ? colour(head, 1) : "rgba(180,240,255,1)"; bctx.shadowBlur = T.glow * scale; }
+            if (T.glow && !highContrast()) { bctx.shadowColor = T.rainbow ? colour(head, 1) : "rgba(180,240,255,1)"; bctx.shadowBlur = T.glow * scale; }
             if (T.chroma) { // (the warm split either side of it)
               const ahead = head >= from ? 1 : -1;
               for (const [k, fringe, strength] of WARM_SPLIT) {
@@ -1889,7 +1905,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     }
     nctx.save();
     nctx.shadowColor = glowColour;
-    nctx.shadowBlur = Math.max(2, c * (cfg.glowCells ?? 0.55));
+    nctx.shadowBlur = highContrast() ? 0 : Math.max(2, c * (cfg.glowCells ?? 0.55)); // (high contrast: no glow)
     nctx.fillStyle = fill;
     nctx.fill(path);
     nctx.restore();
