@@ -26,7 +26,9 @@ import { startRun, resetGame, updateGame, getGhostDropY, collides, createGameSta
 import { resolvePowerupArea } from "./powerups.js";
 import { buildMosaic, paintMosaic } from "./mosaic.js";
 import { calmFx } from "./settings.js";
-import { drawChromaSquare } from "./render.js";
+import { drawChromaSquare, drawBlockWithPaintStatic } from "./render.js";
+import { seedRemains, paintRemains } from "./remains.js";
+import { getShapePaint } from "./shapes.js";
 import { ombre, ombreRGB } from "./util.js";
 import { particleShare, particleLot, alive } from "./particles.js";
 const H = () => CONFIG.home ?? {};
@@ -122,6 +124,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     resetGame(state);
     state.backdrop = true;
     startRun(state, "home");
+    seedRemains(state, state.allShapes ?? state.shapes); // (layers of it there already: src/remains.js)
     warmLeft = 26000; // (game time: it comes on with something on the board already)
     // (the other board: the same pieces, sets and themes, a game of its own, warmed up a little
     // each frame behind the scenes before the camera ever cuts to it)
@@ -133,6 +136,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     other.zenPast = state.zenPast;
     other.backdrop = true;
     startRun(other, "home");
+    seedRemains(other, other.allShapes ?? other.shapes); // (src/remains.js)
     onOther = false;
     otherWarm = 26000;
     camera.reset();
@@ -147,7 +151,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     const M = H().mosaic;
     if (!M || reduced) { mosaic = null; return; }
     const m = buildMosaic(state.allShapes ?? state.shapes, state.allPowerups ?? state.powerups, { cols: M.cols ?? 56, rows: M.rows ?? 34 });
-    mosaic = { ...paintMosaic(m, M.cellPx ?? 20), ready: false };
+    mosaic = { ...paintMosaic(m, M.cellPx ?? 20, undefined, remainsUnder(m, M.cellPx ?? 20)), ready: false };
   }
 
   function stopBackground() {
@@ -485,7 +489,36 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   function calmMosaic() {
     const M = H().mosaic ?? {};
     const m = buildMosaic(state.allShapes ?? state.shapes, state.allPowerups ?? state.powerups, { cols: M.cols ?? 56, rows: M.rows ?? 34 });
-    return { ...paintMosaic(m, M.cellPx ?? 20), ready: false, x: rand(0, m.cols), y: rand(0, m.rows) };
+    return { ...paintMosaic(m, M.cellPx ?? 20, undefined, remainsUnder(m, M.cellPx ?? 20)), ready: false, x: rand(0, m.cols), y: rand(0, m.rows) };
+  }
+
+  // A mosaic with layers of what destroyed blocks leave behind under it, as the boards have
+  // (src/remains.js): some of its pieces gone (CONFIG.home.mosaic.goneShare), the newest of them,
+  // and made-up ones of its own pieces behind those. (Painted first: paintMosaic's `under`.)
+  function remainsUnder(m, cellPx) {
+    if (!CONFIG.remains?.enabled) return null;
+    const share = H().mosaic?.goneShare ?? 0.3, gone = [];
+    const pieces = [...new Set(m.pieces.map(p => p.shape))];
+    m.pieces = m.pieces.filter(p => {
+      if (Math.random() >= share) return true;
+      const mat = p.shape.rotations[p.rot];
+      for (let j = 0; j < mat.length; j++) for (let k = 0; k < mat[0].length; k++) {
+        if (mat[j][k]) gone.push({ x: p.x + k, y: p.y + j, cell: { paint: getShapePaint(p.shape, p.rot, k, j), style: p.shape.style ?? {} } });
+      }
+      return false;
+    });
+    const sprites = new Map();
+    const sprite = (paint, style) => {
+      let cv = sprites.get(paint);
+      if (!cv) {
+        cv = document.createElement("canvas");
+        cv.width = cv.height = cellPx;
+        drawBlockWithPaintStatic(cv.getContext("2d"), 0, 0, cellPx, paint, style);
+        sprites.set(paint, cv);
+      }
+      return cv;
+    };
+    return paintRemains({ cols: m.cols, rows: m.rows, cell: cellPx, pieces, gone, sprite, calm: calmFx() });
   }
   function drawCalm(now) {
     const C = H().calm ?? {}, hold = C.holdMs ?? 9000, fade = C.fadeMs ?? 3000;
@@ -672,6 +705,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     setWholeWindow(true);
     resetGame(state);
     startRun(state, "turbo");
+    seedRemains(state, state.allShapes ?? state.shapes); // (src/remains.js)
     state.backdrop = true;
     state.speed = 1;
   }

@@ -86,7 +86,7 @@ clears.
 | `shapes.js` | Loads `shapes/main_shapes.js`. |
 | `achievements.js` | Tracks and unlocks achievements (saved in the browser). |
 | `render.js` | Draws everything on the board canvas. |
-| `remains.js` | What destroyed blocks leave behind, as light added to the board: their art where they were, sharp and dark, which goes first; a soft blur of it, which goes next; and a wide glow of it, a faint colour across the board, which lingers longest. Red and blue drift apart as it gets older (and it can have scanlines). In layers, which move apart a little when the board shakes. The blocks in play are drawn a little lighter. On to try out, and easy to take out (the top of the file says how). |
+| `remains.js` | What destroyed blocks leave behind, as light added to the board: their art where they were, sharp and dark, which goes first; a soft blur of it, which goes next; and a wide glow of it, a faint colour across the board, which lingers longest. Red and blue drift apart as it gets older (and it can have scanlines). In layers, which move apart a little when the board shakes; the home screen's boards and tiled boards start with layers of it, made up. The blocks in play are drawn a little lighter. On to try out, and easy to take out (the top of the file says how). |
 | `ui.js` | Menus, How to play, achievements page, toasts, HUD, touch + keyboard. |
 | `pausemenu.js` | The pause menu's gallery of the pieces so far, each once, where it last fell, newest first (swipe, or ← → and A D), each with its name and how rare it is; the game over page's, of some of the game's pieces, the one that ended it big in the middle; and the sparkles round the menu. |
 

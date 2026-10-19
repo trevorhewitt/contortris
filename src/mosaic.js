@@ -105,8 +105,9 @@ export function buildMosaic(shapes, powerups, { cols, rows, rng = Math.random, t
 
 // Paint it onto a canvas, `cellPx` a cell, a few pieces at a time (it's a lot of little squares:
 // all at once would hold up a frame): { canvas, step(ms) }, step painting for about that long and
-// saying whether it's all there yet.
-export function paintMosaic(m, cellPx, canvas = document.createElement("canvas")) {
+// saying whether it's all there yet. under(ctx, until): paints what goes under the pieces, if
+// anything, until performance.now() is past `until`, saying whether it's done.
+export function paintMosaic(m, cellPx, canvas = document.createElement("canvas"), under = null) {
   canvas.width = m.cols * cellPx;
   canvas.height = m.rows * cellPx;
   const ctx = canvas.getContext("2d");
@@ -115,6 +116,8 @@ export function paintMosaic(m, cellPx, canvas = document.createElement("canvas")
   let i = 0;
   const step = (ms = 4) => {
     const until = performance.now() + ms;
+    // (what's under the pieces, if anything, first, a little at a time too: src/remains.js)
+    if (under) { if (under(ctx, until)) under = null; return false; }
     while (i < m.pieces.length) {
       const p = m.pieces[i++], mat = p.shape.rotations[p.rot];
       // (what's over the right or bottom edge, round on the left or at the top)

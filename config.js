@@ -107,9 +107,11 @@ export const CONFIG = {
     // at the fewest and the most), shotMs long: in a straight line at a steady speed from the
     // first frame to the cut (speed: screens a second, the screen's longer side), zooming steadily
     // between zoom times as close as filling the screen, turning steadily up to maxTurn degrees.
+    // goneShare: the share of its pieces gone, leaving their art behind as destroyed blocks do
+    // (src/remains.js), in front of layers more of it, made up.
     mosaic: {
       firstMs: [4000, 7000], everyMs: [8000, 13000], shots: [1, 1], shotMs: [1000, 1700], speed: [0.35, 0.9], zoom: [1.15, 3.4], maxTurn: 32,
-      cols: 56, rows: 34, cellPx: 20,
+      cols: 56, rows: 34, cellPx: 20, goneShare: 0.3,
       tags: ["food", "space", "tiles", "landmark", "surreal", "weather", "bugs"],
       themes: { everything: 3, powerups: 1.5, giants: 1.2, few: 1.6, food: 1, space: 0.8, tiles: 0.8, landmark: 0.5, surreal: 0.6, weather: 0.5, bugs: 0.5 },
     },

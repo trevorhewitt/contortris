@@ -1,5 +1,5 @@
 // ============================================================
-// REMAINS — what destroyed blocks leave behind (no DOM, but for drawRemains)
+// REMAINS — what destroyed blocks leave behind (no DOM, but for drawRemains and paintRemains)
 // ============================================================
 // A block destroyed (its row cleared, a Destroyerz going off, zen dissolving the top of the
 // board) leaves its art where it was (CONFIG.remains), under everything still on the board, as
@@ -11,7 +11,8 @@
 // destroyed where one was before takes its place. They come in layers, a new one every few
 // seconds; when the board shakes, each layer moves a little less than the board does, the older
 // the less (parallax). The blocks still in play are drawn a little lighter (liveLift), to stand
-// out.
+// out. (seedRemains makes up layers of it, as if a game had been going a while: the home
+// screen's boards start with some.)
 //
 // It's on to try out, and it's all in here, so it's easy to take out: this file, CONFIG.remains,
 // its section of the developer tools (src/devtools.js), and the hooks, each marked
@@ -19,10 +20,13 @@
 // firePowerupEffect, zenRescue) and ageRemains (updateGame); in src/render.js, drawUnderBlocks
 // and drawBoard (drawRemains, remainsKey, remainsShaken; remainsView, remainsCache and
 // blocksCache for them), quakeTransform's `k`, and liveLift and liftColour (styleKey, getSprite
-// and renderSprite, drawPixelArtDevice's `tone`), and remainsView's `calm`.
+// and renderSprite, drawPixelArtDevice's `tone`), and remainsView's `calm`; in src/home.js,
+// seedRemains (startBackground, startIdleTurbo) and paintRemains (remainsUnder, for newMosaic and
+// calmMosaic); and src/mosaic.js paintMosaic's `under`.
 
 import { CONFIG } from "../config.js";
 import { clamp01 } from "./util.js";
+import { getShapePaint } from "./shapes.js";
 
 const cfg = () => CONFIG.remains ?? {};
 const num = (v, d) => (typeof v === "number" && Number.isFinite(v) ? v : d);
@@ -195,6 +199,62 @@ export function remainsShaken(state) {
   const t = state.fx?.quake?.trauma ?? 0;
   if (t * t * (CONFIG.fx.quake.maxOffsetPx ?? 0) * clamp01(cfg().parallax ?? 0) < 0.2) return false;
   return !!remainsOf(state)?.layers.length && remainsOn(state);
+}
+
+/* =========================
+   Made up: as if a game had been going a while
+   ========================= */
+
+// Layers of remains of every age, made up from `pieces` (shapes: their own art, piece by piece):
+// rows cleared, Destroyerz gone off, the top of a stack dissolved, mostly low on the board. `wrap`
+// (cells): the board's that many cells all round are the far side of the rest of it come round
+// (for a picture that repeats: paintRemains). `newest`: [{ x, y, cell }] as well, just destroyed.
+export function seedRemains(state, pieces, { rng = Math.random, wrap = 0, newest = [] } = {}) {
+  if (!remainsOn(state) || !pieces?.length) return;
+  const r = remainsOf(state, true);
+  const W = r.cols - 2 * wrap, Hh = r.rows - 2 * wrap;
+  if (W < 2 || Hh < 2) return;
+  const life = lasting() ? sharpMs() * 4 : lifeMs(), n = layerCount();
+  r.clock = Math.max(r.clock, life);
+  const put = (cells, x, y, cell) => {
+    x = ((x % W) + W) % W; y = ((y % Hh) + Hh) % Hh;
+    for (const dx of wrap ? [-W, 0, W] : [0]) for (const dy of wrap ? [-Hh, 0, Hh] : [0]) {
+      const X = x + wrap + dx, Y = y + wrap + dy;
+      if (X >= 0 && Y >= 0 && X < r.cols && Y < r.rows) cells.set(Y * r.cols + X, cell);
+    }
+  };
+  // (a piece's own cells where it was put, those that `keep`)
+  const stamp = (cells, keep) => {
+    const p = pieces[Math.floor(rng() * pieces.length)], rot = Math.floor(rng() * p.rotations.length), mat = p.rotations[rot];
+    const x0 = Math.floor(rng() * W) - (mat[0].length >> 1), y0 = keep.y0 + Math.floor(rng() * keep.h) - (mat.length >> 1);
+    for (let y = 0; y < mat.length; y++) for (let x = 0; x < mat[0].length; x++) {
+      if (mat[y][x] && keep.has(x0 + x, y0 + y)) put(cells, x0 + x, y0 + y, { paint: getShapePaint(p, rot, x, y), style: p.style });
+    }
+  };
+  const layers = [];
+  for (let k = 0; k < n; k++) {
+    const cells = new Map();
+    for (let e = 1 + Math.floor(rng() * 2); e > 0; e--) {
+      const kind = rng();
+      // (low on the board, mostly)
+      const low = (h) => Math.min(Hh - h, Math.floor(Hh * (0.3 + 0.7 * Math.sqrt(rng())) - h / 2));
+      let keep;
+      if (kind < 0.5) { const h = 1 + Math.floor(rng() * (kind < 0.15 ? 4 : 2)), y0 = Math.max(0, low(h)); keep = { y0, h, has: (x, y) => !wrap ? x >= 0 && x < W && y >= y0 && y < y0 + h : y >= y0 && y < y0 + h }; }
+      else { const rad = 1.5 + rng() * 2.5, cx = Math.floor(rng() * W), cy = Math.max(0, low(0)); keep = { y0: Math.round(cy - rad), h: Math.ceil(2 * rad), has: (x, y) => (wrap || (x >= 0 && x < W && y >= 0 && y < Hh)) && (x - cx) ** 2 + (y - cy) ** 2 <= rad * rad }; }
+      for (let tries = 0; tries < 60; tries++) stamp(cells, keep);
+    }
+    // (older and older, the newest a few seconds old)
+    layers.push({ born: r.clock - life * (k + 0.15 + 0.7 * rng()) / n, cells, version: 1 });
+  }
+  if (newest.length) {
+    const cells = new Map();
+    for (const { x, y, cell } of newest) put(cells, x, y, { paint: cell.paint, style: cell.style });
+    layers.unshift({ born: r.clock - 1500, cells, version: 1 });
+  }
+  r.layers = [...r.layers, ...layers].sort((a, b) => b.born - a.born);
+  cover(r);
+  fold(r);
+  r.version = ++versions;
 }
 
 /* =========================
@@ -489,4 +549,55 @@ function tint(g, cells, c) {
   }
   g.globalCompositeOperation = "source-over";
   g.globalAlpha = 1;
+}
+
+/* =========================
+   A picture's (src/home.js: its tiled boards)
+   ========================= */
+
+// Made-up remains (seedRemains) for a picture `cols` × `rows` cells of `cell` pixels that repeats
+// in every direction (so they come round at its edges), behind `gone` ([{ x, y, cell }]: the
+// newest). sprite(paint, style): a block's art, `cell` pixels; calm: calmer animations. Returns
+// paint(ctx, until): a layer at a time (it's a lot to draw: all at once would hold up a frame),
+// until performance.now() is past `until`, and once they're all ready, onto ctx; true when it has.
+export function paintRemains({ cols, rows, cell, pieces, gone = [], sprite, rng = Math.random, calm = false }) {
+  if (!cfg().enabled) return () => true;
+  const m = Math.ceil(Math.max(num(cfg().glowBlur, 2.5), num(cfg().softBlur, 0.2))) + 2;
+  const board = Array.from({ length: rows + 2 * m }, () => Array(cols + 2 * m).fill(null));
+  const state = { mode: "home", board };
+  seedRemains(state, pieces, { rng, wrap: m, newest: gone });
+  const r = remainsOf(state), view = { cell, scale: 1, look: "picture", sprite, calm };
+  const todo = [...(r?.layers ?? [])];
+  return (ctx, until = Infinity) => {
+    while (todo.length) {
+      ready(r, todo.pop(), view);
+      if (performance.now() >= until) return false;
+    }
+    if (!r) return true;
+    const cv = canvas(null, (cols + 2 * m) * cell, (rows + 2 * m) * cell), g = cv.getContext("2d");
+    g.fillStyle = "#000";
+    g.fillRect(0, 0, cv.width, cv.height);
+    drawRemains(g, state, view);
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = "lighter";
+    ctx.drawImage(cv, m * cell, m * cell, cols * cell, rows * cell, 0, 0, cols * cell, rows * cell);
+    ctx.restore();
+    cv.width = cv.height = 0;
+    return true;
+  };
+}
+
+// A layer's art made ready to draw, every size of it drawRemains will want (as drawRemains decides).
+function ready(r, layer, view) {
+  const c = cfg(), lk = look(r, layer), full = view.cell * view.scale;
+  const d = layerArt(r, layer, view, lk.sharp >= FAINT || layer === r.layers[0] ? full : blurPixels(full));
+  if (!d) return;
+  const split = lk.shift * view.cell * view.scale >= 1;
+  for (const [blur, strength] of [[num(c.softBlur, 0.2), lk.soft], [num(c.glowBlur, 2.5), lk.glow]]) {
+    if (strength < FAINT) continue;
+    const lo = Math.floor(Math.log2(Math.max(1, blur * d.px)));
+    for (const n of [lo, lo + 1]) { level(r, layer, d, view, n); if (split) channels(d, n); }
+  }
+  if (lk.sharp >= FAINT && split) channels(d, 0);
 }

@@ -5,10 +5,10 @@ import assert from "node:assert/strict";
 
 import { CONFIG } from "../config.js";
 import { SHAPES } from "../shapes/main_shapes.js";
-import { loadShapes } from "../src/shapes.js";
+import { loadShapes, getShapePaint } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { createGameState, startRun, updateGame, hardDropAndLock, on, zenRescue, timeScaleOf } from "../src/game.js";
-import { leaveRemains, ageRemains, remainsAt, remainsKey, liveLift, liftColour } from "../src/remains.js";
+import { leaveRemains, ageRemains, remainsAt, remainsKey, liveLift, liftColour, seedRemains } from "../src/remains.js";
 
 const { shapes, powerups } = loadShapes(SHAPES);
 const byId = (id) => [...shapes, ...powerups].find(s => s.id === id);
@@ -275,4 +275,49 @@ test("the blocks in play a little lighter: each colour by the gamma liveLift, th
     assert.equal(liveLift(), 1);
     assert.equal(liftColour("#808080"), "#808080", "switched off: as they are");
   });
+});
+
+test("made up, as if a game had been going a while: layers of every age, from the pieces' own art; none in the tutorial or switched off", () => {
+  withRemains({ forever: false, layers: 12 }, () => {
+    const state = boardOnly(10, 20);
+    seedRemains(state, shapes, { rng: makeRng(3) });
+    const r = state.remains;
+    assert.ok(r.layers.length >= 6 && r.layers.length <= 12, `${r.layers.length} layers (some covered over by newer ones)`);
+    const paints = new Set(shapes.flatMap(s => s.rotations.flatMap((_, k) => s.rotations[k].flatMap((row, y) => row.map((v, x) => v ? getShapePaint(s, k, x, y) : null)))));
+    const ages = new Set();
+    let cells = 0;
+    for (let y = 0; y < 20; y++) for (let x = 0; x < 10; x++) for (const e of remainsAt(state, x, y)) {
+      cells++;
+      ages.add(e.age);
+      assert.ok(paints.has(e.paint), `${x},${y}: a piece's own art`);
+      assert.ok(e.age > 0 && e.age < 1, `${x},${y}: neither new nor gone`);
+    }
+    assert.ok(cells > 50, `plenty of them: ${cells}`);
+    assert.equal(ages.size, r.layers.length, "each layer its own age");
+    // (and they go on from there, as any would)
+    leaveRemains(state, [{ x: 0, y: 19, cell: block("#aa0000") }]);
+    assert.equal(remainsAt(state, 0, 19)[0].paint, "#aa0000");
+    assert.equal(remainsAt(state, 0, 19)[0].age, 0);
+  });
+  for (const [mode, changes] of [["tutorial", {}], ["normal", { enabled: false }]]) withRemains(changes, () => {
+    const state = { ...boardOnly(10, 20), mode };
+    seedRemains(state, shapes, { rng: makeRng(3) });
+    assert.equal(state.remains, undefined, mode);
+  });
+});
+
+test("made up for a picture that repeats: what goes off one side comes round on the other", () => {
+  const wrap = 3, W = 12, H = 8, state = boardOnly(W + 2 * wrap, H + 2 * wrap);
+  seedRemains(state, shapes, { rng: makeRng(5), wrap, newest: [{ x: 11, y: 7, cell: block("#aa0000") }] });
+  const at = (x, y) => remainsAt(state, x, y).map(e => `${e.paint}@${e.depth}`).join(" ");
+  let some = 0;
+  for (let y = 0; y < H + 2 * wrap; y++) for (let x = 0; x < wrap; x++) {
+    assert.equal(at(x, y), at(x + W, y), `${x},${y}: as the other side`);
+    assert.equal(at(x + W + wrap, y), at(x + wrap, y), `${x + W + wrap},${y}`);
+    if (at(x, y)) some++;
+  }
+  for (let x = 0; x < W + 2 * wrap; x++) for (let y = 0; y < wrap; y++) assert.equal(at(x, y), at(x, y + H), `${x},${y}: as the bottom`);
+  assert.ok(some > 0, "some came round");
+  assert.equal(remainsAt(state, 11 + wrap, 7 + wrap)[0].paint, "#aa0000", "the newest in front");
+  assert.equal(remainsAt(state, 11 + wrap - W, 7 + wrap - H)[0].paint, "#aa0000", "and round at the far corner");
 });
