@@ -898,9 +898,7 @@
     .pgName.cls-expander{ animation-name: growText; color: var(--rgb-g); }
     .pgRarity{ font-family: var(--font-body); font-size: 14px; line-height: 1.25; color: #fff; text-align: center; text-shadow: 0 0 8px rgba(255,255,255,0.25); }
     .pgRarity .pgK{ color: var(--muted); }
-    .pgNone{ display: none; padding: 14px 0 8px; font-family: var(--font-body); font-size: 13px; color: var(--muted); text-align: center; }
-    .pieceGallery.empty .pgStage, .pieceGallery.empty .pgSay, .pieceGallery.empty .pgLast{ display: none; }
-    .pieceGallery.empty .pgNone{ display: block; }
+    .pieceGallery.empty{ display: none; }
     /* the Extra Shiny Pieces in the pause menu (src/shelfui.js bindShelfQueue): a card for each
        one in the bay, in the order they'll come, the next on the left (tagged), with its icon in
        its class's colours, its picture and its name; between two, a button that swaps them, the
@@ -1838,7 +1836,6 @@
                 <div class="pgName"></div>
                 <div class="pgRarity"><span class="pgK">rarity:</span> <span class="pgRare"></span></div>
               </div>
-              <div class="pgNone">Nothing's landed yet.</div>
             </div>
             <div class="devTools" id="devTools" hidden>
               <div class="devTitle">dev: next piece</div>
