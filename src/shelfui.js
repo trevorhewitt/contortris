@@ -7,7 +7,7 @@
 // tutorial's only on its page). Along its bottom, a little icon for each one in it, in the order
 // they'll come, the next on the left: its class's (pieceIcon). A tap on it uses the next one in
 // its queue (shelf.js shelfQueue): the falling piece goes, and that one comes down in its place
-// (game.js useShelf). Space does the same (ui.js). And in the pause menu, the queue to put in
+// (game.js useShelf). Shift does the same (ui.js). And in the pause menu, the queue to put in
 // another order (bindShelfQueue).
 
 import { useShelf } from "./game.js";
@@ -58,7 +58,7 @@ export function bindShelf({ state, root, onUse = () => {}, always = false }) {
     if (icons) icons.innerHTML = queue.map(slot => pieceIcon(slot.shape)).join("");
     const next = queue[0]?.shape.name, then = queue.slice(1).map(slot => slot.shape.name).join(", ");
     btn.setAttribute("aria-label", n ? `Extra Shiny Pieces: ${n}. Use the next one, ${next}${then ? ` (then ${then})` : ""}` : "Extra Shiny Pieces: none");
-    btn.title = n ? `Use the next Extra Shiny Piece, ${next} (Space)` : "Extra Shiny Pieces you get land here";
+    btn.title = n ? `Use the next Extra Shiny Piece, ${next} (Shift)` : "Extra Shiny Pieces you get land here";
     // (one more than there was: the number hops up)
     if (n > count) { tally.classList.remove("bump"); void tally.offsetWidth; tally.classList.add("bump"); }
     count = n;

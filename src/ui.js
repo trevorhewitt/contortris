@@ -1317,6 +1317,7 @@ export function bindUI({ state, renderer, achievements }) {
 
   // Debug: force the next piece to be a powerup (cycles through them all).
   let debugPowerupIdx = 0;
+  let spacePaused = false; // (a Space pressed to pause, not let go yet)
   const EDGE_STEPS = [0, 0.15, 0.3, 0.5, 1];
 
   window.addEventListener("keydown", (e) => {
@@ -1347,14 +1348,19 @@ export function bindUI({ state, renderer, achievements }) {
       else togglePause();
       return;
     }
-    // (Space: the next Extra Shiny Piece, while playing: src/shelfui.js. Anywhere else it's Space
-    // as usual, pressing the button with the focus, say: the pause menu's swaps. But not on the
-    // game over page: a Space meant for the last piece doesn't start the next game)
+    // (Shift: the next Extra Shiny Piece, while playing: src/shelfui.js)
+    if (e.key === "Shift") {
+      if (state.running && !state.gameOver && !state.paused && !currentPanel && !e.repeat) { markInput(state, "keyboard"); shelf.use(); }
+      return;
+    }
+    // (Space: pauses, while playing. Anywhere else it's Space as usual, pressing the button with
+    // the focus: in the pause menu, Resume, or one of the swaps. But not on the game over page: a
+    // Space meant for the last piece doesn't start the next game)
     if (e.code === "Space") {
       if (state.running && !state.gameOver && !state.paused && !currentPanel) {
         e.preventDefault();
-        if (!e.repeat) { markInput(state, "keyboard"); shelf.use(); }
-      } else if (currentPanel === "gameover") e.preventDefault();
+        if (!e.repeat) { spacePaused = true; togglePause(); }
+      } else if (currentPanel === "gameover" || e.repeat) e.preventDefault();
       return;
     }
     if (e.code === "Enter") {
@@ -1430,6 +1436,8 @@ export function bindUI({ state, renderer, achievements }) {
 
   window.addEventListener("keyup", (e) => {
     if (e.code === "ArrowDown" || e.code === "KeyS") state.softDropping = false;
+    // (the Space that paused doesn't go on to press Resume as it's let go)
+    if (e.code === "Space" && spacePaused) { spacePaused = false; e.preventDefault(); }
   });
 
   /* ---------- touch / mouse zones ---------- */
