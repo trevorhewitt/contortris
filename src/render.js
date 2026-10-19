@@ -226,7 +226,7 @@ export function drawIcon(ctx, grid, x, y, sizePx) {
 //   effective: does the effect change this cell (strong) or not (faint)
 // Which animation each class uses for its highlighted cells.
 // Each class has a mark you can tell apart in a single frame:
-//   shrink (Dissolverz): squares closing in; line (Gravitizerz): falling streaks;
+//   shrink (Destroyerz): squares closing in; line (Gravitizerz): falling streaks;
 //   burst (Expanderz): + and x rays shooting out of each cell's centre;
 //   ghost (Phantomz): faint diagonal stripes drifting past, flickering in and out.
 const MARK_STYLE = { destroyer: "shrink", acid: "shrink", expander: "burst", goo: "burst", phantom: "ghost", gravity: "line", blast: "out" };

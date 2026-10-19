@@ -2,7 +2,7 @@
 // THE POWERUP SHELF — powerups kept by, to use when you choose (no DOM)
 // ============================================================
 // In place of the next piece, the player has a bay of Extra Shiny Pieces (CONFIG.shelf): one
-// middling one of each of the three classes (Dissolverz, Gravitizerz, Expanderz; never a combo) in
+// middling one of each of the three classes (Destroyerz, Gravitizerz, Expanderz; never a combo) in
 // every game, picked from a short list, each to use once. The bay on the page (src/shelfui.js)
 // shows how many can be used now, and a tap on it opens its menu, to pick one: the falling piece
 // goes and that one falls in its place (game.js useShelf). In Classic a class's piece only comes

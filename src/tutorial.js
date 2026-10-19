@@ -210,7 +210,7 @@ export const PAGES = [
     pieces: [{ id: "hippo_bellyflop", to: { x: 1 }, then: ["drop"] }, { id: "storm_cloud", to: { x: 9 }, then: ["drop"] }],
   },
   {
-    // (an awkward piece over a heap: the bay's Dissolverz goes in its place, and blasts a round
+    // (an awkward piece over a heap: the bay's Destroyerz goes in its place, and blasts a round
     // hole in the heap, all but its edges)
     id: "shelf", powers: true, shelf: "destroyer",
     text: {

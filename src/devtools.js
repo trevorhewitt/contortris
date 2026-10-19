@@ -106,7 +106,7 @@ function apply(s, on = true) {
   for (const [p, v] of Object.entries(DEFAULTS)) set(p, on && p in s.values ? s.values[p] : v);
   const pu = CONFIG.assist.powerups;
   if (on && s.classes) {
-    // (the acid pieces are Dissolverz too: CLASS_OF in src/powerups.js)
+    // (the acid pieces are Destroyerz too: CLASS_OF in src/powerups.js)
     const off = CLASSES.filter(c => !s.classes.on.includes(c));
     pu.disabledTypes = [...ALWAYS_OFF, ...off, ...(off.includes("destroyer") ? ["acid"] : [])];
     pu.progression.order = s.classes.order ? s.classes.order.filter(c => s.classes.on.includes(c)) : null;

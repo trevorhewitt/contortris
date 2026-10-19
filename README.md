@@ -4,7 +4,7 @@ A falling-block puzzle game where every piece is a silly pixel-art object: fill 
 clears.
 
 - **Classic**: the game plus Shiny Pieces (powerups, in the code; the game itself never says
-  "powerup"), introduced one class at a time: Dissolverz (destroyers and acid), Gravitizerz and
+  "powerup"), introduced one class at a time: Destroyerz (destroyers and acid), Gravitizerz and
   Expanderz, plus Comboz once two classes are in. (Blasts, goo and phantoms still exist in the
   code but are switched off: `assist.powerups.disabledTypes` in `config.js`.) Each new class
   pauses the game with an intro screen (Options turns them off). Each class comes about as often

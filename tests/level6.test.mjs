@@ -472,7 +472,7 @@ test("level 6: no set comes round again until every other one has, even into the
     on(state, (t, d) => { if (t === "spawn" && d.shape.difficulty === 6 && state.pieceSel.level6.group && state.pieceSel.level6.queue.length >= 0) seq.push(d.shape.id); });
     startRun(state, "normal");
     state.devLevel6 = "on";
-    // (every powerup class met from the start, so every set can come: a set with Dissolverz in
+    // (every powerup class met from the start, so every set can come: a set with Destroyerz in
     // it waits for them, and which class comes first is down to the dice)
     for (const c of ["destroyer", "gravity", "expander", "combo"]) state.pieceSel.powerup.shownClasses.add(c);
     const order = [];
@@ -688,10 +688,10 @@ test("a set can have powerups in it: ones that only ever come in it, once their 
   // never outside its set
   const state = make("normal");
   assert.ok(!state.powerups.some(p => p.id === "t_set_only"), "not one of the mode's powerups");
-  // where it can come: not where there are no powerups; in Classic once Dissolverz are met
+  // where it can come: not where there are no powerups; in Classic once Destroyerz are met
   assert.equal(groupPlayable(make("extreme"), g), false, "Extreme has no powerups");
   const n = make("normal");
-  assert.equal(groupPlayable(n, g), false, "not before the Dissolverz have been met");
+  assert.equal(groupPlayable(n, g), false, "not before the Destroyerz have been met");
   n.pieceSel.powerup.shownClasses.add("destroyer");
   assert.equal(groupPlayable(n, g), true);
   assert.equal(groupPlayable(make("god"), g), true, "God mode: everything from the start");

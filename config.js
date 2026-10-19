@@ -1139,7 +1139,7 @@ export const CONFIG = {
       // they're easy to tell apart at a glance (combos show each part in its own colours).
       // hues: [from, to] in degrees (going round the colour wheel), sat/light in %.
       classColours: {
-        destroyer: { hues: [345, 8], sat: 100, light: 56 },    // Dissolverz: red
+        destroyer: { hues: [345, 8], sat: 100, light: 56 },    // Destroyerz: red
         gravity:   { hues: [212, 232], sat: 100, light: 60 },  // Gravitizerz: blue
         expander:  { hues: [122, 148], sat: 100, light: 52 },  // Expanderz: green
         phantom:   { hues: [175, 290], sat: 55, light: 80 },   // Phantomz: pale and ghostly

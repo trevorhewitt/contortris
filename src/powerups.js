@@ -29,11 +29,11 @@ export const DEFAULT_EFFECT_TEXT = {
 };
 
 // Powerup classes as the player sees them. Several types can share a class: acid pieces
-// are Dissolverz too (they dissolve what's around them). The order is the display order.
+// are Destroyerz too (they dissolve what's around them). The order is the display order.
 export const CLASS_OF = { acid: "destroyer" };
 export const classOf = (type) => CLASS_OF[type] ?? type;
 export const CLASS_INFO = {
-  destroyer: { name: "Dissolverz", text: "When it lands, every block in the highlighted area is destroyed." },
+  destroyer: { name: "Destroyerz", text: "When it lands, every block in the highlighted area is destroyed." },
   gravity: { name: "Gravitizerz", text: "When it lands, the blocks in the highlighted area drop down as far as they can, filling the gaps under them." },
   expander: { name: "Expanderz", text: "When it lands, every empty cell in the highlighted area fills up with new blocks." },
   phantom: { name: "Phantomz", text: "Falls straight through other blocks into the deepest gap it fits, and stays there. You can still move and rotate it." },
