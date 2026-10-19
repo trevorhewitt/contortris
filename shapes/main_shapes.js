@@ -116808,7 +116808,7 @@ export const SHAPES = [
   },
   {
     id: "umbrella_for_a_fish",
-    name: "fish umbrella",
+    name: "a fish with an umbrella",
     grid: [
         "XXX",
         "XX."
@@ -116820,7 +116820,7 @@ export const SHAPES = [
       },
     frequency: 1,
     oops: {
-        "many": "fish umbrellas"
+        "many": "fish with umbrellas"
       },
   },
   {
