@@ -160,7 +160,7 @@ export function bindTutorial({ state, togglePause, resumeGame, goToMenu, play })
       textEl.classList.remove("enter"); void textEl.offsetWidth; textEl.classList.add("enter");
       setExtras(page);
     }
-    keysEl.hidden = view !== "keys";
+    keysEl.hidden = view !== "keys" || !!page.shelf; // (the bay's page: the bay on its own, the arrows not needed)
     for (const [v, b] of Object.entries(viewBtns)) b.setAttribute("aria-pressed", String(v === view));
     shelf.refresh();
     if (shown.count !== t.pages.length) {

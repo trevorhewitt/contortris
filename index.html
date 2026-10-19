@@ -1455,8 +1455,9 @@
     }
   
     /* ---------- the tutorial (src/tutorial.js, src/tutorialui.js) ---------- */
-    /* its bar takes the bottom bar's place, a little taller (the fit script makes room for it) */
-    body.tutorial{ --bottom-bar-h: 128px; }
+    /* its bar takes the bottom bar's place, a little taller (the fit script makes room for it):
+       between the dots and the buttons, room for the bay, on its page */
+    body.tutorial{ --bottom-bar-h: 140px; }
     body.tutorial .bottomBar{ width: min(100vw, 600px); grid-template-columns: 1fr; padding-top: 7px; }
     body.tutorial .bottomBar > .bottomLeft, body.tutorial .bottomBar > .bottomCenter, body.tutorial .bottomBar > .bottomRight{ display: none; }
     .tutorialBar{ position: relative; display: flex; flex-direction: column; gap: 6px; min-height: 0; }
