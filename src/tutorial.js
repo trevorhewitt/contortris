@@ -65,20 +65,34 @@ const FILLER = ["#f4f4f6", "#c9c9ce", "#9c9ca3", "#e2e2e7", "#b3b3b9", "#85858c"
 //           shiny: how often a Shiny Piece instead (each put where it leaves the least) }
 export const PAGES = [
   {
+    // (a ledge each side, halfway up a pile: the two of them finish the row between them)
     id: "move",
     text: { touch: "Tap the left or right side of the board to move the piece.", keys: "Press [←] or [→] to move the piece." },
     board: [
-      "....dd..ee....",
-      "....abbbccc...",
+      "......aa......",
+      ".....bcaa.....",
+      "....bbcddef...",
+      "....gbcddef...",
+      "hhhi.jcklef.mm",
+      "nno.jjkklefmm.",
+      "nn.pjqqkr.sstt",
+      "u.pppqq.rrvsst",
     ],
     pieces: [{ id: "cat_loaf", to: { x: 0 } }, { id: "lost_ufo", to: { x: 11 } }],
   },
   {
+    // (a slot halfway down that it only fits upside down: two rows go)
     id: "turn",
     text: { touch: "Tap the top of the board to turn it.", keys: "Press [↑] to turn it." },
     board: [
-      "aaabbbcc...ddd",
-      "eeffggghh.iijj",
+      ".aa.........b.",
+      "cdaa.e.....fb.",
+      "ccghee.....fbi",
+      "jcggekkl...fbi",
+      "jmgnnnkko.pfqi",
+      "jm.rnssooopqq.",
+      "jmrr.sstt.puqv",
+      ".mwrxxtt.ypuuv",
     ],
     pieces: [{ id: "lost_ufo", to: { rot: 2, x: 8 } }],
   },
@@ -89,22 +103,34 @@ export const PAGES = [
       keys: "Hold [↓] to bring it down faster; double press it to drop it straight down.",
     },
     dropMs: 420, // (slower, so you can see it speed up)
-    // (a fat piece into a gap two wide: three rows go)
+    // (a fat piece into a gap two wide, halfway up the pile: three rows go)
     board: [
-      "aaabbc..ddefff",
-      "gggbbc..ddehhh",
-      "iijjkk..llmmnn",
+      ".a..........b.",
+      "aa..........bc",
+      "dae........fbc",
+      "ddeggh..ijffbc",
+      "dkelhh..ijjfmc",
+      "kkelhn..iojpmm",
+      "kqq.rnnsioopmt",
+      "u.qqrrn.vwoptt",
+      "uuxx.ryyvw.ptz",
     ],
     pieces: [{ id: "message", rot: 1, x: 6, to: { rot: 1, x: 6 }, then: ["hold", "drop"] }],
   },
   {
+    // (a gap one wide, halfway up the pile: three rows go, and everything over them comes down)
     id: "rows",
     text: "Fill a row all the way across and it disappears.",
     board: [
-      "aa..bbb.cc.dd.",
-      "ee..gghhiijjkk",
-      "ef.lggmmnnoopp",
-      "ff.llqqrrsstuu",
+      "..........aa..",
+      "b......c..daa.",
+      "be..fff.gddhi.",
+      "be.jkflggdhhii",
+      "be.jjmlgnnnhio",
+      "pe.qjmlrsnttoo",
+      "ppqq.mlrru.vow",
+      ".pqxym.zruuvvw",
+      "AABxxC.zzDuE.F",
     ],
     pieces: [{ id: "candy_cane", to: { x: 2 }, then: ["drop"] }],
   },
@@ -118,8 +144,10 @@ export const PAGES = [
       { cls: "expander", id: "expanding_foam", say: "fill the gaps in it with new blocks" },
     ],
     board: [
-      "a..bb....cc..d",
-      "aee.bff.gcchdd",
+      "aa.b.....cde..",
+      "fabb.gh.icddj.",
+      "ffb.gghhickjjl",
+      "mfnngo.hickkjl",
     ],
   },
   {
@@ -161,21 +189,25 @@ export const PAGES = [
     again: ["hippo_bellyflop", "sumo_wrestler", "steamroller"],
   },
   {
-    // (a pile full of gaps in the middle, some of them covered over: filled in, the bottom three
-    // rows go; and a gap on the right in the two above, for the next one)
+    // (a pile full of gaps down the middle, some of them covered over: filled in, five rows go;
+    // the gaps left under them are for the next ones)
     id: "expander", cls: "expander",
     text: "{name} fill every empty cell in their highlight with new blocks.",
     more: "Drop one on a pile full of gaps.",
     board: [
-      "aa.......b....",
-      "cdd.e...ff...g",
-      "cdj.eh.llf...g",
-      "oop.m..nrsstuu",
-      "vwp..x..ryztAu",
-      "vwBB..C.DyzFAG",
+      ".a..........bc",
+      "daa........bbc",
+      "daeff...gghibc",
+      "deeff.j..hhhkc",
+      "delm.n.o.pqkkr",
+      "sllm..oo.ppkrr",
+      "stlmu.o.vvpwrx",
+      "s.ym.zAA.vBwxx",
+      "sC.Dzz.A.BBwEE",
+      ".CCDDz.FFBGGEE",
     ],
-    pieces: [{ id: "expanding_foam", to: { x: 5 }, then: ["drop"] }],
-    again: ["packing_peanuts", "spilled_paint", "storm_cloud", "microwave_popcorn"],
+    pieces: [{ id: "expanding_foam", to: { x: 6 }, then: ["drop"] }],
+    again: ["packing_peanuts", "microwave_popcorn", "spilled_paint", "storm_cloud"],
   },
   {
     // (a row of junk halfway up a pile full of gaps: it burns that row away and fills the gaps
@@ -201,23 +233,28 @@ export const PAGES = [
     again: ["pile_driver", "jelly_mould"],
   },
   {
-    // (overhangs on the left, everything in them just enough to fill the bottom four rows once
-    // it comes down; gaps on the right: the two together take the four rows away)
+    // (overhangs on the left, enough to fill it to halfway once they come down; gaps on the right;
+    // and the middle, where neither reaches, solid but for a hole in each of the bottom two rows:
+    // the two together take the four rows over those away)
     id: "plan", powers: true,
     text: "Think about where each one goes: a {gravity} on the left drops those overhangs into their holes, and an {expander} on the right fills the gaps.",
     board: [
-      ".a...cc.......",
-      "ddxbb.c.......",
-      "dd.eb..k.ll..m",
-      "ffge.h.k..n.mm",
-      "f.g.jhioo.n..p",
-      "..gjjhioo..q.p",
+      ".a.b..........",
+      "aaab..........",
+      "c.dbee.f......",
+      "cc..geef......",
+      ".ch.g.ifj.k.l.",
+      "m.hh.iifjn.ll.",
+      ".o..ppiqj.rl.s",
+      "t..u.ppqjrr.vs",
+      "..wuu.x.yr.vvs",
+      "zww.uA.ByCCv.s",
     ],
-    pieces: [{ id: "hippo_bellyflop", to: { x: 1 }, then: ["drop"] }, { id: "storm_cloud", to: { x: 9 }, then: ["drop"] }],
+    pieces: [{ id: "hippo_bellyflop", to: { x: 0 }, then: ["drop"] }, { id: "storm_cloud", to: { x: 10 }, then: ["drop"] }],
   },
   {
-    // (an awkward piece over a heap: the bay's Destroyerz goes in its place, and blasts a round
-    // hole in the heap, all but its edges)
+    // (an awkward piece over a hill: the bay's Destroyerz goes in its place, and blasts a round
+    // hole in the top of the hill)
     id: "shelf", powers: true, shelf: "destroyer",
     text: {
       touch: "Every game you get an Extra Shiny Piece of each class to keep for when you need it: tap Extra Shiny Pieces and the next one takes the falling piece's place.",
@@ -225,12 +262,16 @@ export const PAGES = [
     },
     dropMs: 420,
     board: [
-      "......ab......",
-      ".....cabd.....",
-      "....ecc.df....",
-      "...gehhiiff...",
-      "...g.jhk.lm...",
-      "..nnjjkkolmm..",
+      "......aa......",
+      ".....bcaa.....",
+      "....bbc.dd....",
+      "...efbcddgg...",
+      "..eeff.hhhh...",
+      ".iejfkllmmmn..",
+      ".iojjk.llmpnn.",
+      "qiojrksttppun.",
+      "qio.rkssttpuuv",
+      "qwoxry.szzAuvv",
     ],
     pieces: [{ id: "pyramid", firstMs: 1800, then: ["shelf"] }], // (a moment to see the finger go to the bay)
   },

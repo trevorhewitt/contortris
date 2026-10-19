@@ -109,10 +109,12 @@ test("tutorial: left to itself, each page does what it shows, and goes round aga
     tutorialGoTo(state, i);
     updateGame(state, 16);
     const start = occupied(state), resets = t.resets, before = { ...log, shelved }, full = blocks();
-    let presses = 0, seq = t.seq, least = full;
+    const bottom = () => state.board[rows - 1].map(Boolean).join(), firstBottom = bottom();
+    let presses = 0, seq = t.seq, least = full, lastBottom = firstBottom;
     run(state, 90000, () => {
       if (t.seq !== seq) { presses++; seq = t.seq; }
       if (t.resets === resets && !state.active && !state.effect) least = Math.min(least, blocks());
+      if (t.resets === resets) lastBottom = bottom();
       return t.resets !== resets;
     });
     assert.equal(t.resets, resets + 1, `${page.id}: it went round again`);
@@ -126,9 +128,11 @@ test("tutorial: left to itself, each page does what it shows, and goes round aga
     // what it shows: rows going (and for a powerup, the powerup doing something)
     if (page.cls || page.powers) assert.ok(log.fired > before.fired, `${page.id}: the powerup did something`);
     else assert.ok(log.rows > before.rows, `${page.id}: rows went`);
+    // (the basics: the rows that go are halfway up the pile, not at the bottom of it)
+    if (["move", "turn", "down", "rows"].includes(page.id)) assert.equal(lastBottom, firstBottom, `${page.id}: its bottom row stays`);
     // (a powerup page: until the board is nearly gone)
     if (page.again) assert.ok(least <= 12, `${page.id}: the board nearly gone (${least} of ${full} left)`);
-    if (page.id === "plan") assert.ok(log.rows - before.rows >= 4 && least <= 12, `${page.id}: the two together take the rows away (${least} left)`);
+    if (page.id === "plan") assert.ok(log.rows - before.rows >= 4, `${page.id}: the two together take four rows away (${log.rows - before.rows})`);
     if (page.shelf) assert.equal(shelved - before.shelved, 1, `${page.id}: it used the shelf`);
   }
   assert.equal(log.over, 0, "never game over");
