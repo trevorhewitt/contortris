@@ -699,8 +699,10 @@ function begin(state, t, a) {
   // (a mode's page: where zen's autopilot would put it, playing as a person would, never in
   // under an overhang; or else somewhere sensible)
   // (with the piece after it in mind, as a person would: t.freeNext)
-  const calm = spec.free ? bestPlacement({ board: state.board, mode: "zen" }, a.shape, undefined, 4, t.freeNext?.shape?.powerup ? null : t.freeNext?.shape ?? null) : null;
-  const to = spec.free ? (calm && !calm.slide ? { rot: calm.rot, x: calm.x } : bestSpot(state, a.shape, a.x))
+  // (by zen's usual reckoning, low and tidy: not its calm one, which leaves a well open rather
+  // than cover it, and builds up beside it until it tops out)
+  const zen = spec.free ? bestPlacement({ board: state.board }, a.shape, undefined, 4, t.freeNext?.shape?.powerup ? null : t.freeNext?.shape ?? null) : null;
+  const to = spec.free ? (zen && !zen.slide ? { rot: zen.rot, x: zen.x } : bestSpot(state, a.shape, a.x))
     : spec.to === "power" ? powerSpot(state, a.shape) ?? bestSpot(state, a.shape, a.x)
     : spec.to;
   t.goals = [...(spec.via ?? []), { rot: to?.rot ?? a.rotIdx, x: to?.x ?? a.x }].map(g => ({ rot: g.rot ?? a.rotIdx, x: g.x ?? a.x }));
