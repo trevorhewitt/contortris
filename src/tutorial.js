@@ -215,7 +215,7 @@ export const PAGES = [
     id: "shelf", powers: true, shelf: "destroyer",
     text: {
       touch: "Every game you get an Extra Shiny Piece of each class to keep for when you need it: tap Extra Shiny Pieces and the next one takes the falling piece's place.",
-      keys: "Every game you get an Extra Shiny Piece of each class to keep for when you need it: click Extra Shiny Pieces and the next one takes the falling piece's place.",
+      keys: "Every game you get an Extra Shiny Piece of each class to keep for when you need it: press [Space] (or click Extra Shiny Pieces) and the next one takes the falling piece's place.",
     },
     dropMs: 420,
     board: [

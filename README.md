@@ -12,11 +12,11 @@ clears.
   mode, says how many you have (×0 when none): one strong Shiny Piece of each of the three
   classes per game, the same ones every game (a tidal wave, bathroom tiles and a hippo in a tutu:
   never a combo), each added the moment its class unlocks (its first piece down on the board,
-  after its intro), the number hopping up as it comes. Tap it and the next one takes the falling
-  piece's place: they go in the order they came, shown along its bottom by their classes' icons
-  (the Destroyerz' square, the Expanderz' star, the Gravitizerz' arrow; a combo's side by side),
-  the next on the left. The pause menu shows them in that order, and the button between two swaps
-  them. No keys for it.
+  after its intro), the number hopping up as it comes. Tap it (or press Space; Escape pauses) and
+  the next one takes the falling piece's place: they go in the order they came, shown along its
+  bottom by their classes' icons (the Destroyerz' square, the Expanderz' star, the Gravitizerz'
+  arrow; a combo's side by side), the next on the left. The pause menu shows them in that order,
+  and the button between two swaps them.
   It starts easy and gets harder as it goes (`difficulty` in `config.js`, `src/difficulty.js`):
   a bit faster with every piece all the way, fewer Shiny Pieces and less rescue, and more awkward
   pieces; giants and level 6 sets come more often, but only while the stack is low, never near

@@ -10,8 +10,8 @@
 // autopilot presses, as it presses it: on a
 // touch screen a finger tapping the part of the board that does it (the zones are ui.js
 // getZone's, each lit faintly in its own colour as the finger gets there); with a keyboard, a
-// little picture of the arrow keys in the bar, the key lighting up; and the bay, which has no
-// keys, the finger either way, tapping it. It starts with
+// little picture of the arrow keys in the bar, the key lighting up; and the bay, the finger
+// either way, tapping it. It starts with
 // whichever the device looks like it has, goes with whatever the player actually uses, and
 // Touch and Keys switch it by hand.
 // Playing at all (a tap on the board, a key that moves the piece) takes the piece over

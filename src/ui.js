@@ -1347,9 +1347,14 @@ export function bindUI({ state, renderer, achievements }) {
       else togglePause();
       return;
     }
+    // (Space: the next Extra Shiny Piece, while playing: src/shelfui.js. Anywhere else it's Space
+    // as usual, pressing the button with the focus, say: the pause menu's swaps. But not on the
+    // game over page: a Space meant for the last piece doesn't start the next game)
     if (e.code === "Space") {
-      e.preventDefault();
-      togglePause();
+      if (state.running && !state.gameOver && !state.paused && !currentPanel) {
+        e.preventDefault();
+        if (!e.repeat) { markInput(state, "keyboard"); shelf.use(); }
+      } else if (currentPanel === "gameover") e.preventDefault();
       return;
     }
     if (e.code === "Enter") {
