@@ -8,7 +8,7 @@ import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour, om
 import { getShapePaint } from "./shapes.js";
 import { getActiveMatrix, getGhostDropY } from "./game.js";
 import { resolvePowerupArea, computeEffect, isPhantomPowerup, classOf, comesDown } from "./powerups.js";
-import { drawRemains, remainsKey, remainsShaken } from "./remains.js";
+import { drawRemains, remainsKey, remainsShaken, liveLift, liftColour } from "./remains.js";
 
 const DEFAULT_STYLE = {};
 
@@ -155,7 +155,9 @@ function drawBlockWithPaint(ctx, px, py, cellSize, paint, style = {}) {
 
 // Enhanced look: pixel art laid out on the device-pixel grid (even pixel
 // sizes at any scale), no per-cell outline — edges are drawn per piece.
-function drawPixelArtDevice(ctx, sizePx, paint, baseColor) {
+// (tone: each colour through it first, if given: the blocks in play a little lighter, src/remains.js)
+function drawPixelArtDevice(ctx, sizePx, paint, baseColor, tone = null) {
+  const t = tone ?? ((c) => c);
   if (paint && typeof paint === "object" && paint.pixels && paint.k) {
     const k = paint.k;
     const b = new Array(k + 1);
@@ -163,12 +165,12 @@ function drawPixelArtDevice(ctx, sizePx, paint, baseColor) {
     for (let sy = 0; sy < k; sy++) {
       for (let sx = 0; sx < k; sx++) {
         const c = paint.pixels[sy][sx];
-        ctx.fillStyle = (typeof c === "string" && isHexColour(c)) ? c : baseColor;
+        ctx.fillStyle = t((typeof c === "string" && isHexColour(c)) ? c : baseColor);
         ctx.fillRect(b[sx], b[sy], b[sx + 1] - b[sx], b[sy + 1] - b[sy]);
       }
     }
   } else {
-    ctx.fillStyle = (typeof paint === "string") ? paint : baseColor;
+    ctx.fillStyle = t((typeof paint === "string") ? paint : baseColor);
     ctx.fillRect(0, 0, sizePx, sizePx);
   }
 }
@@ -466,6 +468,9 @@ export function createRenderer(boardCanvas, nextCanvas) {
   // --- caches (all rebuilt when the backing scale or cell style changes) ---
   let spriteObjCache = new WeakMap(); // paint object -> canvas
   let spriteStrCache = new WeakMap(); // style object -> Map(colour -> canvas)
+  // (the same, a little lighter, for the blocks in play: src/remains.js liveLift)
+  let liftObjCache = new WeakMap();
+  let liftStrCache = new WeakMap();
   const boardCache = { canvas: document.createElement("canvas"), version: -1, styleKey: "" };
   // (what destroyed blocks left behind, src/remains.js: on the background, and the blocks on their
   // own, for over it while the board shakes)
@@ -477,7 +482,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   const backdrop = { cut: -1, canvas: null };
 
   const isEnhanced = () => CONFIG.render.cellStyle !== "classic";
-  function styleKey() { return `${CONFIG.render.cellStyle}|${CONFIG.render.enhanced.edgeStrength}|${highContrast() ? "hc" : ""}`; }
+  function styleKey() { return `${CONFIG.render.cellStyle}|${CONFIG.render.enhanced.edgeStrength}|${highContrast() ? "hc" : ""}|${liveLift()}`; }
 
   function computeScale() {
     // Integer backing scale so cells land on whole device pixels; the browser
@@ -490,6 +495,8 @@ export function createRenderer(boardCanvas, nextCanvas) {
   function invalidateCaches() {
     spriteObjCache = new WeakMap();
     spriteStrCache = new WeakMap();
+    liftObjCache = new WeakMap();
+    liftStrCache = new WeakMap();
     boardCache.version = -1;
     staticLayers = null;
     overlayCache.key = "";
@@ -522,34 +529,38 @@ export function createRenderer(boardCanvas, nextCanvas) {
     return c;
   }
 
-  // One cached canvas per distinct block paint.
-  function getSprite(paint, style) {
+  // One cached canvas per distinct block paint. (The blocks in play are a little lighter, while
+  // what destroyed blocks leave behind is on: src/remains.js liveLift; `plain`, as they are, for
+  // what's left.)
+  function getSprite(paint, style, plain = false) {
     const enhanced = isEnhanced();
+    const lift = !plain && enhanced && liveLift() !== 1;
+    const objCache = lift ? liftObjCache : spriteObjCache, strCache = lift ? liftStrCache : spriteStrCache;
     if (paint && typeof paint === "object") {
-      let spr = spriteObjCache.get(paint);
+      let spr = objCache.get(paint);
       if (!spr) {
-        spr = renderSprite(paint, style, enhanced);
-        spriteObjCache.set(paint, spr);
+        spr = renderSprite(paint, style, enhanced, lift);
+        objCache.set(paint, spr);
       }
       return spr;
     }
     const st = style ?? DEFAULT_STYLE;
-    let byColour = spriteStrCache.get(st);
-    if (!byColour) { byColour = new Map(); spriteStrCache.set(st, byColour); }
+    let byColour = strCache.get(st);
+    if (!byColour) { byColour = new Map(); strCache.set(st, byColour); }
     let spr = byColour.get(paint);
     if (!spr) {
-      spr = renderSprite(paint, st, enhanced);
+      spr = renderSprite(paint, st, enhanced, lift);
       byColour.set(paint, spr);
     }
     return spr;
   }
 
-  function renderSprite(paint, style, enhanced) {
+  function renderSprite(paint, style, enhanced, lift = false) {
     const size = cell * scale;
     const c = makeCanvas(size, size);
     const g = c.getContext("2d");
     if (enhanced) {
-      drawPixelArtDevice(g, size, paint, style?.baseColor ?? "#FFFFFF");
+      drawPixelArtDevice(g, size, paint, style?.baseColor ?? "#FFFFFF", lift ? liftColour : null);
     } else {
       g.scale(scale, scale);
       drawBlockWithPaint(g, 0, 0, cell, paint, style ?? {});
@@ -842,17 +853,15 @@ export function createRenderer(boardCanvas, nextCanvas) {
   }
 
   // What destroyed blocks left behind, for src/remains.js to draw as the board's blocks are drawn,
-  // and (place) the board with its shake k of the way, for each layer of it (none: at rest).
+  // and (place) the board with its shake k of the way, for each layer of it, s pixels a board pixel
+  // (none: at rest).
   function remainsView(state) {
     return {
-      cell, scale, look: styleKey(), sprite: getSprite,
-      place: state && ((ctx, k) => { ctx.setTransform(scale, 0, 0, scale, 0, 0); quakeTransform(ctx, state, k); punchTransform(ctx, state); }),
+      cell, scale, look: styleKey(), sprite: (paint, style) => getSprite(paint, style, true),
+      place: state && ((ctx, k, s = scale) => { ctx.setTransform(s, 0, 0, s, 0, 0); quakeTransform(ctx, state, k); punchTransform(ctx, state); }),
     };
   }
 
-  // Under the blocks: the background, and what destroyed blocks left behind on it (src/remains.js),
-  // cached together, and drawn again only when what's left changes. (`shaken`: the board's shaking
-  // enough for its layers to be seen to move apart, so they're drawn each where it is.)
   // High contrast (src/settings.js): every cell's border, clear, over the background and what
   // destroyed blocks left, under the blocks.
   function drawCellBorders(ctx) {
@@ -867,6 +876,9 @@ export function createRenderer(boardCanvas, nextCanvas) {
     ctx.restore();
   }
 
+  // Under the blocks: the background, and what destroyed blocks left behind on it (src/remains.js),
+  // cached together, and drawn again only when what's left changes. (`shaken`: the board's shaking
+  // enough for its layers to be seen to move apart, so they're drawn each where it is.)
   function drawUnderBlocks(ctx, state, shaken) {
     const key = remainsKey(state);
     if (shaken || !key) {
@@ -900,7 +912,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   // moves a little less than the board does, so then the blocks come from a cache of their own.)
   function drawBoard(ctx, state) {
     const fx = state.fx;
-    const shaken = remainsShaken(state);
+    const shaken = !calmFx() && remainsShaken(state); // (calmer animations: the board never shakes)
     const animating = fx.rowFall.active || fx.moveAnim.active || fx.growAnim.active || !!fx.ghosts;
     if (animating) {
       drawUnderBlocks(ctx, state, shaken);

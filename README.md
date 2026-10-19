@@ -86,7 +86,7 @@ clears.
 | `shapes.js` | Loads `shapes/main_shapes.js`. |
 | `achievements.js` | Tracks and unlocks achievements (saved in the browser). |
 | `render.js` | Draws everything on the board canvas. |
-| `remains.js` | What destroyed blocks leave behind: their art where they were, darker and faded, in layers that move apart a little when the board shakes. On to try out, and easy to take out (the top of the file says how). |
+| `remains.js` | What destroyed blocks leave behind: their art where they were, darker and a little blurred, in layers, newest in front, that get darker and blurrier as they get older until they fade away (a dark glow of coloured light over the board), and move apart a little when the board shakes. The blocks in play are drawn a little lighter. On to try out, and easy to take out (the top of the file says how). |
 | `ui.js` | Menus, How to play, achievements page, toasts, HUD, touch + keyboard. |
 | `pausemenu.js` | The pause menu's gallery of the pieces so far, each once, where it last fell, newest first (swipe, or ← → and A D), each with its name and how rare it is; the game over page's, of some of the game's pieces, the one that ended it big in the middle; and the sparkles round the menu. |
 
@@ -136,9 +136,11 @@ Otherwise it downloads the updated file for you to drop in.
 - `assist.pieceMix.hard.firstGiantBetween`: the first giant always lands in this range of pieces.
 - `assist.variety.giants.repeatPenalty`: how strongly a giant you've already had is avoided.
 - `scoring`: points for placing, destroying and clearing.
-- `remains`: what destroyed blocks leave behind (`src/remains.js`): how dark, faded and grey,
-  fading away or there for good, its layers and their parallax, and the modes it's not in
-  (`enabled: false` switches it off).
+- `remains`: what destroyed blocks leave behind (`src/remains.js`): how dark, faded, grey and
+  blurred it is new, how much darker and blurrier its layers get as they get older, how long they
+  take to fade away (or whether they're there for good), their parallax, how much lighter the
+  blocks in play are drawn while it's on, and the modes it's not in (`enabled: false` switches it
+  off).
 - `difficulty`: for Classic and God mode, the easy start, how long it takes to get hard, how hard
   it gets, the speed (by how far into the game it is), what "hard" means, and how often each
   powerup class comes when.
@@ -159,9 +161,10 @@ page has:
   per piece after that), how they get harder, what "hard" means, how often each class comes at
   the start, halfway and once it's hard, and Shiny Pieces overall (how often, and how fast they
   go off). Changed ones show in yellow.
-- **What destroyed blocks leave behind**: on or off, how much darker, how faded and how grey it
-  is, how long it takes to fade away (or whether it lasts for good), and the parallax when the
-  board shakes. These change it at once.
+- **What destroyed blocks leave behind**: on or off, how much darker, how faded, how grey and how
+  blurry it is new, how much darker and blurrier it gets as it gets older, how long it takes to
+  fade away (or whether it lasts for good), the parallax when the board shakes, and how much
+  lighter the blocks in play are. These change it at once.
 - **Copy settings**: copies just what you've changed, as text to paste into a message.
 - **Back to the usual** and **Turn developer tools off** (everything back to the game's own).
 

@@ -83,12 +83,16 @@ const GROUPS = [
   // (what destroyed blocks leave behind: src/remains.js; these change it at once)
   { title: "What destroyed blocks leave behind", items: [
     ["remains.enabled", "on"],
-    ["remains.darker", "how much darker (0 as it was, 1 black)", 0, 1, 0.05],
-    ["remains.faded", "how faded (0 solid, 1 gone)", 0, 1, 0.05],
+    ["remains.darker", "how much darker, new (0 as it was, 1 black)", 0, 1, 0.05],
+    ["remains.faded", "how faded, new (0 solid, 1 gone)", 0, 1, 0.05],
     ["remains.saturation", "colour (0 grey, 1 as it was, 2 twice as strong)", 0, 2, 0.05],
+    ["remains.blur", "how blurry, new (cells)", 0, 1, 0.02],
+    ["remains.darkerWithAge", "...and darker as they get older (1: black by the end)", 0, 1, 0.05],
+    ["remains.blurWithAge", "...and blurrier (cells more by the end)", 0, 3, 0.05],
     ["remains.fadeAwaySec", "fade away over (seconds)", 5, 600, 5],
     ["remains.forever", "...or last for good"],
     ["remains.parallax", "parallax when the board shakes (1: the oldest keep still)", 0, 1, 0.05],
+    ["remains.liveLift", "the blocks in play lighter (gamma: 1 as they are)", 1, 2, 0.05],
   ] },
 ];
 

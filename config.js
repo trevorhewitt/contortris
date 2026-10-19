@@ -674,24 +674,31 @@ export const CONFIG = {
 
   // What destroyed blocks leave behind (src/remains.js): a block destroyed (its row cleared, a
   // Destroyerz going off, zen dissolving the top of the board) leaves its art where it was, under
-  // everything still on the board, `darker` (0 as it was, 1 black), `faded` (0 solid, 1 not there
-  // at all) and its colour `saturation` times as strong (0 grey, 1 as it was); the last destroyed
-  // in a cell is the one that shows there. They fade away over fadeAwaySec seconds, or last for
-  // good (forever: until something else is destroyed there). They come in layers, newest on top,
-  // a new one every layerSec at most, and no more than `layers` of them (the oldest go into the
-  // one after them); when the board shakes, each moves less than the board does, the older the
-  // less, the oldest (1 - parallax) of the way with it. Not in the modes in notIn. (On for now, to
-  // try out: the developer tools can change all this, and switch it off.)
+  // everything still on the board. New, it's `darker` (0 as it was, 1 black), `faded` (0 solid, 1
+  // not there at all), its colour `saturation` times as strong (0 grey, 1 as it was) and blurred
+  // `blur` cells. They come in layers, newest in front, no more than one every layerSec seconds
+  // (or fadeAwaySec / layers, if that's longer), and no more than `layers` of them. As a layer
+  // gets older it gets darker (darkerWithAge: by the end, that much darker again, 1 black),
+  // blurrier (blurWithAge: by the end, that many cells more) and further back, until after
+  // fadeAwaySec seconds it has gone; or, forever, it stops getting older three quarters of the way
+  // there, and stays. When the board shakes, each layer moves less than the board does, the older
+  // the less, the oldest (1 - parallax) of the way with it. While this is on, the blocks still in
+  // play are a little lighter (liveLift: a gamma, 1 as they are), to stand out. Not in the modes in
+  // notIn. (On for now, to try out: the developer tools can change all this, and switch it off.)
   remains: {
     enabled: true,
     darker: 0.6,
     faded: 0.5,
-    saturation: 0.6,
+    saturation: 0.8,
+    blur: 0.12,
+    darkerWithAge: 0.5,
+    blurWithAge: 0.75,
     fadeAwaySec: 90,
-    forever: true,
+    forever: false,
     parallax: 0.6,
-    layers: 4,
+    layers: 8,
     layerSec: 4,
+    liveLift: 1.15,
     notIn: ["tutorial"],
   },
 
