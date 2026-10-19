@@ -27,18 +27,19 @@ function drop(state) {
   for (let k = 0; k < 400 && state.effect; k++) updateGame(state, 16);
 }
 
-// `pieces` pieces of a game, the stack reset to `rows` rows before each one
 // (past Classic's first few rows, before which no big pieces come: src/selection.js bigsWait)
 const pastFirstRows = (state) => { state.rowsDestroyed = Math.max(state.rowsDestroyed, CONFIG.modes[state.mode]?.bigAfterRows ?? 0); };
 
+// `pieces` pieces of a game, the stack reset to `rows` rows before each one (`during`: the level 6
+// set under way as each piece came, if any)
 function play(mode, seed, pieces, rows = 3) {
   const state = createGameState(shapes, powerups, { rng: makeRng(seed), groups: GROUPS });
-  const served = [], intros = [];
-  on(state, (t, d) => { if (t === "spawn") { served.push(d.shape); if (d.isNew) intros.push(d.shape.id); } });
+  const served = [], intros = [], during = [];
+  on(state, (t, d) => { if (t === "spawn") { served.push(d.shape); during.push(state.pieceSel.level6?.group); if (d.isNew) intros.push(d.shape.id); } });
   startRun(state, mode);
   pastFirstRows(state);
   for (let i = 0; i < pieces && !state.gameOver; i++) { setStack(state, rows); drop(state); }
-  return { state, served, intros };
+  return { state, served, intros, during };
 }
 
 test("god mode: everything is open from the first piece, with no intro screens", () => {
@@ -243,12 +244,13 @@ test("god mode: after a set, and after a few giants close together, a calm spell
   }
   let ends = 0;
   for (const seed of [1, 2, 3, 4]) {
-    const { served } = play("god", seed * 7, 220);
+    const { served, during } = play("god", seed * 7, 220);
     for (let i = 0; i < served.length; i++) {
       if (served[i].difficulty !== 6) continue;
       // the whole run of this set's pieces, one after another (a set can have small pieces in it:
-      // Noah's raindrops)
-      const gs = sets.get(served[i].id), ofSet = (k) => [...(sets.get(served[k].id) ?? [])].some(g => gs.has(g));
+      // Noah's raindrops; but one that comes once it's over is an ordinary piece, beans in the calm
+      // after the beans. A set is over as its last piece comes.)
+      const gs = sets.get(served[i].id), ofSet = (k) => [...(sets.get(served[k].id) ?? [])].some(g => gs.has(g)) && (gs.has(during[k]) || gs.has(during[k - 1]));
       let j = i;
       for (let k = i + 1; k < served.length && k <= j + 1; k++) if (ofSet(k)) j = k;
       const after = served.slice(j + 1, j + lo); // (one short, in case an ordinary raindrop ran on)

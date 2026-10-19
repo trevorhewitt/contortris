@@ -5,7 +5,7 @@
 // ============================================================
 
 import { clamp01, easeOutBack, makeRng } from "./util.js";
-import { resolvePowerupArea, computeEffect, phantomLandingY, isPhantomPowerup } from "./powerups.js";
+import { resolvePowerupArea, computeEffect, phantomLandingY, isPhantomPowerup, classOf } from "./powerups.js";
 import { getShapePaint } from "./shapes.js";
 import { drawBlockWithPaintStatic, drawPowerupMark } from "./render.js";
 
@@ -166,7 +166,9 @@ export function createDemo(canvas, shape, { cell = 16 } = {}) {
         for (const i of idx) {
           const x = i % COLS, y = (i / COLS) | 0;
           const filled = !!board[y][x];
-          const eff = (lp.type === "goo" || lp.type === "phantom") ? true : lp.type === "expander" ? !filled : filled;
+          // (where it lands, a Destroyerz's own blocks: they go with everything else there)
+          const eff = (lp.type === "goo" || lp.type === "phantom") ? true : lp.type === "expander" ? !filled
+            : filled || (classOf(lp.type) === "destroyer" && best.placed.some(p => p.x === x && p.y === y));
           drawPowerupMark(ctx, lp, x * cell, y * cell, cell, now, x, y, Math.hypot(x - best.centre.x, y - best.centre.y), eff, 1 + charge, best.centre);
         }
       }

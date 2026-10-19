@@ -242,10 +242,15 @@ test("powerup effects never rotate with the piece", () => {
   assert.ok(p.rotations.length > 1);
   // rotation 0: the three cells under a 3x1 piece. Rotation 1 (1x3 upright): still three cells side
   // by side (a row, not a column), centred on the piece the same way (and where it lay before it
-  // turned goes with them: a row too).
-  const rowsOf = (a, own) => new Set(a.cells.filter(c => !!c.own === own).map(c => c.dy)).size;
-  for (const a of p.powerup.areaRotations) assert.ok(rowsOf(a, false) === 1 && rowsOf(a, true) <= 1, JSON.stringify(a.cells));
-  assert.equal(p.powerup.areaRotations[1].cells.filter(c => c.own).length, 2, "the two cells beside it where it lay");
+  // turned goes with them: a row too; and the piece itself as it is now, as a Destroyerz is always
+  // in its own area).
+  const isPiece = (k, c) => !!p.rotations[k][c.dy]?.[c.dx];
+  const rowsOf = (a, own, k) => new Set(a.cells.filter(c => !!c.own === own && !(own && isPiece(k, c))).map(c => c.dy)).size;
+  p.powerup.areaRotations.forEach((a, k) => {
+    assert.ok(rowsOf(a, false, k) === 1 && rowsOf(a, true, k) <= 1, JSON.stringify(a.cells));
+    p.rotations[k].forEach((row, dy) => row.forEach((on, dx) => on && assert.ok(a.cells.some(c => c.dx === dx && c.dy === dy), `turned ${k}: the piece is in its area`)));
+  });
+  assert.equal(p.powerup.areaRotations[1].cells.filter(c => c.own && !isPiece(1, c)).length, 2, "the two cells beside it where it lay");
 });
 
 test("a powerup's intro comes just before it falls, once a class, and nothing is picked ahead of its turn", async () => {

@@ -3,7 +3,7 @@
 // ============================================================
 
 import { isHexColour } from "./util.js";
-import { normalisePowerup, areaRotationsFor, withOwnCells } from "./powerups.js";
+import { normalisePowerup, areaRotationsFor, withOwnCells, withinOwnArea } from "./powerups.js";
 import { normaliseFillArt, isFillArt } from "./fillart.js";
 
 // Splits the raw SHAPES array into regular blocks and powerups.
@@ -226,6 +226,8 @@ export function loadAndNormaliseShapes(rawShapes, defaults = {}) {
         if (powerup.under) powerup.areaRotations = allowed.map(i => underArea(allRotations[i]));
         // (and where the piece was before it turned goes with it: no blank, or block left standing)
         else allowed.forEach((i, k) => withOwnCells(powerup, k, allRotations[0], allRotations[i]));
+        // (a Destroyerz is in its own area, however it's turned: it goes with what it destroys)
+        allowed.forEach((i, k) => withinOwnArea(powerup, k, allRotations[i]));
       }
     }
 

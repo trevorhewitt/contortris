@@ -345,7 +345,40 @@ test("where a powerup was before it turned goes with its area: no blank there, a
     { type: "expander", area: { origin: [1, 0], grid: ["....", "....", "....", "vvvv"] } },
   ] });
   const [ring, fill] = combo.parts;
-  assert.deepEqual(own(ring.areaRotations[1]), ["-1,0"]);
+  // (and its top block where it is now, in the ring's hole: a Destroyerz is always in its own area)
+  assert.deepEqual(own(ring.areaRotations[1]), ["-1,0", "0,0"]);
   assert.deepEqual(own(fill.areaRotations[1]), []);
-  assert.deepEqual(own(combo.areaRotations[1]), ["-1,0"], "and the combo's whole area");
+  assert.deepEqual(own(combo.areaRotations[1]), ["-1,0", "0,0"], "and the combo's whole area");
+});
+
+test("every Destroyer is in its own area, however it's turned: it goes with everything else there", async () => {
+  const { resolvePowerupArea, rollScatter, classOf, computeEffect } = await import("../src/powerups.js");
+  const { makeRng } = await import("../src/util.js");
+  const { powerups } = loadShapes(SHAPES);
+  const cols = 40, rows = 40, at = 15;
+  let n = 0;
+  for (const s of powerups) {
+    const destroys = (p) => classOf(p.type) === "destroyer";
+    if (!(s.powerup.parts ?? [s.powerup]).some(destroys)) continue;
+    n++;
+    // (a spray at random: however it's rolled)
+    const rolls = s.powerup.scatter ? Array.from({ length: 25 }, (_, i) => rollScatter(s, makeRng(i + 1))) : [s];
+    for (const shape of rolls) shape.rotations.forEach((mat, k) => {
+      const area = resolvePowerupArea(shape.powerup, k, at, at, cols, rows);
+      const layers = shape.powerup.parts ? shape.powerup.parts.map((p, i) => [p, area.parts[i]]) : [[shape.powerup, area]];
+      const hit = new Set(layers.filter(([p]) => destroys(p)).flatMap(([, a]) => a.indices));
+      mat.forEach((row, y) => row.forEach((on, x) => {
+        if (on) assert.ok(hit.has((at + y) * cols + at + x), `${s.id}, turned ${k}: its block (${x}, ${y}) is in its area`);
+      }));
+    });
+  }
+  assert.ok(n > 50, `${n} of them`);
+  // one drawn only round itself (a ring, its own cells left out) goes too, with what's round it
+  const { powerups: [ring] } = loadShapes([{ id: "ring_test", name: "a test", grid: ["XX"], color: "#884422", rotation: { mode: "any" },
+    powerup: { type: "destroyer", tier: 2, consume: false, area: { origin: [1, 1], grid: ["####", "#..#", "####"] } } }]);
+  const board = Array.from({ length: 6 }, () => Array(6).fill(null));
+  for (let y = 1; y <= 3; y++) for (let x = 1; x <= 4; x++) board[y][x] = { pid: y === 2 && (x === 2 || x === 3) ? 1 : 2 };
+  const fx = computeEffect(board, ring.powerup, { area: resolvePowerupArea(ring.powerup, 0, 2, 2, 6, 6), placed: [{ x: 2, y: 2 }, { x: 3, y: 2 }], pid: 1, centre: { x: 2.5, y: 2 }, cols: 6, rows: 6 });
+  assert.equal(fx.destroyed.length, 12, "the ring round it and the piece itself");
+  assert.ok(board.every(row => row.every(c => !c)), "nothing left");
 });

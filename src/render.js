@@ -1143,8 +1143,9 @@ export function createRenderer(boardCanvas, nextCanvas) {
         const isPiece = pieceCells.has(i);
         if (isPiece && lp.type === "expander") continue; // (a fill down to the floor passes through it: nothing to mark)
         const filled = !!board[y][x] && !isPiece;
+        // (a Destroyerz's own blocks are in its area, and go with everything else there)
         const effective = (lp.type === "goo" || lp.type === "phantom") ? true
-          : lp.type === "expander" ? (!filled && !isPiece) : filled;
+          : lp.type === "expander" ? (!filled && !isPiece) : filled || (isPiece && classOf(lp.type) === "destroyer");
         const dist = Math.hypot(x - centre.x, y - centre.y);
         drawPowerupMark(bctx, lp, x * cell, y * cell, cell, now, x, y, dist, effective, intensity, centre);
       }

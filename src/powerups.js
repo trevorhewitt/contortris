@@ -43,7 +43,8 @@ export const CLASS_INFO = {
   goo: { name: "Goo", text: "Melts when it lands and flows down into the lowest gaps it can reach." },
 };
 
-// Which consume by default (vanish when they fire).
+// Which consume by default (vanish when they fire). (A Destroyerz is always in its own area,
+// withinOwnArea: it goes with everything else there.)
 const CONSUMES = { destroyer: true, gravity: true, expander: false, acid: true, blast: true, goo: true, phantom: false, combo: true };
 
 // How helpful a powerup is (1 = barely, 5 = a lifesaver) when the data doesn't say.
@@ -321,7 +322,9 @@ export function rollScatter(shape, rng = Math.random) {
   const pu = shape?.powerup;
   // (one already rolled, say by zen's director to see what it would do, keeps its spray)
   if (!pu?.scatter || pu.rolled) return shape;
-  return { ...shape, powerup: { ...pu, areaRotations: scatterAreas(shape.rotations, pu.scatter, rng), rolled: true } };
+  const rolled = { ...pu, areaRotations: scatterAreas(shape.rotations, pu.scatter, rng), rolled: true };
+  shape.rotations.forEach((mat, k) => withinOwnArea(rolled, k, mat)); // (the piece itself in it too)
+  return { ...shape, powerup: rolled };
 }
 
 function unionAreas(list) {
@@ -358,7 +361,6 @@ export function withOwnCells(pu, k, mat0, mat) {
   if (!all.length) return;
   const sx = Math.floor((mat[0].length - mat0[0].length) / 2), sy = Math.floor((mat.length - mat0.length) / 2);
   const isPiece = (x, y) => !!mat[y]?.[x];
-  const inArea = (a, x, y) => a.cells.some(c => c.dx === x && c.dy === y) || a.rows.includes(y) || a.cols.includes(x) || (a.downs ?? []).some(c => c.dx === x && c.dy <= y);
   const solid = (x, y) => (!pu.consume && isPiece(x, y)) || all.some(p => inArea(p.areaRotations[k], x, y));
   let left = [];
   mat0.forEach((row, y) => row.forEach((on, x) => {
@@ -391,6 +393,25 @@ function areaDistance(a, x, y) {
   for (const k of a.cols) d = Math.min(d, Math.abs(k - x));
   for (const c of a.downs ?? []) d = Math.min(d, Math.hypot(c.dx - x, Math.max(0, c.dy - y)));
   return d;
+}
+
+// Is the cell (x, y), from the piece's top-left, in an area?
+function inArea(a, x, y) {
+  return a.cells.some(c => c.dx === x && c.dy === y) || a.rows.includes(y) || a.cols.includes(x) || (a.downs ?? []).some(c => c.dx === x && c.dy <= y);
+}
+
+// A Destroyerz is always in its own area, however it's turned: the piece is highlighted with
+// everything else it will destroy, and goes with it (none destroys only something away from
+// itself). Its blocks in turn `k` (`mat`) that the area as drawn leaves out go in (`own`, as
+// above); a combo's go to its destroying part, and to the combo's whole area too.
+export function withinOwnArea(pu, k, mat) {
+  const parts = (pu?.parts?.length ? pu.parts : [pu]).filter(p => p?.areaRotations?.[k] && classOf(p.type) === "destroyer");
+  if (!parts.length) return;
+  mat.forEach((row, y) => row.forEach((on, x) => {
+    if (!on || parts.some(p => inArea(p.areaRotations[k], x, y))) return;
+    parts[0].areaRotations[k].cells.push({ dx: x, dy: y, own: true });
+    if (parts[0] !== pu) pu.areaRotations[k].cells.push({ dx: x, dy: y, own: true }); // (a combo's whole area too)
+  }));
 }
 
 // Cells within `reach` (Manhattan) steps of the piece's blocks, not the blocks themselves.

@@ -1081,10 +1081,10 @@
   const PU_DEFAULT_CONSUME = { destroyer: true, gravity: true, expander: false, acid: true, blast: true, goo: true, phantom: false, combo: true };
   // What each type does (shown under the type select)
   const PU_TYPE_DOC = {
-    destroyer: "Destroys every block in its area.",
+    destroyer: "Destroys every block in its area. Its own blocks are always in it (the game adds them), so it goes too.",
     gravity: "Blocks in its area fall (or slide) until they hit something.",
     expander: "Fills every empty cell in its area with its fill art.",
-    acid: "Dissolves every block it touches: its area is every cell within reach steps of its blocks, plus any extra area.",
+    acid: "Dissolves every block it touches: its area is every cell within reach steps of its blocks, plus any extra area, and its own blocks.",
     blast: "Throws the blocks in its area outwards by up to push cells, then they fall.",
     goo: "Melts: its blocks (× volume) flow down into the lowest gaps they can reach, drawn with its fill art.",
     phantom: "Falls straight through blocks into the deepest gap it fits, and stays there as blocks.",
@@ -3733,7 +3733,7 @@
     drawRegionBase(ctx, v, cs, cells, tgt && tgt.part ? rgba(partColour(tgt.part.type), 0.08) : "rgba(255,207,106,0.07)");
     for (const p of others){
       const col = partColour(p.type);
-      const pc = regionCellList(p.cells).concat(p.type === "acid" ? touchCells(pieceCells, p.reach) : []);
+      const pc = regionCellList(p.cells).concat(p.type === "acid" ? touchCells(pieceCells, p.reach) : [], rainbowType(p.type) === "destroyer" ? pieceCells.map(c => ({ ...c, ch: "#" })) : []);
       const set = new Set([...affectedCells(pc, v.x0, v.y0, v.cols, v.rows)].map(k => { const [x, y] = parseKey(k); return areaKey(x - v.x0, y - v.y0); }));
       ctx.fillStyle = rgba(col, 0.13);
       for (const k of set){ const [x, y] = parseKey(k); ctx.fillRect(x * cs, y * cs, cs, cs); }
@@ -3755,8 +3755,9 @@
       drawSetOutline(ctx, tset, (x) => x * cs, (y) => y * cs, cs, "rgba(140,255,110,0.85)", [4, 3]);
     }
 
-    // rainbow highlight (what the game shows)
-    const aff = affectedCells(cells.concat(touch), v.x0, v.y0, v.cols, v.rows);
+    // rainbow highlight (what the game shows: a destroyer's own blocks are always in it)
+    const own = rainbowType(type) === "destroyer" ? pieceCells.map(c => ({ ...c, ch: "#" })) : [];
+    const aff = affectedCells(cells.concat(touch, own), v.x0, v.y0, v.cols, v.rows);
     const ctr = { x: (pieceBox().x0 + pieceBox().x1 + 1) / 2, y: (pieceBox().y0 + pieceBox().y1 + 1) / 2 };
     for (const k of aff){
       const [x, y] = parseKey(k);
@@ -4235,6 +4236,12 @@
       // goo / phantom: the game ignores any area; acid: its touch area plus an optional extra area
       if (PU_AREA_TYPES.includes(powerup.type) || !PU_TYPES.includes(powerup.type)) area = regionObjectCells(powerup.area, tx0, ty0);
       if (powerup.type === "acid") touch = touchCells(blocks, powerup.reach);
+      // (a destroyer's own blocks are always in its area, the game's withinOwnArea: a combo's go
+      // in its first destroying part's)
+      const own = blocks.map(b => ({ x: b.x, y: b.y, ch: "#" }));
+      const first = parts && parts.find(q => q.type === "destroyer" || q.type === "acid");
+      if (first) first.cells = first.cells.concat(own);
+      else if (area && (powerup.type === "destroyer" || powerup.type === "acid")) area = area.concat(own);
     }
     const zones = shape && isPlainObject(shape.zones)
       ? Object.entries(shape.zones).filter(([, z]) => isPlainObject(z)).map(([name, z]) => ({ name, cells: regionObjectCells(z, tx0, ty0) }))

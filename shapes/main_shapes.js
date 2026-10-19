@@ -52,11 +52,13 @@
  *
  * powerup: {
  *   type: "destroyer" | "gravity" | "expander" | "acid" | "blast" | "goo" | "phantom" | "combo",
- *     destroyer: destroys every block in its area
+ *     destroyer: destroys every block in its area (its own blocks are always in it, however
+ *                it's turned, whatever the area as drawn: it goes too)
  *     gravity:   blocks in its area fall (or slide) until they hit something
  *     expander:  fills every empty cell in its area with `fill`
  *     acid:      dissolves every block it touches (its area is worked out from its shape:
- *                every cell within `reach` steps of one of its blocks, plus any `area`)
+ *                every cell within `reach` steps of one of its blocks, plus any `area`, and
+ *                its own blocks, as a destroyer's)
  *     blast:     throws the blocks in its area outwards by up to `push` cells, then they fall
  *     goo:       melts: its blocks (× `volume`) flow down into the lowest gaps they can reach
  *     phantom:   falls straight through blocks into the deepest gap it fits; stays as blocks
@@ -142488,7 +142490,7 @@ export const SHAPES = [
             ".....##....."
           ]
         },
-        "intro": "Bursts where it lands, destroying every block in a starburst twelve across and nine high around it. The spam is fine.",
+        "intro": "Bursts where it lands, destroying every block in a starburst twelve across and nine high around it, the tin included. There is always more spam.",
         "setOnly": true
       },
     rotation: {

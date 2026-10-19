@@ -1211,7 +1211,8 @@ function stackHeight(board) {
 }
 
 // Roughly how many cells a powerup's area takes in (all its parts), on a full board: what it
-// could clear, settle or fill at most.
+// could clear, settle or fill at most. (Its area as drawn: a Destroyerz's own blocks, in it too,
+// aren't the board's.)
 export function powerupReach(shape) {
   const pu = shape?.powerup;
   if (!pu) return 0;
@@ -1219,12 +1220,13 @@ export function powerupReach(shape) {
   let n = 0;
   for (const p of pu.type === "combo" ? (pu.parts ?? []) : [pu]) {
     const a = p.areaRotations?.[0];
-    if (a) n += a.cells.length + a.rows.length * cols + a.cols.length * rows + (a.downs?.length ?? 0) * rows / 2;
+    if (a) n += a.cells.filter(c => !c.own).length + a.rows.length * cols + a.cols.length * rows + (a.downs?.length ?? 0) * rows / 2;
   }
   return n;
 }
 
-// Roughly how many cells a destroyer (or a combo's destroying part) wipes on a full board.
+// Roughly how many cells a destroyer (or a combo's destroying part) wipes on a full board (as
+// drawn, as above).
 export function destroyerCells(shape) {
   const pu = shape?.powerup;
   if (!pu) return 0;
@@ -1232,7 +1234,7 @@ export function destroyerCells(shape) {
   for (const p of pu.type === "combo" ? (pu.parts ?? []) : [pu]) {
     if (p.type !== "destroyer" && p.type !== "acid") continue;
     const a = p.areaRotations?.[0];
-    if (a) n += a.cells.length + a.rows.length * CONFIG.board.cols + a.cols.length * CONFIG.board.rows + (a.downs?.length ?? 0) * CONFIG.board.rows / 2;
+    if (a) n += a.cells.filter(c => !c.own).length + a.rows.length * CONFIG.board.cols + a.cols.length * CONFIG.board.rows + (a.downs?.length ?? 0) * CONFIG.board.rows / 2;
   }
   return n;
 }
