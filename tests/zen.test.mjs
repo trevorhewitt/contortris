@@ -188,8 +188,9 @@ test("zen: each piece is a new shape, and comes in somewhere other than the last
     const a = state.active, s = a.shape;
     pieces.push({ from: a.x, to: a.x + s.rotations[a.rotIdx][0].length, cleared: false, powerup: !!s.powerup });
     if (s.powerup) return;
-    // (a level 6 set is a set: its pieces can all be of a kind)
-    if ((s.difficulty ?? 1) !== 6) { checked++; if (shapes.slice(-N).includes(outline(s))) repeats++; }
+    // (a level 6 set is a set: its pieces can all be of a kind; and a giant is never swapped for
+    // another, calmPiece: the one-block "nothing", say, that brings "everything" after it)
+    if ((s.difficulty ?? 1) < 4) { checked++; if (shapes.slice(-N).includes(outline(s))) repeats++; }
     shapes.push(outline(s));
   });
   run(state, log, 15 * 60000);
