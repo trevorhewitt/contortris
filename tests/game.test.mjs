@@ -351,7 +351,11 @@ test("a piece about to top out gets a last chance: it can still be moved out of 
     const { state } = setup();
     settle(state, CONFIG.timing.baseDropMs + CONFIG.timing.lockDelayMsKeyboard + 300);
     assert.ok(state.active?.lastChance);
+    updateGame(state, 16);
+    assert.equal(state.active.lastChance.safe, false, "it flashes red");
     while (tryMove(state, 1, 0)) { /* over to the well */ }
+    updateGame(state, 16);
+    assert.equal(state.active.lastChance.safe, true, "on its way down the well: no more flashing");
     settle(state, 3000);
     assert.equal(state.gameOver, false, "saved");
   }
