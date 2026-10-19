@@ -85,14 +85,17 @@ const GROUPS = [
   // (what destroyed blocks leave behind: src/remains.js; these change it at once)
   { title: "What destroyed blocks leave behind", items: [
     ["remains.enabled", "on"],
-    ["remains.darker", "how much darker, new (0 as it was, 1 black)", 0, 1, 0.05],
-    ["remains.faded", "how faded, new (0 solid, 1 gone)", 0, 1, 0.05],
-    ["remains.saturation", "colour (0 grey, 1 as it was, 2 twice as strong)", 0, 2, 0.05],
-    ["remains.blur", "how blurry, new (cells)", 0, 1, 0.02],
-    ["remains.darkerWithAge", "...and darker as they get older (1: black by the end)", 0, 1, 0.05],
-    ["remains.blurWithAge", "...and blurrier (cells more by the end)", 0, 3, 0.05],
-    ["remains.fadeAwaySec", "fade away over (seconds)", 5, 600, 5],
-    ["remains.forever", "...or last for good"],
+    ["remains.darker", "the sharp art: how much darker (0 as it was, 1 black)", 0, 1, 0.05],
+    ["remains.faded", "...how faded (0 solid, 1 gone)", 0, 1, 0.05],
+    ["remains.saturation", "...colour (0 grey, 1 as it was, 2 twice as strong)", 0, 2, 0.05],
+    ["remains.sharpSec", "...gone over (seconds)", 1, 120, 1],
+    ["remains.softBlur", "the soft blur: how wide (cells)", 0.05, 1, 0.05],
+    ["remains.softStrength", "...how strong", 0, 1, 0.05],
+    ["remains.softSec", "...gone over (seconds)", 1, 300, 1],
+    ["remains.glowBlur", "the glow: how wide (cells)", 0.5, 4, 0.1],
+    ["remains.glowStrength", "...how strong", 0, 1, 0.05],
+    ["remains.fadeAwaySec", "...lingers (seconds)", 5, 600, 5],
+    ["remains.forever", "...or all of it for good"],
     ["remains.parallax", "parallax when the board shakes (1: the oldest keep still)", 0, 1, 0.05],
     ["remains.liveLift", "the blocks in play lighter (gamma: 1 as they are)", 1, 2, 0.05],
   ] },
@@ -144,7 +147,7 @@ export function applySavedDevSettings() {
 // The settings as text, to hand on: only what differs from the game's own
 export function devSettingsText() {
   const s = load(), changed = {};
-  for (const [p, v] of Object.entries(s.values)) if (v !== DEFAULTS[p]) changed[p] = v;
+  for (const [p, v] of Object.entries(s.values)) if (p in DEFAULTS && v !== DEFAULTS[p]) changed[p] = v; // (not ones there are no longer)
   const out = { eztrixDevSettings: 1, changed };
   if (s.classes) out.powerupClasses = { on: s.classes.on, order: s.classes.order ?? "usual (random)" };
   return JSON.stringify(out, null, 2);

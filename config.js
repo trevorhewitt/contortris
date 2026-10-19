@@ -675,31 +675,36 @@ export const CONFIG = {
 
   // What destroyed blocks leave behind (src/remains.js): a block destroyed (its row cleared, a
   // Destroyerz going off, zen dissolving the top of the board) leaves its art where it was, under
-  // everything still on the board. New, it's `darker` (0 as it was, 1 black), `faded` (0 solid, 1
-  // not there at all), its colour `saturation` times as strong (0 grey, 1 as it was) and blurred
-  // `blur` cells. They come in layers, newest in front, no more than one every layerSec seconds
-  // (or fadeAwaySec / layers, if that's longer), and no more than `layers` of them. As a layer
-  // gets older it gets darker (darkerWithAge: by the end, that much darker again, 1 black),
-  // blurrier (blurWithAge: by the end, that many cells more) and further back, until after
-  // fadeAwaySec seconds it has gone; or, forever, it stops getting older three quarters of the way
-  // there, and stays. When the board shakes, each layer moves less than the board does, the older
-  // the less, the oldest (1 - parallax) of the way with it. While this is on, the blocks still in
-  // play are a little lighter (liveLift: a gamma, 1 as they are), to stand out. Not in the modes in
-  // notIn. (On for now, to try out: the developer tools can change all this, and switch it off.)
+  // everything still on the board, as light (added to the board, not laid over it): three of it,
+  // each fading at its own rate. Its sharp art, `darker` (0 as it was, 1 black), `faded` (0 solid,
+  // 1 not there at all), its colour `saturation` times as strong (0 grey, 1 as it was), gone over
+  // sharpSec seconds; a soft blur of it (softBlur cells wide, softStrength strong: 1 as bright as
+  // the art in play), gone over softSec; and a wide glow of it (glowBlur cells wide, glowStrength
+  // strong), rising as the sharp art goes, then a long, slow tail, gone after fadeAwaySec seconds
+  // (or, forever, they stop getting older once the sharp art has gone, and stay). A block destroyed
+  // where one was before takes its place. They come in layers, a new one every layerSec seconds, no
+  // more than `layers` of them (the two nearest in age merged into one). When the board shakes,
+  // each layer moves less than the board does, the older the less, the oldest (1 - parallax) of
+  // the way with it. While this is on, the blocks still in play are a little lighter (liveLift: a
+  // gamma, 1 as they are), to stand out. Not in the modes in notIn. (On for now, to try out: the
+  // developer tools can change all this, and switch it off.)
   remains: {
     enabled: true,
-    darker: 0.6,
+    darker: 0.7,
     faded: 0.5,
     saturation: 0.8,
-    blur: 0.12,
-    darkerWithAge: 0.5,
-    blurWithAge: 0.75,
-    fadeAwaySec: 90,
+    sharpSec: 20,
+    softBlur: 0.2,
+    softStrength: 0.1,
+    softSec: 40,
+    glowBlur: 2.5,
+    glowStrength: 0.2,
+    fadeAwaySec: 160,
     forever: false,
-    parallax: 0.6,
-    layers: 8,
+    parallax: 0.3,
+    layers: 12,
     layerSec: 4,
-    liveLift: 1.15,
+    liveLift: 1.1,
     notIn: ["tutorial"],
   },
 

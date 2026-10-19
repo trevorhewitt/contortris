@@ -103,94 +103,94 @@ test("zen dissolving the top of the board leaves what it dissolved there", () =>
   for (let y = ROWS - keep; y < ROWS; y++) assert.deepEqual(remainsAt(state, 0, y), [], "the rows it kept: none");
 });
 
-test("a block destroyed where one was before goes in front of it, in a newer layer; the older one stays behind", () => {
-  withRemains({ forever: false, fadeAwaySec: 60, layers: 8, layerSec: 4 }, () => {
+test("a block destroyed where one was before takes its place, in a newer layer (being light, they'd add up); the rest of the older one stays behind", () => {
+  withRemains({ forever: false, layerSec: 4 }, () => {
     const state = boardOnly();
-    // (fading away over 60 s in no more than 8 layers: a new one every 7.5 s at most)
     leaveRemains(state, [{ x: 1, y: 3, cell: block("#aa0000") }, { x: 2, y: 3, cell: block("#00aa00") }]);
-    ageRemains(state, 8000);
+    ageRemains(state, 5000); // (a new layer every 4 s)
     leaveRemains(state, [{ x: 1, y: 3, cell: block("#0000aa") }]);
-    assert.deepEqual(paintsAt(state, 1, 3), ["#0000aa", "#aa0000"], "the newer in front");
-    assert.deepEqual(depthsAt(state, 1, 3), [0, 1]);
+    assert.deepEqual(paintsAt(state, 1, 3), ["#0000aa"], "the newer, only");
+    assert.deepEqual(depthsAt(state, 1, 3), [0]);
     assert.deepEqual(paintsAt(state, 2, 3), ["#00aa00"]);
     assert.deepEqual(depthsAt(state, 2, 3), [1], "a layer back");
-    const [front, back] = remainsAt(state, 1, 3);
+    const [front] = remainsAt(state, 1, 3), [back] = remainsAt(state, 2, 3);
     assert.deepEqual(front.style, { baseColor: "#0000aa" });
-    assert.ok(front.age < back.age && front.alpha > back.alpha && front.blur < back.blur, "the one behind older, fainter and blurrier");
+    assert.ok(front.age < back.age && front.sharp > back.sharp, "the one behind older, its sharp art fainter");
 
     // (in the same layer, the last destroyed there takes the place of the one before)
     ageRemains(state, 1000);
     leaveRemains(state, [{ x: 1, y: 3, cell: block("#aaaa00") }]);
-    assert.deepEqual(paintsAt(state, 1, 3), ["#aaaa00", "#aa0000"]);
+    assert.deepEqual(paintsAt(state, 1, 3), ["#aaaa00"]);
+    // (and a layer left with nothing goes)
+    ageRemains(state, 5000);
+    leaveRemains(state, [{ x: 2, y: 3, cell: block("#00aaaa") }]);
+    assert.equal(state.remains.layers.length, 2);
   });
 });
 
-test("no more than `layers` layers: there for good, the oldest go into the one after them; fading away, a layer goes as one", () => {
-  withRemains({ forever: true, fadeAwaySec: 12, layers: 3, layerSec: 4 }, () => {
+test("no more than `layers` layers: the two nearest in age (for the look of them) go into one", () => {
+  for (const forever of [false, true]) withRemains({ forever, sharpSec: 20, softSec: 60, fadeAwaySec: 160, layers: 3, layerSec: 4 }, () => {
     const state = boardOnly();
-    leaveRemains(state, [{ x: 1, y: 2, cell: block("#aa0000") }]);
-    for (let x = 0; x < 5; x++) {
-      ageRemains(state, 5000); // (a new layer each time)
+    // (new layers 0, 5, 50 and 55 s in: 55 s on, 50 and 55 s old are nearer than 0 and 5)
+    for (const [t, x] of [[0, 0], [5000, 1], [45000, 2], [5000, 3]]) {
+      ageRemains(state, t);
       leaveRemains(state, [{ x, y: 3, cell: block(`#00000${x}`) }]);
-      if (x === 1) leaveRemains(state, [{ x: 1, y: 2, cell: block("#00aa00") }]);
+      if (x < 2) leaveRemains(state, [{ x: 5, y: 2, cell: block(x ? "#00aa00" : "#aa0000") }]);
     }
-    assert.deepEqual([0, 1, 2, 3, 4].map(x => depthsAt(state, x, 3)), [[2], [2], [2], [1], [0]]);
-    assert.deepEqual(paintsAt(state, 1, 2), ["#00aa00"], "gone into one: the newer one there, in place of the older");
-  });
-  // (fading away, a new layer no more often than fadeAwaySec / layers, so there are never more
-  // than that, and the oldest has gone before another comes)
-  withRemains({ forever: false, fadeAwaySec: 60, layers: 3, layerSec: 4 }, () => {
-    const state = boardOnly();
-    for (let x = 0; x < 5; x++) {
-      leaveRemains(state, [{ x, y: 3, cell: block(`#00000${x}`) }]);
-      ageRemains(state, 5000);
-    }
-    assert.deepEqual([0, 1, 2, 3, 4].map(x => depthsAt(state, x, 3)), [[1], [1], [1], [1], [0]]);
-    ageRemains(state, 34000); // (59 s since the first)
+    assert.deepEqual([0, 1, 2, 3].map(x => depthsAt(state, x, 3)), [[2], [2], [1], [0]], `forever: ${forever}`);
+    assert.deepEqual(paintsAt(state, 5, 2), ["#00aa00"], "gone into one: the newer one there, in place of the older");
+    assert.equal(remainsAt(state, 1, 3)[0].age, remainsAt(state, 0, 3)[0].age, "all of it the same age");
+    if (forever) return;
+    // (fading away, the two of them on average: one cell 55 s old (the other: covered), two 50 s; and it goes as one)
+    assert.ok(Math.abs(remainsAt(state, 0, 3)[0].age - 155 / 3 / 160) < 1e-9);
+    ageRemains(state, 108000); // (163 s since the first)
     assert.equal(Object.keys(allRemains(state)).length, 5);
     ageRemains(state, 1000);
-    assert.deepEqual(Object.keys(allRemains(state)), ["4,3"], "the first layer's gone, all of it at once");
+    assert.deepEqual(Object.keys(allRemains(state)), ["2,3", "3,3"], "the oldest layer's gone, all of it at once");
   });
 });
 
-test("as a layer gets older it gets fainter, darker and blurrier, and after fadeAwaySec it's gone", () => {
-  withRemains({ forever: false, fadeAwaySec: 10, faded: 0.5, darkerWithAge: 0.7, blur: 0.1, blurWithAge: 1 }, () => {
+test("the sharp art goes first, then the soft blur; the glow rises as the sharp art goes and lingers longest", () => {
+  withRemains({ forever: false, darker: 0.6, faded: 0.5, sharpSec: 10, softSec: 30, softStrength: 0.3, glowStrength: 0.5, fadeAwaySec: 100 }, () => {
     const state = boardOnly();
     leaveRemains(state, [{ x: 0, y: 3, cell: block("#aa0000") }]);
     const looks = [];
-    for (let s = 0; s < 10; s++) {
+    for (let s = 0; s < 100; s++) {
       looks.push(remainsAt(state, 0, 3)[0]);
       ageRemains(state, 1000);
     }
-    assert.equal(looks[0].alpha, 0.5, "new: as faded as `faded`");
-    assert.equal(looks[0].blur, 0.1, "and as blurry as `blur`");
+    const near = (a, b) => Math.abs(a - b) < 1e-9;
+    assert.ok(near(looks[0].sharp, 0.4 * 0.5), `new: the sharp art (1 - darker) × (1 - faded): ${looks[0].sharp}`);
+    assert.ok(near(looks[0].soft, 0.3) && near(looks[0].glow, 0.5 * 0.3), "the soft blur at softStrength, the glow a little of glowStrength");
     for (let s = 1; s < 10; s++) {
-      assert.ok(looks[s].alpha < looks[s - 1].alpha, `${s} s: fainter`);
-      assert.ok(looks[s].blur > looks[s - 1].blur, `${s} s: blurrier`);
+      assert.ok(looks[s].sharp < looks[s - 1].sharp, `${s} s: the sharp art fainter`);
+      assert.ok(looks[s].glow > looks[s - 1].glow, `${s} s: the glow stronger`);
     }
-    assert.ok(Math.abs(looks[5].alpha - 0.5 * (1 - 0.7 * 0.5)) < 1e-9, `halfway, darker by half of darkerWithAge: ${looks[5].alpha}`);
-    assert.ok(Math.abs(looks[5].blur - 0.6) < 1e-9, `and blurrier by half of blurWithAge: ${looks[5].blur}`);
-    assert.ok(looks[9].alpha < 0.1, `nearly gone: ${looks[9].alpha}`);
-    assert.deepEqual(remainsAt(state, 0, 3), [], "gone");
+    assert.ok(looks[10].sharp < 1e-9 && looks[10].soft > 0.1, "10 s: the sharp art gone, the soft blur not yet");
+    for (let s = 1; s < 30; s++) assert.ok(looks[s].soft < looks[s - 1].soft, `${s} s: the soft blur fainter`);
+    assert.ok(looks[30].soft < 1e-9 && looks[30].glow > 0.3, `30 s: the soft blur gone, the glow still strong: ${looks[30].glow}`);
+    for (let s = 11; s < 100; s++) assert.ok(looks[s].glow < looks[s - 1].glow, `${s} s: the glow fading`);
+    assert.ok(looks[80].glow > 0.02, `80 s: a little of it still: ${looks[80].glow}`);
+    assert.ok(looks[99].glow < 0.001, `nearly gone: ${looks[99].glow}`);
+    assert.deepEqual(remainsAt(state, 0, 3), [], "gone after fadeAwaySec");
   });
 });
 
-test("there for good, a layer stops getting older three quarters of the way, and stays", () => {
-  withRemains({ forever: true, fadeAwaySec: 10, faded: 0.5, darkerWithAge: 0.7, blur: 0.1, blurWithAge: 1 }, () => {
+test("there for good, a layer stops getting older once its sharp art has gone, and its glow stays", () => {
+  withRemains({ forever: true, sharpSec: 10 }, () => {
     const state = boardOnly(), then = boardOnly();
     leaveRemains(state, [{ x: 0, y: 3, cell: block("#aa0000") }]);
     leaveRemains(then, [{ x: 0, y: 3, cell: block("#aa0000") }]);
     ageRemains(state, 3600 * 1000);
-    ageRemains(then, 7500);
+    ageRemains(then, 10000);
     const now = remainsAt(state, 0, 3)[0], was = remainsAt(then, 0, 3)[0];
-    assert.equal(now.age, 0.75);
-    assert.deepEqual(now, was, "an hour on, as it was 7.5 s in");
-    assert.ok(now.alpha > 0.2, `still there to see: ${now.alpha}`);
+    assert.deepEqual(now, was, "an hour on, as it was 10 s in");
+    assert.ok(now.glow > 0.1, `still there to see: ${now.glow}`);
   });
 });
 
 test("they get older only as the game goes on (not while it's paused), and in turbo zen no quicker", () => {
-  withRemains({ forever: false, fadeAwaySec: 10 }, () => {
+  withRemains({ forever: false, sharpSec: 2, softSec: 5, fadeAwaySec: 10 }, () => {
     for (const mode of ["normal", "turbo"]) {
       const { state } = newGame(mode);
       leaveRemains(state, [{ x: 0, y: 0, cell: block("#aa0000") }]);
@@ -208,8 +208,8 @@ test("they get older only as the game goes on (not while it's paused), and in tu
   });
 });
 
-test("the renderer draws them again when they change, and as they get older, a sixtieth of fadeAwaySec at a time", () => {
-  for (const [secs, times] of [[60, 3], [120, 1]]) withRemains({ forever: false, fadeAwaySec: secs }, () => {
+test("the renderer draws them again when they change, and as they get older, often while the sharp art goes, less often after", () => {
+  withRemains({ forever: false, sharpSec: 20, softSec: 60, fadeAwaySec: 160 }, () => {
     const state = boardOnly();
     assert.equal(remainsKey(state), "", "none: nothing to draw");
     leaveRemains(state, [{ x: 0, y: 3, cell: block("#aa0000") }]);
@@ -218,19 +218,24 @@ test("the renderer draws them again when they change, and as they get older, a s
     leaveRemains(state, [{ x: 1, y: 3, cell: block("#aa0000") }]);
     const second = remainsKey(state);
     assert.notEqual(second, first, "more of them");
-    const keys = new Set([second]);
-    for (let t = 0; t < 3000; t += 16) { ageRemains(state, 16); keys.add(remainsKey(state)); }
-    assert.equal(keys.size, times + 1, `fading away over ${secs} s, three seconds on: ${times} times`);
+    // (three seconds at a time: new, 30 s on, 70 s on)
+    for (const [from, times] of [[0, 6], [30000, 2], [70000, 1]]) {
+      ageRemains(state, from - Math.round(state.remains.clock / 1000) * 1000);
+      const keys = new Set([remainsKey(state)]);
+      for (let t = 0; t < 3000; t += 16) { ageRemains(state, 16); keys.add(remainsKey(state)); }
+      assert.equal(keys.size, times + 1, `${from / 1000} s in, three seconds on: ${times} times`);
+    }
   });
-  withRemains({ forever: true, fadeAwaySec: 10 }, () => {
+  withRemains({ forever: true, sharpSec: 10 }, () => {
     const state = boardOnly();
     leaveRemains(state, [{ x: 0, y: 3, cell: block("#aa0000") }]);
-    ageRemains(state, 7500);
+    ageRemains(state, 10000);
     const held = remainsKey(state);
     ageRemains(state, 60000);
     assert.equal(remainsKey(state), held, "there for good, once they've stopped getting older: never");
   });
 });
+
 
 test("none on a new board (a new game), in the tutorial, or switched off", () => {
   const { state } = newGame("normal");
