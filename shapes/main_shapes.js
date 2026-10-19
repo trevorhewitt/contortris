@@ -36479,7 +36479,7 @@ export const SHAPES = [
     grid: [
         "X"
       ],
-    color: [["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"],["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#1b1b25","#bdbdbd","#bdbdbd"],["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"],["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"],["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"],["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"],["#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"]],
+    color: [["#ffffff","#ffffff","#c1c1c1","#c2c2c2","#ffffff","#ffffff","#d0d0d0","#c7c7c7"],["#ffffff","#ffffff","#cecece","#c4c4c4","#fdfdfd","#fcfcfc","#d1d1d1","#d8d8d8"],["#d7d7d7","#cdcdcd","#fefefe","#f9f9f9","#c1c1c1","#c1c1c1","#fefefe","#fbfbfb"],["#c9c9c9","#d5d5d5","#ffffff","#ffffff","#c6c6c6","#c1c1c1","#fbfbfb","#f6f6f6"],["#ffffff","#ffffff","#d0d0d0","#c4c4c4","#ffffff","#ffffff","#d2d2d2","#d6d6d6"],["#ffffff","#ffffff","#c8c8c8","#d8d8d8","#ffffff","#f7f7f7","#d2d2d2","#d1d1d1"],["#cbcbcb","#cdcdcd","#ffffff","#ffffff","#cccccc","#d4d4d4","#fbfbfb","#ffffff"],["#d6d6d6","#cbcbcb","#ffffff","#ffffff","#d1d1d1","#cccccc","#f8f8f8","#fbfbfb"]],
     difficulty: 4,
     rotation: {
         "mode": "any"
