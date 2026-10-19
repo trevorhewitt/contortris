@@ -315,7 +315,7 @@ export function tutorialPages(state) {
   };
   return PAGES.map(p => (p.classes ? { ...p, classes: p.classes.filter(c => live(c.id)) } : p))
     .filter(p => (p.pieces ?? []).every(q => live(q.id))
-      && (!p.shelf || CONFIG.shelf?.pieces?.[p.shelf]?.some(id => state.allById.has(id)))
+      && (!p.shelf || state.allById.has(CONFIG.shelf?.pieces?.[p.shelf]))
       && (!p.classes || p.classes.length > 0)
       && (!p.mode || (CONFIG.modes[p.mode] && !CONFIG.modes[p.mode].hidden)));
 }

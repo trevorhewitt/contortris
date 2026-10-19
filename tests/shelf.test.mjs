@@ -1,12 +1,14 @@
 // Run with:  node --test tests/*.test.mjs
-// The powerup shelf: one middling powerup of each class each game, which takes the falling piece's
-// place when it's used; in Classic a class's slot opens the moment the class unlocks.
+// The powerup shelf: one strong powerup of each class each game, the same ones every game, which
+// takes the falling piece's place when it's used; in Classic a class's slot opens the moment the
+// class unlocks.
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CONFIG } from "../config.js";
 import { SHAPES } from "../shapes/main_shapes.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
+import { resolvePowerupArea } from "../src/powerups.js";
 import { createGameState, startRun, updateGame, useShelf, on } from "../src/game.js";
 import { shelfReady, shelfCount } from "../src/shelf.js";
 
@@ -18,10 +20,35 @@ const game = (mode, seed = 3) => {
 };
 
 test("every shelf piece is a powerup of its slot's class", () => {
-  for (const [cls, ids] of Object.entries(CONFIG.shelf.pieces)) for (const id of ids) {
+  for (const [cls, id] of Object.entries(CONFIG.shelf.pieces)) {
     const p = powerups.find(s => s.id === id);
     assert.ok(p, `${id} exists`);
     assert.equal(p.powerup.cls, cls, `${id} is a ${cls}`);
+  }
+});
+
+test("the bay has the same pieces every game", () => {
+  const ids = (state) => state.shelf.slots.map(s => s.shape.id);
+  const first = ids(game("god", 1));
+  for (let seed = 2; seed <= 6; seed++) assert.deepEqual(ids(game("god", seed)), first);
+  assert.deepEqual(first, CONFIG.shelf.classes.map(cls => CONFIG.shelf.pieces[cls]));
+});
+
+test("each of the bay's pieces is close to the best of its class, but not the best", () => {
+  // (by how much of the board it reaches, put down in the middle of it)
+  const { cols, rows } = CONFIG.board;
+  const reach = (p) => {
+    const m = p.rotations[0];
+    const area = resolvePowerupArea(p.powerup, 0, Math.floor((cols - m[0].length) / 2), Math.floor(rows / 2) - m.length, cols, rows);
+    return area.flags.reduce((n, f) => n + (f ? 1 : 0), 0);
+  };
+  const state = game("normal");
+  for (const [cls, id] of Object.entries(CONFIG.shelf.pieces)) {
+    const mine = reach(state.powerups.find(p => p.id === id));
+    const all = state.powerups.filter(p => p.powerup.cls === cls && (p.frequency ?? 1) > 0).map(reach);
+    const better = all.filter(n => n > mine).length;
+    assert.ok(better >= 1, `${id}: not the best ${cls}`);
+    assert.ok(better < all.length / 4, `${id}: in the top quarter of the ${all.length} ${cls}s (${better} reach further)`);
   }
 });
 

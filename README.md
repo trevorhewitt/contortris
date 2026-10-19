@@ -9,9 +9,10 @@ clears.
   code but are switched off: `assist.powerups.disabledTypes` in `config.js`.) Each new class
   pauses the game with an intro screen (Options turns them off). Each class comes about as often
   as the others, however many pieces it has. Extra Shiny Pieces, at the bottom left in every
-  mode, says how many you have (×0 when none): one middling Shiny Piece of each of the three
-  classes per game (never a combo), each added the moment its class unlocks (its first piece down
-  on the board, after its intro), the number hopping up as it comes. Tap it, pick one from its
+  mode, says how many you have (×0 when none): one strong Shiny Piece of each of the three
+  classes per game, the same ones every game (a tidal wave, bathroom tiles and a hippo in a tutu:
+  never a combo), each added the moment its class unlocks (its first piece down on the board,
+  after its intro), the number hopping up as it comes. Tap it, pick one from its
   menu (the game slows while it's open), and it takes the falling piece's place. No keys for it.
   It starts easy and gets harder as it goes (`difficulty` in `config.js`, `src/difficulty.js`):
   a bit faster with every piece all the way, fewer Shiny Pieces and less rescue, and more awkward
