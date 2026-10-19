@@ -154,6 +154,9 @@ export const CONFIG = {
     multiTapMs: 300,
     multiPressMs: 460,
     multiTaps: 2,
+    // ...but only on a piece that's been on the board this long: before that, the player can't
+    // have seen it yet, and the taps were meant for the one that's just landed
+    unseenMs: 160,
     // a piece about to lock sticking out above the top (game over) gets this long more, once:
     // it flashes red and the board warns, and it can still be moved (much longer than the usual
     // grace: it's the one that would end the game)

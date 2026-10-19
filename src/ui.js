@@ -1389,15 +1389,27 @@ export function bindUI({ state, renderer, achievements }) {
 
   // Double tap / double press down (CONFIG.timing.multiTaps): drops the piece straight to where
   // it will land. (The first tap moves it down as usual; a move to the side starts the count
-  // again. `ms`: how close together they count, the key's own for the keyboard.)
-  const downTaps = { n: 0, at: 0 };
+  // again. `ms`: how close together they count, the key's own for the keyboard.) The taps must
+  // all be on the one piece, and one that's been on the board long enough to have been seen
+  // (CONFIG.timing.unseenMs): never the next one, just come in, when they were meant for the
+  // one that's just landed.
+  const downTaps = { n: 0, at: 0, piece: null };
   function isMultiTap(ms = CONFIG.timing.multiTapMs ?? 300) {
-    const now = performance.now(), t = downTaps;
-    t.n = now - t.at < ms ? t.n + 1 : 1;
+    const now = performance.now(), t = downTaps, a = state.active;
+    if (!a || a.seenAt == null || now - a.seenAt < (CONFIG.timing.unseenMs ?? 0)) { t.n = 0; return false; }
+    t.n = now - t.at < ms && t.piece === a ? t.n + 1 : 1;
     t.at = now;
+    t.piece = a;
     if (t.n < (CONFIG.timing.multiTaps ?? 2)) return false;
     t.n = 0;
     return true;
+  }
+  // (when the falling piece first showed on the board: it comes in from above it)
+  function noteShown(now) {
+    const a = state.active;
+    if (!a || a.seenAt != null) return;
+    const mat = a.shape.rotations[a.rotIdx];
+    if (mat.some((row, j) => a.y + j >= 0 && row.some(Boolean))) a.seenAt = now;
   }
   function teleportDown() {
     if (!canAct()) return;
@@ -1556,7 +1568,7 @@ export function bindUI({ state, renderer, achievements }) {
   }
 
   return {
-    frame(now) { updateHUD(); fadeName(); home.frame(now ?? performance.now()); sparkles.frame(now ?? performance.now()); },
+    frame(now = performance.now()) { noteShown(now); updateHUD(); fadeName(); home.frame(now); sparkles.frame(now); },
     home: () => home,
     liveState: () => home.liveState(),
     toast,
