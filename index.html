@@ -854,9 +854,9 @@
       background: linear-gradient(to bottom, transparent 40%, rgba(var(--om-pink),0.16) 45%, rgba(255,255,255,0.14) 48%, rgba(var(--om-cyan),0.16) 51%, transparent 56%);
       animation: modeSlide 4.2s linear infinite;
     }
-    /* the pieces so far (src/pausemenu.js): the one in the middle big and lit, split into the
-       edge's colours, those either side smaller and dimmer; its name under it, then how rare it
-       is. (The game over page has one too, below) */
+    /* the pieces so far (src/pausemenu.js): the one in the middle big and lit, drawn as it is (no
+       colours split off it), those either side smaller and dimmer; its name under it, then how
+       rare it is. (The game over page has one too, below) */
     .pieceGallery{ position: relative; box-sizing: border-box; }
     #pieceGallery{
       padding: 7px 8px 10px;
@@ -878,9 +878,6 @@
     .pgTrack.glide .pgSlot{ transition: transform 260ms cubic-bezier(.2, .8, .3, 1), opacity 260ms linear; }
     .pgSlot canvas{ display: block; image-rendering: auto; }
     .pgSlot.mid canvas{ image-rendering: pixelated; }
-    #pieceGallery .pgSlot.mid canvas{
-      filter: drop-shadow(-1px 0 0 rgba(var(--om-pink),0.85)) drop-shadow(1px 0 0 rgba(var(--om-cyan),0.8)) drop-shadow(0 0 8px rgba(255,255,255,0.32));
-    }
     .pgArrow{ position: absolute; top: 50%; z-index: 1; width: 28px; height: 40px; min-height: 0; margin-top: -20px; padding: 0; font-size: 9px; line-height: 1; }
     .pgArrow:disabled{ opacity: 0.25; cursor: default; }
     .pgPrev{ left: 0; }
