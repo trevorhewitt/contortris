@@ -44,10 +44,14 @@ export const CLASS_INFO = {
 };
 
 // Which consume by default (vanish when they fire). (A Destroyerz is always in its own area,
-// withinOwnArea: it goes with everything else there. A Gravitizerz stays, as an Expanderz does:
-// its blocks are left wherever its own effect leaves them. A combo goes if one of its parts would,
-// unless it has a phantom part.)
+// withinOwnArea: it goes with everything else there. A Gravitizerz stays, as an Expanderz does,
+// and comes down after everything else in one piece: comesDown. A combo goes if one of its parts
+// would, unless it has a phantom part.)
 const CONSUMES = { destroyer: true, gravity: false, expander: false, acid: true, blast: true, goo: true, phantom: false };
+
+// Does it bring itself down when it goes off? A Gravitizerz that stays does, and so does a combo
+// with a gravity part that stays: computeEffect drops it in one piece once the rest has settled.
+export const comesDown = (pu) => !!pu && !pu.consume && (pu.parts ?? [pu]).some(p => p.type === "gravity");
 
 // How helpful a powerup is (1 = barely, 5 = a lifesaver) when the data doesn't say.
 const DEFAULT_HELP_BY_TIER = { 1: 2, 2: 3, 3: 4.5 };
@@ -533,6 +537,34 @@ export function applyGravity(board, area, cols, rows, direction = "down") {
   return moves;
 }
 
+// A Gravitizerz that stays: its blocks come off the board while everything else in its area
+// settles, then it comes down after them in one piece, as far as it goes (onto whatever is under
+// it now: it doesn't come apart, or hang in the air), its blocks above the top (`above`: it
+// locked sticking out) with it. Returns { moves (its own last), placed (where it is now on the
+// board), overTop (its blocks still above the top) }.
+function fallAsOne(board, area, { placed, pid, cols, rows, above = [] }, direction) {
+  const dir = DIRECTIONS[direction] ?? DIRECTIONS.down;
+  const piece = [...above];
+  for (const { x, y } of placed) {
+    const c = board[y]?.[x];
+    if (c && (pid == null || c.pid === pid)) { piece.push({ x, y, cell: c }); board[y][x] = null; }
+  }
+  const moves = applyGravity(board, area, cols, rows, direction);
+  // (not through a wall, the floor or another block; above the top is open air, unless it's going up)
+  const open = (x, y) => x >= 0 && x < cols && y < rows && (y < 0 ? dir.dy >= 0 : !board[y][x]);
+  let n = 0;
+  while (piece.length && piece.every(b => open(b.x + dir.dx * (n + 1), b.y + dir.dy * (n + 1)))) n++;
+  const now = [], overTop = [];
+  for (const b of piece) {
+    const x = b.x + dir.dx * n, y = b.y + dir.dy * n;
+    if (y < 0) { overTop.push({ x, y, cell: b.cell }); continue; }
+    board[y][x] = b.cell;
+    now.push({ x, y });
+    if (n) moves.push({ fromX: b.x, fromY: b.y, toX: x, toY: y, cell: b.cell });
+  }
+  return { moves, placed: now, overTop };
+}
+
 // Expander: fills every empty affected cell with makeCell(x, y).
 // Returns [{x, y, cell}].
 export function applyExpand(board, area, cols, makeCell) {
@@ -820,12 +852,18 @@ export function phantomLandingY(board, x, mat) {
 // Apply a powerup's effect to `board` (mutates it). Shared by the game and the demos.
 //   ctx: { area, placed: [{x,y}] (the powerup's own cells), pid, centre, cols, rows, rng, makeFill,
 //          keepRows (optional Set of rows: a vanishing powerup keeps its blocks in these),
-//          at (optional { rot, x, y }: where the piece is, for a picture fill: picturePaint) }
-// Returns { consumed, destroyed, moves, filled, collapsed }.
+//          at (optional { rot, x, y }: where the piece is, for a picture fill: picturePaint),
+//          above (optional [{x, y, cell}]: its blocks that locked above the top, which come down
+//          with it if it comes down: comesDown) }
+// Returns { consumed, destroyed, moves, filled, collapsed, overTop } (overTop: its blocks still
+// above the top once it has gone off; and `placed`, where its own blocks are now, if it moved them).
 export function computeEffect(board, pu, ctx) {
   const { area, pid, centre, cols, rows, rng = Math.random, makeFill, keepRows } = ctx;
   let { placed } = ctx;
-  const out = { consumed: [], destroyed: [], moves: [], filled: [], collapsed: null };
+  // (whether the piece stays once it has gone off: a combo's parts, which never vanish on their
+  // own, are told)
+  const stays = ctx.stays ?? !pu.consume;
+  const out = { consumed: [], destroyed: [], moves: [], filled: [], collapsed: null, overTop: ctx.above ?? [] };
 
   if (pu.consume) {
     if (keepRows?.size) placed = placed.filter(({ y }) => !keepRows.has(y));
@@ -847,7 +885,8 @@ export function computeEffect(board, pu, ctx) {
       }
       break;
     case "gravity":
-      out.moves = applyGravity(board, area, cols, rows, pu.direction);
+      if (stays) Object.assign(out, fallAsOne(board, area, { ...ctx, placed }, pu.direction));
+      else out.moves = applyGravity(board, area, cols, rows, pu.direction);
       break;
     case "expander": {
       // (fill art: painted to fit what's actually filled, src/fillart.js; or a picture fill: each
@@ -867,11 +906,13 @@ export function computeEffect(board, pu, ctx) {
       break;
     }
     case "combo": {
-      // parts fire one after another on the same board (destroy first, fill last)
+      // parts fire one after another on the same board (destroy first, fill last), each finding
+      // the piece where the one before left it
       const parts = pu.parts ?? [];
       parts.forEach((part, i) => {
         const makeFill = ctx.makeFill ? (x, y) => ({ ...ctx.makeFill(x, y), paint: part.fillPaint ?? pu.fillPaint, style: part.fillStyle ?? pu.fillStyle }) : undefined;
-        const sub = computeEffect(board, { ...part, consume: false }, { ...ctx, placed, makeFill, area: area.parts?.[i] ?? area });
+        const sub = computeEffect(board, { ...part, consume: false }, { ...ctx, placed, above: out.overTop, stays, makeFill, area: area.parts?.[i] ?? area });
+        if (sub.placed) placed = out.placed = sub.placed;
         mergeEffect(out, sub);
       });
       break;
@@ -945,4 +986,5 @@ function mergeEffect(out, sub) {
   }
   out.filled.push(...sub.filled);
   if (sub.collapsed) out.collapsed = sub.collapsed;
+  out.overTop = sub.overTop;
 }

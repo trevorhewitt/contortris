@@ -327,24 +327,75 @@ test("a powerup that vanishes when it fires still clears the rows it completed",
   }
 });
 
-test("a Gravitizer stays: its blocks are on the board after it goes off, with its art, wherever it left them", () => {
+// The piece `id` on the board, in one piece: every block of it where its shape says, from where it
+// is now, each with its own bit of its art. Returns [pid, its instance].
+function inOnePiece(state, id, what) {
+  const [pid, inst] = [...state.instances].find(([, i]) => i.shape?.id === id) ?? [];
+  assert.ok(inst, `${what}: still on the board`);
+  const mat = inst.shape.rotations[inst.rotIdx], n = mat.flat().filter(Boolean).length;
+  assert.equal(inst.intact, true, `${what}: in one piece`);
+  assert.equal(inst.cells.length, n, `${what}: all ${n} of its blocks`);
+  mat.forEach((row, j) => row.forEach((on, i) => {
+    if (!on) return;
+    const c = state.board[inst.y + j]?.[inst.x + i];
+    assert.ok(c?.pid === pid && c.paint === inst.shape.cellPaints[inst.rotIdx][j][i], `${what}: its block at ${inst.x + i},${inst.y + j}, with its art`);
+  }));
+  return [pid, inst];
+}
+
+test("a Gravitizer stays, and comes down after everything else in one piece, its art whole, onto whatever is under it", () => {
   const gravitizers = powerups.filter(p => p.powerup.type === "gravity" && (p.frequency ?? 1) > 0);
   assert.ok(gravitizers.length >= 10, `${gravitizers.length} of them`);
-  for (const p of gravitizers) {
+  for (const p of gravitizers) for (let r = 0; r < p.rotations.length; r++) {
+    const what = `${p.id} (turn ${r})`;
     assert.equal(p.powerup.consume, false, `${p.id} stays`);
     const { state } = newGame("normal");
     // a stack full of gaps (the left column empty all the way down, so no row clears)
     for (let y = ROWS - 6; y < ROWS; y++) for (let x = 1; x < COLS; x++) if ((x + y) % 3) state.board[y][x] = filler();
-    const mat = p.rotations[0], n = mat.flat().filter(Boolean).length, had = state.board.flat().filter(Boolean).length;
-    placeActive(state, p.id, Math.max(1, Math.floor((COLS - mat[0].length) / 2)), 0);
+    const mat = p.rotations[r], n = mat.flat().filter(Boolean).length, had = state.board.flat().filter(Boolean).length;
+    placeActive(state, p.id, Math.max(1, Math.floor((COLS - mat[0].length) / 2)), 0, r);
     hardDropAndLock(state);
     settle(state, 2500);
-    assert.equal(state.effect, null, `${p.id}: it went off`);
-    const [pid, inst] = [...state.instances].find(([, i]) => i.shape?.id === p.id) ?? [];
-    assert.ok(inst, `${p.id}: still on the board`);
-    assert.equal(inst.cells.length, n, `${p.id}: all ${n} of its blocks`);
-    for (const { x, y } of inst.cells) assert.ok(state.board[y][x]?.pid === pid && state.board[y][x].paint, `${p.id}: its block at ${x},${y}, with its art`);
-    assert.equal(state.board.flat().filter(Boolean).length, had + n, `${p.id}: nothing gone`);
+    assert.equal(state.effect, null, `${what}: it went off`);
+    const [pid, inst] = inOnePiece(state, p.id, what);
+    assert.ok(inst.cells.some(({ x, y }) => y === ROWS - 1 || (state.board[y + 1][x] && state.board[y + 1][x].pid !== pid)), `${what}: resting on something`);
+    assert.equal(state.board.flat().filter(Boolean).length, had + n, `${what}: nothing gone`);
+  }
+});
+
+test("a Gravitizer that lands sticking out above the top only ends the game if it can't come down far enough", () => {
+  const p = byId("sumo_wrestler"), mat = p.rotations[0], x0 = 6;
+  const drop = (holes) => {
+    const { state, events } = newGame("normal");
+    // a stack right up to the top (the left column empty, so no row clears), with holes all
+    // through it or none
+    for (let y = 0; y < ROWS; y++) for (let x = 1; x < COLS; x++) if (!holes || (x + y) % 3) state.board[y][x] = filler();
+    placeActive(state, p.id, x0, -mat.length); // (on top of it, all of it above the top)
+    return { state, events, locked: hardDropAndLock(state, { lastChance: true }) };
+  };
+  const goesOff = (state) => { for (let t = 0; t < 5000 && state.effect; t += 16) updateGame(state, 16); };
+  // the stack comes down, and so does he, all of him, onto the board: the game goes on
+  {
+    const { state, events, locked } = drop(true);
+    assert.equal(locked, true, "no last chance: it isn't the end");
+    assert.ok(!events.some(e => e.type === "lastChance"));
+    assert.ok(state.effect && !state.gameOver, "he has landed, and goes off");
+    goesOff(state);
+    assert.ok(events.some(e => e.type === "powerupFire"));
+    assert.equal(state.gameOver, false, "the game goes on");
+    const [, inst] = inOnePiece(state, p.id, "the sumo wrestler");
+    assert.ok(inst.y >= 0, "all of him on the board");
+  }
+  // nothing comes down: he's left sticking out above the top, and that's the end, once he's gone off
+  {
+    const { state, events, locked } = drop(false);
+    assert.equal(locked, false, "a last chance");
+    assert.ok(state.active?.lastChance);
+    for (let t = 0; t < CONFIG.timing.lastChanceMs + 1000 && !state.effect && !state.gameOver; t += 16) updateGame(state, 16);
+    assert.ok(state.effect && !state.gameOver, "he has landed, and goes off first");
+    goesOff(state);
+    assert.ok(events.some(e => e.type === "powerupFire"));
+    assert.equal(state.gameOver, true, "then it's over");
   }
 });
 

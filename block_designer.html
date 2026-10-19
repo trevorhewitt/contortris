@@ -1088,7 +1088,7 @@
   // What each type does (shown under the type select)
   const PU_TYPE_DOC = {
     destroyer: "Destroys every block in its area. Its own blocks are always in it (the game adds them), so it goes too.",
-    gravity: "Blocks in its area fall (or slide) until they hit something.",
+    gravity: "Blocks in its area fall (or slide) until they hit something, then the piece itself, if it stays, comes down after them in one piece, as far as it goes.",
     expander: "Fills every empty cell in its area with its fill art.",
     acid: "Dissolves every block it touches: its area is every cell within reach steps of its blocks, plus any extra area, and its own blocks.",
     blast: "Throws the blocks in its area outwards by up to push cells, then they fall.",

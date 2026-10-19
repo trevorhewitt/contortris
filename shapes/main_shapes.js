@@ -54,8 +54,9 @@
  *   type: "destroyer" | "gravity" | "expander" | "acid" | "blast" | "goo" | "phantom" | "combo",
  *     destroyer: destroys every block in its area (its own blocks are always in it, however
  *                it's turned, whatever the area as drawn: it goes too)
- *     gravity:   blocks in its area fall (or slide) until they hit something (its own blocks
- *                stay, as an expander's do, wherever that leaves them)
+ *     gravity:   blocks in its area fall (or slide) until they hit something, then the piece
+ *                itself (it stays, as an expander does) comes down after them the same way, in
+ *                one piece, as far as it goes
  *     expander:  fills every empty cell in its area with `fill`
  *     acid:      dissolves every block it touches (its area is worked out from its shape:
  *                every cell within `reach` steps of one of its blocks, plus any `area`, and

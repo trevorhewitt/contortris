@@ -22,7 +22,7 @@ import { getShapePaint } from "./shapes.js";
 import { initPieceSelectionState, selectPiece, destroyerCells, stillUseful } from "./selection.js";
 import { createShelf, shelfReady, shelfQueue, takeShelfPending } from "./shelf.js";
 import { gravityColumns } from "./godmode.js";
-import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup, rollScatter, classOf } from "./powerups.js";
+import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup, rollScatter, classOf, comesDown } from "./powerups.js";
 import { normaliseGroups, trackLevel6, cutGroup, LEVEL6 } from "./level6.js";
 import { trackEndGame, endGameOn, spawnJitter, noteLanding } from "./endgame.js";
 import { remixShape } from "./remix.js";
@@ -367,27 +367,49 @@ function currentLockDelayMs(state) {
   if (a?.groundMoved && !groundSpent(state)) delay = Math.max(delay, T.slideLockMs ?? 0);
   // (on its last chance, while it would still top out: whatever's left of it)
   const lc = a?.lastChance;
-  return lc && topsOut(state) ? Math.max(delay, lc.durationMs - lc.elapsedMs) : delay;
+  return lc && endsGame(state) ? Math.max(delay, lc.durationMs - lc.elapsedMs) : delay;
 }
 
-// Would the falling piece, locked where it is now (or `y`), stick out above the top (game over)?
+// Would the falling piece, locked where it is now (or `y`), stick out above the top?
 function topsOut(state, y = state.active.y) {
   const mat = getActiveMatrix(state);
   for (let j = 0; j < mat.length; j++) if (y + j < 0 && mat[j].some(Boolean)) return true;
   return false;
 }
 
+// ...and would that be game over? Not for a powerup that vanishes when it goes off, nor for one
+// that comes down when it does (comesDown) far enough to fit: tried out on a copy of the board.
+function endsGame(state, y = state.active.y) {
+  if (!topsOut(state, y)) return false;
+  const pu = state.active.shape.powerup;
+  if (pu?.consume) return false;
+  if (!comesDown(pu)) return true;
+  const { shape, rotIdx, x } = state.active, mat = shape.rotations[rotIdx];
+  const { cols, rows } = CONFIG.board, me = { pid: -1 };
+  const board = state.board.map(r => r.slice()), placed = [], above = [];
+  for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) {
+    if (!mat[j][i]) continue;
+    if (y + j < 0) above.push({ x: x + i, y: y + j, cell: me });
+    else { board[y + j][x + i] = me; placed.push({ x: x + i, y: y + j }); }
+  }
+  const fx = computeEffect(board, pu, {
+    area: resolvePowerupArea(pu, rotIdx, x, y, cols, rows), placed, above, pid: -1, cols, rows,
+    centre: { x: x + (mat[0].length - 1) / 2, y: y + (mat.length - 1) / 2 }, rng: () => 0.5, makeFill: () => ({ pid: -2 }),
+  });
+  return fx.overTop.length > 0;
+}
+
 // ...or where it would land, dropped straight down from here? (Not: it's safe now, on its way down
 // to somewhere with room. Its last chance stops flashing.)
 function landsOverTop(state) {
-  return topsOut(state, Math.max(state.active.y, getGhostDropY(state) ?? state.active.y));
+  return endsGame(state, Math.max(state.active.y, getGhostDropY(state) ?? state.active.y));
 }
 
-// About to lock sticking out above the top? Once per piece, it gets another moment
-// (CONFIG.timing.lastChanceMs): it flashes red, the board warns, and it can still be moved.
+// About to lock where it would end the game, sticking out above the top? Once per piece, it gets
+// another moment (CONFIG.timing.lastChanceMs): it flashes red, the board warns, and it can still be moved.
 function lastChance(state) {
   const a = state.active, ms = CONFIG.timing.lastChanceMs ?? 0;
-  if (!ms || state.zen || a.lastChance || a.shape.powerup?.consume || !topsOut(state)) return false;
+  if (!ms || state.zen || a.lastChance || !endsGame(state)) return false;
   a.lastChance = { elapsedMs: 0, durationMs: ms };
   state.lockElapsed = 0;
   emit(state, "lastChance", { shape: a.shape });
@@ -781,7 +803,7 @@ function placePiece(state, piece) {
   const pid = state.nextPid++;
 
   let lockedAboveTop = false;
-  const placed = [];
+  const placed = [], above = [];
 
   for (let y = 0; y < mat.length; y++) {
     for (let x = 0; x < mat[0].length; x++) {
@@ -789,13 +811,16 @@ function placePiece(state, piece) {
 
       const bx = piece.x + x;
       const by = piece.y + y;
+      const cell = { paint: getShapePaint(shape, rotIdx, x, y), style: shape.style, pid, ...(shape.seam ? { seam: shape.seam } : {}) };
 
+      // (above the top: not on the board, but a powerup that comes down can bring it with it)
       if (by < 0) {
         lockedAboveTop = true;
+        above.push({ x: bx, y: by, cell });
         continue;
       }
 
-      state.board[by][bx] = { paint: getShapePaint(shape, rotIdx, x, y), style: shape.style, pid, ...(shape.seam ? { seam: shape.seam } : {}) };
+      state.board[by][bx] = cell;
       placed.push({ x: bx, y: by });
     }
   }
@@ -808,7 +833,7 @@ function placePiece(state, piece) {
     total: Math.max(1, placed.length),
     intact: !lockedAboveTop,
   });
-  return { pid, placed, lockedAboveTop };
+  return { pid, placed, above, lockedAboveTop };
 }
 
 // Locks the active piece into the board. Returns info about the placement.
@@ -817,7 +842,7 @@ function lockPiece(state) {
   // (turbo zen: anything still falling with it lands first; its rows clear with this one's. But
   // what a powerup brought along carries on coming down while it goes off: updateGame)
   if (state.flock.length && !shape.powerup) settleFlock(state);
-  const { pid, placed, lockedAboveTop } = placePiece(state, state.active);
+  const { pid, placed, above, lockedAboveTop } = placePiece(state, state.active);
 
   state.lastLockedShape = shape;
   state.drops++;
@@ -842,14 +867,19 @@ function lockPiece(state) {
     onBoard: () => [...state.instances.values()].filter(i => i.cells.length && i.shape).map(i => i.shape),
   });
 
-  // A powerup that vanishes when it fires can't top you out.
+  // A powerup that vanishes when it fires can't top you out, and one that comes down when it fires
+  // only does if it still sticks out once it has (updatePowerupEffect).
   const consumed = !!shape.powerup?.consume;
-  if (lockedAboveTop && !consumed) {
-    if (neverEnds(state)) zenRescue(state); // zen never ends (nor developer mode)
-    else setGameOver(state, shape);
-  }
+  if (lockedAboveTop && comesDown(shape.powerup)) info.above = above;
+  else if (lockedAboveTop && !consumed) toppedOut(state, shape);
 
   return info;
+}
+
+// Locked sticking out above the top: game over (zen never ends, nor developer mode).
+function toppedOut(state, shape) {
+  if (neverEnds(state)) zenRescue(state);
+  else setGameOver(state, shape);
 }
 
 // Turbo zen's flock (zen.js formFlock): pieces falling with the active one, each in columns of
@@ -1189,6 +1219,11 @@ function updatePowerupEffect(state, dt) {
   if (e.quakeOnSettle > 0) addQuakeFromBlocks(state, e.quakeOnSettle);
   if (e.keepRows?.size) consumeLeftovers(state, e.pid, e.keepRows);
   state.effect = null;
+  // (it locked sticking out above the top, came down, and still does: it tops out after all)
+  if (e.overTop?.length) {
+    toppedOut(state, e.shape);
+    if (state.gameOver) return;
+  }
   finishTurn(state, e.keepRows);
 }
 
@@ -1220,13 +1255,14 @@ function firePowerupEffect(state, e) {
   // row is destroyed once the effect has played out, as if the piece had stayed.
   const keepRows = new Set(pu.consume ? e.placed.map(c => c.y).filter(y => state.board[y]?.every(c => c !== null)) : []);
   const fx = computeEffect(state.board, pu, {
-    area: e.area, placed: e.placed, pid: e.pid, centre: e.centre, cols, rows, rng: state.rng, keepRows,
+    area: e.area, placed: e.placed, above: e.above, pid: e.pid, centre: e.centre, cols, rows, rng: state.rng, keepRows,
     makeFill: () => ({ paint: pu.fillPaint, style: pu.fillStyle, pid: fillPid }), at: { rot: e.rotIdx, x: e.x, y: e.y },
   });
   // (the art of the blocks it destroyed stays where they were, a Destroyerz's own too, as it goes
   // with everything else in its area: src/remains.js)
   const ownGone = [pu, ...(pu.parts ?? [])].some(p => classOf(p.type) === "destroyer") ? fx.consumed : [];
   leaveRemains(state, [...ownGone, ...fx.destroyed, ...rowsToCells(fx.collapsed?.removed ?? [])]);
+  e.overTop = fx.overTop;
   // (rows the effect itself collapsed are gone already; the ones above them moved down)
   const gone = new Set(fx.collapsed?.rows ?? []);
   e.keepRows = new Set([...keepRows].filter(y => !gone.has(y)).map(y => y + [...gone].filter(r => r > y).length));
@@ -1255,7 +1291,16 @@ function firePowerupEffect(state, e) {
 
   // blocks moved or filled by a powerup score a little too
   state.score += (fx.moves.length + fx.filled.length) * (CONFIG.scoring.powerupMovePerBlock ?? 0) * state.level;
+  // (its blocks that were above the top are part of it again, where they came down to; any still
+  // up there aren't)
+  const inst = e.above?.length ? state.instances.get(e.pid) : null;
+  if (inst) { inst.cells.push(...e.above.map(({ x, y }) => ({ x, y }))); inst.intact = true; }
   if (fx.moves.length) instancesAfterMoves(state, fx.moves);
+  if (inst) {
+    inst.cells = inst.cells.filter(c => c.y >= 0);
+    inst.total = Math.max(1, inst.cells.length);
+    if (fx.overTop.length) inst.intact = false;
+  }
 
   let affected = fx.destroyed.length + fx.moves.length + fx.filled.length;
   if (pu.type === "phantom") {
