@@ -62,7 +62,9 @@ const FILLER = ["#f4f4f6", "#c9c9ce", "#9c9ca3", "#e2e2e7", "#b3b3b9", "#85858c"
 //   pace:   the autopilot's presses this many times as far apart as usual
 //   free:   no script: one piece after another, for as long as you like, the autopilot putting
 //           each somewhere sensible. { levels: the pieces' levels (difficulty), big: giants too,
-//           shiny: how often a Shiny Piece instead (each put where it leaves the least) }
+//           huge: only the hugest giants, the right way up, shiny: how often a Shiny Piece
+//           instead (each put where it leaves the least), powers: which ones, alternate: a Shiny
+//           Piece after every other piece, no more and no less }
 export const PAGES = [
   {
     // (a ledge each side, halfway up a pile: the two of them finish the row between them)
@@ -317,15 +319,22 @@ export const PAGES = [
     ],
   },
   {
+    // (the show: a high pile, and the hugest giants and the biggest Shiny Pieces there are, one
+    // after the other)
     id: "godmode", mode: "god", title: "God mode",
     text: "Instant endgame.",
     more: "Start the game with every huge piece and every Shiny Piece already unlocked.",
-    free: { levels: [3, 4], big: true, shiny: 0.45 },
+    free: { levels: [5, 6], huge: true, shiny: 1, alternate: true, powers: ["large_black_hole", "tidal_wave", "meteor_shower"] },
     dropMs: 300,
     board: [
-      "..aa.....bbb..",
-      "c.aadd..eeb.ff",
-      "ccgdd.hheei.ff",
+      "..a.......bb..",
+      ".aaa..c..bbdd.",
+      "effg.hcc.ijdk.",
+      "ef.gghhcli.mkn",
+      "eoo.gh.llimmkn",
+      "e.oopqq.lim.kn",
+      "rrrpp.qqsstt.u",
+      ".rvvpww.xsstuu",
     ],
   },
   {
@@ -701,8 +710,10 @@ function begin(state, t, a) {
   // (with the piece after it in mind, as a person would: t.freeNext)
   // (by zen's usual reckoning, low and tidy: not its calm one, which leaves a well open rather
   // than cover it, and builds up beside it until it tops out)
-  const zen = spec.free ? bestPlacement({ board: state.board }, a.shape, undefined, 4, t.freeNext?.shape?.powerup ? null : t.freeNext?.shape ?? null) : null;
-  const to = spec.free ? (zen && !zen.slide ? { rot: zen.rot, x: zen.x } : bestSpot(state, a.shape, a.x))
+  // (a giant that's a picture of something stays the right way up: `upright`)
+  const turns = spec.upright ? 1 : 4;
+  const zen = spec.free ? bestPlacement({ board: state.board }, a.shape, undefined, turns, t.freeNext?.shape?.powerup ? null : t.freeNext?.shape ?? null) : null;
+  const to = spec.free ? (zen && !zen.slide ? { rot: zen.rot, x: zen.x } : bestSpot(state, a.shape, a.x, turns))
     : spec.to === "power" ? powerSpot(state, a.shape) ?? bestSpot(state, a.shape, a.x)
     : spec.to;
   t.goals = [...(spec.via ?? []), { rot: to?.rot ?? a.rotIdx, x: to?.x ?? a.x }].map(g => ({ rot: g.rot ?? a.rotIdx, x: g.x ?? a.x }));
@@ -783,8 +794,9 @@ export function shelfSlot(state, t = state.tutorial) {
    ========================= */
 
 // The pieces a mode's page plays with (its `free`): of its levels, and not too big for the board
-// (giants only if it says so); and its Shiny Pieces (of the three classes, small ones unless it
-// has giants). Made once a page.
+// (giants only if it says so; only the hugest of them, if it says `huge`); and its Shiny Pieces
+// (those it names, or else of the three classes, small ones unless it has giants). Made once a
+// page.
 function freePools(state, t, page) {
   t.freePools ??= new Map();
   if (t.freePools.has(page.id)) return t.freePools.get(page.id);
@@ -793,29 +805,36 @@ function freePools(state, t, page) {
     const m = s.rotations[0], n = m.flat().filter(Boolean).length;
     return n >= 3 && (big ? m.length <= 6 && m[0].length <= 8 && n <= 24 : n <= 6 && m.length <= 4 && m[0].length <= 4);
   };
-  const pieces = state.allShapes.filter(s => levels.includes(s.difficulty ?? 1) && (s.frequency ?? 1) >= 0.3 && inGame(s) && !s.powerup && !s.remix && !s.seam && fits(s));
-  const shiny = F.shiny ? (state.allPowerups ?? state.powerups).filter(s => liveShiny(s) && ["destroyer", "gravity", "expander"].includes(s.powerup.cls) && !s.powerup.bad && fits(s)) : [];
-  const out = { pieces, shiny, chance: shiny.length ? F.shiny : 0 };
+  // (twenty blocks and more, but never so tall there's no room over the pile for it to come down)
+  const huge = (s) => s.rotations[0].flat().filter(Boolean).length >= 20 && s.rotations[0].length <= 7 && s.rotations[0][0].length <= 12;
+  const pieces = state.allShapes.filter(s => levels.includes(s.difficulty ?? 1) && (s.frequency ?? 1) >= 0.3 && inGame(s) && !s.powerup && !s.remix && !s.seam && (F.huge ? huge(s) : fits(s)));
+  const shiny = !F.shiny ? []
+    : F.powers ? F.powers.map(id => state.allById.get(id)).filter(liveShiny)
+    : (state.allPowerups ?? state.powerups).filter(s => liveShiny(s) && ["destroyer", "gravity", "expander"].includes(s.powerup.cls) && !s.powerup.bad && fits(s));
+  const out = { pieces, shiny, chance: shiny.length ? F.shiny : 0, alternate: !!F.alternate, upright: !!F.huge };
   t.freePools.set(page.id, out);
   return out;
 }
 
 function freePiece(state, t) {
-  const page = t.pages[t.page], { pieces, shiny, chance } = freePools(state, t, page);
+  const page = t.pages[t.page], { pieces, shiny, chance, alternate, upright } = freePools(state, t, page);
   if (!pieces.length) return null;
   // (one ahead, so the autopilot can play this one with the next in mind)
   const draw = () => {
-    if (chance && state.rng() < chance) {
+    // (a Shiny Piece now and then; or, taking turns, after every piece)
+    if (chance && (alternate ? !t.freeShiny : state.rng() < chance)) {
       const s = shiny[Math.floor(state.rng() * shiny.length)];
+      t.freeShiny = true;
       return { id: s.id, shape: s, to: "power", then: ["drop"] };
     }
+    t.freeShiny = false;
     let s = pieces[0];
     for (let k = 0; k < 8; k++) {
       s = pieces[Math.floor(state.rng() * pieces.length)];
       if (!t.recent.includes(s.id)) break;
     }
     t.recent = [...t.recent.slice(-4), s.id];
-    return { id: s.id, shape: s, free: true, then: ["drop"] };
+    return { id: s.id, shape: s, free: true, upright, then: ["drop"] };
   };
   // (a new page: what was drawn ahead for the last one isn't this one's)
   if (t.freeFor !== page.id) { t.freeFor = page.id; t.freeNext = null; }
@@ -826,10 +845,10 @@ function freePiece(state, t) {
 
 // Somewhere sensible for it, as a person might choose: rows it finishes, few gaps left under it,
 // and low down. ({ rot, x }, or null.)
-function bestSpot(state, shape, fromX) {
+function bestSpot(state, shape, fromX, turns = 4) {
   const { cols, rows } = CONFIG.board;
   let best = null;
-  for (let r = 0; r < reachableTurns(shape); r++) {
+  for (let r = 0; r < Math.min(turns, reachableTurns(shape)); r++) {
     const mat = shape.rotations[r], w = mat[0].length, h = mat.length;
     for (let x = 0; x + w <= cols; x++) {
       let y = -h;
