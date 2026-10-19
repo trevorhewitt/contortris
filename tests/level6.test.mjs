@@ -15,6 +15,9 @@ import { remixShape } from "../src/remix.js";
 const { shapes, powerups } = loadShapes(SHAPES);
 const filler = { paint: "#888888", style: { baseColor: "#888888" }, pid: 1e9 };
 
+// (past Classic's first few rows, before which no big pieces come: src/selection.js bigsWait)
+const pastFirstRows = (state) => { state.rowsDestroyed = Math.max(state.rowsDestroyed, CONFIG.modes[state.mode]?.bigAfterRows ?? 0); };
+
 // a stack `rows` tall, with one gap per row so nothing clears
 function setStack(state, rows) {
   const R = state.board.length, C = state.board[0].length;
@@ -75,6 +78,7 @@ test("level 6 is locked until the comeback: above row 10, then back down to row 
   let unlocks = 0;
   on(state, (t) => { if (t === "level6Unlocked") unlocks++; });
   startRun(state, "normal");
+  pastFirstRows(state);
   setStack(state, 8); dropDot(state);
   assert.equal(level6Open(state), false, "a middling stack does nothing");
   setStack(state, 12); dropDot(state);
@@ -408,6 +412,7 @@ test("late in a game, giants only with the stack low, and a set under way ends i
     for (const seed of [41, 42, 43]) {
       const state = createGameState(shapes, powerups, { rng: makeRng(seed), groups: GROUPS });
       startRun(state, "normal");
+      pastFirstRows(state);
       state.devEndGame = "off";
       for (let i = 0; i < 150; i++) {
         setStack(state, rows);
@@ -423,6 +428,7 @@ test("late in a game, giants only with the stack low, and a set under way ends i
 
   const state = createGameState(shapes, powerups, { rng: makeRng(44), groups: GROUPS });
   startRun(state, "normal");
+  pastFirstRows(state);
   state.devLevel6 = "on";
   state.devEndGame = "off";
   startGroup(state, normaliseGroups(GROUPS, shapes).find(g => g.id === "townhouses"));
@@ -505,6 +511,7 @@ test("level 6: no set comes round again until every other one has, even into the
     const seq = [];
     on(state, (t, d) => { if (t === "spawn" && d.shape.difficulty === 6 && state.pieceSel.level6.group && state.pieceSel.level6.queue.length >= 0) seq.push(d.shape.id); });
     startRun(state, "normal");
+    pastFirstRows(state);
     state.devLevel6 = "on";
     // (every powerup class met from the start, so every set can come: a set with Destroyerz in
     // it waits for them, and which class comes first is down to the dice)

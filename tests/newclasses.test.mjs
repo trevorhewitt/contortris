@@ -119,6 +119,9 @@ test("easy mode has no giants; normal gets one early", () => {
       const lv = [], ids = [];
       on(state, (t, d) => { if (t === "spawn") { lv.push(d.shape.powerup ? -1 : d.shape.difficulty); ids.push(d.shape.id); } });
       startRun(state, mode);
+      // (the board's emptied after every piece, so no rows are ever destroyed: as if they had
+      // been, for Classic's first few, before which no giants come, src/selection.js bigsWait)
+      state.rowsDestroyed = CONFIG.modes[mode].bigAfterRows ?? 0;
       for (let i = 0; i < 60 && !state.gameOver; i++) {
         hardDropAndLock(state);
         for (let k = 0; k < 120 && state.effect; k++) updateGame(state, 16);

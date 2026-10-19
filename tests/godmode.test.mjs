@@ -28,11 +28,15 @@ function drop(state) {
 }
 
 // `pieces` pieces of a game, the stack reset to `rows` rows before each one
+// (past Classic's first few rows, before which no big pieces come: src/selection.js bigsWait)
+const pastFirstRows = (state) => { state.rowsDestroyed = Math.max(state.rowsDestroyed, CONFIG.modes[state.mode]?.bigAfterRows ?? 0); };
+
 function play(mode, seed, pieces, rows = 3) {
   const state = createGameState(shapes, powerups, { rng: makeRng(seed), groups: GROUPS });
   const served = [], intros = [];
   on(state, (t, d) => { if (t === "spawn") { served.push(d.shape); if (d.isNew) intros.push(d.shape.id); } });
   startRun(state, mode);
+  pastFirstRows(state);
   for (let i = 0; i < pieces && !state.gameOver; i++) { setStack(state, rows); drop(state); }
   return { state, served, intros };
 }
@@ -62,6 +66,7 @@ test("god mode: more big pieces (above all level 6 sets) and more powerups, and 
     for (const seed of [1, 2, 3, 4, 5, 6]) {
       const state = createGameState(shapes, powerups, { rng: makeRng(seed * 101), groups: GROUPS });
       startRun(state, mode);
+      pastFirstRows(state);
       setStack(state, 3);
       for (let i = 0; i < 300; i++) {
         const s = selectPiece(state);
@@ -87,6 +92,7 @@ test("god mode: more big pieces (above all level 6 sets) and more powerups, and 
 function after(prev, recent = [], n = 300, mode = "normal") {
   const state = createGameState(shapes, powerups, { rng: makeRng(11), groups: GROUPS });
   startRun(state, mode);
+  pastFirstRows(state);
   const out = new Map();
   for (let i = 0; i < n; i++) {
     setStack(state, 1);
@@ -138,6 +144,7 @@ test("level 6: a set only starts if it has room", () => {
     const state = createGameState(shapes, powerups, { rng: makeRng(rows), groups: GROUPS });
     state.devLevel6 = "on";
     startRun(state, "normal");
+    pastFirstRows(state);
     // (every class of powerup met: a set with powerups in it can come)
     for (const c of ["destroyer", "gravity", "expander", "combo"]) state.pieceSel.powerup.shownClasses.add(c);
     setStack(state, rows);
