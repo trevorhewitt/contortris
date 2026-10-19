@@ -23,7 +23,7 @@
 
     /* Opening the page: the loading screen (src/loading.js) on its own until the home screen is ready behind
        it (src/ui.js takes body.booting off), and then it fades away. Nothing else shows till then. */
-    body.booting .app, body.booting .homeLayer, body.booting .idlePlay{ visibility: hidden; }
+    body.booting .app, body.booting .homeLayer{ visibility: hidden; }
     .boot{
       position: fixed; inset: 0; z-index: 200; display: grid; place-items: center;
       background: #000; transition: opacity 500ms ease, visibility 0s linear 500ms;
@@ -584,12 +584,6 @@
       100%{ transform: none; filter: none; }
     }
 
-    .idlePlay{
-      position: fixed; z-index: 70; right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom));
-      min-height: 0; padding: 9px 13px; font-size: 10px; opacity: 0.55;
-    }
-    .idlePlay[hidden]{ display: none; }
-    .idlePlay:hover{ opacity: 0.95; }
     @media (prefers-reduced-motion: reduce){
       .homeLogoWrap, .homeLogo, .homeLogo span, button.modeBtn{ animation-duration: 60s; }
       .homeLogo[class*="fx-"], .homeLogo[class*="fx-"] b{ animation: none; }
@@ -1989,7 +1983,6 @@
   <canvas id="homeBurst" class="homeTop" aria-hidden="true" hidden></canvas>
   <div id="homeDark" class="homeDark" aria-hidden="true"></div>
   <!-- (left alone, the home screen is plain turbo zen: this, or anything at all, brings it back) -->
-  <button id="idlePlay" class="idlePlay" hidden>&#9654; Play</button>
 
   <!-- Fit-to-viewport script: uses VisualViewport so the bottom bar never gets cut off.
        Also sizes the board to use ALL available space above the bottom bar. -->

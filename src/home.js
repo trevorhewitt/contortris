@@ -72,7 +72,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   const $ = (id) => document.getElementById(id);
   // (the effects are drawn over the board on the same canvas: one layer for the browser to put
   // together with the menu, not two)
-  const bg = $("homeBg"), fxc = bg, burstc = $("homeBurst"), dark = $("homeDark"), idleBtn = $("idlePlay"), logo = $("homeLogo");
+  const bg = $("homeBg"), fxc = bg, burstc = $("homeBurst"), dark = $("homeDark"), logo = $("homeLogo");
   const bgx = bg.getContext("2d"), fx = bgx, bx = burstc.getContext("2d");
   const body = document.body;
   // (toned down, by the device or the options: src/settings.js)
@@ -619,7 +619,6 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       hideOverlay();
       startIdleTurbo();
       phase = "idle";
-      idleBtn.hidden = false;
     }, 1000);
   }
 
@@ -637,7 +636,6 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     if (phase !== "idle" && phase !== "fading") return;
     const fading = phase === "fading";
     if (fading) body.classList.remove("homeFade");
-    idleBtn.hidden = true;
     if (!fading) {
       resetGame(state);
       setWholeWindow(false);
@@ -858,7 +856,6 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     if (phase === "home" || phase === "starting") return;
     if (phase === "idle" || phase === "fading") { leaveIdle(); return; }
     phase = "home";
-    idleBtn.hidden = true;
     remember();
     body.classList.add("home");
     body.classList.remove("homeFade", "starting");
@@ -912,7 +909,6 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     if (e.code === "Enter" && menuShowing() && document.activeElement?.tagName !== "BUTTON") { e.preventDefault(); play(lastMode()); }
     e.stopImmediatePropagation();
   }, { capture: true });
-  idleBtn.addEventListener("click", (e) => { e.preventDefault(); leaveIdle(); });
   // (back from another tab: the time away doesn't count as being left alone)
   document.addEventListener("visibilitychange", () => { if (!document.hidden && (phase === "home" || phase === "off")) noteInput(); });
   window.addEventListener("click", (e) => {
