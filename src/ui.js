@@ -322,7 +322,8 @@ export function bindUI({ state, renderer, achievements }) {
   const overlayShowing = () => !!currentPanel;
 
   function renderMenu() {
-    // (each mode's button says what it is, from CONFIG.modes; all alike, none picked out)
+    // (each mode's button says what it is, from CONFIG.modes: only on a computer, with room for
+    // the words, index.html .modeTag)
     if (document.activeElement?.classList?.contains("modeBtn")) document.activeElement.blur();
     for (const b of document.querySelectorAll(".modeBtn")) {
       const m = b.dataset.mode;
@@ -1094,7 +1095,6 @@ export function bindUI({ state, renderer, achievements }) {
     showPanel("devtools");
   }
   $("btnDevTools").addEventListener("click", () => openDevTools());
-  $("btnHowTo").addEventListener("click", () => { panelBack = "menu"; showPanel("howto"); });
   $("btnAchievements").addEventListener("click", () => { panelBack = "menu"; showPanel("achievements"); });
   $("btnOptions").addEventListener("click", () => { panelBack = "menu"; showPanel("options"); });
   $("btnPauseOptions").addEventListener("click", () => { panelBack = "pause"; showPanel("options"); });

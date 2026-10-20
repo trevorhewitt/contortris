@@ -24,9 +24,9 @@ export const CONFIG = {
     easy: { label: "Easy", shelf: true, tagline: "Shiny Pieces, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true, hidden: true, hideOnPause: true },
     // bigAfterRows: none of the big pieces (level 4 and up) until the player has destroyed this
     //         many rows (CONFIG.assist.firstRows helps them get there)
-    normal: { label: "Classic", shelf: true, tagline: "the full game, Shiny Pieces and all", powerups: true, giants: true, level6: true, warmup: true, hideOnPause: true, bigAfterRows: 2 },
-    extreme: { label: "Extreme", tagline: "no Shiny Pieces. no help.", powerups: false, giants: true, level6: true, hints: false, hideOnPause: true },
-    god: { label: "God", shelf: true, tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true, hideOnPause: true },
+    normal: { label: "Classic", shelf: true, tagline: "starts easy. gets hard.", powerups: true, giants: true, level6: true, warmup: true, hideOnPause: true, bigAfterRows: 2 },
+    extreme: { label: "Extreme", tagline: "no shiny pieces. no mercy.", powerups: false, giants: true, level6: true, hints: false, hideOnPause: true },
+    god: { label: "God", shelf: true, tagline: "every piece unlocked, instantly", powerups: true, giants: true, level6: "open", everything: true, hideOnPause: true },
     // speeds: a speed setting on the pause menu, these times timeScale (1 to start with).
     // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); calm: zen for playing, a bit
     // like a game of Classic that can't be lost (CONFIG.zen.calm, which also has its own numbers
@@ -34,7 +34,7 @@ export const CONFIG = {
     // zenMovements: "turbo" for turbo zen's own mix of movements; flashNames: the falling piece's
     // name just appears, no sliding in and out; captions: false, no words over the board for what
     // zen's director is up to
-    zen: { label: "Zen", tagline: "endless play: it plays itself, or you do", warmup: "always", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
+    zen: { label: "Zen", tagline: "endless play", warmup: "always", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
     // (Turbo zen isn't one to pick from the menu (hidden): it's what comes up when the home screen
     // is left alone (src/home.js), and the developer tools have a button for it.)
     turbo: { label: "Turbo zen", hidden: true, powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2], captions: false },
@@ -54,7 +54,7 @@ export const CONFIG = {
     // counts towards the achievements.)
     // (pauseWhenHidden false: another tab and back, and it's just where it was, not paused. It
     // doesn't carry on while it's out of sight, as turbo zen does: it waits.)
-    tutorial: { label: "Tutorial", tagline: "how it all works, in a minute", hidden: true, tutorial: true, powerups: true, giants: true, level6: false, achievements: false, pauseWhenHidden: false },
+    tutorial: { label: "Tutorial", hidden: true, tutorial: true, powerups: true, giants: true, level6: false, achievements: false, pauseWhenHidden: false },
   },
   defaultMode: "normal",
 
