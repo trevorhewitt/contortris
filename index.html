@@ -567,8 +567,6 @@
     }
     button.modeBtn:focus-visible{ background: #000; box-shadow: var(--edge-split), var(--edge-glow), 0 0 0 4px rgba(255,255,255,0.55); }
     button.modeBtn:active{ transform: none; }
-    /* (Extreme and God mode held down together: developer mode, on its way) */
-    button.modeBtn.chord{ box-shadow: 0 0 0 6px rgba(255,255,255,0.75), 0 0 40px rgba(255,255,255,0.6); }
     /* (what each mode is, in a few words: only on a computer, with a mouse, and a window with the
        room for them; never on a phone or a tablet, nor in a small window) */
     .modeTag{
@@ -594,6 +592,8 @@
     .homeRow{ margin: 0; }
     body.home .overlay #panelMenu .skipBox{ margin: 0; padding: 6px 10px; background: rgba(0,0,0,0.72); box-shadow: 0 0 0 2px rgba(0,0,0,0.7); }
     body.home .overlay #panelMenu #gameVersion{ margin: 0; padding: 3px 8px; background: rgba(0,0,0,0.6); color: rgba(245,245,255,0.6); }
+    /* (three taps on it: developer mode) */
+    #panelMenu #gameVersion{ user-select: none; -webkit-user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
     @media (max-height: 460px){ button.modeBtn{ min-height: 40px; padding: 0.5em; } button.modeBtn.main{ min-height: 52px; } }
 
     .homeDark{

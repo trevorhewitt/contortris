@@ -1050,40 +1050,27 @@ export function bindUI({ state, renderer, achievements }) {
   /* ---------- buttons ---------- */
 
   // (from the home screen: it all bursts into pieces, a few words, and off it goes)
-  // Developer mode (CONFIG.modes.dev): Extreme and God mode held down together for
-  // CONFIG.devMode.holdMs, or a shift-click on God mode. (Once both are down, neither one's own
-  // click counts until they're both let go.)
-  const chordBtns = [$("btnGod"), $("btnExtreme")];
-  const chord = { down: new Map(), timer: 0, swallow: false };
-  const bothDown = () => chordBtns.every(b => [...chord.down.values()].includes(b));
-  const chordOff = () => { clearTimeout(chord.timer); chord.timer = 0; for (const b of chordBtns) b.classList.remove("chord"); };
-  for (const b of chordBtns) b.addEventListener("pointerdown", (e) => {
-    chord.down.set(e.pointerId, b);
-    if (!bothDown() || chord.timer) return;
-    chord.swallow = true;
-    for (const c of chordBtns) c.classList.add("chord");
-    chord.timer = setTimeout(() => { const go = bothDown(); chordOff(); if (go) openDevTools(); }, CONFIG.devMode?.holdMs ?? 500);
+  // Developer mode (CONFIG.modes.dev): three taps on the version number at the bottom of the home
+  // screen, each within CONFIG.devMode.tapMs of the last, or a shift-click on God mode.
+  const taps = { n: 0, at: -Infinity };
+  $("gameVersion").addEventListener("pointerdown", () => {
+    const t = performance.now();
+    taps.n = t - taps.at <= (CONFIG.devMode?.tapMs ?? 600) ? taps.n + 1 : 1;
+    taps.at = t;
+    if (taps.n >= 3) { taps.n = 0; openDevTools(); }
   });
-  const chordUp = (e) => {
-    if (!chord.down.delete(e.pointerId)) return;
-    if (!bothDown()) chordOff();
-    if (!chord.down.size && chord.swallow) setTimeout(() => { if (!chord.down.size) chord.swallow = false; }, 400);
-  };
-  window.addEventListener("pointerup", chordUp, true);
-  window.addEventListener("pointercancel", chordUp, true);
   for (const b of document.querySelectorAll(".modeBtn")) b.addEventListener("click", (e) => {
-    if (chord.swallow) return;
-    if (e.shiftKey && b === chordBtns[0]) { openDevTools(); return; }
+    if (e.shiftKey && b.id === "btnGod") { openDevTools(); return; }
     home.play(b.dataset.mode, { from: b });
   });
-  // The developer tools switched on (both held down, or a shift-click on God mode), and their
+  // The developer tools switched on (three taps on the version, or a shift-click on God mode), and their
   // page: a developer game (new things first), Turbo zen (on the menu no more), and the settings
   // (src/devtools.js)
   function openDevTools() {
     if (!devmode) { setDevTools(true); devmode = true; }
     setupDevMode();
     buildDevTools($("devToolsBody"), {
-      onPlayDev: () => home.play("dev", { from: chordBtns[0] }),
+      onPlayDev: () => home.play("dev", { from: $("btnGod") }),
       onPlayTurbo: (b) => home.play("turbo", { from: b }),
       onClose: () => {
         devmode = devUrl;

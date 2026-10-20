@@ -44,8 +44,8 @@ export const CONFIG = {
     // `keep` rows or so, so the board is seldom bare; and it stops while the page is hidden.
     // Never one to play.)
     home: { label: "Home", hidden: true, powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 1.75, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, captions: false, callouts: false, names: false, home: true, keep: [6, 10], dramatic: false, rest: false },
-    // (Developer mode, for looking at what's new, CONFIG.devMode: hold Extreme and God mode down
-    // together on the home screen, or shift-click God mode. God mode, with newest: the newest
+    // (Developer mode, for looking at what's new, CONFIG.devMode: three taps on the version number
+    // at the bottom of the home screen, or shift-click God mode. God mode, with newest: the newest
     // things first; rescue: it won't let you lose, and no end game; steady: it never speeds up.)
     dev: { label: "Developer", shelf: true, hidden: true, powerups: true, giants: true, level6: "open", everything: true, newest: true, rescue: true, steady: true },
     // (The tutorial, CONFIG.tutorial: the controls and each kind of piece, a page at a time, on
@@ -528,7 +528,7 @@ export const CONFIG = {
 
   // Developer mode (modes.dev): God mode (CONFIG.godMode), for looking at what's new.
   devMode: {
-    holdMs: 500, // (Extreme and God mode held down together this long, on the home screen)
+    tapMs: 600, // (three taps on the version number at the bottom of the home screen, each this soon after the last)
     // the set it opens with, the first time since the page was loaded (of these, the first never
     // seen in this browser, or else any of them), and the pieces that come straight after it
     // (firstBoost times likelier until each has come once)
