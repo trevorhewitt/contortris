@@ -370,7 +370,8 @@ export function bindUI({ state, renderer, achievements }) {
     wholeWindow = on;
     if (on) {
       const vw = (window.visualViewport?.width ?? window.innerWidth) - 16, vh = (window.visualViewport?.height ?? window.innerHeight) - 16;
-      const small = $("boardShell").getBoundingClientRect().width / CONFIG.board.cols * (CONFIG.zen.wholeWindowCell ?? 0.8);
+      // (the board's size as laid out, not as drawn: it may be switching on, .crtOn, scaled down)
+      const small = $("boardShell").offsetWidth / CONFIG.board.cols * (CONFIG.zen.wholeWindowCell ?? 0.8);
       let cell = Math.max(8, small, Math.sqrt(vw * vh / (CONFIG.zen.wholeWindowCells ?? Infinity)));
       if (vh / cell < usualBoard.rows) cell = vh / usualBoard.rows; // (the usual rows at least: the tallest pieces fill them)
       document.body.classList.add("wholeWindow");

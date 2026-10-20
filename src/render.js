@@ -13,6 +13,18 @@ import { fxTier, onFxTier } from "./particles.js";
 
 const DEFAULT_STYLE = {};
 
+// An element's size as laid out, in CSS pixels: not as it's drawn this moment (getBoundingClientRect),
+// which takes in any transform it's under. The board switching on (index.html .crtOn) starts as a
+// sliver and the next piece popping in (.pop) at 0.6 of its size, and a canvas sized from that
+// stayed that coarse. (Whole pixels from offsetWidth, a fraction from the computed width when it
+// agrees; nothing while it isn't laid out at all.)
+function layoutSize(el) {
+  const w = el.offsetWidth, h = el.offsetHeight;
+  if (!w || !h) return { w, h };
+  const cs = getComputedStyle(el), cw = parseFloat(cs.width), ch = parseFloat(cs.height);
+  return { w: Math.abs(cw - w) < 1 ? cw : w, h: Math.abs(ch - h) < 1 ? ch : h };
+}
+
 /* =========================
    Block drawing (shared by the renderer and previews)
    ========================= */
@@ -502,13 +514,18 @@ export function createRenderer(boardCanvas, nextCanvas) {
   const isEnhanced = () => CONFIG.render.cellStyle !== "classic";
   function styleKey() { return `${CONFIG.render.cellStyle}|${CONFIG.render.enhanced.edgeStrength}|${highContrast() ? "hc" : ""}|${liveLift()}`; }
 
+  // The board's backing scale: a whole number of the canvas's pixels for each board pixel, so cells
+  // land on whole pixels and the browser only ever scales it up a little (image-rendering:
+  // pixelated), never down. As many as the screen has for it (the board's size as laid out: see
+  // layoutSize), but no more than render.maxScale, the tier's boardScale, or keeps the board within
+  // the tier's boardPixels (a board as big as the window on a sharp screen: CONFIG.fx.quality).
+  // The same for the same window and tier, however the board was measured.
   function computeScale() {
-    // Integer backing scale so cells land on whole device pixels; the browser
-    // only ever scales UP a little (image-rendering: pixelated), never down.
-    const dpr = window.devicePixelRatio || 1;
-    const cssW = boardCanvas.getBoundingClientRect().width || bw;
-    // (and no more than the tier's: CONFIG.fx.quality boardScale)
-    return Math.max(1, Math.min(CONFIG.render.maxScale ?? 4, fxTier().boardScale ?? Infinity, Math.floor((cssW * dpr) / bw + 0.001)));
+    const dpr = window.devicePixelRatio || 1, T = fxTier();
+    const cssW = layoutSize(boardCanvas).w || bw;
+    const fits = Math.floor((cssW * dpr) / bw + 0.001);
+    const budget = Math.floor(Math.sqrt((T.boardPixels ?? Infinity) / (bw * bh)));
+    return Math.max(1, Math.min(CONFIG.render.maxScale ?? 4, T.boardScale ?? Infinity, budget, fits));
   }
 
   function invalidateCaches() {
@@ -2000,8 +2017,9 @@ export function createRenderer(boardCanvas, nextCanvas) {
     if (opts && "glow" in opts) nextGlowOn = !!opts.glow;
     if (opts && "plain" in opts) nextPlain = !!opts.plain;
     nextCanvas.parentElement?.classList.toggle("power", !!shape?.powerup && !nextPlain);
-    const rect = nextCanvas.getBoundingClientRect(), dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
-    const W = Math.max(1, Math.round(rect.width * dpr)), Hh = Math.max(1, Math.round(rect.height * dpr));
+    // (its size as laid out: it's popping in, scaled down, this moment)
+    const box = layoutSize(nextCanvas), dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+    const W = Math.max(1, Math.round(box.w * dpr)), Hh = Math.max(1, Math.round(box.h * dpr));
     if (nextCanvas.width !== W || nextCanvas.height !== Hh) { nextCanvas.width = W; nextCanvas.height = Hh; }
     nextLayout = null;
     if (shape) {

@@ -1102,12 +1102,14 @@ export const CONFIG = {
     // copies a Shiny Piece's marks fan out into (WARM_SPLIT, src/render.js); `glow`, the soft
     // glows (the light along clearing rows, the next piece's); `boardScale`, the most pixels the
     // board is drawn at for each of its own (render.maxScale: the fewer, the softer close up, the
-    // quicker); `homePixels` and `homeDpr`, the most pixels the home screen's moving background is
-    // drawn at (in all, and for each of the page's) and `burstPixels` its warp's; `warpSquares`,
-    // the most squares the warp breaks the screen into (home.warp.squares); `warpLite`, the warp's
-    // squares just white, no trails; `motes`, the most effects drifting over the home screen at
-    // once; and index.html's own .fx-low, .fx-medium, .fx-high (scan lines, the board's breathing
-    // glow, the blur behind the bar along the bottom).
+    // quicker), and `boardPixels`, the most it's drawn at in all (fewer for each of its own on a
+    // big board, turbo zen filling the window; the usual board is 0.11 million of its own, 0.98
+    // million drawn 3 for 1); `homePixels` and `homeDpr`, the most pixels the home screen's
+    // moving background is drawn at (in all, and for each of the page's) and `burstPixels` its
+    // warp's; `warpSquares`, the most squares the warp breaks the screen into (home.warp.squares);
+    // `warpLite`, the warp's squares just white, no trails; `motes`, the most effects drifting
+    // over the home screen at once; and index.html's own .fx-low, .fx-medium, .fx-high (scan
+    // lines, the board's breathing glow, the blur behind the bar along the bottom).
     // It starts on the tier this device settled on last time (kept under `remember`); or else the
     // first of `start` the device has no more cores or memory (GB) than (as the browser says:
     // navigator.hardwareConcurrency, deviceMemory); or else the fullest. (index.html?quality=low,
@@ -1120,9 +1122,9 @@ export const CONFIG = {
     quality: {
       remember: "eztrix.quality",
       tiers: [
-        { name: "low", particles: 0.45, split: 0, glow: false, boardScale: 2, homePixels: 0.5e6, homeDpr: 1, burstPixels: 0.5e6, warpSquares: 700, warpLite: true, motes: 80 },
-        { name: "medium", particles: 0.75, split: 3, glow: true, boardScale: 3, homePixels: 0.8e6, homeDpr: 1.25, burstPixels: 0.8e6, warpSquares: 1200, warpLite: false, motes: 160 },
-        { name: "high", particles: 1, split: 5, glow: true, boardScale: 3, homePixels: 1.1e6, homeDpr: 1.5, burstPixels: 1.2e6, warpSquares: 1800, warpLite: false, motes: 260 },
+        { name: "low", particles: 0.45, split: 0, glow: false, boardScale: 2, boardPixels: 0.5e6, homePixels: 0.5e6, homeDpr: 1, burstPixels: 0.5e6, warpSquares: 700, warpLite: true, motes: 80 },
+        { name: "medium", particles: 0.75, split: 3, glow: true, boardScale: 3, boardPixels: 1.2e6, homePixels: 0.8e6, homeDpr: 1.25, burstPixels: 0.8e6, warpSquares: 1200, warpLite: false, motes: 160 },
+        { name: "high", particles: 1, split: 5, glow: true, boardScale: 3, boardPixels: 2.4e6, homePixels: 1.1e6, homeDpr: 1.5, burstPixels: 1.2e6, warpSquares: 1800, warpLite: false, motes: 260 },
       ],
       start: [{ memoryGB: 2, tier: "low" }, { cores: 4, memoryGB: 4, tier: "medium" }],
       down: { slowShare: 0.25, overSec: 1, capMs: 100, holdMs: 1500 },
