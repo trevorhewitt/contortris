@@ -33,10 +33,12 @@ export function setOption(name, value) {
   applyOptions();
 }
 
-// (toned down: asked for here, or by the device)
+// (toned down: asked for here, or by the device. The device's say, asked once: what it says
+// stays up to date by itself, and this is asked many times a frame)
+let reducedMotion;
 export function calmFx() {
-  const device = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
-  return device || !!load().calmFx;
+  if (reducedMotion === undefined) reducedMotion = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)") ?? null;
+  return (reducedMotion?.matches ?? false) || !!load().calmFx;
 }
 
 // (high contrast: clearer cell borders on the board, and no glow)

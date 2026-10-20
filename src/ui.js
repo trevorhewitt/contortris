@@ -138,11 +138,18 @@ function createNameLayer(nameLayerEl) {
     setName(shape.name, instant ? "" : shape.powerup?.description ?? "", shape.powerup ? shape.powerup.cls ?? "combo" : "", instant);
   }
 
-  // The rows of the board the words cover, [top, bottom], or null with none showing.
+  // The rows of the board the words cover, [top, bottom], or null with none showing. (Asked every
+  // frame: measured again only for new words, or after half a second, as measuring makes the
+  // browser lay the page out there and then.)
+  let measured = { el: null, count: 0, until: 0, rows: null };
   function rows(count) {
+    if (!currentEl) return null;
+    const now = performance.now();
+    if (measured.el === currentEl && measured.count === count && now < measured.until) return measured.rows;
     const h = nameLayerEl.clientHeight;
-    if (!currentEl || !h) return null;
-    return [Math.floor(currentEl.offsetTop / h * count), Math.ceil((currentEl.offsetTop + currentEl.offsetHeight) / h * count) - 1];
+    const r = h ? [Math.floor(currentEl.offsetTop / h * count), Math.ceil((currentEl.offsetTop + currentEl.offsetHeight) / h * count) - 1] : null;
+    measured = { el: currentEl, count, until: now + 500, rows: r };
+    return r;
   }
   // (faded: the falling piece among the stack under the words. CONFIG.render.names)
   let busy = false;
@@ -603,12 +610,15 @@ export function bindUI({ state, renderer, achievements }) {
 
   /* ---------- HUD ---------- */
 
-  let hudScore = null;
+  let hudScore = null, hudPause = null;
   function updateHUD() {
     if (state.score !== hudScore) { hudScore = state.score; scoreText.textContent = String(state.score); }
     shelf.refresh();
     if (devmode) updateDevPanel();
-    pauseBtn.textContent = (state.running && !state.paused) ? "❚❚" : "▶";
+    // (only when it changes: setting it at all, every frame, had the bar along the bottom, blur
+    // and all, drawn again every frame)
+    const pauseText = (state.running && !state.paused) ? "❚❚" : "▶";
+    if (pauseText !== hudPause) { hudPause = pauseText; pauseBtn.textContent = pauseText; }
 
     if (state.debug) {
       const z = getDifficultyZone(state);
