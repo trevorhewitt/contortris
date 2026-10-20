@@ -574,6 +574,9 @@ export function bindUI({ state, renderer, achievements }) {
       case "next":
         renderer.drawNext(d.next, true, nextLook(d.next));
         break;
+      case "shelfUndo": // (an Extra Shiny Piece sent back: the name of the piece that's back)
+        if (!state.tutorial && state.active) nameLayer.setShape(state.active.shape, !!CONFIG.modes[state.mode]?.flashNames);
+        break;
       case "lock":
         // (every piece that lands, for the pause menu's gallery: not the home screen's turbo zen's)
         if (!state.backdrop) gallery.add(d.shape);
@@ -1337,7 +1340,8 @@ export function bindUI({ state, renderer, achievements }) {
       else togglePause();
       return;
     }
-    // (Shift: the next Extra Shiny Piece, while playing: src/shelfui.js)
+    // (Shift: the next Extra Shiny Piece, while playing, or again, while it's falling, sending it
+    // back: src/shelfui.js)
     if (e.key === "Shift") {
       if (state.running && !state.gameOver && !state.paused && !currentPanel && !e.repeat) { markInput(state, "keyboard"); shelf.use(); }
       return;

@@ -769,14 +769,63 @@ export function useShelf(state, i) {
   if (!shelfReady(state, slot) || state.paused || state.shelf.pending) return false;
   slot.left--;
   state.shelf.pending = slot.shape;
+  state.shelf.undo = null;
   emit(state, "shelf", { slot, cls: slot.cls });
   if (state.active && !state.effect && !state.hold) {
+    // (the piece it takes the place of, as it was, for a second tap to bring back: undoShelf)
+    const was = { piece: { ...state.active }, dropAccum: state.dropAccum, locking: state.locking, lockElapsed: state.lockElapsed };
     cancelLock(state);
     state.softDropping = false;
     shatter(state, state.active); // (it bursts into bits: the show only)
     state.active = null;
     if (!spawnPiece(state)) setGameOver(state, slot.shape);
+    else state.shelf.undo = { slot, ...was, ace: state.active, ms: 0 };
   }
+  return true;
+}
+
+// Can the Extra Shiny Piece just taken off the shelf still be sent back (undoShelf)? Only while
+// it's falling: not once it has landed (it never can again), or locked, or gone off.
+export function canUndoShelf(state) {
+  const u = state.shelf?.undo, a = state.active;
+  return !!u && !!a && a === u.ace && state.running && !state.gameOver && !state.paused && !state.effect && !state.hold
+    && !state.locking && !a.lastChance && canFall(state);
+}
+
+// A second tap on the bay (or Shift) while the Extra Shiny Piece it sent is still falling: it goes
+// back to the front of the bay's queue, and the piece it took the place of comes back as it was
+// (the same piece, turned the same way, in the same column). But no time is gained: it comes back
+// as far down as it would have fallen by now had it kept falling (on the ground, its time there
+// counting on), so this undoes a tap by mistake and is never a way to step back. True if it did.
+export function undoShelf(state) {
+  if (!canUndoShelf(state)) return false;
+  const sh = state.shelf, u = sh.undo, ace = state.active;
+  sh.undo = null;
+  u.slot.left++;
+  const i = sh.slots.indexOf(u.slot);
+  sh.order = [i, ...sh.order.filter(j => j !== i)];
+  if (state.fx.ace?.piece === ace) state.fx.ace = null;
+  const piece = state.active = { ...u.piece };
+  if (piece.lastChance) piece.lastChance = { ...piece.lastChance, elapsedMs: piece.lastChance.elapsedMs + u.ms };
+  // (nothing has changed under it while the other one fell: where it was still fits; if not, the
+  // nearest place up from there that does)
+  while (piece.y > -getActiveMatrix(state).length && collides(state, piece.x, piece.y, getActiveMatrix(state))) piece.y--;
+  // the rows it would have fallen in the time, at its own pace (not the player's soft drop), and
+  // once on the ground, the time it would have spent there
+  const fall = fallMs(state);
+  let t = u.dropAccum + u.ms, locking = u.locking, lockElapsed = u.locking ? u.lockElapsed + u.ms : 0, ground = u.locking ? u.ms : 0;
+  while (!locking && t >= fall) {
+    t -= fall;
+    if (canFall(state)) piece.y++;
+    else { locking = true; lockElapsed = t; ground = t; }
+  }
+  state.dropAccum = locking ? 0 : t;
+  state.locking = locking;
+  state.lockElapsed = locking ? lockElapsed : 0;
+  if (ground) piece.groundMs = (piece.groundMs ?? 0) + ground;
+  state.softDropping = false;
+  sendBack(state, ace, piece);
+  emit(state, "shelfUndo", { slot: u.slot, cls: u.slot.cls });
   return true;
 }
 
@@ -1739,6 +1788,33 @@ function shatter(state, piece) {
   }
 }
 
+// An Extra Shiny Piece sent back (undoShelf): the arrival the other way round, and light. A few
+// sparks go up off it, and a few bits of the piece it took the place of, in its own colours, fly
+// back in to it from round about.
+function sendBack(state, ace, piece) {
+  const cellPx = CONFIG.render.cellPx, r = (lo, hi) => lo + Math.random() * (hi - lo);
+  const cells = (p) => p.shape.rotations[p.rotIdx].flatMap((row, y) => row.flatMap((on, x) => (on ? [{ x: p.x + x, y: p.y + y }] : [])));
+  for (const c of cells(ace)) {
+    addParticle(state, {
+      x: (c.x + Math.random()) * cellPx, y: (c.y + Math.random()) * cellPx, vx: r(-20, 20), vy: -r(60, 160),
+      lifeMs: r(300, 550), color: "#ffffff", chroma: true, glow: true, g: 0, drag: 1.5, size: 2,
+    });
+  }
+  const { x: cx, y: cy } = pieceCentre(piece);
+  for (const c of cells(piece)) {
+    const paint = getShapePaint(piece.shape, piece.rotIdx, c.x - piece.x, c.y - piece.y);
+    const own = typeof paint === "string" ? [paint] : (paint?.pixels ?? []).flat().filter(k => typeof k === "string");
+    for (let i = 0; i < 2; i++) {
+      const tx = c.x + Math.random(), ty = c.y + Math.random(), d = Math.hypot(tx - cx, ty - cy) || 1, out = r(1.5, 3), ms = r(220, 320);
+      const sx = tx + (tx - cx) / d * out, sy = ty + (ty - cy) / d * out;
+      addParticle(state, {
+        x: sx * cellPx, y: sy * cellPx, vx: (tx - sx) * cellPx / (ms / 1000), vy: (ty - sy) * cellPx / (ms / 1000),
+        lifeMs: ms, color: own.length ? own[(Math.random() * own.length) | 0] : piece.shape.style?.baseColor ?? "#ffffff", g: 0, drag: 0, size: 3,
+      });
+    }
+  }
+}
+
 // The middle of a piece, in cells (as it's turned now)
 function pieceCentre(piece) {
   const mat = piece.shape.rotations[piece.rotIdx];
@@ -2105,6 +2181,9 @@ export function updateGame(state, dt) {
   if (!state.running || state.gameOver) return;
   if (state.paused) return;
   ageRemains(state, dt / timeScaleOf(state)); // (what destroyed blocks left fades away: src/remains.js)
+  // (an Extra Shiny Piece that can still be sent back: how long it's been falling, undoShelf; once
+  // it has landed, it never can be)
+  if (state.shelf?.undo) { if (canUndoShelf(state)) state.shelf.undo.ms += dt; else state.shelf.undo = null; }
 
   if (state.zen) zenTick(state, dt); // zen: the autopilot steers (unless the player is)
   // (the tutorial: its autopilot shows the moves, and when a page starts or goes round again,

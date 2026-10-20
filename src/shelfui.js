@@ -7,10 +7,12 @@
 // tutorial's only on its page). Along its bottom, a little icon for each one in it, in the order
 // they'll come, the next on the left: its class's (pieceIcon). A tap on it uses the next one in
 // its queue (shelf.js shelfQueue): the falling piece goes, and that one comes down in its place
-// (game.js useShelf). Shift does the same (ui.js). And in the pause menu, the queue to put in
-// another order (bindShelfQueue).
+// (game.js useShelf). Another tap while that one is still falling undoes it: it goes back, and
+// the piece it replaced comes back, as far down as it would have got by now (game.js undoShelf).
+// Shift does the same (ui.js). And in the pause menu, the queue to put in another order
+// (bindShelfQueue).
 
-import { useShelf } from "./game.js";
+import { useShelf, undoShelf, canUndoShelf } from "./game.js";
 import { shelfCount, shelfQueue, moveShelf } from "./shelf.js";
 import { classOf } from "./powerups.js";
 import { makeShapePreviewCanvas } from "./render.js";
@@ -48,9 +50,9 @@ export function bindShelf({ state, root, onUse = () => {}, always = false }) {
 
   // (every frame: src/ui.js. Nothing's touched unless something's changed)
   function refresh() {
-    const queue = shelfQueue(state), n = shelfCount(state), on = live();
+    const queue = shelfQueue(state), n = shelfCount(state), on = live(), back = on && canUndoShelf(state);
     const pieces = queue.map(slot => `${slot.shape.id}:${slot.left}`).join(",");
-    const key = `${!!state.shelf}|${on}|${n}|${pieces}`;
+    const key = `${!!state.shelf}|${on}|${n}|${pieces}|${back}`;
     if (key === shown) return;
     shown = key;
     root.hidden = !always && !state.shelf;
@@ -59,10 +61,16 @@ export function bindShelf({ state, root, onUse = () => {}, always = false }) {
     const next = queue[0]?.shape.name, then = queue.slice(1).map(slot => slot.shape.name).join(", ");
     btn.setAttribute("aria-label", n ? `Extra Shiny Pieces: ${n}. Use the next one, ${next}${then ? ` (then ${then})` : ""}` : "Extra Shiny Pieces: none");
     btn.title = n ? `Use the next Extra Shiny Piece, ${next} (Shift)` : "Extra Shiny Pieces you get land here";
+    // (the one just used, still falling: a tap now sends it back)
+    if (back) {
+      const was = state.shelf.undo.piece.shape.name;
+      btn.setAttribute("aria-label", `Undo: send ${state.active.shape.name} back, and carry on with ${was}`);
+      btn.title = `Tap again to send it back and carry on with ${was} (Shift)`;
+    }
     // (one more than there was: the number hops up)
     if (n > count) { tally.classList.remove("bump"); void tally.offsetWidth; tally.classList.add("bump"); }
     count = n;
-    btn.disabled = !n;
+    btn.disabled = !n && !back;
     root.classList.toggle("empty", !n);
   }
 
@@ -70,9 +78,10 @@ export function bindShelf({ state, root, onUse = () => {}, always = false }) {
   // (no focus left on it: a key meant for the piece would press it again)
   btn.addEventListener("click", (e) => { e.preventDefault(); btn.blur(); if (live()) use(); });
 
-  // (`i`: the slot; left out, the next in the queue)
+  // (`i`: the slot; left out, the next in the queue, or, while the one just used is still
+  // falling, sending it back)
   function use(i) {
-    if (!useShelf(state, i)) return false;
+    if (!(i == null && undoShelf(state)) && !useShelf(state, i)) return false;
     refresh();
     onUse(i);
     return true;

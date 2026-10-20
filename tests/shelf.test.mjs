@@ -9,7 +9,7 @@ import { SHAPES } from "../shapes/main_shapes.js";
 import { loadShapes } from "../src/shapes.js";
 import { makeRng } from "../src/util.js";
 import { classOf } from "../src/powerups.js";
-import { createGameState, startRun, updateGame, useShelf, on } from "../src/game.js";
+import { createGameState, startRun, updateGame, useShelf, undoShelf, canUndoShelf, tryMove, tryRotate, on } from "../src/game.js";
 import { shelfReady, shelfCount, shelfQueue, moveShelf, pieceReach } from "../src/shelf.js";
 import { pieceIcon } from "../src/shelfui.js";
 import { resetParticles } from "../src/particles.js";
@@ -192,6 +192,105 @@ test("Used, the falling piece bursts into bits, and the Extra Shiny Piece is put
   assert.ok(useShelf(full));
   assert.ok(full.active.y < 0, "above the board");
   assert.equal(full.fx.ace?.piece, full.active);
+});
+
+// (the game for the undo: God mode, a full bay; its first piece turned and moved over, and
+// fallen for a moment)
+const undoGame = (seed = 4) => {
+  const state = game("god", seed);
+  tryRotate(state, 1);
+  tryMove(state, 1, 0);
+  for (let t = 0; t < 400; t += 16) updateGame(state, 16);
+  return state;
+};
+const run = (state, ms) => { for (let t = 0; t < ms; t += 16) updateGame(state, 16); };
+
+test("A second tap while the Extra Shiny Piece is still falling undoes it: the piece it replaced comes back, and it goes back to the front of the bay", () => {
+  const state = undoGame();
+  const was = { shape: state.active.shape, rotIdx: state.active.rotIdx, x: state.active.x };
+  const queue = shelfQueue(state).map(s => s.cls), count = shelfCount(state);
+  assert.ok(moveShelf(state, 2, 0), "the last one to the front, to use");
+  const used = shelfQueue(state)[0];
+  assert.ok(useShelf(state));
+  assert.equal(state.active.shape, used.shape);
+  run(state, 300);
+  assert.ok(canUndoShelf(state), "still falling");
+  const bits = state.fx.particles.length;
+  assert.ok(undoShelf(state));
+  assert.equal(state.active.shape, was.shape, "the same piece");
+  assert.equal(state.active.rotIdx, was.rotIdx, "turned the same way");
+  assert.equal(state.active.x, was.x, "in the same column");
+  assert.equal(state.fx.ace, null, "no rays of light for it");
+  assert.ok(state.fx.particles.length > bits, "a little light to show it");
+  assert.equal(shelfCount(state), count, "the bay as full as it was");
+  assert.equal(used.left, 1);
+  assert.equal(shelfQueue(state)[0], used, "back at the front of the queue");
+  assert.deepEqual(shelfQueue(state).slice(1).map(s => s.cls), queue.filter(c => c !== used.cls));
+  assert.equal(undoShelf(state), false, "once");
+  // (and it can be used again, like any other)
+  assert.ok(useShelf(state));
+  assert.equal(state.active.shape, used.shape);
+});
+
+test("Undone, the piece comes back as far down as it would have fallen by now: no time is gained", () => {
+  for (const ms of [200, 1500, 4000, 60000]) {
+    // the same game, left alone
+    const plain = undoGame();
+    const piece = plain.active.shape;
+    run(plain, ms);
+    // and with an Extra Shiny Piece taken, and sent back
+    const state = undoGame();
+    assert.ok(useShelf(state));
+    let t = 0;
+    for (; t < ms && canUndoShelf(state); t += 16) updateGame(state, 16);
+    if (!undoShelf(state)) { assert.ok(t > 1000, `${ms}ms: only once it has landed can it not be sent back`); continue; }
+    run(state, ms - t);
+    if (plain.active?.shape === piece) {
+      assert.equal(state.active?.shape, piece, `${ms}ms: still falling, as it would be`);
+      assert.ok(state.active.y >= plain.active.y, `${ms}ms: at row ${state.active.y}, at least as far down as row ${plain.active.y}`);
+    } else {
+      // (it would have landed by now: it has)
+      assert.notEqual(state.active?.shape, piece, `${ms}ms: it has landed, as it would have`);
+    }
+  }
+  // on the ground already when it was replaced: its time there goes on, and it locks no later than
+  // it would have
+  const landed = (st) => { for (let t = 0; t < 60000 && !st.locking; t += 16) updateGame(st, 16); };
+  const until = (st, piece) => { let t = 0; for (; t < 60000 && st.active?.shape === piece; t += 16) updateGame(st, 16); return t; };
+  const plain = undoGame(), piece = plain.active.shape;
+  landed(plain);
+  const left = until(plain, piece);
+  const state = undoGame();
+  landed(state);
+  assert.ok(useShelf(state));
+  run(state, 96);
+  assert.ok(undoShelf(state), "the Extra Shiny Piece still falling");
+  assert.equal(state.active.shape, piece);
+  assert.ok(state.locking && state.lockElapsed >= 96, "still on the ground, its time there going on");
+  assert.ok(96 + until(state, piece) <= left + 16, "locked no later than it would have");
+});
+
+test("Once the Extra Shiny Piece has landed, there's no undoing it", () => {
+  const state = undoGame();
+  const used = shelfQueue(state)[0];
+  assert.ok(useShelf(state));
+  const ace = state.active;
+  for (let t = 0; t < 60000 && !state.locking && state.active === ace; t += 16) updateGame(state, 16);
+  assert.equal(state.active, ace, "landed, not yet locked");
+  assert.equal(canUndoShelf(state), false);
+  assert.equal(undoShelf(state), false);
+  // (not even if it's moved off an edge and falls again)
+  updateGame(state, 16);
+  assert.equal(state.shelf.undo, null, "for good");
+  assert.equal(used.left, 0);
+  // (nor with nothing falling when it was taken: there's nothing to go back to)
+  const between = game("god", 5);
+  const falling = between.active;
+  between.active = null;
+  assert.ok(useShelf(between, 0));
+  between.active = falling;
+  run(between, 2000);
+  assert.equal(undoShelf(between), false);
 });
 
 test("No shelf in Extreme or zen", () => {

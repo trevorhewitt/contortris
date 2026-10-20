@@ -15,9 +15,10 @@
 import { CONFIG } from "../config.js";
 import { classOf, resolvePowerupArea } from "./powerups.js";
 
-// The shelf for a new game: { slots: [{ cls, shape, left }], order: [], pending: null } (order:
-// the queue, the slots' numbers in the order they're used, shelfQueue; pending: a powerup taken
-// off it while nothing was falling, to come next), or null in a mode without one.
+// The shelf for a new game: { slots: [{ cls, shape, left }], order: [], pending: null, undo: null }
+// (order: the queue, the slots' numbers in the order they're used, shelfQueue; pending: a powerup
+// taken off it while nothing was falling, to come next; undo: the one just taken, while it can
+// still be sent back, and the piece it replaced, game.js undoShelf), or null in a mode without one.
 // (`demo`: the tutorial's page about it, in any mode)
 export function createShelf(state, { demo = false } = {}) {
   const cfg = CONFIG.shelf, mode = CONFIG.modes[state.mode] ?? {};
@@ -30,7 +31,7 @@ export function createShelf(state, { demo = false } = {}) {
     if (!shape || !(shape.powerup.cls === cls || shape.powerup.parts?.some(q => classOf(q.type) === cls))) continue; // (a class that's switched off, or its piece gone)
     slots.push({ cls, shape, left: Math.max(1, cfg.perGame ?? 1) });
   }
-  return slots.length ? { slots, order: [], pending: null } : null;
+  return slots.length ? { slots, order: [], pending: null, undo: null } : null;
 }
 
 // The bay's classes: one slot each, whatever CONFIG.shelf.classes says beyond these.
