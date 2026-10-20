@@ -4,7 +4,7 @@
 // Talks to the outside world through events: on(state, fn) receives (type, data).
 //   "start"          { mode }
 //   "reset"          {}
-//   "spawn"          { shape, next }            a new piece is falling
+//   "spawn"          { shape, next, set }       a new piece is falling (set: its level 6 set's id)
 //   "next"           { next }                   the preview changed (debug)
 //   "lock"           { shape, pid, cells, drops, inside(zone) }
 //   "rowsDestroyed"  { count, source }          source "clear" (line clear) or "powerup"
@@ -677,7 +677,9 @@ function spawnPiece(state) {
     // (the first of its class: its piece in the bay waits until it's down on the board. shelf.js)
     if (isNew) state.active.firstOfClass = shape.powerup.cls;
     // (zen can say something else in place of the name: "Oops, all bagpipes!")
-    emit(state, "spawn", { shape, next: state.next, isNew, label: state.zen?.current?.label ?? null });
+    // (set: the level 6 set it's one of, if it is)
+    const set = !shelved && state.pieceSel?.fromSet ? state.pieceSel.level6?.lastGroup ?? null : null;
+    emit(state, "spawn", { shape, next: state.next, isNew, label: state.zen?.current?.label ?? null, set });
     // (turbo zen: a powerup that's about to take most of the board waits up there a moment first)
     if (pauseFirst > 0) dramaticPause(state, pauseFirst, null);
   }

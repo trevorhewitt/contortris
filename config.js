@@ -1065,6 +1065,10 @@ export const CONFIG = {
     toastMs: 3200,     // how long an unlock toast stays up
     maxToastsAtOnce: 1, // more unlocks than this wait their turn...
     maxToastsQueued: 3, // ...up to this many in all; any more unlock quietly (no toast)
+    // They come as a trickle: apart from the `starters` (a new player's first game: starting it,
+    // then 10 rows), one only unlocks once gapPieces pieces have been placed since the last did
+    // (until then it doesn't, and can still be earned later). src/achievements.js
+    pace: { starters: ["first_game", "rows_10"], gapPieces: 60 },
   },
 
   fx: {

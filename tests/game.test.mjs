@@ -218,15 +218,18 @@ test("achievements: sequences, multi-row, lifetime rows persist, mode filter", (
   const ach = createAchievements(ACHIEVEMENTS, { storage, onUnlock: (d) => got.push(d.id) });
   const spam = byId("spam");
   ach.handle("start", { mode: "extreme" }, null);
+  assert.ok(got.includes("first_game"));
+  // (spam on its own isn't the spam: the level 6 set of it is)
   ach.handle("spawn", { shape: spam });
+  ach.handle("spawn", { shape: spam });
+  assert.ok(!got.includes("spam") && !got.includes("spam_3"));
+  ach.handle("spawn", { shape: spam });
+  assert.ok(got.includes("spam_3") && !got.includes("spam"));
+  for (let i = 0; i < 3; i++) ach.handle("spawn", { shape: spam, set: "spam" });
   assert.ok(got.includes("spam"));
-  ach.handle("spawn", { shape: spam });
-  assert.ok(!got.includes("spam_3"));
-  ach.handle("spawn", { shape: spam });
-  assert.ok(got.includes("spam_3"));
 
   ach.handle("rowsDestroyed", { count: 4, source: "clear" });
-  assert.ok(got.includes("multi_4") && got.includes("multi_2") && got.includes("rows_1"));
+  assert.ok(got.includes("multi_4") && got.includes("multi_2") && !got.includes("rows_1"), "rows_1 is retired");
   assert.ok(!got.includes("multi_5"));
 
   // powerup achievements are Normal-only
@@ -240,6 +243,32 @@ test("achievements: sequences, multi-row, lifetime rows persist, mode filter", (
   ach2.handle("start", { mode: "normal" }, null);
   ach2.handle("powerupFire", { shape: byId("katana"), type: "destroyer", affected: 30 });
   assert.ok(got.includes("katana") && got.includes("overkill") && got.includes("powerup_1"));
+});
+
+test("achievements come as a trickle: the starters at once, then one only every so many pieces", () => {
+  const got = [];
+  const pace = { starters: ["first_game", "rows_10"], gapPieces: 5 };
+  const ach = createAchievements(ACHIEVEMENTS, { storage: memoryStorage(), onUnlock: (d) => got.push(d.id), pace });
+  ach.handle("start", { mode: "normal" }, null);
+  ach.handle("rowsDestroyed", { count: 3, source: "clear" });
+  assert.deepEqual(got, ["first_game"], "too soon for anything but a starter");
+  ach.handle("rowsDestroyed", { count: 7, source: "clear" });
+  assert.deepEqual(got, ["first_game", "rows_10"], "a starter comes whenever it's earned");
+  for (let i = 1; i <= 4; i++) ach.handle("lock", { drops: i, onBoard: () => [] });
+  ach.handle("rowsDestroyed", { count: 2, source: "clear" });
+  assert.equal(got.length, 2, "still too soon");
+  ach.handle("lock", { drops: 5, onBoard: () => [] });
+  ach.handle("rowsDestroyed", { count: 10, source: "clear" });
+  assert.equal(got.length, 3, "then one, and only one");
+  assert.ok(got[2] === "rows_20" || got[2].startsWith("multi_"), got[2]);
+  // (a save from before the pacing waits for nothing)
+  const storage = memoryStorage();
+  storage.save({ version: 1, unlocked: { first_game: { at: 1, mode: "normal" } }, stats: {}, progress: {} });
+  const got2 = [];
+  const ach2 = createAchievements(ACHIEVEMENTS, { storage, onUnlock: (d) => got2.push(d.id), pace });
+  ach2.handle("start", { mode: "normal" }, null);
+  ach2.handle("rowsDestroyed", { count: 2, source: "clear" });
+  assert.deepEqual(got2, ["multi_2"]);
 });
 
 test("achievements: game over triggers", () => {
@@ -257,7 +286,7 @@ test("achievements: game over triggers", () => {
 test("every achievement trigger in the data file is a known type", () => {
   const KNOWN = ["together", "blocksDestroyed", "rowWith", "rowsDestroyed", "multiRow", "pieceServed", "pieceSequence", "pieceInside", "seenAll",
     "powerupUsed", "powerupBlocks", "score", "level", "drops", "boardCleared", "gameOver", "level6", "endGameEscaped",
-    "keptAlive", "killed", "killedQuickly", "aliveAtEnd"];
+    "keptAlive", "killed", "killedQuickly", "aliveAtEnd", "setServed", "games"];
   const ids = new Set();
   for (const a of ACHIEVEMENTS) {
     assert.ok(KNOWN.includes(a.trigger.type), `${a.id}: ${a.trigger.type}`);

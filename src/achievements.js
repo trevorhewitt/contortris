@@ -21,12 +21,19 @@ function emptyData() {
     unlocked: {},                       // id -> { at, mode }
     stats: { rowsDestroyed: 0, blocksDestroyed: 0, powerupsUsed: 0, games: 0, bestRowsInGame: 0, bestBlocksInGame: 0 },
     progress: {},                       // achievement id -> lifetime counter
+    sinceLast: 0,                       // pieces placed since the last unlock (`pace`)
   };
 }
 
-export function createAchievements(defs, { storage = localStorageAdapter, onUnlock = () => {}, now = () => Date.now() } = {}) {
+// `pace` (CONFIG.achievements.pace): { starters: [ids], gapPieces } — apart from the starters, an
+// achievement only unlocks once the player has placed gapPieces pieces since the last one did
+// (until then it simply doesn't, and can still be earned later), so they come as a trickle.
+export function createAchievements(defs, { storage = localStorageAdapter, onUnlock = () => {}, now = () => Date.now(), pace = null } = {}) {
   const list = (Array.isArray(defs) ? defs : []).filter(d => d && d.id && d.trigger?.type && !d.retired);
-  const data = { ...emptyData(), ...(storage.load() ?? {}) };
+  const saved = storage.load();
+  // (a save from before the pacing: nothing to wait for)
+  const data = { ...emptyData(), ...(saved ? { sinceLast: Infinity } : {}), ...(saved ?? {}) };
+  if (data.sinceLast == null) data.sinceLast = Infinity; // (JSON keeps Infinity as null)
   data.stats = { ...emptyData().stats, ...(data.stats ?? {}) };
   data.unlocked = data.unlocked ?? {};
   data.progress = data.progress ?? {};
@@ -35,7 +42,7 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
   let game = newGame("normal", []);
 
   function newGame(mode, pool) {
-    return { mode, pool, rows: 0, blocks: 0, drops: 0, history: [], seen: new Set(), served: new Map(), progress: {}, unlocked: [], lives: new Map() };
+    return { mode, pool, rows: 0, blocks: 0, drops: 0, history: [], seen: new Set(), served: new Map(), sets: new Map(), progress: {}, unlocked: [], lives: new Map() };
   }
   // (the triggers that watch a piece's life, so only those pieces are followed)
   const LIFE = new Set(["keptAlive", "killed", "killedQuickly", "aliveAtEnd"]);
@@ -61,6 +68,8 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
 
   function unlock(def) {
     if (isUnlocked(def.id)) return;
+    if (pace && !pace.starters?.includes(def.id) && data.sinceLast < (pace.gapPieces ?? 0)) return;
+    data.sinceLast = 0;
     const n = Array.isArray(def.variants) ? def.variants.length : 0;
     const v = n ? Math.floor(Math.random() * (n + 1)) : 0; // 0 = the main name
     data.unlocked[def.id] = { at: now(), mode: game.mode, ...(v ? { v } : {}) };
@@ -114,6 +123,7 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
         game = newGame(d.mode ?? "normal", state ? currentPool(state) : []);
         data.stats.games++;
         save();
+        each("games", (def, t) => { if (data.stats.games >= (t.count ?? 1)) unlock(def); });
         break;
       }
 
@@ -142,11 +152,18 @@ export function createAchievements(defs, { storage = localStorageAdapter, onUnlo
           const wanted = game.pool.filter(s => matchShape(s, t.match));
           if (wanted.length && wanted.every(s => game.seen.has(s.id))) unlock(def);
         });
+
+        // (a piece of a level 6 set: d.set is the set's id)
+        if (d.set) game.sets.set(d.set, (game.sets.get(d.set) ?? 0) + 1);
+        each("setServed", (def, t) => {
+          if (d.set && (t.ids ?? []).includes(d.set) && game.sets.get(d.set) >= (t.count ?? 1)) unlock(def);
+        });
         break;
       }
 
       case "lock": {
         game.drops = d.drops ?? game.drops + 1;
+        if (data.sinceLast !== Infinity) { data.sinceLast++; if (data.sinceLast % 10 === 0) dirty = true; }
         // (pieces whose life is watched: kept alive so many pieces, killed so soon)
         // (only one that landed on the board: one that locked above the top never lived)
         if (d.shape && d.pid != null && d.cells?.length && lifeTriggers().some(t => matchShape(d.shape, t.match))) game.lives.set(d.pid, { shape: d.shape, at: game.drops });

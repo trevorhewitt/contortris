@@ -30,6 +30,9 @@
  *                                     them in one game)
  *   pieceSequence  { ids }            these pieces arrive one straight after another, in order
  *                                     (e.g. ["spam", "spam", "spam"])
+ *   setServed      { ids, count }     pieces of one of these level 6 sets arrive (`count` of them
+ *                                     in one game, default 1): the set itself, not one piece
+ *   games          { count }          start this many games in all
  *   pieceInside    { piece, container, zone }
  *                                     a `piece`-matching block lands with at least one block in
  *                                     the zone (default "inside") of a `container`-matching
@@ -69,9 +72,19 @@
 
 export const ACHIEVEMENTS = [
   {
+    id: "first_game",
+    name: "Insert Coin",
+    description: "Start your first game.",
+    trigger: {
+        "type": "games",
+        "count": 1
+      },
+  },
+  {
     id: "rows_1",
     name: "Baby's First Row",
     description: "Destroy a row.",
+    retired: true,
     icon: [
         [
           "",
@@ -265,6 +278,7 @@ export const ACHIEVEMENTS = [
     id: "rows_5",
     name: "High Five",
     description: "Destroy 5 rows in one game.",
+    retired: true,
     icon: [
         [
           "",
@@ -3596,13 +3610,11 @@ export const ACHIEVEMENTS = [
         ]
       ],
     trigger: {
-        "type": "pieceServed",
-        "match": {
-          "ids": [
-            "spam",
-            "spam_can"
-          ]
-        }
+        "type": "setServed",
+        "ids": [
+            "spam"
+          ],
+        "count": 3
       },
   },
   {
@@ -4162,13 +4174,11 @@ export const ACHIEVEMENTS = [
         ]
       ],
     trigger: {
-        "type": "pieceServed",
-        "match": {
-          "ids": [
-            "beans",
-            "beans_beans_and_beans"
-          ]
-        }
+        "type": "setServed",
+        "ids": [
+            "beans"
+          ],
+        "count": 3
       },
   },
   {

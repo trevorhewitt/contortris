@@ -6439,6 +6439,10 @@
       params: [{ key: "match", kind: "match", label: "Piece" }] },
     { type: "pieceSequence", doc: "These pieces arrive one straight after another, in order (e.g. [\"spam\", \"spam\", \"spam\"]).",
       params: [{ key: "ids", kind: "ids", label: "Pieces", required: true }] },
+    { type: "setServed", doc: "Pieces of one of these level 6 sets arrive (`count` of them in one game, default 1): the set itself, not one piece. Set ids from shapes/groups.js.",
+      params: [{ key: "ids", kind: "ids", label: "Sets", required: true }, { key: "count", kind: "int", label: "Pieces", def: 1 }] },
+    { type: "games", doc: "Start this many games in all.",
+      params: [{ key: "count", kind: "int", label: "Games", def: 1 }] },
     { type: "pieceInside", doc: "A `piece`-matching block lands with at least one block in the zone (default \"inside\") of a `container`-matching piece on the board — in either order.",
       params: [{ key: "piece", kind: "match", label: "Piece" }, { key: "container", kind: "match", label: "Container" }, { key: "zone", kind: "zone", label: "Zone", def: "inside" }] },
     { type: "seenAll", doc: "Every matching piece has arrived at least once in one game.",
@@ -6607,6 +6611,12 @@
         if (ids.every(x => x === ids[0])) return `Unlocks when ${blockLabel(ids[0])} arrives ${ids.length} times in a row`;
         return `Unlocks when ${listJoin(ids.map(blockLabel), "and")} arrive one straight after another, in that order`;
       }
+      case "setServed": {
+        const ids = arrOf(t.ids), c = val("count") ?? 1;
+        if (!ids.length) return "Unlocks when … (no sets listed yet)";
+        return `Unlocks when ${c === 1 ? "a piece" : `${num(c)} pieces`} of the ${listJoin(ids.map(x => `“${x}”`), "or")} set arrive in one game`;
+      }
+      case "games": { const c = val("count") ?? 1; return `Unlocks when you start ${c === 1 ? "your first game" : `your ${num(c)}th game`}`; }
       case "pieceInside": {
         const zone = String(val("zone") ?? "inside");
         const where = zone === "inside" ? `inside ${matchPhrase(t.container, "piece", true)}` : `in the “${zone}” zone of ${matchPhrase(t.container, "piece", true)}`;
