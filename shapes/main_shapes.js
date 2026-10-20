@@ -114884,7 +114884,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
     nextShapeProbs: [
         0.2,
         0.2
