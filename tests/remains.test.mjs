@@ -263,6 +263,14 @@ test("the renderer draws them again when they change, and as they get older, oft
       assert.equal(keys.size, times + 1, `${from / 1000} s in, three seconds on: ${times} times`);
     }
   });
+  withRemains({ forever: false, sharpSec: 20, softSec: 60, fadeAwaySec: 160 }, () => {
+    // (on a lighter look tier, CONFIG.fx.quality's remainsEvery: every third of those steps)
+    const state = boardOnly();
+    leaveRemains(state, [{ x: 0, y: 3, cell: block("#aa0000") }]);
+    const keys = new Set([remainsKey(state, 3)]);
+    for (let t = 0; t < 3000; t += 16) { ageRemains(state, 16); keys.add(remainsKey(state, 3)); }
+    assert.equal(keys.size, 3, "new, three seconds on, every third step: twice");
+  });
   withRemains({ forever: true, sharpSec: 10 }, () => {
     const state = boardOnly();
     leaveRemains(state, [{ x: 0, y: 3, cell: block("#aa0000") }]);
@@ -287,6 +295,21 @@ test("out of the box: darker to start with, scanlines through them, and longer t
   assert.ok(c.fadeAwaySec > 160, `fade away: ${c.fadeAwaySec} s`);
   // (each line, and each gap, a whole number of the board's pixels: crisp)
   assert.equal(CONFIG.render.cellPx % (2 * c.scanlinesPerCell), 0, `${CONFIG.render.cellPx} px cells, ${c.scanlinesPerCell} lines`);
+});
+
+test("the look tiers: the fullest has them as they are; the lighter ones shake them with the board and draw them again less often", () => {
+  const tiers = CONFIG.fx.quality.tiers, fullest = tiers[tiers.length - 1];
+  assert.equal(fullest.remainsDepth, true, "the fullest: the layers move apart");
+  assert.equal(fullest.remainsEvery, 1, "the fullest: every step of their look");
+  for (const t of tiers.slice(0, -1)) {
+    assert.equal(t.remainsDepth, false, `${t.name}: with the board`);
+    assert.ok(t.remainsEvery > 1, `${t.name}: every ${t.remainsEvery} steps`);
+  }
+  // (the lighter the tier, the less often)
+  for (let i = 1; i < tiers.length; i++) assert.ok(tiers[i].remainsEvery <= tiers[i - 1].remainsEvery, tiers[i].name);
+  // (and the lightest, less in each picture)
+  assert.equal(tiers[0].remainsLite, true, `${tiers[0].name}: less in each picture`);
+  assert.equal(fullest.remainsLite, false, "the fullest: all of it");
 });
 
 

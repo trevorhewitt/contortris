@@ -710,8 +710,9 @@ export const CONFIG = {
   // nearest in age merged into one). When the board shakes, each layer moves less than the board
   // does, the older the less, the oldest (1 - parallax) of the way with it. While this is on, the
   // blocks still in play are a little lighter (liveLift: a gamma, 1 as they are), to stand out. Not
-  // in the modes in notIn. (On for now, to try out: the developer tools can change all this, and
-  // switch it off.)
+  // in the modes in notIn. At rest, they're a picture drawn a little at a time, no more than paintMs
+  // of work a frame (a change shows a frame or two later, rather than holding one up). (On for now,
+  // to try out: the developer tools can change all this, and switch it off.)
   remains: {
     enabled: true,
     darker: 0.8,
@@ -735,6 +736,7 @@ export const CONFIG = {
     layerSec: 4,
     liveLift: 1.1,
     notIn: ["tutorial"],
+    paintMs: 4,
   },
 
   assist: {
@@ -1125,8 +1127,14 @@ export const CONFIG = {
     // `warpLite`, the warp's squares just white, no trails; `motes`, the most effects drifting
     // over the home screen at once; `mosaicRemains`, the home screen's mosaics with what destroyed
     // blocks leave behind under them, some pieces gone (src/remains.js paintRemains: on a desktop
-    // about 0.3 s of work for each mosaic, 0.1 s of it in one frame; six times that on a slow
-    // phone), or whole; and index.html's own .fx-low, .fx-medium, .fx-high (scan
+    // about 0.2 s of work for each mosaic, a step at a time, the biggest some 30 ms; six times
+    // that on a slow phone), or whole; `remainsDepth`, what destroyed blocks leave behind on the board moving
+    // apart, layer by layer, as it shakes (remains.parallax: all of it drawn afresh every frame of
+    // that), or all together with the board, from its picture of them; `remainsEvery`, that
+    // picture drawn again for every so many of the steps their look takes as they get older (1:
+    // every one; src/remains.js remainsKey: each a few frames' work, and the board drawn again);
+    // `remainsLite`, less in each picture: red and blue never apart, no glow in the scanlines
+    // (about a third less to draw); and index.html's own .fx-low, .fx-medium, .fx-high (scan
     // lines, the board's breathing glow, the blur behind the bar along the bottom).
     // It starts on the tier this device settled on last time (kept under `remember`); or else the
     // first of `start` the device has no more cores or memory (GB) than (as the browser says:
@@ -1140,9 +1148,9 @@ export const CONFIG = {
     quality: {
       remember: "eztrix.quality",
       tiers: [
-        { name: "low", particles: 0.45, split: 0, glow: false, boardScale: 2, boardPixels: 0.5e6, homePixels: 0.5e6, homeDpr: 1, burstPixels: 0.5e6, warpSquares: 700, warpLite: true, motes: 80, mosaicRemains: false },
-        { name: "medium", particles: 0.75, split: 3, glow: true, boardScale: 3, boardPixels: 1.2e6, homePixels: 0.8e6, homeDpr: 1.25, burstPixels: 0.8e6, warpSquares: 1200, warpLite: false, motes: 160, mosaicRemains: false },
-        { name: "high", particles: 1, split: 5, glow: true, boardScale: 3, boardPixels: 2.4e6, homePixels: 1.1e6, homeDpr: 1.5, burstPixels: 1.2e6, warpSquares: 1800, warpLite: false, motes: 260, mosaicRemains: true },
+        { name: "low", particles: 0.45, split: 0, glow: false, boardScale: 2, boardPixels: 0.5e6, homePixels: 0.5e6, homeDpr: 1, burstPixels: 0.5e6, warpSquares: 700, warpLite: true, motes: 80, mosaicRemains: false, remainsDepth: false, remainsEvery: 3, remainsLite: true },
+        { name: "medium", particles: 0.75, split: 3, glow: true, boardScale: 3, boardPixels: 1.2e6, homePixels: 0.8e6, homeDpr: 1.25, burstPixels: 0.8e6, warpSquares: 1200, warpLite: false, motes: 160, mosaicRemains: false, remainsDepth: false, remainsEvery: 2, remainsLite: false },
+        { name: "high", particles: 1, split: 5, glow: true, boardScale: 3, boardPixels: 2.4e6, homePixels: 1.1e6, homeDpr: 1.5, burstPixels: 1.2e6, warpSquares: 1800, warpLite: false, motes: 260, mosaicRemains: true, remainsDepth: true, remainsEvery: 1, remainsLite: false },
       ],
       start: [{ memoryGB: 2, tier: "low" }, { cores: 4, memoryGB: 4, tier: "medium" }],
       down: { slowShare: 0.25, overSec: 1, capMs: 100, holdMs: 1500 },

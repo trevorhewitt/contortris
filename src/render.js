@@ -8,7 +8,7 @@ import { clamp01, clampN, frac, hash01, easeOutBack, hsla, rgba, isHexColour, om
 import { getShapePaint } from "./shapes.js";
 import { getActiveMatrix, getGhostDropY } from "./game.js";
 import { resolvePowerupArea, computeEffect, isPhantomPowerup, classOf, comesDown } from "./powerups.js";
-import { drawRemains, remainsKey, remainsShaken, liveLift, liftColour } from "./remains.js";
+import { drawRemains, remainsPainter, remainsKey, remainsShaken, liveLift, liftColour } from "./remains.js";
 import { fxTier, onFxTier } from "./particles.js";
 
 const DEFAULT_STYLE = {};
@@ -504,7 +504,8 @@ export function createRenderer(boardCanvas, nextCanvas) {
   const boardCache = { canvas: document.createElement("canvas"), version: -1, styleKey: "" };
   // (what destroyed blocks left behind, src/remains.js: on the background, and the blocks on their
   // own, for over it while the board shakes)
-  const remainsCache = { canvas: document.createElement("canvas"), key: "" };
+  const remainsCache = { canvas: document.createElement("canvas"), base: "" };
+  const paintRemainsAtRest = remainsPainter(); // (a picture of them at rest, drawn a little at a time)
   const blocksCache = { canvas: document.createElement("canvas"), version: -1, styleKey: "" };
   let staticLayers = null; // { bg, classicTop } pre-rendered layers
   let lastStyleKey = styleKey();
@@ -893,6 +894,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   function remainsView(state) {
     return {
       cell, scale, look: styleKey(), calm: calmFx(), sprite: (paint, style) => getSprite(paint, style, true),
+      every: fxTier().remainsEvery ?? 1, lite: fxTier().remainsLite === true, // (the look tier's: CONFIG.fx.quality)
       place: state && ((ctx, k, s = scale) => { ctx.setTransform(s, 0, 0, s, 0, 0); quakeTransform(ctx, state, k); punchTransform(ctx, state); }),
     };
   }
@@ -911,69 +913,133 @@ export function createRenderer(boardCanvas, nextCanvas) {
     ctx.restore();
   }
 
+  // What destroyed blocks left behind, at rest, as it's on show: src/remains.js remainsPainter's
+  // picture of it, drawn a little each frame, so a big change doesn't hold one up ({ key, cv, x, y,
+  // w, h }); with calmer animations, as it is (the sharp art at the screen's own pixels, all at
+  // once: drawRemains), { key, direct }.
+  function remainsAtRest(state) {
+    if (calmFx()) {
+      const key = remainsKey(state);
+      return { key: key && `${key}|${fxTier().remainsLite === true}`, direct: true };
+    }
+    return paintRemainsAtRest(state, remainsView(null));
+  }
+
+  // What of a cache with what destroyed blocks left behind at rest under what's on it (held: { under,
+  // rect }, the key of the picture of them it has, and where on the board that is) has to be drawn
+  // again for the one on show now (shown: remainsAtRest): where the picture it has was, and where the
+  // new one is ([x, y, w, h], board pixels: the background, opaque, covers whatever was there);
+  // false, none of it; null, all of it.
+  function restingChange(held, shown) {
+    if (held.under === shown.key) return false;
+    if (shown.direct) return null;
+    const rect = pictureRect(shown), was = held.rect;
+    return was && rect ? unionRect(was, rect) : was ?? rect ?? false;
+  }
+  const pictureRect = shown => (shown.cv ? [shown.x, shown.y, shown.w, shown.h] : null);
+  const unionRect = ([ax, ay, aw, ah], [bx, by, bw2, bh2]) => {
+    const x = Math.min(ax, bx), y = Math.min(ay, by);
+    return [x, y, Math.max(ax + aw, bx + bw2) - x, Math.max(ay + ah, by + bh2) - y];
+  };
+  // (g: drawn on just within area, if there is one, board pixels)
+  function clipTo(g, area) {
+    if (!area) return;
+    g.beginPath();
+    g.rect(...area);
+    g.clip();
+  }
+
   // Under the blocks: the background, and what destroyed blocks left behind on it (src/remains.js),
-  // cached together, and drawn again only when what's left changes. (`shaken`: the board's shaking
-  // enough for its layers to be seen to move apart, so they're drawn each where it is.)
-  function drawUnderBlocks(ctx, state, shaken) {
-    const key = remainsKey(state);
-    if (shaken || !key) {
+  // cached together for every frame of an animation, and drawn again only when what's on show of it
+  // changes (shown: remainsAtRest), and then just round where it has (restingChange). (`shaken`: the
+  // board's shaking enough for its layers to be seen to move apart, so they're drawn each where it
+  // is.)
+  function drawUnderBlocks(ctx, state, shaken, shown) {
+    if (shaken || !shown.key) {
       drawBackground(ctx);
       if (shaken) drawRemains(ctx, state, remainsView(state));
       drawCellBorders(ctx);
       return;
     }
-    const c = remainsCache.canvas, full = `${styleKey()}|${calmFx()}|${key}`; // (calmer animations: no scanlines on them)
+    const c = remainsCache.canvas, base = `${styleKey()}|${calmFx()}`; // (calmer animations: no scanlines on them)
     if (c.width !== bw * scale || c.height !== bh * scale) {
       c.width = bw * scale;
       c.height = bh * scale;
-      remainsCache.key = "";
+      remainsCache.base = "";
     }
-    if (remainsCache.key !== full) {
+    const area = remainsCache.base === base ? restingChange(remainsCache, shown) : null;
+    if (area !== false) {
       const g = c.getContext("2d");
-      g.setTransform(1, 0, 0, 1, 0, 0);
-      g.clearRect(0, 0, c.width, c.height);
+      g.save();
       g.setTransform(scale, 0, 0, scale, 0, 0);
       g.imageSmoothingEnabled = false;
-      drawBackground(g);
-      drawRemains(g, state, remainsView(null));
-      drawCellBorders(g);
-      remainsCache.key = full;
+      clipTo(g, area);
+      drawResting(g, state, shown);
+      g.restore();
+      Object.assign(remainsCache, { base, under: shown.key, rect: pictureRect(shown) });
     }
     ctx.drawImage(c, 0, 0, bw, bh);
   }
 
+  // (the same at rest, as it is: the background, then the picture of what destroyed blocks left,
+  // each of its pixels as it is, added; with calmer animations, them)
+  function drawResting(g, state, shown) {
+    drawBackground(g);
+    if (shown.direct) drawRemains(g, state, remainsView(null));
+    else if (shown.cv) {
+      g.globalCompositeOperation = "lighter";
+      g.drawImage(shown.cv, shown.x, shown.y, shown.w, shown.h, shown.x, shown.y, shown.w, shown.h);
+      g.globalCompositeOperation = "source-over";
+    }
+    drawCellBorders(g);
+  }
+
   // Background + locked blocks. Cached as one opaque layer while nothing moves.
   // (Under the blocks, what destroyed blocks left behind, src/remains.js: when the board shakes it
-  // moves a little less than the board does, so then the blocks come from a cache of their own.)
+  // moves a little less than the board does, so then the blocks come from a cache of their own;
+  // when it's all that's changed, the cache is drawn again just round where it has.)
   function drawBoard(ctx, state) {
     const fx = state.fx;
-    const shaken = !calmFx() && remainsShaken(state); // (calmer animations: the board never shakes)
+    // (calmer animations: the board never shakes; a lighter tier, CONFIG.fx.quality: they shake with it)
+    const shaken = !calmFx() && fxTier().remainsDepth !== false && remainsShaken(state);
+    const shown = remainsAtRest(state); // (every frame: its picture drawn a little more, if it's being drawn)
     const animating = fx.rowFall.active || fx.moveAnim.active || fx.growAnim.active || !!fx.ghosts;
     if (animating) {
-      drawUnderBlocks(ctx, state, shaken);
+      drawUnderBlocks(ctx, state, shaken, shown);
       drawBlockList(ctx, collectBoardBlocks(state, true));
       return;
     }
 
     const cache = shaken ? blocksCache : boardCache;
-    const key = shaken ? styleKey() : `${styleKey()}|${remainsKey(state)}`;
+    const base = `${styleKey()}|${calmFx()}`, key = shaken ? styleKey() : `${base}|${shown.key}`;
     if (cache.canvas.width !== bw * scale || cache.canvas.height !== bh * scale) {
       cache.canvas.width = bw * scale;
       cache.canvas.height = bh * scale;
       cache.version = -1;
     }
     if (cache.version !== state.boardVersion || cache.styleKey !== key) {
-      const g = cache.canvas.getContext("2d");
-      g.setTransform(1, 0, 0, 1, 0, 0);
-      g.clearRect(0, 0, cache.canvas.width, cache.canvas.height);
-      g.setTransform(scale, 0, 0, scale, 0, 0);
-      g.imageSmoothingEnabled = false;
-      if (!shaken) drawUnderBlocks(g, state, false);
-      drawBlockList(g, collectBoardBlocks(state, false));
-      cache.version = state.boardVersion;
-      cache.styleKey = key;
+      // (the same blocks, the same look: only what's under them has changed)
+      const area = !shaken && cache.version === state.boardVersion && cache.base === base ? restingChange(cache, shown) : null;
+      if (area !== false) {
+        const g = cache.canvas.getContext("2d");
+        g.save();
+        g.setTransform(1, 0, 0, 1, 0, 0);
+        if (shaken) g.clearRect(0, 0, cache.canvas.width, cache.canvas.height); // (at rest, what's under the blocks covers it all)
+        g.setTransform(scale, 0, 0, scale, 0, 0);
+        g.imageSmoothingEnabled = false;
+        clipTo(g, area);
+        // (under the blocks, the picture straight on: a step fewer than through its cache; with calmer
+        // animations, from that, as all of them are drawn at once there)
+        if (!shaken && shown.direct) drawUnderBlocks(g, state, false, shown);
+        else if (!shaken) drawResting(g, state, shown);
+        // (just round there, just the blocks within a cell or two of it: the rest can't reach it)
+        const blocks = collectBoardBlocks(state, false), [ax, ay, aw, ah] = area || [];
+        drawBlockList(g, area ? blocks.filter(b => b.px > ax - 2 * cell && b.px < ax + aw + cell && b.py > ay - 2 * cell && b.py < ay + ah + cell) : blocks);
+        g.restore();
+      }
+      Object.assign(cache, { version: state.boardVersion, styleKey: key, base, under: shaken ? null : shown.key, rect: shaken ? null : pictureRect(shown) });
     }
-    if (shaken) drawUnderBlocks(ctx, state, true);
+    if (shaken) drawUnderBlocks(ctx, state, true, shown);
     ctx.drawImage(cache.canvas, 0, 0, bw, bh);
   }
 
