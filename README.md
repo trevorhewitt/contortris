@@ -87,7 +87,7 @@ clears.
 | `shapes.js` | Loads `shapes/main_shapes.js`. |
 | `achievements.js` | Tracks and unlocks achievements (saved in the browser). |
 | `render.js` | Draws everything on the board canvas. |
-| `remains.js` | What destroyed blocks leave behind, as light added to the board: their art where they were, sharp and dark, which goes first; a soft blur of it, which goes next; and a wide glow of it, a faint colour across the board, which lingers longest. Red and blue drift apart as it gets older (and it can have scanlines). In layers, which move apart a little when the board shakes; the home screen's boards and tiled boards start with layers of it, made up. The blocks in play are drawn a little lighter. On to try out, and easy to take out (the top of the file says how). |
+| `remains.js` | What destroyed blocks leave behind, as light added to the board: their art where they were, sharp and dark, which goes first; a soft blur of it, which goes next; and a wide glow of it, a faint colour across the board, which lingers longest. Red and blue drift apart as it gets older, and dark scanlines run through it, so many a cell (drawn at the board's own pixels, so it looks the same on every screen). In layers, which move apart a little when the board shakes; the home screen's boards and tiled boards start with layers of it, made up. The blocks in play are drawn a little lighter. On to try out, and easy to take out (the top of the file says how). |
 | `ui.js` | Menus, How to play, achievements page, toasts, HUD, touch + keyboard. |
 | `pausemenu.js` | The pause menu's gallery of the pieces so far, each once, where it last fell, newest first (swipe, or ← → and A D), each with its name and how rare it is; the game over page's, of some of the game's pieces, the one that ended it big in the middle; and the sparkles round the menu. |
 
@@ -140,7 +140,7 @@ Otherwise it downloads the updated file for you to drop in.
 - `remains`: what destroyed blocks leave behind (`src/remains.js`): how dark, faded and grey its
   sharp art is and how long it lasts, how wide and strong the soft blur and the glow are and how
   long each lasts (or whether they're there for good), how far red and blue drift apart, the
-  scanlines, the layers and their parallax, how much lighter the blocks in play are drawn while
+  scanlines (how dark, and how many a cell), the layers and their parallax, how much lighter the blocks in play are drawn while
   it's on, and the modes it's not in (`enabled: false` switches it off).
 - `difficulty`: for Classic and God mode, the easy start, how long it takes to get hard, how hard
   it gets, the speed (by how far into the game it is), what "hard" means, and how often each
@@ -166,8 +166,9 @@ page has:
   go off). Changed ones show in yellow.
 - **What destroyed blocks leave behind**: on or off; the sharp art (how much darker, how faded, how
   grey, how long it lasts), the soft blur and the glow (how wide, how strong, how long each lasts,
-  or whether it all lasts for good), red and blue apart, scanlines, the parallax when the board
-  shakes, and how much lighter the blocks in play are. These change it at once.
+  or whether it all lasts for good), red and blue apart, scanlines (how dark, how many a cell),
+  the parallax when the board shakes, and how much lighter the blocks in play are. These change
+  it at once.
 - **Copy settings**: copies just what you've changed, as text to paste into a message.
 - **Back to the usual** and **Turn developer tools off** (everything back to the game's own).
 

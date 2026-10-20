@@ -887,7 +887,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       drawCellBorders(ctx);
       return;
     }
-    const c = remainsCache.canvas, full = `${styleKey()}|${key}`;
+    const c = remainsCache.canvas, full = `${styleKey()}|${calmFx()}|${key}`; // (calmer animations: no scanlines on them)
     if (c.width !== bw * scale || c.height !== bh * scale) {
       c.width = bw * scale;
       c.height = bh * scale;

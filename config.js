@@ -687,7 +687,9 @@ export const CONFIG = {
   // strong), rising as the sharp art goes, then a long, slow tail, gone after fadeAwaySec seconds
   // (or, forever, they stop getting older once the sharp art has gone, and stay). As it gets older
   // its red and blue drift apart, rgbShift cells by the time the sharp art has gone; scanlines:
-  // lines through it, that strong (0 none). A block destroyed where one was before takes its place.
+  // dark lines through all of it, that strong (0 none), scanlinesPerCell of them a cell (with them,
+  // all of it's drawn at the board's own pixels, 18 a cell, not the screen's, so it looks the same
+  // on every screen: no more than 9). A block destroyed where one was before takes its place.
   // They come in layers, a new one every layerSec seconds, no more than `layers` of them (the two
   // nearest in age merged into one). When the board shakes, each layer moves less than the board
   // does, the older the less, the oldest (1 - parallax) of the way with it. While this is on, the
@@ -696,19 +698,20 @@ export const CONFIG = {
   // switch it off.)
   remains: {
     enabled: true,
-    darker: 0.7,
-    faded: 0.5,
-    saturation: 0.8,
-    sharpSec: 20,
-    softBlur: 0.2,
-    softStrength: 0.1,
-    softSec: 40,
+    darker: 0.8,
+    faded: 0.3,
+    saturation: 1,
+    sharpSec: 45,
+    softBlur: 0.15,
+    softStrength: 0.04,
+    softSec: 60,
     glowBlur: 2.5,
-    glowStrength: 0.2,
-    fadeAwaySec: 160,
+    glowStrength: 0.25,
+    fadeAwaySec: 240,
     forever: false,
     rgbShift: 0.2,
-    scanlines: 0,
+    scanlines: 0.9,
+    scanlinesPerCell: 9,
     parallax: 0.3,
     layers: 12,
     layerSec: 4,

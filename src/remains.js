@@ -4,10 +4,11 @@
 // A block destroyed (its row cleared, a Destroyerz going off, zen dissolving the top of the
 // board) leaves its art where it was (CONFIG.remains), under everything still on the board, as
 // light rather than paint: three of it, added together, each fading at its own rate. The art
-// itself, sharp, darker and greyer than the blocks in play, goes first; a soft blur of it goes
-// next; and a wide glow of it, rising as the sharp art goes, lingers longest, a faint colour
-// spread across the board long after the shapes in it can be made out. As it gets older its red
-// and blue drift apart (an old screen's colour fringes), and it can have faint scanlines. A block
+// itself, sharp, much darker than the blocks in play, goes first; a soft blur of it goes next;
+// and a wide glow of it, rising as the sharp art goes, lingers longest, a faint colour spread
+// across the board long after the shapes in it can be made out. As it gets older its red and blue
+// drift apart (an old screen's colour fringes), and dark scanlines run through all of it (so many
+// a cell, not a screen's pixels: it looks the same on every screen, phone or desktop). A block
 // destroyed where one was before takes its place. They come in layers, a new one every few
 // seconds; when the board shakes, each layer moves a little less than the board does, the older
 // the less (parallax). The blocks still in play are drawn a little lighter (liveLift), to stand
@@ -37,8 +38,8 @@ export const remainsOn = (state) => !!cfg().enabled && !(cfg().notIn ?? []).incl
 const lasting = () => !!cfg().forever || !(cfg().fadeAwaySec > 0);
 const layerCount = () => Math.max(1, num(cfg().layers, 12));
 // How long, in ms, the sharp art and the soft blur take to fade, and the glow (all of it)
-const sharpMs = () => Math.max(100, num(cfg().sharpSec, 20) * 1000);
-const softMs = () => Math.max(100, num(cfg().softSec, 40) * 1000);
+const sharpMs = () => Math.max(100, num(cfg().sharpSec, 45) * 1000);
+const softMs = () => Math.max(100, num(cfg().softSec, 60) * 1000);
 const lifeMs = () => Math.max(sharpMs(), softMs(), num(cfg().fadeAwaySec, 0) * 1000);
 
 // How much lighter the blocks still in play are drawn, while this is on: a gamma (1: as they are).
@@ -155,10 +156,10 @@ function look(r, layer) {
   const u = clamp01(age / life);
   return {
     age: u,
-    sharp: (1 - clamp01(num(c.darker, 0.7))) * (1 - clamp01(num(c.faded, 0.5))) * (1 - smooth01(age / sharpMs())),
-    soft: clamp01(num(c.softStrength, 0.1)) * (1 - smooth01(age / softMs())),
+    sharp: (1 - clamp01(num(c.darker, 0.8))) * (1 - clamp01(num(c.faded, 0.3))) * (1 - smooth01(age / sharpMs())),
+    soft: clamp01(num(c.softStrength, 0.04)) * (1 - smooth01(age / softMs())),
     // (rising as the sharp art goes, then the long, slow tail)
-    glow: clamp01(num(c.glowStrength, 0.2)) * (0.3 + 0.7 * smooth01(age / sharpMs())) * (1 - smooth01(u)),
+    glow: clamp01(num(c.glowStrength, 0.25)) * (0.3 + 0.7 * smooth01(age / sharpMs())) * (1 - smooth01(u)),
     shift: Math.max(0, num(c.rgbShift, 0)) * clamp01(age / sharpMs()),
     depth: 0.25 + 0.75 * u,
   };
@@ -189,7 +190,7 @@ export function remainsKey(state) {
   const ageing = !lasting() || youngest < sharpMs();
   const step = youngest < sharpMs() ? sharpMs() / 40 : youngest < softMs() ? softMs() / 40 : lifeMs() / 60;
   return [r.version, c.darker, c.faded, c.saturation, c.sharpSec, c.softBlur, c.softStrength, c.softSec, c.glowBlur,
-    c.glowStrength, c.fadeAwaySec, c.forever, c.rgbShift, c.scanlines,
+    c.glowStrength, c.fadeAwaySec, c.forever, c.rgbShift, c.scanlines, c.scanlinesPerCell,
     ageing ? Math.floor(r.clock / Math.max(100, step)) : ""].join("|");
 }
 
@@ -263,10 +264,13 @@ export function seedRemains(state, pieces, { rng = Math.random, wrap = 0, newest
 
 // All three are light: each is added to what's under it (the board, and the older ones), not laid
 // over it. The sharp art is drawn at the board's own size, just over its cells; the soft blur and
-// the glow smaller (a pixel no wider than the soft blur: on a phone, an eighth of the size), onto a
+// the glow smaller (a pixel no wider than the soft blur, as many to a cell on every screen), onto a
 // canvas of their own, drawn again only when they change, and that onto the board, smoothed: far
 // less to draw. (The board shaking, they move together, as far back as they are on average, and
-// only the sharp art moves layer by layer.) Each layer's art is drawn onto a canvas of its own (its
+// only the sharp art moves layer by layer.) With scanlines, all of it goes onto a canvas of the
+// board's own pixels (18 a cell, not the screen's: the same pixels on every screen, and fewer of
+// them to draw on a phone), the lines are cut from that, and it goes onto the board, each pixel as
+// it is, crisp. Each layer's art is drawn onto a canvas of its own (its
 // cells, and room round them for the glow to spread into), greyer, only when what's in it changes,
 // at the board's size while its sharp art still shows and smaller after. Blurred, it's that made
 // smaller and smaller, halving each time, smoothed, and drawn back up to size, smoothed (so it works
@@ -277,13 +281,15 @@ const drawn = new WeakMap(); // layer -> { px, levels (0 the full one), lowest, 
 let smaller = null; // (the canvas the blurs are drawn onto, smaller than the board)
 let blurred = null; // (what's on it: { key, x0, y0, x1, y1 (the cells they're over), depth })
 let front = null; // (with scanlines, the canvas they're all drawn onto first)
+let frontUsed = null; // (the part of it drawn on last time: [x, y, w, h])
 const FAINT = 0.004;
 const TAPS = [[-0.5, -0.5], [0.5, -0.5], [-0.5, 0.5], [0.5, 0.5]];
 
-// How many pixels a cell the blurs are drawn at: the board's own (px), halved for as long as its
-// pixels stay no wider than the soft blur.
+// How many pixels a cell the blurs are drawn at: a cell's board pixels (px: not the screen's, so
+// they're the same on every screen), halved for as long as its pixels stay no wider than the soft
+// blur.
 function blurPixels(px) {
-  const halvings = Math.floor(Math.log2(Math.max(1, Math.max(0.05, num(cfg().softBlur, 0.2)) * px)));
+  const halvings = Math.floor(Math.log2(Math.max(1, Math.max(0.05, num(cfg().softBlur, 0.15)) * px)));
   return halvings ? Math.max(1, Math.round(px / 2 ** halvings)) : px;
 }
 
@@ -301,18 +307,32 @@ const canvas = (cv, w, h) => {
 export function drawRemains(ctx, state, view) {
   const r = remainsOf(state);
   if (!r?.layers.length || !remainsOn(state)) return;
-  const c = cfg(), par = clamp01(c.parallax ?? 0), full = view.cell * view.scale, px = blurPixels(full);
-  const scan = view.calm ? 0 : clamp01(num(c.scanlines, 0)); // (calmer animations: no scanlines, as anywhere)
+  const c = cfg(), par = clamp01(c.parallax ?? 0), full = view.cell * view.scale, px = blurPixels(view.cell);
+  // (calmer animations: no scanlines, as anywhere; all of it dimmer instead, as dark on the whole)
+  const scan = view.calm ? 0 : clamp01(num(c.scanlines, 0));
+  const dim = view.calm ? 1 - clamp01(num(c.scanlines, 0)) / 2 : 1;
   const shaking = !!view.place;
-  // where the sharp art goes (with scanlines, a canvas of their own first), and the blurs
-  let out = ctx;
+  // where the sharp art goes, and the blurs: with scanlines, a canvas of their own first, at the
+  // board's own pixels (just what was drawn on it last time cleared), so they're the same pixels
+  // on every screen, and that onto the board, each of its pixels as it is; without, the board, at
+  // its full size. (os: out's pixels a board pixel; sharpPx: a cell's, the sharp art's)
+  let out = ctx, os = view.scale, sharpPx = full;
   if (scan > 0.01) {
-    out = (front = canvas(front, Math.round(r.cols * full), Math.round(r.rows * full))).getContext("2d");
+    out = (front = canvas(front, r.cols * view.cell, r.rows * view.cell)).getContext("2d");
     out.setTransform(1, 0, 0, 1, 0, 0);
-    out.clearRect(0, 0, front.width, front.height);
+    if (frontUsed) out.clearRect(...frontUsed);
+    os = 1;
+    sharpPx = view.cell;
   }
+  // (the cells drawn over, all told: with scanlines, the only part of that canvas to cut them from
+  // and put onto the board; a cell more each way for red and blue apart, and the board shaking, two)
+  const box = [r.cols, r.rows, -1, -1], pad = shaking ? 2 : 1;
+  const drew = (x0, y0, x1, y1) => {
+    box[0] = Math.min(box[0], x0 - pad); box[1] = Math.min(box[1], y0 - pad);
+    box[2] = Math.max(box[2], x1 + pad); box[3] = Math.max(box[3], y1 + pad);
+  };
   // (the blurs drawn again only when they've changed: not for every frame of the board shaking)
-  const key = `${remainsKey(state)}|${view.cell}|${view.scale}|${view.look}|${px}`;
+  const key = `${remainsKey(state)}|${view.cell}|${view.scale}|${view.look}|${px}|${sharpPx}|${dim}`;
   const blurs = blurred?.key !== key;
   const g = (smaller = canvas(smaller, r.cols * px, r.rows * px)).getContext("2d");
   if (blurs) {
@@ -326,11 +346,11 @@ export function drawRemains(ctx, state, view) {
     const sharp = lk.sharp >= FAINT || i === 0; // (the newest may still be filling)
     if (lk.sharp < FAINT && lk.soft < FAINT && lk.glow < FAINT) continue;
     if (!blurs && lk.sharp < FAINT) continue;
-    const d = layerArt(r, layer, view, sharp ? full : px);
+    const d = layerArt(r, layer, view, sharp ? sharpPx : px);
     if (!d) continue;
     // the soft blur and the glow, each at its size (each half the one before), or between two
     let need = sharp ? 0 : Infinity;
-    if (blurs) for (const [blur, strength] of [[num(c.softBlur, 0.2), lk.soft], [num(c.glowBlur, 2.5), lk.glow]]) {
+    if (blurs) for (const [blur, strength] of [[num(c.softBlur, 0.15), lk.soft], [num(c.glowBlur, 2.5), lk.glow]]) {
       if (strength < FAINT) continue;
       const a = Math.log2(Math.max(1, blur * d.px)), lo = Math.floor(a), f = a - lo;
       need = Math.min(need, lo);
@@ -339,21 +359,22 @@ export function drawRemains(ctx, state, view) {
       g.setTransform(px / view.cell, 0, 0, px / view.cell, 0, 0);
       g.globalCompositeOperation = "lighter";
       g.imageSmoothingEnabled = true;
-      for (const [n, w] of sizes) put(g, r, layer, d, view, n, strength * w, lk.shift);
+      for (const [n, w] of sizes) put(g, r, layer, d, view, n, strength * w * dim, lk.shift);
       g.restore();
       const b = blurred;
       b.x0 = Math.min(b.x0, d.x0); b.y0 = Math.min(b.y0, d.y0); b.x1 = Math.max(b.x1, d.x1); b.y1 = Math.max(b.y1, d.y1);
       deep += lk.depth * strength; weight += strength;
     }
-    // the sharp art, at the board's own size (the board shaking, the older, the further back: it
-    // goes 1 - parallax × depth of the way with it)
+    // the sharp art (the board shaking, the older, the further back: it goes 1 - parallax × depth
+    // of the way with it)
     if (lk.sharp >= FAINT) {
       out.save();
-      if (shaking) view.place(out, 1 - par * lk.depth, view.scale); else out.setTransform(view.scale, 0, 0, view.scale, 0, 0);
+      if (shaking) view.place(out, 1 - par * lk.depth, os); else out.setTransform(os, 0, 0, os, 0, 0);
       out.globalCompositeOperation = "lighter";
       out.imageSmoothingEnabled = false;
-      put(out, r, layer, d, view, 0, lk.sharp, shaking ? 0 : lk.shift); // (shaking, drawn every frame: red and blue together)
+      put(out, r, layer, d, view, 0, lk.sharp * dim, shaking ? 0 : lk.shift); // (shaking, drawn every frame: red and blue together)
       out.restore();
+      drew(...d.tight);
     } else if (i > 0 && blurs) letGo(d, need); // (only ever blurrier from now on: the sharper sizes can go)
   }
   if (blurs) blurred.depth = weight ? deep / weight : 0.5;
@@ -362,31 +383,38 @@ export function drawRemains(ctx, state, view) {
   const { x0, y0, x1, y1 } = blurred;
   if (x1 >= x0) {
     out.save();
-    if (shaking) view.place(out, 1 - par * blurred.depth, view.scale); else out.setTransform(view.scale, 0, 0, view.scale, 0, 0);
+    if (shaking) view.place(out, 1 - par * blurred.depth, os); else out.setTransform(os, 0, 0, os, 0, 0);
     const w = x1 - x0 + 1, h = y1 - y0 + 1;
     out.globalCompositeOperation = "lighter";
     out.imageSmoothingEnabled = true;
     out.drawImage(smaller, x0 * px, y0 * px, w * px, h * px, x0 * view.cell, y0 * view.cell, w * view.cell, h * view.cell);
     out.restore();
+    drew(x0, y0, x1, y1);
   }
   if (out === ctx) return;
-  // scanlines: every few pixels a line of them taken out, then all of it onto the board
-  const pitch = Math.max(2, Math.round(full / 8));
+  // scanlines: every few of the board's pixels a line of them taken out (so many a cell, on every
+  // screen), then all of it onto the board, each pixel as it is
+  const X0 = Math.max(0, box[0]), Y0 = Math.max(0, box[1]), X1 = Math.min(r.cols - 1, box[2]), Y1 = Math.min(r.rows - 1, box[3]);
+  frontUsed = null;
+  if (X1 < X0 || Y1 < Y0) return;
+  const sx = X0 * view.cell, sy = Y0 * view.cell, sw = (X1 - X0 + 1) * view.cell, sh = (Y1 - Y0 + 1) * view.cell;
+  frontUsed = [sx, sy, sw, sh];
   out.save();
   out.setTransform(1, 0, 0, 1, 0, 0);
   out.globalCompositeOperation = "destination-out";
   out.globalAlpha = scan;
-  out.fillStyle = scanPattern(out, pitch);
-  out.fillRect(0, 0, front.width, front.height);
+  out.fillStyle = scanPattern(out, Math.max(2, Math.round(view.cell / Math.max(1, num(c.scanlinesPerCell, 9)))));
+  out.fillRect(sx, sy, sw, sh);
   out.restore();
   ctx.save();
   ctx.setTransform(view.scale, 0, 0, view.scale, 0, 0);
   ctx.globalCompositeOperation = "lighter";
-  ctx.drawImage(front, 0, 0, r.cols * view.cell, r.rows * view.cell);
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(front, sx, sy, sw, sh, sx, sy, sw, sh);
   ctx.restore();
 }
 
-// (lines `pitch` apart, half as thick)
+// (lines `pitch` of the board's pixels apart, half as thick)
 let scanned = null;
 function scanPattern(g, pitch) {
   if (scanned?.pitch !== pitch) {
@@ -399,12 +427,12 @@ function scanPattern(g, pitch) {
 }
 
 // A layer's art at size n onto g, `alpha` strong; red and blue `shift` cells apart, if that's a
-// pixel or more.
+// board pixel or more.
 function put(g, r, layer, d, view, n, alpha, shift = 0) {
   const img = drawable(r, layer, d, view, n), X = d.x0 * view.cell, Y = d.y0 * view.cell;
   const s = shift * view.cell / 2;
   g.globalAlpha = Math.min(1, alpha);
-  const art = shift * view.cell * view.scale < 1 ? [[img, 0]] : channels(d, n, img).map((ch, k) => [ch, (1 - k) * s]);
+  const art = shift * view.cell < 1 ? [[img, 0]] : channels(d, n, img).map((ch, k) => [ch, (1 - k) * s]);
   if (n === 0) {
     // (full size, just its cells, not the room round them)
     const [x0, y0, x1, y1] = d.tight, sx = (x0 - d.x0) * d.px, sy = (y0 - d.y0) * d.px, w = x1 - x0 + 1, h = y1 - y0 + 1;
@@ -444,7 +472,7 @@ function layerArt(r, layer, view, px) {
   if (!layer.cells.size) return null;
   // (room round its cells for the glow, in a canvas whose sides halve evenly as many times as
   // that takes)
-  const most = Math.max(num(c.glowBlur, 2.5), num(c.softBlur, 0.2), 0);
+  const most = Math.max(num(c.glowBlur, 2.5), num(c.softBlur, 0.15), 0);
   const halvings = Math.ceil(Math.log2(Math.max(1, most * px))) + 1, room = Math.ceil(most) + 1;
   let x0 = r.cols, y0 = r.rows, x1 = -1, y1 = -1;
   for (const i of layer.cells.keys()) {
@@ -463,7 +491,7 @@ function layerArt(r, layer, view, px) {
   } else { d.levels.length = 1; d.up = new Map(); d.ch = new Map(); }
   const g = d.levels[0].getContext("2d"), added = new Path2D();
   let any = false;
-  g.imageSmoothingEnabled = true; // (the art made smaller, if it is: smoothed)
+  g.imageSmoothingEnabled = px < view.cell; // (the art made smaller than the board's own pixels: smoothed; at them, each as it is)
   for (const i of d.cells.keys()) {
     if (layer.cells.has(i)) continue;
     // (gone from it: a newer layer has something there)
@@ -579,7 +607,7 @@ function tint(g, cells, c) {
 // until performance.now() is past `until`, and once they're all ready, onto ctx; true when it has.
 export function paintRemains({ cols, rows, cell, pieces, gone = [], sprite, rng = Math.random, calm = false }) {
   if (!cfg().enabled) return () => true;
-  const m = Math.ceil(Math.max(num(cfg().glowBlur, 2.5), num(cfg().softBlur, 0.2))) + 2;
+  const m = Math.ceil(Math.max(num(cfg().glowBlur, 2.5), num(cfg().softBlur, 0.15))) + 2;
   const board = Array.from({ length: rows + 2 * m }, () => Array(cols + 2 * m).fill(null));
   const state = { mode: "home", board };
   seedRemains(state, pieces, { rng, wrap: m, newest: gone });
@@ -608,10 +636,10 @@ export function paintRemains({ cols, rows, cell, pieces, gone = [], sprite, rng 
 // A layer's art made ready to draw, every size of it drawRemains will want (as drawRemains decides).
 function ready(r, layer, view) {
   const c = cfg(), lk = look(r, layer), full = view.cell * view.scale;
-  const d = layerArt(r, layer, view, lk.sharp >= FAINT || layer === r.layers[0] ? full : blurPixels(full));
+  const d = layerArt(r, layer, view, lk.sharp >= FAINT || layer === r.layers[0] ? full : blurPixels(view.cell));
   if (!d) return;
-  const split = lk.shift * view.cell * view.scale >= 1;
-  for (const [blur, strength] of [[num(c.softBlur, 0.2), lk.soft], [num(c.glowBlur, 2.5), lk.glow]]) {
+  const split = lk.shift * view.cell >= 1;
+  for (const [blur, strength] of [[num(c.softBlur, 0.15), lk.soft], [num(c.glowBlur, 2.5), lk.glow]]) {
     if (strength < FAINT) continue;
     const lo = Math.floor(Math.log2(Math.max(1, blur * d.px)));
     for (const n of [lo, lo + 1]) { const img = drawable(r, layer, d, view, n); if (split) channels(d, n, img); }
