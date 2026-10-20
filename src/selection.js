@@ -320,7 +320,9 @@ function tryLinkedNextShape(state, prevShape, idToShape, debug = false) {
   const dangerOk = computeStackDanger01(state) <= (hardCfg(state.mode).hardMaxDanger ?? 0.32);
   // (nor before the first giant could come anyway: the big blue fish waits for the giants' time)
   const soonest = hardCfg(state.mode).firstGiantBetween?.[0] ?? 0;
-  const hardOk = endGameOn(state) || (!state.pieceSel?.lastWasHard && dangerOk && (state.pieceSel?.dropIndex ?? 0) >= soonest);
+  // (early in a game, not until the giants' cooldown is over either: hard.early)
+  const earlyWait = (state.pieceSel?.dropIndex ?? 0) < (hardCfg(state.mode).early?.until ?? 0) && (state.pieceSel?.cooldown?.hard ?? 0) > 0;
+  const hardOk = endGameOn(state) || (!state.pieceSel?.lastWasHard && !earlyWait && dangerOk && (state.pieceSel?.dropIndex ?? 0) >= soonest);
   const chainOk = endGameOn(state) || dangerOk;
   const fresh = (state.pieceSel?.recentShapeIds ?? []).slice(-(CONFIG.assist.variety?.noRepeatWithin ?? 5));
   const cand = [];
@@ -427,7 +429,8 @@ function pickNextPiece(state) {
 
   // The first giant: always somewhere in CONFIG...hard.firstGiantBetween (unless the stack's
   // too high for one, then as soon as it's back down).
-  if (sel.giantDueAt != null && !sel.hadGiant && sel.dropIndex >= sel.giantDueAt && !sel.lastWasHard && giantRoom && !calm && !bigsWait(state)) {
+  const earlyWait = sel.dropIndex < (hard.early?.until ?? 0) && (sel.cooldown.hard ?? 0) > 0; // (hard.early)
+  if (sel.giantDueAt != null && !sel.hadGiant && sel.dropIndex >= sel.giantDueAt && !sel.lastWasHard && !earlyWait && giantRoom && !calm && !bigsWait(state)) {
     const giants = state.shapes.filter(s => (s.difficulty ?? 1) === 5 && (s.frequency ?? 1) > 0 && giantFits(s));
     if (giants.length) {
       // (one that sits well on the board as it is: the first one's a laugh, not a disaster)
@@ -805,7 +808,10 @@ export function fitsNow(state, shape, headroom = 2) {
 function noteHardDropped(sel, lvl = 5) {
   sel.urge.hard = 0.0;
   // (closer together the harder it's got: src/difficulty.js)
-  const gap = eased({ mode: sel.mode, pieceSel: sel }, "hardCooldown", hardCfg(sel.mode).cooldownDrops ?? 9);
+  let gap = eased({ mode: sel.mode, pieceSel: sel }, "hardCooldown", hardCfg(sel.mode).cooldownDrops ?? 9);
+  // (further apart early in a game: hard.early)
+  const early = hardCfg(sel.mode).early;
+  if (early && sel.dropIndex < (early.until ?? 0)) gap = Math.max(gap, early.cooldownDrops ?? 0);
   sel.cooldown.hard = Math.max(sel.cooldown.hard ?? 0, Math.round(gap));
   sel.lastHardAt = sel.dropIndex;
   sel.hasDroppedFirstHard = true;

@@ -787,6 +787,11 @@ export const CONFIG = {
         // Never drop any hard (4/5) in the first minDropIndex drops.
         minDropIndex: 5,
 
+        // Early in a game (before piece `until`), giants (4 and 5) at least cooldownDrops pieces
+        // apart, linked ones too, so the first few minutes don't bring one huge piece after another
+        // (a sure chain, the tip of the iceberg and the rest of it, still comes whole)
+        early: { until: 60, cooldownDrops: 24 },
+
         // Window where hard becomes increasingly likely (urge grows faster inside window).
         softWindowStart: 6,
         softWindowEnd: 25,
@@ -896,6 +901,9 @@ export const CONFIG = {
       families: [["spam", "beans", "spaghetti_os"]],
       familyGap: 3,
       familyWeight: 0.08,
+      // ...and the long, intense ones (`late`: the tins) are less likely early in a game: `weight`
+      // times as likely at the first piece, rising evenly to as likely as any by piece `fullBy`
+      late: { sets: ["spam", "beans", "spaghetti_os"], weight: 0.3, fullBy: 250 },
       // Versions of one set (`same`: an emotions chart, ascending, very British or online) are one
       // set as far as taking turns goes: once one of them has come, none of them comes again in
       // that game until every other set has had its turn (nor first thing in the next game). And

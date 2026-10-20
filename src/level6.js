@@ -409,10 +409,13 @@ export function versionShare(groups) {
 
 // Sets of a kind (CONFIG.assist.level6.families: the tins): one soon after another is unlikely.
 function familyWeight(state, g, cfg) {
+  // (the long, intense ones, less likely early in a game: cfg.late)
+  const late = cfg.late?.sets?.includes(g.id) ? cfg.late : null;
+  const early = late ? late.weight + (1 - late.weight) * Math.min(1, state.pieceSel.dropIndex / Math.max(1, late.fullBy ?? 1)) : 1;
   const family = (cfg.families ?? []).find(f => f.includes(g.id));
-  if (!family) return 1;
+  if (!family) return early;
   const recent = (state.level6Recent ?? []).slice(0, cfg.familyGap ?? 3);
-  return recent.some(id => family.includes(id)) ? cfg.familyWeight ?? 0.1 : 1;
+  return early * (recent.some(id => family.includes(id)) ? cfg.familyWeight ?? 0.1 : 1);
 }
 
 // Developer mode: the latest sets first of all (CONFIG.devMode.latest), then the newest
