@@ -30,7 +30,7 @@ import { drawChromaSquare, drawBlockWithPaintStatic, rainbowRound } from "./rend
 import { seedRemains, paintRemains } from "./remains.js";
 import { getShapePaint } from "./shapes.js";
 import { ombre, ombreRGB } from "./util.js";
-import { particleBudget, particleLot, alive, fxTier, onFxTier } from "./particles.js";
+import { particleBudget, particleAmount, particleLot, alive, fxTier, onFxTier } from "./particles.js";
 const H = () => CONFIG.home ?? {};
 const rand = (a, b) => a + Math.random() * (b - a);
 const pickIn = ([a, b]) => rand(a, b);
@@ -636,7 +636,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     // (fewer of them while the frames lag, and those going thin out; and no more at once than
     // the tier has: src/particles.js)
     const area = (W * Hh) / 700000, most = fxTier().motes ?? 260;
-    spawnAcc += (RATE[mood] ?? 6) * area * s * (reduced ? 0.3 : 1) * particleBudget();
+    spawnAcc += (RATE[mood] ?? 6) * area * s * (reduced ? 0.3 : 1) * particleBudget() * particleAmount();
     while (spawnAcc >= 1 && motes.length < most) { spawnAcc--; motes.push(spawnMote(mood, W, Hh, now)); }
     fx.setTransform(1, 0, 0, 1, 0, 0);
     fx.imageSmoothingEnabled = true;
@@ -758,7 +758,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     const T = fxTier();
     warp = { cx, cy, far, speed: far / (H().warp?.waveS ?? 0.34), accel: Math.hypot(W, Hh) * (H().warp?.accel ?? 5), slow: T.warpLite ? 3 : 0 };
     // (fewer of them, and bigger, while the frames lag, and on a lighter tier: src/particles.js)
-    const squares = Math.min(H().warp?.squares ?? 1800, T.warpSquares ?? Infinity) * particleBudget();
+    const squares = Math.min(H().warp?.squares ?? 1800, T.warpSquares ?? Infinity) * particleBudget() * particleAmount();
     const g = Math.max(7, Math.round(Math.sqrt(W * Hh / squares)));
     // the board behind, a square at a time
     const sw = Math.ceil(W / g), sh = Math.ceil(Hh / g);

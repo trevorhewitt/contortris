@@ -1338,6 +1338,74 @@ export function createRenderer(boardCanvas, nextCanvas) {
     return area;
   }
 
+  // What a Shiny Piece will do, played out simply in its highlighted cells on a short loop,
+  // behind its marks (CONFIG.fx.powerup.action): a Destroyerz's blocks shrink into nothing, an
+  // Expanderz's empty cells fill up (drawAction); a Gravitizerz's blocks fall into the gaps
+  // under them (drawFallAction). Plain squares in the class's colour, no particles.
+  const easeIn = (t) => t * t;
+  function actionPhase(at, dist) {
+    const A = CONFIG.fx.powerup.action;
+    return frac(at / A.periodMs + (dist ?? 0) * (A.ripplePerCell ?? 0));
+  }
+  function actionSquare(type, x, y, px, py, size, a) {
+    if (size <= 0.5 || a <= 0) return;
+    const c = markColour(type, 0, x, y), A = CONFIG.fx.powerup.action;
+    bctx.fillStyle = hsla(c.h, c.s, c.l, clamp01(A.alpha * a));
+    bctx.fillRect(px + (cell - size) / 2, py + (cell - size) / 2, size, size);
+  }
+  function drawAction(type, x, y, dist, at) {
+    const A = CONFIG.fx.powerup.action, cls = classOf(type);
+    if (!A?.enabled || (cls !== "destroyer" && cls !== "expander")) return;
+    const t = actionPhase(at, cls === "destroyer" ? -dist : dist);
+    const full = cell - 2;
+    // destroyer: whole, shrinking to nothing, then gone a moment; expander: nothing, filling up,
+    // then full a moment, fading for the next go
+    const size = cls === "destroyer"
+      ? (t < 0.15 ? 1 : t < 0.7 ? 1 - easeIn((t - 0.15) / 0.55) : 0)
+      : (t < 0.15 ? 0 : t < 0.6 ? 1 - Math.pow(1 - (t - 0.15) / 0.45, 2) : 1);
+    const a = cls === "expander" && t > 0.85 ? (1 - t) / 0.15 : 1;
+    bctx.globalCompositeOperation = "source-over";
+    // (a destroyer's block darkens away with its square, so it reads as going)
+    if (cls === "destroyer" && size < 1) {
+      bctx.fillStyle = `rgba(6,6,10,${(A.hide * (1 - size)).toFixed(3)})`;
+      bctx.fillRect(x * cell, y * cell, cell, cell);
+    }
+    actionSquare(type, x, y, x * cell, y * cell, full * size, a);
+  }
+  // (where each block in a Gravitizerz's area ends up, column by column: packed down onto the
+  // lowest of the area's cells in its column, in order; worked out once for each area)
+  const fallMoves = new WeakMap();
+  function drawFallAction(board, lp, la, pieceCells, ownDown, at) {
+    const A = CONFIG.fx.powerup.action;
+    if (!A?.enabled || (lp.direction && lp.direction !== "down")) return;
+    let moves = fallMoves.get(la);
+    if (!moves) {
+      const byCol = new Map();
+      for (const i of la.indices) {
+        const x = i % cols, y = (i / cols) | 0;
+        (byCol.get(x) ?? byCol.set(x, []).get(x)).push(y);
+      }
+      moves = [];
+      for (const [x, ys] of byCol) {
+        ys.sort((p, q) => q - p);
+        let slot = 0;
+        for (const y of ys) {
+          const isPiece = pieceCells.has(y * cols + x);
+          if (!(isPiece ? ownDown : !!board[y]?.[x])) continue;
+          const to = ys[slot++];
+          if (to !== y) moves.push({ x, y, to });
+        }
+      }
+      fallMoves.set(la, moves);
+    }
+    if (!moves.length) return;
+    const t = actionPhase(at, 0);
+    const k = t < 0.15 ? 0 : t < 0.7 ? easeIn((t - 0.15) / 0.55) : 1;
+    const a = t > 0.88 ? (1 - t) / 0.12 : 1;
+    bctx.globalCompositeOperation = "source-over";
+    for (const m of moves) actionSquare(lp.type, m.x, m.y, m.x * cell, (m.y + (m.to - m.y) * k) * cell, cell - 2, a);
+  }
+
   // The highlighted ("affected") cells of the falling powerup (at its landing
   // spot) or of a locked powerup that is charging up.
   function drawPowerupOverlay(state, ghostY, now) {
@@ -1389,6 +1457,8 @@ export function createRenderer(boardCanvas, nextCanvas) {
       ? pu.parts.map((p, k) => [p, p.type === "phantom" ? { indices: [...pieceCells] } : area.parts[k]])
       : [[pu, area]];
     for (const [lp, la] of layers) {
+      // (behind the marks, what it will really do, simply, on a loop: drawAction)
+      if (lp.type === "gravity") drawFallAction(board, lp, la, pieceCells, comesDown(pu), at);
       for (const i of la.indices) {
         const x = i % cols, y = (i / cols) | 0;
         const isPiece = pieceCells.has(i);
@@ -1399,6 +1469,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
         const effective = (lp.type === "goo" || lp.type === "phantom") ? true
           : lp.type === "expander" ? (!filled && !isPiece) : filled || (isPiece && (classOf(lp.type) === "destroyer" || (lp.type === "gravity" && comesDown(pu))));
         const dist = Math.hypot(x - centre.x, y - centre.y);
+        if (effective) drawAction(lp.type, x, y, dist, at);
         drawPowerupMark(bctx, lp, x * cell, y * cell, cell, at, x, y, dist, effective, intensity, centre);
       }
     }

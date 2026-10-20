@@ -30,7 +30,7 @@ import { createZen, zenNext, zenPeek, zenTick, zenSpawned, zenSpeed, zenSteps, z
 import { buildThreads } from "./threads.js";
 import { rampCfg, rampDropMs } from "./difficulty.js";
 import { createTutorial, tutorialNext, tutorialTick, tutorialTopOut } from "./tutorial.js";
-import { keepParticle, particleLot, alive } from "./particles.js";
+import { keepParticle, particleLot, alive, particleAmount } from "./particles.js";
 import { leaveRemains, ageRemains } from "./remains.js";
 
 /* =========================
@@ -1683,7 +1683,7 @@ function admire(state, dt) {
 
 // (fewer of them while the frames lag: src/particles.js)
 function addParticle(state, p) {
-  if (!keepParticle()) return;
+  if (!keepParticle() || Math.random() >= particleAmount()) return;
   state.fx.particles.push({ size: CONFIG.fx.lineClear.particleSizePx, ...p, maxLifeMs: p.lifeMs, lot: particleLot() });
 }
 const hsl = (h, s, l) => `hsl(${Math.round(h)},${Math.round(s)}%,${Math.round(l)}%)`;
@@ -1898,7 +1898,7 @@ function rowClearShow(state, fullRows, removed, dropDistances) {
   if (T.sparks) {
     const cellPx = CONFIG.render.cellPx;
     for (const y of order) for (let x = 0; x < cols; x++) for (let k = 0; k < T.sparks; k++) {
-      if (!keepParticle()) continue; // (fewer while the frames lag: src/particles.js)
+      if (!keepParticle() || Math.random() >= particleAmount()) continue; // (fewer while the frames lag: src/particles.js)
       const a = vr() * Math.PI * 2, sp = 60 + vr() * 160 * (T.speed ?? 1), life = 260 + vr() * 380;
       state.fx.particles.push({
         x: (x + vr()) * cellPx, y: (y + vr()) * cellPx, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 50,
@@ -1967,7 +1967,7 @@ function spawnCellParticles(state, cells, mult = 1, delayMs = 0, opts = {}) {
       const color = colours[Math.floor(state.rng() * colours.length)];
       // (fewer while the frames lag, src/particles.js; but the game's own random numbers drawn
       // for every one all the same, so the game goes on just as it would have)
-      if (!keepParticle()) continue;
+      if (!keepParticle() || Math.random() >= particleAmount()) continue;
 
       state.fx.particles.push({
         x: x0,

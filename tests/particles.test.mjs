@@ -119,7 +119,7 @@ test("particles: a row clearing makes fewer of them when the frames lag, and the
   resetParticles();
   frames(1000 / 60, 60);
   const all = clear();
-  assert.ok(all.n > 300, `${all.n} particles`);
+  assert.ok(all.n > 300 * (C.amount ?? 1), `${all.n} particles`);
   frames(3 * C.slowMs, 60);
   const few = clear();
   resetParticles();

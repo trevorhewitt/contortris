@@ -1112,7 +1112,7 @@ export const CONFIG = {
     // them made goes down with each, the slower the more, to `least` at the fewest, and those
     // already going thin out with it; when the frames keep up again, it comes back up by `recover`
     // a second. (A frame after more than gapMs, the page hidden, say, doesn't count.)
-    particles: { slowMs: 25, behind: 1.5, least: 0.15, recover: 0.3, gapMs: 1000 },
+    particles: { amount: 0.5, slowMs: 25, behind: 1.5, least: 0.15, recover: 0.3, gapMs: 1000 }, // amount: the share of every effect's particles made at all
     // ...and, slower and steadier, the whole look comes in tiers (src/particles.js), from the
     // lightest to the fullest. Each tier: `particles`, the most of every particle effect it makes
     // (a share: the frames can make it fewer still); `split`, how many of the warm rainbow's five
@@ -1319,12 +1319,15 @@ export const CONFIG = {
         hueStepPerCell: 18,      // colour spread across cells
         rgbSplit: 0.06,          // the marks' warm split (copies of them in the warm rainbow, render.js WARM_SPLIT): this much of a cell apart a step
         rgbSplitAlpha: 0.7,      // ...and how strong they are (times the mark's own)
-        fillAlpha: 0.30,         // cells the effect will change
-        idleFillAlpha: 0.11,     // highlighted cells it won't change (e.g. empty cells for a destroyer)
-        markAlpha: 0.95,
-        idleMarkAlpha: 0.45,
+        fillAlpha: 0.18,         // cells the effect will change
+        idleFillAlpha: 0.08,     // highlighted cells it won't change (e.g. empty cells for a destroyer)
+        markAlpha: 0.6,
+        idleMarkAlpha: 0.3,
         ripplePerCell: 0.12,     // destroyer/expander ripple offset per cell of distance
       },
+      // what it will do, played out simply behind the marks on a loop (render.js drawAction):
+      // blocks shrinking away (Destroyerz), empty cells filling (Expanderz), blocks falling (Gravitizerz)
+      action: { enabled: true, periodMs: 1300, alpha: 0.55, hide: 0.75, ripplePerCell: 0.04 },
       shimmerAlpha: 0.9,         // rainbow outline around powerup pieces
     },
 

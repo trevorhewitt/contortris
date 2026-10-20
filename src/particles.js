@@ -60,6 +60,10 @@ export function noteFrame(ms) {
 // The share of particles the frames allow, now (CONFIG.fx.particles.least to 1).
 export function particleShare() { return share; }
 
+// How many of the particles the effects ask for are made at all, whatever the frames
+// (CONFIG.fx.particles.amount: half, to keep it light).
+export function particleAmount() { return P().amount ?? 1; }
+
 // The share of particles to make, now: the frames' share, and no more than the tier's.
 export function particleBudget() { return Math.min(share, fxTier().particles ?? 1); }
 
