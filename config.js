@@ -700,7 +700,9 @@ export const CONFIG = {
   // its red and blue drift apart, rgbShift cells by the time the sharp art has gone; scanlines:
   // dark lines through all of it, that strong (0 none), scanlinesPerCell of them a cell (with them,
   // all of it's drawn at the board's own pixels, 18 a cell, not the screen's, so it looks the same
-  // on every screen: no more than 9). A block destroyed where one was before takes its place.
+  // on every screen: no more than 9), and a faint, soft glow of the art in them, scanlineGlow
+  // strong (0 none: just dark), as an old screen's lines glow into the dark between them. A block
+  // destroyed where one was before takes its place.
   // moved: a block that moves away (rows coming down after a clear, a Gravitizerz, anything that
   // moves blocks) leaves its art in the cell it left too, as if destroyed there, so each cell shows
   // the last art that was in it (false: only destroyed blocks leave any).
@@ -727,6 +729,7 @@ export const CONFIG = {
     rgbShift: 0.2,
     scanlines: 0.9,
     scanlinesPerCell: 9,
+    scanlineGlow: 0.25,
     parallax: 0.3,
     layers: 12,
     layerSec: 4,

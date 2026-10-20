@@ -221,7 +221,7 @@ export function remainsKey(state) {
   const ageing = !lasting() || youngest < sharpMs();
   const step = youngest < sharpMs() ? sharpMs() / 40 : youngest < softMs() ? softMs() / 40 : lifeMs() / 60;
   return [r.version, c.darker, c.faded, c.saturation, c.sharpSec, c.softBlur, c.softStrength, c.softSec, c.glowBlur,
-    c.glowStrength, c.fadeAwaySec, c.forever, c.rgbShift, c.scanlines, c.scanlinesPerCell,
+    c.glowStrength, c.fadeAwaySec, c.forever, c.rgbShift, c.scanlines, c.scanlinesPerCell, c.scanlineGlow,
     ageing ? Math.floor(r.clock / Math.max(100, step)) : ""].join("|");
 }
 
@@ -300,19 +300,20 @@ export function seedRemains(state, pieces, { rng = Math.random, wrap = 0, newest
 // less to draw. (The board shaking, they move together, as far back as they are on average, and
 // only the sharp art moves layer by layer.) With scanlines, all of it goes onto a canvas of the
 // board's own pixels (18 a cell, not the screen's: the same pixels on every screen, and fewer of
-// them to draw on a phone), the lines are cut from that, and it goes onto the board, each pixel as
-// it is, crisp. Each layer's art is drawn onto a canvas of its own (its
-// cells, and room round them for the glow to spread into), greyer, only when what's in it changes,
-// at the board's size while its sharp art still shows and smaller after. Blurred, it's that made
-// smaller and smaller, halving each time, smoothed, and drawn back up to size, smoothed (so it works
-// in every browser: no canvas filters), each size made once, when it's first needed; a blur
-// between two sizes is the two, one faded into the other. Red and blue apart: the size split into
-// its red, its green and its blue, each drawn where it goes.
+// them to draw on a phone), the lines are cut from that (a faint glow of the art left in them), and
+// it goes onto the board, each pixel as it is, crisp. Each layer's art is drawn onto a canvas of
+// its own (its cells, and room round them for the glow to spread into), greyer, only when what's
+// in it changes, at the board's size while its sharp art still shows and smaller after. Blurred,
+// it's that made smaller and smaller, halving each time, smoothed, and drawn back up to size,
+// smoothed (so it works in every browser: no canvas filters), each size made once, when it's first
+// needed; a blur between two sizes is the two, one faded into the other. Red and blue apart: the
+// size split into its red, its green and its blue, each drawn where it goes.
 const drawn = new WeakMap(); // layer -> { px, levels (0 the full one), lowest, up (n -> as it's drawn), ch (n -> [r, g, b]), cells, version, key, x0, y0, x1, y1 (its canvas's cells), tight (just its own), bw, bh }
 let smaller = null; // (the canvas the blurs are drawn onto, smaller than the board)
 let blurred = null; // (what's on it: { key, x0, y0, x1, y1 (the cells they're over), depth })
 let front = null; // (with scanlines, the canvas they're all drawn onto first)
 let frontUsed = null; // (the part of it drawn on last time: [x, y, w, h])
+let glowSmall = null; // (with a glow in the dark lines: all of it, smaller)
 const FAINT = 0.004;
 const TAPS = [[-0.5, -0.5], [0.5, -0.5], [-0.5, 0.5], [0.5, 0.5]];
 
@@ -430,12 +431,32 @@ export function drawRemains(ctx, state, view) {
   if (X1 < X0 || Y1 < Y0) return;
   const sx = X0 * view.cell, sy = Y0 * view.cell, sw = (X1 - X0 + 1) * view.cell, sh = (Y1 - Y0 + 1) * view.cell;
   frontUsed = [sx, sy, sw, sh];
+  const pitch = Math.max(2, Math.round(view.cell / Math.max(1, num(c.scanlinesPerCell, 9))));
+  // (and a faint glow in the dark lines, scanlineGlow strong, as an old screen's lit lines glow
+  // into the dark between them: all of it, before they're taken out, made a quarter the size,
+  // smoothed, so each of its pixels is a little of the art round it, and drawn back up, smoothed,
+  // into just the dark lines, in the art's own colours)
+  const bloom = clamp01(num(c.scanlineGlow, 0));
+  if (bloom > 0.01) {
+    glowSmall = canvas(glowSmall, Math.max(1, Math.round(sw / 4)), Math.max(1, Math.round(sh / 4)));
+    const b = glowSmall.getContext("2d");
+    b.globalCompositeOperation = "copy";
+    b.imageSmoothingEnabled = true;
+    b.drawImage(front, sx, sy, sw, sh, 0, 0, glowSmall.width, glowSmall.height);
+  }
   out.save();
   out.setTransform(1, 0, 0, 1, 0, 0);
   out.globalCompositeOperation = "destination-out";
   out.globalAlpha = scan;
-  out.fillStyle = scanPattern(out, Math.max(2, Math.round(view.cell / Math.max(1, num(c.scanlinesPerCell, 9)))));
+  out.fillStyle = scanPattern(out, pitch);
   out.fillRect(sx, sy, sw, sh);
+  if (bloom > 0.01) {
+    out.clip(scanPath(pitch, front.width, front.height));
+    out.globalCompositeOperation = "lighter";
+    out.globalAlpha = bloom;
+    out.imageSmoothingEnabled = true;
+    out.drawImage(glowSmall, 0, 0, glowSmall.width, glowSmall.height, sx, sy, sw, sh);
+  }
   out.restore();
   ctx.save();
   ctx.setTransform(view.scale, 0, 0, view.scale, 0, 0);
@@ -455,6 +476,17 @@ function scanPattern(g, pitch) {
     scanned = { pitch, cv, pattern: null };
   }
   return (scanned.pattern ??= g.createPattern(scanned.cv, "repeat"));
+}
+
+// (the same lines, as a shape over the whole board, w by h: to draw into just them)
+let scanShape = null;
+function scanPath(pitch, w, h) {
+  if (scanShape?.pitch !== pitch || scanShape.w !== w || scanShape.h !== h) {
+    const path = new Path2D(), thick = Math.max(1, pitch >> 1);
+    for (let y = 0; y < h; y += pitch) path.rect(0, y + pitch - thick, w, thick);
+    scanShape = { pitch, w, h, path };
+  }
+  return scanShape.path;
 }
 
 // A layer's art at size n onto g, `alpha` strong; red and blue `shift` cells apart, if that's a

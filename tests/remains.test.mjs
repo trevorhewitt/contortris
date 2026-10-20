@@ -270,8 +270,8 @@ test("the renderer draws them again when they change, and as they get older, oft
     const held = remainsKey(state);
     ageRemains(state, 60000);
     assert.equal(remainsKey(state), held, "there for good, once they've stopped getting older: never");
-    // (and when the look changes: the scanlines, how dark and how many a cell)
-    for (const change of [{ scanlines: 0.3 }, { scanlinesPerCell: 6 }]) {
+    // (and when the look changes: the scanlines, how dark, how many a cell and the glow in them)
+    for (const change of [{ scanlines: 0.3 }, { scanlinesPerCell: 6 }, { scanlineGlow: 0.6 }]) {
       withRemains(change, () => assert.notEqual(remainsKey(state), held, JSON.stringify(change)));
     }
   });
@@ -281,6 +281,8 @@ test("out of the box: darker to start with, scanlines through them, and longer t
   const c = CONFIG.remains;
   assert.ok(c.darker >= 0.75 && c.darker <= 0.85, `darker: ${c.darker}`);
   assert.ok(c.scanlines >= 0.5 && c.scanlinesPerCell >= 3, `scanlines: ${c.scanlines}, ${c.scanlinesPerCell} a cell`);
+  // (a faint glow in them: there, so they look meant, but not so much they're gone)
+  assert.ok(c.scanlineGlow > 0 && c.scanlineGlow <= 0.4, `the glow in the scanlines: ${c.scanlineGlow}`);
   assert.ok(c.softStrength < c.glowStrength, "the soft blur fainter than the glow (no blurry look)");
   assert.ok(c.fadeAwaySec > 160, `fade away: ${c.fadeAwaySec} s`);
   // (each line, and each gap, a whole number of the board's pixels: crisp)

@@ -100,6 +100,7 @@ const GROUPS = [
     ["remains.rgbShift", "red and blue apart, as they get older (cells)", 0, 0.5, 0.01],
     ["remains.scanlines", "scanlines: how dark (0 none)", 0, 1, 0.05],
     ["remains.scanlinesPerCell", "...how many a cell", 2, 9, 1],
+    ["remains.scanlineGlow", "...a glow in them (0 none)", 0, 1, 0.05],
     ["remains.parallax", "parallax when the board shakes (1: the oldest keep still)", 0, 1, 0.05],
     ["remains.liveLift", "the blocks in play lighter (gamma: 1 as they are)", 1, 2, 0.05],
   ] },
