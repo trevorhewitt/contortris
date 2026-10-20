@@ -9,6 +9,7 @@ import { getShapePaint } from "./shapes.js";
 import { getActiveMatrix, getGhostDropY } from "./game.js";
 import { resolvePowerupArea, computeEffect, isPhantomPowerup, classOf, comesDown } from "./powerups.js";
 import { drawRemains, remainsKey, remainsShaken, liveLift, liftColour } from "./remains.js";
+import { fxTier, onFxTier } from "./particles.js";
 
 const DEFAULT_STYLE = {};
 
@@ -248,6 +249,14 @@ export function rainbowRound(ctx, cx, cy, turn, a, lift = 0, steps = 30) {
   return g;
 }
 
+// (the copies a tier fans out: all five, or the `split` strongest, the nearest in, of them)
+const SPLITS = new Map();
+function splitCopies() {
+  const n = Math.max(0, Math.min(WARM_SPLIT.length, fxTier().split ?? WARM_SPLIT.length));
+  let list = SPLITS.get(n);
+  if (!list) SPLITS.set(n, list = n >= WARM_SPLIT.length ? WARM_SPLIT : [...WARM_SPLIT].sort((a, b) => Math.abs(a[0]) - Math.abs(b[0])).slice(0, n));
+  return list;
+}
 // The warm rainbow's hues (for colours given as hue, saturation and lightness)
 const OMBRE_HUES = [336, 25, 45, 191, 264];
 
@@ -303,13 +312,14 @@ export function drawPowerupMark(ctx, { type, direction }, px, py, cell, now, x, 
   // fading copies of it fanned out to each side, as far as the cell's own little glitch has them
   // (now and then they tear further apart for a moment), then the mark itself in its class's
   // colour over them.
-  const split = o.rgbSplit ?? 0;
-  if (split > 0) {
+  // (the lighter tiers fan out fewer of the copies, the nearest first: CONFIG.fx.quality)
+  const split = o.rgbSplit ?? 0, copies = splitCopies();
+  if (split > 0 && copies.length) {
     const tick = Math.floor(now / 90), g = hash01(tick * 31 + x * 7 + y * 13);
     const d = cell * split * (g > 0.93 ? 3.2 : g > 0.8 ? 1.8 : 1);
     const dy = g > 0.93 ? cell * split * (hash01(tick + x) - 0.5) * 2 : 0;
     const a = markA * (o.rgbSplitAlpha ?? 0.6);
-    for (const [k, colour, strength] of WARM_SPLIT) {
+    for (const [k, colour, strength] of copies) {
       ctx.save();
       ctx.globalAlpha *= a * strength;
       ctx.translate(-d * k, k > 0 ? -dy : dy);
@@ -497,7 +507,8 @@ export function createRenderer(boardCanvas, nextCanvas) {
     // only ever scales UP a little (image-rendering: pixelated), never down.
     const dpr = window.devicePixelRatio || 1;
     const cssW = boardCanvas.getBoundingClientRect().width || bw;
-    return Math.max(1, Math.min(CONFIG.render.maxScale ?? 4, Math.floor((cssW * dpr) / bw + 0.001)));
+    // (and no more than the tier's: CONFIG.fx.quality boardScale)
+    return Math.max(1, Math.min(CONFIG.render.maxScale ?? 4, fxTier().boardScale ?? Infinity, Math.floor((cssW * dpr) / bw + 0.001)));
   }
 
   function invalidateCaches() {
@@ -526,6 +537,8 @@ export function createRenderer(boardCanvas, nextCanvas) {
       if (s !== scale) applyScale(s);
     }).observe(boardCanvas);
   }
+  // (a lighter tier draws it with fewer pixels, a fuller one with more: CONFIG.fx.quality)
+  onFxTier(() => { const s = computeScale(); if (s !== scale) applyScale(s); });
 
   // --- next-piece canvas (sized to fit wherever it is, each time it's drawn: drawNext) ---
   const nctx = nextCanvas.getContext("2d");
@@ -1649,8 +1662,8 @@ export function createRenderer(boardCanvas, nextCanvas) {
     const list = state.fx.rowClears;
     if (!list?.length) return;
     const tiers = CONFIG.fx.rowClear.tiers;
-    // (the glows: not in high contrast)
-    const glows = !highContrast();
+    // (the glows: not in high contrast, nor on a tier without them, CONFIG.fx.quality)
+    const glows = !highContrast() && fxTier().glow !== false;
     bctx.save();
     bctx.imageSmoothingEnabled = true; // (the glows: soft, drawn at fewer pixels than the board)
     bctx.globalCompositeOperation = "lighter";
@@ -2001,8 +2014,8 @@ export function createRenderer(boardCanvas, nextCanvas) {
       fill.addColorStop(0, colours.still[0]); fill.addColorStop(1, colours.still[1]);
       glowColour = cfg.glow ?? "rgba(150,135,255,0.8)";
     }
-    // (its glow: the shadow of it, blurred; high contrast, none)
-    const blur = highContrast() ? 0 : Math.max(2, c * (cfg.glowCells ?? 0.55));
+    // (its glow: the shadow of it, blurred; high contrast, or a tier without glows, none)
+    const blur = highContrast() || fxTier().glow === false ? 0 : Math.max(2, c * (cfg.glowCells ?? 0.55));
     if (blur > 0) nctx.drawImage(nextGlowIn(L, blur, glowColour), 0, 0);
     nctx.fillStyle = fill;
     nctx.fill(path);

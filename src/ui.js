@@ -27,6 +27,7 @@ import { bindTutorial } from "./tutorialui.js";
 import { bindOptions, favouritePool } from "./optionsui.js";
 import { getOption, setOption, applyOptions, favourite } from "./settings.js";
 import { createGallery, createSparkles, somePieces } from "./pausemenu.js";
+import { onFxTier, fxTierReady, fxTierInfo } from "./particles.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -241,6 +242,12 @@ export function bindUI({ state, renderer, achievements }) {
   let devmode = devUrl || devToolsOn();
   // (the options: src/settings.js, and their page, src/optionsui.js)
   applyOptions();
+  // (the look's tier, for the page's own effects: index.html .fx-low, .fx-medium, .fx-high;
+  // src/particles.js, CONFIG.fx.quality)
+  onFxTier((t) => {
+    for (const c of [...document.body.classList]) if (c.startsWith("fx-")) document.body.classList.remove(c);
+    document.body.classList.add(`fx-${t.name}`);
+  });
   const options = bindOptions({ state });
   const skipIntros = () => !!getOption("skipIntros");
   const setSkipIntros = (on) => {
@@ -1020,6 +1027,14 @@ export function bindUI({ state, renderer, achievements }) {
   }
 
   let devLast = 0;
+  // (the look's tier, src/particles.js: which, whether held there (?quality=), the share of the
+  // frames slow lately and over a while, and how long till it'd try the next one up)
+  function qualityStatus() {
+    const q = fxTierInfo();
+    const how = q.forced ? "held" : q.counting ? `slow ${(q.slow * 100).toFixed(0)}% · ${(q.slowLong * 100).toFixed(0)}% · up in ${(q.upInMs / 1000).toFixed(0)}s` : "not counting yet";
+    return `${q.name} · ${how}${q.best ? ` · best ${q.best.toFixed(1)} ms` : ""}`;
+  }
+
   function updateDevPanel() {
     const now = performance.now();
     if (now - devLast < 200) return;
@@ -1050,6 +1065,7 @@ export function bindUI({ state, renderer, achievements }) {
       ["shiny seen", ps ? `${ps.shown.size}/${state.powerups.length} · ${state.devPowerups.disabled.size} disabled` : "–"],
       ["pieces on board", String(state.instances.size)],
       ["look", `${CONFIG.render.cellStyle} · edges ${CONFIG.render.enhanced.edgeStrength}`],
+      ["quality", qualityStatus()],
     ];
     devPanel.innerHTML = `<div class="devTitle">dev mode</div>` +
       lines.map(([k, v]) => `<div><span class="k">${k}</span> <span class="v">${escapeHtml(v)}</span></div>`).join("") +
@@ -1572,7 +1588,8 @@ export function bindUI({ state, renderer, achievements }) {
       const reveal = () => {
         if ((fontIn && !home.warming()) || performance.now() - t0 > (CONFIG.home.bootMaxMs ?? 2500)) {
           // (the loading screen fills its bar the rest of the way, then goes: src/loading.js)
-          const show = () => document.body.classList.remove("booting");
+          // (and from then on, the frames count towards the look's tier: src/particles.js)
+          const show = () => { document.body.classList.remove("booting"); fxTierReady(); };
           if (window.__loading) window.__loading.done(show); else show();
         } else requestAnimationFrame(reveal);
       };

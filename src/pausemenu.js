@@ -13,7 +13,7 @@
 import { makeShapePreviewCanvas } from "./render.js";
 import { rarity } from "./rarity.js";
 import { calmFx } from "./settings.js";
-import { particleShare, particleLot, alive } from "./particles.js";
+import { particleBudget, particleLot, alive } from "./particles.js";
 
 /* =========================
    The gallery
@@ -302,8 +302,8 @@ export function createSparkles({ canvas, panel, showing }) {
     return { x: rnd(0, w), y: rnd(h * 0.15, h), vy: -rnd(2, 7), sway: rnd(0.4, 1.6), phase: rnd(0, 7), age: age * life, life, rgb: SPECKS[(Math.random() * SPECKS.length) | 0], a: rnd(0.25, 0.7), lot: particleLot() };
   }
   // (fewer of them while the frames lag, and those going thin out: src/particles.js)
-  const starCount = (b) => Math.round(Math.max(14, Math.min(40, (b.w + b.h) / 9)) * particleShare());
-  const speckCount = () => Math.round(Math.max(24, Math.min(110, w * h / 2600)) * particleShare());
+  const starCount = (b) => Math.round(Math.max(14, Math.min(40, (b.w + b.h) / 9)) * particleBudget());
+  const speckCount = () => Math.round(Math.max(24, Math.min(110, w * h / 2600)) * particleBudget());
   function seed() {
     const b = box();
     stars.length = 0;
