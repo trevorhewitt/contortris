@@ -9,8 +9,21 @@ import { getShapePaint } from "./shapes.js";
 import { getActiveMatrix, getGhostDropY } from "./game.js";
 import { resolvePowerupArea, computeEffect, isPhantomPowerup, classOf, comesDown } from "./powerups.js";
 import { drawRemains, remainsKey, remainsShaken, liveLift, liftColour } from "./remains.js";
+import { fxTier, onFxTier } from "./particles.js";
 
 const DEFAULT_STYLE = {};
+
+// An element's size as laid out, in CSS pixels: not as it's drawn this moment (getBoundingClientRect),
+// which takes in any transform it's under. The board switching on (index.html .crtOn) starts as a
+// sliver and the next piece popping in (.pop) at 0.6 of its size, and a canvas sized from that
+// stayed that coarse. (Whole pixels from offsetWidth, a fraction from the computed width when it
+// agrees; nothing while it isn't laid out at all.)
+function layoutSize(el) {
+  const w = el.offsetWidth, h = el.offsetHeight;
+  if (!w || !h) return { w, h };
+  const cs = getComputedStyle(el), cw = parseFloat(cs.width), ch = parseFloat(cs.height);
+  return { w: Math.abs(cw - w) < 1 ? cw : w, h: Math.abs(ch - h) < 1 ? ch : h };
+}
 
 /* =========================
    Block drawing (shared by the renderer and previews)
@@ -240,6 +253,22 @@ const MARK_STYLE = { destroyer: "shrink", acid: "shrink", expander: "burst", goo
 const rgbOf = ([r, g, b]) => `rgb(${r},${g},${b})`;
 const [PINK, ORANGE, GOLD, CYAN, VIOLET] = OMBRE.map(rgbOf);
 export const WARM_SPLIT = [[2.4, GOLD, 0.35], [1.7, ORANGE, 0.55], [1, PINK, 0.85], [-1, CYAN, 0.85], [-1.8, VIOLET, 0.5]];
+// The warm rainbow all the way round (cx, cy), from `turn` (radians, clockwise from the right),
+// at alpha a: for a ring of it, drawn as one stroke.
+export function rainbowRound(ctx, cx, cy, turn, a, lift = 0, steps = 30) {
+  const g = ctx.createConicGradient(turn, cx, cy);
+  for (let k = 0; k <= steps; k++) g.addColorStop(k / steps, ombre(k / steps, a, lift));
+  return g;
+}
+
+// (the copies a tier fans out: all five, or the `split` strongest, the nearest in, of them)
+const SPLITS = new Map();
+function splitCopies() {
+  const n = Math.max(0, Math.min(WARM_SPLIT.length, fxTier().split ?? WARM_SPLIT.length));
+  let list = SPLITS.get(n);
+  if (!list) SPLITS.set(n, list = n >= WARM_SPLIT.length ? WARM_SPLIT : [...WARM_SPLIT].sort((a, b) => Math.abs(a[0]) - Math.abs(b[0])).slice(0, n));
+  return list;
+}
 // The warm rainbow's hues (for colours given as hue, saturation and lightness)
 const OMBRE_HUES = [336, 25, 45, 191, 264];
 
@@ -295,13 +324,14 @@ export function drawPowerupMark(ctx, { type, direction }, px, py, cell, now, x, 
   // fading copies of it fanned out to each side, as far as the cell's own little glitch has them
   // (now and then they tear further apart for a moment), then the mark itself in its class's
   // colour over them.
-  const split = o.rgbSplit ?? 0;
-  if (split > 0) {
+  // (the lighter tiers fan out fewer of the copies, the nearest first: CONFIG.fx.quality)
+  const split = o.rgbSplit ?? 0, copies = splitCopies();
+  if (split > 0 && copies.length) {
     const tick = Math.floor(now / 90), g = hash01(tick * 31 + x * 7 + y * 13);
     const d = cell * split * (g > 0.93 ? 3.2 : g > 0.8 ? 1.8 : 1);
     const dy = g > 0.93 ? cell * split * (hash01(tick + x) - 0.5) * 2 : 0;
     const a = markA * (o.rgbSplitAlpha ?? 0.6);
-    for (const [k, colour, strength] of WARM_SPLIT) {
+    for (const [k, colour, strength] of copies) {
       ctx.save();
       ctx.globalAlpha *= a * strength;
       ctx.translate(-d * k, k > 0 ? -dy : dy);
@@ -476,7 +506,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   // own, for over it while the board shakes)
   const remainsCache = { canvas: document.createElement("canvas"), key: "" };
   const blocksCache = { canvas: document.createElement("canvas"), version: -1, styleKey: "" };
-  let staticLayers = null; // { bg, screen, classicTop } pre-rendered layers
+  let staticLayers = null; // { bg, classicTop } pre-rendered layers
   let lastStyleKey = styleKey();
   const overlayCache = { key: "", area: null };
   const backdrop = { cut: -1, canvas: null };
@@ -484,12 +514,18 @@ export function createRenderer(boardCanvas, nextCanvas) {
   const isEnhanced = () => CONFIG.render.cellStyle !== "classic";
   function styleKey() { return `${CONFIG.render.cellStyle}|${CONFIG.render.enhanced.edgeStrength}|${highContrast() ? "hc" : ""}|${liveLift()}`; }
 
+  // The board's backing scale: a whole number of the canvas's pixels for each board pixel, so cells
+  // land on whole pixels and the browser only ever scales it up a little (image-rendering:
+  // pixelated), never down. As many as the screen has for it (the board's size as laid out: see
+  // layoutSize), but no more than render.maxScale, the tier's boardScale, or keeps the board within
+  // the tier's boardPixels (a board as big as the window on a sharp screen: CONFIG.fx.quality).
+  // The same for the same window and tier, however the board was measured.
   function computeScale() {
-    // Integer backing scale so cells land on whole device pixels; the browser
-    // only ever scales UP a little (image-rendering: pixelated), never down.
-    const dpr = window.devicePixelRatio || 1;
-    const cssW = boardCanvas.getBoundingClientRect().width || bw;
-    return Math.max(1, Math.min(CONFIG.render.maxScale ?? 4, Math.floor((cssW * dpr) / bw + 0.001)));
+    const dpr = window.devicePixelRatio || 1, T = fxTier();
+    const cssW = layoutSize(boardCanvas).w || bw;
+    const fits = Math.floor((cssW * dpr) / bw + 0.001);
+    const budget = Math.floor(Math.sqrt((T.boardPixels ?? Infinity) / (bw * bh)));
+    return Math.max(1, Math.min(CONFIG.render.maxScale ?? 4, T.boardScale ?? Infinity, budget, fits));
   }
 
   function invalidateCaches() {
@@ -518,6 +554,8 @@ export function createRenderer(boardCanvas, nextCanvas) {
       if (s !== scale) applyScale(s);
     }).observe(boardCanvas);
   }
+  // (a lighter tier draws it with fewer pixels, a fuller one with more: CONFIG.fx.quality)
+  onFxTier(() => { const s = computeScale(); if (s !== scale) applyScale(s); });
 
   // --- next-piece canvas (sized to fit wherever it is, each time it's drawn: drawNext) ---
   const nctx = nextCanvas.getContext("2d");
@@ -568,6 +606,22 @@ export function createRenderer(boardCanvas, nextCanvas) {
     return c;
   }
 
+  // A faint warm edge just inside the board (both looks). No scan lines: the pieces stay crisp.
+  // (Two lines: drawn straight onto the board each frame, they cost less than laying a whole
+  // board's worth of canvas over it.)
+  function drawScreenFX(g) {
+    g.save();
+    g.globalCompositeOperation = "source-over";
+    g.lineWidth = 1;
+    g.globalAlpha = 0.06;
+    g.strokeStyle = PINK;
+    g.strokeRect(1.5, 1.5, bw - 3, bh - 3);
+    g.globalAlpha = 0.05;
+    g.strokeStyle = CYAN;
+    g.strokeRect(3.5, 2.5, bw - 6, bh - 6);
+    g.restore();
+  }
+
   function getStaticLayers() {
     if (staticLayers) return staticLayers;
     const W = bw * scale, H = bh * scale;
@@ -606,25 +660,6 @@ export function createRenderer(boardCanvas, nextCanvas) {
       g.restore();
     }
 
-    // A faint warm edge just inside the board (both looks). No scan lines: the pieces stay crisp.
-    function drawScreenFX(g) {
-      g.save();
-      g.globalAlpha = 0.06;
-      g.strokeStyle = PINK;
-      g.strokeRect(1.5, 1.5, bw - 3, bh - 3);
-      g.globalAlpha = 0.05;
-      g.strokeStyle = CYAN;
-      g.strokeRect(3.5, 2.5, bw - 6, bh - 6);
-      g.restore();
-    }
-
-    const screen = makeCanvas(W, H);
-    {
-      const g = screen.getContext("2d");
-      g.scale(scale, scale);
-      drawScreenFX(g);
-    }
-
     // Grid + screen FX merged, so the classic look costs one composite, not two.
     const classicTop = makeCanvas(W, H);
     {
@@ -634,7 +669,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       drawScreenFX(g);
     }
 
-    staticLayers = { bg, screen, classicTop };
+    staticLayers = { bg, classicTop };
     return staticLayers;
   }
 
@@ -1369,10 +1404,16 @@ export function createRenderer(boardCanvas, nextCanvas) {
       bctx.beginPath(); bctx.arc(cx, cy, r, 0, Math.PI * 2); bctx.stroke();
       bctx.setLineDash([]);
     } else if (w.kind === "rainbow") {
-      // a ring of the warm rainbow, turning as it spreads, with a soft glow of it round it
+      // a ring of the warm rainbow, turning as it spreads, with a soft glow of it round it (each
+      // a single stroke of a gradient round it, where the browser has them)
       const segs = 30;
       for (const [width, alpha, lift] of [[cell * 1.1, 0.22, 0], [cell * 0.4, 0.85, 0.15]]) {
         bctx.lineWidth = Math.max(2, width * fade);
+        if (bctx.createConicGradient) {
+          bctx.strokeStyle = rainbowRound(bctx, cx, cy, now * 0.003, alpha * fade, lift);
+          bctx.beginPath(); bctx.arc(cx, cy, r, 0, Math.PI * 2); bctx.stroke();
+          continue;
+        }
         for (let k = 0; k < segs; k++) {
           const a0 = (k / segs) * Math.PI * 2 + now * 0.003, a1 = a0 + Math.PI * 2 / segs + 0.02;
           bctx.strokeStyle = ombre(k / segs, alpha * fade, lift);
@@ -1661,13 +1702,53 @@ export function createRenderer(boardCanvas, nextCanvas) {
     bctx.restore();
   }
 
+  // The glow round the head of the light along a clearing row (a rowClear tier's `glow`): what
+  // a shadow blur that wide round the head and its warm split would be, drawn once for each size,
+  // way and colour (the warm rainbow's to the nearest 48th of the way round) and kept, at no more
+  // pixels than a blur that soft needs. (A blur that wide drawn each frame, for every row and
+  // every copy of the split, was more than even a quick computer could keep up with.) The head
+  // and its split themselves are drawn at (0, 0): the head's middle, the top of the band.
+  const rowGlows = new Map();
+  const GLOW_HUES = 48;
+  function rowGlow(glow, h, ahead, chroma, colour) {
+    const key = `${glow}|${h}|${ahead}|${colour}|${scale}`;
+    let spr = rowGlows.get(key);
+    if (spr) return spr;
+    if (rowGlows.size > 200) rowGlows.clear();
+    const r = Math.min(scale, Math.max(1, 8 / glow)); // (its pixels a board pixel)
+    const reach = glow * 1.6 + 1; // (how far out the blur goes: past three of its sigma, glow / 2)
+    const ox = 7.5 + reach, oy = 1 + reach, w = ox * 2, hh = h + oy * 2;
+    const c = makeCanvas(Math.ceil(w * r), Math.ceil(hh * r)), g = c.getContext("2d");
+    // (just the shadow: what casts it is off to the left of the canvas, the shadow pushed back on)
+    const far = c.width + 16;
+    g.setTransform(r, 0, 0, r, ox * r - far, oy * r);
+    g.shadowOffsetX = far;
+    g.shadowColor = colour;
+    g.shadowBlur = glow * r;
+    g.globalCompositeOperation = "lighter";
+    if (chroma) for (const [k, fringe, strength] of WARM_SPLIT) {
+      g.globalAlpha = 0.6 * strength;
+      g.fillStyle = fringe;
+      g.fillRect(-1.5 - ahead * k * 2.5, -1, 3, h + 2);
+    }
+    g.globalAlpha = 1;
+    g.fillStyle = "rgba(255,255,255,0.95)";
+    g.fillRect(-1.5, 0, 3, h);
+    spr = { canvas: c, ox, oy, w: c.width / r, h: c.height / r };
+    rowGlows.set(key, spr);
+    return spr;
+  }
+
   // The light sweeping along rows as they go (game.js rowClearShow, CONFIG.fx.rowClear): a band
   // brightest at its head, fading behind it, with more to it the more rows go at once.
   function drawRowClears(state, now) {
     const list = state.fx.rowClears;
     if (!list?.length) return;
     const tiers = CONFIG.fx.rowClear.tiers;
+    // (the glows: not in high contrast, nor on a tier without them, CONFIG.fx.quality)
+    const glows = !highContrast() && fxTier().glow !== false;
     bctx.save();
+    bctx.imageSmoothingEnabled = true; // (the glows: soft, drawn at fewer pixels than the board)
     bctx.globalCompositeOperation = "lighter";
     for (const c of list) {
       const T = tiers[c.tier] ?? tiers[0], t = c.elapsedMs, mid = bw / 2;
@@ -1703,9 +1784,15 @@ export function createRenderer(boardCanvas, nextCanvas) {
           bctx.fillRect(lo, top, w, h);
           // the head itself, while it's still moving: white hot, with a glow and fringes
           if (s < 1) {
-            if (T.glow && !highContrast()) { bctx.shadowColor = T.rainbow ? colour(head, 1) : "rgba(180,240,255,1)"; bctx.shadowBlur = T.glow * scale; }
+            const ahead = head >= from ? 1 : -1;
+            if (T.glow && glows) { // (the glow round it all: rowGlow)
+              const q = T.rainbow ? Math.round(frac((c.hue + (head / bw) * 300 + t * 0.25) / 360) * GLOW_HUES) % GLOW_HUES : -1;
+              const spr = rowGlow(T.glow, h, T.chroma ? ahead : 0, !!T.chroma, q < 0 ? "rgba(180,240,255,1)" : ombre(q / GLOW_HUES, 1, 0.2));
+              bctx.globalAlpha = fade;
+              bctx.drawImage(spr.canvas, head - spr.ox, top - spr.oy, spr.w, spr.h);
+              bctx.globalAlpha = 1;
+            }
             if (T.chroma) { // (the warm split either side of it)
-              const ahead = head >= from ? 1 : -1;
               for (const [k, fringe, strength] of WARM_SPLIT) {
                 bctx.globalAlpha = 0.6 * strength * fade;
                 bctx.fillStyle = fringe;
@@ -1715,7 +1802,6 @@ export function createRenderer(boardCanvas, nextCanvas) {
             }
             bctx.fillStyle = `rgba(255,255,255,${(0.95 * fade).toFixed(3)})`;
             bctx.fillRect(head - 1.5, top, 3, h);
-            bctx.shadowBlur = 0;
           }
         }
       });
@@ -1823,7 +1909,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     if (state.gameOver) {
       drawBackground(bctx);
       drawGameOverBackdrop(state);
-      bctx.drawImage(layers.screen, 0, 0, bw, bh);
+      drawScreenFX(bctx);
       return;
     }
 
@@ -1870,7 +1956,8 @@ export function createRenderer(boardCanvas, nextCanvas) {
     drawParticles(state);
     if (!hide) drawShockwaves(state, now);
     if (!hide) drawCallouts(state, now);
-    bctx.drawImage(enhanced ? layers.screen : layers.classicTop, 0, 0, bw, bh);
+    if (enhanced) drawScreenFX(bctx);
+    else bctx.drawImage(layers.classicTop, 0, 0, bw, bh);
 
     bctx.restore();
   }
@@ -1930,8 +2017,9 @@ export function createRenderer(boardCanvas, nextCanvas) {
     if (opts && "glow" in opts) nextGlowOn = !!opts.glow;
     if (opts && "plain" in opts) nextPlain = !!opts.plain;
     nextCanvas.parentElement?.classList.toggle("power", !!shape?.powerup && !nextPlain);
-    const rect = nextCanvas.getBoundingClientRect(), dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
-    const W = Math.max(1, Math.round(rect.width * dpr)), Hh = Math.max(1, Math.round(rect.height * dpr));
+    // (its size as laid out: it's popping in, scaled down, this moment)
+    const box = layoutSize(nextCanvas), dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+    const W = Math.max(1, Math.round(box.w * dpr)), Hh = Math.max(1, Math.round(box.h * dpr));
     if (nextCanvas.width !== W || nextCanvas.height !== Hh) { nextCanvas.width = W; nextCanvas.height = Hh; }
     nextLayout = null;
     if (shape) {
@@ -1945,6 +2033,32 @@ export function createRenderer(boardCanvas, nextCanvas) {
       nextLayout = { W, Hh, dpr, c, ox, oy, dw, dh, path, colours: silhouetteColours(nextPlain ? null : shape), hint: nextGlowOn ? averageColour(shape) : null };
     }
     paintNext(performance.now());
+  }
+  // The silhouette's glow in `colour`: what a shadow blurred `blur` pixels round it would be. The
+  // blur is made once for the piece (white), and only coloured each time: its colours flow, so
+  // it's painted every frame, and a blur that size each frame was a good share of one.
+  function nextGlowIn(L, blur, colour) {
+    let G = L.glow;
+    if (!G || G.blur !== blur) {
+      const mask = makeCanvas(L.W, L.Hh), g = mask.getContext("2d"), far = L.W + 16;
+      g.setTransform(1, 0, 0, 1, -far, 0); // (the shape off the canvas, its shadow back on it)
+      g.shadowOffsetX = far;
+      g.shadowColor = "#fff";
+      g.shadowBlur = blur;
+      g.fillStyle = "#fff";
+      g.fill(L.path);
+      G = L.glow = { blur, mask, tint: makeCanvas(L.W, L.Hh), colour: null };
+    }
+    if (G.colour !== colour) {
+      const t = G.tint.getContext("2d");
+      t.globalCompositeOperation = "copy";
+      t.drawImage(G.mask, 0, 0);
+      t.globalCompositeOperation = "source-in";
+      t.fillStyle = colour;
+      t.fillRect(0, 0, L.W, L.Hh);
+      G.colour = colour;
+    }
+    return G.tint;
   }
   function paintNext(now) {
     const L = nextLayout;
@@ -1984,12 +2098,11 @@ export function createRenderer(boardCanvas, nextCanvas) {
       fill.addColorStop(0, colours.still[0]); fill.addColorStop(1, colours.still[1]);
       glowColour = cfg.glow ?? "rgba(150,135,255,0.8)";
     }
-    nctx.save();
-    nctx.shadowColor = glowColour;
-    nctx.shadowBlur = highContrast() ? 0 : Math.max(2, c * (cfg.glowCells ?? 0.55)); // (high contrast: no glow)
+    // (its glow: the shadow of it, blurred; high contrast, or a tier without glows, none)
+    const blur = highContrast() || fxTier().glow === false ? 0 : Math.max(2, c * (cfg.glowCells ?? 0.55));
+    if (blur > 0) nctx.drawImage(nextGlowIn(L, blur, glowColour), 0, 0);
     nctx.fillStyle = fill;
     nctx.fill(path);
-    nctx.restore();
     // (a soft sheen from the top, for a little depth: no lines)
     const sheen = nctx.createLinearGradient(0, oy, 0, oy + dh);
     sheen.addColorStop(0, "rgba(255,255,255,0.22)"); sheen.addColorStop(0.5, "rgba(255,255,255,0.04)"); sheen.addColorStop(1, "rgba(0,0,0,0.12)");

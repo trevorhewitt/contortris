@@ -1104,6 +1104,43 @@ export const CONFIG = {
     // already going thin out with it; when the frames keep up again, it comes back up by `recover`
     // a second. (A frame after more than gapMs, the page hidden, say, doesn't count.)
     particles: { slowMs: 25, behind: 1.5, least: 0.15, recover: 0.3, gapMs: 1000 },
+    // ...and, slower and steadier, the whole look comes in tiers (src/particles.js), from the
+    // lightest to the fullest. Each tier: `particles`, the most of every particle effect it makes
+    // (a share: the frames can make it fewer still); `split`, how many of the warm rainbow's five
+    // copies a Shiny Piece's marks fan out into (WARM_SPLIT, src/render.js); `glow`, the soft
+    // glows (the light along clearing rows, the next piece's); `boardScale`, the most pixels the
+    // board is drawn at for each of its own (render.maxScale: the fewer, the softer close up, the
+    // quicker), and `boardPixels`, the most it's drawn at in all (fewer for each of its own on a
+    // big board, turbo zen filling the window; the usual board is 0.11 million of its own, 0.98
+    // million drawn 3 for 1); `homePixels` and `homeDpr`, the most pixels the home screen's
+    // moving background is drawn at (in all, and for each of the page's) and `burstPixels` its
+    // warp's; `warpSquares`, the most squares the warp breaks the screen into (home.warp.squares);
+    // `warpLite`, the warp's squares just white, no trails; `motes`, the most effects drifting
+    // over the home screen at once; `mosaicRemains`, the home screen's mosaics with what destroyed
+    // blocks leave behind under them, some pieces gone (src/remains.js paintRemains: on a desktop
+    // about 0.3 s of work for each mosaic, 0.1 s of it in one frame; six times that on a slow
+    // phone), or whole; and index.html's own .fx-low, .fx-medium, .fx-high (scan
+    // lines, the board's breathing glow, the blur behind the bar along the bottom).
+    // It starts on the tier this device settled on last time (kept under `remember`); or else the
+    // first of `start` the device has no more cores or memory (GB) than (as the browser says:
+    // navigator.hardwareConcurrency, deviceMemory); or else the fullest. (index.html?quality=low,
+    // medium or high holds it at one, as do the developer tools.) Once the game is up, it goes
+    // down a tier when more than down.slowShare of the time over the last down.overSec seconds or
+    // so has been slow frames (fx.particles' slow; each frame counting for its time, but no more
+    // than down.capMs), no sooner than holdMs after the last change; and up one after up.afterMs
+    // with hardly any (under up.slowShare over the last up.overSec seconds). A rise that doesn't
+    // last failWithinMs makes the next wait twice as long (up to maxMs); one that does, half.
+    quality: {
+      remember: "eztrix.quality",
+      tiers: [
+        { name: "low", particles: 0.45, split: 0, glow: false, boardScale: 2, boardPixels: 0.5e6, homePixels: 0.5e6, homeDpr: 1, burstPixels: 0.5e6, warpSquares: 700, warpLite: true, motes: 80, mosaicRemains: false },
+        { name: "medium", particles: 0.75, split: 3, glow: true, boardScale: 3, boardPixels: 1.2e6, homePixels: 0.8e6, homeDpr: 1.25, burstPixels: 0.8e6, warpSquares: 1200, warpLite: false, motes: 160, mosaicRemains: false },
+        { name: "high", particles: 1, split: 5, glow: true, boardScale: 3, boardPixels: 2.4e6, homePixels: 1.1e6, homeDpr: 1.5, burstPixels: 1.2e6, warpSquares: 1800, warpLite: false, motes: 260, mosaicRemains: true },
+      ],
+      start: [{ memoryGB: 2, tier: "low" }, { cores: 4, memoryGB: 4, tier: "medium" }],
+      down: { slowShare: 0.25, overSec: 1, capMs: 100, holdMs: 1500 },
+      up: { slowShare: 0.04, overSec: 2, afterMs: 6000, failWithinMs: 10000, maxMs: 60000 },
+    },
     quake: {
       enabled: true,
 

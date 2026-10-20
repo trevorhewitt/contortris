@@ -26,11 +26,11 @@ import { startRun, resetGame, updateGame, getGhostDropY, collides, createGameSta
 import { resolvePowerupArea } from "./powerups.js";
 import { buildMosaic, paintMosaic } from "./mosaic.js";
 import { calmFx } from "./settings.js";
-import { drawChromaSquare, drawBlockWithPaintStatic } from "./render.js";
+import { drawChromaSquare, drawBlockWithPaintStatic, rainbowRound } from "./render.js";
 import { seedRemains, paintRemains } from "./remains.js";
 import { getShapePaint } from "./shapes.js";
 import { ombre, ombreRGB } from "./util.js";
-import { particleShare, particleLot, alive } from "./particles.js";
+import { particleBudget, particleLot, alive, fxTier, onFxTier } from "./particles.js";
 const H = () => CONFIG.home ?? {};
 const rand = (a, b) => a + Math.random() * (b - a);
 const pickIn = ([a, b]) => rand(a, b);
@@ -75,7 +75,9 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   // (the effects are drawn over the board on the same canvas: one layer for the browser to put
   // together with the menu, not two)
   const bg = $("homeBg"), fxc = bg, burstc = $("homeBurst"), dark = $("homeDark"), logo = $("homeLogo");
-  const bgx = bg.getContext("2d"), fx = bgx, bx = burstc.getContext("2d");
+  // (the background's always drawn all over, black first: no see-through, so the browser needn't
+  // draw what's under it)
+  const bgx = bg.getContext("2d", { alpha: false }), fx = bgx, bx = burstc.getContext("2d");
   const body = document.body;
   // (toned down, by the device or the options: src/settings.js)
   let reduced = calmFx();
@@ -95,15 +97,15 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
 
   // (the board behind is pixel art made bigger, and the effects are soft: neither needs every
   // pixel of a big screen, so each is drawn at a resolution that keeps it cheap, and the browser
-  // scales it up)
+  // scales it up: how many pixels, the tier's, CONFIG.fx.quality homePixels, homeDpr, burstPixels)
   function sizeCanvases() {
-    const vv = window.visualViewport;
+    const vv = window.visualViewport, T = fxTier();
     view.w = Math.max(1, Math.round(vv?.width ?? window.innerWidth));
     view.h = Math.max(1, Math.round(vv?.height ?? window.innerHeight));
     const area = view.w * view.h, dpr = window.devicePixelRatio || 1;
-    view.dpr = Math.min(dpr, 1.5, Math.sqrt(1.1e6 / area));
+    view.dpr = Math.min(dpr, T.homeDpr ?? 1.5, Math.sqrt((T.homePixels ?? 1.1e6) / area));
     view.fx = view.dpr;
-    view.burst = Math.min(dpr, 1.25, Math.sqrt(1.2e6 / area));
+    view.burst = Math.min(dpr, 1.25, Math.sqrt((T.burstPixels ?? 1.2e6) / area));
     const fit = (c, s) => {
       const w = Math.max(1, Math.round(view.w * s)), h = Math.max(1, Math.round(view.h * s));
       if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
@@ -111,6 +113,9 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     fit(bg, view.dpr); fit(burstc, view.burst);
     shade = null;
   }
+  // (a new tier: the background at its number of pixels, from the next frame; not in the middle
+  // of the warp, which is drawn at the size it started at)
+  onFxTier(() => { if (phase === "home" || phase === "fading") sizeCanvases(); });
 
   /* ---------- the board behind it ---------- */
 
@@ -494,9 +499,11 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
 
   // A mosaic with layers of what destroyed blocks leave behind under it, as the boards have
   // (src/remains.js): some of its pieces gone (CONFIG.home.mosaic.goneShare), the newest of them,
-  // and made-up ones of its own pieces behind those. (Painted first: paintMosaic's `under`.)
+  // and made-up ones of its own pieces behind those. (Painted first: paintMosaic's `under`.) Not
+  // on a tier without mosaicRemains (CONFIG.fx.quality): they take a lot of getting ready, some of
+  // it all in one frame, and every mosaic has its own; there, the mosaic is whole.
   function remainsUnder(m, cellPx) {
-    if (!CONFIG.remains?.enabled) return null;
+    if (!CONFIG.remains?.enabled || fxTier().mosaicRemains === false) return null;
     const share = H().mosaic?.goneShare ?? 0.3, gone = [];
     const pieces = [...new Set(m.pieces.map(p => p.shape))];
     m.pieces = m.pieces.filter(p => {
@@ -626,10 +633,11 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       mood = others[Math.floor(Math.random() * others.length)];
       moodUntil = now + pickIn(H().fxEvery ?? [14000, 22000]);
     }
-    // (fewer of them while the frames lag, and those going thin out: src/particles.js)
-    const area = (W * Hh) / 700000;
-    spawnAcc += (RATE[mood] ?? 6) * area * s * (reduced ? 0.3 : 1) * particleShare();
-    while (spawnAcc >= 1 && motes.length < 260) { spawnAcc--; motes.push(spawnMote(mood, W, Hh, now)); }
+    // (fewer of them while the frames lag, and those going thin out; and no more at once than
+    // the tier has: src/particles.js)
+    const area = (W * Hh) / 700000, most = fxTier().motes ?? 260;
+    spawnAcc += (RATE[mood] ?? 6) * area * s * (reduced ? 0.3 : 1) * particleBudget();
+    while (spawnAcc >= 1 && motes.length < most) { spawnAcc--; motes.push(spawnMote(mood, W, Hh, now)); }
     fx.setTransform(1, 0, 0, 1, 0, 0);
     fx.imageSmoothingEnabled = true;
     fx.drawImage(shading(), 0, 0, fxc.width, fxc.height);
@@ -746,9 +754,12 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     const far = Math.max(Math.hypot(cx, cy), Math.hypot(W - cx, cy), Math.hypot(cx, Hh - cy), Math.hypot(W - cx, Hh - cy));
     // (the wave gets to the furthest corner in waveS seconds; what it's reached speeds up by
     // accel, in screen sizes a second each second)
-    warp = { cx, cy, far, speed: far / (H().warp?.waveS ?? 0.34), accel: Math.hypot(W, Hh) * (H().warp?.accel ?? 5), slow: 0 };
-    // (fewer of them, and bigger, while the frames lag: src/particles.js)
-    const g = Math.max(7, Math.round(Math.sqrt(W * Hh / ((H().warp?.squares ?? 1800) * particleShare()))));
+    // (a tier that says so has it simpler from the start: CONFIG.fx.quality warpLite)
+    const T = fxTier();
+    warp = { cx, cy, far, speed: far / (H().warp?.waveS ?? 0.34), accel: Math.hypot(W, Hh) * (H().warp?.accel ?? 5), slow: T.warpLite ? 3 : 0 };
+    // (fewer of them, and bigger, while the frames lag, and on a lighter tier: src/particles.js)
+    const squares = Math.min(H().warp?.squares ?? 1800, T.warpSquares ?? Infinity) * particleBudget();
+    const g = Math.max(7, Math.round(Math.sqrt(W * Hh / squares)));
     // the board behind, a square at a time
     const sw = Math.ceil(W / g), sh = Math.ceil(Hh / g);
     const small = document.createElement("canvas");
@@ -765,7 +776,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       const turn = (way / (Math.PI * 2) + 1 + rand(-0.02, 0.02)) % 1;
       bits.push({
         x, y, size, fill: `rgb(${r},${gg},${b})`, ux: Math.cos(way), uy: Math.sin(way), trail: Math.floor(turn * TRAILS) % TRAILS,
-        v: rand(160, 460) * kick, at: dist / warp.speed + rand(0, 0.04), lot: particleLot(),
+        v: rand(160, 460) * kick, at: dist / warp.speed + rand(0, 0.04), lot: particleLot(), i: bits.length, gone: false,
       });
     };
     if (px) for (let j = 0; j < sh; j++) for (let i = 0; i < sw; i++) {
@@ -787,6 +798,66 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     burstc.hidden = false;
     bx.setTransform(1, 0, 0, 1, 0, 0);
     bx.clearRect(0, 0, burstc.width, burstc.height);
+    paintStill();
+  }
+
+  // The squares the wave hasn't got to yet, the screen as it was: painted once, all of them, on a
+  // canvas of their own (`still`), laid over each frame in one go; as the wave gets to each, it's
+  // taken off that (and whatever else, still to go, was under it, put back, in order). The same
+  // as drawing each of them every frame, for far less.
+  let still = null;
+  const stillAt = new Map(); // (which squares are where: a grid of `stillCell` device pixels)
+  let stillCell = 1;
+  const stillKey = (i, j) => i * 65536 + j;
+  function paintStill() {
+    const d = view.burst;
+    still ??= document.createElement("canvas");
+    still.width = burstc.width; still.height = burstc.height;
+    const g = still.getContext("2d");
+    stillAt.clear();
+    let most = 1;
+    for (const b of bits) most = Math.max(most, b.size);
+    stillCell = Math.max(8, most * d);
+    for (const b of bits) {
+      // (where it is, in whole pixels: what's taken off when it goes)
+      const x0 = (b.x - b.size / 2) * d, y0 = (b.y - b.size / 2) * d, z = b.size * d;
+      b.from = [x0, y0, z, Math.floor(x0), Math.floor(y0), Math.ceil(x0 + z), Math.ceil(y0 + z)];
+      g.fillStyle = b.fill;
+      g.fillRect(x0, y0, z, z);
+      for (let j = Math.floor(b.from[4] / stillCell); j <= Math.floor(b.from[6] / stillCell); j++) {
+        for (let i = Math.floor(b.from[3] / stillCell); i <= Math.floor(b.from[5] / stillCell); i++) {
+          const k = stillKey(i, j);
+          let list = stillAt.get(k);
+          if (!list) stillAt.set(k, list = []);
+          list.push(b);
+        }
+      }
+    }
+  }
+  // (the squares the wave has just got to: off the still screen)
+  function takeOffStill(t) {
+    const g = still.getContext("2d");
+    for (const b of bits) {
+      if (b.gone || t < b.at) continue;
+      b.gone = true;
+      const [, , , l, tp, r, bt] = b.from;
+      // (what else, still to go, overlaps where it was, in the order they were painted)
+      const under = new Set();
+      for (let j = Math.floor(tp / stillCell); j <= Math.floor(bt / stillCell); j++) {
+        for (let i = Math.floor(l / stillCell); i <= Math.floor(r / stillCell); i++) {
+          for (const o of stillAt.get(stillKey(i, j)) ?? []) {
+            if (o.gone || t >= o.at || o.from[3] >= r || o.from[5] <= l || o.from[4] >= bt || o.from[6] <= tp) continue;
+            under.add(o);
+          }
+        }
+      }
+      g.clearRect(l, tp, r - l, bt - tp);
+      if (!under.size) continue;
+      g.save();
+      g.beginPath(); g.rect(l, tp, r - l, bt - tp); g.clip();
+      for (const o of [...under].sort((a, c) => a.i - c.i)) { g.fillStyle = o.fill; g.fillRect(o.from[0], o.from[1], o.from[2], o.from[2]); }
+      g.restore();
+    }
   }
 
   function drawBurst(dt) {
@@ -798,13 +869,10 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     bx.globalCompositeOperation = "destination-out";
     bx.fillStyle = `rgba(0,0,0,${(1 - Math.pow(0.58, dt / 16.7)).toFixed(3)})`;
     bx.fillRect(0, 0, burstc.width, burstc.height);
-    // the squares the wave hasn't got to yet: the screen as it was
+    // the squares the wave hasn't got to yet: the screen as it was (paintStill)
     bx.globalCompositeOperation = "source-over";
-    for (const b of bits) {
-      if (t >= b.at) continue;
-      bx.fillStyle = b.fill;
-      bx.fillRect((b.x - b.size / 2) * d, (b.y - b.size / 2) * d, b.size * d, b.size * d);
-    }
+    takeOffStill(t);
+    bx.drawImage(still, 0, 0);
     bx.globalCompositeOperation = "lighter";
     // the flash at the button, and the ring of the rainbow going out with the wave
     const R = t * w.speed;
@@ -821,6 +889,11 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       const k = 1 - R / (w.far * 1.15), segs = 36;
       for (const [width, alpha, lift] of [[26, 0.16, 0], [7, 0.75, 0.25]]) {
         bx.lineWidth = Math.max(1, width * d * (0.4 + 0.6 * k));
+        if (bx.createConicGradient) { // (one stroke of the rainbow all the way round, where the browser can)
+          bx.strokeStyle = rainbowRound(bx, w.cx * d, w.cy * d, -t * 2.2, alpha * k, lift, segs);
+          bx.beginPath(); bx.arc(w.cx * d, w.cy * d, R * d, 0, Math.PI * 2); bx.stroke();
+          continue;
+        }
         for (let i = 0; i < segs; i++) {
           const a0 = (i / segs) * Math.PI * 2 - t * 2.2;
           bx.strokeStyle = ombre(i / segs, alpha * k, lift);
@@ -913,6 +986,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     const warped = !!warp;
     bits.length = 0;
     warp = null;
+    if (still) { still.width = still.height = 0; stillAt.clear(); }
     burstc.hidden = true;
     restoreBoard();
     state.backdrop = false;
@@ -1002,8 +1076,13 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     if (phase === "home" || phase === "fading") {
       // (it comes on with something on the board already: a fast start, a little each frame)
       for (let i = 0; warmLeft > 0 && i < 8; i++) { updateGame(state, 50); warmLeft -= 50; }
-      // (and the other board's, a little at a time, once the first has had its own)
-      if (warmLeft <= 0 && other && otherWarm > 0) for (let i = 0; otherWarm > 0 && i < 2; i++) { updateGame(other, 50); otherWarm -= 50; }
+      // (and the other board's, a little at a time, once the first has had its own: two steps a
+      // frame, or just the one when that one took a while, so a slow device doesn't fall behind
+      // for it; the camera only cuts to it once it's done)
+      if (warmLeft <= 0 && other && otherWarm > 0) {
+        const t0 = performance.now();
+        for (let i = 0; otherWarm > 0 && i < 2 && (i === 0 || performance.now() - t0 < 4); i++) { updateGame(other, 50); otherWarm -= 50; }
+      }
       if (reduced) drawCalm(now); // (calmer animations: tiled boards, fading)
       else { camera.step(dt, now); camera.draw(); }
       stepFx(dt, now);

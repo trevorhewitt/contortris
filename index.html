@@ -274,11 +274,12 @@
 
     /* (over everything but the board, faint scan lines, like an old screen: the board itself
        stays crisp, cut out of them where it is, frame and all: --board-x, -y, -w, -h, from
-       src/ui.js. Toned down animations turn them off) */
+       src/ui.js. Toned down animations turn them off, as does the lightest tier, .fx-low.
+       Just dark lines laid over, not blended in: blending them in had the browser put the
+       whole screen together twice over, every frame, for much the same look) */
     body::after{
       content: ""; position: fixed; inset: 0; z-index: 300; pointer-events: none;
-      background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0 1px, rgba(0,0,0,0.08) 1px 3px);
-      mix-blend-mode: overlay;
+      background: repeating-linear-gradient(to bottom, transparent 0 1px, rgba(0,0,0,0.07) 1px 3px);
       -webkit-mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
       -webkit-mask-position: 0 0, var(--board-x, -9999px) var(--board-y, -9999px);
       -webkit-mask-size: 100% 100%, var(--board-w, 0px) var(--board-h, 0px);
@@ -686,6 +687,15 @@
        rolling light, the logo still */
     body.calmFx::after{ display: none; }
     body.calmFx *, body.calmFx *::before, body.calmFx *::after{ animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+    /* the look's tiers, as the device keeps up (src/particles.js, CONFIG.fx.quality): on the
+       middle one and the lightest, the board's glow holds still (breathing, its blur was worked
+       out again every frame) and the bar along the bottom has no blur behind it; on the
+       lightest, no scan lines either */
+    body.fx-medium .boardFrame::before, body.fx-medium .boardFrame::after,
+    body.fx-low .boardFrame::before, body.fx-low .boardFrame::after{ animation: none; opacity: 0.42; }
+    body.fx-medium .pauseFrame::after, body.fx-low .pauseFrame::after{ animation: none; opacity: 0.72; }
+    body.fx-medium .bottomBar, body.fx-low .bottomBar{ backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(0,0,0,0.55); }
+    body.fx-low::after{ display: none; }
     /* high contrast: the pieces bolder and brighter, the words pure white */
     body.highContrast canvas{ filter: contrast(1.45) saturate(1.3) brightness(1.06); }
     body.highContrast{ --text: #ffffff; }
@@ -1767,7 +1777,7 @@
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
             <div class="menuRow homeRow" id="devRow" hidden><button id="btnDevTools" class="secondary small">Developer tools</button></div>
-            <div class="small" id="gameVersion">version 202610201429</div>
+            <div class="small" id="gameVersion">version 202610201604</div>
           </div>
 
           <div class="msg panel devToolsPanel" id="panelDevTools" hidden>
@@ -1811,7 +1821,7 @@
               <h3>Modes</h3>
               <div id="howtoModes"></div>
 
-              <p class="small menuFoot">[<span class="gameName">Estrix</span> version 202610201429 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[<span class="gameName">Estrix</span> version 202610201604 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>

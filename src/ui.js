@@ -27,6 +27,7 @@ import { bindTutorial } from "./tutorialui.js";
 import { bindOptions, favouritePool } from "./optionsui.js";
 import { getOption, setOption, applyOptions, favourite } from "./settings.js";
 import { createGallery, createSparkles, somePieces } from "./pausemenu.js";
+import { onFxTier, fxTierReady, fxTierInfo } from "./particles.js";
 
 // Fallback icons (12×12) for achievements without one, and for locked / secret ones.
 const _ = "", K = "#1a1428", G = "#ffcf3f", g = "#c98d1d", W = "#fff6c8";
@@ -138,11 +139,18 @@ function createNameLayer(nameLayerEl) {
     setName(shape.name, instant ? "" : shape.powerup?.description ?? "", shape.powerup ? shape.powerup.cls ?? "combo" : "", instant);
   }
 
-  // The rows of the board the words cover, [top, bottom], or null with none showing.
+  // The rows of the board the words cover, [top, bottom], or null with none showing. (Asked every
+  // frame: measured again only for new words, or after half a second, as measuring makes the
+  // browser lay the page out there and then.)
+  let measured = { el: null, count: 0, until: 0, rows: null };
   function rows(count) {
+    if (!currentEl) return null;
+    const now = performance.now();
+    if (measured.el === currentEl && measured.count === count && now < measured.until) return measured.rows;
     const h = nameLayerEl.clientHeight;
-    if (!currentEl || !h) return null;
-    return [Math.floor(currentEl.offsetTop / h * count), Math.ceil((currentEl.offsetTop + currentEl.offsetHeight) / h * count) - 1];
+    const r = h ? [Math.floor(currentEl.offsetTop / h * count), Math.ceil((currentEl.offsetTop + currentEl.offsetHeight) / h * count) - 1] : null;
+    measured = { el: currentEl, count, until: now + 500, rows: r };
+    return r;
   }
   // (faded: the falling piece among the stack under the words. CONFIG.render.names)
   let busy = false;
@@ -234,6 +242,12 @@ export function bindUI({ state, renderer, achievements }) {
   let devmode = devUrl || devToolsOn();
   // (the options: src/settings.js, and their page, src/optionsui.js)
   applyOptions();
+  // (the look's tier, for the page's own effects: index.html .fx-low, .fx-medium, .fx-high;
+  // src/particles.js, CONFIG.fx.quality)
+  onFxTier((t) => {
+    for (const c of [...document.body.classList]) if (c.startsWith("fx-")) document.body.classList.remove(c);
+    document.body.classList.add(`fx-${t.name}`);
+  });
   const options = bindOptions({ state });
   const skipIntros = () => !!getOption("skipIntros");
   const setSkipIntros = (on) => {
@@ -356,7 +370,8 @@ export function bindUI({ state, renderer, achievements }) {
     wholeWindow = on;
     if (on) {
       const vw = (window.visualViewport?.width ?? window.innerWidth) - 16, vh = (window.visualViewport?.height ?? window.innerHeight) - 16;
-      const small = $("boardShell").getBoundingClientRect().width / CONFIG.board.cols * (CONFIG.zen.wholeWindowCell ?? 0.8);
+      // (the board's size as laid out, not as drawn: it may be switching on, .crtOn, scaled down)
+      const small = $("boardShell").offsetWidth / CONFIG.board.cols * (CONFIG.zen.wholeWindowCell ?? 0.8);
       let cell = Math.max(8, small, Math.sqrt(vw * vh / (CONFIG.zen.wholeWindowCells ?? Infinity)));
       if (vh / cell < usualBoard.rows) cell = vh / usualBoard.rows; // (the usual rows at least: the tallest pieces fill them)
       document.body.classList.add("wholeWindow");
@@ -607,12 +622,15 @@ export function bindUI({ state, renderer, achievements }) {
 
   /* ---------- HUD ---------- */
 
-  let hudScore = null;
+  let hudScore = null, hudPause = null;
   function updateHUD() {
     if (state.score !== hudScore) { hudScore = state.score; scoreText.textContent = String(state.score); }
     shelf.refresh();
     if (devmode) updateDevPanel();
-    pauseBtn.textContent = (state.running && !state.paused) ? "❚❚" : "▶";
+    // (only when it changes: setting it at all, every frame, had the bar along the bottom, blur
+    // and all, drawn again every frame)
+    const pauseText = (state.running && !state.paused) ? "❚❚" : "▶";
+    if (pauseText !== hudPause) { hudPause = pauseText; pauseBtn.textContent = pauseText; }
 
     if (state.debug) {
       const z = getDifficultyZone(state);
@@ -1014,6 +1032,14 @@ export function bindUI({ state, renderer, achievements }) {
   }
 
   let devLast = 0;
+  // (the look's tier, src/particles.js: which, whether held there (?quality=), the share of the
+  // frames slow lately and over a while, and how long till it'd try the next one up)
+  function qualityStatus() {
+    const q = fxTierInfo();
+    const how = q.forced ? "held" : q.counting ? `slow ${(q.slow * 100).toFixed(0)}% · ${(q.slowLong * 100).toFixed(0)}% · up in ${(q.upInMs / 1000).toFixed(0)}s` : "not counting yet";
+    return `${q.name} · ${how}${q.best ? ` · best ${q.best.toFixed(1)} ms` : ""}`;
+  }
+
   function updateDevPanel() {
     const now = performance.now();
     if (now - devLast < 200) return;
@@ -1044,6 +1070,7 @@ export function bindUI({ state, renderer, achievements }) {
       ["shiny seen", ps ? `${ps.shown.size}/${state.powerups.length} · ${state.devPowerups.disabled.size} disabled` : "–"],
       ["pieces on board", String(state.instances.size)],
       ["look", `${CONFIG.render.cellStyle} · edges ${CONFIG.render.enhanced.edgeStrength}`],
+      ["quality", qualityStatus()],
     ];
     devPanel.innerHTML = `<div class="devTitle">dev mode</div>` +
       lines.map(([k, v]) => `<div><span class="k">${k}</span> <span class="v">${escapeHtml(v)}</span></div>`).join("") +
@@ -1555,7 +1582,8 @@ export function bindUI({ state, renderer, achievements }) {
       const reveal = () => {
         if ((fontIn && !home.warming()) || performance.now() - t0 > (CONFIG.home.bootMaxMs ?? 2500)) {
           // (the loading screen fills its bar the rest of the way, then goes: src/loading.js)
-          const show = () => document.body.classList.remove("booting");
+          // (and from then on, the frames count towards the look's tier: src/particles.js)
+          const show = () => { document.body.classList.remove("booting"); fxTierReady(); };
           if (window.__loading) window.__loading.done(show); else show();
         } else requestAnimationFrame(reveal);
       };
