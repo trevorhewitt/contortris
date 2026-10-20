@@ -1,24 +1,25 @@
 // ============================================================
-// ZEN MODE — the game plays itself, and never ends (no DOM)
+// ZEN MODE — the computer plays, or steps in, and it never ends (no DOM)
 // ============================================================
-// Zen is for playing: a bit like a game of Classic that can't be lost. Each piece comes down
-// at an easy pace (a little quicker with every piece, but never fast), already turned and over
-// the place the computer would put it; it's in the computer's hands until the player touches
-// it, and then it's theirs (the game never moves it back) until the next piece. Left alone a
-// while, it carries on by itself, a little quicker. It plays like a person would, and not too
+// Zen is for playing: a game of Classic, only slower, that goes on for ever and can't be lost.
+// Each piece comes in at the top as in Classic, for the player to play, at an easy pace (a
+// little quicker with every piece, but never fast), and the computer only steps in to save
+// them: a piece they leave alone a few seconds it takes over, a turn and then a column at a time
+// as a person would, and the next ones come already turned and over their places until the
+// player touches something again (left alone a while, it carries on a little quicker); and with
+// the stack piled up high, each piece comes already turned and over a good place, for them to
+// drop there or take elsewhere, until it's back down. It plays like a person would, and not too
 // perfectly: it keeps the board low, never builds anything up and never slides a piece in under
 // an overhang, and of the places nearly as good as its best it picks one at random, away from
 // where the last few went; now and then it leaves a hole, which it gets back to by clearing the
-// rows above it (as it does the player's). So it looks like someone playing, and the player can
-// often do better. Each piece is a new shape, not the shape of any of the last few. And it
-// doesn't push: where the player has just moved a piece away from, it doesn't aim again for a
-// piece or two, and when it does, it's with another shape. Now and then a little run of
-// something (a few bees, a red patch). Its powerups come about as often as at the start of a
-// game of Classic, but never one that takes much of the board (a gentler one comes in its
-// place), and with the player playing, each comes aimed where it takes hardly anything, for
-// them to put where they like; and a little help, left to itself to keep it low and tidy, but
-// with the player playing only once they've built it right up near the top: they can fill most
-// of the board if they like (CONFIG.zen.calm).
+// rows above it (as it does the player's). Each piece is a new shape, not the shape of any of
+// the last few. And it doesn't push: where the player has just moved one of its pieces away
+// from, it doesn't aim again for a piece or two, and when it does, it's with another shape. Now
+// and then a little run of something (a few bees, a red patch). Its Shiny Pieces come about as
+// often as at the start of a game of Classic, but never one that takes much of the board (a
+// gentler one comes in its place); and a little help, left to itself to keep it low and tidy,
+// but with the player playing only once they've built it right up near the top: they can fill
+// most of the board if they like (CONFIG.zen.calm).
 //
 // Turbo zen is for watching, and for stepping into. Each piece arrives already turned and over
 // the place it's going, and falls quickly straight down into it: the computer never moves or
@@ -45,7 +46,7 @@
 // them; the first that wouldn't, and it gives way to something new.
 
 import { CONFIG } from "../config.js";
-import { zenCaption, timeScaleOf, settleFlock } from "./game.js";
+import { zenCaption, timeScaleOf, settleFlock, tryMove, tryRotate } from "./game.js";
 import { selectPiece, duePowerup, destroyerCells, pickFitting, inGame } from "./selection.js";
 import { gravityColumns } from "./godmode.js";
 import { computeEffect, resolvePowerupArea, phantomLandingY, isPhantomPowerup, rollScatter } from "./powerups.js";
@@ -121,6 +122,12 @@ export function createZen(state) {
     userHas: false,   // the player has taken this piece over
     userAt: null,     // (the last time they did: state.drops)
     clock: 0, inputClock: 0, // (game time, and when the player last pressed anything: zen dozes off without them)
+    shownAt: null,    // (zen: when this piece first showed on the board...
+    mine: false,      // ...the computer has it: it came in already in place, or the computer took it over...
+    steer: null,      // ...and is getting it there, a move at a time: { ms }...
+    away: false,      // ...the player has stepped back: nothing pressed since it took one over...
+    piled: false,     // ...the stack is piled up: CONFIG.zen.calm.hand
+    noted: null,      // ...and the last piece it noted where it went: landed)
     playedAt: -Infinity, // (turbo zen: when they last did, coming back from a pause aside: playing)
     alone: Infinity,  // (turbo zen: the pieces the computer has had to itself since they stopped playing...
     hand: 1,          // ...and so how far it has taken back over, 0 to 1: CONFIG.zen.takeBack)
@@ -168,8 +175,9 @@ export function zenNext(state) {
   const z = state.zen;
   const { cols, rows } = CONFIG.board;
   const occ = occupancy(state.board);
-  // (zen: where the player didn't want the last one, before anything's picked for this one)
-  if (isCalm(state)) movedAway(state);
+  // (zen: where the last one went, and if the player didn't want it where it was going, before
+  // anything's picked for this one)
+  if (isCalm(state)) landed(state);
   // the player stepped in and the plan no longer fits the board: it carries on from the board as
   // it is while its pieces still land just where it put them (adrift: the board each was to
   // leave, to tell); the first that wouldn't, and never mind the rest of it, something new comes
@@ -880,8 +888,9 @@ function holesOf(occ, cols, rows) {
 // leave a hole, and never one that stands taller than the best would (nor where the player has
 // just moved one away from, and away from the last few pieces if it can); only while the board
 // is low and has few holes in it already. It gets back down to them by clearing the rows above
-// them (WEIGHTS.calm), and the player can often do better. { rot, x } or null.
-function slipFor(state, shape, maxTurns) {
+// them (WEIGHTS.calm), and the player can often do better. (Only where `ok` says it can get to,
+// if it says.) { rot, x } or null.
+function slipFor(state, shape, maxTurns, ok = null) {
   const S = CONFIG.zen.calm.slips, z = state.zen, { cols, rows } = CONFIG.board;
   if (!S || shape.powerup || shape.difficulty === LEVEL6 || blocks(shape) < 3 || z.simRng() >= S.chance) return null;
   const occ = occupancy(state.board), holes = holesOf(occ, cols, rows);
@@ -893,12 +902,12 @@ function slipFor(state, shape, maxTurns) {
       const y = dropY(occ, mat, x, cols, rows);
       if (y == null || y < 0) continue;
       const o = occ.slice(), lines = placeAndClear(o, mat, x, y, cols, rows);
-      all.push({ rot: r, x, to: x + w, s: score(o, lines, WEIGHTS.calm, cols, rows), h: heightOf(o, cols, rows), made: holesOf(o, cols, rows) - holes });
+      all.push({ rot: r, x, y, to: x + w, s: score(o, lines, WEIGHTS.calm, cols, rows), h: heightOf(o, cols, rows), made: holesOf(o, cols, rows) - holes });
     }
   }
   if (!all.length) return null;
   const best = all.reduce((a, b) => (b.s > a.s ? b : a));
-  const slips = all.filter(c => c.made >= 1 && c.made <= S.holes && c.h <= best.h && c.s >= best.s - S.within && !pushedAway(state, shape, c.x, c.to));
+  const slips = all.filter(c => c.made >= 1 && c.made <= S.holes && c.h <= best.h && c.s >= best.s - S.within && !pushedAway(state, shape, c.x, c.to) && (!ok || ok(c)));
   if (!slips.length) return null;
   const away = slips.filter(c => !nearRecent(z, c.x, c.to, CONFIG.zen.calm.place?.spread ?? 0));
   const c = (away.length ? away : slips).reduce((a, b) => (b.s > a.s ? b : a));
@@ -1519,17 +1528,25 @@ function bigPowerup(state) {
 
 // A new piece has spawned (game.js spawnPiece): put it straight over where it's going, already
 // turned, and let it fall at its pace. From then on it only ever falls straight down: the
-// computer never moves it, and the player can take it over whenever they like (zenTick).
+// computer never moves it, and the player can take it over whenever they like (zenTick). In zen,
+// only if the computer has it (stepsIn); the rest come in at the top as in Classic, the player's
+// to play.
 export function zenSpawned(state) {
   const z = state.zen, a = state.active;
   const theirs = z.userHas; // (turbo zen: the player had the last one)
+  if (isCalm(state)) landed(state);
   z.piece = a;
   z.userHas = false;
   noteUse(state, a.shape);
   // (anything pressed since the last piece came was the player playing that one, not this one)
-  if (state.lastInputAt !== z.inputAt) { z.userAt = state.drops; z.inputClock = z.playedAt = z.clock; }
+  if (state.lastInputAt !== z.inputAt) { z.userAt = state.drops; z.inputClock = z.playedAt = z.clock; z.away = false; }
   z.inputAt = state.lastInputAt;
-  z.target = upright(state, a.shape, targetFor(state));
+  if (isCalm(state)) {
+    z.shownAt = null;
+    z.steer = null;
+    z.mine = stepsIn(state);
+  }
+  z.target = !isCalm(state) || z.mine ? upright(state, a.shape, targetFor(state)) : null;
   const t = z.target;
   if (t) {
     const mat = a.shape.rotations[t.rot];
@@ -1545,8 +1562,6 @@ export function zenSpawned(state) {
   // how far it has to fall (a short way, near the top, it takes its time)
   const mat = a.shape.rotations[a.rotIdx];
   const { cols, rows } = CONFIG.board;
-  // (zen: where it came in, so the next few come in somewhere else)
-  if (isCalm(state)) z.spots = [...z.spots, [a.x, a.x + mat[0].length]].slice(-8);
   const land = isPhantomPowerup(a.shape.powerup) ? phantomLandingY(state.board, a.x, mat) : dropY(occupancy(state.board), mat, a.x, cols, rows);
   z.fall = Math.max(1, (land ?? 0) - a.y);
   // (turbo zen, with the player playing, the one after theirs too, the computer keeps its hands
@@ -1571,6 +1586,80 @@ export function zenSpawned(state) {
   if (z.rest > 0 && z.hand > 0) a.y -= Math.round(z.rest / state.dropMs);
   // (on a big board, a few more of them might come down with it)
   formFlock(state, land);
+}
+
+// Zen: does the computer have this piece, as it comes in? When the player has stepped back (it
+// took the last one over, and they haven't pressed anything since), with the stack piled up (past
+// hand.high of the board, and until it's back down to hand.low), and for a little help or to
+// steady it.
+function stepsIn(state) {
+  const z = state.zen, H = CONFIG.zen.calm.hand;
+  if (!H) return true;
+  z.piled = stackHeight(state) > CONFIG.board.rows * (z.piled ? H.low : H.high);
+  return z.away || z.piled || !!z.current?.help || !!z.current?.emergency;
+}
+
+// Zen: the piece before has landed (or gone: one off the bay takes its place). Where it went, so
+// the next few go somewhere else (spots), and whether the player moved it away from where the
+// computer had it going (movedAway). Once for each.
+function landed(state) {
+  const z = state.zen, p = z.piece;
+  if (!p || z.noted === p) return;
+  z.noted = p;
+  movedAway(state);
+  z.spots = [...z.spots, [p.x, p.x + (p.shape.rotations[p.rotIdx]?.[0].length ?? 1)]].slice(-8);
+}
+
+// Zen, every frame: a piece nobody has touched, with nothing pressed for hand.afterMs since it
+// first showed on the board, the player has stepped back, and the computer takes it over, as a
+// person would: to one of the places it can still get to from where it is (reachable), a turn at
+// a time and then a column at a time, hand.stepMs each (game.js tryRotate, tryMove), and then it
+// falls; something in the way after all, and it falls from there. The ones after it come already
+// in place until the player presses something.
+function lendHand(state, dt) {
+  const z = state.zen, a = state.active, H = CONFIG.zen.calm.hand;
+  if (!H || !a || z.piece !== a || z.userHas || state.effect || state.hold) return;
+  if (z.shownAt == null) {
+    if (!a.shape.rotations[a.rotIdx].some((row, j) => a.y + j >= 0 && row.some(Boolean))) return;
+    z.shownAt = z.clock;
+  }
+  if (!z.mine && z.clock - Math.max(z.inputClock, z.shownAt) >= H.afterMs) {
+    z.mine = z.away = true;
+    const ok = reachable(state), t = targetFor(state, ok), u = upright(state, a.shape, t);
+    z.target = u && ok(u) ? u : t;
+    z.steer = z.target ? { ms: 0 } : null;
+  }
+  const t = z.target, S = z.steer;
+  if (!S || !t) return;
+  for (S.ms += dt; S.ms >= H.stepMs; S.ms -= H.stepMs) {
+    const moved = a.rotIdx !== t.rot ? tryRotate(state) : a.x !== t.x ? tryMove(state, Math.sign(t.x - a.x), 0) : false;
+    if (!moved) { z.steer = null; return; }
+  }
+}
+
+// ...the places it can get the falling piece to from where it is: tried out on a copy, from here
+// and from a row further down (it keeps falling meanwhile), and from there it has to drop straight
+// down to the same place it would land in dropped from the top (never in under an overhang). A
+// test for a place { rot, x, y } (y left out: anywhere it gets to).
+function reachable(state) {
+  const a = state.active, { cols, rows } = CONFIG.board, occ = occupancy(state.board);
+  const phantom = isPhantomPowerup(a.shape.powerup), known = new Map();
+  const steer = (y, rot, x) => {
+    const sim = { board: state.board, active: { ...a, y }, locking: false, lockElapsed: 0 }, s = sim.active;
+    for (let k = 0; s.rotIdx !== rot; k++) if (k >= a.shape.rotations.length || !tryRotate(sim)) return null;
+    while (s.x !== x) if (!tryMove(sim, Math.sign(x - s.x), 0)) return null;
+    return s;
+  };
+  return (c) => {
+    const key = `${c.rot},${c.x},${c.y}`;
+    if (!known.has(key)) {
+      known.set(key, [a.y, a.y + 1].every(y => {
+        const s = steer(y, c.rot, c.x);
+        return !!s && (c.y == null || phantom || dropFrom(occ, a.shape.rotations[c.rot], c.x, s.y, cols, rows) === c.y);
+      }));
+    }
+    return known.get(key);
+  };
 }
 
 /* =========================
@@ -1735,7 +1824,7 @@ export function zenLockMs(state) {
   // (the rest of a flock: it clears their rows with its own; but a powerup goes off with them
   // still on the way)
   if (state.flock.length && !a.shape.powerup) return Infinity;
-  if (isCalm(state)) return dozing(state) ? CONFIG.zen.lockMs * z.pace : null;
+  if (isCalm(state)) return z.mine && dozing(state) ? CONFIG.zen.lockMs * z.pace : null;
   return handOver(z, grace(state), CONFIG.zen.lockMs * z.pace);
 }
 // (turbo zen: as long as a piece waits on the ground in the other modes, but in real time, however
@@ -1758,8 +1847,9 @@ function paceFor(state, item, shape) {
   return Math.max(P.fastest, p);
 }
 
-// Called every frame (game.js updateGame). The computer never moves a piece: it only notices the
-// player taking one over, and how it should fall.
+// Called every frame (game.js updateGame). Turbo zen never moves a piece: it only notices the
+// player taking one over, and how it should fall. Zen moves one the player has left alone, as a
+// person would (lendHand).
 export function zenTick(state, dt) {
   const z = state.zen;
   const a = state.active;
@@ -1774,6 +1864,8 @@ export function zenTick(state, dt) {
   if (state.lastInputAt !== z.inputAt) {
     z.inputAt = state.lastInputAt;
     z.inputClock = z.playedAt = z.clock;
+    z.away = false; // (zen: they're back...
+    z.steer = null; // ...and the computer lets go of it)
     if (a && !z.userHas) {
       z.userHas = true;
       z.userAt = state.drops;
@@ -1784,7 +1876,7 @@ export function zenTick(state, dt) {
       if (a.y < -h) a.y = -h;
       if (state.flock.length) settleFlock(state); // (the rest of the flock lands, out of their way)
     }
-  }
+  } else if (isCalm(state)) lendHand(state, dt);
 }
 
 // The piece the director marked to bring the whole board down has landed (game.js
@@ -1808,28 +1900,31 @@ function bigMoment(state, shape, rot, x, y) {
 }
 
 // The player let go of the game (paused and came back, say): that's not taking the piece over
-// (but they're back, so zen wakes up).
+// (but they're back, so zen wakes up, and the next piece is theirs).
 export function zenIgnoreInput(state) {
-  if (state.zen) { state.zen.inputAt = state.lastInputAt; state.zen.inputClock = state.zen.clock; }
+  if (state.zen) { state.zen.inputAt = state.lastInputAt; state.zen.inputClock = state.zen.clock; state.zen.away = false; }
 }
 
-function targetFor(state) {
+// Where the falling piece goes: { rot, x } or null. (`ok`: zen, taking over a piece already on
+// its way down, a test for the places it can still get to: reachable.)
+function targetFor(state, ok = null) {
   const z = state.zen, a = state.active;
-  const item = z.current;
-  if (item?.target && item.shape.id === a.shape.id && (!item.adrift || landsAsPlanned(state, item))) return { ...item.target };
+  const item = z.current, turns = item?.turns ?? 4;
+  if (item?.target && item.shape.id === a.shape.id && (!item.adrift || landsAsPlanned(state, item)) && (!ok || ok(item.target))) return { ...item.target };
   // (zen: one of the places nearly as good as the best, away from the last few; now and then,
   // where a person might have put it, leaving a hole. A powerup goes where it does the most good,
   // or nearly, away from the last few, and not where the player has just moved a piece away from;
   // one to steady it, or a little help, goes just where the director put it.)
   if (isCalm(state) && !a.shape.powerup) {
-    const c = slipFor(state, a.shape, item?.turns ?? 4) ?? calmPlacement(state, a.shape, item?.turns ?? 4);
+    const c = slipFor(state, a.shape, turns, ok) ?? calmPlacement(state, a.shape, turns, ok);
     if (c) return c;
   } else if (isCalm(state) && !item?.emergency) {
-    const c = powerupPlace(state, a.shape, item);
+    const c = powerupPlace(state, a.shape, item, ok);
     if (c) return { rot: c.rot, x: c.x };
   }
   // (with the next piece in mind, if it's known: the moon goes where the earth can stand beside it)
-  const best = bestPlacement(state, a.shape, item?.weights ?? WEIGHTS.clear, item?.turns ?? 4, z.queue[0]?.shape ?? null);
+  const next = z.queue[0]?.shape ?? null, w = item?.weights ?? WEIGHTS.clear;
+  const best = ok ? bestOf(placesFor(state, a.shape, w, turns, next).filter(ok)) : bestPlacement(state, a.shape, w, turns, next);
   return best ? { rot: best.rot, x: best.x } : null;
 }
 
@@ -1851,14 +1946,17 @@ export function upright(state, shape, t) {
 // fewer) that's nearly as good as the best (within `away` of it), or if there isn't one, any
 // that's about as good (within `within`); a place that clears a row can be anywhere (that's how
 // it keeps the board low). And then one of those at random, the better the likelier (a place
-// worth `temper` less, about a third as likely). { rot, x } or null.
-function calmPlacement(state, shape, maxTurns) {
+// worth `temper` less, about a third as likely). Only of the places `ok` says it can get to, if
+// it says. { rot, x } or null.
+function calmPlacement(state, shape, maxTurns, ok = null) {
   const P = CONFIG.zen.calm.place, z = state.zen, next = z.queue[0]?.shape ?? null;
   const to = (c) => c.x + shape.rotations[c.rot][0].length;
   const notPushed = (list) => list.filter(c => !pushedAway(state, shape, c.x, to(c)));
-  let all = placesFor(state, shape, WEIGHTS.calm, maxTurns, next), free = notPushed(all);
-  // (the best few all where the player didn't want it: everywhere else, without the next in mind)
-  if (!free.length && next) { all = placesFor(state, shape, WEIGHTS.calm, maxTurns); free = notPushed(all); }
+  const places = (next) => placesFor(state, shape, WEIGHTS.calm, maxTurns, next).filter(c => !ok || ok(c));
+  let all = places(next), free = notPushed(all);
+  // (the best few all where the player didn't want it, or out of reach: everywhere else, without
+  // the next in mind)
+  if (!free.length && next) { all = places(null); free = notPushed(all); }
   if (!all.length) return null;
   let pool = free.length ? free : all;
   const best = Math.max(...pool.map(c => c.s));
@@ -1874,18 +1972,11 @@ function calmPlacement(state, shape, maxTurns) {
 }
 
 // Zen: where one of its own powerups goes: where it does the most good, on any turn it has, as
-// calmBest picks it; but with the player playing (they've had one of the last help.played
-// pieces), only where it takes at most bite.playing blocks, if anywhere: what they build stays
-// theirs, and they can put it where they like. (tooBig judges it here too.) { rot, x, y, s,
-// lines, took } or null.
-function powerupPlace(state, shape, item = null) {
-  let list = placesFor(state, shape, item?.weights ?? WEIGHTS.clear, item?.turns ?? 4).map(c => ({ ...c, p: shape }));
-  const C = CONFIG.zen.calm, z = state.zen;
-  if (C.bite?.playing != null && z.userAt != null && state.drops - z.userAt <= (C.help?.played ?? 0)) {
-    const little = list.filter(c => c.took <= C.bite.playing);
-    if (little.length) list = little;
-  }
-  return calmBest(state, list);
+// calmBest picks it (of the places `ok` says it can get to, if it says). (tooBig judges it here
+// too.) { rot, x, y, s, lines, took } or null.
+function powerupPlace(state, shape, item = null, ok = null) {
+  const list = placesFor(state, shape, item?.weights ?? WEIGHTS.clear, item?.turns ?? 4).filter(c => !ok || ok(c));
+  return calmBest(state, list.map(c => ({ ...c, p: shape })));
 }
 
 // Zen, for a powerup: of these places (each with its piece, `p`), the best that isn't where the
@@ -1905,8 +1996,8 @@ const bestOf = (list) => list.reduce((a, c) => (!a || c.s > a.s ? c : a), null);
 // (zen: are columns [x0, x1) any of those the last n pieces came in over?)
 const nearRecent = (z, x0, x1, n) => n > 0 && z.spots.slice(-n).some(([a, b]) => x0 < b && a < x1);
 
-// Zen: the player took the last piece and put it somewhere other than where it was going (or
-// turned it another way): where it was going, so as not to push it on them
+// Zen: the player took over the last piece the computer had and put it somewhere other than where
+// it was going (or turned it another way): where it was going, so as not to push it on them
 // (CONFIG.zen.calm.pushed). (Anything pressed since it came, and not noticed yet, was theirs: a
 // press and a drop at once.)
 function movedAway(state) {
@@ -1928,9 +2019,10 @@ function pushedAway(state, shape, x0, x1) {
 }
 
 // The best place for `shape`: every turn and column, dropped straight down (never slid in under
-// an overhang: the computer never moves a piece once it's falling). Powerups are tried out on a
-// copy of the board. `maxTurns` limits the turns tried. With `next` (an ordinary piece), the best
-// few places (LOOK_AHEAD of them) are judged again by the best the next piece could do after each.
+// an overhang: turbo zen never moves a piece once it's falling, and zen never slides one in under
+// anything). Powerups are tried out on a copy of the board. `maxTurns` limits the turns tried.
+// With `next` (an ordinary piece), the best few places (LOOK_AHEAD of them) are judged again by
+// the best the next piece could do after each.
 const LOOK_AHEAD = 10;
 export function bestPlacement(state, shape, weights = WEIGHTS.clear, maxTurns = 4, next = null) {
   let best = null;

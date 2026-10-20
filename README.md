@@ -28,22 +28,26 @@ clears.
   back, until a big Gravitizer brings the mess down (`waves`, `src/waves.js`).
 - **Extreme**: no Shiny Pieces, no mercy.
 - **God mode**: everything from the first piece; it gets harder too.
-- **Zen** and **Turbo zen**: it plays itself (calmly, or as a show), or you do. Zen is a bit like
-  a game of Classic that can't be lost: Shiny Pieces about as often as at the start of one, and
-  a little quicker with every piece, but never fast. Each piece comes in over a different place
-  from the last few and is a new shape each time, and one that fits just the same upside down
-  comes the way it was drawn; move one away from where it was going and it won't keep putting
-  things there. You can build the board most of the way up if you like: no Shiny Piece of its
-  own takes much of it (a gentler one comes in its place), and while you're playing each comes
-  aimed where it takes hardly anything, for you to put where you like; help only comes near the
-  top (it still can't be lost). In Turbo zen every piece arrives already turned and over the
-  place it's going (often upside down, though the ESTRIX piece mostly reads the right way), and
-  drops straight into it, quickly; the computer never moves a piece once it's on the board. Step
-  in whenever you like: the piece you touch is yours until it lands, and while you're playing
-  the next ones come promptly, one at a time, at a pace you can steer, each with a moment on the
-  ground to slide or turn it; stop, and the computer takes back over gently, over a few pieces
-  (`zen` in `config.js`). Turbo zen isn't on the menu: it's what the home screen turns into when
-  it's left alone, and the developer tools have a button for it.
+- **Zen** and **Turbo zen**: Zen is a game of Classic at an easier pace that goes on for ever and
+  can't be lost: Shiny Pieces about as often as at the start of one, and a little quicker with
+  every piece, but never fast. You play the pieces; the computer only steps in to save you. Leave
+  a piece alone a few seconds and it takes it over, a turn and then a column at a time as a
+  person would, and the ones after until you touch something; pile it up near the top and each
+  piece comes already turned and over a good place, for you to drop there or take elsewhere,
+  until it's back down. It plays like a person, not perfectly: a good place, not always the
+  best, now and then leaving a hole, each piece a new shape and somewhere other than the last
+  few, and one that fits just the same upside down comes the way it was drawn; move one of its
+  pieces away from where it was going and it won't keep putting things there. You can build the
+  board most of the way up if you like: no Shiny Piece of its own takes much of it (a gentler
+  one comes in its place), and help only comes near the top. Turbo zen plays itself, as a show:
+  every piece arrives already turned and over the place it's going (often upside down, though
+  the ESTRIX piece mostly reads the right way), and drops straight into it, quickly; the
+  computer never moves a piece once it's on the board. Step in whenever you like: the piece you
+  touch is yours until it lands, and while you're playing the next ones come promptly, one at a
+  time, at a pace you can steer, each with a moment on the ground to slide or turn it; stop, and
+  the computer takes back over gently, over a few pieces (`zen` in `config.js`). Turbo zen isn't
+  on the menu: it's what the home screen turns into when it's left alone, and the developer
+  tools have a button for it.
 - **Options**: skip the Shiny Piece intro screens, a favourite piece that turns up a little more
   often, toned-down animations, high contrast, and whether Turbo zen fills the screen. Kept in
   the browser.

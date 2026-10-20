@@ -291,7 +291,7 @@ export function startRun(state, mode) {
   if (state.running || state.gameOver || state.active || state.drops || resized) resetGame(state);
   configureMode(state, mode);
   initPieceSelectionState(state);
-  // Zen mode: it plays itself (src/zen.js), and never ends
+  // Zen mode: the computer plays, or steps in (src/zen.js), and it never ends
   state.zen = CONFIG.modes[state.mode]?.zen ? createZen(state) : null;
   if (state.zen) state.dropMs = CONFIG.zen.dropMs;
   // The tutorial: a page at a time, each with its own board and pieces (src/tutorial.js)
@@ -657,7 +657,7 @@ function spawnPiece(state) {
     // Start fully above the board so entry is row-by-row, even for tall pieces
     y: -mat.length,
   };
-  // (zen: it starts out already turned, over the place it's going)
+  // (zen: it starts out already turned, over the place it's going, if the computer has it)
   if (state.zen) zenSpawned(state);
   if (at != null) state.active.x = at; // (the tutorial's pieces start where the page says)
   // (with no room for any of it to come onto the board there, under a stack right up to the top,

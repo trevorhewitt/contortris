@@ -28,9 +28,9 @@ export const CONFIG = {
     extreme: { label: "Extreme", tagline: "no shiny pieces. no mercy.", powerups: false, giants: true, level6: true, hints: false, hideOnPause: true },
     god: { label: "God", shelf: true, tagline: "every piece unlocked, instantly", powerups: true, giants: true, level6: "open", everything: true, hideOnPause: true },
     // speeds: a speed setting on the pause menu, these times timeScale (1 to start with).
-    // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); calm: zen for playing, a bit
-    // like a game of Classic that can't be lost (CONFIG.zen.calm, which also has its own numbers
-    // for the pieces); timeScale: how fast it all runs;
+    // zen: the computer plays, or steps in, and it never ends (CONFIG.zen, src/zen.js); calm: zen
+    // for playing, a game of Classic that can't be lost (CONFIG.zen.calm, which also has its own
+    // numbers for the pieces); timeScale: how fast it all runs;
     // zenMovements: "turbo" for turbo zen's own mix of movements; flashNames: the falling piece's
     // name just appears, no sliding in and out; captions: false, no words over the board for what
     // zen's director is up to
@@ -287,14 +287,19 @@ export const CONFIG = {
   // best ones, the wide gravitizers. Each section replaces the same numbers in `assist` (only
   // the ones listed) while playing God mode.
   // Zen mode (src/zen.js): the director decides what comes next, the autopilot plays each piece
-  // unless the player takes it over, and it never ends.
+  // unless the player takes it over (in zen, only the ones it steps in for), and it never ends.
   zen: {
-    // Zen itself is for playing: a bit like a game of Classic, but one that can't be lost. Each
-    // piece comes down at an easy pace (dropMs a row, the same bit quicker with every piece, but
-    // never fast: speedUp, toMs a row after `pieces` pieces and no quicker), already turned and
-    // over the place the computer would put it; touch it and it's yours. Leave it alone for idleMs
-    // and it carries on by itself a little quicker (idleDropMs a row) until it's touched again. It
-    // plays as a person would, and not too perfectly: it keeps the board low and never builds
+    // Zen itself is for playing: a game of Classic, only slower, that goes on for ever and can't
+    // be lost. Each piece comes in at the top as in Classic, the player's to play, at an easy pace
+    // (dropMs a row, the same bit quicker with every piece, but never fast: speedUp, toMs a row
+    // after `pieces` pieces and no quicker). The computer steps in only to save them (hand): a
+    // piece left alone for afterMs (nothing pressed since it showed on the board), it takes over
+    // from where it is, as a person would, a turn and then a column at a time (stepMs each), and
+    // the ones after come already turned and over the place it would put them until the player
+    // presses something (touch one and it's theirs); and with the stack piled up past `high` of
+    // the board, each piece comes that way, for the player to drop there or take elsewhere, until
+    // it's back down to `low`. Left alone for idleMs, it carries on a little quicker (idleDropMs a
+    // row). It plays as a person would, and not too perfectly: it keeps the board low and never builds
     // anything up, never slides a piece in under an overhang, and of the places about as good as
     // its best (place: within that much of it; or, to put it somewhere other than over the columns
     // of the last `spread` pieces, within `away` of it), it picks one at random, the better the
@@ -309,16 +314,14 @@ export const CONFIG = {
     // A piece that would come turned for nothing, the same shape as the way it was drawn but upside
     // down (or a square on its side), comes the way it was drawn instead (upright: `share` of those
     // times, here all of them; turbo zen's is softer).
-    // When the player moves a piece away from where it was going, the computer doesn't push it
-    // on them (pushed): it aims somewhere else for the next `pieces` pieces, and a piece of that
-    // shape somewhere else for `shape` pieces in all (so when it comes back to it, it's with
+    // When the player moves one of the computer's pieces away from where it was going, it doesn't
+    // push it on them (pushed): it aims somewhere else for the next `pieces` pieces, and a piece of
+    // that shape somewhere else for `shape` pieces in all (so when it comes back to it, it's with
     // another shape).
     // Now and then a little run of something. Its own powerups come as in a game (in a run too),
-    // but never one that would take more than `most` blocks at once where it would go, or more than
-    // `share` of what's on the board (bite; `least` is always all right): a gentler one comes in
-    // its place. With the player playing (they've had one of the last help.played pieces), it goes
-    // where it takes at most `playing` blocks, if anywhere, so what they build stays theirs (and
-    // they can put it where they like). A little help (help: a powerup that brings down at most
+    // but never one that would take more than `most` blocks at once where the computer would put
+    // it, or more than `share` of what's on the board (bite; `least` is always all right): a
+    // gentler one comes in its place. A little help (help: a powerup that brings down at most
     // `rows` rows or `blocks` blocks at once, one every `every` pieces at most): with the player
     // playing (they've had one of the last `played` pieces), only once they've built it right up
     // past `height` of the board, so they can fill most of it if they like; left to itself, sooner,
@@ -332,11 +335,12 @@ export const CONFIG = {
     // and mostly the easier pieces.
     calm: {
       dropMs: 700, speedUp: { toMs: 500, pieces: 300 }, idleMs: 20000, idleDropMs: 170,
+      hand: { afterMs: 4000, stepMs: 90, high: 0.75, low: 0.6 },
       place: { within: 0.3, away: 1, temper: 0.5, spread: 3 },
       slips: { chance: 0.12, holes: 2, within: 3, height: 0.4, most: 3 },
       newShapes: 6, random: 0.3, upright: { share: 1 },
       pushed: { pieces: 2, shape: 8 },
-      bite: { most: 24, share: 0.3, least: 8, playing: 8 },
+      bite: { most: 24, share: 0.3, least: 8 },
       help: { height: 0.7, played: 10, every: 12, rows: 6, blocks: 30, alone: { height: 0.4, gaps: 12 } },
       dangerRows: 4, steady: { rows: 10, blocks: 80 },
       hard: { minDropIndex: 12, firstGiantBetween: [18, 36], softWindowStart: 18, rechargePerDrop: 0.004, cooldownDrops: 30, hardMaxDanger: 0.25 },

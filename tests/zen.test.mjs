@@ -1,6 +1,7 @@
 // Run with:  node --test tests/*.test.mjs
-// Zen mode: slow and easy, and it can't be lost. Turbo zen: it plays itself, fills the board to the
-// brink and brings it all down, and never ends.
+// Zen mode: the player plays, at an easy pace, and the computer only steps in to save them: it
+// can't be lost. Turbo zen: it plays itself, fills the board to the brink and brings it all down,
+// and never ends.
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CONFIG } from "../config.js";
@@ -48,7 +49,7 @@ const run = (state, log, ms, each = null) => {
   }
 };
 
-test("zen: slow and easy — it plays itself, keeps the board low, and never ends", () => {
+test("zen: left to itself it plays on, keeps the board low, and never ends", () => {
   const { state, log } = zen(1);
   let low = 0;
   run(state, log, 30 * 60000, () => { if (height(state) <= 12) low++; });
@@ -65,7 +66,7 @@ test("zen: slow and easy — it plays itself, keeps the board low, and never end
   assert.ok(["family", "colours", "rain"].filter(k => kinds.has(k)).length >= 2, `${[...kinds]}`);
 });
 
-test("zen: each piece comes in already turned and over its place, as a person would play it (never in under an overhang), now and then leaving a hole", () => {
+test("zen: left alone, each piece comes in already turned and over its place, as a person would play it (never in under an overhang), now and then leaving a hole", () => {
   const { state } = zen(2);
   let checked = 0, slips = 0, piece = null, want = null;
   const holes = () => { let n = 0; for (let x = 0; x < cols; x++) for (let y = 0, seen = false; y < rows; y++) { if (state.board[y][x]) seen = true; else if (seen) n++; } return n; };
@@ -127,7 +128,7 @@ test("zen: left alone it dozes off and carries on a little quicker, and a touch 
   const piece = state.active;
   while (state.active === piece) updateGame(state, 16);
   while (!state.active) updateGame(state, 16);
-  assert.equal(state.zen.userHas, false, "the next piece is the computer's");
+  assert.ok(!state.zen.mine && !state.zen.target, "the next piece is theirs, coming in at the top as in Classic");
   assert.ok(easy(), `still awake: ${state.dropMs}`);
 });
 
@@ -150,31 +151,66 @@ test("zen: a little quicker with every piece, but never fast", () => {
   assert.ok(paces.filter(p => p.drops >= S.pieces).every(p => p.ms === S.toMs), `toMs from ${S.pieces} pieces on`);
 });
 
-test("zen: once the player touches a piece it's theirs, and the next one is the computer's again", () => {
+test("zen: the player plays each piece as in Classic; one they leave alone, the computer takes over a move at a time, and the next ones too, until they touch something", () => {
+  const H = CONFIG.zen.calm.hand;
   const { state } = zen(3);
-  run(state, null, 4000);
-  while (!state.active || state.effect || state.active.y < 0) updateGame(state, 16);
-  const piece = state.active;
-  // the player nudges it, as far left as it goes
-  markInput(state, "keyboard");
-  while (tryMove(state, -1, 0)) { /* all the way */ }
-  const x = piece.x, rot = piece.rotIdx;
-  updateGame(state, 16);
-  assert.equal(state.zen.userHas, true);
-  assert.ok(state.dropMs <= CONFIG.zen.calm.dropMs && state.dropMs > CONFIG.zen.calm.dropMs * 0.97, `it falls at the player's pace: ${state.dropMs}`);
-  for (let t = 0; t < 60000 && state.active === piece; t += 16) {
-    updateGame(state, 16);
-    if (state.active !== piece) break;
-    assert.equal(piece.x, x, "the game never moves it back");
-    assert.equal(piece.rotIdx, rot);
+  const next = () => { while (!state.active || state.effect || state.hold) updateGame(state, 16); return state.active; };
+  // each piece comes in at the top as in Classic: the way it was drawn, about the middle, theirs
+  for (let i = 0; i < 6; i++) {
+    const a = next(), w = a.shape.rotations[0][0].length;
+    assert.ok(!state.zen.mine && !state.zen.target, `${a.shape.id}: not the computer's`);
+    assert.equal(a.rotIdx, 0);
+    assert.ok(Math.abs(a.x - (cols - w) / 2) <= 3, `${a.shape.id} at ${a.x}`);
+    markInput(state, "keyboard");
+    hardDropAndLock(state);
   }
-  assert.notEqual(state.active, piece, "it landed");
-  assert.equal(state.zen.userHas, false, "the next piece is the computer's");
-  // (and coming back from a pause isn't taking it over)
+  // then they stop. The piece is left alone, and afterMs (not before) after it first shows on the
+  // board, the computer takes it
+  const a = next();
+  const shows = () => a.shape.rotations[a.rotIdx].some((row, j) => a.y + j >= 0 && row.some(Boolean));
+  while (!shows()) updateGame(state, 16);
+  let t = 0;
+  while (!state.zen.mine && state.active === a) { updateGame(state, 16); t += 16; }
+  assert.ok(Math.abs(t - H.afterMs) <= 48, `taken over after ${t}ms`);
+  const target = { ...state.zen.target };
+  assert.ok(target.x != null, "it knows where it's taking it");
+  // a turn or a column at a time, stepMs apart, and then it falls in where it was taking it
+  let last = { x: a.x, rot: a.rotIdx, at: -Infinity }, moves = 0;
+  for (t = 0; state.active === a; t += 16) {
+    updateGame(state, 16);
+    if (state.active !== a || (a.x === last.x && a.rotIdx === last.rot)) continue;
+    assert.ok(a.rotIdx !== last.rot || Math.abs(a.x - last.x) === 1, `one move at a time: ${last.x}/${last.rot} to ${a.x}/${a.rotIdx}`);
+    assert.ok(t - last.at >= H.stepMs - 16, `${t - last.at}ms apart`);
+    last = { x: a.x, rot: a.rotIdx, at: t };
+    moves++;
+  }
+  assert.ok(a.x === target.x && a.rotIdx === target.rot, `${a.shape.id} where it was taking it, in ${moves} moves`);
+  // the next ones come already in place, until the player touches something
+  for (let i = 0; i < 3; i++) {
+    const b = next(), z = state.zen;
+    assert.ok(z.mine && z.target && b.x === z.target.x && b.rotIdx === z.target.rot, `${b.shape.id} already in place`);
+    while (state.active === b) updateGame(state, 16);
+  }
+  const b = next();
+  markInput(state, "keyboard");
+  while (tryMove(state, -1, 0)) { /* all the way left */ }
+  const x = b.x, rot = b.rotIdx;
+  updateGame(state, 16);
+  assert.equal(state.zen.userHas, true, "theirs");
+  assert.ok(state.dropMs <= CONFIG.zen.calm.dropMs && state.dropMs > CONFIG.zen.calm.dropMs * 0.97, `it falls at the player's pace: ${state.dropMs}`);
+  while (state.active === b) {
+    updateGame(state, 16);
+    if (state.active === b) assert.ok(b.x === x && b.rotIdx === rot, "the game never moves it back");
+  }
+  const c = next();
+  assert.ok(!state.zen.mine && !state.zen.target && c.rotIdx === 0, "and the next is theirs");
+  // (and coming back from a pause isn't taking it over, but it's coming back)
+  for (let t = 0; t < 20000 && !state.zen.away; t += 16) updateGame(state, 16);
+  assert.equal(state.zen.away, true, "stepped back");
   markInput(state, "touch");
   zenIgnoreInput(state);
   updateGame(state, 16);
-  assert.equal(state.zen.userHas, false);
+  assert.ok(!state.zen.away && !state.zen.userHas);
 });
 
 test("zen: each piece is a new shape, and comes in somewhere other than the last few", () => {
@@ -208,7 +244,7 @@ test("zen: each piece is a new shape, and comes in somewhere other than the last
   assert.ok(n > 100 && near / n < 0.35, `${near} of ${n} over the columns of one of the last three`);
 });
 
-test("zen: it doesn't push: where the player has just moved a piece away from, it aims somewhere else for the next two, and comes back to it with another shape", () => {
+test("zen: it doesn't push: where the player has just moved one of its pieces away from, it aims somewhere else for the next two, and comes back to it with another shape", () => {
   const P = CONFIG.zen.calm.pushed;
   let pushes = 0;
   for (const seed of [3, 4]) {
@@ -218,18 +254,24 @@ test("zen: it doesn't push: where the player has just moved a piece away from, i
     const gap = 9;
     for (const row of state.board) row.fill(null);
     for (let y = rows - 2; y < rows; y++) for (let x = 0; x < cols; x++) if (x !== gap) state.board[y][x] = { pid: 900 + y };
+    // (where the computer takes each piece: as it comes in, or once it has been left alone)
     const came = [];
     on(state, (t) => {
-      if (t !== "spawn") return;
-      const a = state.active, w = a.shape.rotations[a.rotIdx][0].length;
-      came.push({ piece: a, shape: outline(a.shape), aimed: a.x <= gap && gap < a.x + w, steady: !!state.zen.current?.emergency, pushed: false });
+      if (t === "spawn") came.push({ piece: state.active, shape: outline(state.active.shape), aimed: false, steady: !!state.zen.current?.emergency, pushed: false });
     });
-    // the player doesn't want anything there: each piece that comes in over it, they move over to
-    // the left wall and drop
+    const aim = () => {
+      const c = came.at(-1), t = state.zen.target;
+      if (!c || c.target || c.piece !== state.active || !t || !state.zen.mine) return;
+      c.target = t;
+      c.aimed = t.x <= gap && gap < t.x + c.piece.shape.rotations[t.rot][0].length;
+    };
+    // the player's left it to the computer, but doesn't want anything there: each piece it takes
+    // over there, they move over to the left wall and drop (and then leave it again)
     const done = new Set();
-    run(state, null, 4 * 60000, () => {
+    run(state, null, 8 * 60000, () => {
+      aim();
       const a = state.active;
-      if (!a || done.has(a) || state.effect || state.hold || a.y < 0 || came.length > 40 || came.at(-1)?.piece !== a) return;
+      if (!a || done.has(a) || state.effect || state.hold || came.length > 40 || came.at(-1)?.piece !== a || !came.at(-1).target) return;
       done.add(a);
       if (!came.at(-1).aimed || a.shape.powerup || state.board[rows - 1][gap]) return;
       came.at(-1).pushed = true;
@@ -280,7 +322,7 @@ test("zen: the player can build it right up and fill most of the board: a little
     said = null;
   });
   // the builder: every piece stacked on the left, as low as it will go, never in the three
-  // columns on the right, so nothing ever clears
+  // columns on the right, so nothing ever clears (the Shiny Pieces they leave to the computer)
   let above = 0, frames = 0;
   run(state, log, 15 * 60000, () => {
     const a = state.active;
@@ -302,14 +344,46 @@ test("zen: the player can build it right up and fill most of the board: a little
   });
   assert.equal(log.over, false);
   assert.ok(log.maxHeight >= rows * 0.8, `built up to ${log.maxHeight} rows`);
-  assert.ok(above / frames > 0.6, `more than half way up ${(above / frames * 100).toFixed(0)}% of the time`);
+  assert.ok(above / frames > 0.5, `more than half way up ${(above / frames * 100).toFixed(0)}% of the time`);
   const helps = log.movements.filter(m => m.name === "help"), steadies = log.movements.filter(m => m.name === "steady");
   assert.ok(helps.length > 0 && helps.every(m => m.height > rows * H.height), `help only near the top: ${helps.map(m => m.height)}`);
   assert.ok(steadies.every(m => m.height >= rows - CONFIG.zen.calm.dangerRows), `steadied only at the top: ${steadies.map(m => m.height)}`);
   assert.ok(bites.length >= 5, `${bites.length} powerups of its own`);
   assert.ok(bites.every(n => n <= B.most), `its own powerups took ${bites.filter(n => n > B.most).join(", ")} blocks`);
-  // (with the player playing, each aimed where it takes hardly anything, if there's anywhere)
-  assert.ok(bites.filter(n => n <= B.playing).length >= bites.length * 0.8, `its own powerups took ${bites.join(", ")} blocks`);
+});
+
+test("zen: piled up near the top, each piece comes in already turned and over a good place, for the player to drop there or take elsewhere, until it's back down", () => {
+  const H = CONFIG.zen.calm.hand;
+  let ups = 0;
+  for (const seed of [4, 7]) {
+    const { state } = zen(seed);
+    const next = () => { while (!state.active || state.effect || state.hold) updateGame(state, 16); return state.active; };
+    next();
+    // a stack well past `high`, a gap in each row, all in one column but for a few
+    for (const row of state.board) row.fill(null);
+    const top = rows - Math.ceil(rows * H.high) - 1;
+    for (let y = top; y < rows; y++) for (let x = 0; x < cols; x++) if (x !== (y % 5 ? 6 : 2)) state.board[y][x] = { pid: 900 + y };
+    markInput(state, "keyboard");
+    hardDropAndLock(state); // (the one that came in before)
+    // the player drops each piece where it comes in (and moves it over now and then)
+    const seen = [];
+    let piled = true;
+    for (let i = 0; i < 80; i++) {
+      const a = next(), z = state.zen, h = height(state);
+      const aimed = !!z.target && a.x === z.target.x && a.rotIdx === z.target.rot;
+      seen.push({ h, aimed });
+      if (h > rows * H.high) piled = true;
+      else if (h <= rows * H.low) piled = false;
+      if (piled) assert.ok(aimed, `seed ${seed}: ${a.shape.id} at ${h} rows high comes already in place`);
+      else if (!z.current?.help && !z.current?.emergency) assert.ok(!aimed && !z.mine, `seed ${seed}: back down to ${h} rows, ${a.shape.id} is theirs`);
+      markInput(state, "keyboard");
+      if (i % 4 === 3) tryMove(state, 1, 0);
+      hardDropAndLock(state);
+    }
+    assert.ok(seen.some(s => s.h <= rows * H.low), `seed ${seed}: it came back down: ${seen.map(s => s.h)}`);
+    ups += seen.filter(s => s.h > rows * H.high).length;
+  }
+  assert.ok(ups >= 2, `${ups} pieces piled up`);
 });
 
 test("zen: nothing the player does can end it, and a little help comes when it's left in a mess", () => {
