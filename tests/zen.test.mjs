@@ -530,11 +530,14 @@ test("turbo zen: with the player playing, a piece that lands waits a moment befo
   ready();
   markInput(state, "touch");
   near(wait(), T.lockDelayMsTouch * ts, "by touch");
-  // slid or turned along the ground as it lands, it waits longer again, to be slid again
-  ready();
-  markInput(state, "keyboard");
-  let moved = false;
-  const t = wait(() => { markInput(state, "keyboard"); moved = tryMove(state, 1, 0) || tryMove(state, -1, 0) || tryRotate(state); });
+  // slid or turned along the ground as it lands, it waits longer again, to be slid again (the
+  // first piece that has room to be)
+  let moved = false, t = 0;
+  for (let k = 0; k < 6 && !moved; k++) {
+    ready();
+    markInput(state, "keyboard");
+    t = wait(() => { markInput(state, "keyboard"); moved = tryMove(state, 1, 0) || tryMove(state, -1, 0) || tryRotate(state); });
+  }
   assert.ok(moved, "it could be slid or turned");
   assert.ok(t >= T.slideLockMs * ts, `slid, it waited ${t}ms`);
   // left alone until it has taken all the way back over, the computer's own lock almost as soon as
