@@ -690,6 +690,9 @@ export const CONFIG = {
   // dark lines through all of it, that strong (0 none), scanlinesPerCell of them a cell (with them,
   // all of it's drawn at the board's own pixels, 18 a cell, not the screen's, so it looks the same
   // on every screen: no more than 9). A block destroyed where one was before takes its place.
+  // moved: a block that moves away (rows coming down after a clear, a Gravitizerz, anything that
+  // moves blocks) leaves its art in the cell it left too, as if destroyed there, so each cell shows
+  // the last art that was in it (false: only destroyed blocks leave any).
   // They come in layers, a new one every layerSec seconds, no more than `layers` of them (the two
   // nearest in age merged into one). When the board shakes, each layer moves less than the board
   // does, the older the less, the oldest (1 - parallax) of the way with it. While this is on, the
@@ -709,6 +712,7 @@ export const CONFIG = {
     glowStrength: 0.25,
     fadeAwaySec: 240,
     forever: false,
+    moved: true,
     rgbShift: 0.2,
     scanlines: 0.9,
     scanlinesPerCell: 9,

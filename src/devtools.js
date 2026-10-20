@@ -85,6 +85,7 @@ const GROUPS = [
   // (what destroyed blocks leave behind: src/remains.js; these change it at once)
   { title: "What destroyed blocks leave behind", items: [
     ["remains.enabled", "on"],
+    ["remains.moved", "blocks that moved away leave their art too (each cell shows the last that was in it)"],
     ["remains.darker", "the sharp art: how much darker (0 as it was, 1 black)", 0, 1, 0.05],
     ["remains.faded", "...how faded (0 solid, 1 gone)", 0, 1, 0.05],
     ["remains.saturation", "...colour (0 grey, 1 as it was, 2 twice as strong)", 0, 2, 0.05],

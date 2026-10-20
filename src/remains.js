@@ -9,16 +9,19 @@
 // across the board long after the shapes in it can be made out. As it gets older its red and blue
 // drift apart (an old screen's colour fringes), and dark scanlines run through all of it (so many
 // a cell, not a screen's pixels: it looks the same on every screen, phone or desktop). A block
-// destroyed where one was before takes its place. They come in layers, a new one every few
-// seconds; when the board shakes, each layer moves a little less than the board does, the older
-// the less (parallax). The blocks still in play are drawn a little lighter (liveLift), to stand
-// out. (seedRemains makes up layers of it, as if a game had been going a while: the home
-// screen's boards start with some.)
+// destroyed where one was before takes its place. And a block that moves away (rows coming down
+// after a clear, a Gravitizerz) leaves its art in the cell it left, as if destroyed there, so each
+// cell shows the last art that was in it (CONFIG.remains.moved). They come in layers, a new one
+// every few seconds; when the board shakes, each layer moves a little less than the board does,
+// the older the less (parallax). The blocks still in play are drawn a little lighter (liveLift),
+// to stand out. (seedRemains makes up layers of it, as if a game had been going a while: the
+// home screen's boards start with some.)
 //
 // It's on to try out, and it's all in here, so it's easy to take out: this file, CONFIG.remains,
 // its section of the developer tools (src/devtools.js), and the hooks, each marked
 // "src/remains.js": in src/game.js, leaveRemains where blocks are destroyed (clearFullLines,
-// firePowerupEffect, zenRescue) and ageRemains (updateGame); in src/render.js, drawUnderBlocks
+// firePowerupEffect, zenRescue) and ageRemains (updateGame: and what moved away, by the board as
+// it was and is); in src/render.js, drawUnderBlocks
 // and drawBoard (drawRemains, remainsKey, remainsShaken; remainsView, remainsCache and
 // blocksCache for them), quakeTransform's `k`, and liveLift and liftColour (styleKey, getSprite
 // and renderSprite, drawPixelArtDevice's `tone`), and remainsView's `calm`; in src/home.js,
@@ -64,11 +67,12 @@ export function liftColour(colour) {
   return out;
 }
 
-// The remains on the board: { board, cols, rows, layers, clock, version }
+// The remains on the board: { board, cols, rows, layers, clock, version, seen }
 //   layers: newest first: { born (clock), cells (Map: y * cols + x -> { paint, style }), version
 //           (changes with its cells) }
 //   clock: ms of play since the first (as you see it: turbo zen's fade no quicker)
 //   version: changes with them (never the same twice, on any board: the renderer's caches)
+//   seen: what was on the board, for what moved away (leftBehind): { version (the board's), cells }
 // They belong to the board they were left on: a new board (a new game, a fresh start in the
 // tutorial, the developer tools' clear) has none.
 let versions = 0;
@@ -133,8 +137,35 @@ function cover(r) {
   r.layers = r.layers.filter(l => l.cells.size);
 }
 
-// The game going on, `dt` ms of it (as you see it): fading away, a layer goes once its glow has.
+// Blocks that moved away (rows coming down after a clear, a Gravitizerz, anything that moves
+// them), CONFIG.remains.moved: a cell a block has left, empty now, shows that block's art, as if
+// it had been destroyed there, so each cell shows the last art that was in it. (What was where,
+// cell by cell, as the board was last time: r.seen; set again whenever the board changes. A cell
+// a block has left that another's come into is that one's, and shows its art when it goes.)
+function leftBehind(state) {
+  if (!cfg().moved || !remainsOn(state)) {
+    const r = remainsOf(state);
+    if (r) r.seen = null; // (switched on again, as the board is then, not as it was)
+    return;
+  }
+  const r = remainsOf(state, true);
+  if (r.seen?.version === state.boardVersion) return;
+  const was = r.seen?.cells, now = new Array(r.rows * r.cols), left = [];
+  for (let y = 0; y < r.rows; y++) {
+    const row = state.board[y];
+    for (let x = 0; x < r.cols; x++) {
+      const i = y * r.cols + x, cell = (now[i] = row?.[x] ?? null);
+      if (!cell && was?.[i]) left.push({ x, y, cell: was[i] });
+    }
+  }
+  r.seen = { version: state.boardVersion, cells: now };
+  leaveRemains(state, left);
+}
+
+// The game going on, `dt` ms of it (as you see it): fading away, a layer goes once its glow has;
+// and what blocks that moved away left behind (leftBehind).
 export function ageRemains(state, dt) {
+  leftBehind(state);
   const r = remainsOf(state);
   if (!r?.layers.length) return;
   r.clock += dt;
