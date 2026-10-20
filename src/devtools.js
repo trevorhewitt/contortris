@@ -1,7 +1,7 @@
 // ============================================================
 // DEVELOPER TOOLS — settings to try the game out with (DOM)
 // ============================================================
-// Holding God mode and Turbo zen down together on the home screen switches the developer tools
+// Holding Extreme and God mode down together on the home screen switches the developer tools
 // on, for this visit only (never remembered: the next visit starts without them), and opens
 // their page: a developer game (new things first),
 // which powerup classes Classic has and in what order they come, the bay's Extra Shiny Pieces

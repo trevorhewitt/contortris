@@ -1049,10 +1049,10 @@ export function bindUI({ state, renderer, achievements }) {
   /* ---------- buttons ---------- */
 
   // (from the home screen: it all bursts into pieces, a few words, and off it goes)
-  // Developer mode (CONFIG.modes.dev): God mode and Turbo zen held down together for
+  // Developer mode (CONFIG.modes.dev): Extreme and God mode held down together for
   // CONFIG.devMode.holdMs, or a shift-click on God mode. (Once both are down, neither one's own
   // click counts until they're both let go.)
-  const chordBtns = [$("btnGod"), $("btnTurbo")];
+  const chordBtns = [$("btnGod"), $("btnExtreme")];
   const chord = { down: new Map(), timer: 0, swallow: false };
   const bothDown = () => chordBtns.every(b => [...chord.down.values()].includes(b));
   const chordOff = () => { clearTimeout(chord.timer); chord.timer = 0; for (const b of chordBtns) b.classList.remove("chord"); };

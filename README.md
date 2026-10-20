@@ -147,7 +147,7 @@ Otherwise it downloads the updated file for you to drop in.
 
 ## Developer tools
 
-Hold **God mode** and **Turbo zen** down together on the home screen (or shift-click God mode) to
+Hold **Extreme** and **God mode** down together on the home screen (or shift-click God mode) to
 switch the developer tools on, for this visit only (a reload, or the next visit, starts without
 them; while they're on, a "Developer tools" button on the home screen brings the page back). The
 page has:
