@@ -499,9 +499,11 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
 
   // A mosaic with layers of what destroyed blocks leave behind under it, as the boards have
   // (src/remains.js): some of its pieces gone (CONFIG.home.mosaic.goneShare), the newest of them,
-  // and made-up ones of its own pieces behind those. (Painted first: paintMosaic's `under`.)
+  // and made-up ones of its own pieces behind those. (Painted first: paintMosaic's `under`.) Not
+  // on a tier without mosaicRemains (CONFIG.fx.quality): they take a lot of getting ready, some of
+  // it all in one frame, and every mosaic has its own; there, the mosaic is whole.
   function remainsUnder(m, cellPx) {
-    if (!CONFIG.remains?.enabled) return null;
+    if (!CONFIG.remains?.enabled || fxTier().mosaicRemains === false) return null;
     const share = H().mosaic?.goneShare ?? 0.3, gone = [];
     const pieces = [...new Set(m.pieces.map(p => p.shape))];
     m.pieces = m.pieces.filter(p => {
