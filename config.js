@@ -654,6 +654,13 @@ export const CONFIG = {
       lineWidth: 0.1,
       insetPx: 0.0,
       drawBehindActive: true,
+      // a glow inside it, so it reads on a busy board: light along the inside of its edges, this
+      // strong (0 none, 1 white), fading in to nothing glowCells in; and a copy of it splitPx of
+      // the board's pixels one way in pink and the other in cyan (an old screen's colours out of
+      // true; not in high contrast)
+      glow: 0.2,
+      glowCells: 0.45,
+      splitPx: 1,
     },
 
     enhanced: {
