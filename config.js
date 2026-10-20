@@ -24,9 +24,9 @@ export const CONFIG = {
     easy: { label: "Easy", shelf: true, tagline: "Shiny Pieces, and no giant pieces", powerups: true, giants: false, level6: false, warmup: true, hidden: true, hideOnPause: true },
     // bigAfterRows: none of the big pieces (level 4 and up) until the player has destroyed this
     //         many rows (CONFIG.assist.firstRows helps them get there)
-    normal: { label: "Classic", shelf: true, tagline: "the full game, Shiny Pieces and all", powerups: true, giants: true, level6: true, warmup: true, hideOnPause: true, bigAfterRows: 2 },
-    extreme: { label: "Extreme", tagline: "no Shiny Pieces. no help.", powerups: false, giants: true, level6: true, hints: false, hideOnPause: true },
-    god: { label: "God", shelf: true, tagline: "everything, right away", powerups: true, giants: true, level6: "open", everything: true, hideOnPause: true },
+    normal: { label: "Classic", shelf: true, tagline: "starts easy. gets hard.", powerups: true, giants: true, level6: true, warmup: true, hideOnPause: true, bigAfterRows: 2 },
+    extreme: { label: "Extreme", tagline: "no shiny pieces. no mercy.", powerups: false, giants: true, level6: true, hints: false, hideOnPause: true },
+    god: { label: "God", shelf: true, tagline: "every piece unlocked, instantly", powerups: true, giants: true, level6: "open", everything: true, hideOnPause: true },
     // speeds: a speed setting on the pause menu, these times timeScale (1 to start with).
     // zen: it plays itself, and never ends (CONFIG.zen, src/zen.js); calm: zen for playing, a bit
     // like a game of Classic that can't be lost (CONFIG.zen.calm, which also has its own numbers
@@ -34,15 +34,17 @@ export const CONFIG = {
     // zenMovements: "turbo" for turbo zen's own mix of movements; flashNames: the falling piece's
     // name just appears, no sliding in and out; captions: false, no words over the board for what
     // zen's director is up to
-    zen: { label: "Zen", tagline: "endless play: it plays itself, or you do", warmup: "always", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
-    turbo: { label: "Turbo zen", tagline: "it plays itself, and doesn't stop", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2], captions: false },
+    zen: { label: "Zen", tagline: "endless play", warmup: "always", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
+    // (Turbo zen isn't one to pick from the menu (hidden): it's what comes up when the home screen
+    // is left alone (src/home.js), and the developer tools have a button for it.)
+    turbo: { label: "Turbo zen", hidden: true, powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2], captions: false },
     // (behind the home screen, CONFIG.home: turbo zen with no words in it at all, no names, no
     // callouts, at an easier pace than turbo zen's so you see the pieces fall; never a pause, dramatic or for
     // breath (dramatic, rest: false), so something's always coming down; its demolitions leave
     // `keep` rows or so, so the board is seldom bare; and it stops while the page is hidden.
     // Never one to play.)
     home: { label: "Home", hidden: true, powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 1.75, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, captions: false, callouts: false, names: false, home: true, keep: [6, 10], dramatic: false, rest: false },
-    // (Developer mode, for looking at what's new, CONFIG.devMode: hold God mode and Turbo zen down
+    // (Developer mode, for looking at what's new, CONFIG.devMode: hold Extreme and God mode down
     // together on the home screen, or shift-click God mode. God mode, with newest: the newest
     // things first; rescue: it won't let you lose, and no end game; steady: it never speeds up.)
     dev: { label: "Developer", shelf: true, hidden: true, powerups: true, giants: true, level6: "open", everything: true, newest: true, rescue: true, steady: true },
@@ -52,7 +54,7 @@ export const CONFIG = {
     // counts towards the achievements.)
     // (pauseWhenHidden false: another tab and back, and it's just where it was, not paused. It
     // doesn't carry on while it's out of sight, as turbo zen does: it waits.)
-    tutorial: { label: "Tutorial", tagline: "how it all works, in a minute", hidden: true, tutorial: true, powerups: true, giants: true, level6: false, achievements: false, pauseWhenHidden: false },
+    tutorial: { label: "Tutorial", hidden: true, tutorial: true, powerups: true, giants: true, level6: false, achievements: false, pauseWhenHidden: false },
   },
   defaultMode: "normal",
 
@@ -526,7 +528,7 @@ export const CONFIG = {
 
   // Developer mode (modes.dev): God mode (CONFIG.godMode), for looking at what's new.
   devMode: {
-    holdMs: 500, // (God mode and Turbo zen held down together this long, on the home screen)
+    holdMs: 500, // (Extreme and God mode held down together this long, on the home screen)
     // the set it opens with, the first time since the page was loaded (of these, the first never
     // seen in this browser, or else any of them), and the pieces that come straight after it
     // (firstBoost times likelier until each has come once)
@@ -652,6 +654,13 @@ export const CONFIG = {
       lineWidth: 0.1,
       insetPx: 0.0,
       drawBehindActive: true,
+      // a glow inside it, so it reads on a busy board: light along the inside of its edges, this
+      // strong (0 none, 1 white), fading in to nothing glowCells in; and a copy of it splitPx of
+      // the board's pixels one way in pink and the other in cyan (an old screen's colours out of
+      // true; not in high contrast)
+      glow: 0.2,
+      glowCells: 0.45,
+      splitPx: 1,
     },
 
     enhanced: {
@@ -685,7 +694,12 @@ export const CONFIG = {
   // strong), rising as the sharp art goes, then a long, slow tail, gone after fadeAwaySec seconds
   // (or, forever, they stop getting older once the sharp art has gone, and stay). As it gets older
   // its red and blue drift apart, rgbShift cells by the time the sharp art has gone; scanlines:
-  // lines through it, that strong (0 none). A block destroyed where one was before takes its place.
+  // dark lines through all of it, that strong (0 none), scanlinesPerCell of them a cell (with them,
+  // all of it's drawn at the board's own pixels, 18 a cell, not the screen's, so it looks the same
+  // on every screen: no more than 9). A block destroyed where one was before takes its place.
+  // moved: a block that moves away (rows coming down after a clear, a Gravitizerz, anything that
+  // moves blocks) leaves its art in the cell it left too, as if destroyed there, so each cell shows
+  // the last art that was in it (false: only destroyed blocks leave any).
   // They come in layers, a new one every layerSec seconds, no more than `layers` of them (the two
   // nearest in age merged into one). When the board shakes, each layer moves less than the board
   // does, the older the less, the oldest (1 - parallax) of the way with it. While this is on, the
@@ -694,19 +708,21 @@ export const CONFIG = {
   // switch it off.)
   remains: {
     enabled: true,
-    darker: 0.7,
-    faded: 0.5,
-    saturation: 0.8,
-    sharpSec: 20,
-    softBlur: 0.2,
-    softStrength: 0.1,
-    softSec: 40,
+    darker: 0.8,
+    faded: 0.3,
+    saturation: 1,
+    sharpSec: 45,
+    softBlur: 0.15,
+    softStrength: 0.04,
+    softSec: 60,
     glowBlur: 2.5,
-    glowStrength: 0.2,
-    fadeAwaySec: 160,
+    glowStrength: 0.25,
+    fadeAwaySec: 240,
     forever: false,
+    moved: true,
     rgbShift: 0.2,
-    scanlines: 0,
+    scanlines: 0.9,
+    scanlinesPerCell: 9,
     parallax: 0.3,
     layers: 12,
     layerSec: 4,

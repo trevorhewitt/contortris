@@ -244,10 +244,10 @@ test("tutorial: the modes' pages play on, one piece after another, each the way 
       assert.ok(fired > before.fired, `${page.id}: Shiny Pieces turn up (${got.shiny})`);
     } else assert.equal(got.shiny, 0, `${page.id}: no Shiny Pieces`);
   }
-  // (Classic and Zen gently, kept low; Turbo zen far quicker than Zen; God mode Shiny Pieces all
-  // the time)
+  // (Classic and Zen gently, kept low; Turbo zen, when it's on the menu to have a page, far
+  // quicker than Zen; God mode Shiny Pieces all the time)
   assert.ok(seen.classic.high <= 13 && seen.zen.high <= 10, JSON.stringify(seen));
-  assert.ok(seen.turbo.locks >= seen.zen.locks * 3, `turbo ${seen.turbo.locks}, zen ${seen.zen.locks}`);
+  if (seen.turbo) assert.ok(seen.turbo.locks >= seen.zen.locks * 3, `turbo ${seen.turbo.locks}, zen ${seen.zen.locks}`);
   assert.ok(seen.godmode.shiny > seen.classic.shiny, `god ${seen.godmode.shiny}, classic ${seen.classic.shiny}`);
   assert.equal(log.over, 0, "never game over");
 });

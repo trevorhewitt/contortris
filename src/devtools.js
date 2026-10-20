@@ -1,9 +1,9 @@
 // ============================================================
 // DEVELOPER TOOLS — settings to try the game out with (DOM)
 // ============================================================
-// Holding God mode and Turbo zen down together on the home screen switches the developer tools
+// Holding Extreme and God mode down together on the home screen switches the developer tools
 // on, for this visit only (never remembered: the next visit starts without them), and opens
-// their page: a developer game (new things first),
+// their page: a developer game (new things first), Turbo zen (no longer on the menu),
 // which powerup classes Classic has and in what order they come, the bay's Extra Shiny Pieces
 // (CONFIG.shelf.pieces: which one each of its classes has), sliders for how fast Classic and
 // God mode fall and how they get harder (CONFIG.difficulty) and how often each class comes at
@@ -85,6 +85,7 @@ const GROUPS = [
   // (what destroyed blocks leave behind: src/remains.js; these change it at once)
   { title: "What destroyed blocks leave behind", items: [
     ["remains.enabled", "on"],
+    ["remains.moved", "blocks that moved away leave their art too (each cell shows the last that was in it)"],
     ["remains.darker", "the sharp art: how much darker (0 as it was, 1 black)", 0, 1, 0.05],
     ["remains.faded", "...how faded (0 solid, 1 gone)", 0, 1, 0.05],
     ["remains.saturation", "...colour (0 grey, 1 as it was, 2 twice as strong)", 0, 2, 0.05],
@@ -97,7 +98,8 @@ const GROUPS = [
     ["remains.fadeAwaySec", "...lingers (seconds)", 5, 600, 5],
     ["remains.forever", "...or all of it for good"],
     ["remains.rgbShift", "red and blue apart, as they get older (cells)", 0, 0.5, 0.01],
-    ["remains.scanlines", "scanlines (0 none)", 0, 1, 0.05],
+    ["remains.scanlines", "scanlines: how dark (0 none)", 0, 1, 0.05],
+    ["remains.scanlinesPerCell", "...how many a cell", 2, 9, 1],
     ["remains.parallax", "parallax when the board shakes (1: the oldest keep still)", 0, 1, 0.05],
     ["remains.liveLift", "the blocks in play lighter (gamma: 1 as they are)", 1, 2, 0.05],
   ] },
@@ -155,7 +157,8 @@ export function devSettingsText() {
   return JSON.stringify(out, null, 2);
 }
 
-// Build the developer tools page into `body`. `hooks`: { onPlayDev(), onClose(), onChange() };
+// Build the developer tools page into `body`. `hooks`: { onPlayDev(), onPlayTurbo(button),
+// onClose(), onChange() };
 // `powerups`: every Shiny Piece there is (the bay's to choose from)
 export function buildDevTools(body, hooks = {}, powerups = []) {
   let s = load();
@@ -168,7 +171,10 @@ export function buildDevTools(body, hooks = {}, powerups = []) {
   const play = el("button", "", "Developer game");
   play.title = "God mode with the newest pieces and sets first, and it won't let you lose";
   play.addEventListener("click", () => hooks.onPlayDev?.());
-  top.appendChild(play);
+  const turbo = el("button", "secondary", "Turbo zen");
+  turbo.title = "It plays itself, quickly, and never stops";
+  turbo.addEventListener("click", () => hooks.onPlayTurbo?.(turbo));
+  top.append(play, turbo);
   body.appendChild(top);
   body.appendChild(el("div", "small devNote", "These settings apply to every game while the developer tools are on, from the next game."));
 

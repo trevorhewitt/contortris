@@ -510,14 +510,28 @@
     @keyframes fxSpinAll{ from{ transform: rotateY(0deg); } to{ transform: rotateY(360deg); } }
     @keyframes fxGrowAll{ 0%, 100%{ transform: scale(1); } 35%{ transform: scale(1.16); } 70%{ transform: scale(0.95); } }
 
-    /* (every row the same height, the tallest of them: one mode's words going onto another line
-       makes all six taller, not just its row) */
+    /* (the modes: on a phone, or any window too narrow for three across, one column, Classic the
+       big one in the middle of it; wider, Classic in the middle, big, Zen and Extreme either side
+       of it, the Tutorial over it and God mode under it, those four all the same size) */
     .homeModes{
-      --gap: clamp(8px, 1.8vmin, 18px); --per: 3;
-      display: grid; grid-template-columns: repeat(var(--per), minmax(0, 1fr)); grid-auto-rows: 1fr;
-      gap: var(--gap); width: min(92vw, 880px);
+      --gap: clamp(8px, 1.8vmin, 18px); --big: 1.3;
+      display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; align-items: center;
+      gap: var(--gap); width: min(84vw, 340px);
     }
-    @media (max-aspect-ratio: 5/6){ .homeModes{ --per: 2; width: min(94vw, 540px); } }
+    .homeModes button.modeBtn{ width: 88%; }
+    .homeModes button.modeBtn.main{ width: 100%; }
+    @media (min-width: 600px){
+      .homeModes{
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr); /* (the middle one --big times as wide) */
+        grid-template-areas: ". tutorial ." "zen normal extreme" ". god .";
+        width: min(92vw, 900px);
+      }
+      .homeModes button.modeBtn{ width: 100%; }
+      /* (the Tutorial and God mode as big as Zen and Extreme, not as Classic's column) */
+      .homeModes #btnTutorial, .homeModes #btnGod{ width: calc(100% / var(--big)); }
+      #btnTutorial{ grid-area: tutorial; } #btnZen{ grid-area: zen; } #btnNormal{ grid-area: normal; }
+      #btnExtreme{ grid-area: extreme; } #btnGod{ grid-area: god; }
+    }
     button.modeBtn{
       position: relative; min-height: clamp(52px, 10vmin, 96px); padding: 0.8em 0.6em;
       border: var(--edge-w) solid var(--edge-line); color: #fff;
@@ -539,7 +553,13 @@
     }
     button.modeBtn .modeName{ text-shadow: var(--rgb-split), 0 0 10px rgba(255,255,255,0.55); }
     button.modeBtn > *{ position: relative; }
-    /* (every mode the same size, always: nothing grows or lifts on hover or focus, which a touch
+    /* (Classic, the game itself: bigger than the rest, its name bigger, and the brightest glow) */
+    button.modeBtn.main{
+      min-height: clamp(72px, 14vmin, 140px); font-size: clamp(15px, min(3.2vw, 4.2vh), 30px);
+      border-width: calc(var(--edge-w) * 1.5);
+      box-shadow: var(--edge-split), var(--edge-glow), 0 0 24px rgba(255,255,255,0.22), 0 0 56px rgba(var(--om-orange),0.2);
+    }
+    /* (each mode stays the size it is: nothing grows or lifts on hover or focus, which a touch
        screen leaves stuck on the last one tapped; a glow only, and the hover one only where
        there's a real pointer) */
     @media (hover: hover) and (pointer: fine){
@@ -548,11 +568,19 @@
     }
     button.modeBtn:focus-visible{ background: #000; box-shadow: var(--edge-split), var(--edge-glow), 0 0 0 4px rgba(255,255,255,0.55); }
     button.modeBtn:active{ transform: none; }
-    /* (God mode and Turbo zen held down together: developer mode, on its way) */
+    /* (Extreme and God mode held down together: developer mode, on its way) */
     button.modeBtn.chord{ box-shadow: 0 0 0 6px rgba(255,255,255,0.75), 0 0 40px rgba(255,255,255,0.6); }
+    /* (what each mode is, in a few words: only on a computer, with a mouse, and a window with the
+       room for them; never on a phone or a tablet, nor in a small window) */
     .modeTag{
+      display: none;
       font-family: var(--font-body); font-size: clamp(9px, min(1.45vw, 2vh), 14px);
       text-transform: none; letter-spacing: 0; line-height: 1.25; opacity: 0.92;
+    }
+    /* (the Tutorial has none: a blank line in its place, so it's the same size as the others) */
+    @media (hover: hover) and (pointer: fine) and (min-width: 900px) and (min-height: 560px){
+      .modeTag{ display: block; }
+      .modeTag:empty::before{ content: "\a0"; }
     }
     @keyframes modeSlide{ from{ transform: translateY(-33.3%); } to{ transform: translateY(33.3%); } }
     /* (words that glitch: the rainbow tears apart, jumps, and comes back) */
@@ -567,7 +595,7 @@
     .homeRow{ margin: 0; }
     body.home .overlay #panelMenu .skipBox{ margin: 0; padding: 6px 10px; background: rgba(0,0,0,0.72); box-shadow: 0 0 0 2px rgba(0,0,0,0.7); }
     body.home .overlay #panelMenu #gameVersion{ margin: 0; padding: 3px 8px; background: rgba(0,0,0,0.6); color: rgba(245,245,255,0.6); }
-    @media (max-height: 460px){ .modeTag{ display: none; } button.modeBtn{ min-height: 40px; padding: 0.5em; } }
+    @media (max-height: 460px){ button.modeBtn{ min-height: 40px; padding: 0.5em; } button.modeBtn.main{ min-height: 52px; } }
 
     .homeDark{
       position: fixed; inset: 0; z-index: 60; background: #000; opacity: 0;
@@ -1735,21 +1763,21 @@
           <div id="pieceCard" class="pieceCard" hidden></div>
           <div class="msg panel homeMenu" id="panelMenu" hidden>
             <div class="homeLogoWrap"><div class="homeLogo" id="homeLogo" role="img" aria-label="Estrix"><span style="--i:0;--h:350"><b>E</b></span><span style="--i:1;--h:35"><b>S</b></span><span style="--i:2;--h:58"><b>T</b></span><span style="--i:3;--h:140"><b>R</b></span><span style="--i:4;--h:200"><b>I</b></span><span style="--i:5;--h:275"><b>X</b></span></div></div>
+            <!-- (in this order down a phone; on a wider screen, Classic in the middle and the rest
+                 round it: index.html .homeModes) -->
             <div class="homeModes">
               <button id="btnTutorial" class="modeBtn" style="--i:0" data-mode="tutorial"><span class="modeName">Tutorial</span><span class="modeTag"></span></button>
-              <button id="btnNormal" class="modeBtn" style="--i:1" data-mode="normal"><span class="modeName">Classic</span><span class="modeTag"></span></button>
-              <button id="btnGod" class="modeBtn" style="--i:2" data-mode="god"><span class="modeName">God mode</span><span class="modeTag"></span></button>
-              <button id="btnZen" class="modeBtn" style="--i:3" data-mode="zen"><span class="modeName">Zen</span><span class="modeTag"></span></button>
-              <button id="btnTurbo" class="modeBtn" style="--i:4" data-mode="turbo"><span class="modeName">Turbo zen</span><span class="modeTag"></span></button>
-              <button id="btnExtreme" class="modeBtn" style="--i:5" data-mode="extreme"><span class="modeName">Extreme</span><span class="modeTag"></span></button>
+              <button id="btnZen" class="modeBtn" style="--i:1" data-mode="zen"><span class="modeName">Zen</span><span class="modeTag"></span></button>
+              <button id="btnNormal" class="modeBtn main" style="--i:2" data-mode="normal"><span class="modeName">Classic</span><span class="modeTag"></span></button>
+              <button id="btnExtreme" class="modeBtn" style="--i:3" data-mode="extreme"><span class="modeName">Extreme</span><span class="modeTag"></span></button>
+              <button id="btnGod" class="modeBtn" style="--i:4" data-mode="god"><span class="modeName">God mode</span><span class="modeTag"></span></button>
             </div>
             <div class="menuRow homeRow">
-              <button id="btnHowTo" class="secondary small">How to play</button>
-              <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
               <button id="btnOptions" class="secondary small">Options</button>
+              <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
             <div class="menuRow homeRow" id="devRow" hidden><button id="btnDevTools" class="secondary small">Developer tools</button></div>
-            <div class="small" id="gameVersion">version 202610191937</div>
+            <div class="small" id="gameVersion">version 202610201429</div>
           </div>
 
           <div class="msg panel devToolsPanel" id="panelDevTools" hidden>
@@ -1793,7 +1821,7 @@
               <h3>Modes</h3>
               <div id="howtoModes"></div>
 
-              <p class="small menuFoot">[<span class="gameName">Estrix</span> version 202610191937 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[<span class="gameName">Estrix</span> version 202610201429 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>

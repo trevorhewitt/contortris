@@ -336,7 +336,8 @@ export function bindUI({ state, renderer, achievements }) {
   const overlayShowing = () => !!currentPanel;
 
   function renderMenu() {
-    // (each mode's button says what it is, from CONFIG.modes; all alike, none picked out)
+    // (each mode's button says what it is, from CONFIG.modes: only on a computer, with room for
+    // the words, index.html .modeTag)
     if (document.activeElement?.classList?.contains("modeBtn")) document.activeElement.blur();
     for (const b of document.querySelectorAll(".modeBtn")) {
       const m = b.dataset.mode;
@@ -1075,10 +1076,10 @@ export function bindUI({ state, renderer, achievements }) {
   /* ---------- buttons ---------- */
 
   // (from the home screen: it all bursts into pieces, a few words, and off it goes)
-  // Developer mode (CONFIG.modes.dev): God mode and Turbo zen held down together for
+  // Developer mode (CONFIG.modes.dev): Extreme and God mode held down together for
   // CONFIG.devMode.holdMs, or a shift-click on God mode. (Once both are down, neither one's own
   // click counts until they're both let go.)
-  const chordBtns = [$("btnGod"), $("btnTurbo")];
+  const chordBtns = [$("btnGod"), $("btnExtreme")];
   const chord = { down: new Map(), timer: 0, swallow: false };
   const bothDown = () => chordBtns.every(b => [...chord.down.values()].includes(b));
   const chordOff = () => { clearTimeout(chord.timer); chord.timer = 0; for (const b of chordBtns) b.classList.remove("chord"); };
@@ -1102,12 +1103,14 @@ export function bindUI({ state, renderer, achievements }) {
     home.play(b.dataset.mode, { from: b });
   });
   // The developer tools switched on (both held down, or a shift-click on God mode), and their
-  // page: a developer game (new things first), and the settings (src/devtools.js)
+  // page: a developer game (new things first), Turbo zen (on the menu no more), and the settings
+  // (src/devtools.js)
   function openDevTools() {
     if (!devmode) { setDevTools(true); devmode = true; }
     setupDevMode();
     buildDevTools($("devToolsBody"), {
       onPlayDev: () => home.play("dev", { from: chordBtns[0] }),
+      onPlayTurbo: (b) => home.play("turbo", { from: b }),
       onClose: () => {
         devmode = devUrl;
         if (!devmode) { $("devRow").hidden = true; devPanel.hidden = true; $("devTools").hidden = true; document.body.classList.remove("devmode"); }
@@ -1118,7 +1121,6 @@ export function bindUI({ state, renderer, achievements }) {
     showPanel("devtools");
   }
   $("btnDevTools").addEventListener("click", () => openDevTools());
-  $("btnHowTo").addEventListener("click", () => { panelBack = "menu"; showPanel("howto"); });
   $("btnAchievements").addEventListener("click", () => { panelBack = "menu"; showPanel("achievements"); });
   $("btnOptions").addEventListener("click", () => { panelBack = "menu"; showPanel("options"); });
   $("btnPauseOptions").addEventListener("click", () => { panelBack = "pause"; showPanel("options"); });

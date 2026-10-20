@@ -905,7 +905,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       drawCellBorders(ctx);
       return;
     }
-    const c = remainsCache.canvas, full = `${styleKey()}|${key}`;
+    const c = remainsCache.canvas, full = `${styleKey()}|${calmFx()}|${key}`; // (calmer animations: no scanlines on them)
     if (c.width !== bw * scale || c.height !== bh * scale) {
       c.width = bw * scale;
       c.height = bh * scale;
@@ -960,12 +960,78 @@ export function createRenderer(boardCanvas, nextCanvas) {
     ctx.drawImage(cache.canvas, 0, 0, bw, bh);
   }
 
+  // The landing preview's glow (CONFIG.render.ghost): light along the inside of its edges, fading
+  // in towards its middle, with a copy of it pulled a little one way in pink and another the other
+  // way in cyan (an old screen's colours out of true; high contrast: just the light), so it reads
+  // on a busy board. Made once for each shape it takes (and the board's scale): { cv, pad (board
+  // pixels round it), w, h (board pixels) }; none, glow 0.
+  const ghostGlows = new Map();
+  function ghostGlow(mat) {
+    const g = CONFIG.render.ghost ?? {}, strength = clamp01(g.glow ?? 0);
+    if (strength <= 0) return null;
+    const hc = highContrast(), split = hc ? 0 : Math.max(0, g.splitPx ?? 1), depth = Math.max(1, (g.glowCells ?? 0.45) * cell);
+    const key = `${mat.map(r => r.map(v => (v ? 1 : 0)).join("")).join("/")}|${scale}|${strength}|${depth}|${split}`;
+    let out = ghostGlows.get(key);
+    if (out) return out;
+    if (ghostGlows.size >= 64) ghostGlows.clear();
+    const pad = Math.ceil(split) + 1, w = mat[0].length * cell + 2 * pad, h = mat.length * cell + 2 * pad;
+    const light = makeCanvas(w * scale, h * scale), lg = light.getContext("2d");
+    lg.scale(scale, scale);
+    lg.globalCompositeOperation = "lighter"; // (two edges meeting at a corner: brighter there)
+    // (from the edge at x0, y0, as strong as it is, to nothing at x1, y1, over the rectangle r)
+    const edge = (x0, y0, x1, y1, ...r) => {
+      const grad = lg.createLinearGradient(x0, y0, x1, y1);
+      grad.addColorStop(0, `rgba(255,255,255,${strength})`);
+      grad.addColorStop(1, "rgba(255,255,255,0)");
+      lg.fillStyle = grad;
+      lg.fillRect(...r);
+    };
+    for (let y = 0; y < mat.length; y++) {
+      for (let x = 0; x < mat[0].length; x++) {
+        if (!mat[y][x]) continue;
+        const m = matrixEdgeMask(mat, x, y), px = pad + x * cell, py = pad + y * cell;
+        if (m & EDGE_T) edge(px, py, px, py + depth, px, py, cell, depth);
+        if (m & EDGE_B) edge(px, py + cell, px, py + cell - depth, px, py + cell - depth, cell, depth);
+        if (m & EDGE_L) edge(px, py, px + depth, py, px, py, depth, cell);
+        if (m & EDGE_R) edge(px + cell, py, px + cell - depth, py, px + cell - depth, py, depth, cell);
+      }
+    }
+    out = { cv: light, pad, w, h };
+    if (split > 0) {
+      // (half of it as it is, and half in pink, pulled one way, and half in cyan, the other)
+      const cv = makeCanvas(w * scale, h * scale), cg = cv.getContext("2d");
+      cg.globalCompositeOperation = "lighter";
+      cg.globalAlpha = 0.5;
+      cg.drawImage(light, 0, 0);
+      for (const [colour, dx] of [[PINK, -split], [CYAN, split]]) {
+        const t = makeCanvas(w * scale, h * scale), tg = t.getContext("2d");
+        tg.drawImage(light, 0, 0);
+        tg.globalCompositeOperation = "source-in";
+        tg.fillStyle = colour;
+        tg.fillRect(0, 0, t.width, t.height);
+        cg.drawImage(t, dx * scale, 0);
+      }
+      out.cv = cv;
+    }
+    ghostGlows.set(key, out);
+    return out;
+  }
+
   function drawGhostPiece(state, ghostY) {
     if (!CONFIG.render.ghost?.enabled) return;
     if (!state.active || state.gameOver) return;
     if (ghostY == null || ghostY === state.active.y) return;
 
     const mat = getActiveMatrix(state);
+
+    // (its glow first, added to what's under it: light)
+    const glow = ghostGlow(mat);
+    if (glow) {
+      bctx.save();
+      bctx.globalCompositeOperation = "lighter";
+      bctx.drawImage(glow.cv, state.active.x * cell - glow.pad, ghostY * cell - glow.pad, glow.w, glow.h);
+      bctx.restore();
+    }
 
     if (isEnhanced()) {
       const e = CONFIG.render.enhanced;

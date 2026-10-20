@@ -50,7 +50,7 @@ function allRemains(state) {
 const paintsAt = (state, x, y) => remainsAt(state, x, y).map(r => r.paint);
 const depthsAt = (state, x, y) => remainsAt(state, x, y).map(r => r.depth);
 
-test("a row cleared leaves each block's art where it was, under whatever comes down there; what came down leaves none", () => {
+test("a row cleared leaves each block's art where it was, under whatever comes down there; what came down leaves none (only destroyed blocks: moved off)", () => withRemains({ moved: false }, () => {
   const { state } = newGame("normal");
   // the bottom row full but for column 0, each block its own colour, and a lentil (1x1) on it
   const paints = Array.from({ length: COLS }, (_, x) => `#80${(16 + x).toString(16)}40`);
@@ -70,7 +70,41 @@ test("a row cleared leaves each block's art where it was, under whatever comes d
   // (the lentil on it came down into the row: it's there now, over what the row left)
   assert.equal(state.board[ROWS - 1][5], lentil);
   assert.deepEqual(paintsAt(state, 5, ROWS - 1), [paints[5]]);
+  for (let t = 0; t < 200; t += 16) updateGame(state, 16);
   assert.deepEqual(remainsAt(state, 5, ROWS - 2), [], "where it came down from: nothing (it wasn't destroyed)");
+}));
+
+test("a block that moves away (rows coming down after a clear, a Gravitizerz) leaves its art in the cell it left, so each cell shows the last art that was in it", () => {
+  const settle = (state, ms) => { for (let t = 0; t < ms; t += 16) updateGame(state, 16); };
+  // rows coming down: a lentil on a row that's cleared comes down into it
+  {
+    const { state } = newGame("normal");
+    for (let x = 1; x < COLS; x++) state.board[ROWS - 1][x] = block("#808080");
+    placeActive(state, "lentil", 5, ROWS - 3);
+    hardDropAndLock(state);
+    const lentil = state.board[ROWS - 2][5];
+    settle(state, 32);
+    assert.deepEqual(allRemains(state), {}, "nothing's moved yet");
+    placeActive(state, "lentil", 0, 0);
+    hardDropAndLock(state); // (the row's full, and goes: the lentil on it comes down)
+    settle(state, 32);
+    assert.equal(state.board[ROWS - 1][5], lentil);
+    assert.deepEqual(paintsAt(state, 5, ROWS - 2), [lentil.paint], "where it came down from: its art");
+    assert.deepEqual(paintsAt(state, 5, ROWS - 1), ["#808080"], "and where it is, what was destroyed there, under it");
+    for (let x = 0; x < COLS; x++) if (x !== 5) assert.deepEqual(remainsAt(state, x, ROWS - 2), [], `column ${x}: nothing came down from there`);
+  }
+  // a Gravitizerz: a block with a gap under it comes down
+  for (const moved of [true, false]) withRemains({ moved }, () => {
+    const { state } = newGame("normal");
+    state.board[ROWS - 1][7] = block("#808080");
+    const floating = (state.board[10][7] = block("#aa00aa"));
+    settle(state, 32);
+    placeActive(state, "infectious_sand", 8, 0); // (its area: columns 7 to 9)
+    hardDropAndLock(state);
+    settle(state, 2000);
+    assert.notEqual(state.board[10][7], floating, "it came down");
+    assert.deepEqual(paintsAt(state, 7, 10), moved ? ["#aa00aa"] : [], moved ? "where it was: its art" : "switched off: nothing (it wasn't destroyed)");
+  });
 });
 
 test("a Destroyerz leaves the art of the blocks it destroyed, and its own, as it goes with them", () => {
@@ -236,7 +270,21 @@ test("the renderer draws them again when they change, and as they get older, oft
     const held = remainsKey(state);
     ageRemains(state, 60000);
     assert.equal(remainsKey(state), held, "there for good, once they've stopped getting older: never");
+    // (and when the look changes: the scanlines, how dark and how many a cell)
+    for (const change of [{ scanlines: 0.3 }, { scanlinesPerCell: 6 }]) {
+      withRemains(change, () => assert.notEqual(remainsKey(state), held, JSON.stringify(change)));
+    }
   });
+});
+
+test("out of the box: darker to start with, scanlines through them, and longer to go than before", () => {
+  const c = CONFIG.remains;
+  assert.ok(c.darker >= 0.75 && c.darker <= 0.85, `darker: ${c.darker}`);
+  assert.ok(c.scanlines >= 0.5 && c.scanlinesPerCell >= 3, `scanlines: ${c.scanlines}, ${c.scanlinesPerCell} a cell`);
+  assert.ok(c.softStrength < c.glowStrength, "the soft blur fainter than the glow (no blurry look)");
+  assert.ok(c.fadeAwaySec > 160, `fade away: ${c.fadeAwaySec} s`);
+  // (each line, and each gap, a whole number of the board's pixels: crisp)
+  assert.equal(CONFIG.render.cellPx % (2 * c.scanlinesPerCell), 0, `${CONFIG.render.cellPx} px cells, ${c.scanlinesPerCell} lines`);
 });
 
 
