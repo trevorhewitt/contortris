@@ -658,7 +658,7 @@ function spawnPiece(state) {
     y: -mat.length,
   };
   // (zen: it starts out already turned, over the place it's going, if the computer has it)
-  if (state.zen) zenSpawned(state);
+  if (state.zen) zenSpawned(state, { bay: !!shelved });
   if (at != null) state.active.x = at; // (the tutorial's pieces start where the page says)
   // (with no room for any of it to come onto the board there, under a stack right up to the top,
   // it comes down somewhere it can: the piece that ends a game is one the player sees)

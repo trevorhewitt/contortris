@@ -293,9 +293,38 @@ test("Once the Extra Shiny Piece has landed, there's no undoing it", () => {
   assert.equal(undoShelf(between), false);
 });
 
-test("No shelf in Extreme or zen", () => {
+test("No shelf in Extreme", () => {
   assert.equal(game("extreme").shelf, null);
-  assert.equal(game("zen").shelf, null);
+});
+
+test("Zen: the bay as in Classic, with all three in it from the start; one from it is the player's, and the computer leaves it to them", () => {
+  const state = game("zen");
+  while (!state.active) updateGame(state, 16);
+  assert.deepEqual(state.shelf.slots.map(s => s.cls).sort(), ["destroyer", "expander", "gravity"]);
+  assert.equal(shelfCount(state), 3, "all three from the first piece");
+  assert.deepEqual(shelfQueue(state).map(s => s.cls), CONFIG.shelf.classes);
+  const slot = shelfQueue(state)[0];
+  assert.ok(useShelf(state));
+  const a = state.active;
+  assert.equal(a.shape.id, slot.shape.id);
+  assert.equal(slot.left, 0);
+  assert.equal(shelfCount(state), 2);
+  assert.ok(state.zen.userHas && !state.zen.mine && !state.zen.target, "theirs: it isn't aimed, nor taken over");
+  // (left alone, it's still theirs: it falls where it is)
+  const x = a.x, rot = a.rotIdx;
+  for (let t = 0; t < 30000 && state.active === a; t += 16) {
+    updateGame(state, 16);
+    if (state.active === a) assert.ok(a.x === x && a.rotIdx === rot && !state.zen.mine);
+  }
+  assert.notEqual(state.active, a, "it landed");
+  // (and the rest are used one after another, then it's empty, as in Classic)
+  while (!state.active || state.effect) updateGame(state, 16);
+  assert.ok(useShelf(state));
+  while (!state.active || state.effect) updateGame(state, 16);
+  assert.ok(useShelf(state));
+  assert.equal(shelfCount(state), 0);
+  while (!state.active || state.effect) updateGame(state, 16);
+  assert.equal(useShelf(state), false);
 });
 
 test("Classic: a class's piece comes into the bay the moment the class unlocks: its first piece down on the board, not before", () => {

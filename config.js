@@ -34,7 +34,7 @@ export const CONFIG = {
     // zenMovements: "turbo" for turbo zen's own mix of movements; flashNames: the falling piece's
     // name just appears, no sliding in and out; captions: false, no words over the board for what
     // zen's director is up to
-    zen: { label: "Zen", tagline: "endless play", warmup: "always", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
+    zen: { label: "Zen", shelf: true, tagline: "endless play", warmup: "always", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
     // (Turbo zen isn't one to pick from the menu (hidden): it's what comes up when the home screen
     // is left alone (src/home.js), and the developer tools have a button for it.)
     turbo: { label: "Turbo zen", hidden: true, powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2], captions: false },

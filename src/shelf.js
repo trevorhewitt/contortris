@@ -9,8 +9,10 @@
 // its place (game.js useShelf). In Classic a class's piece only comes into the bay once the class
 // has been unlocked: the first of its class is down on the board (its intro first), so nothing in
 // it is a surprise, and using it never brings anything in sooner (the combos come once two
-// classes have been met: a piece from the bay is never the one that meets one). (Later the bay
-// will be the player's own, bought, kept from game to game: `left` is how many of each are in it.)
+// classes have been met: a piece from the bay is never the one that meets one). In God mode and
+// Zen, with every class in from the first piece, all three are there from the start; Extreme has
+// no bay. (Later the bay will be the player's own, bought, kept from game to game: `left` is how
+// many of each are in it.)
 
 import { CONFIG } from "../config.js";
 import { classOf, resolvePowerupArea } from "./powerups.js";

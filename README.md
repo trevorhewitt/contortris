@@ -39,7 +39,8 @@ clears.
   few, and one that fits just the same upside down comes the way it was drawn; move one of its
   pieces away from where it was going and it won't keep putting things there. You can build the
   board most of the way up if you like: no Shiny Piece of its own takes much of it (a gentler
-  one comes in its place), and help only comes near the top. Turbo zen plays itself, as a show:
+  one comes in its place), and help only comes near the top. The bay of Extra Shiny Pieces is
+  as in Classic, with all three in it from the start. Turbo zen plays itself, as a show:
   every piece arrives already turned and over the place it's going (often upside down, though
   the ESTRIX piece mostly reads the right way), and drops straight into it, quickly; the
   computer never moves a piece once it's on the board. Step in whenever you like: the piece you

@@ -19,7 +19,8 @@
 // often as at the start of a game of Classic, but never one that takes much of the board (a
 // gentler one comes in its place); and a little help, left to itself to keep it low and tidy,
 // but with the player playing only once they've built it right up near the top: they can fill
-// most of the board if they like (CONFIG.zen.calm).
+// most of the board if they like (CONFIG.zen.calm). The bay is as in Classic, with one of each of
+// its Extra Shiny Pieces in it from the start (src/shelf.js), and one from it is the player's.
 //
 // Turbo zen is for watching, and for stepping into. Each piece arrives already turned and over
 // the place it's going, and falls quickly straight down into it: the computer never moves or
@@ -1530,8 +1531,9 @@ function bigPowerup(state) {
 // turned, and let it fall at its pace. From then on it only ever falls straight down: the
 // computer never moves it, and the player can take it over whenever they like (zenTick). In zen,
 // only if the computer has it (stepsIn); the rest come in at the top as in Classic, the player's
-// to play.
-export function zenSpawned(state) {
+// to play. (`bay`: an Extra Shiny Piece the player has just taken off the bay: theirs, as in
+// Classic.)
+export function zenSpawned(state, { bay = false } = {}) {
   const z = state.zen, a = state.active;
   const theirs = z.userHas; // (turbo zen: the player had the last one)
   if (isCalm(state)) landed(state);
@@ -1544,7 +1546,8 @@ export function zenSpawned(state) {
   if (isCalm(state)) {
     z.shownAt = null;
     z.steer = null;
-    z.mine = stepsIn(state);
+    z.mine = !bay && stepsIn(state);
+    if (bay) { z.current = { shape: a.shape, weights: WEIGHTS.clear, bay: true }; z.userHas = true; z.userAt = state.drops; z.inputClock = z.clock; z.away = false; }
   }
   z.target = !isCalm(state) || z.mine ? upright(state, a.shape, targetFor(state)) : null;
   const t = z.target;
