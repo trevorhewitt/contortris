@@ -274,11 +274,12 @@
 
     /* (over everything but the board, faint scan lines, like an old screen: the board itself
        stays crisp, cut out of them where it is, frame and all: --board-x, -y, -w, -h, from
-       src/ui.js. Toned down animations turn them off) */
+       src/ui.js. Toned down animations turn them off. Just dark lines laid over, not blended
+       in: blending them in had the browser put the whole screen together twice over, every
+       frame, for much the same look) */
     body::after{
       content: ""; position: fixed; inset: 0; z-index: 300; pointer-events: none;
-      background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0 1px, rgba(0,0,0,0.08) 1px 3px);
-      mix-blend-mode: overlay;
+      background: repeating-linear-gradient(to bottom, transparent 0 1px, rgba(0,0,0,0.07) 1px 3px);
       -webkit-mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
       -webkit-mask-position: 0 0, var(--board-x, -9999px) var(--board-y, -9999px);
       -webkit-mask-size: 100% 100%, var(--board-w, 0px) var(--board-h, 0px);
