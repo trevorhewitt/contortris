@@ -3,7 +3,7 @@
 // ============================================================
 // Holding Extreme and God mode down together on the home screen switches the developer tools
 // on, for this visit only (never remembered: the next visit starts without them), and opens
-// their page: a developer game (new things first),
+// their page: a developer game (new things first), Turbo zen (no longer on the menu),
 // which powerup classes Classic has and in what order they come, the bay's Extra Shiny Pieces
 // (CONFIG.shelf.pieces: which one each of its classes has), sliders for how fast Classic and
 // God mode fall and how they get harder (CONFIG.difficulty) and how often each class comes at
@@ -155,7 +155,8 @@ export function devSettingsText() {
   return JSON.stringify(out, null, 2);
 }
 
-// Build the developer tools page into `body`. `hooks`: { onPlayDev(), onClose(), onChange() };
+// Build the developer tools page into `body`. `hooks`: { onPlayDev(), onPlayTurbo(button),
+// onClose(), onChange() };
 // `powerups`: every Shiny Piece there is (the bay's to choose from)
 export function buildDevTools(body, hooks = {}, powerups = []) {
   let s = load();
@@ -168,7 +169,10 @@ export function buildDevTools(body, hooks = {}, powerups = []) {
   const play = el("button", "", "Developer game");
   play.title = "God mode with the newest pieces and sets first, and it won't let you lose";
   play.addEventListener("click", () => hooks.onPlayDev?.());
-  top.appendChild(play);
+  const turbo = el("button", "secondary", "Turbo zen");
+  turbo.title = "It plays itself, quickly, and never stops";
+  turbo.addEventListener("click", () => hooks.onPlayTurbo?.(turbo));
+  top.append(play, turbo);
   body.appendChild(top);
   body.appendChild(el("div", "small devNote", "These settings apply to every game while the developer tools are on, from the next game."));
 

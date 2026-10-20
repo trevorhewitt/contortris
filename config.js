@@ -35,7 +35,9 @@ export const CONFIG = {
     // name just appears, no sliding in and out; captions: false, no words over the board for what
     // zen's director is up to
     zen: { label: "Zen", tagline: "endless play: it plays itself, or you do", warmup: "always", powerups: true, giants: true, level6: "open", everything: true, zen: true, calm: true },
-    turbo: { label: "Turbo zen", tagline: "it plays itself, and doesn't stop", powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2], captions: false },
+    // (Turbo zen isn't one to pick from the menu (hidden): it's what comes up when the home screen
+    // is left alone (src/home.js), and the developer tools have a button for it.)
+    turbo: { label: "Turbo zen", hidden: true, powerups: true, giants: true, level6: "open", everything: true, zen: true, timeScale: 2.34, zenMovements: "turbo", flashNames: true, pauseWhenHidden: false, speeds: [0.5, 0.75, 1, 1.25, 1.5, 2], captions: false },
     // (behind the home screen, CONFIG.home: turbo zen with no words in it at all, no names, no
     // callouts, at an easier pace than turbo zen's so you see the pieces fall; never a pause, dramatic or for
     // breath (dramatic, rest: false), so something's always coming down; its demolitions leave

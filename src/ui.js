@@ -1076,12 +1076,14 @@ export function bindUI({ state, renderer, achievements }) {
     home.play(b.dataset.mode, { from: b });
   });
   // The developer tools switched on (both held down, or a shift-click on God mode), and their
-  // page: a developer game (new things first), and the settings (src/devtools.js)
+  // page: a developer game (new things first), Turbo zen (on the menu no more), and the settings
+  // (src/devtools.js)
   function openDevTools() {
     if (!devmode) { setDevTools(true); devmode = true; }
     setupDevMode();
     buildDevTools($("devToolsBody"), {
       onPlayDev: () => home.play("dev", { from: chordBtns[0] }),
+      onPlayTurbo: (b) => home.play("turbo", { from: b }),
       onClose: () => {
         devmode = devUrl;
         if (!devmode) { $("devRow").hidden = true; devPanel.hidden = true; $("devTools").hidden = true; document.body.classList.remove("devmode"); }

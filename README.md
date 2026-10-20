@@ -42,7 +42,8 @@ clears.
   in whenever you like: the piece you touch is yours until it lands, and while you're playing
   the next ones come promptly, one at a time, at a pace you can steer, each with a moment on the
   ground to slide or turn it; stop, and the computer takes back over gently, over a few pieces
-  (`zen` in `config.js`).
+  (`zen` in `config.js`). Turbo zen isn't on the menu: it's what the home screen turns into when
+  it's left alone, and the developer tools have a button for it.
 - **Options**: skip the Shiny Piece intro screens, a favourite piece that turns up a little more
   often, toned-down animations, high contrast, and whether Turbo zen fills the screen. Kept in
   the browser.
@@ -153,6 +154,8 @@ them; while they're on, a "Developer tools" button on the home screen brings the
 page has:
 
 - **Developer game**: God mode with the newest pieces and sets first; it won't let you lose.
+- **Turbo zen**: off the menu (it comes up by itself when the home screen is left alone); this
+  starts it.
 - **Shiny Piece classes in Classic**: which classes are in, and (ticked) the exact order they come in,
   with "Comboz" where the combos may start.
 - **Extra Shiny Pieces (the bay)**: which piece each of its three classes has, from that class's
