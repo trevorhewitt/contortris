@@ -477,15 +477,20 @@ export function bindUI({ state, renderer, achievements }) {
     setBoardSize, setWholeWindow,
     restoreBoard: () => setBoardSize(usualBoard.cols, usualBoard.rows),
     onPlay: (mode) => startGame(mode),
-    // (back from idle: to the page it went idle from, the home screen behind it)
-    onShowMenu: (panel = "menu") => { showPanel("menu"); if (panel !== "menu" && panels[panel]) showPanel(panel); },
+    // (back from idle: to the page it went idle from, the home screen behind it; or the game
+    // over page, over the game as it ended, src/home.js keepGame)
+    onShowMenu: (panel = "menu") => {
+      if (panel === "gameover") { showPanel("gameover"); return; }
+      showPanel("menu");
+      if (panel !== "menu" && panels[panel]) showPanel(panel);
+    },
     menuShowing: () => currentPanel === "menu",
     // Where it can go idle, and where it wakes up to: the home screen, the achievements from it,
-    // and the game over (to the home screen: that game's gone by then). Not How to play, nor
-    // anywhere a game is still going on (paused, an intro).
+    // and the game over page. Not How to play, nor anywhere a game is still going on (paused,
+    // an intro).
     idleFrom: () => (currentPanel === "menu" ? "menu"
       : currentPanel === "achievements" && panelBack === "menu" ? "achievements"
-      : currentPanel === "gameover" ? "menu" : null),
+      : currentPanel === "gameover" ? "gameover" : null),
     lastMode: () => lastMode,
     hideOverlay: () => showPanel(null),
   });

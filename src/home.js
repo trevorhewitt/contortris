@@ -707,6 +707,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     body.classList.add("homeFade");
     setTimeout(() => {
       if (phase !== "fading") return;
+      if (wakeTo === "gameover") kept = keepGame();
       body.classList.remove("home", "homeFade");
       stopBackground();
       restore();
@@ -714,6 +715,24 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       startIdleTurbo();
       phase = "idle";
     }, 1000);
+  }
+
+  // Gone idle from the game over page: the game as it ended, kept, and put back on waking, so
+  // the page comes back over it just as it was, the score and all. (Turbo zen in between has
+  // the same state to play on, so it gets its own pieces' map and game over details to change,
+  // leaving the game's as they were; the rest it only replaces.)
+  let kept = null;
+  function keepGame() {
+    const was = { ...state, gameOverInfo: { ...state.gameOverInfo } };
+    state.instances = new Map();
+    state.gameOverInfo = { ...state.gameOverInfo };
+    return { was, backdrop: { ...state.fx.gameOverBackdrop } };
+  }
+  function putBack() {
+    Object.assign(state, kept.was);
+    Object.assign(state.fx.gameOverBackdrop, kept.backdrop);
+    kept = null;
+    markBoardDirty(state);
   }
 
   function startIdleTurbo() {
@@ -732,8 +751,9 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     const fading = phase === "fading";
     if (fading) body.classList.remove("homeFade");
     if (!fading) {
-      resetGame(state);
       setWholeWindow(false);
+      resetGame(state);
+      if (kept) putBack();
     }
     // (caught while it was still fading: back to just where it was)
     phase = fading ? fadeFrom : "off";
