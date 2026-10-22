@@ -485,8 +485,11 @@ export const CONFIG = {
     // mixKinds[0] and mixKinds[1] kinds, the least shown the likeliest), or anything (any). Of the
     // rest of the pieces, the bigger ones are there to fill in round them only `keep` of the
     // time, a different handful each movement; and oneOffs: how likely none, one, two or three
-    // one-off pieces, the least shown the likeliest, each built in once wherever it fits.
-    cast: { few: 1, mix: 1.1, any: 0.35, mixKinds: [8, 20], keep: 0.3, oneOffs: [0.25, 0.35, 0.28, 0.12] },
+    // one-off pieces, the least shown the likeliest, each built in once wherever it fits. A
+    // select few go in wherever they fit, each up to fewUses times the square root of its blocks
+    // in a planned movement (and more on a bigger board, as the square root of its size), so no
+    // one small piece fills every gap.
+    cast: { few: 1, mix: 1.1, any: 0.35, mixKinds: [8, 20], keep: 0.3, oneOffs: [0.25, 0.35, 0.28, 0.12], fewUses: 6 },
     // What turbo zen has shown is remembered from one visit to the next (src/main.js), fading to
     // `fade` of itself each visit, so a visit doesn't open with the same few pieces as the last.
     memory: { key: "eztrix.turboShown", fade: 0.5, saveMs: 20000 },

@@ -552,7 +552,9 @@ function fromPalette(state, pal, pool, headroom = 4) {
   const P = CONFIG.zen.palette ?? {};
   const odd = !pal || state.rng() < (P.odd ?? 0);
   const list = (odd ? pool : pal.pieces).filter(s => fitsUnder(state, s, headroom));
-  if (!list.length) return smallFill(state);
+  // (none of it fits any more, or just the one kind of it, near the top: something small, as often
+  // as not, so it isn't that one all the way up)
+  if (!list.length || (!odd && list.length === 1 && pal.pieces.length > 1 && state.rng() < 0.5)) return smallFill(state);
   return odd ? pickFresh(state, list) : sampleByWeight(list, s => pal.share.get(s) ?? 1, state.rng);
 }
 // The mood for doing things in batches (the same piece a few times running, to read its name):
@@ -591,19 +593,28 @@ const seen = (state, key) => (state.zenUses?.get(key) ?? 0) + (state.zenPast?.ge
 // comes: always 1.)
 const fresh = (state, s, power = CONFIG.zen.strays?.freshness ?? 0.5) => (isCalm(state) ? 1 : 1 / (1 + seen(state, s.id)) ** power);
 const pickFresh = (state, list) => sampleByWeight(list, s => (s.frequency ?? 1) * fresh(state, s), state.rng);
+// ...and for the planners, which put the bigger pieces first: how much bigger a piece counts for,
+// for how much less (or more) it has come up than the rest of `pool` have, on average: 1 for as
+// often, up to 1.6 for not at all, down to half for far more often. (Of the pieces much the same
+// size, the ones shown less go first; and the ones shown most give way to smaller ones.)
+function freshness(state, pool) {
+  if (isCalm(state)) return () => 1;
+  const mean = pool.reduce((n, s) => n + seen(state, s.id), 0) / Math.max(1, pool.length);
+  return (s) => Math.max(0.5, Math.min(1.6, 1 + 0.15 * Math.log2((1 + mean) / (1 + seen(state, s.id)))));
+}
 
 function giantPiece(state) {
   const g = giantPool(state).filter(s => fitsUnder(state, s, 4));
   return g.length ? pick(state, g) : buildPiece(state);
 }
 
-// Something small, when nothing bigger will do (nearly at the top): one of the movement's own
-// cast if one of them is small, or else any small thing but the tiles, the least shown the
-// likeliest.
+// Something small, when nothing bigger will do (nearly at the top): now and then one of the
+// movement's own cast, if some of them are small (the more of them, the likelier), or else any
+// small thing but the tiles, the least shown the likeliest.
 function smallFill(state) {
   const small = smallPool(state), lead = state.zen?.cast?.lead;
   const own = lead ? small.filter(s => lead.has(s.id)) : [];
-  if (own.length) return pickFresh(state, own);
+  if (own.length && state.rng() < Math.min(0.75, own.length / 4)) return pickFresh(state, own);
   const list = small.filter(s => !isTile(s));
   return pickFresh(state, list.length ? list : small);
 }
@@ -623,7 +634,7 @@ function castFor(state) {
   const C = CONFIG.zen.cast;
   if (!C || isCalm(state)) return null;
   const rng = state.rng;
-  const pool = plannable(state, 3).filter(s => !isTile(s) && candidates([s], 5, 5, 9).length);
+  const pool = plannable(state, 3).filter(s => !isTile(s) && candidates([s], FILLER.w, FILLER.h, FILLER.cells).length);
   const kind = sampleByWeight([["few", C.few ?? 1], ["mix", C.mix ?? 1], ["any", C.any ?? 0]], ([, w]) => w, rng)[0];
   let lead = [];
   if (kind === "few") lead = palettePick(state, pool)?.pieces ?? [];
@@ -3049,16 +3060,20 @@ export function planSquares(state) {
   for (const p of pieces) { const c = colourOf(p); if (c && c !== "black") { if (!byCol.has(c)) byCol.set(c, []); byCol.get(c).push(p); } }
   for (const [c, list] of byCol) if (list.every(isTile)) byCol.delete(c); // (a colour of only tiles: not one to use)
   // (and of each colour, one or two of them this time, the least shown the likelier: not every
-  // square of that colour every time)
+  // square of that colour every time; for the fine one, there being so many more of them, two to
+  // four)
   for (const [c, list] of byCol) {
     const left = list.filter(p => !isTile(p)), some = [];
-    for (let n = int(state, 1, 2); n > 0 && left.length; n--) { const one = pickFresh(state, left); some.push(one); left.splice(left.indexOf(one), 1); }
+    for (let n = sq === 1 ? int(state, 2, 4) : int(state, 1, 2); n > 0 && left.length; n--) { const one = pickFresh(state, left); some.push(one); left.splice(left.indexOf(one), 1); }
     if (rng() < 0.3) some.push(...list.filter(isTile).slice(0, 1));
     byCol.set(c, some);
   }
   const palette = [...byCol.keys()];
   if (palette.length < 3) return null;
   for (let i = palette.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [palette[i], palette[j]] = [palette[j], palette[i]]; }
+  // (for the fine one, the colours with more than one kind first: a colour's share of so many
+  // squares all one piece is far too much of it)
+  if (sq === 1) palette.sort((a, b) => (byCol.get(b).length > 1) - (byCol.get(a).length > 1));
   let key = zenKeys(state).find(k => k.rotations[0][0].length === sq);
   const nx = Math.floor(cols / sq), ny = Math.floor(rows / sq);
   // a slot for one of the tallest pieces, if there's a clear one; or else a square left out of
@@ -3546,17 +3561,20 @@ function plannable(state, maxDifficulty) {
 }
 
 function fillerCandidates(state) {
-  // (the movement's cast first, as often as they fit if it's a select few; then the rest of
-  // what it keeps to fill in round them: castFor)
-  const cast = state.zen?.cast;
+  // (the movement's cast first, a good many times each if it's a select few, but never one small
+  // thing all over the board: CONFIG.zen.cast.fewUses; then the rest of what it keeps to fill in
+  // round them: castFor)
+  const cast = state.zen?.cast, few = (CONFIG.zen.cast?.fewUses ?? 99) * Math.sqrt(Math.max(1, CONFIG.board.cols * CONFIG.board.rows / 336));
   const pool = plannable(state, 3).filter(s => !cast || cast.keep.has(s.id));
-  const all = candidates(pool, 5, 5, 9);
+  const all = candidates(pool, FILLER.w, FILLER.h, FILLER.cells), rel = freshness(state, pool);
   for (const c of all) {
-    c.fresh = fresh(state, c.shape);
-    if (cast?.lead.has(c.shape.id)) { c.lead = true; if (cast.few) c.cap = 99; }
+    c.fresh = rel(c.shape);
+    if (cast?.lead.has(c.shape.id)) { c.lead = true; if (cast.few) c.cap = Math.round(few * Math.sqrt(c.cells.length)); }
   }
   return [...strayCandidates(state), ...all];
 }
+// (the biggest the planners fill in with: wide, tall, blocks)
+const FILLER = { w: 6, h: 6, cells: 16 };
 // ...and now and then (turbo zen: CONFIG.zen.strays.planChance), a few of the pieces it hardly
 // uses (the least used the likeliest), any shape, each to go in once wherever it happens to fit,
 // for the rest to fill in round.
@@ -3646,8 +3664,9 @@ function candidates(shapes, maxW, maxH, maxCells) {
 // it gives up after `budget` steps and the plan tries again another way.)
 function tile(occ, need, cands, rng, cols, rows, maxUses = 3, holes = null, budget = 1200 * Math.max(1, cols * rows / 336)) {
   // (any strays first, each once, now and then where they fit: strayCandidates)
-  // (then the movement's own cast, `lead`, and then the rest: the bigger first)
-  const order = [...cands.filter(c => c.stray), ...cands.filter(c => !c.stray).map(c => ({ c, k: (c.lead ? 100 : 0) + c.cells.length + rng() * 4 + (c.fresh ?? 0) * 3 })).sort((a, b) => b.k - a.k).map(o => o.c)];
+  // (then the movement's own cast, `lead`, and then the rest: the bigger first, the fresher
+  // counting for bigger, c.fresh: freshness)
+  const order = [...cands.filter(c => c.stray), ...cands.filter(c => !c.stray).map(c => ({ c, k: (c.lead ? 100 : 0) + c.cells.length * (c.fresh ?? 1) + rng() * 4 })).sort((a, b) => b.k - a.k).map(o => o.c)];
   const strayHere = CONFIG.zen.strays?.perAnchor ?? 0;
   const ids = new Map(), plan = [];
   const sid = order.map(c => { if (!ids.has(c.shape.id)) ids.set(c.shape.id, ids.size); return ids.get(c.shape.id); });
@@ -3700,12 +3719,21 @@ function tile(occ, need, cands, rng, cols, rows, maxUses = 3, holes = null, budg
     if (top.placed) { put(top.placed, 0); top.placed = null; plan.pop(); }
     const ax = top.a % cols, ay = (top.a / cols) | 0;
     let found = null;
-    // (a second pass for pieces already used enough)
+    // (a second pass for pieces already used enough: of those that fit here, the least used
+    // first, so it isn't the same one in every gap)
     while (top.pass < 2 && !found) {
-      for (; top.ci < order.length && !found; top.ci++) {
-        const c = order[top.ci], used = uses[sid[top.ci]] >= (c.cap ?? maxUses);
-        if (c.stray && (top.pass === 1 || uses[sid[top.ci]] >= 1 || !(top.strayOk ??= rng() < strayHere))) continue;
-        if (used !== (top.pass === 1)) continue;
+      if (top.pass === 1) {
+        if (!top.alts) {
+          top.alts = [];
+          for (let i = 0; i < order.length; i++) { const c = order[i]; if (!c.stray && uses[sid[i]] >= (c.cap ?? maxUses) && fits(c, ax - c.ax, ay - c.ay)) top.alts.push(i); }
+          top.alts.sort((a, b) => uses[sid[a]] - uses[sid[b]] || a - b);
+        }
+        if (top.ci < top.alts.length) { const i = top.alts[top.ci++], c = order[i]; found = { c, x0: ax - c.ax, y0: ay - c.ay, s: sid[i] }; }
+      }
+      for (; top.pass === 0 && top.ci < order.length && !found; top.ci++) {
+        const c = order[top.ci];
+        if (uses[sid[top.ci]] >= (c.cap ?? maxUses)) continue;
+        if (c.stray && (uses[sid[top.ci]] >= 1 || !(top.strayOk ??= rng() < strayHere))) continue;
         const x0 = ax - c.ax, y0 = ay - c.ay;
         if (fits(c, x0, y0)) found = { c, x0, y0, s: sid[top.ci] };
       }
