@@ -1496,77 +1496,165 @@ export function createRenderer(boardCanvas, nextCanvas) {
     return area;
   }
 
-  // What a Shiny Piece will do, played out simply in its highlighted cells on a short loop,
-  // behind its marks (CONFIG.fx.powerup.action): a Destroyerz's blocks shrink into nothing, an
-  // Expanderz's empty cells fill up (drawAction); a Gravitizerz's blocks fall into the gaps
-  // under them (drawFallAction). Plain squares in the class's colour, no particles.
+  // What a Shiny Piece will do, played out in its highlighted cells once each time it comes, is
+  // moved or is turned, and then held there as it'll be (CONFIG.fx.powerup.action), as it'll
+  // really go (planAction): a Destroyerz's blocks zapped away to dark, an Expanderz's empty cells
+  // filled, each from the piece outwards; a Gravitizerz's blocks shaking loose and falling into
+  // the gaps under them, leaving their places dark; a combo's parts one after another, as they go
+  // off (drawPlan). The blocks that come and go are fakes in the class's colours, a little glitchy,
+  // like the ghost piece (fakeBlock).
   const easeIn = (t) => t * t;
-  function actionPhase(at, dist) {
-    const A = CONFIG.fx.powerup.action;
-    return frac(at / A.periodMs + (dist ?? 0) * (A.ripplePerCell ?? 0));
+  const action = { key: "", from: 0, plan: null }; // (what it is, where and how it's turned: when that last changed, and what it'll do)
+  // (how glitchy a fake is, u of the way through its play: very, as it starts, settling down;
+  // then only now and then, for a moment; never, with calmer animations)
+  function glitchOf(u, x, y, now) {
+    if (calmFx()) return 0;
+    if (u < 1) return 0.15 + 0.85 * (1 - clamp01(u)) ** 2;
+    return hash01(Math.floor(now / 90) * 31 + x * 7 + y * 13) > 0.95 ? 0.6 : 0;
   }
-  function actionSquare(type, x, y, px, py, size, a) {
-    if (size <= 0.5 || a <= 0) return;
-    const c = markColour(type, 0, x, y), A = CONFIG.fx.powerup.action;
-    bctx.fillStyle = hsla(c.h, c.s, c.l, clamp01(A.alpha * a));
-    bctx.fillRect(px + (cell - size) / 2, py + (cell - size) / 2, size, size);
-  }
-  function drawAction(type, x, y, dist, at) {
-    const A = CONFIG.fx.powerup.action, cls = classOf(type);
-    if (!A?.enabled || (cls !== "destroyer" && cls !== "expander")) return;
-    const t = actionPhase(at, cls === "destroyer" ? -dist : dist);
-    const full = cell - 2;
-    // destroyer: whole, shrinking to nothing, then gone a moment; expander: nothing, filling up,
-    // then full a moment, fading for the next go
-    const size = cls === "destroyer"
-      ? (t < 0.15 ? 1 : t < 0.7 ? 1 - easeIn((t - 0.15) / 0.55) : 0)
-      : (t < 0.15 ? 0 : t < 0.6 ? 1 - Math.pow(1 - (t - 0.15) / 0.45, 2) : 1);
-    const a = cls === "expander" && t > 0.85 ? (1 - t) / 0.15 : 1;
+  // (a cell gone dark: its block gone, or gone from there)
+  function darken(x, y, a) {
+    if (a <= 0.01) return;
     bctx.globalCompositeOperation = "source-over";
-    // (a destroyer's block darkens away with its square, so it reads as going)
-    if (cls === "destroyer" && size < 1) {
-      bctx.fillStyle = `rgba(6,6,10,${(A.hide * (1 - size)).toFixed(3)})`;
-      bctx.fillRect(x * cell, y * cell, cell, cell);
-    }
-    actionSquare(type, x, y, x * cell, y * cell, full * size, a);
+    bctx.globalAlpha = clamp01(a);
+    bctx.fillStyle = "#07050b";
+    bctx.fillRect(x * cell, y * cell, cell, cell);
+    bctx.globalAlpha = 1;
   }
-  // (where each block in a Gravitizerz's area ends up, column by column: packed down onto the
-  // lowest of the area's cells in its column, in order; worked out once for each area)
-  const fallMoves = new WeakMap();
-  function drawFallAction(board, lp, la, pieceCells, ownDown, at) {
-    const A = CONFIG.fx.powerup.action;
-    if (!A?.enabled || (lp.direction && lp.direction !== "down")) return;
-    let moves = fallMoves.get(la);
-    if (!moves) {
-      const byCol = new Map();
-      for (const i of la.indices) {
-        const x = i % cols, y = (i / cols) | 0;
-        (byCol.get(x) ?? byCol.set(x, []).get(x)).push(y);
+  // What it'll do, worked out as the game does it (computeEffect) on `board`, a copy of the board
+  // with it landed (ctx: its area, placed, above, pid, centre, at; mine(cell): whether a cell is
+  // its own), a part at a time for a combo, each part's play starting when the one before is most
+  // of the way through, as they go off (CONFIG.fx.powerup.show.comboOverlap): [{ type, start,
+  // gone, filled, moves }] (gone and filled: cells x, y, d, how far from the piece; moves: from x,
+  // y to tx, ty, and whether it's the piece's own block).
+  function planAction(board, pu, ctx, mine) {
+    const fx = computeEffect(board, pu, { ...ctx, cols, rows, rng: () => 0.5, makeFill: () => ({ pid: -2 }) });
+    const A = CONFIG.fx.powerup.action, F = A.fall ?? {}, overlap = CONFIG.fx.powerup.show?.comboOverlap ?? 0.72;
+    const near = ({ x, y }) => ({ x, y, d: Math.hypot(x - ctx.centre.x, y - ctx.centre.y) });
+    let start = 0;
+    return (fx.parts ?? [fx]).map((p, k) => {
+      const gone = [...p.consumed, ...p.destroyed].map(near), filled = p.filled.map(near);
+      const moves = p.moves.map(m => ({ x: m.fromX, y: m.fromY, tx: m.toX, ty: m.toY, mine: mine(m.cell) }));
+      const far = Math.max(0, ...gone.map(c => c.d), ...filled.map(c => c.d));
+      const ms = moves.length
+        ? (F.trembleMs ?? 160) + Math.max(...moves.map(m => (F.baseMs ?? 200) + (F.msPerSqrtCell ?? 80) * Math.sqrt(Math.hypot(m.tx - m.x, m.ty - m.y))))
+        : (A.ms ?? 480) + far * (A.ripplePerCellMs ?? 35);
+      const part = { type: pu.parts?.[k]?.type ?? pu.type, start, gone, filled, moves };
+      start += ms * overlap;
+      return part;
+    });
+  }
+  // (...for the falling piece, landed where it'll land)
+  function planLanding(state, pu, ghostY) {
+    const a = state.active, mat = getActiveMatrix(state), me = { pid: -1 };
+    const board = state.board.map(r => r.slice()), placed = [], above = [];
+    for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) {
+      if (!mat[j][i]) continue;
+      if (ghostY + j < 0) above.push({ x: a.x + i, y: ghostY + j, cell: me });
+      else { board[ghostY + j][a.x + i] = me; placed.push({ x: a.x + i, y: ghostY + j }); }
+    }
+    return planAction(board, pu, {
+      area: resolvePowerupArea(pu, a.rotIdx, a.x, ghostY, cols, rows), placed, above, pid: -1,
+      centre: { x: a.x + (mat[0].length - 1) / 2, y: ghostY + (mat.length - 1) / 2 }, at: { rot: a.rotIdx, x: a.x, y: ghostY },
+    }, (c) => c === me);
+  }
+  // (it, `since` ms into its play; `own`: the cells the piece is in now, left as they are)
+  function drawPlan(plan, since, now, own) {
+    const A = CONFIG.fx.powerup.action, F = A.fall ?? {}, ms = A.ms ?? 480, ripple = A.ripplePerCellMs ?? 35;
+    for (const p of plan) {
+      const t = since - p.start;
+      if (t < 0) continue;
+      // zapped: a fake of it over it, torn, then shrinking away as the block goes dark
+      for (const c of p.gone) {
+        const u = (t - c.d * ripple) / ms, k = clamp01((u - 0.3) / 0.7);
+        if (u <= 0 || own.has(c.y * cols + c.x)) continue;
+        darken(c.x, c.y, A.hide * k);
+        if (k < 1) fakeBlock(p.type, c.x, c.y, c.x * cell, c.y * cell, (cell - 2) * (1 - easeIn(k)), glitchOf(u, c.x, c.y, now));
       }
-      moves = [];
-      for (const [x, ys] of byCol) {
-        ys.sort((p, q) => q - p);
-        let slot = 0;
-        for (const y of ys) {
-          const isPiece = pieceCells.has(y * cols + x);
-          if (!(isPiece ? ownDown : !!board[y]?.[x])) continue;
-          const to = ys[slot++];
-          if (to !== y) moves.push({ x, y, to });
+      // filled: a fake growing in, settling down, and staying
+      for (const c of p.filled) {
+        const u = (t - c.d * ripple) / ms;
+        if (u <= 0 || own.has(c.y * cols + c.x)) continue;
+        fakeBlock(p.type, c.x, c.y, c.x * cell, c.y * cell, (cell - 2) * (1 - (1 - clamp01(u)) ** 2), glitchOf(u, c.x, c.y, now));
+      }
+      // moved: a shake where they are, then off, faster and faster, the further the longer,
+      // leaving their places dark (not the piece's own: that's only where it lands)
+      const tt = t - (F.trembleMs ?? 160);
+      for (const m of p.moves) {
+        const u = tt / ((F.baseMs ?? 200) + (F.msPerSqrtCell ?? 80) * Math.sqrt(Math.hypot(m.tx - m.x, m.ty - m.y))), k = easeIn(clamp01(u));
+        if (!m.mine && !own.has(m.y * cols + m.x)) darken(m.x, m.y, A.hide * clamp01(2 * u));
+        const g = u < 0 ? (calmFx() ? 0 : 0.5) : glitchOf(u, m.x, m.y, now);
+        fakeBlock(p.type, m.x, m.y, (m.x + (m.tx - m.x) * k) * cell, (m.y + (m.ty - m.y) * k) * cell, cell - 2, g);
+      }
+    }
+    drawFakes(now);
+  }
+  // A fake block, size across, its class's colour, in the middle of the cell at px, py: a little
+  // see-through, with scanlines across it and its edge lit inside, and pink and cyan copies of it
+  // either side, like the ghost piece's (not in high contrast); `glitch` (0 to 1) tears it, its
+  // copies further apart and it in slices pulled sideways. All of them drawn together, drawFakes.
+  const fakes = [];
+  function fakeBlock(type, x, y, px, py, size, glitch = 0) {
+    if (size <= 0.5) return;
+    const c = markColour(type, 0, x, y);
+    fakes.push(px + (cell - size) / 2, py + (cell - size) / 2, size, glitch, hslOf(c.h, c.s, c.l), x * 7 + y * 13);
+  }
+  let scan = null; // (a pattern: a dark line every third of the board's pixels)
+  function drawFakes(now) {
+    const n = fakes.length;
+    if (!n) return;
+    const A = CONFIG.fx.powerup.action, tick = Math.floor(now / 90), split = highContrast() ? 0 : A.splitPx ?? 1.5;
+    bctx.save();
+    if (split > 0) {
+      // (each twice, the second further out and fainter: a blur of colour either side)
+      bctx.globalCompositeOperation = "lighter";
+      for (const [colour, side, strength] of [[PINK, -1, 1], [PINK, -2, 0.4], [CYAN, 1, 1], [CYAN, 2, 0.4]]) {
+        bctx.fillStyle = colour;
+        for (let i = 0; i < n; i += 6) {
+          bctx.globalAlpha = strength * (A.splitAlpha ?? 0.45) * (1 + fakes[i + 3]) / 2;
+          bctx.fillRect(fakes[i] + side * split * (1 + 3 * fakes[i + 3]), fakes[i + 1], fakes[i + 2], fakes[i + 2]);
         }
       }
-      fallMoves.set(la, moves);
     }
-    if (!moves.length) return;
-    const t = actionPhase(at, 0);
-    const k = t < 0.15 ? 0 : t < 0.7 ? easeIn((t - 0.15) / 0.55) : 1;
-    const a = t > 0.88 ? (1 - t) / 0.12 : 1;
     bctx.globalCompositeOperation = "source-over";
-    for (const m of moves) actionSquare(lp.type, m.x, m.y, m.x * cell, (m.y + (m.to - m.y) * k) * cell, cell - 2, a);
+    bctx.globalAlpha = A.alpha ?? 0.6;
+    for (let i = 0; i < n; i += 6) {
+      const x0 = fakes[i], y0 = fakes[i + 1], s = fakes[i + 2], g = fakes[i + 3];
+      bctx.fillStyle = fakes[i + 4];
+      if (g < 0.05) { bctx.fillRect(x0, y0, s, s); continue; }
+      // (torn: three slices, each pulled its own way)
+      for (let k = 0; k < 3; k++) bctx.fillRect(x0 + (hash01(tick * 13 + fakes[i + 5] + k * 101) - 0.5) * cell * 0.5 * g, y0 + k * s / 3, s, s / 3);
+    }
+    if (!scan) {
+      const c = makeCanvas(1, 3), g = c.getContext("2d");
+      g.fillStyle = "#000";
+      g.fillRect(0, 2, 1, 1);
+      scan = bctx.createPattern(c, "repeat");
+    }
+    bctx.fillStyle = scan;
+    bctx.globalAlpha = A.scanlines ?? 0.35;
+    for (let i = 0; i < n; i += 6) bctx.fillRect(fakes[i], fakes[i + 1], fakes[i + 2], fakes[i + 2]);
+    bctx.globalCompositeOperation = "lighter";
+    bctx.strokeStyle = "#ffffff";
+    bctx.lineWidth = 1;
+    bctx.globalAlpha = A.edge ?? 0.3;
+    for (let i = 0; i < n; i += 6) bctx.strokeRect(fakes[i] + 0.5, fakes[i + 1] + 0.5, fakes[i + 2] - 1, fakes[i + 2] - 1);
+    bctx.restore();
+    fakes.length = 0;
   }
 
   // The highlighted ("affected") cells of the falling powerup (at its landing
   // spot) or of a locked powerup that is charging up.
-  const overlayMarks = []; // (drawPowerupOverlay's, kept, as long as they've been: the first so many used each time)
+  const overlayMarks = []; // (drawPowerupOverlay's, a list for each part, kept, as long as they've been: the first so many used each time)
+  // (the cells the falling piece is in now: what it'll do is shown round it, not over it)
+  const noCells = new Set();
+  function ownCells(state) {
+    const a = state.active;
+    if (!a || state.effect?.phase === "charge") return noCells;
+    const mat = getActiveMatrix(state), out = new Set();
+    for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) if (mat[j][i] && a.y + j >= 0) out.add((a.y + j) * cols + a.x + i);
+    return out;
+  }
   function drawPowerupOverlay(state, ghostY, now) {
     let pu, area, pieceCells, centre, intensity = 1, chargeT = 0;
 
@@ -1578,10 +1666,19 @@ export function createRenderer(boardCanvas, nextCanvas) {
       centre = e.centre;
       chargeT = clamp01(e.elapsedMs / e.durationMs);
       intensity = 1 + 0.9 * chargeT + (calmFx() ? 0 : 0.35 * Math.sin(chargeT * Math.PI * 6));
+      // (locked somewhere it wasn't last drawn, moved and dropped between two frames: what it'll
+      // do from there, as it'll be)
+      const where = `${e.rotIdx}|${e.x}|${e.y}`;
+      if (action.where !== where) {
+        const plan = planAction(state.board.map(r => r.slice()), pu, { area, placed: e.placed, above: e.above ?? [], pid: e.pid, centre, at: { rot: e.rotIdx, x: e.x, y: e.y } }, (c) => c?.pid === e.pid);
+        Object.assign(action, { key: "", from: -Infinity, plan, where });
+      }
     } else if (state.active?.shape.powerup && ghostY != null) {
       const a = state.active;
       pu = a.shape.powerup;
       const key = `${a.shape.id}|${a.rotIdx}|${a.x}|${ghostY}|${state.boardVersion}`;
+      // (come, moved or turned: what it'll do plays again, from the start)
+      if (action.key !== key) Object.assign(action, { key, from: now, plan: planLanding(state, pu, ghostY), where: `${a.rotIdx}|${a.x}|${ghostY}` });
       if (overlayCache.key !== key) {
         overlayCache.key = key;
         overlayCache.area = resolvePowerupArea(pu, a.rotIdx, a.x, ghostY, cols, rows);
@@ -1611,15 +1708,15 @@ export function createRenderer(boardCanvas, nextCanvas) {
     const board = state.board;
     const at = calmFx() ? 0 : now; // (calmer animations: the highlight holds still)
     bctx.save();
-    // combos: each part draws its own kind of highlight over its own area
+    // combos: each part draws its own kind of highlight over its own area. Each cell's tint as it
+    // comes, every part's; then over them what it'll do, played out (drawPlan); then each part's
+    // marks all together (drawMarks).
     const layers = pu.parts && area.parts
       ? pu.parts.map((p, k) => [p, p.type === "phantom" ? { indices: [...pieceCells] } : area.parts[k]])
       : [[pu, area]];
+    const counts = [];
     for (const [lp, la] of layers) {
-      // (behind the marks, what it will really do, simply, on a loop: drawAction)
-      if (lp.type === "gravity") drawFallAction(board, lp, la, pieceCells, comesDown(pu), at);
-      // (each cell's tint as it comes; then all their marks together: drawMarks)
-      const marks = overlayMarks;
+      const marks = (overlayMarks[counts.length] ??= []);
       let n = 0;
       for (const i of la.indices) {
         const x = i % cols, y = (i / cols) | 0;
@@ -1631,12 +1728,14 @@ export function createRenderer(boardCanvas, nextCanvas) {
         const effective = (lp.type === "goo" || lp.type === "phantom") ? true
           : lp.type === "expander" ? (!filled && !isPiece) : filled || (isPiece && (classOf(lp.type) === "destroyer" || (lp.type === "gravity" && comesDown(pu))));
         const dist = Math.hypot(x - centre.x, y - centre.y);
-        if (effective) drawAction(lp.type, x, y, dist, at);
         drawMarkFill(bctx, lp, x * cell, y * cell, cell, at, x, y, effective, intensity);
         marks[n++] = x * cell; marks[n++] = y * cell; marks[n++] = x; marks[n++] = y; marks[n++] = dist; marks[n++] = effective ? 1 : 0;
       }
-      drawMarks(bctx, lp, marks, n, cell, at, intensity, centre);
+      counts.push(n);
     }
+    // (from when it came, was moved or was turned; with calmer animations, just as it'll be)
+    if (action.plan) drawPlan(action.plan, calmFx() ? Infinity : now - action.from, now, ownCells(state));
+    layers.forEach(([lp], k) => drawMarks(bctx, lp, overlayMarks[k], counts[k], cell, at, intensity, centre));
 
     // White-hot flash right before the effect fires.
     if (chargeT > 0.6) {

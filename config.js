@@ -1350,15 +1350,25 @@ export const CONFIG = {
         hueStepPerCell: 18,      // colour spread across cells
         rgbSplit: 0.06,          // the marks' warm split (copies of them in the warm rainbow, render.js WARM_SPLIT): this much of a cell apart a step
         rgbSplitAlpha: 0.7,      // ...and how strong they are (times the mark's own)
-        fillAlpha: 0.18,         // cells the effect will change
-        idleFillAlpha: 0.08,     // highlighted cells it won't change (e.g. empty cells for a destroyer)
-        markAlpha: 0.6,
-        idleMarkAlpha: 0.3,
+        fillAlpha: 0.30,         // cells the effect will change
+        idleFillAlpha: 0.11,     // highlighted cells it won't change (e.g. empty cells for a destroyer)
+        markAlpha: 0.95,
+        idleMarkAlpha: 0.45,
         ripplePerCell: 0.12,     // destroyer/expander ripple offset per cell of distance
       },
-      // what it will do, played out simply behind the marks on a loop (render.js drawAction):
-      // blocks shrinking away (Destroyerz), empty cells filling (Expanderz), blocks falling (Gravitizerz)
-      action: { enabled: true, periodMs: 1300, alpha: 0.55, hide: 0.75, ripplePerCell: 0.04 },
+      // What it will do, played out under the marks (render.js drawPlan), once each time it
+      // comes, is moved or is turned, and then held as it'll be: blocks zapped away to dark
+      // (Destroyerz), empty cells filling (Expanderz), blocks falling into the gaps (Gravitizerz).
+      // Each cell's play takes ms, the further from the piece the later (ripplePerCellMs a cell);
+      // a Gravitizerz's shake trembleMs, then each block's fall baseMs + msPerSqrtCell × √(how
+      // far). hide: how dark what goes away goes. The blocks that come and go are fakes in the
+      // class's colours: alpha, scanlines (how dark), edge (how lit), and copies splitPx (board
+      // pixels) either side in pink and cyan, splitAlpha strong.
+      action: {
+        enabled: true, ms: 480, ripplePerCellMs: 35, hide: 0.8,
+        fall: { trembleMs: 160, baseMs: 200, msPerSqrtCell: 80 },
+        alpha: 0.6, scanlines: 0.35, edge: 0.3, splitPx: 1.5, splitAlpha: 0.45,
+      },
       shimmerAlpha: 0.9,         // rainbow outline around powerup pieces
     },
 

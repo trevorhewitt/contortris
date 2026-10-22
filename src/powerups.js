@@ -883,7 +883,8 @@ export function phantomLandingY(board, x, mat) {
 //          above (optional [{x, y, cell}]: its blocks that locked above the top, which come down
 //          with it if it comes down: comesDown) }
 // Returns { consumed, destroyed, moves, filled, collapsed, overTop } (overTop: its blocks still
-// above the top once it has gone off; and `placed`, where its own blocks are now, if it moved them).
+// above the top once it has gone off; `placed`, where its own blocks are now, if it moved them;
+// and for a combo, `parts`, each part's own results, in the order they went off).
 export function computeEffect(board, pu, ctx) {
   const { area, pid, centre, cols, rows, rng = Math.random, makeFill, keepRows } = ctx;
   let { placed } = ctx;
@@ -941,6 +942,7 @@ export function computeEffect(board, pu, ctx) {
         const sub = computeEffect(board, { ...part, consume: false }, { ...ctx, placed, above: out.overTop, stays, makeFill, area: area.parts?.[i] ?? area });
         if (sub.placed) placed = out.placed = sub.placed;
         mergeEffect(out, sub);
+        (out.parts ??= []).push(sub); // (each part's own, as well: render.js planAction)
       });
       break;
     }
