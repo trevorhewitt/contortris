@@ -343,9 +343,22 @@ export function bindUI({ state, renderer, achievements }) {
 
   const overlayShowing = () => !!currentPanel;
 
+  // The line under the logo (CONFIG.home.taglines): one of the usual ones when the page opens; back
+  // on the home screen from anywhere else, one of either, the strange ones too (never the same
+  // one twice running)
+  let tagline = null;
+  function pickTagline() {
+    const T = CONFIG.home?.taglines ?? {};
+    const pool = [...(T.usual ?? []), ...(tagline == null ? [] : T.strange ?? [])].filter(t => t !== tagline);
+    if (!pool.length) return;
+    tagline = pool[Math.floor(Math.random() * pool.length)];
+    const el = $("homeTagline");
+    if (el) el.textContent = tagline;
+  }
+
   function renderMenu() {
-    // (each mode's button says what it is, from CONFIG.modes: only on a computer, with room for
-    // the words, index.html .modeTag)
+    pickTagline();
+    // (each mode's button says what it is, from CONFIG.modes: index.html .modeTag)
     if (document.activeElement?.classList?.contains("modeBtn")) document.activeElement.blur();
     for (const b of document.querySelectorAll(".modeBtn")) {
       const m = b.dataset.mode;

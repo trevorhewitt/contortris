@@ -573,7 +573,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   // The letters' glitch (index.html .homeLogo i[data-g]), each in its turn, a moment at a time:
   // set from here, as an animation of it (its colours a custom property, which only the main
   // thread can animate) had the browser restyling the letters for every frame, glitch or not.
-  const GLITCH_MS = 3700, GLITCH = [[0.61, "a"], [0.63, "b"], [0.65, ""], [0.88, "c"], [0.89, ""]];
+  const GLITCH_MS = 2500, GLITCH = [[0.61, "a"], [0.63, "b"], [0.65, ""], [0.88, "c"], [0.89, ""]];
   const glitching = logo?.getElementsByTagName("i") ?? [], glitchNow = [];
   function stepGlitch(now) {
     for (let k = 0; k < glitching.length; k++) {

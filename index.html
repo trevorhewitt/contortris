@@ -441,7 +441,7 @@
       gap: clamp(8px, 2.4vmin, 24px);
     }
     body.home .overlay #panelMenu.panel[hidden]{ display: none; }
-    .homeLogoWrap{ perspective: 900px; animation: logoZoom 4.4s ease-in-out infinite; }
+    .homeLogoWrap{ perspective: 900px; animation: logoZoom 2.9s ease-in-out infinite; }
     .homeLogo{
       display: flex; justify-content: center; gap: 0.02em;
       font-family: var(--font-display); font-size: clamp(34px, min(13.5vw, 15vh), 150px); line-height: 1.15;
@@ -452,8 +452,8 @@
     .homeLogo span{
       display: inline-block;
       color: #fff;
-      animation: letterHop 1.9s ease-in-out infinite;
-      animation-delay: calc(var(--i) * -0.16s);
+      animation: letterHop 1.25s ease-in-out infinite;
+      animation-delay: calc(var(--i) * -0.11s);
     }
     /* (its glow and its glitch on a box of their own inside the letter's: so the hop is on its own,
        and runs off the main thread, the letters, glow and all, not drawn again for every frame) */
@@ -477,37 +477,46 @@
     .homeLogo i[data-g="c"]{ --sx: 0.07em; }
     .homeLogo b{ display: inline-block; font-weight: inherit; }
     @property --sx{ syntax: "<length>"; inherits: true; initial-value: 0.035em; }
-    @keyframes logoZoom{ 0%, 100%{ transform: scale(0.94) rotate(-2.5deg); } 50%{ transform: scale(1.06) rotate(2.5deg); } }
-    @keyframes letterHop{ 0%, 100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-0.08em) rotate(-4deg); } }
+    /* (a line under the logo, in the body font: a different one each time the home screen comes
+       back, src/ui.js pickTagline) */
+    .homeTagline{
+      max-width: min(92vw, 620px); margin: calc(-0.4 * clamp(8px, 2.4vmin, 24px)) 0 0;
+      font-family: var(--font-body); font-size: clamp(12px, min(3.6vw, 2.7vh), 24px); line-height: 1.3;
+      text-align: center; color: #fff; text-wrap: balance;
+      text-shadow: 0 0 1px #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 8px rgba(0,0,0,0.9);
+    }
+    .homeTagline:empty{ display: none; }
+    @keyframes logoZoom{ 0%, 100%{ transform: scale(0.9) rotate(-4deg); } 50%{ transform: scale(1.1) rotate(4deg); } }
+    @keyframes letterHop{ 0%, 100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-0.15em) rotate(-7deg); } }
     /* the moves (src/home.js picks one every few seconds), passed from letter to letter */
     .homeLogo[class*="fx-"] b{
-      animation-duration: 620ms; animation-timing-function: cubic-bezier(.45, .05, .35, 1);
-      animation-fill-mode: both; animation-delay: calc(var(--i) * 85ms);
+      animation-duration: 480ms; animation-timing-function: cubic-bezier(.45, .05, .35, 1);
+      animation-fill-mode: both; animation-delay: calc(var(--i) * 65ms);
     }
     .homeLogo.fx-spin b{ animation-name: fxSpin; }
     .homeLogo.fx-flip b{ animation-name: fxFlip; }
-    .homeLogo.fx-tumble b{ animation-name: fxTumble; animation-duration: 760ms; }
+    .homeLogo.fx-tumble b{ animation-name: fxTumble; animation-duration: 600ms; }
     .homeLogo.fx-twist b{ animation-name: fxTwist; }
-    .homeLogo.fx-grow b{ animation-name: fxGrow; animation-duration: 520ms; animation-timing-function: ease-in-out; animation-delay: calc(var(--i) * 70ms); }
-    .homeLogo.fx-shrink b{ animation-name: fxShrink; animation-duration: 520ms; animation-timing-function: ease-in-out; animation-delay: calc(var(--i) * 70ms); }
-    .homeLogo.fx-hop b{ animation-name: fxHop; animation-duration: 560ms; animation-timing-function: ease-out; animation-delay: calc(var(--i) * 75ms); }
-    .homeLogo.fx-wave b{ animation-name: fxWave; animation-duration: 1000ms; animation-timing-function: ease-in-out; animation-delay: calc(var(--i) * 100ms); }
-    .homeLogo.fx-spinAll{ animation: fxSpinAll 1000ms cubic-bezier(.45, .05, .3, 1) both; }
-    .homeLogo.fx-growAll{ animation: fxGrowAll 800ms ease-in-out both; }
+    .homeLogo.fx-grow b{ animation-name: fxGrow; animation-duration: 420ms; animation-timing-function: ease-in-out; animation-delay: calc(var(--i) * 55ms); }
+    .homeLogo.fx-shrink b{ animation-name: fxShrink; animation-duration: 420ms; animation-timing-function: ease-in-out; animation-delay: calc(var(--i) * 55ms); }
+    .homeLogo.fx-hop b{ animation-name: fxHop; animation-duration: 440ms; animation-timing-function: ease-out; animation-delay: calc(var(--i) * 58ms); }
+    .homeLogo.fx-wave b{ animation-name: fxWave; animation-duration: 780ms; animation-timing-function: ease-in-out; animation-delay: calc(var(--i) * 78ms); }
+    .homeLogo.fx-spinAll{ animation: fxSpinAll 800ms cubic-bezier(.45, .05, .3, 1) both; }
+    .homeLogo.fx-growAll{ animation: fxGrowAll 640ms ease-in-out both; }
     .homeLogo.fx-spinAll b, .homeLogo.fx-growAll b{ animation: none; }
     @keyframes fxSpin{ from{ transform: rotateY(0deg); } to{ transform: rotateY(360deg); } }
     @keyframes fxFlip{ from{ transform: rotateX(0deg); } to{ transform: rotateX(360deg); } }
     @keyframes fxTumble{ from{ transform: rotate3d(1, 1, 0, 0deg); } to{ transform: rotate3d(1, 1, 0, 360deg); } }
     @keyframes fxTwist{ from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
-    @keyframes fxGrow{ 0%, 100%{ transform: scale(1); } 45%{ transform: scale(1.45); } }
-    @keyframes fxShrink{ 0%, 100%{ transform: scale(1); } 45%{ transform: scale(0.5); } }
+    @keyframes fxGrow{ 0%, 100%{ transform: scale(1); } 45%{ transform: scale(1.6); } }
+    @keyframes fxShrink{ 0%, 100%{ transform: scale(1); } 45%{ transform: scale(0.4); } }
     @keyframes fxHop{
-      0%, 100%{ transform: translateY(0) scale(1); } 14%{ transform: translateY(0) scale(1.14, 0.86); }
-      48%{ transform: translateY(-0.42em) scale(0.94, 1.08); } 82%{ transform: translateY(0) scale(1.1, 0.9); }
+      0%, 100%{ transform: translateY(0) scale(1); } 14%{ transform: translateY(0) scale(1.18, 0.82); }
+      48%{ transform: translateY(-0.6em) scale(0.92, 1.1); } 82%{ transform: translateY(0) scale(1.14, 0.86); }
     }
-    @keyframes fxWave{ 0%, 100%{ transform: none; } 25%{ transform: translateY(-0.22em) rotate(-10deg) scale(1.08); } 75%{ transform: translateY(0.14em) rotate(8deg) scale(0.95); } }
+    @keyframes fxWave{ 0%, 100%{ transform: none; } 25%{ transform: translateY(-0.32em) rotate(-14deg) scale(1.12); } 75%{ transform: translateY(0.2em) rotate(11deg) scale(0.93); } }
     @keyframes fxSpinAll{ from{ transform: rotateY(0deg); } to{ transform: rotateY(360deg); } }
-    @keyframes fxGrowAll{ 0%, 100%{ transform: scale(1); } 35%{ transform: scale(1.16); } 70%{ transform: scale(0.95); } }
+    @keyframes fxGrowAll{ 0%, 100%{ transform: scale(1); } 35%{ transform: scale(1.25); } 70%{ transform: scale(0.92); } }
 
     /* (the modes: on a phone, or any window too narrow for three across, one column, Classic the
        big one in the middle of it; wider, Classic in the middle, big, Zen and Extreme either side
@@ -1763,6 +1772,7 @@
           <div id="pieceCard" class="pieceCard" hidden></div>
           <div class="msg panel homeMenu" id="panelMenu" hidden>
             <div class="homeLogoWrap"><div class="homeLogo" id="homeLogo" role="img" aria-label="Estrix"><span style="--i:0;--h:350"><i><b>E</b></i></span><span style="--i:1;--h:35"><i><b>S</b></i></span><span style="--i:2;--h:58"><i><b>T</b></i></span><span style="--i:3;--h:140"><i><b>R</b></i></span><span style="--i:4;--h:200"><i><b>I</b></i></span><span style="--i:5;--h:275"><i><b>X</b></i></span></div></div>
+            <div class="homeTagline" id="homeTagline"></div>
             <!-- (in this order down a phone; on a wider screen, Classic in the middle and the rest
                  round it: index.html .homeModes) -->
             <div class="homeModes">

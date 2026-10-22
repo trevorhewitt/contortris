@@ -95,7 +95,32 @@ export const CONFIG = {
     // cutOverlap of what they show between them, by area; with nowhere like that, it's the other
     // board, or no cut at all)
     otherBoard: 0.9, calmOtherBoard: 0.5, otherBoardAfterMs: 1500, cutOverlap: 0.35,
-    fxEvery: [14000, 22000], logoEvery: 2600,
+    fxEvery: [14000, 22000], logoEvery: 1600,
+    // The line under the logo (src/ui.js pickTagline): one of the usual ones when the page opens;
+    // back on the home screen from anywhere else, one of either (never the same one twice running)
+    taglines: {
+      usual: [
+        "The only game with literally everything.",
+        "Now with 50% more Estrix!",
+        'The "E" is for Estrix!',
+        "Not like the other games #deep",
+        "Now with nearly 700 unique pieces!",
+        "There's a piece for that.",
+        "Now containing a large variety of unique beans-related pieces.",
+        "Have you seen The Great Ziggurat of Ur yet?",
+        "Go on, play it! Just play!",
+        "Just wait till you see the Shiny Pieces.",
+      ],
+      strange: [
+        "Fun for the whole hivemind!",
+        "Estrix Estrix Estrix Estrix!",
+        "Hergerber der schnerblerge Estrix!",
+        "Looking back on my life, I only wish I had spent more time playing Estrix.",
+        "The way you play Estrix - it's not like the others. There's something cool, something sensual about the way you move the pieces.",
+        "You're not like the other Estrix players. You're special.",
+        "I feel so good when I feel you moving those pieces, playing Estrix like you do.",
+      ],
+    },
     idleMs: 30000,
     burstMs: 720, fadeMs: 240,
     warp: { waveS: 0.34, accel: 5, squares: 1800, slowMs: 30 },
