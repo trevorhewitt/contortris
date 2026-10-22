@@ -1593,14 +1593,20 @@ export function bindUI({ state, renderer, achievements }) {
   /* ---------- boot ---------- */
 
   // The page opens on the loading screen alone (src/loading.js, body.booting). The home screen
-  // comes up behind it, and once the board behind the menu has had its quick start and the logo's
-  // font is in (or it has waited long enough), the loading screen finishes and fades away.
+  // comes up behind it, and once the board behind the menu has had its quick start and the
+  // fonts are in (or it has waited long enough), the loading screen finishes and fades away.
+  // (The fonts: the logo's, and the body font in both its weights. A weight's file only comes
+  // the first time something is written in it, and the bold one's first words are the game
+  // over page's, which showed in another font until it came.)
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       showPanel("menu");
       const t0 = performance.now();
       let fontIn = !document.fonts?.load;
-      document.fonts?.load?.("16px PressStart2P").then(() => { fontIn = true; }, () => { fontIn = true; });
+      if (!fontIn) {
+        Promise.all(["16px PressStart2P", "16px PixelifySans", "600 16px PixelifySans"].map(f => document.fonts.load(f)))
+          .then(() => { fontIn = true; }, () => { fontIn = true; });
+      }
       const reveal = () => {
         if ((fontIn && !home.warming()) || performance.now() - t0 > (CONFIG.home.bootMaxMs ?? 2500)) {
           // (the loading screen fills its bar the rest of the way, then goes: src/loading.js)
