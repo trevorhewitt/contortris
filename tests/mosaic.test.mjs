@@ -48,3 +48,13 @@ test("mosaic: every theme packs the grid full, nothing overlapping (a piece over
   assert.ok(wraps > 20, `${wraps} pieces over an edge`);
   assert.ok(Math.abs(edgeLittle - midLittle) / runs < 0.08, `edges ${(100 * edgeLittle / runs).toFixed(0)}% little pieces, the middle ${(100 * midLittle / runs).toFixed(0)}%`);
 });
+
+test("mosaic: the next is on another theme from the one before it", () => {
+  const { cols, rows } = CONFIG.home.mosaic;
+  let theme = null;
+  for (let i = 0; i < 40; i++) {
+    const m = buildMosaic(shapes, powerups, { cols, rows, rng: makeRng(100 + i), not: theme });
+    assert.notEqual(m.theme, theme, `twice running: ${m.theme}`);
+    theme = m.theme;
+  }
+});

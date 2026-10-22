@@ -37,7 +37,7 @@ test("how alike two views are, for the cuts: the same view 1, nothing in common 
   assert.equal(viewOverlap(v, { ...v, x: 14, y: 3 }, W, Hh), viewOverlap({ ...v, x: 14, y: 3 }, v, W, Hh));
 });
 
-test("a shot of a mosaic is steady from its first frame to the cut: one speed across the screen, one rate of zoom, one of turn", () => {
+test("a shot of a mosaic is steady from its first frame to the cut: one speed across the screen, one rate of zoom, one of turn (and past it, waiting on the next, the same way at the same speed)", () => {
   const shots = [
     { a: { x: 3, y: 4, z: 1.2, rot: -0.3 }, b: { x: 40, y: -9, z: 3.1, rot: 0.4 } }, // (a sweep, zooming in)
     { a: { x: 50, y: 20, z: 3, rot: 0.2 }, b: { x: 20, y: 30, z: 1.25, rot: 0.2 } }, // (zooming out)
@@ -58,5 +58,14 @@ test("a shot of a mosaic is steady from its first frame to the cut: one speed ac
     assert.ok(steady(zoom) && steady(turn));
     // (and from just where it starts to just where it ends)
     for (const [u, at] of [[0, s.a], [1, s.b]]) for (const k of ["x", "y", "z", "rot"]) assert.ok(Math.abs(mosaicSweep(s, u)[k] - at[k]) < 1e-9, `${k} at ${u}`);
+    // (past its end, as it waits on the next mosaic: on the same way at the same speed, no longer
+    // turning or zooming)
+    for (let i = 0; i < 30; i++) {
+      const p = mosaicSweep(s, 1 + i / n), q = mosaicSweep(s, 1 + (i + 1) / n);
+      const v = Math.hypot(q.x - p.x, q.y - p.y) * 25 * q.z, along = ((q.x - p.x) * (s.b.x - s.a.x) + (q.y - p.y) * (s.b.y - s.a.y)) / Math.hypot(q.x - p.x, q.y - p.y) / Math.hypot(s.b.x - s.a.x, s.b.y - s.a.y);
+      assert.ok(Math.abs(v - speed[0]) <= 1e-3 * speed[0], `speed past the end ${v.toFixed(3)}, before ${speed[0].toFixed(3)}`);
+      assert.ok(along > 1 - 1e-9, "the same way");
+      assert.ok(Math.abs(q.z - s.b.z) < 1e-9 && Math.abs(q.rot - s.b.rot) < 1e-9);
+    }
   }
 });

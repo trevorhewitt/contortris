@@ -132,17 +132,20 @@ export const CONFIG = {
     // ...and never more than maxOnes one-cell pieces in a row, slow and all much the same (and
     // none picked just at random: only as part of a plan or a combination)
     maxOnes: 3,
-    // A few seconds after the home screen comes up (firstMs), and often after that (everyMs), the
-    // next cut is to a mosaic (src/mosaic.js), a new one each time: a grid cols × rows packed full
-    // of pieces on a theme (themes: how likely each; tags: the kinds of thing that can be one),
-    // drawn cellPx a cell, repeating in every direction, swept across in a shot (shots: how many,
-    // at the fewest and the most), shotMs long: in a straight line at a steady speed from the
-    // first frame to the cut (speed: screens a second, the screen's longer side), zooming steadily
-    // between zoom times as close as filling the screen, turning steadily up to maxTurn degrees.
-    // goneShare: the share of its pieces gone, leaving their art behind as destroyed blocks do
-    // (src/remains.js), in front of layers more of it, made up.
+    // The camera goes from the boards to mosaics (src/mosaic.js) and back in runs: a few shots of
+    // the boards (boardShots: at the fewest and the most), then a few of mosaics (shots), each a
+    // new one on another theme from the one before: a grid cols × rows packed full of pieces on a
+    // theme (themes: how likely each; tags: the kinds of thing that can be one), drawn cellPx a
+    // cell, repeating in every direction, swept across in a shot shotMs long: in a straight line
+    // at a steady speed from the first frame to the cut (speed: screens a second, the screen's
+    // longer side), zooming steadily between zoom times as close as filling the screen, turning
+    // steadily up to maxTurn degrees. (The next one is painted while one's on screen: if it isn't
+    // ready when the shot's up, the sweep goes on as it was for up to waitMs, and then it's
+    // another shot of the same one, somewhere else on it.) goneShare: the share of its pieces
+    // gone, leaving their art behind as destroyed blocks do (src/remains.js), in front of layers
+    // more of it, made up.
     mosaic: {
-      firstMs: [4000, 7000], everyMs: [8000, 13000], shots: [1, 1], shotMs: [1000, 1700], speed: [0.35, 0.9], zoom: [1.15, 3.4], maxTurn: 32,
+      boardShots: [3, 5], shots: [3, 5], shotMs: [1000, 1700], waitMs: 1200, speed: [0.35, 0.9], zoom: [1.15, 3.4], maxTurn: 32,
       cols: 56, rows: 34, cellPx: 20, goneShare: 0.3,
       tags: ["food", "space", "tiles", "landmark", "surreal", "weather", "bugs"],
       themes: { everything: 3, powerups: 1.5, giants: 1.2, few: 1.6, food: 1, space: 0.8, tiles: 0.8, landmark: 0.5, surreal: 0.6, weather: 0.5, bugs: 0.5 },

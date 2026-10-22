@@ -1,7 +1,7 @@
 // ============================================================
 // MOSAIC — a screen packed full of pieces, for the home screen's camera (DOM: a canvas)
 // ============================================================
-// Now and then the home screen (src/home.js) cuts away from its turbo zen boards to one of these:
+// Now and then the home screen (src/home.js) cuts away from its turbo zen boards to a few of these:
 // a big grid packed with pieces, the biggest put down first wherever they fit and then smaller
 // and smaller ones in the gaps (a few gaps left is fine, as long as it looks full), all of them
 // on a theme: anything at all, one kind of thing (food, space...), the powerups, the giants, or
@@ -16,7 +16,9 @@ import { CONFIG } from "../config.js";
 import { getShapePaint } from "./shapes.js";
 import { artInto } from "./render.js";
 
-const blocksOf = (s) => s.rotations[0].flat().filter(Boolean).length;
+// (how many blocks a piece has: counted once a piece, asked often)
+const sizes = new WeakMap();
+const blocksOf = (s) => { let n = sizes.get(s); if (n == null) sizes.set(s, (n = s.rotations[0].flat().filter(Boolean).length)); return n; };
 
 // The themes, each a pool of pieces to pack with (or null if there aren't enough of them).
 // (Never the four-block pieces: the falling-block game everyone knows is made of those.)
@@ -41,9 +43,10 @@ function themes(shapes, powerups, rng) {
 
 // Pack a grid `cols` × `rows`: { cols, rows, theme, pieces: [{ shape, rot, x, y }] }. (A piece
 // can go over the right or bottom edge: what's over it comes round on the left, or at the top.)
-export function buildMosaic(shapes, powerups, { cols, rows, rng = Math.random, theme = null } = {}) {
+export function buildMosaic(shapes, powerups, { cols, rows, rng = Math.random, theme = null, not = null } = {}) {
   const pools = themes(shapes, powerups, rng);
-  const names = Object.keys(pools);
+  // (on any theme but `not`, the last one's, so the next looks like something else)
+  const names = Object.keys(pools).filter((n, _, all) => n !== not || all.length < 2);
   const weights = CONFIG.home.mosaic?.themes ?? {};
   if (!theme || !pools[theme]) {
     let total = 0;

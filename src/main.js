@@ -95,10 +95,11 @@ function tick(now) {
   noteFrame(now - last); // (fewer particles while the frames lag: src/particles.js)
   last = now;
 
-  // (the board on screen: the game's own, or behind the home screen, either of its two boards)
+  // (the board on screen: the game's own, or behind the home screen, either of its two boards,
+  // not drawn while the home screen's camera is on something else)
   const live = ui.liveState?.() ?? state;
   updateGame(live, dt * timeScaleOf(live)); // (turbo zen runs faster)
-  renderer.draw(live, now);
+  if (!ui.boardHidden?.()) renderer.draw(live, now);
   ui.frame(now);
 
   requestAnimationFrame(tick);

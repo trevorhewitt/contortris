@@ -1649,6 +1649,7 @@ export function bindUI({ state, renderer, achievements }) {
     frame(now = performance.now()) { noteShown(now); updateHUD(); fadeName(); home.frame(now); sparkles.frame(now); },
     home: () => home,
     liveState: () => home.liveState(),
+    boardHidden: () => home.boardHidden(),
     toast,
     showPanel,
     startGame,
