@@ -456,7 +456,7 @@ function* drawing(ctx, state, view, k) {
       if (shaking) view.place(out, 1 - par * lk.depth, os); else out.setTransform(os, 0, 0, os, 0, 0);
       out.globalCompositeOperation = "lighter";
       out.imageSmoothingEnabled = false;
-      put(out, d, view, 0, lk.sharp * dim, shaking || view.lite ? 0 : lk.shift); // (shaking, drawn every frame: red and blue together)
+      put(out, d, view, 0, lk.sharp * dim, view.lite ? 0 : lk.shift); // (red and blue apart as at rest: brought together while it shook, they jolted sideways)
       out.restore();
       drew(...d.tight);
     }
