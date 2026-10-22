@@ -56,7 +56,7 @@ if (CONFIG.achievements.enabled) on(state, (type, data, st) => { if (!CONFIG.mod
 ui = bindUI({ state, renderer, achievements });
 
 // Handy for testing in the browser console: open index.html?debug
-if (new URLSearchParams(location.search).has("debug")) {
+if (CONFIG.devTools && new URLSearchParams(location.search).has("debug")) {
   window.__eztrix = {
     state, CONFIG, shapes, powerups, renderer, achievements, ui,
     step: (dt = 16) => updateGame(state, dt),           // advance without waiting for frames

@@ -246,7 +246,7 @@ export function bindUI({ state, renderer, achievements }) {
     options: $("panelOptions"),
   };
   // The developer tools (src/devtools.js): on in this browser, or for this visit (?devmode=1)
-  const devUrl = new URLSearchParams(location.search).get("devmode") === "1";
+  const devUrl = CONFIG.devTools && new URLSearchParams(location.search).get("devmode") === "1";
   let devmode = devUrl || devToolsOn();
   // (the options: src/settings.js, and their page, src/optionsui.js)
   applyOptions();
@@ -1098,13 +1098,14 @@ export function bindUI({ state, renderer, achievements }) {
     if (taps.n >= 3) { taps.n = 0; openDevTools(); }
   });
   for (const b of document.querySelectorAll(".modeBtn")) b.addEventListener("click", (e) => {
-    if (e.shiftKey && b.id === "btnGod") { openDevTools(); return; }
+    if (e.shiftKey && b.id === "btnGod" && CONFIG.devTools) { openDevTools(); return; }
     home.play(b.dataset.mode, { from: b });
   });
   // The developer tools switched on (three taps on the version, or a shift-click on God mode), and their
   // page: a developer game (new things first), Turbo zen (on the menu no more), and the settings
   // (src/devtools.js)
   function openDevTools() {
+    if (!CONFIG.devTools) return; // (switched off for good: config.js devTools)
     if (!devmode) { setDevTools(true); devmode = true; }
     setupDevMode();
     buildDevTools($("devToolsBody"), {
@@ -1349,7 +1350,7 @@ export function bindUI({ state, renderer, achievements }) {
 
   window.addEventListener("keydown", (e) => {
     // (the backquote key, by Escape: D moves the piece)
-    if (e.code === "Backquote" && !e.repeat) {
+    if (e.code === "Backquote" && !e.repeat && CONFIG.devTools) {
       state.debug = !state.debug;
       debugPanel.style.display = state.debug ? "block" : "none";
       return;

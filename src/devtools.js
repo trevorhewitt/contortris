@@ -146,7 +146,7 @@ function apply(s, on = true) {
 
 // At start-up (they're only ever on from the start with ?devmode=1): the settings kept for the tab
 export function applySavedDevSettings() {
-  if (new URLSearchParams(globalThis.location?.search ?? "").get("devmode") === "1") { on = true; apply(load()); }
+  if (CONFIG.devTools && new URLSearchParams(globalThis.location?.search ?? "").get("devmode") === "1") { on = true; apply(load()); }
 }
 
 // The settings as text, to hand on: only what differs from the game's own

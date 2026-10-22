@@ -8,6 +8,11 @@ export const CONFIG = {
   // (Saved data keeps the keys it had when it was Eztrix, eztrix.*, so nothing saved is lost.)
   name: "Estrix",
 
+  // Whether the developer tools can be opened at all. false (before shipping): there's no way in,
+  // not by three taps on the version number, a shift-click on God mode, ?devmode=1, the
+  // backquote key's debug keys, nor ?debug in the browser's console.
+  devTools: true,
+
   board: { cols: 14, rows: 24 },
 
   // Game modes. Extreme = the game with no powerups. Normal (Classic) = the same game plus powerups.
