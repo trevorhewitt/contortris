@@ -2597,7 +2597,7 @@ export function planCrack(state, end = null) {
     const need = new Uint8Array(cols * rows);
     for (let y = top; y < rows; y++) for (let x = 0; x < cols; x++) if (!occ[y * cols + x] && !holes[y * cols + x]) need[y * cols + x] = 1;
     let work = occ.slice();
-    let fillers = tile(work, need, fillerCandidates(state), rng, cols, rows, 3, holes);
+    let fillers = tile(work, need, fillerCandidates(state), rng, cols, rows, 3, holes, quickBudget(cols, rows));
     if (!fillers && tries >= 2) { work = occ.slice(); fillers = tileFlat(work, need, flatCandidates(state), rng, cols, rows); }
     if (!fillers) continue;
     const res = crackEnd(state, end, list, { ghost, singles, top, seg });
@@ -3472,7 +3472,7 @@ export function planMess(state) {
     // (the top row needs a gap too, so it doesn't clear when it's finished)
     need[top * cols + Math.floor(rng() * cols)] = 0;
     let work = occ.slice();
-    let fillers = tile(work, need, fillerCandidates(state), rng, cols, rows, 3, holes);
+    let fillers = tile(work, need, fillerCandidates(state), rng, cols, rows, 3, holes, quickBudget(cols, rows));
     if (!fillers && tries >= 2) { work = occ.slice(); fillers = tileFlat(work, need, flatCandidates(state), rng, cols, rows); }
     if (!fillers) continue;
     const items = toItems(occ, asFillers(fillers), cols, rows, { mustClear: false });
@@ -3566,11 +3566,9 @@ function fillerCandidates(state) {
   // round them: castFor)
   const cast = state.zen?.cast, few = (CONFIG.zen.cast?.fewUses ?? 99) * Math.sqrt(Math.max(1, CONFIG.board.cols * CONFIG.board.rows / 336));
   const pool = plannable(state, 3).filter(s => !cast || cast.keep.has(s.id));
-  const all = candidates(pool, FILLER.w, FILLER.h, FILLER.cells), rel = freshness(state, pool);
-  for (const c of all) {
-    c.fresh = rel(c.shape);
-    if (cast?.lead.has(c.shape.id)) { c.lead = true; if (cast.few) c.cap = Math.round(few * Math.sqrt(c.cells.length)); }
-  }
+  const rel = freshness(state, pool);
+  const all = candidates(pool, FILLER.w, FILLER.h, FILLER.cells).map(c => ({ ...c, fresh: rel(c.shape) }));
+  for (const c of all) if (cast?.lead.has(c.shape.id)) { c.lead = true; if (cast.few) c.cap = Math.round(few * Math.sqrt(c.cells.length)); }
   return [...strayCandidates(state), ...all];
 }
 // (the biggest the planners fill in with: wide, tall, blocks)
@@ -3630,29 +3628,43 @@ function awkwardCandidates(state, maxW) {
 }
 
 // Every distinct turn of each piece, with the cell the planner lines it up by: the leftmost
-// cell of its bottom row.
+// cell of its bottom row. (The same every time for a piece, so worked out once: turnsCache.
+// Shared, so not to be changed: a copy for that.)
+const turnsCache = new WeakMap();
 function candidates(shapes, maxW, maxH, maxCells) {
-  const out = [];
+  const out = [], size = `${maxW},${maxH},${maxCells}`;
   for (const s of shapes) {
-    const seen = new Set(), turns = reachableTurns(s);
-    s.rotations.forEach((mat, rot) => {
-      const h = mat.length, w = mat[0].length;
-      if (rot >= turns || w > maxW || h > maxH) return;
-      const key = mat.map(r => r.map(Number).join("")).join("/");
-      if (seen.has(key)) return;
-      seen.add(key);
-      const cells = [];
-      for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (mat[j][i]) cells.push([i, j]);
-      if (cells.length > maxCells) return;
-      // (for the planner, flat: its cells, and again from the bottom row up, which rule a place
-      // out soonest; and which cells it has)
-      const near = [...cells].sort((p, q) => q[1] - p[1] || p[0] - q[0]);
-      const mask = new Uint8Array(w * h);
-      for (const [i, j] of cells) mask[j * w + i] = 1;
-      out.push({ shape: s, rot, mat, w, h, cells, ax: mat[h - 1].findIndex(Boolean), ay: h - 1, mask,
-        cellsF: Int8Array.from(cells.flat()), nearF: Int8Array.from(near.flat()) });
-    });
+    let by = turnsCache.get(s);
+    if (!by) turnsCache.set(s, by = new Map());
+    let turns = by.get(size);
+    if (!turns) by.set(size, turns = turnsOf(s, maxW, maxH, maxCells));
+    for (const c of turns) out.push(c);
   }
+  return out;
+}
+function turnsOf(s, maxW, maxH, maxCells) {
+  const out = [], seen = new Set(), turns = reachableTurns(s);
+  s.rotations.forEach((mat, rot) => {
+    const h = mat.length, w = mat[0].length;
+    if (rot >= turns || w > maxW || h > maxH) return;
+    const key = mat.map(r => r.map(Number).join("")).join("/");
+    if (seen.has(key)) return;
+    seen.add(key);
+    const cells = [];
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (mat[j][i]) cells.push([i, j]);
+    if (cells.length > maxCells) return;
+    // (for the planner, flat: its cells, and again from the bottom row up, which rule a place
+    // out soonest; which cells it has; and how many of its bottom row run on unbroken from the
+    // cell it's lined up by, `run`, which rules most places out at a glance)
+    const near = [...cells].sort((p, q) => q[1] - p[1] || p[0] - q[0]);
+    const mask = new Uint8Array(w * h);
+    for (const [i, j] of cells) mask[j * w + i] = 1;
+    const ax = mat[h - 1].findIndex(Boolean);
+    let run = 0;
+    while (ax + run < w && mat[h - 1][ax + run]) run++;
+    out.push({ shape: s, rot, mat, w, h, cells, ax, ay: h - 1, run, mask,
+      cellsF: Int8Array.from(cells.flat()), nearF: Int8Array.from(near.flat()) });
+  });
   return out;
 }
 
@@ -3700,6 +3712,9 @@ function tile(occ, need, cands, rng, cols, rows, maxUses = 3, holes = null, budg
     for (; y >= 0; y--, x = 0) for (; x < cols; x++) if (need[y * cols + x] && !occ[y * cols + x]) return y * cols + x;
     return -1;
   };
+  // how many cells from (x, y) rightwards are still to fill, unbroken: no piece whose bottom row
+  // runs on further than that from the cell it's lined up by (`run`) can go in there
+  const roomAt = (x, y) => { let n = 0; while (x + n < cols && need[y * cols + x + n] && !occ[y * cols + x + n]) n++; return n; };
   const put = (p, v) => {
     for (const [i, j] of p.c.cells) {
       const x = p.x0 + i, y = p.y0 + j;
@@ -3717,7 +3732,8 @@ function tile(occ, need, cands, rng, cols, rows, maxUses = 3, holes = null, budg
     if (++steps > budget) return null;
     const top = stack[stack.length - 1];
     if (top.placed) { put(top.placed, 0); top.placed = null; plan.pop(); }
-    const ax = top.a % cols, ay = (top.a / cols) | 0;
+    // (the same each time back here: what was put in since has all been taken out again)
+    const ax = top.a % cols, ay = (top.a / cols) | 0, room = (top.room ??= roomAt(ax, ay));
     let found = null;
     // (a second pass for pieces already used enough: of those that fit here, the least used
     // first, so it isn't the same one in every gap)
@@ -3725,7 +3741,7 @@ function tile(occ, need, cands, rng, cols, rows, maxUses = 3, holes = null, budg
       if (top.pass === 1) {
         if (!top.alts) {
           top.alts = [];
-          for (let i = 0; i < order.length; i++) { const c = order[i]; if (!c.stray && uses[sid[i]] >= (c.cap ?? maxUses) && fits(c, ax - c.ax, ay - c.ay)) top.alts.push(i); }
+          for (let i = 0; i < order.length; i++) { const c = order[i]; if (!c.stray && uses[sid[i]] >= (c.cap ?? maxUses) && c.run <= room && c.ay <= ay && fits(c, ax - c.ax, ay - c.ay)) top.alts.push(i); }
           top.alts.sort((a, b) => uses[sid[a]] - uses[sid[b]] || a - b);
         }
         if (top.ci < top.alts.length) { const i = top.alts[top.ci++], c = order[i]; found = { c, x0: ax - c.ax, y0: ay - c.ay, s: sid[i] }; }
@@ -3734,6 +3750,7 @@ function tile(occ, need, cands, rng, cols, rows, maxUses = 3, holes = null, budg
         const c = order[top.ci];
         if (uses[sid[top.ci]] >= (c.cap ?? maxUses)) continue;
         if (c.stray && (uses[sid[top.ci]] >= 1 || !(top.strayOk ??= rng() < strayHere))) continue;
+        if (c.run > room || c.ay > ay) continue; // (too long a bottom row for here, or too tall)
         const x0 = ax - c.ax, y0 = ay - c.ay;
         if (fits(c, x0, y0)) found = { c, x0, y0, s: sid[top.ci] };
       }
@@ -3749,6 +3766,10 @@ function tile(occ, need, cands, rng, cols, rows, maxUses = 3, holes = null, budg
   }
   return null;
 }
+
+// (a quarter of that, for a plan that tries again another way anyway: a tiling that works nearly
+// always takes far fewer steps, and one that hasn't by then most likely won't)
+const quickBudget = (cols, rows) => 300 * Math.max(1, cols * rows / 336);
 
 // The same, the simple way, when that fails around awkward gaps: row by row from the bottom, each
 // stretch of a row between the gaps laid with flat pieces (like bricks), each one resting on
