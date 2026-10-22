@@ -583,6 +583,74 @@ test("a piece comes down where it can get onto the board, not over a stack right
   assert.ok(Math.abs(state.active.x - (COLS - 2) / 2) <= 3, "near the middle");
 });
 
+// (dropped straight down from where it is, would all of the falling piece end up on the board?)
+function landsWhole(state) {
+  const a = state.active, mat = a.shape.rotations[a.rotIdx];
+  const hits = (y) => mat.some((row, j) => row.some((c, i) => c && (y + j >= ROWS || (y + j >= 0 && state.board[y + j][a.x + i]))));
+  let y = a.y;
+  while (!hits(y + 1)) y++;
+  return mat.every((row, j) => row.every(c => !c || y + j >= 0));
+}
+
+test("a piece comes down where all of it gets onto the board, not just some of it, turned if it must", () => {
+  // (a stack in the middle up to the second row: the big square coming down over it would get
+  // only its bottom row on, and stick out over the top)
+  const tower = [...Array(COLS).keys()].filter(x => Math.abs(x - (COLS - 1) / 2) < 3);
+  for (let seed = 1; seed <= 8; seed++) {
+    const { state } = newGame("extreme", seed);
+    state.board.forEach(row => row.fill(null));
+    for (let y = 1; y < ROWS; y++) for (const x of tower) state.board[y][x] = filler();
+    placeActive(state, "pea", 0, 0);
+    setNextPiece(state, byId("square"));
+    hardDropAndLock(state);
+    const a = state.active;
+    assert.equal(a.shape.id, "square");
+    assert.ok(a.x + 4 <= tower[0] || a.x > tower.at(-1), `seed ${seed}: it comes down clear of the stack (x ${a.x})`);
+    assert.ok(landsWhole(state), `seed ${seed}: all of it on the board`);
+  }
+  // (every row full but for two columns: a straight piece lying down would stick out wherever it
+  // went; stood on its end, it goes down one of them)
+  const stick = byId("astronaut_ice_cream"), gaps = [3, 10];
+  assert.equal(stick.rotations[0].length, 1, "(lying down to start with)");
+  const { state } = newGame("extreme", 2);
+  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) state.board[y][x] = gaps.includes(x) ? null : filler();
+  placeActive(state, "pea", 10, 0);
+  setNextPiece(state, stick);
+  hardDropAndLock(state);
+  assert.equal(state.active.shape.id, stick.id);
+  assert.ok(stick.rotations[state.active.rotIdx].length === 4 && gaps.includes(state.active.x), "stood up, over a gap");
+  assert.ok(landsWhole(state));
+  hardDropAndLock(state);
+  assert.equal(state.gameOver, false);
+});
+
+test("a piece that couldn't go anywhere without sticking out over the top doesn't come, if another could", () => {
+  // (the board full but for a well two deep and one a block deep: only the smallest pieces fit)
+  const setUp = (seed) => {
+    const { state, events } = newGame("extreme", seed);
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
+      const gap = y <= 1 ? x === 3 || x === 10 : x === (y * 5 + 1) % COLS; // (holes further down, under blocks)
+      state.board[y][x] = gap ? null : filler();
+    }
+    placeActive(state, "pea", 10, 0); // (into the second well)
+    return { state, events };
+  };
+  let swapped = 0;
+  for (let seed = 1; seed <= 10; seed++) {
+    const { state, events } = setUp(seed);
+    hardDropAndLock(state);
+    assert.ok(state.active, `seed ${seed}: something came`);
+    assert.ok(landsWhole(state), `seed ${seed}: ${state.active.shape.id} fits`);
+    if (events.some(e => e.type === "deferred")) swapped++;
+  }
+  assert.ok(swapped >= 5, `most of what was picked couldn't fit, and something else came (${swapped} of 10)`);
+  // (one asked for by name still comes, all the same)
+  const { state } = setUp(1);
+  setNextPiece(state, byId("square"));
+  hardDropAndLock(state);
+  assert.equal(state.active.shape.id, "square");
+});
+
 test("a piece slid along the ground waits a little longer, so it can be slid again (up to a point)", () => {
   const fresh = () => {
     const { state } = newGame("extreme", 5);

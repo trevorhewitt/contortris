@@ -17,9 +17,9 @@
 //   "endGame"        { on, escaped }            the (hidden) end game starts or is escaped
 
 import { CONFIG } from "../config.js";
-import { clamp01, lerp } from "./util.js";
+import { clamp01, lerp, sampleByWeight } from "./util.js";
 import { getShapePaint } from "./shapes.js";
-import { initPieceSelectionState, selectPiece, destroyerCells, stillUseful } from "./selection.js";
+import { initPieceSelectionState, selectPiece, destroyerCells, stillUseful, inGame } from "./selection.js";
 import { createShelf, shelfReady, shelfQueue, takeShelfPending } from "./shelf.js";
 import { gravityColumns } from "./godmode.js";
 import { resolveArea, resolvePowerupArea, collapseRows, computeEffect, phantomLandingY, isPhantomPowerup, rollScatter, classOf, comesDown } from "./powerups.js";
@@ -635,7 +635,7 @@ function spawnPiece(state) {
     // (Unless one's waiting its turn: asked for by name, in dev mode and the tests.)
     const waiting = state.next;
     state.next = null;
-    shape = notDeadly(state, waiting ?? prepareShape(state, selectPiece(state)));
+    shape = notDeadly(state, waiting ?? prepareShape(state, selectPiece(state)), !!waiting);
     // (a powerup with nothing to do here, one asked for ahead of time: one of the same outline
     // that can, unless it was asked for by name)
     const swap = state.nextChosen ? { shape } : stillUseful(state, shape);
@@ -660,11 +660,14 @@ function spawnPiece(state) {
   // (zen: it starts out already turned, over the place it's going, if the computer has it)
   if (state.zen) zenSpawned(state, { bay: !!shelved });
   if (at != null) state.active.x = at; // (the tutorial's pieces start where the page says)
-  // (with no room for any of it to come onto the board there, under a stack right up to the top,
-  // it comes down somewhere it can: the piece that ends a game is one the player sees)
-  else if (!state.zen && !isPhantomPowerup(shape.powerup)) state.active.x = roomToEnter(state, mat, state.active.x);
+  // (with no room for all of it to come onto the board there, under a stack up near the top, it
+  // comes down somewhere it can, turned if it must: the piece that ends a game is one the player sees)
+  else if (!state.zen && !isPhantomPowerup(shape.powerup)) {
+    const to = roomToEnter(state, shape, rotIdx, state.active.x);
+    Object.assign(state.active, { x: to.x, rotIdx: to.rot, y: -shape.rotations[to.rot].length });
+  }
   // (an Extra Shiny Piece is put straight onto the top of the board, if there's room for it there)
-  if (shelved && !collides(state, state.active.x, 0, mat)) state.active.y = 0;
+  if (shelved && !collides(state, state.active.x, 0, getActiveMatrix(state))) state.active.y = 0;
   const pauseFirst = state.zen?.pauseFirst ?? 0;
 
   const ok = isPhantomPowerup(shape.powerup) || !collides(state, state.active.x, state.active.y, getActiveMatrix(state));
@@ -686,25 +689,26 @@ function spawnPiece(state) {
   return ok;
 }
 
-// Where a piece can come down onto the board from, starting at column x0: x0, if any of it would
-// get onto the board there, dropped straight down; or else the nearest column where it would land
-// without sticking out over the top, and failing that, where the most of it would get on. (Nowhere
-// at all: x0.)
-function roomToEnter(state, mat, x0) {
-  const cols = CONFIG.board.cols, w = mat[0].length;
-  const onBoard = (x) => {
-    let y = -mat.length;
-    while (!collides(state, x, y + 1, mat)) y++;
+// Where a piece, turned `rot`, can come down onto the board from, starting at column x0: x0, if
+// all of it would get onto the board there, dropped straight down; or else the nearest column where
+// it would land without sticking out over the top, as it is, or else turned another way it can
+// turn; and failing that, wherever the most of it would get on (as it is, and nearer, if as much).
+// (Nowhere at all: as it was.) { x, rot }
+function roomToEnter(state, shape, rot, x0) {
+  const cols = CONFIG.board.cols, all = blockCount(shape), top = boardTops(state);
+  const onBoard = (mat, x) => {
+    const y = landsAt(top, mat, x);
     return mat.reduce((n, row, j) => n + (y + j >= 0 ? row.filter(Boolean).length : 0), 0);
   };
-  if (onBoard(x0) > 0) return x0;
-  const all = mat.reduce((n, row) => n + row.filter(Boolean).length, 0);
-  let best = x0, most = 0;
-  for (let d = 1; d < cols; d++) for (const x of [x0 - d, x0 + d]) {
-    if (x < 0 || x + w > cols) continue;
-    const n = onBoard(x);
-    if (n === all) return x;
-    if (n > most) { best = x; most = n; }
+  let best = { x: x0, rot }, most = 0;
+  for (const r of [rot, ...[...Array(reachableTurns(shape)).keys()].filter(r => r !== rot)]) {
+    const mat = shape.rotations[r], w = mat[0].length, at = Math.max(0, Math.min(cols - w, x0));
+    for (let d = 0; d < cols; d++) for (const x of d ? [at - d, at + d] : [at]) {
+      if (x < 0 || x + w > cols) continue;
+      const n = onBoard(mat, x);
+      if (n === all) return { x, rot: r };
+      if (n > most) { best = { x, rot: r }; most = n; }
+    }
   }
   return best;
 }
@@ -728,36 +732,97 @@ function introduce(state, shape) {
   return isNew;
 }
 
-// A giant, or a level 6 set's piece, that couldn't go anywhere without sticking out over the top
-// (an instant game over) doesn't come: something to make room comes instead (a big destroyer, or
-// a small piece without powerups). A set ends there, and doesn't come back.
-function notDeadly(state, shape) {
-  if (shape.powerup || (shape.difficulty ?? 1) < 4) return shape;
-  if (fitsSomewhere(state, shape)) return shape;
-  if ((shape.difficulty ?? 1) === LEVEL6 && state.pieceSel?.level6) cutGroup(state);
+// A piece that couldn't go anywhere without sticking out over the top (an instant game over, and
+// out of sight, up at the top) doesn't come, if something else could. A giant, or a level 6 set's
+// piece: something to make room comes instead (a big destroyer, or a small piece without
+// powerups), and a set ends there, and doesn't come back. Any other (unless it was asked for by
+// name): another of its level that would fit somewhere, or else of the nearest level below with
+// one; a Shiny Piece (not one that vanishes as it goes off), another of its kind that would, or
+// else an ordinary small piece that would.
+function notDeadly(state, shape, named = false) {
+  const pu = shape.powerup, lvl = shape.difficulty ?? 1, giant = !pu && lvl >= 4, top = boardTops(state);
+  if ((named && !giant) || pu?.consume || fitsSomewhere(state, shape, top)) return shape;
+  let other;
+  if (giant) {
+    if (lvl === LEVEL6 && state.pieceSel?.level6) cutGroup(state);
+    other = roomMaker(state, top);
+  } else if (pu) {
+    const kind = (p) => [p.powerup.cls, ...(p.powerup.parts ?? []).map(part => part.type)].join();
+    other = fittingOf(state, top, state.powerups.filter(p => kind(p) === kind(shape) && (p.frequency ?? 1) > 0 && isPowerupEnabled(p) && !p.powerup.bad && !state.devPowerups?.disabled?.has(p.id)))
+      ?? fittingFrom(state, top, 1);
+  } else {
+    other = fittingFrom(state, top, lvl);
+  }
+  if (!other) return shape;
   emit(state, "deferred", { shape });
-  return prepareShape(state, roomMaker(state));
+  return other;
 }
 
-function roomMaker(state) {
-  const big = state.powerups.filter(p => isPowerupEnabled(p) && !p.powerup.bad && (destroyerCells(p) >= 40 || gravityColumns(p) >= 8));
-  if (big.length && CONFIG.modes[state.mode]?.powerups !== false) return big[Math.floor(state.rng() * big.length)];
+function roomMaker(state, top) {
+  // (one that vanishes as it goes off, or would fit)
+  const big = state.powerups.filter(p => isPowerupEnabled(p) && !p.powerup.bad && (destroyerCells(p) >= 40 || gravityColumns(p) >= 8) && (p.powerup.consume || fitsSomewhere(state, p, top)));
+  if (big.length && CONFIG.modes[state.mode]?.powerups !== false) return prepareShape(state, big[Math.floor(state.rng() * big.length)]);
   const small = state.shapes.filter(s => (s.frequency ?? 1) > 0 && (s.difficulty ?? 1) <= 1);
-  return small[Math.floor(state.rng() * small.length)] ?? state.shapes[0];
+  return fittingFrom(state, top, 1) ?? prepareShape(state, small[Math.floor(state.rng() * small.length)] ?? state.shapes[0]);
+}
+
+// An ordinary piece of level `lvl` that would fit somewhere, or else of the nearest level below
+// with one (or null).
+function fittingFrom(state, top, lvl) {
+  const served = state.pieceSel?.servedCounts;
+  for (let l = lvl; l >= 0; l--) {
+    const s = fittingOf(state, top, state.shapes.filter(s => (s.difficulty ?? 1) === l && (s.frequency ?? 1) > 0 && inGame(s) && !(s.once && served?.get(s.id) > 0)));
+    if (s) return s;
+  }
+  return null;
+}
+
+// One of `pool` that would fit somewhere, the commoner likelier, as it'll come (remixed, say), or null.
+function fittingOf(state, top, pool) {
+  while (pool.length) {
+    const s = sampleByWeight(pool, p => p.frequency ?? 1, state.rng);
+    const ready = fitsSomewhere(state, s, top) ? prepareShape(state, s) : null;
+    if (ready && fitsSomewhere(state, ready, top)) return ready;
+    pool.splice(pool.indexOf(s), 1);
+  }
+  return null;
 }
 
 // Could the piece go anywhere (any turn it can reach, any column) without sticking out over the top?
-function fitsSomewhere(state, shape) {
+function fitsSomewhere(state, shape, top = boardTops(state)) {
   const cols = CONFIG.board.cols;
   for (let r = 0; r < reachableTurns(shape); r++) {
-    const mat = shape.rotations[r], w = mat[0].length;
-    for (let x = 0; x + w <= cols; x++) {
-      let y = -mat.length;
-      while (!collides(state, x, y + 1, mat)) y++;
-      if (!mat.some((row, j) => y + j < 0 && row.some(Boolean))) return true;
-    }
+    const mat = shape.rotations[r], high = lowsOf(mat).high;
+    for (let x = 0; x + mat[0].length <= cols; x++) if (landsAt(top, mat, x) + high >= 0) return true;
   }
   return false;
+}
+
+// Where `mat` comes to rest, dropped straight down at column x: the row its top is in (top: the
+// board's columns' highest blocks, boardTops). Each of its columns stops on the highest block in
+// that column: nothing above that block can be in the way.
+function landsAt(top, mat, x) {
+  const low = lowsOf(mat).low;
+  let y = Infinity;
+  for (let i = 0; i < low.length; i++) if (low[i] >= 0) y = Math.min(y, top[x + i] - 1 - low[i]);
+  return y;
+}
+// (each column's highest block, or the floor)
+function boardTops(state) {
+  const { cols, rows } = CONFIG.board, top = new Array(cols).fill(rows);
+  for (let x = 0; x < cols; x++) for (let y = 0; y < rows; y++) if (state.board[y][x]) { top[x] = y; break; }
+  return top;
+}
+// (a turn of a piece: the lowest of its blocks in each column, -1 for none, and the row its
+// highest is in)
+const lowsMemo = new WeakMap();
+function lowsOf(mat) {
+  let m = lowsMemo.get(mat);
+  if (!m) {
+    const low = mat[0].map((_, i) => { for (let j = mat.length - 1; j >= 0; j--) if (mat[j][i]) return j; return -1; });
+    lowsMemo.set(mat, (m = { low, high: mat.findIndex(row => row.some(Boolean)) }));
+  }
+  return m;
 }
 
 // The player takes a powerup off the shelf (src/shelf.js): the falling piece bursts into bits, and
