@@ -1442,16 +1442,17 @@ export function createRenderer(boardCanvas, nextCanvas) {
     bctx.fillRect(0, 0, bw, 2);
   }
 
-  // Animated outline around a powerup piece (falling, or charging), in its class's colours
-  // (rainbow for combos).
-  function drawPowerupShimmer(cells, now, boost = 0, type = "combo") {
+  // Animated outline around a powerup piece (falling, or charging), in its class's colours (a
+  // combo's in its classes' colours, a cell of each in turn: nothing of its own).
+  function drawPowerupShimmer(cells, now, boost = 0, pu = null) {
     // cells: [{x, y, mask}] in board coords
     const alpha = clamp01(CONFIG.fx.powerup.shimmerAlpha + boost * 0.1);
+    const types = pu?.parts?.length ? pu.parts.map(p => p.type) : [pu?.type];
     bctx.save();
     bctx.lineWidth = 1.5;
     for (const { x, y, mask } of cells) {
       const px = x * cell, py = y * cell;
-      const c = markColour(type, now * 2, x * 2, y * 2);
+      const c = markColour(types[(((x + y) % types.length) + types.length) % types.length], now * 2, x * 2, y * 2);
       bctx.strokeStyle = hsla(c.h, c.s, Math.max(c.l, 62), alpha);
       bctx.beginPath();
       if (mask & EDGE_T) { bctx.moveTo(px, py + 0.75); bctx.lineTo(px + cell, py + 0.75); }
@@ -1654,7 +1655,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   }
 
   // Rings racing out from the centre: a blast's shockwave (and a quick flash), a destroyer's
-  // fiery burst, an expander's pulse, a phantom's ripple, a combo's rainbow.
+  // fiery burst, an expander's pulse, a phantom's ripple.
   function drawShockwaves(state, now) {
     const list = state.fx.shockwaves;
     if (!list.length || calmFx()) return; // (calmer animations: no rings)
@@ -1703,23 +1704,6 @@ export function createRenderer(boardCanvas, nextCanvas) {
       bctx.strokeStyle = `rgba(225,215,255,${(0.6 * fade).toFixed(3)})`;
       bctx.beginPath(); bctx.arc(cx, cy, r, 0, Math.PI * 2); bctx.stroke();
       bctx.setLineDash([]);
-    } else if (w.kind === "rainbow") {
-      // a ring of the warm rainbow, turning as it spreads, with a soft glow of it round it (each
-      // a single stroke of a gradient round it, where the browser has them)
-      const segs = 30;
-      for (const [width, alpha, lift] of [[cell * 1.1, 0.22, 0], [cell * 0.4, 0.85, 0.15]]) {
-        bctx.lineWidth = Math.max(2, width * fade);
-        if (bctx.createConicGradient) {
-          bctx.strokeStyle = rainbowRound(bctx, cx, cy, now * 0.003, alpha * fade, lift);
-          bctx.beginPath(); bctx.arc(cx, cy, r, 0, Math.PI * 2); bctx.stroke();
-          continue;
-        }
-        for (let k = 0; k < segs; k++) {
-          const a0 = (k / segs) * Math.PI * 2 + now * 0.003, a1 = a0 + Math.PI * 2 / segs + 0.02;
-          bctx.strokeStyle = ombre(k / segs, alpha * fade, lift);
-          bctx.beginPath(); bctx.arc(cx, cy, r, a0, a1); bctx.stroke();
-        }
-      }
     }
     bctx.globalCompositeOperation = "source-over";
   }
@@ -1785,27 +1769,6 @@ export function createRenderer(boardCanvas, nextCanvas) {
         }
         bctx.globalCompositeOperation = "source-over";
       }
-    }
-
-    // combos: the rainbow running out along every part of it, cell by cell, each cell in its
-    // part's own colours with a white square split into the warm rainbow over it
-    if (sh.sweep) {
-      bctx.globalCompositeOperation = "lighter";
-      for (const c of sh.sweep.cells) {
-        const u = (t - c.at) / sh.sweep.ms;
-        if (u < 0 || u >= 1) continue;
-        const a = Math.sin(u * Math.PI), px = c.x * cell, py = c.y * cell;
-        const col = markColour(c.type, now, c.x, c.y);
-        bctx.fillStyle = hsla(col.h, col.s, Math.max(col.l, 62), 0.5 * a);
-        bctx.fillRect(px, py, cell, cell);
-        let ux = c.x + 0.5 - sh.centre.x, uy = c.y + 0.5 - sh.centre.y;
-        const len = Math.hypot(ux, uy) || 1;
-        ux /= len; uy /= len;
-        chromas.push(px + cell / 2, py + cell / 2, cell * (0.28 + 0.34 * (1 - u)), ux, uy, 1 + cell * 0.14 * a, a, 0.12);
-      }
-      drawChromaSquares(bctx, chromas);
-      bctx.globalAlpha = 1;
-      bctx.globalCompositeOperation = "source-over";
     }
 
     // blocks that have left the board: pulled into the core, or fading away
@@ -2242,13 +2205,13 @@ export function createRenderer(boardCanvas, nextCanvas) {
       drawPowerupOverlay(state, ghostY, now);
 
       if (state.active?.shape.powerup) {
-        drawPowerupShimmer(activeShimmerCells(state), now, 0, state.active.shape.powerup.type);
+        drawPowerupShimmer(activeShimmerCells(state), now, 0, state.active.shape.powerup);
       } else if (state.effect?.phase === "charge") {
         const e = state.effect;
         const cells = e.placed
           .filter(({ x, y }) => state.board[y][x]?.pid === e.pid)
           .map(({ x, y }) => ({ x, y, mask: boardEdgeMask(state.board, x, y, e.pid) }));
-        drawPowerupShimmer(cells, now, clamp01(e.elapsedMs / e.durationMs), e.pu?.type);
+        drawPowerupShimmer(cells, now, clamp01(e.elapsedMs / e.durationMs), e.pu);
       }
 
       drawShow(state, now);

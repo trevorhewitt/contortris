@@ -1325,10 +1325,6 @@ export const CONFIG = {
         tailMs: 500,        // (rings and glows fade out after play carries on)
         fadeMs: 170,        // a vanishing powerup fades out
         comboOverlap: 0.72, // a combo's next part starts when the one before is this far through
-        finaleLead: 120,    // and its rainbow comes this long before the end
-        // ...running out from the middle along every part of it, cell by cell (msPerCell further
-        // out), each cell lit for `ms`, with sparks off `sparks` of them
-        comboSweep: { msPerCell: 30, ms: 460, sparks: 0.3 },
         destroy: { pullMs: 150, msPerSqrtCell: 52, jitterMs: 60, popMs: 260, maxEmbers: 180 },
         gravity: { trembleMs: 230, trembleFrom: 6, squashMs: 150 },
         phantom: { ms: 380 },

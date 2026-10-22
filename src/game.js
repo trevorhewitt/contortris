@@ -1433,7 +1433,7 @@ function planShow(state, e, fx, affected, reach) {
     centre: { x: e.centre.x + 0.5, y: e.centre.y + 0.5 }, area: e.area.indices,
     blocks: [],   // blocks no longer on the board that it still draws (pulled in, fading away)
     pull: null, ghost: null, fills: null, trails: false, tremble: 0, land: null,
-    phases: [], quakes: [], finaleAt: null,
+    phases: [], quakes: [],
     elapsedMs: 0, durationMs: 0, settleMs: 0, speed: e.speed,
   };
   // (goo flows from where the piece melted to where it settles)
@@ -1463,18 +1463,6 @@ function planShow(state, e, fx, affected, reach) {
     spawnCellParticles(state, fx.consumed, 0.6, hold);
   }
   if (reach) state.fx.shockwaves.push({ kind: "blast", x: show.centre.x, y: show.centre.y, radius: reach + 1, elapsedMs: -hold, durationMs: 420 * slow });
-  if (show.cls === "combo") {
-    // the finale: the rainbow running out from the middle along every part of it, every cell it
-    // touched (a long one lights up all the way along), sparks flying off all along it, a
-    // rainbow ring and a burst of confetti
-    const at = Math.max(hold, end - S.finaleLead);
-    show.finaleAt = at;
-    show.sweep = comboSweep(e, show.centre, at, slow);
-    sparksAlong(state, show.sweep);
-    state.fx.shockwaves.push({ kind: "rainbow", x: show.centre.x, y: show.centre.y, radius: 2.5 + 5 * power + Math.sqrt(affected) * 0.35, elapsedMs: -at, durationMs: 560 * slow });
-    confetti(state, show.centre, Math.round(10 + 40 * power), at);
-    end = Math.max(end, at + 240, show.sweep.last + show.sweep.ms * 0.6);
-  }
   // (the particles and rings it set going play at its speed too: updateFX)
   for (let i = had[0]; i < particles.length; i++) particles[i].speed = show.speed;
   for (let i = had[1]; i < shockwaves.length; i++) shockwaves[i].speed = show.speed;
@@ -1482,38 +1470,6 @@ function planShow(state, e, fx, affected, reach) {
   show.durationMs = show.settleMs + S.tailMs;
   state.fx.show = show;
   return show;
-}
-
-// A combo's rainbow, cell by cell: every cell of each part's area, and the piece itself, each lit
-// in turn the further it is from the middle ({ cells: [{ x, y, type, at }], ms, last }).
-function comboSweep(e, centre, at, slow) {
-  const C = CONFIG.fx.powerup.show.comboSweep ?? {}, cols = CONFIG.board.cols;
-  const types = new Map();
-  (e.pu.parts ?? []).forEach((p, k) => { for (const i of e.area.parts?.[k]?.indices ?? []) if (!types.has(i)) types.set(i, p.type); });
-  for (const { x, y } of e.placed) if (y >= 0 && !types.has(y * cols + x)) types.set(y * cols + x, "combo");
-  const cells = [];
-  let last = at;
-  for (const [i, type] of types) {
-    const x = i % cols, y = (i / cols) | 0;
-    const t = at + Math.hypot(x + 0.5 - centre.x, y + 0.5 - centre.y) * (C.msPerCell ?? 30) * slow;
-    cells.push({ x, y, type, at: t });
-    last = Math.max(last, t);
-  }
-  return { cells, ms: (C.ms ?? 460) * slow, last };
-}
-
-// ...and sparks flying off it all along, each as its cell lights up.
-function sparksAlong(state, sweep) {
-  const cellPx = CONFIG.render.cellPx, share = CONFIG.fx.powerup.show.comboSweep?.sparks ?? 0.3;
-  for (const c of sweep.cells) {
-    if (Math.random() >= share) continue;
-    const a = Math.random() * Math.PI * 2, sp = 40 + Math.random() * 120;
-    addParticle(state, {
-      x: (c.x + 0.5) * cellPx, y: (c.y + 0.5) * cellPx, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 50,
-      lifeMs: 500 + Math.random() * 500, delayMs: c.at,
-      color: "#ffffff", chroma: true, glow: true, g: 240, drag: 1.4, size: 2 + (Math.random() < 0.3 ? 1 : 0),
-    });
-  }
 }
 
 // Destroyers: every block in the area is pulled into the middle, faster and faster and glowing
@@ -1819,19 +1775,6 @@ function sendBack(state, ace, piece) {
 function pieceCentre(piece) {
   const mat = piece.shape.rotations[piece.rotIdx];
   return { x: piece.x + mat[0].length / 2, y: piece.y + mat.length / 2 };
-}
-
-// Combos: confetti, white squares split into the warm rainbow (render.js drawChromaSquare).
-function confetti(state, centre, n, at) {
-  const cellPx = CONFIG.render.cellPx;
-  for (let i = 0; i < n; i++) {
-    const a = Math.random() * Math.PI * 2, sp = 80 + Math.random() * 200;
-    addParticle(state, {
-      x: centre.x * cellPx, y: centre.y * cellPx, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 60,
-      lifeMs: 700 + Math.random() * 600, delayMs: at,
-      color: "#ffffff", chroma: true, glow: true, g: 260, drag: 1.3, size: 2 + (Math.random() < 0.4 ? 1 : 0),
-    });
-  }
 }
 
 /* =========================
