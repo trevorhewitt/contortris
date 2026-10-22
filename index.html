@@ -594,7 +594,11 @@
     body.home .overlay #panelMenu #gameVersion{ margin: 0; padding: 3px 8px; background: rgba(0,0,0,0.6); color: rgba(245,245,255,0.6); }
     /* (three taps on it: developer mode) */
     #panelMenu #gameVersion{ user-select: none; -webkit-user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    /* (the version and the copyright: one line, or on a narrow screen one over the other) */
+    @media (max-width: 400px){ #gameVersion .verPart{ display: block; } #gameVersion .verSep{ display: none; } }
     @media (max-height: 460px){ button.modeBtn{ min-height: 40px; padding: 0.5em; } button.modeBtn.main{ min-height: 52px; } }
+    /* (a phone on its side has no room for the words under the logo and the modes' names) */
+    @media (max-height: 460px){ .homeTagline, .modeTag{ display: none; } }
 
     .homeDark{
       position: fixed; inset: 0; z-index: 60; background: #000; opacity: 0;
@@ -1776,7 +1780,7 @@
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
             <div class="menuRow homeRow" id="devRow" hidden><button id="btnDevTools" class="secondary small">Developer tools</button></div>
-            <div class="small" id="gameVersion">version 202610221735</div>
+            <div class="small" id="gameVersion"><span class="verPart">version 202610221735</span><span class="verSep"> · </span><span class="verPart">Copyright 2026 Studio Geometrix</span></div>
           </div>
 
           <div class="msg panel devToolsPanel" id="panelDevTools" hidden>
