@@ -83,6 +83,7 @@ function remainsOf(state, make = false) {
   const r = state.remains;
   if (r?.board === state.board) return r;
   if (!make) return null;
+  if (r) for (const layer of r.layers) retire(layer); // (the last board's)
   const rows = state.board.length, cols = state.board[0]?.length ?? 0;
   return (state.remains = { board: state.board, cols, rows, layers: [], clock: 0, version: ++versions });
 }
@@ -105,6 +106,7 @@ function fold(r) {
     if (!lasting() && n + m) into.born = (into.born * n + newer.born * m) / (n + m);
     for (const [i, e] of newer.cells) into.cells.set(i, e);
     into.version++;
+    retire(newer);
   }
 }
 
@@ -137,6 +139,7 @@ function cover(r) {
     }
     if (gone) layer.version++;
   }
+  for (const layer of r.layers) if (!layer.cells.size) retire(layer);
   r.layers = r.layers.filter(l => l.cells.size);
 }
 
@@ -174,6 +177,7 @@ export function ageRemains(state, dt) {
   r.clock += dt;
   if (lasting()) return;
   const life = lifeMs(), n = r.layers.length;
+  for (const layer of r.layers) if (r.clock - layer.born >= life) retire(layer);
   r.layers = r.layers.filter(l => r.clock - l.born < life);
   if (r.layers.length !== n) r.version = ++versions;
 }
@@ -328,10 +332,34 @@ function blurPixels(px) {
 }
 
 const canvas = (cv, w, h) => {
-  cv ??= document.createElement("canvas");
+  cv ??= spare.pop() ?? document.createElement("canvas");
   if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
   return cv;
 };
+
+// Canvases done with, emptied and kept to be used again. (A new board's made-up layers took about
+// a hundred new ones at once, and as many old ones left about, still holding their pixels until
+// the browser next tidied up: a lot of memory all at once, which had it stop everything to tidy
+// up there and then, twice over. Emptied, a canvas lets go of its pixels at once.)
+const spare = [];
+function letGo(cv) {
+  if (!cv) return;
+  cv.width = cv.height = 0;
+  if (spare.length < 256) spare.push(cv);
+}
+// A layer's canvases (layerArt's), let go of: the layer's gone, or its art is drawn afresh.
+function letGoArt(d) {
+  for (const cv of d.levels ?? []) letGo(cv);
+  for (const cv of d.up?.values() ?? []) letGo(cv);
+  for (const cv of d.ch ?? []) letGo(cv);
+  d.levels = []; d.up = new Map(); d.ch = null;
+}
+function retire(layer) {
+  const d = drawn.get(layer);
+  if (!d) return;
+  drawn.delete(layer);
+  letGoArt(d);
+}
 
 // The canvases a drawing of them goes through (drawRemains has its own; a painter, two, a picture
 // made in one while the other's on show): { front (with scanlines, or for a picture, all of it,
@@ -623,9 +651,8 @@ function layerArt(r, layer, view, px, until = Infinity) {
   x1 = Math.min(r.cols - 1, x1 + room); y1 = Math.min(r.rows - 1, y1 + room);
   if (!d) drawn.set(real, d = {});
   if (d.key !== key || x0 < d.x0 || y0 < d.y0 || x1 > d.x1 || y1 > d.y1) {
-    const unit = 2 ** halvings, cv = document.createElement("canvas");
-    cv.width = Math.ceil((x1 - x0 + 1) * px / unit) * unit;
-    cv.height = Math.ceil((y1 - y0 + 1) * px / unit) * unit;
+    letGoArt(d);
+    const unit = 2 ** halvings, cv = canvas(null, Math.ceil((x1 - x0 + 1) * px / unit) * unit, Math.ceil((y1 - y0 + 1) * px / unit) * unit);
     Object.assign(d, { key, px, levels: [cv], fresh: 1, up: new Map(), upFresh: new Set(), ch: null, chFresh: false, cells: new Map(), x0, y0, x1, y1, bw: cv.width * view.cell / px, bh: cv.height * view.cell / px });
   }
   const g = d.levels[0].getContext("2d"), added = new Path2D();
@@ -749,8 +776,9 @@ export function paintRemains({ cols, rows, cell, pieces, gone = [], sprite, rng 
       ctx.drawImage(k.front, m * cell, m * cell, cols * cell, rows * cell, 0, 0, cols * cell, rows * cell);
       ctx.restore();
     }
-    for (const cv of [k.front, k.smaller, k.glow]) if (cv) cv.width = cv.height = 0;
+    for (const cv of [k.front, k.smaller, k.glow]) letGo(cv);
     k.front = k.smaller = k.glow = k.used = null;
+    for (const layer of state.remains?.layers ?? []) retire(layer); // (and its layers', all done with)
     return true;
   };
 }

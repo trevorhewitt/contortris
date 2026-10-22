@@ -111,12 +111,14 @@ export function buildMosaic(shapes, powerups, { cols, rows, rng = Math.random, t
 // under it a band at a time: a few calls in all, not a square for every pixel of every block.)
 const BAND = 64;
 let layer = null; // (where each band goes before it's laid over the mosaic: one for all of them)
+let spareImg = null; // (the last one's picture, done with: cleared and used again for the next, the same size)
 export function paintMosaic(m, cellPx, canvas = document.createElement("canvas"), under = null) {
   const W = (canvas.width = m.cols * cellPx), H = (canvas.height = m.rows * cellPx);
   const ctx = canvas.getContext("2d");
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, W, H);
-  let img = new ImageData(W, H), px = new Uint32Array(img.data.buffer);
+  let img = spareImg?.width === W && spareImg.height === H ? spareImg : new ImageData(W, H), px = new Uint32Array(img.data.buffer);
+  if (img === spareImg) { spareImg = null; px.fill(0); }
   let i = 0, band = 0;
   const step = (ms = 4) => {
     const until = performance.now() + ms;
@@ -139,6 +141,7 @@ export function paintMosaic(m, cellPx, canvas = document.createElement("canvas")
       if (performance.now() >= until) break;
     }
     if (band * BAND < H) return false;
+    spareImg = img;
     img = px = null; // (done with)
     return true;
   };
