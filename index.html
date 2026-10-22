@@ -511,7 +511,7 @@
 
     /* (the modes: on a phone, or any window too narrow for three across, one column, Classic the
        big one in the middle of it; wider, Classic in the middle, big, Zen and Extreme either side
-       of it, the Tutorial over it and God mode under it, those four all the same size) */
+       of it, How to play over it and God mode under it, those four all the same size) */
     .homeModes{
       --gap: clamp(8px, 1.8vmin, 18px); --big: 1.3;
       display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; align-items: center;
@@ -526,7 +526,7 @@
         width: min(92vw, 900px);
       }
       .homeModes button.modeBtn{ width: 100%; }
-      /* (the Tutorial and God mode as big as Zen and Extreme, not as Classic's column) */
+      /* (How to play and God mode as big as Zen and Extreme, not as Classic's column) */
       .homeModes #btnTutorial, .homeModes #btnGod{ width: calc(100% / var(--big)); }
       #btnTutorial{ grid-area: tutorial; } #btnZen{ grid-area: zen; } #btnNormal{ grid-area: normal; }
       #btnExtreme{ grid-area: extreme; } #btnGod{ grid-area: god; }
@@ -567,18 +567,15 @@
     }
     button.modeBtn:focus-visible{ background: #000; box-shadow: var(--edge-split), var(--edge-glow), 0 0 0 4px rgba(255,255,255,0.55); }
     button.modeBtn:active{ transform: none; }
-    /* (what each mode is, in a few words: only on a computer, with a mouse, and a window with the
-       room for them; never on a phone or a tablet, nor in a small window) */
+    /* (what each mode is, in a few words, under its name: a little bigger on a phone, where the
+       buttons are one under another and have the room) */
     .modeTag{
-      display: none;
-      font-family: var(--font-body); font-size: clamp(9px, min(1.45vw, 2vh), 14px);
+      display: block;
+      font-family: var(--font-body); font-size: clamp(10px, min(1.45vw, 2vh), 14px);
       text-transform: none; letter-spacing: 0; line-height: 1.25; opacity: 0.92;
     }
-    /* (the Tutorial has none: a blank line in its place, so it's the same size as the others) */
-    @media (hover: hover) and (pointer: fine) and (min-width: 900px) and (min-height: 560px){
-      .modeTag{ display: block; }
-      .modeTag:empty::before{ content: "\a0"; }
-    }
+    .modeTag:empty::before{ content: "\a0"; }
+    @media (max-width: 599px){ .modeTag{ font-size: clamp(10px, min(3vw, 1.7vh), 13px); } }
     @keyframes modeSlide{ from{ transform: translateY(-33.3%); } to{ transform: translateY(33.3%); } }
     /* (words that glitch: the rainbow tears apart, jumps, and comes back) */
     @keyframes textGlitch{
@@ -1769,7 +1766,7 @@
             <!-- (in this order down a phone; on a wider screen, Classic in the middle and the rest
                  round it: index.html .homeModes) -->
             <div class="homeModes">
-              <button id="btnTutorial" class="modeBtn" style="--i:0" data-mode="tutorial"><span class="modeName">Tutorial</span><span class="modeTag"></span></button>
+              <button id="btnTutorial" class="modeBtn" style="--i:0" data-mode="tutorial"><span class="modeName">How to play</span><span class="modeTag"></span></button>
               <button id="btnZen" class="modeBtn" style="--i:1" data-mode="zen"><span class="modeName">Zen</span><span class="modeTag"></span></button>
               <button id="btnNormal" class="modeBtn main" style="--i:2" data-mode="normal"><span class="modeName">Classic</span><span class="modeTag"></span></button>
               <button id="btnExtreme" class="modeBtn" style="--i:3" data-mode="extreme"><span class="modeName">Extreme</span><span class="modeTag"></span></button>

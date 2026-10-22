@@ -54,12 +54,12 @@ export const CONFIG = {
     // things first; rescue: it won't let you lose, and no end game; steady: it never speeds up.)
     dev: { label: "Developer", shelf: true, hidden: true, powerups: true, giants: true, level6: "open", everything: true, newest: true, rescue: true, steady: true },
     // (The tutorial, CONFIG.tutorial: the controls and each kind of piece, a page at a time, on
-    // the real board. It has a button of its own on the home screen, so it isn't one of the mode
-    // buttons, nor the mode the menu remembers (hidden); no score, no game over, and nothing
-    // counts towards the achievements.)
+    // the real board. It has a button of its own on the home screen ("How to play", and under
+    // it its tagline), so it isn't one of the mode buttons, nor the mode the menu remembers
+    // (hidden); no score, no game over, and nothing counts towards the achievements.)
     // (pauseWhenHidden false: another tab and back, and it's just where it was, not paused. It
     // doesn't carry on while it's out of sight, as turbo zen does: it waits.)
-    tutorial: { label: "Tutorial", hidden: true, tutorial: true, powerups: true, giants: true, level6: false, achievements: false, pauseWhenHidden: false },
+    tutorial: { label: "Tutorial", tagline: "newbies start here", hidden: true, tutorial: true, powerups: true, giants: true, level6: false, achievements: false, pauseWhenHidden: false },
   },
   defaultMode: "normal",
 
