@@ -644,7 +644,9 @@ function layerArt(r, layer, view, px, until = Infinity) {
     if (++n % 8 === 0 && performance.now() > until) { d.done = false; break; } // (the rest next time)
     const X = (i % r.cols - d.x0) * px, Y = (((i / r.cols) | 0) - d.y0) * px;
     g.clearRect(X, Y, px, px);
-    g.drawImage(view.sprite(e.paint, e.style), X, Y, px, px);
+    const spr = view.sprite(e.paint, e.style);
+    if (spr.img) g.drawImage(spr.img, spr.sx, spr.sy, spr.s, spr.s, X, Y, px, px); // (on a sheet: render.js spriteSheets)
+    else g.drawImage(spr, X, Y, px, px);
     added.rect(X, Y, px, px);
     d.cells.set(i, e);
     any = true;

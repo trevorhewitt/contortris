@@ -14,7 +14,7 @@
 
 import { CONFIG } from "../config.js";
 import { getShapePaint } from "./shapes.js";
-import { drawBlockWithPaintStatic } from "./render.js";
+import { artInto } from "./render.js";
 
 const blocksOf = (s) => s.rotations[0].flat().filter(Boolean).length;
 
@@ -103,30 +103,44 @@ export function buildMosaic(shapes, powerups, { cols, rows, rng = Math.random, t
   return { cols, rows, theme, pieces, filled: occ.reduce((a, b) => a + b, 0) / (cols * rows) };
 }
 
-// Paint it onto a canvas, `cellPx` a cell, a few pieces at a time (it's a lot of little squares:
-// all at once would hold up a frame): { canvas, step(ms) }, step painting for about that long and
-// saying whether it's all there yet. under(ctx, until): paints what goes under the pieces, if
-// anything, until performance.now() is past `until`, saying whether it's done.
+// Paint it onto a canvas, `cellPx` a cell, a little each frame (it's a lot of blocks: all at once
+// would hold up a frame): { canvas, step(ms) }, step painting for about that long and saying
+// whether it's all there yet. under(ctx, until): paints what goes under the pieces, if anything,
+// until performance.now() is past `until`, saying whether it's done. (The pieces' art is written
+// into a picture of the whole mosaic, a few pieces at a time, which then goes on over what's
+// under it a band at a time: a few calls in all, not a square for every pixel of every block.)
+const BAND = 64;
+let layer = null; // (where each band goes before it's laid over the mosaic: one for all of them)
 export function paintMosaic(m, cellPx, canvas = document.createElement("canvas"), under = null) {
-  canvas.width = m.cols * cellPx;
-  canvas.height = m.rows * cellPx;
+  const W = (canvas.width = m.cols * cellPx), H = (canvas.height = m.rows * cellPx);
   const ctx = canvas.getContext("2d");
   ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  let i = 0;
+  ctx.fillRect(0, 0, W, H);
+  let img = new ImageData(W, H), px = new Uint32Array(img.data.buffer);
+  let i = 0, band = 0;
   const step = (ms = 4) => {
     const until = performance.now() + ms;
     // (what's under the pieces, if anything, first, a little at a time too: src/remains.js)
     if (under) { if (under(ctx, until)) under = null; return false; }
     while (i < m.pieces.length) {
-      const p = m.pieces[i++], mat = p.shape.rotations[p.rot];
+      const p = m.pieces[i++], mat = p.shape.rotations[p.rot], base = p.shape.style?.baseColor ?? "#FFFFFF";
       // (what's over the right or bottom edge, round on the left or at the top)
       for (let j = 0; j < mat.length; j++) for (let k = 0; k < mat[0].length; k++) {
-        if (mat[j][k]) drawBlockWithPaintStatic(ctx, ((p.x + k) % m.cols) * cellPx, ((p.y + j) % m.rows) * cellPx, cellPx, getShapePaint(p.shape, p.rot, k, j), p.shape.style ?? {});
+        if (mat[j][k]) artInto(px, W, ((p.x + k) % m.cols) * cellPx, ((p.y + j) % m.rows) * cellPx, cellPx, getShapePaint(p.shape, p.rot, k, j), base);
       }
+      if (performance.now() >= until) return false;
+    }
+    if (!img) return true;
+    if (layer?.canvas.width !== W || layer.canvas.height < BAND) layer = Object.assign(document.createElement("canvas"), { width: W, height: BAND }).getContext("2d");
+    while (band * BAND < H) {
+      const y = band++ * BAND, h = Math.min(BAND, H - y);
+      layer.putImageData(img, 0, -y, 0, y, W, h);
+      ctx.drawImage(layer.canvas, 0, 0, W, h, 0, y, W, h);
       if (performance.now() >= until) break;
     }
-    return i >= m.pieces.length;
+    if (band * BAND < H) return false;
+    img = px = null; // (done with)
+    return true;
   };
   return { canvas, step, mosaic: m };
 }

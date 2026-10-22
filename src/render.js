@@ -166,26 +166,128 @@ function drawBlockWithPaint(ctx, px, py, cellSize, paint, style = {}) {
   }
 }
 
-// Enhanced look: pixel art laid out on the device-pixel grid (even pixel
-// sizes at any scale), no per-cell outline — edges are drawn per piece.
-// (tone: each colour through it first, if given: the blocks in play a little lighter, src/remains.js)
-function drawPixelArtDevice(ctx, sizePx, paint, baseColor, tone = null) {
-  const t = tone ?? ((c) => c);
+/* =========================
+   Block art on sheets
+   ========================= */
+
+// A colour as an ImageData pixel's four bytes in one number (as a Uint32Array over its data reads
+// them, but signed: a solid colour's fits in a small integer, which nothing has to be made for each
+// time it's written): a hex colour straight off, anything else as a canvas paints it.
+const pixelOf = new Map();
+let colourProbe = null;
+function pixelColour(colour) {
+  let v = pixelOf.get(colour);
+  if (v !== undefined) return v;
+  const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(colour).trim());
+  let r, g, b, a = 255;
+  if (m) {
+    const hex = m[1].length === 3 ? [...m[1]].map(ch => ch + ch).join("") : m[1];
+    r = parseInt(hex.slice(0, 2), 16); g = parseInt(hex.slice(2, 4), 16); b = parseInt(hex.slice(4, 6), 16);
+  } else {
+    colourProbe ??= Object.assign(document.createElement("canvas"), { width: 1, height: 1 }).getContext("2d", { willReadFrequently: true });
+    colourProbe.clearRect(0, 0, 1, 1);
+    colourProbe.fillStyle = "#000";
+    colourProbe.fillStyle = colour;
+    colourProbe.fillRect(0, 0, 1, 1);
+    [r, g, b, a] = colourProbe.getImageData(0, 0, 1, 1).data;
+  }
+  v = (a << 24) | (b << 16) | (g << 8) | r;
+  if (pixelOf.size > 4096) pixelOf.clear();
+  pixelOf.set(colour, v);
+  return v;
+}
+
+// A block's art, `size` pixels across, into `px` (an image's pixels, `stride` a row) with its
+// top-left at (x0, y0), written straight in rather than painted a square at a time: its pixel art
+// laid out on whole pixels (as drawBlockWithPaintStatic paints it; for the enhanced look, on the
+// device's own pixels, even at any scale), or solid; each colour through `tone` first, if given.
+export function artInto(px, stride, x0, y0, size, paint, baseColor = "#FFFFFF", tone = null) {
   if (paint && typeof paint === "object" && paint.pixels && paint.k) {
     const k = paint.k;
-    const b = new Array(k + 1);
-    for (let i = 0; i <= k; i++) b[i] = Math.round((i * sizePx) / k);
     for (let sy = 0; sy < k; sy++) {
+      const ya = Math.round((sy * size) / k), yb = Math.round(((sy + 1) * size) / k);
       for (let sx = 0; sx < k; sx++) {
-        const c = paint.pixels[sy][sx];
-        ctx.fillStyle = t((typeof c === "string" && isHexColour(c)) ? c : baseColor);
-        ctx.fillRect(b[sx], b[sy], b[sx + 1] - b[sx], b[sy + 1] - b[sy]);
+        const c = paint.pixels[sy]?.[sx], hex = (typeof c === "string" && isHexColour(c)) ? c : baseColor;
+        const v = pixelColour(tone ? tone(hex) : hex);
+        const xa = x0 + Math.round((sx * size) / k), xb = x0 + Math.round(((sx + 1) * size) / k);
+        for (let y = y0 + ya; y < y0 + yb; y++) px.fill(v, y * stride + xa, y * stride + xb);
       }
     }
   } else {
-    ctx.fillStyle = t((typeof paint === "string") ? paint : baseColor);
-    ctx.fillRect(0, 0, sizePx, sizePx);
+    const c = typeof paint === "string" ? paint : baseColor, v = pixelColour(tone ? tone(c) : c);
+    for (let y = y0; y < y0 + size; y++) px.fill(v, y * stride + x0, y * stride + x0 + size);
   }
+}
+
+// Each distinct block paint's art, `size` pixels a side, kept on a few big canvases (sheets),
+// rather than on a canvas of its own: a burst of new art (rows clearing, a mosaic's remains) is a
+// write to a sheet for each, never a new canvas, all of it drawn from the same few, and however
+// many pieces come and go there are never more than `most` sheets (when they're full, the oldest
+// is wiped and used again, and its art made again when it's next wanted). Each one has a pixel of
+// its own edge all round it, so art drawn smaller, smoothed, takes in nothing of its neighbours'.
+// get(paint, style) gives { img, sx, sy, s }: where on which sheet (drawSprite draws it). `tone`:
+// each colour through it first; `classic(g, paint, style)`: paint it with canvas calls instead, at
+// (0, 0), `size` across.
+export function spriteSheets(size, { tone = null, classic = null, most = 4, per = 16 } = {}) {
+  const pitch = size + 2, side = pitch * per, sheets = [];
+  const byPaint = new WeakMap(), byColour = new Map();
+  let at = per * per, cur = -1, img = null, px = null;
+  function place() {
+    if (at >= per * per) {
+      cur = (cur + 1) % most;
+      let sh = sheets[cur];
+      if (!sh) {
+        sh = sheets[cur] = { canvas: Object.assign(document.createElement("canvas"), { width: side, height: side }), keys: [] };
+        sh.g = sh.canvas.getContext("2d");
+      } else {
+        for (const k of sh.keys) (typeof k === "object" ? byPaint : byColour).delete(k);
+        sh.keys.length = 0;
+        sh.g.clearRect(0, 0, side, side);
+      }
+      at = 0;
+    }
+    const n = at++, sh = sheets[cur];
+    return { img: sh.canvas, sx: (n % per) * pitch + 1, sy: ((n / per) | 0) * pitch + 1, s: size, sheet: sh };
+  }
+  return {
+    get(paint, style) {
+      const base = style?.baseColor ?? "#FFFFFF", obj = paint && typeof paint === "object";
+      const key = obj ? paint : typeof paint === "string" ? paint : "\0" + base;
+      let spr = obj ? byPaint.get(key) : byColour.get(key);
+      if (spr) return spr;
+      spr = place();
+      const g = spr.sheet.g, { sx, sy } = spr;
+      if (classic) {
+        g.save();
+        g.beginPath();
+        g.rect(sx, sy, size, size);
+        g.clip();
+        g.translate(sx, sy);
+        classic(g, paint, style);
+        g.restore();
+        // (its edge, round it)
+        g.drawImage(g.canvas, sx, sy, 1, size, sx - 1, sy, 1, size);
+        g.drawImage(g.canvas, sx + size - 1, sy, 1, size, sx + size, sy, 1, size);
+        g.drawImage(g.canvas, sx - 1, sy, size + 2, 1, sx - 1, sy - 1, size + 2, 1);
+        g.drawImage(g.canvas, sx - 1, sy + size - 1, size + 2, 1, sx - 1, sy + size, size + 2, 1);
+      } else {
+        if (!img) { img = new ImageData(pitch, pitch); px = new Uint32Array(img.data.buffer); }
+        artInto(px, pitch, 1, 1, size, paint, base, tone);
+        // (its edge, round it)
+        for (let y = 1; y <= size; y++) { px[y * pitch] = px[y * pitch + 1]; px[y * pitch + size + 1] = px[y * pitch + size]; }
+        px.copyWithin(0, pitch, pitch * 2);
+        px.copyWithin((size + 1) * pitch, size * pitch, (size + 1) * pitch);
+        g.putImageData(img, sx - 1, sy - 1);
+      }
+      (obj ? byPaint : byColour).set(key, spr);
+      spr.sheet.keys.push(key);
+      return spr;
+    },
+  };
+}
+// (one of them, into dx, dy, dw × dh)
+export function drawSprite(ctx, spr, dx, dy, dw, dh) {
+  ctx.drawImage(spr.img, spr.sx, spr.sy, spr.s, spr.s, dx, dy, dw, dh);
 }
 
 // A whole shape (rotation 0) on its own canvas, e.g. for menus.
@@ -293,57 +395,127 @@ export function drawChromaSquare(ctx, x, y, z, ux, uy, o, a = 1, glow = 0) {
   ctx.fillRect(x - h, y - h, z, z);
 }
 
+// Many of them at once (as drawChromaSquare draws each), colour by colour: the halos, each copy of
+// the split, then the white squares, so the colour's set a handful of times, not for each one.
+// Only where they're drawn "lighter" (the order they go on in makes no difference there).
+// `list`: x, y, z, ux, uy, o, a and glow for each, one after another; emptied once drawn.
+export function drawChromaSquares(ctx, list) {
+  if (!list.length) return;
+  ctx.fillStyle = ORANGE;
+  for (let i = 0; i < list.length; i += 8) {
+    const z = list[i + 2], glow = list[i + 7];
+    if (!(glow > 0)) continue;
+    ctx.globalAlpha = list[i + 6] * glow;
+    ctx.fillRect(list[i] - z * 1.5, list[i + 1] - z * 1.5, z * 3, z * 3);
+  }
+  for (const [k, colour, strength] of WARM_SPLIT) {
+    ctx.fillStyle = colour;
+    for (let i = 0; i < list.length; i += 8) {
+      const h = list[i + 2] / 2, o = list[i + 5];
+      ctx.globalAlpha = list[i + 6] * strength;
+      ctx.fillRect(list[i] - h - list[i + 3] * o * k, list[i + 1] - h - list[i + 4] * o * k, list[i + 2], list[i + 2]);
+    }
+  }
+  ctx.fillStyle = "#ffffff";
+  for (let i = 0; i < list.length; i += 8) {
+    const h = list[i + 2] / 2;
+    ctx.globalAlpha = list[i + 6];
+    ctx.fillRect(list[i] - h, list[i + 1] - h, list[i + 2], list[i + 2]);
+  }
+  list.length = 0;
+}
+
 // The colour of a highlighted cell: its class's gradient (CONFIG.fx.powerup.classColours),
 // shimmering back and forth across the cells; the warm rainbow for anything without one.
 export function markColour(type, now, x, y) {
+  return markColourInto({ h: 0, s: 0, l: 0 }, type, now, x, y);
+}
+// (the same, into `out`: for the marks of a whole area, every frame, with nothing new made for each)
+function markColourInto(out, type, now, x, y) {
   const o = CONFIG.fx.powerup.overlay;
   const pal = CONFIG.fx.powerup.classColours?.[classOf(type)];
   const t = now * o.hueDegPerMs + (x + y) * o.hueStepPerCell;
   // (no colours of its own: the warm rainbow's in turn)
-  if (!pal) return { h: OMBRE_HUES[Math.floor(((t % 360) + 360) % 360 / 72)], s: 100, l: 62 };
-  const [h0, h1] = pal.hues;
+  if (!pal) { out.h = OMBRE_HUES[Math.floor(((t % 360) + 360) % 360 / 72)]; out.s = 100; out.l = 62; return out; }
+  const h0 = pal.hues[0], h1 = pal.hues[1];
   const span = ((h1 - h0) % 360 + 360) % 360 || 360;
   const tri = 1 - Math.abs(((t / span) % 2) - 1); // 0 -> 1 -> 0 ...
-  return { h: (h0 + span * tri) % 360, s: pal.sat ?? 100, l: pal.light ?? 60 };
+  out.h = (h0 + span * tri) % 360; out.s = pal.sat ?? 100; out.l = pal.light ?? 60;
+  return out;
 }
 
-export function drawPowerupMark(ctx, { type, direction }, px, py, cell, now, x, y, dist, effective, intensity = 1, centre = null) {
-  const o = CONFIG.fx.powerup.overlay;
-  const c = markColour(type, now, x, y);
-  const fillA = clamp01((effective ? o.fillAlpha : o.idleFillAlpha) * intensity);
-  const markA = clamp01((effective ? o.markAlpha : o.idleMarkAlpha) * intensity);
+// A colour, solid, as hsla() writes it (its alpha goes in globalAlpha instead): each one written
+// once and kept, as the marks' colours come round again every frame.
+const hslKept = new Map();
+function hslOf(h, s, l) {
+  h |= 0;
+  if (!(Number.isInteger(s) && Number.isInteger(l) && s >= 0 && s <= 100 && l >= 0 && l <= 100)) return `hsla(${h},${s}%,${l}%,1)`;
+  const key = (h * 101 + s) * 101 + l;
+  let v = hslKept.get(key);
+  if (v === undefined) {
+    if (hslKept.size > 4096) hslKept.clear();
+    hslKept.set(key, (v = `hsla(${h},${s}%,${l}%,1)`));
+  }
+  return v;
+}
 
+export function drawPowerupMark(ctx, pu, px, py, cell, now, x, y, dist, effective, intensity = 1, centre = null) {
+  drawMarkFill(ctx, pu, px, py, cell, now, x, y, effective, intensity);
+  const one = [px, py, x, y, dist, effective ? 1 : 0];
+  drawMarks(ctx, pu, one, one.length, cell, now, intensity, centre);
+}
+
+// A highlighted cell's tint (drawn as it's come to, under the marks)
+const tintColour = { h: 0, s: 0, l: 0 };
+function drawMarkFill(ctx, { type }, px, py, cell, now, x, y, effective, intensity = 1) {
+  const o = CONFIG.fx.powerup.overlay, c = markColourInto(tintColour, type, now, x, y), g = ctx.globalAlpha;
   ctx.globalCompositeOperation = "source-over";
-  ctx.fillStyle = hsla(c.h, c.s, c.l, fillA);
+  ctx.globalAlpha = g * clamp01((effective ? o.fillAlpha : o.idleFillAlpha) * intensity);
+  ctx.fillStyle = hslOf(c.h, c.s, c.l);
   ctx.fillRect(px, py, cell, cell);
+  ctx.globalAlpha = g;
+}
 
-  // marks glow additively so they stay visible over bright pixel art
+// The marks of a whole area at once, over its tints: the first n of `cells` list each cell's px,
+// py, x, y, dist and effective (1 or 0), one after another. Drawn "lighter", so they glow over bright pixel art;
+// split into the warm rainbow like an old screen pulled out of true (WARM_SPLIT): fading copies of
+// each mark fanned out to each side, as far as the cell's own little glitch has them (now and then
+// they tear further apart for a moment), then the mark itself in its class's colour over them.
+// (Each copy for every cell, then every mark: a colour set a handful of times, not for each cell.)
+const glitches = []; // (drawMarks': how far each cell's copies are fanned out, and torn)
+const markColourOf = { h: 0, s: 0, l: 0 };
+function drawMarks(ctx, { type, direction }, cells, n, cell, now, intensity, centre) {
+  const o = CONFIG.fx.powerup.overlay, base = ctx.globalAlpha;
+  const markA = (eff) => clamp01((eff ? o.markAlpha : o.idleMarkAlpha) * intensity);
   ctx.globalCompositeOperation = "lighter";
-  const mark = hsla(c.h, c.s, Math.min(92, c.l + 2), markA);
-  // The mark, split into the warm rainbow like an old screen pulled out of true (WARM_SPLIT):
-  // fading copies of it fanned out to each side, as far as the cell's own little glitch has them
-  // (now and then they tear further apart for a moment), then the mark itself in its class's
-  // colour over them.
   // (the lighter tiers fan out fewer of the copies, the nearest first: CONFIG.fx.quality)
   const split = o.rgbSplit ?? 0, copies = splitCopies();
   if (split > 0 && copies.length) {
-    const tick = Math.floor(now / 90), g = hash01(tick * 31 + x * 7 + y * 13);
-    const d = cell * split * (g > 0.93 ? 3.2 : g > 0.8 ? 1.8 : 1);
-    const dy = g > 0.93 ? cell * split * (hash01(tick + x) - 0.5) * 2 : 0;
-    const a = markA * (o.rgbSplitAlpha ?? 0.6);
+    const tick = Math.floor(now / 90), a = o.rgbSplitAlpha ?? 0.6, apart = glitches;
+    for (let i = 0, j = 0; i < n; i += 6, j += 2) {
+      const x = cells[i + 2], y = cells[i + 3], g = hash01(tick * 31 + x * 7 + y * 13);
+      apart[j] = cell * split * (g > 0.93 ? 3.2 : g > 0.8 ? 1.8 : 1);
+      apart[j + 1] = g > 0.93 ? cell * split * (hash01(tick + x) - 0.5) * 2 : 0;
+    }
     for (const [k, colour, strength] of copies) {
-      ctx.save();
-      ctx.globalAlpha *= a * strength;
-      ctx.translate(-d * k, k > 0 ? -dy : dy);
       ctx.strokeStyle = colour;
       ctx.fillStyle = colour;
-      drawMarkShape(ctx, type, direction, px, py, cell, now, x, y, dist, centre);
-      ctx.restore();
+      for (let i = 0, j = 0; i < n; i += 6, j += 2) {
+        const d = apart[j], dy = apart[j + 1];
+        ctx.globalAlpha = base * markA(cells[i + 5]) * a * strength;
+        drawMarkShape(ctx, type, direction, cells[i] - d * k, cells[i + 1] + (k > 0 ? -dy : dy), cell, now, cells[i + 2], cells[i + 3], cells[i + 4], centre);
+      }
     }
   }
-  ctx.strokeStyle = mark;
-  ctx.fillStyle = mark;
-  drawMarkShape(ctx, type, direction, px, py, cell, now, x, y, dist, centre);
+  for (let i = 0; i < n; i += 6) {
+    const x = cells[i + 2], y = cells[i + 3], c = markColourInto(markColourOf, type, now, x, y);
+    const mark = hslOf(c.h, c.s, Math.min(92, c.l + 2));
+    ctx.globalAlpha = base * markA(cells[i + 5]);
+    ctx.strokeStyle = mark;
+    ctx.fillStyle = mark;
+    drawMarkShape(ctx, type, direction, cells[i], cells[i + 1], cell, now, x, y, cells[i + 4], centre);
+  }
+  ctx.globalAlpha = base;
   ctx.globalCompositeOperation = "source-over";
 }
 
@@ -496,11 +668,9 @@ export function createRenderer(boardCanvas, nextCanvas) {
   let scale = 1;
 
   // --- caches (all rebuilt when the backing scale or cell style changes) ---
-  let spriteObjCache = new WeakMap(); // paint object -> canvas
-  let spriteStrCache = new WeakMap(); // style object -> Map(colour -> canvas)
-  // (the same, a little lighter, for the blocks in play: src/remains.js liveLift)
-  let liftObjCache = new WeakMap();
-  let liftStrCache = new WeakMap();
+  // (each block's art: as it is, and a little lighter, for the blocks in play: src/remains.js
+  // liveLift; made when first wanted: spriteSheets)
+  let sprites = null, liftSprites = null;
   const boardCache = { canvas: document.createElement("canvas"), version: -1, styleKey: "" };
   // (what destroyed blocks left behind, src/remains.js: on the background, and the blocks on their
   // own, for over it while the board shakes)
@@ -530,10 +700,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
   }
 
   function invalidateCaches() {
-    spriteObjCache = new WeakMap();
-    spriteStrCache = new WeakMap();
-    liftObjCache = new WeakMap();
-    liftStrCache = new WeakMap();
+    sprites = liftSprites = null;
     boardCache.version = -1;
     staticLayers = null;
     overlayCache.key = "";
@@ -568,43 +735,20 @@ export function createRenderer(boardCanvas, nextCanvas) {
     return c;
   }
 
-  // One cached canvas per distinct block paint. (The blocks in play are a little lighter, while
-  // what destroyed blocks leave behind is on: src/remains.js liveLift; `plain`, as they are, for
-  // what's left.)
+  // Each distinct block paint's art, at the board's backing scale, on sheets (spriteSheets). (The
+  // blocks in play are a little lighter, while what destroyed blocks leave behind is on: src/remains.js
+  // liveLift; `plain`, as they are, for what's left.)
   function getSprite(paint, style, plain = false) {
     const enhanced = isEnhanced();
     const lift = !plain && enhanced && liveLift() !== 1;
-    const objCache = lift ? liftObjCache : spriteObjCache, strCache = lift ? liftStrCache : spriteStrCache;
-    if (paint && typeof paint === "object") {
-      let spr = objCache.get(paint);
-      if (!spr) {
-        spr = renderSprite(paint, style, enhanced, lift);
-        objCache.set(paint, spr);
-      }
-      return spr;
-    }
-    const st = style ?? DEFAULT_STYLE;
-    let byColour = strCache.get(st);
-    if (!byColour) { byColour = new Map(); strCache.set(st, byColour); }
-    let spr = byColour.get(paint);
-    if (!spr) {
-      spr = renderSprite(paint, st, enhanced, lift);
-      byColour.set(paint, spr);
-    }
-    return spr;
+    const sheets = lift ? (liftSprites ??= spriteSheets(cell * scale, { tone: liftColour }))
+      : (sprites ??= spriteSheets(cell * scale, { classic: enhanced ? null : classicArt }));
+    return sheets.get(paint, style ?? DEFAULT_STYLE);
   }
-
-  function renderSprite(paint, style, enhanced, lift = false) {
-    const size = cell * scale;
-    const c = makeCanvas(size, size);
-    const g = c.getContext("2d");
-    if (enhanced) {
-      drawPixelArtDevice(g, size, paint, style?.baseColor ?? "#FFFFFF", lift ? liftColour : null);
-    } else {
-      g.scale(scale, scale);
-      drawBlockWithPaint(g, 0, 0, cell, paint, style ?? {});
-    }
-    return c;
+  // (the classic look's art: src/settings.js)
+  function classicArt(g, paint, style) {
+    g.scale(scale, scale);
+    drawBlockWithPaint(g, 0, 0, cell, paint, style ?? {});
   }
 
   // A faint warm edge just inside the board (both looks). No scan lines: the pieces stay crisp.
@@ -750,17 +894,17 @@ export function createRenderer(boardCanvas, nextCanvas) {
         ctx.save();
         ctx.translate(b.px + cell / 2, b.py + cell / 2);
         ctx.rotate(b.rot);
-        ctx.drawImage(spr, -cell / 2, -cell / 2, cell, cell);
+        drawSprite(ctx, spr, -cell / 2, -cell / 2, cell, cell);
         ctx.restore();
       } else if (b.sq) {
         // squashed: wider and lower, standing on the same floor
         const w = cell * (1 + b.sq), h = cell * (1 - b.sq);
-        ctx.drawImage(spr, b.px - (w - cell) / 2, b.py + cell - h, w, h);
+        drawSprite(ctx, spr, b.px - (w - cell) / 2, b.py + cell - h, w, h);
       } else if (b.s >= 1) {
-        ctx.drawImage(spr, b.px, b.py, cell, cell);
+        drawSprite(ctx, spr, b.px, b.py, cell, cell);
       } else if (b.s > 0) {
         const d = cell * b.s;
-        ctx.drawImage(spr, b.px + (cell - d) / 2, b.py + (cell - d) / 2, d, d);
+        drawSprite(ctx, spr, b.px + (cell - d) / 2, b.py + (cell - d) / 2, d, d);
       }
     }
 
@@ -1049,16 +1193,29 @@ export function createRenderer(boardCanvas, nextCanvas) {
   // on a busy board. Made once for each shape it takes (and the board's scale): { cv, pad (board
   // pixels round it), w, h (board pixels) }; none, glow 0.
   const ghostGlows = new Map();
+  const outlines = new WeakMap(); // (a piece's turn -> its outline, as a key)
+  // A canvas kept to make things on (`slot`), w × h, cleared, its drawing state as new.
+  const scratches = [];
+  function scratchCanvas(slot, w, h) {
+    const c = (scratches[slot] ??= makeCanvas(w, h));
+    c.width = w;
+    c.height = h;
+    return c;
+  }
   function ghostGlow(mat) {
     const g = CONFIG.render.ghost ?? {}, strength = clamp01(g.glow ?? 0);
     if (strength <= 0) return null;
     const hc = highContrast(), split = hc ? 0 : Math.max(0, g.splitPx ?? 1), depth = Math.max(1, (g.glowCells ?? 0.45) * cell);
-    const key = `${mat.map(r => r.map(v => (v ? 1 : 0)).join("")).join("/")}|${scale}|${strength}|${depth}|${split}`;
+    // (one for each outline: the same for every piece of that shape, however it's coloured)
+    let outline = outlines.get(mat);
+    if (!outline) outlines.set(mat, outline = mat.map(r => r.map(v => (v ? 1 : 0)).join("")).join("/"));
+    const key = `${outline}|${scale}|${strength}|${depth}|${split}`;
     let out = ghostGlows.get(key);
     if (out) return out;
     if (ghostGlows.size >= 64) ghostGlows.clear();
     const pad = Math.ceil(split) + 1, w = mat[0].length * cell + 2 * pad, h = mat.length * cell + 2 * pad;
-    const light = makeCanvas(w * scale, h * scale), lg = light.getContext("2d");
+    // (split: made on a canvas kept for the purpose, then fanned out onto its own)
+    const light = split > 0 ? scratchCanvas(0, w * scale, h * scale) : makeCanvas(w * scale, h * scale), lg = light.getContext("2d");
     lg.scale(scale, scale);
     lg.globalCompositeOperation = "lighter"; // (two edges meeting at a corner: brighter there)
     // (from the edge at x0, y0, as strong as it is, to nothing at x1, y1, over the rectangle r)
@@ -1087,7 +1244,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
       cg.globalAlpha = 0.5;
       cg.drawImage(light, 0, 0);
       for (const [colour, dx] of [[PINK, -split], [CYAN, split]]) {
-        const t = makeCanvas(w * scale, h * scale), tg = t.getContext("2d");
+        const t = scratchCanvas(1, w * scale, h * scale), tg = t.getContext("2d");
         tg.drawImage(light, 0, 0);
         tg.globalCompositeOperation = "source-in";
         tg.fillStyle = colour;
@@ -1408,6 +1565,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
 
   // The highlighted ("affected") cells of the falling powerup (at its landing
   // spot) or of a locked powerup that is charging up.
+  const overlayMarks = []; // (drawPowerupOverlay's, kept, as long as they've been: the first so many used each time)
   function drawPowerupOverlay(state, ghostY, now) {
     let pu, area, pieceCells, centre, intensity = 1, chargeT = 0;
 
@@ -1459,6 +1617,9 @@ export function createRenderer(boardCanvas, nextCanvas) {
     for (const [lp, la] of layers) {
       // (behind the marks, what it will really do, simply, on a loop: drawAction)
       if (lp.type === "gravity") drawFallAction(board, lp, la, pieceCells, comesDown(pu), at);
+      // (each cell's tint as it comes; then all their marks together: drawMarks)
+      const marks = overlayMarks;
+      let n = 0;
       for (const i of la.indices) {
         const x = i % cols, y = (i / cols) | 0;
         const isPiece = pieceCells.has(i);
@@ -1470,8 +1631,10 @@ export function createRenderer(boardCanvas, nextCanvas) {
           : lp.type === "expander" ? (!filled && !isPiece) : filled || (isPiece && (classOf(lp.type) === "destroyer" || (lp.type === "gravity" && comesDown(pu))));
         const dist = Math.hypot(x - centre.x, y - centre.y);
         if (effective) drawAction(lp.type, x, y, dist, at);
-        drawPowerupMark(bctx, lp, x * cell, y * cell, cell, at, x, y, dist, effective, intensity, centre);
+        drawMarkFill(bctx, lp, x * cell, y * cell, cell, at, x, y, effective, intensity);
+        marks[n++] = x * cell; marks[n++] = y * cell; marks[n++] = x; marks[n++] = y; marks[n++] = dist; marks[n++] = effective ? 1 : 0;
       }
+      drawMarks(bctx, lp, marks, n, cell, at, intensity, centre);
     }
 
     // White-hot flash right before the effect fires.
@@ -1638,8 +1801,9 @@ export function createRenderer(boardCanvas, nextCanvas) {
         let ux = c.x + 0.5 - sh.centre.x, uy = c.y + 0.5 - sh.centre.y;
         const len = Math.hypot(ux, uy) || 1;
         ux /= len; uy /= len;
-        drawChromaSquare(bctx, px + cell / 2, py + cell / 2, cell * (0.28 + 0.34 * (1 - u)), ux, uy, 1 + cell * 0.14 * a, a, 0.12);
+        chromas.push(px + cell / 2, py + cell / 2, cell * (0.28 + 0.34 * (1 - u)), ux, uy, 1 + cell * 0.14 * a, a, 0.12);
       }
+      drawChromaSquares(bctx, chromas);
       bctx.globalAlpha = 1;
       bctx.globalCompositeOperation = "source-over";
     }
@@ -1660,14 +1824,14 @@ export function createRenderer(boardCanvas, nextCanvas) {
     if (b.fade || calmFx()) { // (calmer animations: every one just fades where it was)
       const u = clamp01(local / b.dur), d = cell * (1 - 0.6 * u);
       bctx.globalAlpha = 1 - u;
-      bctx.drawImage(spr, px + (cell - d) / 2, py + (cell - d) / 2, d, d);
+      drawSprite(bctx, spr, px + (cell - d) / 2, py + (cell - d) / 2, d, d);
       bctx.globalAlpha = 1;
       return;
     }
     const heat = markColour("destroyer", now, b.x, b.y);
     if (local < 0) {
       // waiting its turn, glowing hot where it is
-      bctx.drawImage(spr, px, py, cell, cell);
+      drawSprite(bctx, spr, px, py, cell, cell);
       bctx.fillStyle = hsla(heat.h, 100, 70, 0.22 + 0.14 * Math.sin(now * 0.03 + b.x + b.y));
       bctx.fillRect(px, py, cell, cell);
       return;
@@ -1679,7 +1843,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     bctx.save();
     bctx.translate(x, y);
     bctx.rotate(b.spin * u);
-    bctx.drawImage(spr, -d / 2, -d / 2, d, d);
+    drawSprite(bctx, spr, -d / 2, -d / 2, d, d);
     bctx.globalCompositeOperation = "lighter";
     bctx.fillStyle = hsla(heat.h, 100, 60, 0.15 + 0.6 * u);
     bctx.fillRect(-d / 2, -d / 2, d, d);
@@ -1995,6 +2159,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
     bctx.restore();
   }
 
+  const chromas = []; // (drawChromaSquares' list, for the particles and the shows)
   function drawParticles(state) {
     const parts = state.fx.particles;
     if (!parts.length || calmFx()) return; // (calmer animations: no bits flying)
@@ -2009,7 +2174,9 @@ export function createRenderer(boardCanvas, nextCanvas) {
         bctx.globalAlpha = p.twinkle ? Math.sin(Math.PI * life) : life;
         if (p.chroma) { // white, split into the warm rainbow along the way it's going
           const sp = Math.hypot(p.vx, p.vy), s = p.size;
-          drawChromaSquare(bctx, p.x + s / 2, p.y + s / 2, s, sp ? p.vx / sp : 0, sp ? p.vy / sp : 1, Math.min(s, 0.5 + sp * 0.005), bctx.globalAlpha, 0.14);
+          // (glowing, all together once the rest are on: drawChromaSquares)
+          if (glow) chromas.push(p.x + s / 2, p.y + s / 2, s, sp ? p.vx / sp : 0, sp ? p.vy / sp : 1, Math.min(s, 0.5 + sp * 0.005), bctx.globalAlpha, 0.14);
+          else drawChromaSquare(bctx, p.x + s / 2, p.y + s / 2, s, sp ? p.vx / sp : 0, sp ? p.vy / sp : 1, Math.min(s, 0.5 + sp * 0.005), bctx.globalAlpha, 0.14);
           continue;
         }
         bctx.fillStyle = p.color;
@@ -2019,6 +2186,7 @@ export function createRenderer(boardCanvas, nextCanvas) {
           bctx.fillRect(p.x - k / 2, p.y - s, k, s * 2);
         } else bctx.fillRect(p.x, p.y, p.size, p.size);
       }
+      drawChromaSquares(bctx, chromas);
     }
     bctx.restore();
   }

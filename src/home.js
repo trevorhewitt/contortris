@@ -26,7 +26,7 @@ import { startRun, resetGame, updateGame, getGhostDropY, collides, createGameSta
 import { resolvePowerupArea } from "./powerups.js";
 import { buildMosaic, paintMosaic } from "./mosaic.js";
 import { calmFx } from "./settings.js";
-import { drawChromaSquare, drawBlockWithPaintStatic, rainbowRound } from "./render.js";
+import { drawChromaSquare, drawChromaSquares, rainbowRound, spriteSheets } from "./render.js";
 import { seedRemains, paintRemains } from "./remains.js";
 import { getShapePaint } from "./shapes.js";
 import { ombre, ombreRGB } from "./util.js";
@@ -502,6 +502,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
   // and made-up ones of its own pieces behind those. (Painted first: paintMosaic's `under`.) Not
   // on a tier without mosaicRemains (CONFIG.fx.quality): they take a lot of getting ready, some of
   // it all in one frame, and every mosaic has its own; there, the mosaic is whole.
+  let mosaicArt = null;
   function remainsUnder(m, cellPx) {
     if (!CONFIG.remains?.enabled || fxTier().mosaicRemains === false) return null;
     const share = H().mosaic?.goneShare ?? 0.3, gone = [];
@@ -514,17 +515,9 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       }
       return false;
     });
-    const sprites = new Map();
-    const sprite = (paint, style) => {
-      let cv = sprites.get(paint);
-      if (!cv) {
-        cv = document.createElement("canvas");
-        cv.width = cv.height = cellPx;
-        drawBlockWithPaintStatic(cv.getContext("2d"), 0, 0, cellPx, paint, style);
-        sprites.set(paint, cv);
-      }
-      return cv;
-    };
+    // (each block's art, kept from one mosaic to the next: render.js spriteSheets)
+    if (mosaicArt?.size !== cellPx) mosaicArt = { size: cellPx, sheets: spriteSheets(cellPx, { per: 32, most: 2 }) };
+    const sprite = (paint, style) => mosaicArt.sheets.get(paint, style);
     return paintRemains({ cols: m.cols, rows: m.rows, cell: cellPx, pieces, gone, sprite, calm: calmFx() });
   }
   function drawCalm(now) {
@@ -626,6 +619,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     return m;
   }
   const RATE = { embers: 9, sparkles: 7, confetti: 10, comets: 0.7, snow: 16 }; // (a second, on a 1000×700 screen)
+  const chromas = []; // (stepFx's, for drawChromaSquares)
   function stepFx(dt, now) {
     const W = view.w, Hh = view.h, d = view.fx, s = dt / 1000;
     if (now >= moodUntil) {
@@ -656,7 +650,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       if (m.kind === "confetti") {
         // (a white square tumbling down, its split opening and closing as it turns)
         const w = z * (0.55 + 0.45 * Math.abs(Math.cos(m.rot)));
-        drawChromaSquare(fx, x, y, w, Math.cos(m.rot), Math.sin(m.rot), d * 1.6, a);
+        chromas.push(x, y, w, Math.cos(m.rot), Math.sin(m.rot), d * 1.6, a, 0);
       } else if (m.kind === "sparkles") {
         const p = Math.sin(t * Math.PI), r = z * p;
         fx.drawImage(glow(m.t), x - r, y - r, r * 2, r * 2);
@@ -671,10 +665,10 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
         fx.lineWidth = z * 0.7;
         fx.beginPath(); fx.moveTo(x, y); fx.lineTo(x - m.vx * 0.16 * d, y - m.vy * 0.16 * d); fx.stroke();
         fx.drawImage(glow(m.t), x - z * 3, y - z * 3, z * 6, z * 6);
-        drawChromaSquare(fx, x, y, z * 0.9, ux, uy, d * 2.2, a);
+        chromas.push(x, y, z * 0.9, ux, uy, d * 2.2, a, 0);
       } else if (m.kind === "embers") {
         fx.drawImage(glow(m.t), x - z, y - z, z * 2, z * 2);
-        drawChromaSquare(fx, x, y, Math.max(d * 2, z * 0.28), ux, uy, d * 1.2, a);
+        chromas.push(x, y, Math.max(d * 2, z * 0.28), ux, uy, d * 1.2, a, 0);
       } else {
         fx.drawImage(glow(m.t), x - z, y - z, z * 2, z * 2);
         fx.fillStyle = "#fff";
@@ -682,6 +676,7 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       }
     }
     motes.length = n;
+    drawChromaSquares(fx, chromas); // (the white squares split into the warm rainbow, all together)
     fx.globalAlpha = 1;
     fx.globalCompositeOperation = "source-over";
   }
