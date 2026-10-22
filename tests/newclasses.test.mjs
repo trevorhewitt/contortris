@@ -62,7 +62,7 @@ const pairHasCombo = (powerups, a, b) => powerups.some(p => p.powerup.type === "
 
 test("progression: classes open one at a time, starting with a simple one", () => {
   const { shapes, powerups } = loadShapes(SHAPES);
-  const firsts = new Set();
+  const firsts = new Set(), orders = new Set();
   for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
     const state = createGameState(shapes, powerups, { rng: makeRng(seed) });
     const news = [];
@@ -100,15 +100,21 @@ test("progression: classes open one at a time, starting with a simple one", () =
     const firstCombo = seen.indexOf("combo");
     if (firstCombo >= 0) assert.ok(new Set(seen.slice(0, firstCombo)).size >= 2, "combo before two classes");
     // (progression.early, if set, is always one of the first two; it's null now: fully at random),
-    // and the third class waits for the combos of the first two (combosBeforeThird)
+    // and then the combos and the third class, in either order (progression.combosFirst): the
+    // combos first, the third class waiting for them, or the third class first, the combos
+    // waiting for it
     const classes = news.filter(c => c !== "combo");
     if (classes.length >= 2 && prog.early) assert.ok(classes.slice(0, 2).includes(prog.early), `${prog.early} in the first two: ${news.join(" > ")}`);
     // (where there's a combo of just those two, that is: none is left of the Expanderz and the
     // gravitizers, say, if they're all banished)
-    if (classes.length >= 3 && pairHasCombo(powerups, classes[0], classes[1])) assert.ok(news.indexOf("combo") >= 0 && news.indexOf("combo") < news.indexOf(classes[2]), `combos before the third class: ${news.join(" > ")}`);
+    const first = state.pieceSel.powerup.combosFirst, combo = news.indexOf("combo");
+    if (classes.length >= 3 && first && pairHasCombo(powerups, classes[0], classes[1])) assert.ok(combo >= 0 && combo < news.indexOf(classes[2]), `combos before the third class: ${news.join(" > ")}`);
+    if (classes.length >= 3 && first === false) assert.ok(combo < 0 || combo > news.indexOf(classes[2]), `the third class before the combos: ${news.join(" > ")}`);
+    if (classes.length >= 3 && combo >= 0) orders.add(combo < news.indexOf(classes[2]) ? "combos first" : "third first");
     assert.ok(!seen.includes("blast") && !seen.includes("goo"), "switched-off classes never turn up");
   }
   assert.ok(firsts.size >= 2, "the first class varies between games");
+  assert.equal(orders.size, 2, `the combos and the third class come in either order: ${[...orders]}`);
 });
 
 test("easy mode has no giants; normal gets one early", () => {

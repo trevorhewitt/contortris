@@ -71,6 +71,7 @@ export function initPieceSelectionState(state) {
       pendingIntro: new Set(), // classes picked for their intro, not spawned yet
       sinceClass: 0,           // powerups served since the last new class
       classAtDrop: 0,          // dropIndex when the last class came in
+      combosFirst: null,       // whether the combos come before the third class (decided when it matters: combosFirst)
     },
 
     // how much the player is struggling, 0..1 (see CONFIG.assist.powerups.struggle)
@@ -1096,6 +1097,7 @@ function maybeSelectPowerup(state, danger01) {
   const dev = state.devPowerups;
   let candidates = state.powerups.filter(p => (p.frequency ?? 1) > 0 && !dev?.disabled?.has(p.id));
   if (!candidates.length) return null;
+  const all = candidates;
 
   // Progression: classes come in one at a time; every powerup of an unlocked class can turn up.
   const prog = cfg.progression;
@@ -1115,8 +1117,11 @@ function maybeSelectPowerup(state, danger01) {
   // (in a set order: only once every class before "combo" in it has been met, and never if it
   // isn't in it)
   const order = classOrder(), ci = order ? order.indexOf("combo") : -1;
+  // (and with the third class to come first this game, not until every class is in)
+  const classesIn = new Set(all.map(p => p.powerup.cls).filter(c => c !== "combo"));
   const combosOpen = sel.dropIndex >= (combos.minDrop ?? 0) &&
-    (!prog?.enabled || (order ? ci >= 0 && order.slice(0, ci).every(c => ps.shownClasses.has(c)) : met.length >= (combos.minClasses ?? 2)));
+    (!prog?.enabled || (order ? ci >= 0 && order.slice(0, ci).every(c => ps.shownClasses.has(c))
+      : met.length >= (combos.minClasses ?? 2) && (met.length >= classesIn.size || combosFirst(state))));
   candidates = candidates.filter(p => p.powerup.type !== "combo" ||
     (combosOpen && (!prog?.enabled || p.powerup.parts.every(part => ps.shownClasses.has(part.cls)))));
   if (prog?.enabled && combosOpen && !ps.classes.includes("combo") && candidates.some(p => p.powerup.type === "combo")) {
@@ -1311,7 +1316,7 @@ export function destroyerCells(shape) {
 
 // Open the next powerup class: the first is random from progression.firstClassPool, the second
 // progression.early if the first wasn't it, after that any class not in yet (combos open on
-// their own, see CONFIG...combos, and the third class waits for them: nextClassAllowed).
+// their own, see CONFIG...combos, and the third class may wait for them: nextClassAllowed).
 function unlockNextClass(state, pool) {
   const prog = CONFIG.assist.powerups.progression;
   const ps = state.pieceSel.powerup;
@@ -1357,8 +1362,16 @@ function mustOpen(ps) {
   const classes = ps.classes.filter(c => c !== "combo");
   return early && !off.includes(early) && classes.length === 1 && !classes.includes(early) ? early : null;
 }
-// May another class open now? Not the third before the first combo has come (made of the
-// first two), unless it has been a long time (progression.comboWaitDrops).
+// Do the combos come before the third class this game? At random, the first time it matters
+// (progression.combosFirst: the chance that they do).
+function combosFirst(state) {
+  const ps = state.pieceSel.powerup;
+  ps.combosFirst ??= state.rng() < (CONFIG.assist.powerups.progression?.combosFirst ?? 1);
+  return ps.combosFirst;
+}
+// May another class open now? In a game where the combos come first, not the third before the
+// first combo has come (made of the first two), unless it has been a long time
+// (progression.comboWaitDrops).
 function nextClassAllowed(state) {
   const prog = CONFIG.assist.powerups.progression, sel = state.pieceSel, ps = sel.powerup;
   // (in a set order: a class after "combo" waits for the first combo, or a long time)
@@ -1368,8 +1381,11 @@ function nextClassAllowed(state) {
     const waits = next && order.indexOf("combo") >= 0 && order.indexOf("combo") < order.indexOf(next) && !ps.shownClasses.has("combo");
     return !waits || sel.dropIndex - ps.classAtDrop >= (prog?.comboWaitDrops ?? Infinity);
   }
-  if (!prog?.combosBeforeThird || ps.shownClasses.has("combo")) return true;
+  if (ps.shownClasses.has("combo")) return true;
   if (ps.classes.filter(c => c !== "combo").length < 2) return true;
+  // (nor for combos that can't come: none made of just the classes in so far)
+  if (!state.powerups.some(p => p.powerup.type === "combo" && (p.frequency ?? 1) > 0 && p.powerup.parts?.every(part => ps.classes.includes(part.cls)))) return true;
+  if (!combosFirst(state)) return true;
   return sel.dropIndex - ps.classAtDrop >= (prog.comboWaitDrops ?? Infinity);
 }
 

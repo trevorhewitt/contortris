@@ -989,10 +989,12 @@ export const CONFIG = {
         // the first class is picked at random from these (the simpler ones), so every
         // game starts differently
         firstClassPool: ["destroyer", "gravity", "expander"],
-        // early: one of the first two classes is always this one (null: any, fully at random);
-        // then the combos of those two, and only then (combosBeforeThird) the third class, or
-        // after comboWaitDrops pieces anyway
-        early: null, combosBeforeThird: true, comboWaitDrops: 45,
+        // early: one of the first two classes is always this one (null: any, fully at random).
+        // Then the combos and the third class in either order, at random each game: the combos
+        // first (the chance of it: combosFirst), the third class waiting for them, or for
+        // comboWaitDrops pieces anyway; or else the third class first, the combos waiting until
+        // every class is in.
+        early: null, combosFirst: 0.5, comboWaitDrops: 45,
         // ...or, in this order exactly (the developer tools set it): the classes one after
         // another, and "combo" where the combos may start (left out: no combos). null: as above.
         order: null,
