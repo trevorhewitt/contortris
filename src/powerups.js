@@ -466,8 +466,15 @@ export function touchArea(mat, reach = 1) {
 //   indices:  affected cell indices (y*cols + x), sorted
 //   fullRows: board rows covered wall-to-wall by a row flag
 export function resolveArea(areaRot, px, py, cols, rows) {
-  const flags = new Uint8Array(cols * rows);
-  const fullRows = [];
+  return resolveAreaInto({ flags: new Uint8Array(cols * rows), indices: [], fullRows: [] }, areaRot, px, py, cols, rows);
+}
+// (the same into `out`, cleared first: for a piece tried in spot after spot, with no new area for
+// each one: src/selection.js powerupUsefulness)
+export function resolveAreaInto(out, areaRot, px, py, cols, rows) {
+  const { flags, indices, fullRows } = out;
+  flags.fill(0);
+  indices.length = 0;
+  fullRows.length = 0;
 
   for (const { dx, dy } of areaRot.cells) {
     const x = px + dx, y = py + dy;
@@ -491,9 +498,8 @@ export function resolveArea(areaRot, px, py, cols, rows) {
     for (let y = Math.max(0, py + dy); y < rows; y++) flags[y * cols + x] |= AREA_CELL;
   }
 
-  const indices = [];
   for (let i = 0; i < flags.length; i++) if (flags[i]) indices.push(i);
-  return { flags, indices, fullRows };
+  return out;
 }
 
 /* =========================
@@ -521,21 +527,12 @@ export function applyGravity(board, area, cols, rows, direction = "down") {
   const dir = DIRECTIONS[direction] ?? DIRECTIONS.down;
   const moves = [];
 
-  // Visit order: nearest the floor first.
-  const order = [];
-  if (dir.dy !== 0) {
-    const ys = [];
-    for (let y = 0; y < rows; y++) ys.push(y);
-    if (dir.dy > 0) ys.reverse();
-    for (const y of ys) for (let x = 0; x < cols; x++) order.push([x, y]);
-  } else {
-    const xs = [];
-    for (let x = 0; x < cols; x++) xs.push(x);
-    if (dir.dx > 0) xs.reverse();
-    for (const x of xs) for (let y = 0; y < rows; y++) order.push([x, y]);
-  }
-
-  for (const [x, y] of order) {
+  // Visit order: nearest the floor first (row by row, or column by column).
+  const across = dir.dy !== 0, lines = across ? rows : cols, along = across ? cols : rows;
+  const back = across ? dir.dy > 0 : dir.dx > 0;
+  for (let n = 0; n < lines * along; n++) {
+    const line = back ? lines - 1 - ((n / along) | 0) : (n / along) | 0, k = n % along;
+    const x = across ? k : line, y = across ? line : k;
     if (!area.flags[y * cols + x]) continue;
     const cell = board[y][x];
     if (!cell) continue;
@@ -825,22 +822,32 @@ export function applyGoo(board, sources, units, cols, rows, makeCell, spread = 4
     const i = s.y * cols + s.x;
     if (!seen[i]) { seen[i] = 1; queue.push(s); }
   }
-  const region = [];
-  while (queue.length) {
-    const c = queue.shift();
-    region.push(c);
-    for (const [nx, ny] of [[c.x, c.y + 1], [c.x - 1, c.y], [c.x + 1, c.y]]) {
+  // (the queue is the region, in the order it's reached: down, then left, then right)
+  const region = queue;
+  for (let q = 0; q < region.length; q++) {
+    const c = region[q];
+    for (let k = 0; k < 3; k++) {
+      const nx = k === 0 ? c.x : k === 1 ? c.x - 1 : c.x + 1, ny = k === 0 ? c.y + 1 : c.y;
       if (nx < 0 || nx >= cols || ny < 0 || ny >= rows || nx < minX || nx > maxX) continue;
       const i = ny * cols + nx;
       if (seen[i] || board[ny][nx]) continue;
       seen[i] = 1;
-      queue.push({ x: nx, y: ny });
+      region.push({ x: nx, y: ny });
     }
   }
-  region.sort((a, b) => (b.y - a.y) || (Math.abs(a.x - cx) - Math.abs(b.x - cx)) || (a.x - b.x));
+  // (the lowest first, then the nearest the middle, then the leftmost: only the first `units` of
+  // them in that order, kept in order as the region's gone through, not all of it sorted)
+  const before = (a, b) => (b.y - a.y) || (Math.abs(a.x - cx) - Math.abs(b.x - cx)) || (a.x - b.x);
+  const first = [];
+  for (const c of region) {
+    if (first.length === units && before(c, first[units - 1]) >= 0) continue;
+    let k = first.length < units ? first.length : units - 1;
+    while (k > 0 && before(c, first[k - 1]) < 0) { first[k] = first[k - 1]; k--; }
+    first[k] = c;
+  }
 
   const filled = [];
-  for (const t of region.slice(0, units)) {
+  for (const t of first) {
     let src = sources[0], best = Infinity;
     for (const s of sources) {
       const d = Math.abs(s.x - t.x) + Math.abs(s.y - t.y);

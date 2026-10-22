@@ -2038,7 +2038,7 @@ function placesFor(state, shape, weights = WEIGHTS.clear, maxTurns = 4, next = n
   const { cols, rows } = CONFIG.board;
   // (zen plays as a person would, and digs down to its holes)
   if (isCalm(state) && weights === WEIGHTS.clear) weights = WEIGHTS.calm;
-  const occ0 = occupancy(state.board);
+  const occ0 = occupancy(state.board), top0 = colTops(occ0, cols, rows, new Int16Array(cols));
   const pu = shape.powerup;
   const phantom = pu && isPhantomPowerup(pu);
   const ahead = next && !next.powerup && !pu ? [] : null;
@@ -2050,10 +2050,10 @@ function placesFor(state, shape, weights = WEIGHTS.clear, maxTurns = 4, next = n
       const res = tryPowerup(state, shape, r, x, y);
       occ = res.occ; lines = res.lines; bonus = res.affected * 0.06;
     } else {
-      occ = occ0.slice();
+      occ = trial(0, occ0);
       lines = placeAndClear(occ, mat, x, y, cols, rows);
     }
-    const over = mat.some((row, j) => y + j < 0 && row.some(Boolean)) ? 1000 : 0; // it would top out
+    const over = y + profileOf(mat).first < 0 ? 1000 : 0; // it would top out
     // (and the column kept clear stays clear, even for a row or two cleared)
     const inWell = !pu && intoWell(mat, x, weights) ? 12 : 0;
     const base = score(occ, lines, weights, cols, rows);
@@ -2067,7 +2067,7 @@ function placesFor(state, shape, weights = WEIGHTS.clear, maxTurns = 4, next = n
   for (let r = 0; r < turns; r++) {
     const mat = shape.rotations[r], w = mat[0].length;
     for (let x = 0; x + w <= cols; x++) {
-      const y = phantom ? phantomLandingY(state.board, x, mat) : dropY(occ0, mat, x, cols, rows);
+      const y = phantom ? phantomLandingY(state.board, x, mat) : landing(top0, mat, x, rows);
       if (y != null) consider(r, x, y);
     }
   }
@@ -2075,7 +2075,7 @@ function placesFor(state, shape, weights = WEIGHTS.clear, maxTurns = 4, next = n
   if (!ahead?.length) return all;
   ahead.sort((a, b) => b.c.s - a.c.s);
   return ahead.slice(0, LOOK_AHEAD).map(a => {
-    const occ = occ0.slice(), lines = placeAndClear(occ, shape.rotations[a.c.rot], a.at, a.c.y, cols, rows);
+    const occ = trial(1, occ0), lines = placeAndClear(occ, shape.rotations[a.c.rot], a.at, a.c.y, cols, rows);
     return { ...a.c, s: Math.max(a.base - 50, lookAhead(occ, next, weights, cols, rows, lines)) + a.extra };
   });
 }
@@ -2084,18 +2084,54 @@ const z01 = (state) => state.zen?.simRng() ?? 0;
 // The best score after the next piece too, on a board `occ` (with `lines` cleared so far).
 function lookAhead(occ, shape, weights, cols, rows, lines) {
   let best = -Infinity;
-  const turns = reachableTurns(shape);
+  const turns = reachableTurns(shape), top = colTops(occ, cols, rows, trials.top?.length === cols ? trials.top : (trials.top = new Int16Array(cols)));
   for (let r = 0; r < turns; r++) {
-    const mat = shape.rotations[r], w = mat[0].length;
+    const mat = shape.rotations[r], w = mat[0].length, first = profileOf(mat).first;
     for (let x = 0; x + w <= cols; x++) {
-      const y = dropY(occ, mat, x, cols, rows);
-      if (y == null || mat.some((row, j) => y + j < 0 && row.some(Boolean))) continue;
-      const o = occ.slice();
+      const y = landing(top, mat, x, rows);
+      if (y + first < 0) continue;
+      const o = trial(2, occ);
       const n = placeAndClear(o, mat, x, y, cols, rows);
       best = Math.max(best, score(o, lines + n, weights, cols, rows) - (intoWell(mat, x, weights) ? 12 : 0));
     }
   }
   return best;
+}
+
+// (the boards placesFor and lookAhead try pieces on: a copy of `occ` in the one kept for `slot`,
+// made once, rather than a new copy for every try)
+const trials = { boards: [], top: null, board: null };
+function trial(slot, occ) {
+  let b = trials.boards[slot];
+  if (b?.length !== occ.length) b = trials.boards[slot] = new Uint8Array(occ.length);
+  b.set(occ);
+  return b;
+}
+// A turn of a piece, by columns: the lowest block in each (-1: none), and the first row with a
+// block in it. (Kept for each turn.)
+const profiles = new WeakMap();
+function profileOf(mat) {
+  let p = profiles.get(mat);
+  if (p) return p;
+  const low = new Int8Array(mat[0].length).fill(-1);
+  let first = -1;
+  for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) if (mat[j][i]) { low[i] = j; if (first < 0) first = j; }
+  profiles.set(mat, p = { low, first });
+  return p;
+}
+// Each column's highest block, as a row (`rows`: none), into `out`.
+function colTops(occ, cols, rows, out) {
+  for (let x = 0; x < cols; x++) out[x] = colTop(occ, x, cols, rows);
+  return out;
+}
+// Where a piece comes to rest dropped straight down from above the board in column x (as dropY,
+// in the columns it fits in): as its lowest block in some column meets the highest block there,
+// or the floor.
+function landing(tops, mat, x, rows) {
+  const { low } = profileOf(mat);
+  let y = rows;
+  for (let i = 0; i < low.length; i++) if (low[i] >= 0) y = Math.min(y, tops[x + i] - low[i] - 1);
+  return y;
 }
 
 // Would it go into the column being kept clear (weights.well)?
@@ -2107,7 +2143,9 @@ function intoWell(mat, x, weights) {
 // A powerup's effect, tried on a copy of the board: { occ, lines, affected }.
 export function tryPowerup(state, shape, rot, x, y) {
   const { cols, rows } = CONFIG.board;
-  const board = state.board.map(r => r.slice());
+  // (on a copy of the board, kept from one try to the next)
+  const board = trials.board?.length === rows && trials.board[0].length === cols ? trials.board : (trials.board = state.board.map(r => r.slice()));
+  for (let yy = 0; yy < rows; yy++) for (let xx = 0; xx < cols; xx++) board[yy][xx] = state.board[yy][xx];
   const mat = shape.rotations[rot], me = { pid: -1 }, placed = [];
   for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) {
     if (!mat[j][i] || y + j < 0) continue;

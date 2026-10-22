@@ -13,7 +13,7 @@
 
 import { CONFIG } from "../config.js";
 import { clamp01, lerp, sampleByWeight } from "./util.js";
-import { analyseBoard, resolvePowerupArea, computeEffect, phantomLandingY, isPhantomPowerup } from "./powerups.js";
+import { analyseBoard, resolveAreaInto, computeEffect, phantomLandingY, isPhantomPowerup } from "./powerups.js";
 import { LEVEL6, initLevel6, nextGroupPiece, groupPieceReady, maybeStartGroup, groupUnderWay } from "./level6.js";
 import { initEndGame, endGameOn, endGameLevelWeights } from "./endgame.js";
 import { isGodMode, godConfig, gravityColumns } from "./godmode.js";
@@ -855,26 +855,59 @@ export function powerupUsefulnessCached(state, shape) {
   return v;
 }
 
+// (what it tries each spot on, kept from one try to the next: a copy of the board, put back as
+// it was after each try, and the area; a try makes nothing new but the effect's own results)
+const tries = { copy: null, area: null, marks: [] };
+function readyTries(rows, cols) {
+  if (tries.copy?.length === rows && tries.copy[0].length === cols) return;
+  tries.copy = Array.from({ length: rows }, () => new Array(cols).fill(null));
+  tries.area = { flags: new Uint8Array(rows * cols), indices: [], fullRows: [] };
+  tries.top = new Int16Array(cols);
+  tries.mine = new Uint8Array(rows * cols);
+}
+function tryBoard(board, rows, cols) {
+  const copy = tries.copy;
+  for (let y = 0; y < rows; y++) { const from = board[y], to = copy[y]; for (let x = 0; x < cols; x++) to[x] = from[x]; }
+  return copy;
+}
+
+// A turn of a piece by columns: the first and last with blocks in, and each one's lowest block
+// (-1: none), for where it lands dropped straight down (powerupUsefulness).
+const bottomsOf = new WeakMap();
+function bottoms(mat) {
+  let b = bottomsOf.get(mat);
+  if (b) return b;
+  const low = new Int8Array(mat[0].length).fill(-1);
+  for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) if (mat[j][i]) low[i] = j;
+  let i0 = 0, i1 = low.length - 1;
+  while (low[i0] < 0) i0++;
+  while (low[i1] < 0) i1--;
+  bottomsOf.set(mat, b = { low, i0, i1 });
+  return b;
+}
+
 export function powerupUsefulness(board, shape) {
   const rows = board.length, cols = board[0].length;
   const pu = shape.powerup;
-  const occupied = board.map(r => r.map(Boolean));
-  const collides = (mat, px, py) => {
-    for (let y = 0; y < mat.length; y++) for (let x = 0; x < mat[0].length; x++) {
-      if (!mat[y][x]) continue;
-      const bx = px + x, by = py + y;
-      if (bx < 0 || bx >= cols || by >= rows) return true;
-      if (by >= 0 && occupied[by][bx]) return true;
-    }
-    return false;
-  };
+  // (these always do something if their area has blocks in it: no physics; and the piece only
+  // goes where the board is empty, so any block in its area is the board's)
+  const cheap = pu.type === "destroyer" || pu.type === "acid" || pu.type === "blast" || pu.type === "combo";
+  // (an Expanderz that stays fills every empty cell of its area, and nothing else: what the
+  // effect would do, worked out from the board as it is, with no copy of it; `top`: each
+  // column's highest block)
+  const fills = pu.type === "expander" && !pu.consume;
   let best = 0;
+  readyTries(rows, cols);
+  const top = tries.top, mine = tries.mine;
+  for (let x = 0; x < cols; x++) { let y = 0; while (y < rows && !board[y][x]) y++; top[x] = y; }
   for (let r = 0; r < shape.rotations.length; r++) {
-    const mat = shape.rotations[r];
-    for (let x = -mat[0].length + 1; x < cols; x++) {
-      let y = -mat.length;
-      if (collides(mat, x, y)) continue;
-      while (!collides(mat, x, y + 1)) y++;
+    const mat = shape.rotations[r], { low, i0, i1 } = bottoms(mat);
+    const areaRot = pu.areaRotations[r] ?? pu.areaRotations[0];
+    // (dropped straight down from above in each column it fits in, it stops as its lowest block
+    // in some column meets the highest block there, or the floor)
+    for (let x = -i0; x + i1 < cols; x++) {
+      let y = rows;
+      for (let i = i0; i <= i1; i++) if (low[i] >= 0) y = Math.min(y, top[x + i] - low[i] - 1);
       if (pu.type === "phantom") {
         const deep = phantomLandingY(board, x, mat);
         if (deep != null && deep > y) best = Math.max(best, deep - y);
@@ -886,21 +919,37 @@ export function powerupUsefulness(board, shape) {
         if (deep == null) continue;
         y = deep;
       }
-      const copy = board.map(row => row.slice());
-      const placed = [];
-      for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) {
-        if (!mat[j][i] || y + j < 0) continue;
-        copy[y + j][x + i] = { pid: -7 };
-        placed.push({ x: x + i, y: y + j });
-      }
-      const area = resolvePowerupArea(pu, r, x, y, cols, rows);
-      if (pu.type === "destroyer" || pu.type === "acid" || pu.type === "blast" || pu.type === "combo") {
-        // these always do something if their area has blocks in it (cheap: no physics)
+      if (cheap) {
+        const area = resolveAreaInto(tries.area, areaRot, x, y, cols, rows);
         let hit = 0;
-        for (const i of area.indices) { const c = copy[(i / cols) | 0][i % cols]; if (c && c.pid !== -7) hit++; }
+        for (const i of area.indices) if (board[(i / cols) | 0][i % cols]) hit++;
         best = Math.max(best, hit);
         if (best >= 4) return best;
         continue;
+      }
+      if (fills) {
+        // (as below: a filled cell helps under a block, or walled in, by walls, the floor, blocks
+        // or the piece, on three sides)
+        const area = resolveAreaInto(tries.area, areaRot, x, y, cols, rows);
+        for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) if (mat[j][i] && y + j >= 0) mine[(y + j) * cols + x + i] = 1;
+        const solid = (xx, yy) => xx < 0 || xx >= cols || yy >= rows || !!board[yy][xx] || mine[yy * cols + xx] === 1;
+        let gaps = 0;
+        for (const i of area.indices) {
+          const fx = i % cols, fy = (i / cols) | 0;
+          if (board[fy][fx] || mine[i]) continue;
+          if (top[fx] < fy || solid(fx - 1, fy) + solid(fx + 1, fy) + solid(fx, fy + 1) >= 3) gaps++;
+        }
+        for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) if (mat[j][i] && y + j >= 0) mine[(y + j) * cols + x + i] = 0;
+        best = Math.max(best, gaps);
+        if (best >= 4) return best;
+        continue;
+      }
+      const copy = tryBoard(board, rows, cols), area = resolveAreaInto(tries.area, areaRot, x, y, cols, rows);
+      const placed = [];
+      for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) {
+        if (!mat[j][i] || y + j < 0) continue;
+        copy[y + j][x + i] = tries.marks[placed.length] ??= { pid: -7 };
+        placed.push({ x: x + i, y: y + j });
       }
       const fx = computeEffect(copy, pu, {
         area, placed, pid: -7, centre: { x: x + (mat[0].length - 1) / 2, y: y + (mat.length - 1) / 2 },
@@ -916,7 +965,8 @@ export function powerupUsefulness(board, shape) {
         const walls = solid(f.x - 1, f.y) + solid(f.x + 1, f.y) + solid(f.x, f.y + 1);
         if (covered || walls >= 3) filledGaps++;
       }
-      const moved = fx.moves.filter(m => m.toY > m.fromY || m.toX !== m.fromX).length;
+      let moved = 0;
+      for (const m of fx.moves) if (m.toY > m.fromY || m.toX !== m.fromX) moved++;
       const score = fx.destroyed.length + moved + filledGaps + (fx.collapsed ? fx.collapsed.rows.length * cols : 0);
       best = Math.max(best, score);
       if (best >= 4) return best; // plenty: no need to look further
