@@ -1,0 +1,1019 @@
+// ============================================================
+// POWERUPS — pure logic (no DOM). Imported by main.js and by the tests.
+// ============================================================
+//
+// Board format (same as main.js): board[y][x] is null (empty) or a cell object.
+// Area format: see the doc comment at the top of shapes/powerup_shapes.js.
+
+import { valueNoise, makeRng } from "./util.js";
+import { paintFill } from "./fillart.js";
+import { CONFIG } from "../config.js";
+
+export const POWERUP_TYPES = ["destroyer", "gravity", "expander", "acid", "blast", "goo", "phantom", "combo"];
+
+// Classes a combo can be built from, in the order their parts fire.
+export const COMBO_PART_TYPES = ["phantom", "destroyer", "acid", "blast", "gravity", "expander"];
+
+// Moves like a phantom (falls through blocks): a phantom, or a combo with a phantom part.
+export const isPhantomPowerup = (pu) => !!pu && (pu.type === "phantom" || !!pu.parts?.some(p => p.type === "phantom"));
+
+export const DEFAULT_EFFECT_TEXT = {
+  destroyer: "destroys highlighted blocks",
+  gravity: "gravitates highlighted blocks",
+  expander: "fills highlighted blocks",
+  acid: "dissolves the blocks around it",
+  blast: "blasts highlighted blocks away",
+  goo: "melts into the gaps below",
+  phantom: "falls through blocks into the deepest gap",
+  combo: "does several things at once",
+};
+
+// Powerup classes as the player sees them. Several types can share a class: acid pieces
+// are Destroyerz too (they dissolve what's around them). The order is the display order.
+export const CLASS_OF = { acid: "destroyer" };
+export const classOf = (type) => CLASS_OF[type] ?? type;
+export const CLASS_INFO = {
+  destroyer: { name: "Destroyerz", text: "When it lands, every block in the highlighted area is destroyed." },
+  gravity: { name: "Gravitizerz", text: "When it lands, the blocks in the highlighted area drop down as far as they can, filling the gaps under them." },
+  expander: { name: "Expanderz", text: "When it lands, every empty cell in the highlighted area fills up with new blocks." },
+  phantom: { name: "Phantomz", text: "Falls straight through other blocks into the deepest gap it fits, and stays there. You can still move and rotate it." },
+  combo: { name: "Comboz", text: "Does more than one of these at once. Each kind of highlight shows what will happen there." },
+  // switched off (CONFIG.assist.powerups.disabledTypes), kept for the data
+  blast: { name: "Blasts", text: "When it lands, the blocks in the highlighted area are thrown outwards and fall back down." },
+  goo: { name: "Goo", text: "Melts when it lands and flows down into the lowest gaps it can reach." },
+};
+
+// Which consume by default (vanish when they fire). (A Destroyerz is always in its own area,
+// withinOwnArea: it goes with everything else there. A Gravitizerz stays, as an Expanderz does,
+// and its blocks come down with everything else there: comesDown. A combo goes if one of its parts
+// would, unless it has a phantom part.)
+const CONSUMES = { destroyer: true, gravity: false, expander: false, acid: true, blast: true, goo: true, phantom: false };
+
+// Does it bring itself down when it goes off? A Gravitizerz that stays does, and so does a combo
+// with a gravity part that stays: computeEffect drops its blocks with everything else in its area.
+export const comesDown = (pu) => !!pu && !pu.consume && (pu.parts ?? [pu]).some(p => p.type === "gravity");
+
+// How helpful a powerup is (1 = barely, 5 = a lifesaver) when the data doesn't say.
+const DEFAULT_HELP_BY_TIER = { 1: 2, 2: 3, 3: 4.5 };
+
+const DIRECTIONS = {
+  down: { dx: 0, dy: 1 },
+  up: { dx: 0, dy: -1 },
+  left: { dx: -1, dy: 0 },
+  right: { dx: 1, dy: 0 },
+};
+
+// Area flags (bitmask) for one area entry.
+export const AREA_CELL = 1;
+export const AREA_ROW = 2;
+export const AREA_COL = 4;
+export const AREA_DOWN = 8; // (this cell and every one under it, down to the floor)
+
+const AREA_CHAR_FLAGS = {
+  "#": AREA_CELL,
+  "-": AREA_ROW,
+  "|": AREA_COL,
+  "+": AREA_ROW | AREA_COL,
+  "v": AREA_DOWN,
+};
+
+/* =========================
+   Normalisation
+   ========================= */
+
+// Parse an area grid into offsets relative to the piece's top-left block.
+// `trim` = {top, left}: how many empty rows/cols were trimmed off the top/left
+// of the piece grid when it was normalised (so the origin still lines up).
+export function parseArea(area, trim = { top: 0, left: 0 }) {
+  const out = { cells: [], rows: [], cols: [], downs: [] };
+  if (!area || !area.grid) return out;
+
+  const lines = Array.isArray(area.grid) ? area.grid : String(area.grid).split("\n");
+  const [ox, oy] = Array.isArray(area.origin) ? area.origin : [0, 0];
+
+  const rowSet = new Set();
+  const colSet = new Set();
+
+  for (let gy = 0; gy < lines.length; gy++) {
+    const line = String(lines[gy]);
+    for (let gx = 0; gx < line.length; gx++) {
+      const flags = AREA_CHAR_FLAGS[line[gx]] ?? 0;
+      if (!flags) continue;
+      const dx = gx - (ox | 0) - (trim.left | 0);
+      const dy = gy - (oy | 0) - (trim.top | 0);
+      if (flags & AREA_CELL) out.cells.push({ dx, dy });
+      if (flags & AREA_ROW) rowSet.add(dy);
+      if (flags & AREA_COL) colSet.add(dx);
+      if (flags & AREA_DOWN) out.downs.push({ dx, dy });
+    }
+  }
+
+  out.rows = [...rowSet].sort((a, b) => a - b);
+  out.cols = [...colSet].sort((a, b) => a - b);
+  return out;
+}
+
+// Rotate area offsets 90° clockwise to follow a piece rotation.
+// `pieceH` is the height of the piece matrix BEFORE this rotation.
+// Matches main.js rotateMatrix90CW: (x, y) -> (H - 1 - y, x).
+export function rotateArea90CW(area, pieceH) {
+  const rot = ({ dx, dy }) => ({ dx: pieceH - 1 - dy, dy: dx });
+  return {
+    cells: area.cells.map(rot),
+    // a whole row at dy becomes a whole column at (H - 1 - dy), and vice versa
+    rows: area.cols.slice().sort((a, b) => a - b),
+    cols: area.rows.map(dy => pieceH - 1 - dy).sort((a, b) => a - b),
+    // (down to the floor stays down: it's where things fall)
+    downs: (area.downs ?? []).map(rot),
+  };
+}
+
+// Parse an area/zone ({origin, grid}) for every rotation of a piece.
+// `rotations` are the piece's boolean matrices in rotation order (0..3).
+export function areaRotationsFor(area, rotations, trim = { top: 0, left: 0 }) {
+  const out = [parseArea(area, trim)];
+  for (let i = 1; i < rotations.length; i++) {
+    out.push(rotateArea90CW(out[i - 1], rotations[i - 1].length));
+  }
+  return out;
+}
+
+// An expander's fill down to the floor (a combo's too) never reaches more than
+// CONFIG.assist.powerups.expanderMaxCols columns across, centred on the piece as it first comes,
+// whatever its area as drawn: two of them side by side can't fill the stack from wall to wall.
+// (Its other turns follow from that one.) A fill along a row, or in a shape of its own, is as
+// drawn: a row's worth is what makes those worth having. A combo's fill that's the ground either
+// side of a hole it digs to the floor stays as it is (a mineshaft, a canyon): the hole's in the
+// way of its ever filling a row across. A piece can be allowed more (its `maxCols`: the volcano,
+// the tiles).
+function narrowFill(areaRotations, rotations, own = null) {
+  const max = own ?? CONFIG.assist?.powerups?.expanderMaxCols;
+  if (!(max > 0)) return areaRotations;
+  const c = (rotations[0][0].length - 1) / 2, keep = (dx) => Math.abs(dx - c) < max / 2;
+  const a = areaRotations[0];
+  if (!a.cols.some(dx => !keep(dx)) && !(a.downs ?? []).some(q => !keep(q.dx))) return areaRotations;
+  const out = [{
+    cells: a.cells,
+    rows: a.rows,
+    cols: a.cols.filter(keep),
+    downs: (a.downs ?? []).filter(q => keep(q.dx)),
+  }];
+  // (and one that would be left with nothing at all stays as it is)
+  if (isEmptyArea(out[0])) return areaRotations;
+  for (let i = 1; i < rotations.length; i++) out.push(rotateArea90CW(out[i - 1], rotations[i - 1].length));
+  return out;
+}
+
+// A combo's parts: its fill narrowed, unless one of its destroyers digs a column to the floor
+// that the fill leaves be (the hole's in the way).
+function narrowComboFill(parts, rotations) {
+  const dug = parts.filter(p => p.type === "destroyer").flatMap(p => p.areaRotations[0].downs ?? []);
+  const covers = (a, dx) => a.rows.length > 0 || a.cols.includes(dx) || a.cells.some(q => q.dx === dx) || (a.downs ?? []).some(q => q.dx === dx);
+  for (const p of parts) {
+    if (p.type === "expander" && !dug.some(q => !covers(p.areaRotations[0], q.dx))) p.areaRotations = narrowFill(p.areaRotations, rotations);
+  }
+}
+
+export function isEmptyArea(a) {
+  return !a.cells.length && !a.rows.length && !a.cols.length && !a.downs?.length;
+}
+
+// Normalise a raw `powerup` object. `rotations` are the piece's boolean
+// matrices (one per allowed rotation), `trim` comes from the grid parser.
+export function normalisePowerup(raw, rotations, trim, id = "?", inCombo = false) {
+  if (!raw || typeof raw !== "object") return null;
+
+  const type = POWERUP_TYPES.includes(raw.type) ? raw.type : null;
+  if (!type) {
+    console.warn(`[${id}] unknown powerup type "${raw.type}"; treating as a regular shape.`);
+    return null;
+  }
+
+  const direction = DIRECTIONS[raw.direction] ? raw.direction : "down";
+  const tier = Math.max(1, Math.min(3, Math.round(Number(raw.tier) || 1)));
+
+  let areaRotations;
+  let parts = null;
+  if (type === "combo") {
+    // each part is a small powerup of its own (no goo / phantom / nested combos); a part of a
+    // kind that's taken out of combos (CONFIG.assist.powerups.stripFromCombos) is left off, and
+    // the combo does the rest
+    const strip = CONFIG.assist?.powerups?.stripFromCombos ?? [];
+    parts = (Array.isArray(raw.parts) ? raw.parts : [])
+      .filter(p => p && COMBO_PART_TYPES.includes(p.type) && !strip.includes(p.type))
+      .map(p => normalisePowerup({ ...p, consume: false, tier: raw.tier, area: p.type === "phantom" ? undefined : p.area }, rotations, trim, `${id}/${p.type}`, true))
+      .filter(Boolean)
+      .sort((a, b) => COMBO_PART_TYPES.indexOf(a.type) - COMBO_PART_TYPES.indexOf(b.type));
+    narrowComboFill(parts, rotations);
+    if ((raw.parts?.length ?? 0) < 2) console.warn(`[${id}] a combo needs at least two parts.`);
+    // (with only one part left, it's just a powerup of that kind now, in the combo's words)
+    if (parts.length === 1) {
+      const [only] = parts;
+      return {
+        ...only,
+        starter: raw.starter === true,
+        tier,
+        description: (typeof raw.description === "string" && raw.description.trim()) ? raw.description.trim() : DEFAULT_EFFECT_TEXT[only.type],
+        intro: typeof raw.intro === "string" ? raw.intro.trim() : "",
+        consume: typeof raw.consume === "boolean" ? raw.consume : CONSUMES[only.type],
+        help: Number.isFinite(Number(raw.help)) && raw.help !== null && raw.help !== "" ? Math.max(1, Math.min(5, Number(raw.help))) : DEFAULT_HELP_BY_TIER[tier],
+        fill: only.fill ?? raw.fill ?? null,
+        bad: raw.bad === true,
+        setOnly: raw.setOnly === true,
+        stripped: true,
+      };
+    }
+    areaRotations = rotations.map((_, i) => unionAreas(parts.map(p => p.areaRotations[i])));
+  } else if (type === "acid") {
+    // everything within `reach` steps of the piece, plus any explicit area
+    const reach = Math.max(1, Math.round(Number(raw.reach) || 1));
+    const extra = raw.area ? areaRotationsFor(raw.area, rotations, trim) : null;
+    areaRotations = rotations.map((mat, i) => {
+      const t = touchArea(mat, reach);
+      if (extra) {
+        t.cells.push(...extra[i].cells);
+        t.rows = [...new Set([...t.rows, ...extra[i].rows])];
+        t.cols = [...new Set([...t.cols, ...extra[i].cols])];
+        t.downs = [...t.downs, ...extra[i].downs];
+      }
+      return t;
+    });
+  } else if (type === "goo" || type === "phantom") {
+    areaRotations = rotations.map(() => ({ cells: [], rows: [], cols: [], downs: [] }));
+  } else if (raw.scatter && type === "destroyer") {
+    // a random spray of cells, re-rolled each time the piece spawns (rollScatter); the first
+    // one is seeded from its id, so a game is the same every time with the same seed
+    areaRotations = scatterAreas(rotations, raw.scatter, makeRng([...String(id)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7)));
+  } else {
+    areaRotations = areaRotationsFor(raw.area, rotations, trim);
+    // (a combo's part: the combo sees to it, narrowComboFill)
+    if (type === "expander" && !inCombo) areaRotations = narrowFill(areaRotations, rotations, raw.maxCols > 0 ? raw.maxCols : null);
+    if (isEmptyArea(areaRotations[0])) {
+      console.warn(`[${id}] powerup has an empty area; it will do nothing.`);
+    }
+  }
+
+  return {
+    type,
+    cls: classOf(type), // the class the player sees (acid -> destroyer)
+    starter: raw.starter === true, // may be the first of its class in a game
+    direction,
+    tier,
+    description: (typeof raw.description === "string" && raw.description.trim())
+      ? raw.description.trim()
+      : DEFAULT_EFFECT_TEXT[type],
+    intro: typeof raw.intro === "string" ? raw.intro.trim() : "",
+    consume: (typeof raw.consume === "boolean") ? raw.consume
+      : type === "combo" ? !parts.some(p => p.type === "phantom") && parts.some(p => CONSUMES[p.type])
+      : CONSUMES[type],
+    collapse: (type === "destroyer" || type === "acid") && raw.collapse === true,
+    reach: Math.max(1, Math.round(Number(raw.reach) || 1)),
+    push: Math.max(1, Number(raw.push) || 3),
+    volume: Math.max(0.1, Number(raw.volume) || 1),
+    fill: raw.fill ?? null,
+    help: Number.isFinite(Number(raw.help)) && raw.help !== null && raw.help !== ""
+      ? Math.max(1, Math.min(5, Number(raw.help)))
+      : DEFAULT_HELP_BY_TIER[tier],
+    parts,
+    areaRotations,
+    bad: raw.bad === true,
+    // (one that only ever comes in its level 6 set: shapes/groups.js)
+    setOnly: raw.setOnly === true,
+    // (its area is everything under it, its own columns from its top down to the floor, however
+    // it's turned: src/shapes.js)
+    under: raw.under === true,
+    scatter: (raw.scatter && type === "destroyer") ? {
+      radius: Math.max(1, Number(raw.scatter.radius) || 5),
+      density: Math.max(0.05, Math.min(1, Number(raw.scatter.density) || 0.5)),
+    } : null,
+  };
+}
+
+/* =========================
+   Scatter areas (random, noise-shaped)
+   ========================= */
+
+// Offsets (relative to the piece's centre) of a spray of cells that thins out from the
+// centre, in streaks (angular noise) and clumps (2D noise).
+export function scatterOffsets(sc, rng) {
+  const R = sc.radius, density = sc.density;
+  const blobs = valueNoise(rng, 2.2);
+  const rays = valueNoise(rng, 1);
+  const nRays = 5 + Math.floor(rng() * 4);
+  const out = [];
+  for (let oy = -R; oy <= R; oy++) for (let ox = -R; ox <= R; ox++) {
+    const d = Math.hypot(ox, oy);
+    if (d > R + 0.3) continue;
+    const t = (Math.atan2(oy, ox) / (2 * Math.PI) + 0.5) * nRays;
+    // wrap the angular noise so the streaks join up all the way round
+    const ray = rays(t, 0.5) * (1 - t / nRays) + rays(t - nRays, 0.5) * (t / nRays);
+    const fall = Math.max(0, 1 - d / (R + 1));
+    const p = density * (0.35 + 1.3 * fall) * (0.25 + 1.5 * ray * blobs(ox, oy));
+    if (d < 1.5 || rng() < p) out.push({ ox, oy });
+  }
+  return out;
+}
+
+// The scatter as an area for every rotation, centred on the piece (it never rotates).
+export function scatterAreas(rotations, sc, rng) {
+  const offs = scatterOffsets({ radius: Number(sc?.radius) || 5, density: Number(sc?.density) || 0.5 }, rng);
+  return rotations.map(mat => {
+    const cx = Math.floor(mat[0].length / 2), cy = Math.floor(mat.length / 2);
+    return { cells: offs.map(({ ox, oy }) => ({ dx: cx + ox, dy: cy + oy })), rows: [], cols: [], downs: [] };
+  });
+}
+
+// A copy of a scatter powerup piece with a freshly rolled spray.
+export function rollScatter(shape, rng = Math.random) {
+  const pu = shape?.powerup;
+  // (one already rolled, say by zen's director to see what it would do, keeps its spray)
+  if (!pu?.scatter || pu.rolled) return shape;
+  const rolled = { ...pu, areaRotations: scatterAreas(shape.rotations, pu.scatter, rng), rolled: true };
+  shape.rotations.forEach((mat, k) => withinOwnArea(rolled, k, mat)); // (the piece itself in it too)
+  return { ...shape, powerup: rolled };
+}
+
+function unionAreas(list) {
+  const out = { cells: [], rows: [], cols: [], downs: [] };
+  for (const a of list) {
+    if (!a) continue;
+    out.cells.push(...a.cells);
+    out.rows.push(...a.rows);
+    out.cols.push(...a.cols);
+    out.downs.push(...(a.downs ?? []));
+  }
+  out.rows = [...new Set(out.rows)].sort((a, b) => a - b);
+  out.cols = [...new Set(out.cols)].sort((a, b) => a - b);
+  return out;
+}
+
+// The area of a powerup at board position (px, py) in rotation `rot`. Combos also get
+// `parts`: one resolved area per part.
+export function resolvePowerupArea(pu, rot, px, py, cols, rows) {
+  const area = resolveArea(pu.areaRotations[rot] ?? pu.areaRotations[0], px, py, cols, rows);
+  if (pu.parts) area.parts = pu.parts.map(p => resolveArea(p.areaRotations[rot] ?? p.areaRotations[0], px, py, cols, rows));
+  return area;
+}
+
+// Where a turned piece was before it turned (its rotation-0 cells, centred on it as its area is)
+// goes with its area in turn `k` (`mat0`: its rotation-0 matrix, `mat`: this turn's), so turning
+// it never leaves a blank, or a block standing, where it was. Each cell goes to the nearest part
+// of a combo. One that destroys or drops takes them all; a fill takes only those it would
+// otherwise leave as a hole (its area, or the piece if it stays, on both sides of the cell or on
+// three), so nothing is ever filled in out on its own above the piece. Scatter sprays are left alone.
+export function withOwnCells(pu, k, mat0, mat) {
+  if (!pu || pu.scatter) return;
+  const all = (pu.parts?.length ? pu.parts : [pu]).filter(p => p.areaRotations?.[k] && ["destroyer", "acid", "gravity", "expander"].includes(p.type));
+  if (!all.length) return;
+  const sx = Math.floor((mat[0].length - mat0[0].length) / 2), sy = Math.floor((mat.length - mat0.length) / 2);
+  const isPiece = (x, y) => !!mat[y]?.[x];
+  const solid = (x, y) => (!pu.consume && isPiece(x, y)) || all.some(p => inArea(p.areaRotations[k], x, y));
+  let left = [];
+  mat0.forEach((row, y) => row.forEach((on, x) => {
+    const cx = x + sx, cy = y + sy;
+    if (on && !isPiece(cx, cy) && !all.some(p => inArea(p.areaRotations[k], cx, cy))) left.push({ x: cx, y: cy });
+  }));
+  // (a few passes: one cell taken in can close in the next)
+  for (let pass = 0; pass < 3 && left.length; pass++) {
+    left = left.filter(({ x, y }) => {
+      let best = null, bestD = Infinity;
+      for (const p of all) { const d = areaDistance(p.areaRotations[k], x, y); if (d < bestD) { bestD = d; best = p; } }
+      if (!best) return false;
+      if (best.type === "expander") {
+        const l = solid(x - 1, y), r = solid(x + 1, y), u = solid(x, y - 1), d = solid(x, y + 1);
+        if (!((l && r) || (u && d) || l + r + u + d >= 3)) return true;
+      }
+      // (`own`: not part of the area as drawn, so a picture over it sits where it did)
+      best.areaRotations[k].cells.push({ dx: x, dy: y, own: true });
+      if (best !== pu) pu.areaRotations[k].cells.push({ dx: x, dy: y, own: true }); // (a combo's whole area too)
+      return false;
+    });
+  }
+}
+
+// How far the cell (x, y) is from an area as drawn (0: in it)
+function areaDistance(a, x, y) {
+  let d = Infinity;
+  for (const c of a.cells) if (!c.own) d = Math.min(d, Math.hypot(c.dx - x, c.dy - y));
+  for (const r of a.rows) d = Math.min(d, Math.abs(r - y));
+  for (const k of a.cols) d = Math.min(d, Math.abs(k - x));
+  for (const c of a.downs ?? []) d = Math.min(d, Math.hypot(c.dx - x, Math.max(0, c.dy - y)));
+  return d;
+}
+
+// Is the cell (x, y), from the piece's top-left, in an area?
+function inArea(a, x, y) {
+  return a.cells.some(c => c.dx === x && c.dy === y) || a.rows.includes(y) || a.cols.includes(x) || (a.downs ?? []).some(c => c.dx === x && c.dy <= y);
+}
+
+// A Destroyerz is always in its own area, however it's turned: the piece is highlighted with
+// everything else it will destroy, and goes with it (none destroys only something away from
+// itself). Its blocks in turn `k` (`mat`) that the area as drawn leaves out go in (`own`, as
+// above); a combo's go to its destroying part, and to the combo's whole area too.
+// So is a Gravitizerz that stays (comesDown), and everything under it too, down to the floor: its
+// blocks fall with what's under them, so nothing its zone leaves out holds them up. Its columns the
+// zone as drawn leaves out go in from its top block down (`own` too; sliding sideways or up,
+// just its blocks), to its gravity part, and to a combo's whole area too.
+export function withinOwnArea(pu, k, mat) {
+  const all = (pu?.parts?.length ? pu.parts : [pu]).filter(p => p?.areaRotations?.[k]);
+  const add = (part, key, entry) => {
+    (part.areaRotations[k][key] ??= []).push(entry);
+    if (part !== pu) (pu.areaRotations[k][key] ??= []).push(entry); // (a combo's whole area too)
+  };
+  const parts = all.filter(p => classOf(p.type) === "destroyer");
+  if (parts.length) mat.forEach((row, y) => row.forEach((on, x) => {
+    if (on && !parts.some(p => inArea(p.areaRotations[k], x, y))) add(parts[0], "cells", { dx: x, dy: y, own: true });
+  }));
+  const drops = comesDown(pu) ? all.filter(p => p.type === "gravity") : [];
+  if (!drops.length) return;
+  if ((drops[0].direction ?? "down") !== "down") {
+    mat.forEach((row, y) => row.forEach((on, x) => {
+      if (on && !drops.some(p => inArea(p.areaRotations[k], x, y))) add(drops[0], "cells", { dx: x, dy: y, own: true });
+    }));
+    return;
+  }
+  for (let x = 0; x < mat[0].length; x++) {
+    const top = mat.findIndex(row => row[x]);
+    const down = (a) => a.cols.includes(x) || (a.downs ?? []).some(c => c.dx === x && c.dy <= top);
+    if (top >= 0 && !drops.some(p => down(p.areaRotations[k]))) add(drops[0], "downs", { dx: x, dy: top, own: true });
+  }
+}
+
+// Cells within `reach` (Manhattan) steps of the piece's blocks, not the blocks themselves.
+export function touchArea(mat, reach = 1) {
+  const H = mat.length, W = mat[0].length;
+  const cells = [];
+  for (let dy = -reach; dy < H + reach; dy++) {
+    for (let dx = -reach; dx < W + reach; dx++) {
+      if (mat[dy]?.[dx]) continue;
+      let best = Infinity;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        if (mat[y][x]) best = Math.min(best, Math.abs(dx - x) + Math.abs(dy - y));
+      }
+      if (best <= reach) cells.push({ dx, dy });
+    }
+  }
+  return { cells, rows: [], cols: [], downs: [] };
+}
+
+/* =========================
+   Area resolution on a board
+   ========================= */
+
+// Resolve the area of a piece at board position (px, py).
+// Returns:
+//   flags:    Uint8Array(cols*rows), non-zero for affected cells
+//   indices:  affected cell indices (y*cols + x), sorted
+//   fullRows: board rows covered wall-to-wall by a row flag
+export function resolveArea(areaRot, px, py, cols, rows) {
+  return resolveAreaInto({ flags: new Uint8Array(cols * rows), indices: [], fullRows: [] }, areaRot, px, py, cols, rows);
+}
+// (the same into `out`, cleared first: for a piece tried in spot after spot, with no new area for
+// each one: src/selection.js powerupUsefulness)
+export function resolveAreaInto(out, areaRot, px, py, cols, rows) {
+  const { flags, indices, fullRows } = out;
+  flags.fill(0);
+  indices.length = 0;
+  fullRows.length = 0;
+
+  for (const { dx, dy } of areaRot.cells) {
+    const x = px + dx, y = py + dy;
+    if (x < 0 || x >= cols || y < 0 || y >= rows) continue;
+    flags[y * cols + x] |= AREA_CELL;
+  }
+  for (const dy of areaRot.rows) {
+    const y = py + dy;
+    if (y < 0 || y >= rows) continue;
+    fullRows.push(y);
+    for (let x = 0; x < cols; x++) flags[y * cols + x] |= AREA_ROW;
+  }
+  for (const dx of areaRot.cols) {
+    const x = px + dx;
+    if (x < 0 || x >= cols) continue;
+    for (let y = 0; y < rows; y++) flags[y * cols + x] |= AREA_COL;
+  }
+  for (const { dx, dy } of areaRot.downs ?? []) {
+    const x = px + dx;
+    if (x < 0 || x >= cols) continue;
+    for (let y = Math.max(0, py + dy); y < rows; y++) flags[y * cols + x] |= AREA_CELL;
+  }
+
+  for (let i = 0; i < flags.length; i++) if (flags[i]) indices.push(i);
+  return out;
+}
+
+/* =========================
+   Effects (mutate the board)
+   ========================= */
+
+// Destroyer: empties every affected cell. Returns [{x, y, cell}].
+export function applyDestroy(board, area, cols) {
+  const destroyed = [];
+  for (const i of area.indices) {
+    const x = i % cols, y = (i / cols) | 0;
+    const cell = board[y][x];
+    if (!cell) continue;
+    destroyed.push({ x, y, cell });
+    board[y][x] = null;
+  }
+  return destroyed;
+}
+
+// Gravity: every affected block moves in `direction` until it hits a wall or
+// another block. Blocks closest to the "floor" settle first, so stacked blocks
+// land on each other. Unaffected blocks stay put and act as obstacles.
+// Returns moves [{fromX, fromY, toX, toY, cell}] (only blocks that moved).
+export function applyGravity(board, area, cols, rows, direction = "down") {
+  const dir = DIRECTIONS[direction] ?? DIRECTIONS.down;
+  const moves = [];
+
+  // Visit order: nearest the floor first (row by row, or column by column).
+  const across = dir.dy !== 0, lines = across ? rows : cols, along = across ? cols : rows;
+  const back = across ? dir.dy > 0 : dir.dx > 0;
+  for (let n = 0; n < lines * along; n++) {
+    const line = back ? lines - 1 - ((n / along) | 0) : (n / along) | 0, k = n % along;
+    const x = across ? k : line, y = across ? line : k;
+    if (!area.flags[y * cols + x]) continue;
+    const cell = board[y][x];
+    if (!cell) continue;
+
+    let tx = x, ty = y;
+    while (true) {
+      const nx = tx + dir.dx, ny = ty + dir.dy;
+      if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) break;
+      if (board[ny][nx]) break;
+      tx = nx; ty = ny;
+    }
+    if (tx === x && ty === y) continue;
+
+    board[y][x] = null;
+    board[ty][tx] = cell;
+    moves.push({ fromX: x, fromY: y, toX: tx, toY: ty, cell });
+  }
+  return moves;
+}
+
+// A Gravitizerz that stays: its own blocks are in its area (withinOwnArea), and fall (or slide)
+// with everything else there, each on its own, into whatever gaps are under them, however it's
+// turned; its blocks above the top (`above`: it locked sticking out) come down after them, as far
+// as they go. Returns { moves, placed (where its blocks are now on the board), overTop (its
+// blocks still above the top) }.
+function fallWith(board, area, { placed, pid, cols, rows, above = [] }, direction) {
+  const dir = DIRECTIONS[direction] ?? DIRECTIONS.down;
+  const mine = new Set();
+  for (const { x, y } of placed) {
+    const c = board[y]?.[x];
+    if (c && (pid == null || c.pid === pid)) mine.add(c);
+  }
+  const moves = applyGravity(board, area, cols, rows, direction);
+  // (above the top is open air, unless it's going up; nearest the floor first)
+  const open = (x, y) => x >= 0 && x < cols && y < rows && (y < 0 ? dir.dy >= 0 : !board[y][x]);
+  const overTop = [];
+  for (const b of [...above].sort((a, b) => (b.x - a.x) * dir.dx + (b.y - a.y) * dir.dy)) {
+    let x = b.x, y = b.y;
+    while (open(x + dir.dx, y + dir.dy)) { x += dir.dx; y += dir.dy; }
+    if (y < 0) { overTop.push({ x, y, cell: b.cell }); continue; }
+    board[y][x] = b.cell;
+    mine.add(b.cell);
+    moves.push({ fromX: b.x, fromY: b.y, toX: x, toY: y, cell: b.cell });
+  }
+  const now = [];
+  board.forEach((row, y) => row.forEach((c, x) => { if (c && mine.has(c)) now.push({ x, y }); }));
+  return { moves, placed: now, overTop };
+}
+
+// Expander: fills every empty affected cell with makeCell(x, y).
+// Returns [{x, y, cell}].
+export function applyExpand(board, area, cols, makeCell) {
+  const filled = [];
+  for (const i of area.indices) {
+    const x = i % cols, y = (i / cols) | 0;
+    if (board[y][x]) continue;
+    const cell = makeCell(x, y);
+    board[y][x] = cell;
+    filled.push({ x, y, cell });
+  }
+  return filled;
+}
+
+// A picture fill (fill: { picture, k, slice }): one picture laid over the whole of the area, not
+// one block over and over. The picture goes over the box the area spans from where the piece is
+// (past the walls too, so it stays where the piece is; "v" columns and whole columns down to the
+// floor), its edges (`slice`: blocks at the top, bottom, left and right) kept as they are, and the
+// rest repeated (or cut down the middle) to the size of the box, like a nine-patch.
+// `at`: { rot, x, y }, the piece's turn and its top-left block.
+export function pictureBox(areaRot, at, cols, rows) {
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  const take = (x, y) => { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; };
+  for (const { dx, dy, own } of areaRot.cells) if (!own) take(at.x + dx, at.y + dy);
+  for (const { dx, dy } of areaRot.downs ?? []) { take(at.x + dx, at.y + dy); take(at.x + dx, rows - 1); }
+  for (const dy of areaRot.rows) { take(0, at.y + dy); take(cols - 1, at.y + dy); }
+  for (const dx of areaRot.cols) { take(at.x + dx, 0); take(at.x + dx, rows - 1); }
+  return x0 <= x1 ? { x0, x1, y0, y1 } : null;
+}
+// (which of `size` picture blocks goes `u` blocks into a box `n` long, with `a` and `b` kept at
+// the two ends and the middle repeated, or cut down the middle when there's less room)
+function sliceAt(u, n, size, a, b) {
+  if (u < a) return Math.min(u, size - 1);
+  if (u >= n - b) return Math.max(0, size - (n - u));
+  const mid = Math.max(1, size - a - b);
+  if (n <= size) return Math.min(size - 1, a + Math.floor((mid - (n - a - b)) / 2) + (u - a));
+  return a + ((u - a) % mid);
+}
+export function picturePaint(pic, box, x, y) {
+  const u = sliceAt(x - box.x0, box.x1 - box.x0 + 1, pic.W, pic.left, pic.right);
+  const v = sliceAt(y - box.y0, box.y1 - box.y0 + 1, pic.H, pic.top, pic.bottom);
+  return pic.blocks[Math.max(0, Math.min(pic.H - 1, v))][Math.max(0, Math.min(pic.W - 1, u))];
+}
+
+// Remove whole rows and drop everything above them (like a line clear).
+// Returns { removed: [{y, cells}], dropDistances } where dropDistances[newY]
+// is how many rows the row now at newY fell (for the fall animation).
+export function collapseRows(board, rowsToRemove, cols) {
+  const rows = board.length;
+  const set = new Set(rowsToRemove);
+  const removed = [];
+  const kept = [];
+  const dropDistances = Array(rows).fill(0);
+
+  for (let y = 0; y < rows; y++) {
+    if (set.has(y)) removed.push({ y, cells: board[y].slice() });
+    else kept.push(y);
+  }
+  if (!removed.length) return { removed, dropDistances };
+
+  const newBoard = [];
+  for (let i = 0; i < removed.length; i++) newBoard.push(Array(cols).fill(null));
+  for (const y of kept) newBoard.push(board[y]);
+
+  // dropDistances: for each surviving row, the number of removed rows below it.
+  for (let i = 0; i < kept.length; i++) {
+    const oldY = kept[i];
+    const newY = removed.length + i;
+    dropDistances[newY] = newY - oldY;
+  }
+
+  for (let y = 0; y < rows; y++) board[y] = newBoard[y];
+  return { removed, dropDistances };
+}
+
+/* =========================
+   Board analysis (for the powerup scheduler)
+   ========================= */
+
+// holes = empty cells with at least one block somewhere above them in the column.
+export function analyseBoard(board) {
+  const rows = board.length;
+  const cols = rows ? board[0].length : 0;
+  let highest = rows;
+  let holes = 0;
+  let filled = 0;
+
+  for (let x = 0; x < cols; x++) {
+    let seenBlock = false;
+    for (let y = 0; y < rows; y++) {
+      if (board[y][x]) {
+        filled++;
+        if (!seenBlock) {
+          seenBlock = true;
+          if (y < highest) highest = y;
+        }
+      } else if (seenBlock) {
+        holes++;
+      }
+    }
+  }
+  return { highest, holes, filled, stackHeight: rows - highest };
+}
+
+// Blast: every block in the area is launched away from `centre` (harder the closer it
+// is, always with some lift), flies on a ballistic arc under gravity, bounces off the
+// walls, and lands where it comes down. All blocks fly at once, so they land on each
+// other in the order they come down. `push` scales how far they go.
+// Moves carry `path` ([{x, y, t}] in cells and seconds), `flight` (seconds) and `spin`
+// (radians, a whole number of turns) for the animation.
+export const BLAST_PHYSICS = { gravity: 40, speedPerPush: 3.1, lift: 11, dt: 1 / 120, sampleEvery: 1 / 40, maxFlight: 3 };
+
+export function applyBlast(board, area, cols, rows, centre, push = 3, rng = Math.random) {
+  const P = BLAST_PHYSICS;
+  const flyers = [];
+  let maxD = 0;
+  for (const i of area.indices) {
+    const x = i % cols, y = (i / cols) | 0;
+    if (!board[y][x]) continue;
+    const d = Math.hypot(x - centre.x, y - centre.y);
+    maxD = Math.max(maxD, d);
+    flyers.push({ x, y, d, cell: board[y][x] });
+  }
+  if (!flyers.length) return [];
+  for (const f of flyers) board[f.y][f.x] = null; // everything in the blast takes off at once
+
+  for (const f of flyers) {
+    let ux = f.x - centre.x, uy = f.y - centre.y;
+    let len = Math.hypot(ux, uy);
+    if (len < 0.01) { ux = rng() * 2 - 1; uy = -1; len = Math.hypot(ux, uy); }
+    ux /= len; uy /= len;
+    const near = 1 - f.d / (maxD + 1.5);                 // closer to the centre = harder
+    const power = push * P.speedPerPush * (0.6 + 0.7 * near) * (0.85 + 0.3 * rng());
+    f.px = f.x; f.py = f.y;
+    const lift = P.lift * (0.75 + 0.5 * rng()) * (0.6 + 0.4 * Math.min(1, push / 4));
+    f.vx = ux * power * (uy > 0 ? 0.8 : 1);
+    // blocks below the centre can't go down through the floor: they're thrown up and out
+    f.vy = uy > 0 ? -(lift + 0.45 * uy * power) : uy * power - lift * 0.6;
+    f.path = [{ x: f.x, y: f.y, t: 0 }];
+    f.t = 0;
+    f.nextSample = P.sampleEvery;
+    f.spin = (rng() < 0.5 ? -1 : 1) * Math.PI * 2 * (1 + Math.floor(rng() * Math.min(3, push / 2)));
+  }
+
+  const occupied = (x, y) => y >= rows || (y >= 0 && !!board[y][x]);
+  const land = (f, x, y) => {
+    // settle into the nearest free cell at or above (x, y) in that column
+    let yy = Math.min(y, rows - 1);
+    while (yy >= 0 && board[yy][x]) yy--;
+    if (yy < 0) { // column full to the top: back where it started, or anywhere free nearby
+      if (!board[f.y][f.x]) { x = f.x; yy = f.y; }
+      else return false;
+    }
+    board[yy][x] = f.cell;
+    f.toX = x; f.toY = yy;
+    f.path.push({ x, y: yy, t: f.t });
+    return true;
+  };
+
+  const moves = [];
+  let flying = flyers.slice();
+  while (flying.length) {
+    const still = [];
+    for (const f of flying) {
+      f.t += P.dt;
+      f.vy += P.gravity * P.dt;
+      let nx = f.px + f.vx * P.dt;
+      const ny = f.py + f.vy * P.dt;
+      if (nx < 0) { nx = -nx; f.vx = -f.vx * 0.45; }
+      if (nx > cols - 1) { nx = 2 * (cols - 1) - nx; f.vx = -f.vx * 0.45; }
+      const cx = Math.round(nx), cy = Math.round(ny);
+      if (f.vy < 0 && cy >= 0 && occupied(cx, cy)) {
+        f.vy = 0; // bonk on an overhang
+        f.px = nx;
+      } else if (f.vy > 0 && (occupied(cx, cy) || occupied(cx, cy + 1) && ny >= cy)) {
+        if (!land(f, cx, occupied(cx, cy) ? cy - 1 : cy)) still.push(f);
+        continue;
+      } else {
+        f.px = nx; f.py = ny;
+      }
+      if (f.t >= f.nextSample) { f.path.push({ x: f.px, y: f.py, t: f.t }); f.nextSample += P.sampleEvery; }
+      if (f.t > P.maxFlight) { if (!land(f, Math.round(f.px), Math.round(Math.max(0, f.py)))) board[f.y][f.x] = f.cell; continue; }
+      still.push(f);
+    }
+    if (still.length === flying.length && still.every(f => f.t > P.maxFlight * 2)) break;
+    flying = still;
+  }
+
+  for (const f of flyers) {
+    if (f.toX == null) { f.toX = f.x; f.toY = f.y; if (!board[f.y][f.x]) board[f.y][f.x] = f.cell; }
+    if (f.toX === f.x && f.toY === f.y) continue;
+    moves.push({ fromX: f.x, fromY: f.y, toX: f.toX, toY: f.toY, cell: f.cell, path: f.path, flight: f.t, spin: f.spin });
+  }
+
+  // The crater caves in: in the columns the blast covered, whatever is left hanging over
+  // the hole (down to the bottom of the blast) falls into it.
+  let minX = cols, maxX = -1, maxY = -1;
+  for (const i of area.indices) {
+    const x = i % cols, y = (i / cols) | 0;
+    minX = Math.min(minX, x); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+  }
+  const settleArea = { flags: new Uint8Array(cols * rows) };
+  for (let y = 0; y <= maxY; y++) for (let x = minX; x <= maxX; x++) settleArea.flags[y * cols + x] = 1;
+  const settled = applyGravity(board, settleArea, cols, rows, "down");
+  const landedAt = new Map(moves.map(m => [m.toY * cols + m.toX, m]));
+  const lastLanding = Math.max(0, ...moves.map(m => m.flight));
+  for (const g of settled) {
+    const m = landedAt.get(g.fromY * cols + g.fromX);
+    if (m) {
+      // a block that flew, landed on the rubble, then slid down with it
+      const fall = 0.07 * Math.sqrt(g.toY - g.fromY);
+      m.toX = g.toX; m.toY = g.toY; m.flight += fall;
+      m.path.push({ x: g.toX, y: g.toY, t: m.flight });
+    } else {
+      // it waits for the blast, then drops
+      const fall = 0.07 * Math.sqrt(g.toY - g.fromY);
+      const t0 = lastLanding * 0.6;
+      moves.push({ fromX: g.fromX, fromY: g.fromY, toX: g.toX, toY: g.toY, cell: g.cell, flight: t0 + fall, spin: 0,
+        path: [{ x: g.fromX, y: g.fromY, t: 0 }, { x: g.fromX, y: g.fromY, t: t0 }, { x: g.toX, y: g.toY, t: t0 + fall }] });
+    }
+  }
+  return moves;
+}
+
+// Goo: `units` cells of goo flow from `sources` (the melted piece's cells, already
+// empty) down and sideways (never up) and fill the lowest reachable cells first,
+// staying within `spread` columns of the piece. Returns [{x, y, cell, fromX, fromY}].
+export function applyGoo(board, sources, units, cols, rows, makeCell, spread = 4) {
+  if (!sources.length || units <= 0) return [];
+  const minX = Math.min(...sources.map(s => s.x)) - spread;
+  const maxX = Math.max(...sources.map(s => s.x)) + spread;
+  const cx = sources.reduce((a, s) => a + s.x, 0) / sources.length;
+
+  const seen = new Uint8Array(cols * rows);
+  const queue = [];
+  for (const s of sources) {
+    if (s.y < 0 || board[s.y][s.x]) continue;
+    const i = s.y * cols + s.x;
+    if (!seen[i]) { seen[i] = 1; queue.push(s); }
+  }
+  // (the queue is the region, in the order it's reached: down, then left, then right)
+  const region = queue;
+  for (let q = 0; q < region.length; q++) {
+    const c = region[q];
+    for (let k = 0; k < 3; k++) {
+      const nx = k === 0 ? c.x : k === 1 ? c.x - 1 : c.x + 1, ny = k === 0 ? c.y + 1 : c.y;
+      if (nx < 0 || nx >= cols || ny < 0 || ny >= rows || nx < minX || nx > maxX) continue;
+      const i = ny * cols + nx;
+      if (seen[i] || board[ny][nx]) continue;
+      seen[i] = 1;
+      region.push({ x: nx, y: ny });
+    }
+  }
+  // (the lowest first, then the nearest the middle, then the leftmost: only the first `units` of
+  // them in that order, kept in order as the region's gone through, not all of it sorted)
+  const before = (a, b) => (b.y - a.y) || (Math.abs(a.x - cx) - Math.abs(b.x - cx)) || (a.x - b.x);
+  const first = [];
+  for (const c of region) {
+    if (first.length === units && before(c, first[units - 1]) >= 0) continue;
+    let k = first.length < units ? first.length : units - 1;
+    while (k > 0 && before(c, first[k - 1]) < 0) { first[k] = first[k - 1]; k--; }
+    first[k] = c;
+  }
+
+  const filled = [];
+  for (const t of first) {
+    let src = sources[0], best = Infinity;
+    for (const s of sources) {
+      const d = Math.abs(s.x - t.x) + Math.abs(s.y - t.y);
+      if (d < best) { best = d; src = s; }
+    }
+    const cell = makeCell(t.x, t.y);
+    board[t.y][t.x] = cell;
+    filled.push({ x: t.x, y: t.y, cell, fromX: src.x, fromY: src.y });
+  }
+  return filled;
+}
+
+// Deepest y where `mat` fits entirely in empty cells at column `x` (phantoms), or null.
+export function phantomLandingY(board, x, mat) {
+  const rows = board.length, cols = board[0].length;
+  const fits = (y) => {
+    for (let j = 0; j < mat.length; j++) for (let i = 0; i < mat[0].length; i++) {
+      if (!mat[j][i]) continue;
+      const bx = x + i, by = y + j;
+      if (bx < 0 || bx >= cols || by >= rows) return false;
+      if (by >= 0 && board[by][bx]) return false;
+    }
+    return true;
+  };
+  for (let y = rows - mat.length; y >= -mat.length; y--) if (fits(y)) return y;
+  return null;
+}
+
+// Apply a powerup's effect to `board` (mutates it). Shared by the game and the demos.
+//   ctx: { area, placed: [{x,y}] (the powerup's own cells), pid, centre, cols, rows, rng, makeFill,
+//          keepRows (optional Set of rows: a vanishing powerup keeps its blocks in these),
+//          at (optional { rot, x, y }: where the piece is, for a picture fill: picturePaint),
+//          above (optional [{x, y, cell}]: its blocks that locked above the top, which come down
+//          with it if it comes down: comesDown) }
+// Returns { consumed, destroyed, moves, filled, collapsed, overTop } (overTop: its blocks still
+// above the top once it has gone off; `placed`, where its own blocks are now, if it moved them;
+// and for a combo, `parts`, each part's own results, in the order they went off).
+export function computeEffect(board, pu, ctx) {
+  const { area, pid, centre, cols, rows, rng = Math.random, makeFill, keepRows } = ctx;
+  let { placed } = ctx;
+  // (whether the piece stays once it has gone off: a combo's parts, which never vanish on their
+  // own, are told)
+  const stays = ctx.stays ?? !pu.consume;
+  const out = { consumed: [], destroyed: [], moves: [], filled: [], collapsed: null, overTop: ctx.above ?? [] };
+
+  if (pu.consume) {
+    if (keepRows?.size) placed = placed.filter(({ y }) => !keepRows.has(y));
+    for (const { x, y } of placed) {
+      const c = board[y]?.[x];
+      if (c && (pid == null || c.pid === pid)) {
+        out.consumed.push({ x, y, cell: c });
+        board[y][x] = null;
+      }
+    }
+  }
+
+  switch (pu.type) {
+    case "destroyer":
+    case "acid":
+      out.destroyed = applyDestroy(board, area, cols);
+      if (pu.collapse && area.fullRows.length) {
+        out.collapsed = { rows: area.fullRows, ...collapseRows(board, area.fullRows, cols) };
+      }
+      break;
+    case "gravity":
+      if (stays) Object.assign(out, fallWith(board, area, { ...ctx, placed }, pu.direction));
+      else out.moves = applyGravity(board, area, cols, rows, pu.direction);
+      break;
+    case "expander": {
+      // (fill art: painted to fit what's actually filled, src/fillart.js; or a picture fill: each
+      // cell its own block of the picture)
+      const art = pu.fillArt && ctx.at && makeFill ? fillArtFor(board, pu, area, ctx) : null;
+      const box = !art && pu.fillPicture && ctx.at && makeFill ? pictureBox(pu.areaRotations[ctx.at.rot] ?? pu.areaRotations[0], ctx.at, cols, rows) : null;
+      out.filled = applyExpand(board, area, cols, art ? art.make : box ? (x, y) => ({ ...makeFill(x, y), paint: picturePaint(pu.fillPicture, box, x, y) }) : makeFill);
+      art?.after(out);
+      break;
+    }
+    case "blast":
+      out.moves = applyBlast(board, area, cols, rows, centre, pu.push, rng);
+      break;
+    case "goo": {
+      const units = Math.max(1, Math.round(placed.length * (pu.volume ?? 1)));
+      out.filled = applyGoo(board, placed.filter(p => p.y >= 0), units, cols, rows, makeFill);
+      break;
+    }
+    case "combo": {
+      // parts fire one after another on the same board (destroy first, fill last), each finding
+      // the piece where the one before left it
+      const parts = pu.parts ?? [];
+      parts.forEach((part, i) => {
+        const makeFill = ctx.makeFill ? (x, y) => ({ ...ctx.makeFill(x, y), paint: part.fillPaint ?? pu.fillPaint, style: part.fillStyle ?? pu.fillStyle }) : undefined;
+        const sub = computeEffect(board, { ...part, consume: false }, { ...ctx, placed, above: out.overTop, stays, makeFill, area: area.parts?.[i] ?? area });
+        if (sub.placed) placed = out.placed = sub.placed;
+        mergeEffect(out, sub);
+        (out.parts ??= []).push(sub); // (each part's own, as well: render.js planAction)
+      });
+      break;
+    }
+    default: // phantom: already where it wants to be
+      break;
+  }
+  return out;
+}
+
+// Fill art (src/fillart.js) for an Expanderz going off: the cells it will fill (the empty ones in
+// its area) painted all at once to fit, so its edges, its distance from the piece and so on are
+// what's really there. With `cover`, the piece's own cells are part of it (repainted, or filled
+// in where the piece vanished); with `join`, the piece and its fill share a seam (no edge drawn
+// between them: render.js).
+function fillArtFor(board, pu, area, ctx) {
+  const { cols, rows, makeFill, pid } = ctx, spec = pu.fillArt;
+  const targets = [];
+  for (const i of area.indices) { const x = i % cols, y = (i / cols) | 0; if (!board[y][x]) targets.push({ x, y }); }
+  const piece = (ctx.placed ?? []).filter(p => p.x >= 0 && p.y >= 0 && p.x < cols && p.y < rows);
+  let box = pictureBox(pu.areaRotations[ctx.at.rot] ?? pu.areaRotations[0], ctx.at, cols, rows);
+  if (spec.cover && piece.length) {
+    box ??= { x0: piece[0].x, x1: piece[0].x, y0: piece[0].y, y1: piece[0].y };
+    for (const p of piece) box = { x0: Math.min(box.x0, p.x), x1: Math.max(box.x1, p.x), y0: Math.min(box.y0, p.y), y1: Math.max(box.y1, p.y) };
+  }
+  // (only how it looks: not the game's dice)
+  const seed = 1 + Math.floor(Math.random() * 2147483646);
+  const paints = paintFill(spec, targets, { cols, rows, piece, seed, box });
+  const seam = spec.join ? `fill-${seed}` : null;
+  const own = (c) => c && (pid == null || c.pid === pid);
+  return {
+    make: (x, y) => ({ ...makeFill(x, y), paint: paints.get(y * cols + x) ?? pu.fillPaint, ...(seam ? { seam } : {}) }),
+    after(out) {
+      for (const p of piece) {
+        const c = board[p.y][p.x], paint = spec.cover ? paints.get(p.y * cols + p.x) : null;
+        if (paint && !c) {
+          const cell = { ...makeFill(p.x, p.y), paint, ...(seam ? { seam } : {}) };
+          board[p.y][p.x] = cell;
+          out.filled.push({ x: p.x, y: p.y, cell });
+        } else if (own(c) && (paint || seam)) board[p.y][p.x] = { ...c, ...(paint ? { paint } : {}), ...(seam ? { seam } : {}) };
+      }
+    },
+  };
+}
+
+// Fold a later part's results into `out`, chaining moves of the same block.
+function mergeEffect(out, sub) {
+  const at = (x, y) => out.moves.findIndex(m => m.toX === x && m.toY === y);
+  for (const d of sub.destroyed) {
+    const i = at(d.x, d.y);
+    if (i >= 0) { // it had moved earlier in this combo: it was destroyed where it ended up
+      out.moves.splice(i, 1);
+    }
+    out.destroyed.push(d);
+  }
+  for (const m of sub.moves) {
+    const i = at(m.fromX, m.fromY);
+    if (i >= 0) {
+      const prev = out.moves[i];
+      if (prev.path) {
+        // it flew, landed, then fell further: add the fall to the end of its flight
+        const fall = 0.06 * Math.sqrt(Math.abs(m.toY - m.fromY) + Math.abs(m.toX - m.fromX));
+        out.moves[i] = { ...prev, toX: m.toX, toY: m.toY, flight: prev.flight + fall,
+          path: [...prev.path, { x: m.toX, y: m.toY, t: prev.flight + fall }] };
+      } else {
+        out.moves[i] = { ...m, fromX: prev.fromX, fromY: prev.fromY };
+      }
+    } else {
+      out.moves.push(m);
+    }
+  }
+  out.filled.push(...sub.filled);
+  if (sub.collapsed) out.collapsed = sub.collapsed;
+  out.overTop = sub.overTop;
+}

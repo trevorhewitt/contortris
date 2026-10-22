@@ -1,0 +1,6 @@
+shapes/.backups/
+shapes/.drafts.json
+shapes/.drafts.json.tmp
+
+# (Claude Code: working copies of helpers)
+.claude/

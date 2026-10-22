@@ -4,9 +4,51 @@
   <meta charset="utf-8" />
   <!-- Disable zoom + keep viewport stable -->
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Extris</title>
+  <title>Estrix</title>
 
   <style>
+    /* hidden means hidden, whatever a class's own display says (the developer tools' button
+       used to show on every home screen because .menuRow is a flex box) */
+    [hidden]{ display: none !important; }
+    /* A game, not a document: no text selection or long-press callouts anywhere
+       (holding a finger on the board used to select the HUD / achievement text on phones). */
+    html, body, * {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      font-variant-ligatures: none; /* (the pixel font's "fi" reads as an "A": "fill" came out "All") */
+    }
+    input, textarea, select { -webkit-user-select: auto; user-select: auto; }
+
+    /* Opening the page: the loading screen (src/loading.js) on its own until the home screen is ready behind
+       it (src/ui.js takes body.booting off), and then it fades away. Nothing else shows till then. */
+    body.booting .app, body.booting .homeLayer{ visibility: hidden; }
+    .boot{
+      position: fixed; inset: 0; z-index: 200; display: grid; place-items: center;
+      background: #000; transition: opacity 500ms ease, visibility 0s linear 500ms;
+    }
+    body:not(.booting) .boot{ opacity: 0; visibility: hidden; pointer-events: none; }
+    /* (src/loading.js: the word, the bar, and a line for each piece as it falls in) */
+    .boot{ grid-template-rows: 1fr auto auto auto 1fr; gap: 14px; padding: 0 16px; }
+    .loadWord{
+      grid-row: 2; font-family: "PressStart2P", monospace; font-size: 16px; letter-spacing: 0.08em; color: #fff;
+      text-shadow: var(--rgb-split), 0 0 22px rgba(var(--om-pink),0.4);
+      animation: loadJitter 1.3s steps(1, end) infinite;
+    }
+    @keyframes loadJitter{
+      0%, 100%{ text-shadow: var(--rgb-split), 0 0 22px rgba(var(--om-pink),0.4); }
+      42%{ text-shadow: var(--om-tear), 0 0 22px rgba(var(--om-pink),0.4); }
+      44%{ text-shadow: 1px 0 0 rgba(var(--om-gold),0.95), -1px 0 0 rgba(var(--om-cyan),0.9), 0 0 16px rgba(var(--om-orange),0.6); }
+    }
+    .loadBar{
+      grid-row: 3; width: min(86vw, 420px); height: calc(min(86vw, 420px) / 5); display: block; image-rendering: pixelated;
+      border: var(--edge-w) solid var(--edge-line); background: #000;
+      box-shadow: var(--edge-split), var(--edge-glow);
+    }
+    .loadSay{ grid-row: 4; min-height: 1.4em; font-family: "PixelifySans", sans-serif; font-size: 14px; color: rgba(255,255,255,0.8); text-align: center; }
+    @media (prefers-reduced-motion: reduce){ .loadWord{ animation: none; } }
+
     @font-face{
       font-family: "PressStart2P";
       src: url("./fonts/PressStart2P-Regular.ttf") format("truetype");
@@ -14,17 +56,79 @@
       font-style: normal;
       font-display: block;
     }
+    /* body text: Pixelify Sans (SIL Open Font License, fonts/PixelifySans-OFL.txt) */
+    @font-face{
+      font-family: "PixelifySans";
+      src: url("./fonts/pixelify-sans-latin-400-normal.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+    }
+    @font-face{
+      font-family: "PixelifySans";
+      src: url("./fonts/pixelify-sans-latin-ext-400-normal.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+    }
+    @font-face{
+      font-family: "PixelifySans";
+      src: url("./fonts/pixelify-sans-latin-600-normal.woff2") format("woff2");
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+    }
+    @font-face{
+      font-family: "PixelifySans";
+      src: url("./fonts/pixelify-sans-latin-ext-600-normal.woff2") format("woff2");
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+    }
   
     :root{
-      --bg: #0f1020;
-      --bg2: #070714;
+      --bg: #000;
+      --bg2: #000;
+      /* the game's look: glowing white on black, its edges bleeding into a warm retro rainbow
+         (hot pink, orange and gold one way, cyan and violet the other), soft and bright, like the
+         colours of an old screen running; and the three classes, a colour each (Destroyerz red,
+         Expanderz green, Gravitizerz blue) */
+      --rgb-r: #ff1f4b;
+      --rgb-g: #1fff6e;
+      --rgb-b: #2f6bff;
+      --om-pink: 255,61,139;
+      --om-orange: 255,140,56;
+      --om-gold: 255,214,90;
+      --om-cyan: 86,224,255;
+      --om-violet: 168,108,255;
+      /* words: white, fringed with it a pixel at a time, and glowing warm */
+      --rgb-split: -1px 0 0 rgba(var(--om-pink),0.95), -2px 0 0 rgba(var(--om-orange),0.75), -3px 0 2px rgba(var(--om-gold),0.5), 1px 0 0 rgba(var(--om-cyan),0.9), 2px 0 1px rgba(var(--om-violet),0.65), 0 0 12px rgba(var(--om-orange),0.5);
+      /* ...and torn further apart for a moment */
+      --om-tear: -3px 1px 0 rgba(var(--om-pink),0.95), -5px 1px 1px rgba(var(--om-orange),0.75), -7px 1px 2px rgba(var(--om-gold),0.5), 3px -1px 0 rgba(var(--om-cyan),0.9), 5px -1px 1px rgba(var(--om-violet),0.65), 0 0 14px rgba(var(--om-orange),0.6);
+      /* THE border, the same everywhere (the board, the bay, the score, the buttons, the panels):
+         a white line pulled apart into its colours a pixel at a time, warm to one side and cool to
+         the other, like an old screen's picture, and glowing soft with them. (Its colours come off
+         the line itself: no rainbow going round it.) .edge puts it on anything */
+      --edge-w: 2px;
+      --edge-line: rgba(255,255,255,0.9);
+      --edge-split: -1px 0 0 rgba(var(--om-pink),0.95), -2px 0 0 rgba(var(--om-orange),0.7), -3px 0 1px rgba(var(--om-gold),0.45), 1px 0 0 rgba(var(--om-cyan),0.9), 2px 0 0 rgba(var(--om-violet),0.6), 0 -1px 0 rgba(var(--om-gold),0.5), 0 1px 0 rgba(var(--om-violet),0.55), inset 1px 0 0 rgba(var(--om-cyan),0.5), inset -1px 0 0 rgba(var(--om-pink),0.5);
+      --edge-glow: -5px 0 14px -4px rgba(var(--om-orange),0.5), 5px 0 14px -4px rgba(var(--om-violet),0.5), 0 -4px 12px -6px rgba(var(--om-gold),0.35), 0 4px 12px -6px rgba(var(--om-cyan),0.35), 0 0 18px rgba(var(--om-pink),0.14);
+      /* (buttons at rest: the same, quieter, until they're pointed at) */
+      --edge-quiet-line: rgba(255,255,255,0.42);
+      --edge-quiet: -1px 0 0 rgba(var(--om-pink),0.55), 1px 0 0 rgba(var(--om-cyan),0.5);
+      /* ...and torn a little further apart, now and then */
+      --edge-torn: -3px 1px 0 rgba(var(--om-pink),0.95), -5px 1px 0 rgba(var(--om-orange),0.7), -7px 1px 1px rgba(var(--om-gold),0.45), 3px -1px 0 rgba(var(--om-cyan),0.9), 5px -1px 0 rgba(var(--om-violet),0.6), 0 -2px 0 rgba(var(--om-gold),0.55), 0 2px 0 rgba(var(--om-violet),0.6), inset 2px 0 0 rgba(var(--om-cyan),0.5), inset -2px 0 0 rgba(var(--om-pink),0.5);
   
       --text: rgba(245,245,255,0.92);
       --muted: rgba(245,245,255,0.70);
   
       /* Natural board geometry (used for fit calculations) */
       --cols: 14;
-      --rows: 28;
+      --rows: 24; /* main.js sets --cols / --rows from config.js */
       --cell: 18px;
       --natural-board-w: calc(var(--cols) * var(--cell));
       --natural-board-h: calc(var(--rows) * var(--cell));
@@ -38,14 +142,14 @@
       --boardEdgeInner: rgba(245,245,255,0.10);
   
       /* Typography */
-      --font-body: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      --font-body: "PixelifySans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       --font-display: "PressStart2P", ui-monospace, monospace;
       --font-numbers: "PressStart2P", ui-monospace, monospace;
   
       /* Retro styling controls */
       --ui-radius: 0px;
       --ui-border: rgba(255,255,255,0.18);
-      --ui-panel-bg: rgba(8,8,16,0.84);
+      --ui-panel-bg: rgba(0,0,0,0.84);
   
       /* Glow / RGB controls */
       --display-glow-a: 0.24;
@@ -57,12 +161,30 @@
       --display-rgb-a4: 0.14;
   
       --name-glow-a: 0.35;
-      --name-glow-b: 0.22;
-      --name-rgb-shift: 2px;
-      --name-rgb-a1: 0.22;
-      --name-rgb-a2: 0.18;
+      --name-glow-b: 0.3;
+      --name-rgb-shift: 1px;
+      --name-rgb-a1: 0.45;
+      --name-rgb-a2: 0.4;
+      /* (the falling piece's name: a dark outline, fringed with the warm rainbow, glowing; the
+         tutorial's words have it too) */
+      --name-shadow:
+        0 0 1px rgba(0,0,0,0.95), 1px 1px 0 rgba(0,0,0,0.85), -1px -1px 0 rgba(0,0,0,0.6),
+        0 0 4px rgba(0,0,0,0.85), 0 2px 8px rgba(0,0,0,0.7),
+        calc(var(--name-rgb-shift) * -1) 0 0 rgba(var(--om-pink),var(--name-rgb-a1)),
+        calc(var(--name-rgb-shift) * -2) 0 1px rgba(var(--om-gold),var(--name-rgb-a1)),
+        var(--name-rgb-shift) 0 0 rgba(var(--om-cyan),var(--name-rgb-a2)),
+        calc(var(--name-rgb-shift) * 2) 0 1px rgba(var(--om-violet),var(--name-rgb-a2)),
+        0 0 12px rgba(255,255,255,var(--name-glow-a)),
+        0 0 24px rgba(var(--om-orange),var(--name-glow-b));
     }
   
+    /* the border (--edge-*), on anything; all of them torn a little further apart at once, now
+       and then, like a screen catching a bad signal */
+    .edge{ border: var(--edge-w) solid var(--edge-line); box-shadow: var(--edge-split), var(--edge-glow); }
+    /* (torn: for a moment every 6.7 seconds, src/ui.js; a class on the page rather than an
+       animation on each, which had the browser restyling them for every frame, tear or not) */
+    html.edgeTorn .edge{ box-shadow: var(--edge-torn), var(--edge-glow); }
+
     html,
     body{
       height: 100%;
@@ -71,12 +193,15 @@
       overflow: hidden;
       overscroll-behavior: none;
       touch-action: none;
-      background: radial-gradient(1200px 900px at 30% 10%, #2a2550 0%, var(--bg) 45%, var(--bg2) 100%);
+      background: #000;
       color: var(--text);
       font-family: var(--font-body);
     }
   
     .app{
+      position: fixed;
+      left: 0;
+      top: 0;
       width: 100vw;
       height: 100dvh;
       display: grid;
@@ -96,22 +221,76 @@
       min-height: 0;
     }
   
+    /* Turbo zen can fill the whole window (ui.js setWholeWindow): the bottom bar goes (and its
+       room, so the board's in the middle, frame and all), and a small pause button sits in the
+       corner of the board, out of the way */
+    body.wholeWindow .bottomBar{ display: none; }
+    body.wholeWindow .app{ grid-template-rows: 1fr env(safe-area-inset-bottom); }
+    .floatPause{ display: none; }
+    body.wholeWindow .floatPause{
+      display: block; position: absolute; top: 8px; right: 8px; width: 40px; height: 40px; min-height: 0;
+      padding: 0; border-radius: 10px; font-size: 13px; line-height: 40px; color: #fff; opacity: 0.3;
+      background: rgba(10,10,24,0.55); border: 1px solid rgba(255,255,255,0.3); box-shadow: none;
+      transition: opacity 150ms linear; cursor: pointer;
+    }
+    body.wholeWindow .floatPause:hover, body.wholeWindow .floatPause:focus-visible{ opacity: 0.9; }
+
     .boardShell{
       position: relative;
       background: #000;
       overflow: hidden;
-      box-shadow:
-        0 18px 60px rgba(0,0,0,0.55),
-        0 0 0 2px var(--boardEdge),
-        0 0 0 1px var(--boardEdgeInner) inset,
-        -6px 0 18px rgba(255,220,90,0.12),
-        6px 0 18px rgba(90,200,255,0.12),
-        0 -6px 18px rgba(110,255,140,0.10),
-        0 6px 18px rgba(255,90,90,0.10);
+      box-shadow: var(--board-shadow);
       width: var(--natural-board-w);
       height: var(--natural-board-h);
+      --board-shadow: 0 0 0 1px rgba(0,0,0,0.9), 0 0 0 1px var(--boardEdgeInner) inset;
     }
-  
+    /* its frame: the edge (.edge, like everything else's), glowing soft round it, warm off the
+       left and cool off the right as its colours are. The board sits over it (fit() below says
+       how big the board is: --shell-w, -h) */
+    .boardRegion > .boardFrame, .boardRegion > .boardShell{ grid-area: 1 / 1; }
+    .boardFrame{
+      --ring: var(--edge-w);
+      position: relative; isolation: isolate; pointer-events: none;
+      width: calc(var(--shell-w, var(--natural-board-w)) + var(--ring) * 2);
+      height: calc(var(--shell-h, var(--natural-board-h)) + var(--ring) * 2);
+    }
+    /* (the edge itself, over its glow) */
+    .boardRing{ position: absolute; inset: 0; box-sizing: border-box; }
+    /* (its glow: a soft white one close in, and a wide faint one in its colours, breathing) */
+    .boardFrame::before, .boardFrame::after{ content: ""; position: absolute; z-index: -1; }
+    .boardFrame::before{
+      inset: -1px; border: 3px solid rgba(255,255,255,0.6); filter: blur(7px);
+      animation: omBreathe 3.1s ease-in-out infinite;
+    }
+    .boardFrame::after{
+      inset: -12px; filter: blur(26px); opacity: 0.4;
+      background: linear-gradient(90deg, rgb(var(--om-orange)), rgba(var(--om-pink),0.7) 22%, rgba(255,255,255,0.25) 50%, rgba(var(--om-violet),0.7) 78%, rgb(var(--om-cyan)));
+      animation: omBreathe 4.4s ease-in-out infinite reverse;
+    }
+    @keyframes omBreathe{ 0%, 100%{ opacity: 0.3; } 50%{ opacity: 0.55; } }
+    body.home .boardFrame{ display: none; }
+
+    /* (over everything but the board, faint scan lines, like an old screen: the board itself
+       stays crisp, cut out of them where it is, frame and all: --board-x, -y, -w, -h, from
+       src/ui.js. Toned down animations turn them off, as does the lightest tier, .fx-low.
+       Just dark lines laid over, not blended in: blending them in had the browser put the
+       whole screen together twice over, every frame, for much the same look) */
+    body::after{
+      content: ""; position: fixed; inset: 0; z-index: 300; pointer-events: none;
+      background: repeating-linear-gradient(to bottom, transparent 0 1px, rgba(0,0,0,0.07) 1px 3px);
+      -webkit-mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+      -webkit-mask-position: 0 0, var(--board-x, -9999px) var(--board-y, -9999px);
+      -webkit-mask-size: 100% 100%, var(--board-w, 0px) var(--board-h, 0px);
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-composite: xor;
+      mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+      mask-position: 0 0, var(--board-x, -9999px) var(--board-y, -9999px);
+      mask-size: 100% 100%, var(--board-w, 0px) var(--board-h, 0px);
+      mask-repeat: no-repeat;
+      mask-composite: exclude;
+    }
+    body.home::after{ -webkit-mask: none; mask: none; }
+
     canvas{
       width: var(--natural-board-w);
       height: var(--natural-board-h);
@@ -126,17 +305,19 @@
       pointer-events: none;
       overflow: hidden;
       opacity: 1;
-      mix-blend-mode: screen;
+      /* (faded while the falling piece is among the stack under the words: src/ui.js fadeName) */
+      transition: opacity 220ms ease;
+      /* (no screen blend: it washed the names out over bright pieces; a dark outline instead) */
       filter:
-        drop-shadow(0 0 10px rgba(123,247,255,0.35))
-        drop-shadow(0 0 34px rgba(255,80,220,0.22));
+        drop-shadow(0 0 8px rgba(255,255,255,0.22))
+        drop-shadow(0 0 26px rgba(var(--om-orange),0.22));
     }
   
     .nameText{
       position: absolute;
       left: 0;
       right: 0;
-      top: 42px;
+      top: 30%;
       width: 100%;
       padding: 0 10px;
       box-sizing: border-box;
@@ -145,7 +326,7 @@
       line-height: 1.5;
       font-weight: 400;
       letter-spacing: 0.04em;
-      color: rgba(245,245,255,0.68);
+      color: rgba(248,248,255,0.93);
       text-align: center;
       text-transform: uppercase;
       white-space: normal;
@@ -154,18 +335,897 @@
       overflow: hidden;
       text-overflow: clip;
       user-select: none;
-      text-shadow:
-        var(--name-rgb-shift) 0 0 rgba(255,0,140,var(--name-rgb-a1)),
-        calc(var(--name-rgb-shift) * -1) 0 0 rgba(0,255,255,var(--name-rgb-a2)),
-        0 0 10px rgba(180,180,255,var(--name-glow-a)),
-        0 0 22px rgba(255,80,220,var(--name-glow-b));
+      text-shadow: var(--name-shadow);
       image-rendering: pixelated;
       transform: translateX(0);
       opacity: 1;
       transition: transform 260ms steps(6, end), opacity 180ms linear;
     }
   
+    .nameText .nameMain{ display: block; }
+
+    /* Powerups: the name in its class's colours + the effect line underneath */
+    .nameText.powerup .nameMain{
+      animation: rgbText 1.6s steps(12, end) infinite;
+    }
+    .nameText .nameEffect{
+      display: block;
+      margin-top: 10px;
+      font-size: 9px;
+      line-height: 1.6;
+      letter-spacing: 0.06em;
+      color: rgba(245,245,255,0.82);
+    }
+    /* (white, fringed with the warm rainbow, its colours drifting round and the fringe breathing) */
+    @keyframes rgbText{
+      0%, 100%{ color: #fff; text-shadow: -1px 0 0 rgba(var(--om-pink),0.95), -2px 0 1px rgba(var(--om-orange),0.7), 1px 0 0 rgba(var(--om-cyan),0.9), 2px 0 1px rgba(var(--om-violet),0.6), 0 0 10px rgba(var(--om-orange),0.55); }
+      33%{ color: #fff; text-shadow: -2px 1px 0 rgba(var(--om-orange),0.95), -3px 1px 1px rgba(var(--om-gold),0.7), 2px -1px 0 rgba(var(--om-pink),0.9), 3px -1px 1px rgba(var(--om-violet),0.6), 0 0 12px rgba(var(--om-gold),0.55); }
+      66%{ color: #fff; text-shadow: 1px 0 0 rgba(var(--om-gold),0.95), 2px 0 1px rgba(var(--om-cyan),0.7), -1px 1px 0 rgba(var(--om-violet),0.9), -2px 1px 1px rgba(var(--om-pink),0.6), 0 0 10px rgba(var(--om-pink),0.55); }
+    }
+    /* each powerup class has its own colours (the same as its highlights on the board);
+       combos are white, split into all three */
+    @keyframes fireText{
+      0%, 100% { color: #ff1f4b; text-shadow: -1px 0 0 rgba(var(--om-gold),0.75), -2px 0 1px rgba(var(--om-orange),0.5), 1px 0 0 rgba(var(--om-pink),0.7), 0 0 10px rgba(255,31,75,0.8); }
+      50%      { color: #ff5a75; text-shadow: 1px 0 0 rgba(var(--om-gold),0.75), 2px 0 1px rgba(var(--om-orange),0.5), -1px 0 0 rgba(var(--om-violet),0.6), 0 0 12px rgba(255,31,75,0.9); }
+    }
+    @keyframes deepText{
+      0%, 100% { color: #3f7bff; text-shadow: -1px 0 0 rgba(var(--om-violet),0.8), -2px 0 1px rgba(var(--om-pink),0.45), 1px 0 0 rgba(var(--om-cyan),0.75), 0 0 10px rgba(47,107,255,0.85); }
+      50%      { color: #7aa2ff; text-shadow: 1px 0 0 rgba(var(--om-violet),0.8), 2px 0 1px rgba(var(--om-pink),0.45), -1px 0 0 rgba(var(--om-cyan),0.75), 0 0 12px rgba(47,107,255,0.95); }
+    }
+    @keyframes growText{
+      0%, 100% { color: #1fff6e; text-shadow: -1px 0 0 rgba(var(--om-gold),0.75), -2px 0 1px rgba(var(--om-orange),0.4), 1px 0 0 rgba(var(--om-cyan),0.75), 0 0 10px rgba(31,255,110,0.75); }
+      50%      { color: #7dffad; text-shadow: 1px 0 0 rgba(var(--om-gold),0.75), 2px 0 1px rgba(var(--om-orange),0.4), -1px 0 0 rgba(var(--om-cyan),0.75), 0 0 12px rgba(31,255,110,0.85); }
+    }
+    @keyframes ghostText{
+      0%, 100% { color: rgba(196,240,255,0.80); }
+      25%, 75% { color: rgba(236,236,255,0.62); }
+      50%      { color: rgba(222,204,255,0.86); }
+    }
+    .nameText.powerup.cls-destroyer .nameMain, .introName.cls-destroyer{ animation-name: fireText; }
+    .nameText.powerup.cls-gravity .nameMain, .introName.cls-gravity{ animation-name: deepText; }
+    .nameText.powerup.cls-expander .nameMain, .introName.cls-expander{ animation-name: growText; }
+    .nameText.powerup.cls-phantom .nameMain, .introName.cls-phantom{ animation-name: ghostText; }
+    .demoName.cls-destroyer{ animation: fireText 1.6s steps(12, end) infinite; }
+    .demoName.cls-gravity{ animation: deepText 1.6s steps(12, end) infinite; }
+    .demoName.cls-expander{ animation: growText 1.6s steps(12, end) infinite; }
+    .demoName.cls-phantom{ animation: ghostText 1.6s steps(12, end) infinite; }
+    .demoName.cls-combo{ animation: rgbText 1.6s steps(12, end) infinite; }
+
+    /* ---------- menu panels ---------- */
+    .overlay .msg.panel{
+      box-sizing: border-box;
+      width: min(100%, 420px);
+      max-width: calc(100% - 20px);
+      max-height: calc(100% - 20px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+      scrollbar-width: auto;
+    }
+    .overlay .msg.panel[hidden]{ display: none; }
+    /* panels that always fit on the board (scaled down by ui.js fitPanel, never scrolled) */
+    .overlay .msg.panel.fit{
+      width: clamp(300px, calc(100% - 20px), 420px); /* never narrower than 300: no wrapped buttons */
+      flex: none;            /* (don't let the overlay squeeze it) */
+      max-width: none;
+      max-height: none;
+      overflow: visible;
+      transform-origin: center center;
+    }
+
+    .overlay .msg .big.title{
+      font-size: 26px;
+      margin: 6px 0 6px;
+    }
+
+    /* ---------- the home screen (src/home.js) ---------- */
+    .homeLayer, .homeTop{
+      position: fixed; left: 0; top: 0; width: 100vw; height: 100dvh;
+      pointer-events: none; display: none; image-rendering: pixelated;
+    }
+    body.home .homeLayer{ display: block; }
+    .homeTop{ display: block; z-index: 50; }
+    .homeTop[hidden]{ display: none; }
+    .homeLayer, body.home .overlay, .app{ transition: opacity 900ms ease; }
+    body.homeFade .homeLayer, body.homeFade .overlay, body.homeFade .app{ opacity: 0 !important; }
+    body.home .boardShell{ background: transparent; box-shadow: none; --board-shadow: none; }
+    body.home #boardCanvas, body.home .nameLayer, body.home .floatPause, body.home .bottomBar, body.home #toasts{ visibility: hidden; }
+    body.home .overlay{ position: fixed; inset: 0; background: transparent; }
+    body.starting .app, body.starting .homeLayer{ opacity: 0; transition: none; }
+
+    body.home .overlay #panelMenu.panel{
+      box-sizing: border-box; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0;
+      padding: max(10px, env(safe-area-inset-top)) clamp(10px, 3vmin, 28px) max(10px, env(safe-area-inset-bottom));
+      background: none; border: 0; box-shadow: none; transform: none; overflow: hidden;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: clamp(8px, 2.4vmin, 24px);
+    }
+    body.home .overlay #panelMenu.panel[hidden]{ display: none; }
+    .homeLogoWrap{ perspective: 900px; animation: logoZoom 2.9s ease-in-out infinite; }
+    .homeLogo{
+      display: flex; justify-content: center; gap: 0.02em;
+      font-family: var(--font-display); font-size: clamp(34px, min(13.5vw, 15vh), 150px); line-height: 1.15;
+      transform-style: preserve-3d;
+    }
+    /* (glowing white, its edges running into the warm rainbow, and now and then a glitch that
+       tears it further apart) */
+    .homeLogo span{
+      display: inline-block;
+      color: #fff;
+      animation: letterHop 1.25s ease-in-out infinite;
+      animation-delay: calc(var(--i) * -0.11s);
+    }
+    /* (its glow and its glitch on a box of their own inside the letter's: so the hop is on its own,
+       and runs off the main thread, the letters, glow and all, not drawn again for every frame) */
+    .homeLogo i{
+      display: inline-block; perspective: 3em; font-style: normal;
+      --sx: 0.035em;
+      text-shadow:
+        calc(var(--sx) * -1) 0 0 rgba(var(--om-pink),0.95),
+        calc(var(--sx) * -2) 0 0.02em rgba(var(--om-orange),0.75),
+        calc(var(--sx) * -3) 0 0.04em rgba(var(--om-gold),0.5),
+        var(--sx) 0 0 rgba(var(--om-cyan),0.9),
+        calc(var(--sx) * 2) 0 0.03em rgba(var(--om-violet),0.65),
+        0 0.10em 0 rgba(60,60,70,0.9),
+        0 0.15em 0 rgba(0,0,0,0.9),
+        0 0 0.3em rgba(255,255,255,0.65),
+        0 0 0.7em rgba(var(--om-orange),0.45);
+    }
+    /* (the glitch, a moment at a time, each letter in turn: src/home.js stepGlitch) */
+    .homeLogo i[data-g="a"]{ --sx: 0.12em; transform: translateX(0.03em) skewX(-6deg); }
+    .homeLogo i[data-g="b"]{ --sx: -0.06em; transform: translateX(-0.02em); }
+    .homeLogo i[data-g="c"]{ --sx: 0.07em; }
+    .homeLogo b{ display: inline-block; font-weight: inherit; }
+    @property --sx{ syntax: "<length>"; inherits: true; initial-value: 0.035em; }
+    /* (a line under the logo, in the body font: a different one each time the home screen comes
+       back, src/ui.js pickTagline) */
+    .homeTagline{
+      max-width: min(92vw, 620px); margin: calc(-0.4 * clamp(8px, 2.4vmin, 24px)) 0 0;
+      font-family: var(--font-body); font-size: clamp(12px, min(3.6vw, 2.7vh), 24px); line-height: 1.3;
+      text-align: center; color: #fff; text-wrap: balance;
+      text-shadow: 0 0 1px #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 8px rgba(0,0,0,0.9);
+    }
+    .homeTagline:empty{ display: none; }
+    @keyframes logoZoom{ 0%, 100%{ transform: scale(0.9) rotate(-4deg); } 50%{ transform: scale(1.1) rotate(4deg); } }
+    @keyframes letterHop{ 0%, 100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-0.15em) rotate(-7deg); } }
+    /* the moves (src/home.js picks one every few seconds), passed from letter to letter */
+    .homeLogo[class*="fx-"] b{
+      animation-duration: 480ms; animation-timing-function: cubic-bezier(.45, .05, .35, 1);
+      animation-fill-mode: both; animation-delay: calc(var(--i) * 65ms);
+    }
+    .homeLogo.fx-spin b{ animation-name: fxSpin; }
+    .homeLogo.fx-flip b{ animation-name: fxFlip; }
+    .homeLogo.fx-tumble b{ animation-name: fxTumble; animation-duration: 600ms; }
+    .homeLogo.fx-twist b{ animation-name: fxTwist; }
+    .homeLogo.fx-grow b{ animation-name: fxGrow; animation-duration: 420ms; animation-timing-function: ease-in-out; animation-delay: calc(var(--i) * 55ms); }
+    .homeLogo.fx-shrink b{ animation-name: fxShrink; animation-duration: 420ms; animation-timing-function: ease-in-out; animation-delay: calc(var(--i) * 55ms); }
+    .homeLogo.fx-hop b{ animation-name: fxHop; animation-duration: 440ms; animation-timing-function: ease-out; animation-delay: calc(var(--i) * 58ms); }
+    .homeLogo.fx-wave b{ animation-name: fxWave; animation-duration: 780ms; animation-timing-function: ease-in-out; animation-delay: calc(var(--i) * 78ms); }
+    .homeLogo.fx-spinAll{ animation: fxSpinAll 800ms cubic-bezier(.45, .05, .3, 1) both; }
+    .homeLogo.fx-growAll{ animation: fxGrowAll 640ms ease-in-out both; }
+    .homeLogo.fx-spinAll b, .homeLogo.fx-growAll b{ animation: none; }
+    @keyframes fxSpin{ from{ transform: rotateY(0deg); } to{ transform: rotateY(360deg); } }
+    @keyframes fxFlip{ from{ transform: rotateX(0deg); } to{ transform: rotateX(360deg); } }
+    @keyframes fxTumble{ from{ transform: rotate3d(1, 1, 0, 0deg); } to{ transform: rotate3d(1, 1, 0, 360deg); } }
+    @keyframes fxTwist{ from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
+    @keyframes fxGrow{ 0%, 100%{ transform: scale(1); } 45%{ transform: scale(1.6); } }
+    @keyframes fxShrink{ 0%, 100%{ transform: scale(1); } 45%{ transform: scale(0.4); } }
+    @keyframes fxHop{
+      0%, 100%{ transform: translateY(0) scale(1); } 14%{ transform: translateY(0) scale(1.18, 0.82); }
+      48%{ transform: translateY(-0.6em) scale(0.92, 1.1); } 82%{ transform: translateY(0) scale(1.14, 0.86); }
+    }
+    @keyframes fxWave{ 0%, 100%{ transform: none; } 25%{ transform: translateY(-0.32em) rotate(-14deg) scale(1.12); } 75%{ transform: translateY(0.2em) rotate(11deg) scale(0.93); } }
+    @keyframes fxSpinAll{ from{ transform: rotateY(0deg); } to{ transform: rotateY(360deg); } }
+    @keyframes fxGrowAll{ 0%, 100%{ transform: scale(1); } 35%{ transform: scale(1.25); } 70%{ transform: scale(0.92); } }
+
+    /* (the modes: on a phone, or any window too narrow for three across, one column, Classic the
+       big one in the middle of it; wider, Classic in the middle, big, Zen and Extreme either side
+       of it, How to play over it and God mode under it, those four all the same size) */
+    .homeModes{
+      --gap: clamp(8px, 1.8vmin, 18px); --big: 1.3;
+      display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; align-items: center;
+      gap: var(--gap); width: min(84vw, 340px);
+    }
+    .homeModes button.modeBtn{ width: 88%; }
+    .homeModes button.modeBtn.main{ width: 100%; }
+    @media (min-width: 600px){
+      .homeModes{
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr); /* (the middle one --big times as wide) */
+        grid-template-areas: ". tutorial ." "zen normal extreme" ". god .";
+        width: min(92vw, 900px);
+      }
+      .homeModes button.modeBtn{ width: 100%; }
+      /* (How to play and God mode as big as Zen and Extreme, not as Classic's column) */
+      .homeModes #btnTutorial, .homeModes #btnGod{ width: calc(100% / var(--big)); }
+      #btnTutorial{ grid-area: tutorial; } #btnZen{ grid-area: zen; } #btnNormal{ grid-area: normal; }
+      #btnExtreme{ grid-area: extreme; } #btnGod{ grid-area: god; }
+    }
+    button.modeBtn{
+      position: relative; min-height: clamp(52px, 10vmin, 96px); padding: 0.8em 0.6em;
+      border: var(--edge-w) solid var(--edge-line); color: #fff;
+      font-size: clamp(11px, min(2.2vw, 2.9vh), 20px); letter-spacing: 0.05em;
+      text-shadow: 0 2px 0 #000, 0 0 8px rgba(0,0,0,0.85);
+      background: radial-gradient(120% 90% at 50% 50%, rgba(255,255,255,0.07), rgba(0,0,0,0) 70%) #000; overflow: hidden; isolation: isolate;
+      box-shadow: var(--edge-split), var(--edge-glow);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5em;
+      transition: transform 140ms ease, box-shadow 140ms ease;
+    }
+    /* (scan lines, and a band of light rolling down through it now and then, split like the edge) */
+    button.modeBtn::after{
+      content: ""; position: absolute; left: 0; right: 0; top: -100%; height: 300%; z-index: -2; pointer-events: none;
+      background:
+        repeating-linear-gradient(to bottom, rgba(255,255,255,0.05) 0 1px, transparent 1px 3px),
+        linear-gradient(to bottom, transparent 40%, rgba(var(--om-pink),0.14) 45%, rgba(255,255,255,0.12) 48%, rgba(var(--om-cyan),0.14) 51%, transparent 56%);
+      animation: modeSlide 5.5s linear infinite; animation-delay: calc(var(--i) * -1.15s);
+      will-change: transform;
+    }
+    button.modeBtn .modeName{ text-shadow: var(--rgb-split), 0 0 10px rgba(255,255,255,0.55); }
+    button.modeBtn > *{ position: relative; }
+    /* (Classic, the game itself: bigger than the rest, its name bigger, and the brightest glow) */
+    button.modeBtn.main{
+      min-height: clamp(72px, 14vmin, 140px); font-size: clamp(15px, min(3.2vw, 4.2vh), 30px);
+      border-width: calc(var(--edge-w) * 1.5);
+      box-shadow: var(--edge-split), var(--edge-glow), 0 0 24px rgba(255,255,255,0.22), 0 0 56px rgba(var(--om-orange),0.2);
+    }
+    /* (each mode stays the size it is: nothing grows or lifts on hover or focus, which a touch
+       screen leaves stuck on the last one tapped; a glow only, and the hover one only where
+       there's a real pointer) */
+    @media (hover: hover) and (pointer: fine){
+      button.modeBtn:hover{ background: radial-gradient(120% 90% at 50% 50%, rgba(255,255,255,0.12), rgba(0,0,0,0) 70%) #000; border-color: #fff; box-shadow: var(--edge-torn), var(--edge-glow), 0 0 30px rgba(255,255,255,0.25); }
+      button.modeBtn:hover .modeName{ animation: textGlitch 0.9s steps(1, end) infinite; }
+    }
+    button.modeBtn:focus-visible{ background: #000; box-shadow: var(--edge-split), var(--edge-glow), 0 0 0 4px rgba(255,255,255,0.55); }
+    button.modeBtn:active{ transform: none; }
+    /* (what each mode is, in a few words, under its name: a little bigger on a phone, where the
+       buttons are one under another and have the room) */
+    .modeTag{
+      display: block;
+      font-family: var(--font-body); font-size: clamp(10px, min(1.45vw, 2vh), 14px);
+      text-transform: none; letter-spacing: 0; line-height: 1.25; opacity: 0.92;
+    }
+    .modeTag:empty::before{ content: "\a0"; }
+    @media (max-width: 599px){ .modeTag{ font-size: clamp(10px, min(3vw, 1.7vh), 13px); } }
+    @keyframes modeSlide{ from{ transform: translateY(-33.3%); } to{ transform: translateY(33.3%); } }
+    /* (words that glitch: the rainbow tears apart, jumps, and comes back) */
+    @keyframes textGlitch{
+      0%, 100%{ text-shadow: var(--rgb-split), 0 0 10px rgba(255,255,255,0.55); transform: none; }
+      20%{ text-shadow: var(--om-tear), 0 0 10px rgba(255,255,255,0.55); transform: translateX(1px); }
+      24%{ text-shadow: 2px 0 0 rgba(var(--om-gold),0.95), 4px 0 1px rgba(var(--om-orange),0.7), -2px 0 0 rgba(var(--om-cyan),0.9), 0 0 12px rgba(var(--om-pink),0.6); transform: translateX(-1px) skewX(-8deg); }
+      28%{ text-shadow: var(--rgb-split), 0 0 10px rgba(255,255,255,0.55); transform: none; }
+      70%{ text-shadow: -1px 0 0 rgba(var(--om-pink),0.95), 5px 0 0 rgba(var(--om-cyan),0.9), 7px 0 2px rgba(var(--om-violet),0.6), 0 0 10px rgba(255,255,255,0.55); }
+      73%{ text-shadow: var(--rgb-split), 0 0 10px rgba(255,255,255,0.55); }
+    }
+    .homeRow{ margin: 0; }
+    body.home .overlay #panelMenu .skipBox{ margin: 0; padding: 6px 10px; background: rgba(0,0,0,0.72); box-shadow: 0 0 0 2px rgba(0,0,0,0.7); }
+    body.home .overlay #panelMenu #gameVersion{ margin: 0; padding: 3px 8px; background: rgba(0,0,0,0.6); color: rgba(245,245,255,0.6); }
+    /* (three taps on it: developer mode) */
+    #panelMenu #gameVersion{ user-select: none; -webkit-user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    /* (the version and the copyright: one line, or on a narrow screen one over the other) */
+    @media (max-width: 400px){ #gameVersion .verPart{ display: block; } #gameVersion .verSep{ display: none; } }
+    @media (max-height: 460px){ button.modeBtn{ min-height: 40px; padding: 0.5em; } button.modeBtn.main{ min-height: 52px; } }
+    /* (a phone on its side has no room for the words under the logo and the modes' names) */
+    @media (max-height: 460px){ .homeTagline, .modeTag{ display: none; } }
+
+    .homeDark{
+      position: fixed; inset: 0; z-index: 60; background: #000; opacity: 0;
+      pointer-events: none; transition: opacity 240ms ease;
+    }
+    .homeDark.on{ opacity: 1; }
+    /* (a game coming up from the home screen: the board switches on like an old screen, a line of
+       white light opening out into it: src/home.js finishStart) */
+    .boardShell.crtOn{ animation: crtOn 560ms cubic-bezier(.25, .8, .3, 1) both; }
+    .boardFrame.crtOn{ animation: crtOn 560ms cubic-bezier(.25, .8, .3, 1) both; }
+    @keyframes crtOn{
+      0%{ transform: scale(0.5, 0.006); filter: brightness(8) saturate(0); }
+      28%{ transform: scale(1.02, 0.006); filter: brightness(6) saturate(0); }
+      58%{ transform: scale(1, 1.035); filter: brightness(1.7) saturate(1.4); }
+      100%{ transform: none; filter: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .homeLogoWrap, .homeLogo, .homeLogo span, button.modeBtn{ animation-duration: 60s; }
+      .homeLogo[class*="fx-"], .homeLogo[class*="fx-"] b{ animation: none; }
+    }
+
+    .menuBtns{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 16px auto 12px;
+      width: min(100%, 260px);
+    }
+    .menuBtns button{ font-size: 11px; }
+    .zenRow{ display: flex; gap: 8px; }
+    .zenRow button{ flex: 1 1 0; min-width: 0; }
+
+    .menuRow{
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 0 0 12px;
+    }
+    button.small{
+      min-height: 34px;
+      padding: 8px 10px;
+      font-size: 8px;
+    }
+
+    .menuFoot{
+      margin-top: 10px;
+      font-size: 10px !important;
+      opacity: 0.8;
+    }
+
+    /* How to play */
+    .howto{
+      text-align: left;
+      font-family: var(--font-body);
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .howto h3{
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(245,245,255,0.92);
+      margin: 16px 0 6px;
+    }
+    .howto p{ margin: 0 0 8px; }
+    /* the options */
+    .optionsPanel .big{ margin-bottom: 10px; }
+    .optList{ display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin: 0 auto 12px; width: fit-content; }
+    .favRow{ display: flex; align-items: center; justify-content: center; gap: 12px; margin: 0 0 10px; }
+    .favWhat{ text-align: left; }
+    .favNow{ display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 10px; min-width: 96px; }
+    .favNow canvas{ image-rendering: pixelated; width: 84px; height: 64px; object-fit: contain; }
+    .favName{ font-size: 8px; max-width: 110px; white-space: normal; line-height: 1.4; }
+    .favGrid{
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px;
+      max-height: 46vh; overflow-y: auto; padding: 6px; margin: 0 0 10px;
+      background: rgba(0,0,0,0.6); box-shadow: 0 0 0 2px rgba(255,255,255,0.12);
+    }
+    .favGrid[hidden]{ display: none; }
+    .favGrid button{ min-height: 0; padding: 4px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #000; box-shadow: 0 0 0 1px rgba(255,255,255,0.18); }
+    .favGrid button.on{ box-shadow: 0 0 0 2px #fff, -2px 0 0 2px rgba(var(--om-pink),0.85), 2px 0 0 2px rgba(var(--om-cyan),0.8), 0 0 14px rgba(var(--om-orange),0.5); }
+    .favGrid canvas{ image-rendering: pixelated; width: 100%; height: 100%; object-fit: contain; } /* (each piece as it's drawn, not squared) */
+    /* toned down (an option, or the device asks for less motion): no scan lines, no glitching or
+       rolling light, the logo still */
+    body.calmFx::after{ display: none; }
+    body.calmFx *, body.calmFx *::before, body.calmFx *::after{ animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+    /* the look's tiers, as the device keeps up (src/particles.js, CONFIG.fx.quality): on the
+       middle one and the lightest, the board's glow holds still (breathing, its blur was worked
+       out again every frame) and the bar along the bottom has no blur behind it; on the
+       lightest, no scan lines either */
+    body.fx-medium .boardFrame::before, body.fx-medium .boardFrame::after,
+    body.fx-low .boardFrame::before, body.fx-low .boardFrame::after{ animation: none; opacity: 0.42; }
+    body.fx-medium .pauseFrame::after, body.fx-low .pauseFrame::after{ animation: none; opacity: 0.72; }
+    body.fx-medium .bottomBar, body.fx-low .bottomBar{ backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(0,0,0,0.55); }
+    body.fx-low::after{ display: none; }
+    /* high contrast: the pieces bolder and brighter, the words pure white */
+    body.highContrast canvas{ filter: contrast(1.45) saturate(1.3) brightness(1.06); }
+    body.highContrast{ --text: #ffffff; }
+    /* ...and no glow anywhere: none round the borders, the words or the icons (the words over the
+       board keep a crisp dark outline, so they still read over the pieces; the board's own glows
+       are off too: src/render.js) */
+    body.highContrast{ --edge-glow: 0 0 0 transparent; --edge-line: #ffffff; }
+    body.highContrast *, body.highContrast *::before, body.highContrast *::after{ text-shadow: none !important; }
+    body.highContrast .nameLayer, body.highContrast .tutWords, body.highContrast .tutClassSay, body.highContrast #panelGameOver .big, body.highContrast #gameOverGallery .pgName{
+      text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 0 #000 !important;
+    }
+    body.highContrast .nameLayer, body.highContrast .tutWords, body.highContrast .bqIcon svg, body.highContrast .bayIcon{ filter: none !important; }
+    body.highContrast .tutDots i.on, body.highContrast .favGrid button.on{ box-shadow: 0 0 0 1px #000 !important; }
+    body.highContrast .small, body.highContrast .modeTag, body.highContrast .tutClassSay, body.highContrast .tutWords .tutMore{ opacity: 1; color: #fff; }
+    .howDemoRow{ display: flex; justify-content: center; margin: 4px 0 10px; }
+    /* the X in a panel's top right corner: back to where it came from */
+    .overlay .msg.panel:has(> .panelX){ position: relative; }
+    .panelX{
+      position: absolute; top: 6px; right: 6px; z-index: 2;
+      width: 34px; height: 34px; min-height: 0; padding: 0;
+      font-family: var(--font-display); font-size: 14px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .howto .howLead{
+      font-family: var(--font-display); font-weight: 400; font-size: 12px; line-height: 1.8;
+      letter-spacing: 0.04em; text-transform: uppercase; text-align: center;
+      color: #fff; margin: 4px 0 6px;
+      text-shadow: 0 2px 0 #000, 0 0 10px rgba(255,255,255,0.35);
+    }
+    .modeRow{ grid-template-columns: auto 1fr; }
+    .modeRow .modeText{ margin: 0 0 8px; }
+    .modeRow button.small{ min-height: 30px; padding: 6px 12px; }
+    /* scroll bars in the game's own look: a chunky pixel thumb on a dark track */
+    .panel, .howto, .achGrid{ scrollbar-color: #ffffff rgba(0,0,0,0.9); }
+    .panel::-webkit-scrollbar, .achGrid::-webkit-scrollbar{ width: 12px; height: 12px; }
+    .panel::-webkit-scrollbar-track, .achGrid::-webkit-scrollbar-track{ background: rgba(0,0,0,0.9); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.08); }
+    .panel::-webkit-scrollbar-thumb, .achGrid::-webkit-scrollbar-thumb{
+      background: #fff; border: 2px solid #000;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5);
+    }
+    .panel::-webkit-scrollbar-thumb:hover, .achGrid::-webkit-scrollbar-thumb:hover{ background: #fff; box-shadow: -2px 0 0 rgb(var(--om-pink)), 2px 0 0 rgb(var(--om-cyan)); }
+    .panel::-webkit-scrollbar-corner{ background: transparent; }
+    .howto b{ color: rgba(245,245,255,0.92); font-weight: 600; }
+    .howto kbd{
+      font-family: var(--font-display);
+      font-size: 8px;
+      padding: 2px 4px;
+      border: 1px solid rgba(255,255,255,0.25);
+      color: rgba(245,245,255,0.9);
+    }
+    .demoRow{
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: center;
+      margin: 8px 0;
+      padding: 8px;
+      background: rgba(255,255,255,0.04);
+      border: 2px solid rgba(255,255,255,0.08);
+    }
+    canvas.demo{
+      display: block;
+      image-rendering: pixelated;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .demoRow .demoName{
+      font-family: var(--font-display);
+      font-size: 9px;
+      text-transform: uppercase;
+      color: rgba(245,245,255,0.92);
+      margin-bottom: 4px;
+    }
+    .panelBtns{
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    /* Achievements */
+    .achGrid{
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      text-align: left;
+    }
+    .achCard{
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.05);
+      border: 2px solid rgba(255,255,255,0.10);
+    }
+    .achCard.unlocked{
+      border-color: rgba(255,207,63,0.45);
+      background: rgba(255,207,63,0.07);
+    }
+    .achCard.locked .achName{ color: rgba(245,245,255,0.6); }
+    .achName{
+      font-family: var(--font-display);
+      font-size: 9px;
+      line-height: 1.5;
+      text-transform: uppercase;
+      color: rgba(245,245,255,0.95);
+    }
+    .achDesc{
+      font-family: var(--font-body);
+      font-size: 12px;
+      line-height: 1.35;
+      color: var(--muted);
+    }
+    .achMeta{
+      font-family: var(--font-body);
+      font-size: 10px;
+      color: rgba(255,207,63,0.75);
+      margin-top: 2px;
+    }
+    canvas.pixelIcon{ image-rendering: pixelated; display: block; }
+    canvas.pixelIcon.locked{ filter: grayscale(1) brightness(0.7); opacity: 0.55; }
+
+
+    /* Powerup intro screen */
+    #panelIntro, #panelPowerups{ background: rgba(0,0,0,0.97); }
+    /* the intro slides straight over the board: no backdrop, no fade */
+    .overlay.intro{ background: none; transition: none; }
+    /* paused (src/ui.js): the whole screen, dark, and the menu where the board is, the same size
+       and its edge the board's edge, its buttons in a column and the pieces so far under them
+       (src/pausemenu.js), a glow breathing round it and sparkles drifting up past it. Where the
+       board stays in view (zen), a tap outside the menu, or "Look at the board", puts the menu
+       away to look at the board: tap a piece for its card, pinch, double tap or the wheel to zoom
+       in, drag to look around; then an empty spot, or Done, and the menu's back */
+    .overlay.boardPause{
+      position: fixed; inset: 0; z-index: 15; touch-action: none;
+      background: radial-gradient(ellipse 80% 62% at 50% 46%, rgba(24,18,44,0.62), rgba(0,0,0,0.9) 78%);
+    }
+    .overlay.boardPause.peek, .overlay.boardPause.zoomed{ background: none; }
+    /* (the scan lines over all of it, as on the home screen, but not over the board being looked at) */
+    body:has(.overlay.boardPause:not(.peek):not(.zoomed))::after{ -webkit-mask: none; mask: none; }
+    .pauseFx{ display: none; position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; image-rendering: pixelated; transition: opacity 160ms linear; }
+    .overlay.boardPause .pauseFx{ display: block; }
+    /* (the menu's edge and its dark, just where the board's edge is, over it: --board-x, -y, -w,
+       -h, from the fit script below) */
+    .pauseFrame{
+      display: none; position: absolute; isolation: isolate; box-sizing: border-box; pointer-events: none;
+      left: var(--board-x, 0px); top: var(--board-y, 0px); width: var(--board-w, 100%); height: var(--board-h, 100%);
+      border: var(--edge-w) solid var(--edge-line); box-shadow: var(--edge-split), var(--edge-glow);
+      background: radial-gradient(130% 50% at 50% 0%, rgba(255,255,255,0.07), rgba(255,255,255,0) 70%), rgba(5,5,12,0.93);
+      transition: opacity 140ms linear;
+    }
+    .overlay.boardPause .pauseFrame{ display: block; }
+    /* (and what's in it, over the board inside its edge, in the middle of it, and no wider than
+       360 across on a wide board. If the board is too small for it, it's scaled down to fit, and
+       made as much bigger as it's scaled down, so it's still the board's size: ui.js fitPanel) */
+    #panelPause.panel{
+      --menu-w: calc((var(--board-w, 100%) - var(--edge-w) * 2) / var(--fit, 1));
+      --menu-h: calc((var(--board-h, 100%) - var(--edge-w) * 2) / var(--fit, 1));
+      position: absolute; display: flex; flex-direction: column; justify-content: center;
+      left: calc(var(--board-x, 0px) + var(--board-w, 100%) / 2); top: calc(var(--board-y, 0px) + var(--board-h, 100%) / 2); translate: -50% -50%;
+      width: max(300px, var(--menu-w)); min-height: var(--menu-h);
+      padding: 20px max(18px, calc(var(--menu-w) / 2 - 180px)) 16px;
+      background: none; border: 0; box-shadow: none;
+      transition: opacity 140ms linear;
+    }
+    .overlay.boardPause.peek #panelPause, .overlay.boardPause.zoomed #panelPause,
+    .overlay.boardPause.peek .pauseFrame, .overlay.boardPause.zoomed .pauseFrame,
+    .overlay.boardPause.peek .pauseFx, .overlay.boardPause.zoomed .pauseFx{ opacity: 0; pointer-events: none; }
+    /* (its glow: wide and soft in the edge's colours, warm off the left and cool off the right,
+       and a white one close in, the two breathing out of step) */
+    .pauseFrame::before, .pauseFrame::after{ content: ""; position: absolute; inset: calc(var(--edge-w) * -1); z-index: -1; pointer-events: none; }
+    .pauseFrame::before{
+      box-shadow:
+        -16px 0 52px -10px rgba(var(--om-orange),0.6), 16px 0 52px -10px rgba(var(--om-violet),0.6),
+        0 -14px 46px -16px rgba(var(--om-gold),0.45), 0 14px 46px -16px rgba(var(--om-cyan),0.45),
+        0 0 90px rgba(var(--om-pink),0.16);
+      animation: pauseBreathe 4.4s ease-in-out infinite;
+    }
+    .pauseFrame::after{ border: 3px solid rgba(255,255,255,0.5); filter: blur(7px); animation: pauseBreathe 3.1s ease-in-out infinite reverse; }
+    @keyframes pauseBreathe{ 0%, 100%{ opacity: 0.45; } 50%{ opacity: 1; } }
+    /* (developer mode: the developer tools under the rest, and the menu scrolls on down to them,
+       no taller than the board: ui.js fitPanel) */
+    #panelPause.scrolls{ height: var(--menu-h); justify-content: flex-start; overflow-y: auto; }
+    /* (its name torn a little further apart, now and then) */
+    #panelPause .big{ font-size: 20px; margin: 0 0 4px; animation: pauseTear 5.3s steps(1, end) infinite; }
+    @keyframes pauseTear{
+      0%, 100%{ text-shadow: var(--rgb-split), 0 0 24px rgba(var(--om-pink),0.3); transform: none; }
+      63%{ text-shadow: var(--om-tear), 0 0 24px rgba(var(--om-pink),0.3); transform: translateX(1px); }
+      64.5%{ text-shadow: var(--rgb-split), 0 0 24px rgba(var(--om-pink),0.3); transform: none; }
+    }
+    #panelPause .menuBtns{ width: min(100%, 250px); gap: 8px; margin: 14px auto 16px; }
+    #panelPause .menuBtns button{ min-height: 40px; padding: 9px 12px; }
+    /* (Resume, the one to press: lit, with a band of light rolling down through it now and then) */
+    #btnResume{ position: relative; overflow: hidden; isolation: isolate; color: #fff; border-color: var(--edge-line); box-shadow: var(--edge-split), var(--edge-glow); text-shadow: var(--rgb-split); }
+    #btnResume::after{
+      content: ""; position: absolute; left: 0; right: 0; top: -100%; height: 300%; z-index: -1; pointer-events: none;
+      background: linear-gradient(to bottom, transparent 40%, rgba(var(--om-pink),0.16) 45%, rgba(255,255,255,0.14) 48%, rgba(var(--om-cyan),0.16) 51%, transparent 56%);
+      animation: modeSlide 4.2s linear infinite;
+    }
+    /* the pieces so far (src/pausemenu.js): the one in the middle big and lit, drawn as it is (no
+       colours split off it), those either side smaller and dimmer; its name under it, then how
+       rare it is. (The game over page has one too, below) */
+    .pieceGallery{ position: relative; box-sizing: border-box; }
+    #pieceGallery{
+      padding: 7px 8px 10px;
+      border: var(--edge-w) solid var(--edge-quiet-line); box-shadow: var(--edge-quiet);
+      background: radial-gradient(70% 50% at 50% 36%, rgba(255,255,255,0.06), rgba(0,0,0,0) 70%), rgba(0,0,0,0.5);
+    }
+    /* (the strip cut off at its ends: the pieces further along, out of sight, don't stretch the menu) */
+    .pgStage{ position: relative; height: 104px; margin: 0 0 2px; overflow: hidden; overflow: clip; touch-action: pan-y; cursor: grab; }
+    .pgStage.dragging{ cursor: grabbing; }
+    .pgTrack{ position: absolute; inset: 0 30px; }
+    /* (a soft light behind the one in the middle, breathing) */
+    .pgTrack::before{
+      content: ""; position: absolute; left: 50%; top: 50%; width: 190px; height: 104px; transform: translate(-50%, -50%); pointer-events: none;
+      background: radial-gradient(closest-side, rgba(255,255,255,0.16), rgba(var(--om-pink),0.06) 62%, rgba(0,0,0,0));
+      animation: pauseBreathe 3.1s ease-in-out infinite;
+    }
+    .pgSlot{ position: absolute; left: 50%; top: 50%; line-height: 0; }
+    .pgSlot.mid{ z-index: 1; }
+    .pgTrack.glide .pgSlot{ transition: transform 260ms cubic-bezier(.2, .8, .3, 1), opacity 260ms linear; }
+    .pgSlot canvas{ display: block; image-rendering: auto; }
+    .pgSlot.mid canvas{ image-rendering: pixelated; }
+    .pgArrow{ position: absolute; top: 50%; z-index: 1; width: 28px; height: 40px; min-height: 0; margin-top: -20px; padding: 0; font-size: 9px; line-height: 1; }
+    .pgArrow:disabled{ opacity: 0.25; cursor: default; }
+    .pgPrev{ left: 0; }
+    .pgNext{ right: 0; }
+    /* (room for the longest name, three lines of it, and the words under it, so nothing moves as
+       the pieces go by: the name and its words together in the middle of it) */
+    .pgSay{ display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 68px; }
+    .pgName{
+      font-family: var(--font-display); font-size: 9px; line-height: 1.6; letter-spacing: 0.04em; text-transform: uppercase;
+      text-align: center; overflow-wrap: anywhere; color: #fff;
+      text-shadow: -1px 0 0 rgba(var(--om-pink),0.6), 1px 0 0 rgba(var(--om-cyan),0.55), 0 0 10px rgba(255,255,255,0.3);
+    }
+    /* (a Shiny Piece's name in its class's colours, as it is when it falls: still its colour with
+       the animations toned down) */
+    .pgName.shiny{ animation: rgbText 1.6s steps(12, end) infinite; }
+    .pgName.cls-destroyer{ animation-name: fireText; color: var(--rgb-r); }
+    .pgName.cls-gravity{ animation-name: deepText; color: #3f7bff; }
+    .pgName.cls-expander{ animation-name: growText; color: var(--rgb-g); }
+    .pgRarity{ font-family: var(--font-body); font-size: 14px; line-height: 1.25; color: #fff; text-align: center; text-shadow: 0 0 8px rgba(255,255,255,0.25); }
+    .pgRarity .pgK{ color: var(--muted); }
+    .pieceGallery.empty{ display: none; }
+    /* the Extra Shiny Pieces in the pause menu (src/shelfui.js bindShelfQueue): a card for each
+       one in the bay, in the order they'll come, the next on the left (tagged), with its icon in
+       its class's colours, its picture and its name; between two, a button that swaps them, the
+       two sliding into their places */
+    .bayQueue{ margin: 0 0 14px; }
+    .bayQueue[hidden]{ display: none; }
+    .bqTitle{ font-family: var(--font-display); font-size: 8px; line-height: 1.4; letter-spacing: 0.04em; text-transform: uppercase; text-align: center; color: var(--muted); margin: 0 0 10px; }
+    .bqList{ display: flex; align-items: stretch; justify-content: center; gap: 3px; }
+    .bqCard{
+      position: relative; flex: 0 1 96px; min-width: 0; box-sizing: border-box; padding: 10px 3px 7px;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px;
+      border: var(--edge-w) solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.03);
+    }
+    .bqCard.next{ border-color: var(--edge-quiet-line); box-shadow: var(--edge-quiet); background: rgba(255,255,255,0.07); }
+    .bqTag{
+      position: absolute; top: -6px; left: 50%; translate: -50% 0; padding: 2px 4px 1px;
+      font-family: var(--font-display); font-size: 6px; line-height: 1.2; letter-spacing: 0.06em; text-transform: uppercase;
+      color: #000; background: #fff;
+    }
+    .bqIcon svg{ display: block; height: 18px; width: auto; filter: drop-shadow(0 0 4px rgba(255,255,255,0.18)); }
+    .bqArt{ display: block; max-width: 100%; max-height: 36px; image-rendering: pixelated; }
+    .bqName{ font-family: var(--font-display); font-size: 7px; line-height: 1.5; letter-spacing: 0.02em; text-transform: uppercase; text-align: center; overflow-wrap: break-word; color: var(--text); }
+    .bqSwap{ flex: none; align-self: center; width: 26px; min-width: 0; height: 44px; min-height: 0; padding: 0; display: flex; align-items: center; justify-content: center; }
+    .bqSwap svg{ display: block; height: 11px; width: auto; fill: currentColor; }
+    .bqCard.fromLeft{ animation: bqFromLeft 240ms cubic-bezier(.2, .8, .3, 1); }
+    .bqCard.fromRight{ animation: bqFromRight 240ms cubic-bezier(.2, .8, .3, 1); }
+    @keyframes bqFromLeft{ from{ transform: translateX(-125%); opacity: 0.4; } }
+    @keyframes bqFromRight{ from{ transform: translateX(125%); opacity: 0.4; } }
+    /* the game over page (src/ui.js): no box, its words straight over the board going round
+       behind it (src/render.js drawGameOverBackdrop), bold and white with a dark edge to them so
+       they read over anything; and the piece that ended the game, big, with some of the pieces
+       before it to step back through (src/pausemenu.js), drawn as they are, each with its name
+       and how rare it is under it */
+    #panelGameOver.panel{ padding: 12px 0; background: none; border: 0; box-shadow: none; }
+    #panelGameOver .big{ font-size: 24px; margin-bottom: 8px; text-shadow: var(--name-shadow); }
+    .goStats, .pgLast, .goAch, #gameOverGallery .pgRarity{
+      font-family: var(--font-body); font-weight: 600; color: #fff;
+      text-shadow: 0 0 1px #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 8px rgba(0,0,0,0.9);
+    }
+    .goStats{ font-size: 16px; line-height: 1.45; }
+    .goScore{ font-size: 20px; }
+    #gameOverGallery{ margin-top: 16px; }
+    .pgLast{ font-size: 14px; }
+    #gameOverGallery .pgStage{ height: 220px; }
+    /* (behind the pieces here, a soft dark pool, still, so they stand out from the board behind) */
+    #gameOverGallery .pgTrack::before{ width: 300px; height: 220px; animation: none; background: radial-gradient(closest-side, rgba(0,0,0,0.72), rgba(0,0,0,0.5) 55%, rgba(0,0,0,0)); }
+    #gameOverGallery .pgSay{ min-height: 78px; }
+    #gameOverGallery .pgName{ font-size: 11px; text-shadow: var(--name-shadow); }
+    .goAch{ margin-top: 6px; font-size: 15px; color: rgb(255,207,63); }
+    /* looking at the board: what to do, and Done, at the top (not while a piece's card is up:
+       the card may be there) */
+    .pauseLook{
+      display: none; position: absolute; left: 50%; top: max(10px, env(safe-area-inset-top)); z-index: 4; transform: translateX(-50%);
+      box-sizing: border-box; width: max-content; max-width: calc(100% - 20px);
+      align-items: center; gap: 10px; padding: 6px 6px 6px 12px; background: rgba(0,0,0,0.86);
+    }
+    .pauseLook .small{ font-family: var(--font-body); font-size: 12px; line-height: 1.3; color: var(--muted); text-align: left; }
+    .pauseLook button{ flex: none; min-height: 32px; padding: 6px 12px; }
+    .overlay.boardPause.peek .pauseLook, .overlay.boardPause.zoomed .pauseLook{ display: flex; }
+    .overlay.boardPause:has(> .pieceCard:not([hidden])) .pauseLook{ display: none; }
+    .pieceCard{
+      position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+      width: min(calc(100% - 20px), 340px); box-sizing: border-box; padding: 10px 12px 12px;
+      background: rgba(0,0,0,0.92); border: 2px solid var(--ui-border); border-radius: var(--ui-radius);
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.85) inset, 0 12px 40px rgba(0,0,0,0.55);
+      text-align: center; pointer-events: auto; z-index: 3;
+    }
+    .pieceCard.top{ bottom: auto; top: 10px; }
+    .pieceCard[hidden]{ display: none; }
+    .pieceCard .pcPic{ display: grid; place-items: center; margin: 2px 0 8px; }
+    .pieceCard .pcPic canvas{ width: auto; height: auto; }
+    .pieceCard .pcName{ font-family: var(--font-display); font-size: 11px; line-height: 1.55; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(245,245,255,0.94); }
+    .pieceCard .pcRarity{ font-family: var(--font-body); font-size: 12px; color: rgba(245,245,255,0.8); margin-top: 6px; }
+    .pieceCard .pcNote{ font-family: var(--font-body); font-size: 11px; line-height: 1.4; color: var(--muted); margin-top: 4px; }
+    .pieceCard .pcPower{ font-family: var(--font-display); font-size: 10px; margin-top: 8px; animation: rgbText 1.6s steps(12, end) infinite; }
+    .pieceCard .pcPower.cls-destroyer{ animation-name: fireText; }
+    .pieceCard .pcPower.cls-gravity{ animation-name: deepText; }
+    .pieceCard .pcPower.cls-expander{ animation-name: growText; }
+    .pieceCard .pcPower.cls-phantom{ animation-name: ghostText; }
+    #panelIntro.slideIn{ animation: introSlide 200ms cubic-bezier(0.2, 0.9, 0.3, 1.05); }
+    @keyframes introSlide{
+      from{ transform: translateX(115%); }
+      to{ transform: translateX(0); }
+    }
+    .introKicker{
+      font-family: var(--font-display);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,207,63,0.95);
+      margin-bottom: 16px;
+    }
+    .introName{
+      font-family: var(--font-display);
+      font-size: 14px;
+      line-height: 1.5;
+      text-transform: uppercase;
+      animation: rgbText 1.6s steps(12, end) infinite;
+    }
+    .introEffect{
+      font-family: var(--font-display);
+      font-size: 8px;
+      text-transform: uppercase;
+      color: rgba(245,245,255,0.85);
+      margin: 6px 0 10px;
+    }
+    canvas.introDemo{ margin: 12px auto 6px; }
+    .introPiece{ font-size: 11px !important; opacity: 0.7; margin-bottom: 10px; }
+    .introClass{ font-size: 14px !important; color: rgba(245,245,255,0.92) !important; margin-bottom: 4px; }
+    .skipBox{
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 12px;
+      font-family: var(--font-display);
+      font-size: 8px;
+      line-height: 1.6;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+    }
+    .skipBox:hover{ color: var(--text); }
+    /* the tickbox: a little pixel box like the buttons, with a chunky pixel tick */
+    .skipBox input[type=checkbox]{
+      appearance: none;
+      -webkit-appearance: none;
+      flex: none;
+      position: relative;
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-radius: 0;
+      background: rgba(10, 10, 12, 0.96);
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 8px rgba(255,255,255,0.14);
+      cursor: pointer;
+      image-rendering: pixelated;
+    }
+    .skipBox:hover input[type=checkbox]{ border-color: rgba(255,255,255,0.75); }
+    .skipBox input[type=checkbox]:focus-visible{ outline: 2px solid rgba(255,255,255,0.9); outline-offset: 3px; }
+    .skipBox input[type=checkbox]:checked{
+      border-color: rgba(255,255,255,0.9);
+      background: rgba(10, 10, 12, 0.96);
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 10px rgba(255,255,255,0.45);
+    }
+    /* the tick, drawn as 2px "pixels" */
+    .skipBox input[type=checkbox]:checked::after{
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 2px;
+      height: 2px;
+      background: transparent;
+      box-shadow:
+        0 6px 0 #ffffff, 2px 8px 0 #ffffff, 4px 8px 0 #ffffff,
+        6px 6px 0 #ffffff, 8px 4px 0 #ffffff, 10px 2px 0 #ffffff;
+    }
+    .demoEg{ font-size: 11px; opacity: 0.75; margin-top: 2px; }
+
+    /* Dev mode */
+    .devPanel{
+      position: fixed;
+      left: 8px;
+      top: 8px;
+      z-index: 20;
+      width: 230px;
+      max-width: calc(50vw - 16px);
+      padding: 8px 10px;
+      background: rgba(0,0,0,0.72);
+      border: 1px solid rgba(255,255,255,0.35);
+      font-family: ui-monospace, monospace;
+      font-size: 10px;
+      line-height: 1.45;
+      color: rgba(245,245,255,0.75);
+      pointer-events: none;
+    }
+    .devPanel.folded > :not(.devTitle){ display: none; }
+    .devPanel.folded{ width: auto; opacity: 0.8; }
+    @media (max-width: 759px){ .devPanel{ pointer-events: auto; cursor: pointer; } }
+    .devPanel .k{ color: rgba(255,255,255,0.8); }
+    .devPanel .v{ color: rgba(245,245,255,0.95); }
+    .devTitle{ font-family: var(--font-display); font-size: 8px; text-transform: uppercase; color: rgba(255,255,255,0.95); margin-bottom: 4px; }
+    .devHint{ margin-top: 4px; opacity: 0.7; }
+    .devTools{
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px dashed rgba(255,255,255,0.4);
+    }
+    .devTools input[type=range]{ width: 100%; }
+    /* the developer tools' own page (src/devtools.js) */
+    .devToolsPanel{ text-align: left; max-height: 100%; overflow-y: auto; width: min(520px, 100%); }
+    .devToolsPanel .big{ text-align: center; }
+    .devNote{ margin: 6px 0 10px; opacity: 0.8; }
+    .devSection{ margin: 10px 0; padding: 8px 10px; border: 1px dashed rgba(255,255,255,0.35); }
+    .devSection > summary{ cursor: pointer; margin: 0; }
+    .devClassRow{ display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 13px; }
+    .devClassName{ flex: 1 1 auto; }
+    .devMini{ padding: 2px 8px; min-width: 0; }
+    .devCheck{ display: block; font-size: 12px; margin-top: 6px; opacity: 0.85; }
+    .devSlider{ display: block; margin: 8px 0; font-size: 12px; }
+    .devSlider input{ width: 100%; }
+    .devSlider.changed .devSliderLabel{ color: #ffd36b; }
+    .devBayRow{ display: block; margin: 8px 0; font-size: 12px; }
+    .devBayRow.changed .devBayName{ color: #ffd36b; }
+    .devEnabled{ text-align: left; font-size: 11px; max-height: 40vh; overflow-y: auto; }
+    .devEnabled details{ margin: 2px 0; }
+    .devEnabled summary{ cursor: pointer; }
+    .devEnabled label{ display: block; padding: 2px 0 2px 18px; }
+    .devTools select, .devBayRow select{
+      width: 100%;
+      margin: 6px 0 8px;
+      padding: 6px;
+      background: #080808;
+      color: #eee;
+      border: 1px solid rgba(255,255,255,0.2);
+      font-size: 12px;
+    }
+
+    /* Achievement toasts */
+    .toasts{
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .toast{
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 10px;
+      align-items: center;
+      width: min(100%, 320px);
+      box-sizing: border-box;
+      padding: 8px 10px;
+      background: rgba(8,8,10,0.94);
+      border: var(--edge-w) solid var(--edge-line);
+      box-shadow: var(--edge-split), var(--edge-glow), 0 8px 30px rgba(0,0,0,0.6);
+      transform: translateY(-140%);
+      opacity: 0;
+      transition: transform 260ms steps(6, end), opacity 200ms linear;
+    }
+    .toast.in{ transform: translateY(0); opacity: 1; }
+    .toast.out{ transform: translateY(-40%); opacity: 0; }
+    .toastLabel{
+      font-family: var(--font-display);
+      font-size: 7px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,207,63,0.9);
+    }
+    .toastName{
+      font-family: var(--font-display);
+      font-size: 10px;
+      line-height: 1.5;
+      text-transform: uppercase;
+      color: rgba(245,245,255,0.98);
+      margin: 3px 0 2px;
+    }
+    .toastDesc{
+      font-family: var(--font-body);
+      font-size: 11px;
+      line-height: 1.3;
+      color: var(--muted);
+    }
+
     .nameText.enterFromRight{ transform: translateX(110%); opacity: 0; }
+    .nameText.instant{ transition: none !important; }
     .nameText.enterToCenter{ transform: translateX(0); opacity: 1; }
     .nameText.exitToLeft{ transform: translateX(-120%); opacity: 0; }
   
@@ -175,15 +1235,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background:
-        linear-gradient(rgba(0,0,0,0.70), rgba(0,0,0,0.70)),
-        repeating-linear-gradient(
-          to bottom,
-          rgba(255,255,255,0.03) 0px,
-          rgba(255,255,255,0.03) 1px,
-          transparent 1px,
-          transparent 4px
-        );
+      background: rgba(0,0,0,0.70);
       opacity: 0;
       pointer-events: none;
       transition: opacity 120ms linear;
@@ -198,11 +1250,8 @@
       padding: 18px;
       border-radius: var(--ui-radius);
       background: var(--ui-panel-bg);
-      border: 2px solid var(--ui-border);
-      box-shadow:
-        0 0 0 2px rgba(0,0,0,0.85) inset,
-        0 18px 60px rgba(0,0,0,0.55),
-        0 0 18px rgba(120,180,255,0.08);
+      border: var(--edge-w) solid var(--edge-line);
+      box-shadow: var(--edge-split), var(--edge-glow), 0 18px 60px rgba(0,0,0,0.55);
       text-align: center;
       max-width: min(560px, calc(100vw - 24px));
     }
@@ -216,11 +1265,7 @@
       margin-bottom: 10px;
       text-transform: uppercase;
       color: rgba(245,245,255,0.94);
-      text-shadow:
-        var(--display-rgb-shift) 0 0 rgba(255,0,140,var(--display-rgb-a1)),
-        calc(var(--display-rgb-shift) * -1) 0 0 rgba(0,255,255,var(--display-rgb-a2)),
-        0 0 10px rgba(123,247,255,var(--display-glow-a)),
-        0 0 24px rgba(255,80,220,var(--display-glow-b));
+      text-shadow: var(--rgb-split), 0 0 24px rgba(var(--om-pink),0.3);
     }
   
     .overlay .msg .small{
@@ -230,57 +1275,19 @@
       color: var(--muted);
     }
   
-    .controlsBlock{
-      margin-top: 12px;
-      text-align: left;
-      padding: 12px 14px;
-      border-radius: var(--ui-radius);
-      background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(255,255,255,0.10);
-      box-shadow: 0 0 0 2px rgba(0,0,0,0.55) inset;
-    }
-  
-    .controlsHeader{
-      font-family: var(--font-display);
-      font-size: 10px;
-      line-height: 1.5;
-      letter-spacing: 0.06em;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      color: rgba(245,245,255,0.92);
-    }
-  
-    .controlsText{
-      font-family: var(--font-body);
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-  
-    .overlayBtns{
-      display: flex;
-      gap: 10px;
-      margin-top: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-  
+    /* (the edge, quieter until it's pointed at) */
     button{
     appearance: none;
     -webkit-appearance: none;
-    border: 2px solid rgba(255,255,255,0.18);
+    border: var(--edge-w) solid var(--edge-quiet-line);
     border-radius: 0;
     padding: 12px 14px;
     min-height: 44px;
 
     color: rgba(245,245,255,0.96);
-    background: rgba(34, 38, 68, 0.96);
+    background: rgba(10, 10, 12, 0.96);
 
-    box-shadow:
-      0 0 0 2px rgba(0,0,0,0.88),
-      0 0 0 4px rgba(255,255,255,0.05),
-      0 0 10px rgba(123,247,255,0.14),
-      0 0 24px rgba(255,80,220,0.10);
+    box-shadow: var(--edge-quiet);
 
     font-family: var(--font-display);
     font-size: 10px;
@@ -294,9 +1301,9 @@
     user-select: none;
 
     text-shadow:
-      1px 0 0 rgba(255,0,140,0.14),
-      -1px 0 0 rgba(0,255,255,0.10),
-      0 0 8px rgba(123,247,255,var(--display-glow-a));
+      -1px 0 0 rgba(var(--om-pink),0.3),
+      1px 0 0 rgba(var(--om-cyan),0.25),
+      0 0 8px rgba(255,255,255,var(--display-glow-a));
 
     transition:
       background-color 120ms linear,
@@ -308,162 +1315,168 @@
     }
 
     button:hover{
-      background: rgba(44, 50, 90, 0.98);
-      border-color: rgba(255,255,255,0.30);
-      box-shadow:
-        0 0 0 2px rgba(0,0,0,0.92),
-        0 0 0 4px rgba(255,255,255,0.07),
-        0 0 14px rgba(123,247,255,0.24),
-        0 0 30px rgba(255,80,220,0.16);
+      background: rgba(24, 24, 28, 0.98);
+      border-color: var(--edge-line);
+      box-shadow: var(--edge-split), var(--edge-glow);
     }
 
     button:active{
       transform: translateY(1px);
-      background: rgba(28, 32, 58, 0.98);
-      border-color: rgba(255,255,255,0.22);
-      box-shadow:
-        0 0 0 2px rgba(0,0,0,0.94),
-        0 0 0 4px rgba(255,255,255,0.04),
-        0 0 8px rgba(123,247,255,0.10),
-        0 0 18px rgba(255,80,220,0.08);
+      background: rgba(16, 16, 18, 0.98);
+      border-color: var(--edge-line);
+      box-shadow: var(--edge-split);
     }
 
     button:focus-visible{
       outline: none;
-      box-shadow:
-        0 0 0 2px rgba(0,0,0,0.94),
-        0 0 0 4px rgba(255,255,255,0.08),
-        0 0 0 6px rgba(123,247,255,0.45),
-        0 0 18px rgba(123,247,255,0.24),
-        0 0 34px rgba(255,80,220,0.14);
+      border-color: var(--edge-line);
+      box-shadow: var(--edge-split), var(--edge-glow), 0 0 0 5px rgba(0,0,0,0.9), 0 0 0 7px rgba(255,255,255,0.5);
     }
 
-    button.secondary{
-      background: rgba(22, 24, 38, 0.96);
-      border-color: rgba(255,255,255,0.14);
-      color: rgba(245,245,255,0.88);
-      box-shadow:
-        0 0 0 2px rgba(0,0,0,0.90),
-        0 0 0 4px rgba(255,255,255,0.04),
-        0 0 8px rgba(123,247,255,0.08);
-    }
-
-    button.secondary:hover{
-      background: rgba(30, 34, 52, 0.98);
-      border-color: rgba(255,255,255,0.24);
-      box-shadow:
-        0 0 0 2px rgba(0,0,0,0.92),
-        0 0 0 4px rgba(255,255,255,0.06),
-        0 0 12px rgba(123,247,255,0.16);
-    }
+    button.secondary{ background: rgba(8, 8, 10, 0.96); color: rgba(245,245,255,0.88); }
+    button.secondary:hover{ background: rgba(20, 20, 24, 0.98); }
     .bottomBar{
       width: min(100vw, calc(var(--natural-board-w) * 2));
-      height: var(--bottom-bar-h);
+      height: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom));
       padding: 8px 10px calc(10px + env(safe-area-inset-bottom)) 10px;
       box-sizing: border-box;
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       gap: 10px;
-      align-items: center;
+      align-items: stretch;
       justify-self: center;
       background: rgba(0,0,0,0.30);
       border-top: 1px solid rgba(255,255,255,0.10);
       backdrop-filter: blur(10px);
       overflow: hidden;
     }
-  
-    .bottomLeft{
-      display: flex;
-      justify-content: flex-start;
+    /* (all three parts the bar's full height) */
+    .bottomLeft, .bottomCenter, .bottomRight{ display: flex; min-height: 0; }
+    .bottomLeft{ justify-content: flex-start; }
+    /* (the pause button small and low, the logo over it: a tap at the bottom of the screen meant
+       for the piece doesn't pause it; the logo does nothing at all) */
+    .bottomCenter{ flex-direction: column; justify-content: flex-end; align-items: center; gap: 5px; }
+    .hudLogo{
+      display: flex; gap: 1px; font-family: var(--font-display); font-size: clamp(10px, 3vw, 14px); line-height: 1;
+      user-select: none; cursor: default;
     }
-  
-    .bottomCenter{
-      display: flex;
-      justify-content: center;
+    .hudLogo span{
+      color: #fff;
+      text-shadow: -1px 0 0 rgba(var(--om-pink),0.95), -2px 0 1px rgba(var(--om-gold),0.6), 1px 0 0 rgba(var(--om-cyan),0.9), 2px 0 1px rgba(var(--om-violet),0.55), 0 0 0.5em rgba(var(--om-orange),0.55);
     }
-  
-    .bottomRight{
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
+    .bottomRight{ justify-content: flex-end; }
+
+    /* the bay: the Extra Shiny Pieces, a Shiny Piece × how many can be used now, and a tap uses
+       the next (src/shelfui.js). Dressed like the score beside it */
+    .shelf{
+      box-sizing: border-box; height: 100%;
+      width: clamp(118px, 34vw, 170px); min-width: 0;
+      border-radius: var(--ui-radius);
+      background: radial-gradient(160px 110px at 50% 30%, rgba(255,255,255,0.07), rgba(0,0,0,0.5));
+      display: flex; position: relative;
     }
-  
-    .nextMiniShell{
-      width: 110px;
-      height: 74px;
-      background: radial-gradient(180px 120px at 35% 25%, rgba(123,247,255,0.10), rgba(0,0,0,0.55));
-      border: 1px solid rgba(255,255,255,0.10);
-      overflow: hidden;
-      position: relative;
+    .shelf[hidden]{ display: none; }
+    .shelf .bayBtn{
+      flex: 1 1 auto; min-width: 0; min-height: 0; padding: 5px 5px 4px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+      background: transparent; border: 0; border-radius: inherit; box-shadow: none; text-shadow: none;
+      color: inherit; touch-action: manipulation;
     }
-  
-    #nextCanvas{
-      width: 110px;
-      height: 74px;
-      display: block;
-      image-rendering: pixelated;
+    .shelf .bayBtn:active{ transform: none; }
+    .shelf .bayBtn:disabled{ opacity: 1; cursor: default; }
+    .shelf .bayBtn:not(:disabled):hover{ background: rgba(255,255,255,0.06); }
+    .shelf .k{
+      font-family: var(--font-display); font-size: 8px; line-height: 1.4; color: var(--muted);
+      white-space: normal; text-transform: uppercase; text-align: center;
     }
-  
-    .statsMini{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      align-items: center;
+    /* (a plus made of blocks, ×, how many: the number like the score's) */
+    .bayTally{
+      display: flex; align-items: center; justify-content: center; gap: 0.4em;
+      font-family: var(--font-numbers); font-size: clamp(13px, 4vw, 19px); line-height: 1.4; letter-spacing: 0.04em;
+      color: rgba(245,245,255,0.96); text-shadow: var(--rgb-split);
     }
-  
+    .bayIcon{
+      height: 1em; width: auto; flex: none; fill: currentColor;
+      filter: drop-shadow(-1px 0 0 rgba(var(--om-pink),0.95)) drop-shadow(1px 0 0 rgba(var(--om-cyan),0.9)) drop-shadow(0 0 4px rgba(var(--om-orange),0.5));
+    }
+    .bayX{ font-size: 0.7em; opacity: 0.8; }
+    .shelf.empty .bayTally{ opacity: 0.45; text-shadow: none; }
+    .shelf.empty .bayIcon{ filter: none; }
+    /* (one more: the number hops up, flashing) */
+    .bayTally.bump .bayN{ animation: bayBump 520ms cubic-bezier(.2, 1.6, .4, 1) both; }
+    .bayTally.bump .bayIcon{ animation: bayHop 520ms cubic-bezier(.2, 1.6, .4, 1) both; }
+    .bayN{ display: inline-block; }
+    @keyframes bayBump{
+      0%{ transform: translateY(0.5em) scale(0.4); opacity: 0; }
+      35%{ transform: translateY(-0.25em) scale(1.7); opacity: 1; text-shadow: var(--om-tear), 0 0 16px #fff; }
+      100%{ transform: none; }
+    }
+    @keyframes bayHop{ 30%{ transform: translateY(-0.3em) rotate(-12deg) scale(1.25); } 100%{ transform: none; } }
+    /* (along the bottom, an icon for each one in it, the next on the left: its class's colours,
+       quiet. Its height kept, empty or not, so nothing jumps when one comes) */
+    .bayNext{
+      --bay-u: clamp(9px, 2.4vw, 18px);
+      display: flex; justify-content: center; align-items: center; gap: calc(var(--bay-u) * 0.5);
+      height: var(--bay-u); max-width: 100%; opacity: 0.6;
+    }
+    .bayNext svg{ height: 100%; width: auto; flex: 0 1 auto; min-width: 0; } /* (all combos: smaller, to fit) */
+    .bayGlyph.cls-destroyer{ fill: var(--rgb-r); }
+    .bayGlyph.cls-expander{ fill: var(--rgb-g); }
+    .bayGlyph.cls-gravity{ fill: #3f7bff; }
+    .bayPlate{ fill: rgba(255,255,255,0.16); }
+
+    .nextMiniShell, .statPill{
+      box-sizing: border-box; height: 100%;
+      width: clamp(118px, 34vw, 170px); min-width: 0; /* (as wide as the bay, so the bar's even) */
+      padding: 6px 6px 5px;
+      border-radius: var(--ui-radius);
+      background: radial-gradient(160px 110px at 50% 30%, rgba(255,255,255,0.07), rgba(0,0,0,0.5));
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+      position: relative; overflow: hidden;
+    }
+    /* (the next piece is no longer shown: src/render.js still draws into this hidden canvas) */
+    #nextCanvas{ flex: 1 1 auto; width: 100%; min-height: 0; display: block; image-rendering: pixelated; }
+    #nextCanvas.pop{ animation: nextPop 280ms cubic-bezier(.2, 1.5, .4, 1) both; }
+    /* (paused in Classic, God mode or Extreme: no peeking at the board or the next piece) */
+    body.boardHidden #boardCanvas, body.boardHidden #nextCanvas, body.boardHidden #nameLayer{ visibility: hidden; }
+    @keyframes nextPop{ from{ transform: scale(0.6); opacity: 0.3; } to{ transform: none; opacity: 1; } }
+
     .pauseBtn{
-      width: 62px;
-      height: 62px;
+      border-color: var(--edge-line); box-shadow: var(--edge-split), var(--edge-glow);
+      box-sizing: border-box; height: 44px; flex: 0 0 auto;
+      width: clamp(52px, 15vw, 72px);
+      min-height: 0;
       border-radius: var(--ui-radius);
       padding: 0;
       display: grid;
       place-items: center;
       font-family: var(--font-display);
       font-weight: 400;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 1;
       user-select: none;
     }
-  
-    .statPill{
-      width: 118px;
-      min-height: 58px;
-      padding: 8px;
-      border-radius: var(--ui-radius);
-      background: rgba(255,255,255,0.06);
-      border: 2px solid rgba(255,255,255,0.10);
-      box-shadow: 0 0 0 2px rgba(0,0,0,0.55) inset;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      min-width: 0;
-    }
-  
-    .statPill .k{
+
+    .statPill .k, .nextMiniShell .k{
       font-family: var(--font-display);
       font-size: 8px;
       line-height: 1.4;
       color: var(--muted);
-      white-space: nowrap;
+      white-space: normal;
       text-transform: uppercase;
       text-align: center;
     }
   
     .statPill .v{
       font-family: var(--font-numbers);
-      font-size: 12px;
+      font-size: clamp(13px, 4vw, 19px);
       line-height: 1.4;
       font-weight: 400;
       letter-spacing: 0.04em;
       white-space: nowrap;
       text-align: center;
       color: rgba(245,245,255,0.96);
-      text-shadow:
-        var(--display-rgb-shift) 0 0 rgba(255,0,140,var(--display-rgb-a4)),
-        calc(var(--display-rgb-shift) * -1) 0 0 rgba(0,255,255,0.10),
-        0 0 8px rgba(123,247,255,var(--display-glow-a));
+      text-shadow: var(--rgb-split);
     }
   
     .debugPanel{
@@ -492,11 +1505,200 @@
       font-weight: 900;
     }
   
+    /* ---------- the tutorial (src/tutorial.js, src/tutorialui.js) ---------- */
+    /* its bar takes the bottom bar's place, a little taller (the fit script makes room for it):
+       between the dots and the buttons, room for the bay, on its page */
+    body.tutorial{ --bottom-bar-h: 140px; }
+    body.tutorial .bottomBar{ width: min(100vw, 600px); grid-template-columns: 1fr; padding-top: 7px; }
+    body.tutorial .bottomBar > .bottomLeft, body.tutorial .bottomBar > .bottomCenter, body.tutorial .bottomBar > .bottomRight{ display: none; }
+    .tutorialBar{ position: relative; display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+    .tutorialBar[hidden]{ display: none; }
+    .tutDots{ display: flex; justify-content: center; gap: 5px; flex: none; }
+    .tutDots i{ width: 6px; height: 6px; background: rgba(255,255,255,0.16); box-shadow: 0 0 0 1px rgba(0,0,0,0.85); }
+    .tutDots i.done{ background: rgba(255,255,255,0.42); }
+    .tutDots i.on{ background: #ffffff; box-shadow: 0 0 0 1px #000, 0 0 8px rgba(255,255,255,0.85); }
+    .tutSay{ flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; gap: 14px; }
+    /* what the page says, over the board where a game has the falling piece's name, in the same
+       letters, outline and glow, with a smaller line under it as a shiny piece has what it does;
+       a mode's page has its name over it, big, as a piece's (src/tutorialui.js). Under the words,
+       on the Shiny Pieces' page, the classes side by side, each doing its thing; on a mode's page,
+       the button to go and play it */
+    body.tutorial .nameLayer{ display: none; }
+    .tutTop{
+      position: absolute; left: 0; right: 0; top: 30%; z-index: 5; pointer-events: none;
+      padding: 0 12px; box-sizing: border-box;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      text-align: center; user-select: none;
+    }
+    .tutTop[hidden]{ display: none; }
+    .tutWords{
+      width: 100%; color: rgba(248,248,255,0.95);
+      font-family: var(--font-display); font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase;
+      overflow-wrap: anywhere; word-break: break-word;
+      text-shadow: var(--name-shadow);
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.22)) drop-shadow(0 0 26px rgba(var(--om-orange),0.22));
+    }
+    .tutWords .tutHead{ display: block; margin: 0 0 10px; font-size: 18px; line-height: 1.5; animation: rgbText 1.6s steps(12, end) infinite; }
+    .tutWords .tutMain{ display: block; font-size: clamp(10px, 2.9vw, 13px); line-height: 1.75; }
+    .tutWords .tutMore{ display: block; margin-top: 10px; font-size: 9px; line-height: 1.6; letter-spacing: 0.06em; color: rgba(245,245,255,0.82); }
+    .tutTop.enter .tutWords{ animation: tutTopIn 380ms cubic-bezier(.2, 1.2, .4, 1) both; }
+    @keyframes tutTopIn{
+      0%{ opacity: 0; transform: translateY(-10px); filter: none; }
+      60%{ opacity: 1; }
+      100%{ opacity: 1; transform: none; }
+    }
+    .tutWords kbd{
+      display: inline-block; min-width: 1.4em; padding: 3px 4px 2px; margin: 0 2px;
+      font-family: var(--font-display); font-size: 0.85em; line-height: 1.3; text-align: center; vertical-align: 1px;
+      color: #fff; background: #000; text-shadow: none;
+      border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 2px 0 rgba(255,255,255,0.3);
+    }
+    .tutName{ font-family: var(--font-display); font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; animation: rgbText 1.6s steps(12, end) infinite; }
+    .tutName.cls-destroyer{ animation-name: fireText; }
+    .tutName.cls-gravity{ animation-name: deepText; }
+    .tutName.cls-expander{ animation-name: growText; }
+    .tutName.cls-phantom{ animation-name: ghostText; }
+    /* (the Shiny Pieces' page: a card for each class, its little game going round (src/demo.js),
+       its name and what it does) */
+    .tutClasses{ display: flex; justify-content: center; gap: 8px; width: 100%; }
+    .tutClasses:empty{ display: none; }
+    .tutClass{
+      position: relative; isolation: isolate; flex: 1 1 0; min-width: 0; max-width: 132px; box-sizing: border-box; container-type: inline-size;
+      display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 9px 5px 10px;
+      background: rgba(0,0,0,0.78); border: var(--edge-w) solid var(--edge-line); box-shadow: var(--edge-split), var(--edge-glow);
+      animation: tutCardIn 420ms cubic-bezier(.2, 1.3, .4, 1) both; animation-delay: calc(var(--n, 0) * 110ms + 120ms);
+    }
+    .tutClass canvas{ display: block; image-rendering: pixelated; box-shadow: 0 0 0 1px rgba(255,255,255,0.12); }
+    /* (its name as big as fits the card: the longest, Gravitizerz, with a little room each side) */
+    .tutClass .tutName{ font-size: clamp(7px, 2.2vw, 10px); font-size: clamp(5px, 8cqi, 10px); line-height: 1.4; }
+    .tutClassSay{ font-family: var(--font-body); font-size: clamp(10px, 2.8vw, 12px); line-height: 1.25; color: rgba(245,245,255,0.92); text-shadow: 0 1px 0 #000; }
+    @keyframes tutCardIn{ from{ opacity: 0; transform: translateY(12px) scale(0.92); } to{ opacity: 1; transform: none; } }
+    /* (a mode's page: the button to play it) */
+    .tutPlay{
+      position: relative; isolation: isolate; overflow: hidden; pointer-events: auto;
+      min-height: 0; padding: 13px 20px; border: var(--edge-w) solid var(--edge-line);
+      font-family: var(--font-display); font-size: clamp(11px, 3.2vw, 14px); letter-spacing: 0.05em; text-transform: uppercase;
+      color: #fff; background: #000;
+      box-shadow: var(--edge-split), var(--edge-glow);
+      text-shadow: var(--rgb-split), 0 0 10px rgba(255,255,255,0.55);
+      animation: tutCardIn 420ms cubic-bezier(.2, 1.3, .4, 1) 160ms both;
+    }
+    .tutPlay[hidden]{ display: none; }
+    @media (hover: hover) and (pointer: fine){ .tutPlay:hover{ background: radial-gradient(120% 90% at 50% 50%, rgba(255,255,255,0.14), rgba(0,0,0,0) 70%) #000; } }
+    /* (God mode: the one to look at. Its edge torn further apart, light rolling through it, its
+       name glitching all the time) */
+    .tutPlay.tutGod{
+      box-shadow: var(--edge-torn), var(--edge-glow), 0 0 26px rgba(255,255,255,0.45);
+      animation: tutCardIn 420ms cubic-bezier(.2, 1.3, .4, 1) 160ms both, tutGodFrame 2.2s steps(1, end) 600ms infinite, textGlitch 1.3s steps(1, end) infinite;
+    }
+    .tutPlay.tutGod::after{
+      content: ""; position: absolute; left: 0; right: 0; top: -100%; height: 300%; z-index: -1; pointer-events: none;
+      background:
+        repeating-linear-gradient(to bottom, rgba(255,255,255,0.06) 0 1px, transparent 1px 3px),
+        linear-gradient(to bottom, transparent 40%, rgba(var(--om-pink),0.24) 45%, rgba(255,255,255,0.2) 48%, rgba(var(--om-cyan),0.24) 51%, transparent 56%);
+      animation: modeSlide 2.4s linear infinite;
+    }
+    @keyframes tutGodFrame{
+      0%, 100%{ box-shadow: var(--edge-torn), var(--edge-glow), 0 0 26px rgba(255,255,255,0.45); }
+      47%{ box-shadow: -6px 1px 0 rgba(var(--om-pink),0.95), -9px 1px 0 rgba(var(--om-orange),0.6), 6px -1px 0 rgba(var(--om-cyan),0.95), 9px -1px 0 rgba(var(--om-violet),0.6), var(--edge-glow), 0 0 40px rgba(255,255,255,0.7); }
+      52%{ box-shadow: var(--edge-split), var(--edge-glow), 0 0 30px rgba(255,255,255,0.55); }
+    }
+    /* the X: home */
+    .tutX{
+      position: absolute; top: 8px; right: 8px; z-index: 6;
+      width: 34px; height: 34px; min-height: 0; padding: 0;
+      font-family: var(--font-display); font-size: 14px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tutX[hidden]{ display: none; }
+    /* (paused: the pause menu over the board, with its own X) */
+    .boardShell.tutPaused .tutTop, .boardShell.tutPaused .tutX{ visibility: hidden; }
+    /* (Touch or Keys: which the tutorial shows) */
+    .tutView{ display: flex; flex: none; }
+    .tutNav .tutView button{ padding: 8px 9px; box-shadow: 0 0 0 2px rgba(0,0,0,0.88); opacity: 0.55; }
+    .tutNav .tutView button[aria-pressed="true"]{ opacity: 1; background: #fff; color: #000; text-shadow: none; }
+    .tutShelf{ height: 64px; width: min(46vw, 170px); }
+    .tutShelf[hidden]{ display: none; }
+    .tutShelf.aim{ outline: 2px solid #fff; outline-offset: 2px; }
+    /* the keys it presses (with a keyboard): the arrows (WASD works too), each lit as it's pressed */
+    .tutKeys{ display: flex; gap: 8px; flex: none; height: 100%; align-items: center; }
+    .tutKeys[hidden]{ display: none; }
+    .tutKeyset{ display: grid; grid-template-columns: repeat(3, 20px); grid-template-rows: repeat(2, 20px); gap: 2px; }
+    .tutKeyset i{
+      display: grid; place-items: center; font-style: normal; font-family: var(--font-display); font-size: 8px;
+      color: rgba(245,245,255,0.75); background: rgba(10,10,12,0.96); border: 1px solid rgba(255,255,255,0.22);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.85); transition: background 60ms linear, color 60ms linear, transform 60ms linear, box-shadow 60ms linear;
+    }
+    .tutKeyset i:first-child{ grid-column: 2; }
+    .tutKeyset i:nth-child(n+2){ grid-row: 2; }
+    .tutKeyset i.lit{ color: #0a0916; background: #ffffff; border-color: #fff; transform: translateY(2px); box-shadow: 0 0 0 rgba(0,0,0,0.85), 0 0 12px rgba(255,255,255,0.85); }
+    .tutNav{ display: flex; align-items: center; gap: 6px; flex: none; }
+    .tutGap{ flex: 1 1 0; }
+    .tutNav button{ min-height: 40px; padding: 8px 12px; font-size: 9px; white-space: nowrap; }
+    .tutNav button[hidden]{ display: none; }
+    .tutNav button:disabled{ opacity: 0.35; cursor: default; }
+    .tutNav .tutPause{ width: 52px; padding: 0; font-size: 13px; }
+    /* (a phone: the last page's four buttons on one row) */
+    @media (max-width: 440px){ .tutNav{ gap: 5px; } .tutNav button, .tutNav .tutView button{ padding: 8px 7px; font-size: 8px; } .tutNav .tutPause{ width: 40px; } }
+    /* (more room: bigger keys) */
+    @media (min-width: 600px){ .tutKeyset{ grid-template-columns: repeat(3, 23px); grid-template-rows: repeat(2, 23px); } .tutKeyset i{ font-size: 9px; } }
+    /* (no shift when pressed, and a little more to hit than it shows: the glow round a button
+       counts as the button, more so for Back and Next at the ends) */
+    .tutNav button{ position: relative; }
+    .tutNav button:active{ transform: none; }
+    .tutNav button::after{ content: ""; position: absolute; inset: -3px; }
+    #tutBack::after, #tutNext::after{ inset: -10px; }
+    #tutNext{ padding-left: 16px; padding-right: 16px; }
+    #tutNext.nudge{ animation: tutNudge 1.1s ease-in-out infinite; }
+    @keyframes tutNudge{
+      0%, 100%{ box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 10px rgba(255,255,255,0.2); }
+      50%{ box-shadow: 0 0 0 2px rgba(0,0,0,0.88), 0 0 0 4px rgba(255,255,255,0.6), 0 0 22px rgba(255,255,255,0.6); }
+    }
+    /* (the player did what the page shows) */
+    .tutCheer{
+      position: absolute; left: 50%; top: -5px; transform: translateX(-50%); pointer-events: none; opacity: 0;
+      padding: 3px 8px 2px; background: #0a0916; box-shadow: 0 0 0 2px #000, 0 0 12px rgba(255,255,255,0.45);
+      font-family: var(--font-display); font-size: 10px; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.08em;
+      text-shadow: 0 2px 0 #000; animation: rgbText 1.6s steps(12, end) infinite;
+    }
+    .tutCheer.on{ animation: rgbText 1.6s steps(12, end) infinite, tutCheer 1.6s ease-out both; }
+    @keyframes tutCheer{ 0%{ opacity: 0; transform: translate(-50%, 6px) scale(0.6); } 15%{ opacity: 1; transform: translate(-50%, 0) scale(1.15); } 25%, 75%{ opacity: 1; transform: translate(-50%, 0) scale(1); } 100%{ opacity: 0; transform: translate(-50%, -4px); } }
+    /* the part of the board the finger is about to tap, faintly in its own colour (the zones are
+       src/ui.js getZone's) */
+    .tutZones{ position: absolute; inset: 0; pointer-events: none; }
+    .tutZone{ position: absolute; inset: 0; opacity: 0; transition: opacity 200ms linear; background: rgba(var(--zc), 0.1); }
+    .tutZone.on{ opacity: 1; }
+    .tutZone.hit{ animation: tutZoneHit 280ms ease-out; }
+    @keyframes tutZoneHit{ from{ background: rgba(var(--zc), 0.3); } }
+    .tutZone[data-zone=left]{ --zc: 255,220,90; clip-path: polygon(0 22%, 50% 22%, 50% 72%, 25% 72%, 25% 100%, 0 100%); }
+    .tutZone[data-zone=right]{ --zc: 90,200,255; clip-path: polygon(50% 22%, 100% 22%, 100% 100%, 75% 100%, 75% 72%, 50% 72%); }
+    .tutZone[data-zone=top]{ --zc: 110,255,140; clip-path: inset(0 0 78% 0); }
+    .tutZone[data-zone=bottom]{ --zc: 255,90,90; clip-path: inset(72% 25% 0 25%); }
+    /* the finger: it goes to the zone, and taps (a ripple where it touched) or holds */
+    .tutFinger{
+      position: fixed; left: 0; top: 0; z-index: 45; pointer-events: none; opacity: 0;
+      transition: transform 240ms cubic-bezier(.3, .7, .3, 1), opacity 160ms linear;
+    }
+    .tutFinger.on{ opacity: 0.96; }
+    .tutHand{ transform-origin: 24.5px 1.4px; filter: drop-shadow(2px 4px 0 rgba(0,0,0,0.5)); transition: transform 90ms ease-out; }
+    .tutHand svg{ display: block; }
+    .tutHand.tap{ animation: tutTap 210ms ease-out; }
+    .tutHand.hold{ transform: translateY(3px) scale(0.92); }
+    @keyframes tutTap{ 0%{ transform: none; } 35%{ transform: translateY(4px) scale(0.9); } 100%{ transform: none; } }
+    .tutRipple{
+      position: absolute; z-index: -1; left: 24.5px; top: 1.4px; width: 12px; height: 12px; margin: -6px 0 0 -6px;
+      box-sizing: border-box; border: 3px solid rgba(255,255,255,0.9); box-shadow: 0 0 10px rgba(255,255,255,0.8);
+      animation: tutRipple 440ms ease-out forwards;
+    }
+    @keyframes tutRipple{ from{ transform: scale(0.4); opacity: 1; } to{ transform: scale(3.6); opacity: 0; } }
+    /* (a page set up, or going round again: the board fades in) */
+    #boardCanvas.tutFade{ animation: tutFade 360ms ease-out; }
+    @keyframes tutFade{ from{ opacity: 0.2; } }
+    @media (prefers-reduced-motion: reduce){ .tutFinger{ transition: opacity 160ms linear; } .tutHand.tap, .tutRipple, #boardCanvas.tutFade{ animation: none; } }
+
     #boardShell.glow-left{
       box-shadow:
-        0 18px 60px rgba(0,0,0,0.55),
-        0 0 0 2px var(--boardEdge),
-        0 0 0 1px var(--boardEdgeInner) inset,
+        var(--board-shadow),
         -6px 0 18px rgba(255,220,90,0.12),
         6px 0 18px rgba(90,200,255,0.12),
         0 -6px 18px rgba(110,255,140,0.10),
@@ -507,9 +1709,7 @@
   
     #boardShell.glow-right{
       box-shadow:
-        0 18px 60px rgba(0,0,0,0.55),
-        0 0 0 2px var(--boardEdge),
-        0 0 0 1px var(--boardEdgeInner) inset,
+        var(--board-shadow),
         -6px 0 18px rgba(255,220,90,0.12),
         6px 0 18px rgba(90,200,255,0.12),
         0 -6px 18px rgba(110,255,140,0.10),
@@ -520,9 +1720,7 @@
   
     #boardShell.glow-top{
       box-shadow:
-        0 18px 60px rgba(0,0,0,0.55),
-        0 0 0 2px var(--boardEdge),
-        0 0 0 1px var(--boardEdgeInner) inset,
+        var(--board-shadow),
         -6px 0 18px rgba(255,220,90,0.12),
         6px 0 18px rgba(90,200,255,0.12),
         0 -6px 18px rgba(110,255,140,0.10),
@@ -533,9 +1731,7 @@
   
     #boardShell.glow-bottom{
       box-shadow:
-        0 18px 60px rgba(0,0,0,0.55),
-        0 0 0 2px var(--boardEdge),
-        0 0 0 1px var(--boardEdgeInner) inset,
+        var(--board-shadow),
         -6px 0 18px rgba(255,220,90,0.12),
         6px 0 18px rgba(90,200,255,0.12),
         0 -6px 18px rgba(110,255,140,0.10),
@@ -546,79 +1742,320 @@
   </style>
 </head>
 
-<body>
+<body class="booting">
+  <!-- opening the page: this on its own until the home screen is ready (src/ui.js, boot) -->
+  <div class="boot" id="boot" role="img" aria-label="Loading"></div>
+  <script src="./src/loadingdata.js"></script>
+  <script src="./src/loading.js"></script>
+  <!-- the home screen (src/home.js): turbo zen behind it, through the camera, and effects over it -->
+  <canvas id="homeBg" class="homeLayer" aria-hidden="true"></canvas>
   <div class="app">
     <div class="boardRegion">
+      <div class="boardFrame" id="boardFrame" aria-hidden="true"><i class="boardRing edge"></i></div>
       <div class="boardShell" id="boardShell">
         <div id="nameLayer" class="nameLayer"></div>
         <canvas id="boardCanvas"></canvas>
+        <!-- (the tutorial: what the page says, where a game has the piece's name; under it, the
+             Shiny Pieces' classes, or the button to play a mode; and an X to go home) -->
+        <div id="tutTop" class="tutTop" hidden>
+          <div class="tutWords" id="tutWords" aria-live="polite"></div>
+          <div class="tutClasses" id="tutClasses"></div>
+          <button class="tutPlay" id="tutPlay" hidden></button>
+        </div>
+        <button id="tutX" class="tutX" aria-label="Home" hidden>X</button>
+
+        <div id="toasts" class="toasts" aria-live="polite"></div>
+        <!-- (turbo zen filling the whole window: no bottom bar, so the pause button sits on the board) -->
+        <button id="floatPause" class="floatPause" aria-label="Pause">&#10074;&#10074;</button>
 
         <div id="overlay" class="overlay show">
-          <div class="msg">
-            <div class="big" id="overlayTitle">Loading…</div>
-            <div class="small" id="overlaySubtitle"></div>
+          <div id="pieceCard" class="pieceCard" hidden></div>
+          <div class="msg panel homeMenu" id="panelMenu" hidden>
+            <div class="homeLogoWrap"><div class="homeLogo" id="homeLogo" role="img" aria-label="Estrix"><span style="--i:0;--h:350"><i><b>E</b></i></span><span style="--i:1;--h:35"><i><b>S</b></i></span><span style="--i:2;--h:58"><i><b>T</b></i></span><span style="--i:3;--h:140"><i><b>R</b></i></span><span style="--i:4;--h:200"><i><b>I</b></i></span><span style="--i:5;--h:275"><i><b>X</b></i></span></div></div>
+            <div class="homeTagline" id="homeTagline"></div>
+            <!-- (in this order down a phone; on a wider screen, Classic in the middle and the rest
+                 round it: index.html .homeModes) -->
+            <div class="homeModes">
+              <button id="btnTutorial" class="modeBtn" style="--i:0" data-mode="tutorial"><span class="modeName">How to play</span><span class="modeTag"></span></button>
+              <button id="btnZen" class="modeBtn" style="--i:1" data-mode="zen"><span class="modeName">Zen</span><span class="modeTag"></span></button>
+              <button id="btnNormal" class="modeBtn main" style="--i:2" data-mode="normal"><span class="modeName">Classic</span><span class="modeTag"></span></button>
+              <button id="btnExtreme" class="modeBtn" style="--i:3" data-mode="extreme"><span class="modeName">Extreme</span><span class="modeTag"></span></button>
+              <button id="btnGod" class="modeBtn" style="--i:4" data-mode="god"><span class="modeName">God mode</span><span class="modeTag"></span></button>
+            </div>
+            <div class="menuRow homeRow">
+              <button id="btnOptions" class="secondary small">Options</button>
+              <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
+            </div>
+            <div class="menuRow homeRow" id="devRow" hidden><button id="btnDevTools" class="secondary small">Developer tools</button></div>
+            <div class="small" id="gameVersion"><span class="verPart">version 202610230009</span><span class="verSep"> · </span><span class="verPart">Copyright 2026 Studio Geometrix</span></div>
+          </div>
 
-            <div class="controlsBlock" id="controlsBlock" style="display:none;">
-              <div class="controlsHeader">Controls</div>
-              <div class="controlsText">
-                Swipe or tap left to move left. <br>
-                Swipe or tap right to move right. <br>
-                Tap the top to rotate. <br>
-                Tap the bottom to move the piece down.
-                <small>[Extris alpha version 20250306 copyright 2026 geometrixgamestudio@gmail.com]</small>
+          <div class="msg panel devToolsPanel" id="panelDevTools" hidden>
+            <div class="big">Developer tools</div>
+            <div id="devToolsBody"></div>
+            <div class="menuBtns"><button class="secondary" data-back>Back</button></div>
+          </div>
+
+          <!-- the options (src/optionsui.js, kept by src/settings.js) -->
+          <div class="msg panel optionsPanel" id="panelOptions" hidden>
+            <button class="panelX" data-back aria-label="Close">X</button>
+            <div class="big">Options</div>
+            <div class="optList">
+              <label class="skipBox"><input type="checkbox" class="skipIntros" data-opt="skipIntros"> Skip the Shiny Piece intro screens</label>
+              <label class="skipBox"><input type="checkbox" data-opt="calmFx"> Tone down the animations</label>
+              <label class="skipBox"><input type="checkbox" data-opt="contrast"> High contrast</label>
+              <label class="skipBox"><input type="checkbox" data-opt="turboWhole"> Turbo zen fills the screen</label>
+            </div>
+            <div class="favRow">
+              <div class="favWhat"><div class="k">Favourite piece</div><div class="small">It turns up a little more often.</div></div>
+              <button class="favNow secondary" id="btnFavPick" aria-label="Choose your favourite piece"><span id="favArt"></span><span class="favName" id="favName"></span></button>
+            </div>
+            <div class="favGrid" id="favGrid" hidden></div>
+            <div class="menuBtns"><button class="secondary" data-back>Back</button></div>
+          </div>
+
+          <div class="msg panel" id="panelHowTo" hidden>
+            <button class="panelX" data-back aria-label="Close">X</button>
+            <div class="big">How to play</div>
+            <div class="howto">
+              <h2 class="howLead">Pieces fall. Fill a row to destroy it. Don't let the pile reach the top.</h2>
+              <div class="howDemoRow"><button id="btnHowDemo">Play the demo</button></div>
+
+              <h3>Controls</h3>
+              <p><b>Touch:</b> tap the left or right side to move, tap the top to rotate, tap the bottom middle to drop faster. Hold to keep going. Double tap the bottom to drop straight down.</p>
+              <p><b>Keyboard:</b> <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> move, <kbd>↑</kbd> or <kbd>W</kbd> rotate, <kbd>↓</kbd> or <kbd>S</kbd> drop faster, <kbd>Shift</kbd> use the next Extra Shiny Piece (again while it's falling to undo it), <kbd>Space</kbd> or <kbd>Esc</kbd> pause. Double press <kbd>↓</kbd> or <kbd>S</kbd> to drop straight down.</p>
+
+              <h3>Shiny Pieces</h3>
+              <div id="howtoClasses"></div>
+
+              <h3>Modes</h3>
+              <div id="howtoModes"></div>
+
+              <p class="small menuFoot">[<span class="gameName">Estrix</span> version 202610230009 copyright 2026 geometrixgamestudio@gmail.com]</p>
+            </div>
+            <div class="panelBtns">
+              <button data-back>Back</button>
+            </div>
+          </div>
+
+          <div class="msg panel" id="panelAchievements" hidden>
+            <div class="big">Achievements</div>
+            <div class="small" id="achSummary"></div>
+            <div class="achGrid" id="achGrid"></div>
+            <div class="panelBtns">
+              <button data-back>Back</button>
+              <button id="btnResetAch" class="secondary small">Reset</button>
+            </div>
+          </div>
+
+          <!-- paused: the sparkles behind the menu (src/pausemenu.js), the menu's edge over the
+               board's, and, looking at the board in a mode that leaves it in view, what to do and
+               the way back to the menu -->
+          <canvas id="pauseFx" class="pauseFx" aria-hidden="true"></canvas>
+          <div class="pauseFrame" aria-hidden="true"></div>
+          <div class="pauseLook edge" id="pauseLook">
+            <span class="small">tap a piece to look at it · pinch or double tap to zoom</span>
+            <button id="btnLookDone" class="small">Done</button>
+          </div>
+
+          <div class="msg panel" id="panelPause" hidden>
+            <button class="panelX" id="btnPauseX" aria-label="Resume">X</button>
+            <div class="big">Paused</div>
+            <div class="small" id="pauseMode"></div>
+            <div class="menuBtns">
+              <button id="btnResume">Resume</button>
+              <button id="btnLookBoard" class="secondary" hidden>Look at the board</button>
+              <button id="btnWholeWindow" class="secondary" hidden>Fill the window</button>
+              <button id="btnSpeed" class="secondary" hidden>Speed: 1×</button>
+              <button id="btnPowerupHelp" class="secondary" hidden>Shiny Pieces</button>
+              <button id="btnPauseHowTo" class="secondary">How to play</button>
+              <button id="btnPauseOptions" class="secondary">Options</button>
+              <button id="btnQuit" class="secondary">Quit to menu</button>
+            </div>
+            <!-- the Extra Shiny Pieces in the bay, in the order they'll come, the next on the left:
+                 the button between two swaps them (src/shelfui.js bindShelfQueue) -->
+            <div class="bayQueue" id="bayQueue" role="group" aria-labelledby="bqTitle" hidden>
+              <div class="bqTitle" id="bqTitle">Extra Shiny Pieces</div>
+              <div class="bqList"></div>
+            </div>
+            <!-- the pieces so far, each where it last fell, newest first (src/pausemenu.js): swipe,
+                 the arrows, or ← → and A D -->
+            <div class="pieceGallery" id="pieceGallery" role="group" aria-label="The pieces so far">
+              <div class="pgStage">
+                <button class="pgArrow pgPrev" aria-label="The piece before">&#9664;</button>
+                <div class="pgTrack"></div>
+                <button class="pgArrow pgNext" aria-label="The piece after">&#9654;</button>
+              </div>
+              <div class="pgSay" aria-live="polite">
+                <div class="pgName"></div>
+                <div class="pgRarity"><span class="pgK">rarity:</span> <span class="pgRare"></span></div>
               </div>
             </div>
+            <div class="devTools" id="devTools" hidden>
+              <div class="devTitle">dev: next piece</div>
+              <select id="devNextPiece"></select>
+              <div class="menuRow">
+                <button id="btnDevNext" class="small">Use as next</button>
+                <button id="btnDevUnlockAll" class="secondary small">Unlock all Shiny Pieces</button>
+              </div>
+              <div class="menuRow">
+                <button id="btnDevClear" class="secondary small">Clear board</button>
+                <button id="btnDevMessy" class="secondary small">Messy board</button>
+              </div>
+              <div class="small" id="devNextStatus"></div>
+              <div class="devTitle">dev: level 6</div>
+              <select id="devLevel6">
+                <option value="auto">level 6: auto (unlocks after a comeback)</option>
+                <option value="on">level 6: always unlocked</option>
+                <option value="off">level 6: always locked</option>
+              </select>
+              <select id="devGroup"></select>
+              <div class="menuRow">
+                <button id="btnDevGroup" class="small">Start group next</button>
+              </div>
+              <div class="devTitle">dev: zen movement (zen and turbo zen)</div>
+              <select id="devZenMovement"></select>
+              <div class="menuRow">
+                <button id="btnDevZen" class="small">Start it next</button>
+              </div>
+              <div class="devTitle">dev: end game</div>
+              <select id="devEndGame">
+                <option value="auto">end game: auto (at two thirds full)</option>
+                <option value="on">end game: on now</option>
+                <option value="off">end game: never</option>
+              </select>
+              <div class="devTitle">dev: Shiny Piece frequency <span id="devRateValue"></span></div>
+              <input type="range" id="devRate" min="0" max="5" step="0.25" value="1">
+              <div class="devTitle">dev: enabled Shiny Pieces</div>
+              <div class="devEnabled" id="devEnabled"></div>
+            </div>
+          </div>
 
-            <div class="overlayBtns" id="overlayBtns" style="display:none;">
-              <button id="overlayPlayBtn">Play</button>
-              <button id="overlayResumeBtn" class="secondary">Resume</button>
-              <button id="overlayNewBtn" class="secondary">New game</button>
+          <div class="msg panel" id="panelIntro" hidden>
+            <div class="introKicker" id="introKicker">Shiny Piece!</div>
+            <div class="introName" id="introName"></div>
+            <canvas id="introDemo" class="demo introDemo"></canvas>
+            <div class="small introPiece" id="introPiece"></div>
+            <div class="small introClass" id="introClass"></div>
+            <div class="panelBtns">
+              <button id="btnIntroContinue">Got it</button>
+            </div>
+            <label class="skipBox"><input type="checkbox" class="skipIntros"> skip Shiny Piece intro screens</label>
+          </div>
+
+          <div class="msg panel" id="panelPowerups" hidden>
+            <div class="big">Shiny Pieces</div>
+            <div class="small">Everything you've met so far this game.</div>
+            <div class="howto" id="powerupList"></div>
+            <div class="panelBtns">
+              <button data-back>Back</button>
+            </div>
+          </div>
+
+          <!-- game over: straight over the board going round behind it, and the piece that ended
+               the game, big, with some of the pieces before it (src/pausemenu.js): swipe, the
+               arrows, or ← → and A D -->
+          <div class="msg panel" id="panelGameOver" hidden>
+            <div class="big">Game Over</div>
+            <div class="goStats" id="gameOverStats"></div>
+            <div class="pieceGallery" id="gameOverGallery" role="group" aria-label="Pieces from the game">
+              <div class="pgLast" id="gameOverLast">The piece that killed you</div>
+              <div class="pgStage">
+                <button class="pgArrow pgPrev" aria-label="The piece before">&#9664;</button>
+                <div class="pgTrack"></div>
+                <button class="pgArrow pgNext" aria-label="The piece after">&#9654;</button>
+              </div>
+              <div class="pgSay" aria-live="polite">
+                <div class="pgName"></div>
+                <div class="pgRarity"><span class="pgK">rarity:</span> <span class="pgRare"></span></div>
+              </div>
+            </div>
+            <div class="goAch" id="gameOverAch"></div>
+            <div class="panelBtns">
+              <button id="btnAgain">Play again</button>
+              <button id="btnGameOverMenu" class="secondary">Menu</button>
             </div>
           </div>
         </div>
 
         <div id="debugPanel" class="debugPanel">
+          <div><span class="k">Mode</span> <span id="dbgMode" class="v">–</span></div>
           <div><span class="k">Zone</span> <span id="dbgZone" class="v">normal</span></div>
           <div><span class="k">Piece difficulty</span> <span id="dbgPieceDiff" class="v">–</span></div>
           <div><span class="k">Base fall speed</span> <span id="dbgBaseSpeed" class="v">–</span></div>
+          <div><span class="k">Shiny Piece chance</span> <span id="dbgPowerup" class="v">–</span></div>
         </div>
       </div>
     </div>
 
     <div class="bottomBar">
       <div class="bottomLeft">
-        <div class="nextMiniShell" aria-label="Next shape">
-          <canvas id="nextCanvas"></canvas>
+        <!-- the bay (src/shelfui.js), where the next piece used to be: the Extra Shiny Pieces, a
+             plus made of blocks × how many -->
+        <div class="shelf edge" id="shelf">
+          <button type="button" class="bayBtn"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 11 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M4 0h3v3H4zM0 4h3v3H0zM4 4h3v3H4zM8 4h3v3H8zM4 8h3v3H4z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span><span class="bayNext" aria-hidden="true"></span></button>
         </div>
+        <canvas id="nextCanvas" hidden></canvas>
       </div>
     
       <div class="bottomCenter">
+        <div class="hudLogo" aria-hidden="true"><span style="--h:350">E</span><span style="--h:35">S</span><span style="--h:58">T</span><span style="--h:140">R</span><span style="--h:200">I</span><span style="--h:275">X</span></div>
         <button id="pauseBtn" class="pauseBtn" aria-label="Pause/Play">▶</button>
       </div>
     
       <div class="bottomRight">
-        <div class="statPill">
+        <div class="statPill edge">
           <div class="k">Score</div>
           <div class="v" id="scoreText">0</div>
         </div>
-        <div class="statPill">
-          <div class="k">Blocks destroyed</div>
-          <div class="v" id="linesText">0</div>
+      </div>
+
+      <!-- the tutorial (src/tutorialui.js), in place of the rest: what each page says, the keys
+           it presses (with a keyboard), and the way from page to page -->
+      <div class="tutorialBar" id="tutorialBar" hidden>
+        <div class="tutDots" id="tutDots" role="img"></div>
+        <div class="tutCheer" id="tutCheer" aria-hidden="true">Nice!</div>
+        <div class="tutSay">
+          <div class="tutKeys" id="tutKeys" aria-hidden="true" hidden>
+            <div class="tutKeyset"><i data-k="up">&#8593;</i><i data-k="left">&#8592;</i><i data-k="down">&#8595;</i><i data-k="right">&#8594;</i></div>
+          </div>
+          <div class="shelf tutShelf edge" id="tutShelf" hidden><button type="button" class="bayBtn"><span class="k">Extra Shiny Pieces</span><span class="bayTally"><svg class="bayIcon" viewBox="0 0 11 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M4 0h3v3H4zM0 4h3v3H0zM4 4h3v3H4zM8 4h3v3H8zM4 8h3v3H4z"/></svg><span class="bayX">×</span><span class="bayN">0</span></span><span class="bayNext" aria-hidden="true"></span></button></div>
+        </div>
+        <div class="tutNav">
+          <button id="tutBack" class="secondary">&#9664; Back</button>
+          <span class="tutGap"></span>
+          <div class="tutView" role="group" aria-label="Controls">
+            <button id="tutViewTouch" class="secondary" aria-pressed="false">Touch</button>
+            <button id="tutViewKeys" class="secondary" aria-pressed="false">Keys</button>
+          </div>
+          <button id="tutPause" class="tutPause" aria-label="Pause">&#10074;&#10074;</button>
+          <span class="tutGap"></span>
+          <button id="tutNext">Next &#9654;</button>
         </div>
       </div>
     </div>
   </div>
+
+  <div id="devPanel" class="devPanel" hidden></div>
+  <!-- (choosing a mode: everything bursts into pieces, and a few words to start it off) -->
+  <canvas id="homeBurst" class="homeTop" aria-hidden="true" hidden></canvas>
+  <div id="homeDark" class="homeDark" aria-hidden="true"></div>
+  <!-- (left alone, the home screen is plain turbo zen: this, or anything at all, brings it back) -->
 
   <!-- Fit-to-viewport script: uses VisualViewport so the bottom bar never gets cut off.
        Also sizes the board to use ALL available space above the bottom bar. -->
   <script>
     (function(){
       const shell = document.getElementById("boardShell");
+      const frame = document.getElementById("boardFrame");
       const boardCanvas = document.getElementById("boardCanvas");
       const bottomBar = document.querySelector(".bottomBar");
 
-      const NAT_W = 14 * 18; // must match --cols * --cell
-      const NAT_H = 28 * 18; // must match --rows * --cell
+      // board size in cells: read from the CSS variables, which main.js sets from config.js
+      const dims = () => {
+        const cs = getComputedStyle(document.documentElement);
+        return { cols: Number(cs.getPropertyValue("--cols")) || 14, rows: Number(cs.getPropertyValue("--rows")) || 24 };
+      };
 
       function viewportSize(){
         if (window.visualViewport) {
@@ -627,8 +2064,21 @@
         return { w: window.innerWidth, h: window.innerHeight };
       }
 
+      const app = document.querySelector(".app");
+
       function fit(){
         const vp = viewportSize();
+        // (behind the home screen the board isn't seen as it is: src/home.js sizes it)
+        const hs = window.__homeShellPx;
+        if (hs) {
+          app.style.height = Math.floor(vp.h) + "px";
+          shell.style.width = hs.w + "px"; shell.style.height = hs.h + "px";
+          boardCanvas.style.width = hs.w + "px"; boardCanvas.style.height = hs.h + "px";
+          return;
+        }
+        // Pin the app to the *visible* viewport: some mobile browsers (e.g. Firefox on
+        // Android) report 100dvh taller than what's shown above their bottom toolbar.
+        app.style.height = Math.floor(vp.h) + "px";
         const bb = bottomBar.getBoundingClientRect();
 
         // Space available to boardRegion content:
@@ -636,23 +2086,50 @@
         const availW = vp.w - 16; // boardRegion padding + breathing room
         const availH = (vp.h - bb.height) - 16; // boardRegion padding + breathing room
 
-        // Uniform scale
-        const scale = Math.min(availW / NAT_W, availH / NAT_H);
-
-        // Guard against tiny sizes
-        const s = Math.max(0.1, scale);
-
-        const scaledW = Math.floor(NAT_W * s);
-        const scaledH = Math.floor(NAT_H * s);
+        // A whole number of pixels per cell, the same both ways, so cells are exactly square
+        const { cols, rows } = dims();
+        const cellPx = Math.max(4, Math.floor(Math.min(availW / cols, availH / rows)));
+        const scaledW = cellPx * cols;
+        const scaledH = cellPx * rows;
 
         shell.style.width = scaledW + "px";
         shell.style.height = scaledH + "px";
         boardCanvas.style.width = scaledW + "px";
         boardCanvas.style.height = scaledH + "px";
+        frame.style.setProperty("--shell-w", scaledW + "px");
+        frame.style.setProperty("--shell-h", scaledH + "px");
+        markBoard();
+      }
+
+      // Where the board is, frame and all, for the hole in the scan lines over the page (body::after):
+      // the board stays crisp. Again whenever it moves or changes size.
+      // (its size as laid out, and its middle from where it is on screen: the same while it's
+      // switching on, .crtOn, which scales it about its middle)
+      function markBoard(){
+        const r = shell.getBoundingClientRect(), w = shell.offsetWidth, h = shell.offsetHeight;
+        const ring = frame.offsetWidth ? Math.max(0, (frame.offsetWidth - w) / 2) : 0;
+        const root = document.documentElement.style;
+        root.setProperty("--board-x", (r.left + r.width / 2 - w / 2 - ring) + "px");
+        root.setProperty("--board-y", (r.top + r.height / 2 - h / 2 - ring) + "px");
+        root.setProperty("--board-w", (w + ring * 2) + "px");
+        root.setProperty("--board-h", (h + ring * 2) + "px");
+      }
+      // (.crtOn done with, so it can come again next time)
+      for (const el of [shell, frame]) el.addEventListener("animationend", (e) => {
+        if (e.target === el && e.animationName === "crtOn") el.classList.remove("crtOn");
+      });
+      if (window.ResizeObserver) {
+        const ro = new ResizeObserver(() => markBoard());
+        ro.observe(shell);
+        ro.observe(document.querySelector(".boardRegion"));
       }
 
       // Prevent browser from handling touch scroll/zoom gestures anywhere
-      document.addEventListener("touchmove", (e) => e.preventDefault(), { passive: false });
+      // ...except inside scrolling menu panels.
+      document.addEventListener("touchmove", (e) => {
+        if (e.target.closest && e.target.closest(".panel")) return;
+        e.preventDefault();
+      }, { passive: false });
 
       window.addEventListener("resize", fit, { passive: true });
       if (window.visualViewport) {
@@ -661,11 +2138,15 @@
       }
       window.addEventListener("orientationchange", fit, { passive: true });
 
+      window.__fitBoard = fit; // main.js calls this once the board size is known
+
       // Initial fit after layout settles
       requestAnimationFrame(() => requestAnimationFrame(fit));
+      // mobile toolbars slide in/out after load; settle a few times
+      [250, 700, 1500].forEach(ms => setTimeout(fit, ms));
     })();
   </script>
 
-  <script type="module" src="./main.js"></script>
+  <script type="module" src="./src/main.js"></script>
 </body>
 </html>

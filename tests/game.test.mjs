@@ -1,0 +1,885 @@
+// Run with:  node --test tests/*.test.mjs
+// Game core + achievements, headless (no DOM).
+import test from "node:test";
+import assert from "node:assert/strict";
+
+import { CONFIG } from "../config.js";
+import { SHAPES } from "../shapes/main_shapes.js";
+import { ACHIEVEMENTS } from "../shapes/achievements.js";
+import { loadShapes } from "../src/shapes.js";
+import { makeRng } from "../src/util.js";
+import {
+  createGameState, startRun, updateGame, hardDropAndLock, setNextPiece, on, insidePairs, tryMove, tryRotate, showSpeed,
+} from "../src/game.js";
+import { computeBoardPresence, varietyMultiplier, powerupUsefulness } from "../src/selection.js";
+import { resolvePowerupArea, comesDown } from "../src/powerups.js";
+import { createAchievements } from "../src/achievements.js";
+
+const { shapes, powerups } = loadShapes(SHAPES);
+const byId = (id) => [...shapes, ...powerups].find(s => s.id === id);
+const COLS = CONFIG.board.cols, ROWS = CONFIG.board.rows;
+
+function memoryStorage(initial = null) {
+  let data = initial;
+  return { load: () => (data ? JSON.parse(JSON.stringify(data)) : null), save: (d) => { data = JSON.parse(JSON.stringify(d)); }, peek: () => data };
+}
+
+function newGame(mode = "normal", seed = 1) {
+  const state = createGameState(shapes, powerups, { rng: makeRng(seed) });
+  const events = [];
+  on(state, (type, d) => events.push({ type, d }));
+  startRun(state, mode);
+  return { state, events };
+}
+
+// Put `shape` (rotation rotIdx) in as the active piece at (x, y).
+function placeActive(state, id, x, y, rotIdx = 0) {
+  state.active = { shape: byId(id), rotIdx, x, y };
+}
+
+function settle(state, ms = 3000) {
+  for (let t = 0; t < ms; t += 16) updateGame(state, 16);
+}
+
+function filler(pid = 999999) {
+  return { paint: "#808080", style: { baseColor: "#808080" }, pid };
+}
+
+test("every block in main_shapes.js loads (regular + powerups)", () => {
+  assert.ok(shapes.length > 50);
+  assert.ok(powerups.length >= 8);
+  for (const s of [...shapes, ...powerups]) {
+    assert.ok(s.rotations.length >= 1, s.id);
+    assert.equal(s.cellPaints.length, s.rotations.length, s.id);
+  }
+  const rawRot = Object.fromEntries(SHAPES.map(s => [s.id, s.rotation?.mode]));
+  for (const p of powerups) if (rawRot[p.id] !== "any") assert.equal(p.rotations.length, 1, `${p.id} should not rotate`);
+});
+
+test("Extreme mode never serves powerups; Normal does", () => {
+  const ext = newGame("extreme", 7);
+  for (let i = 0; i < 400 && !ext.state.gameOver; i++) {
+    hardDropAndLock(ext.state);
+    ext.state.board = ext.state.board.map(r => r.fill(null)); // keep it alive
+    settle(ext.state, 50);
+  }
+  assert.ok(!ext.events.some(e => e.type === "spawn" && e.d.shape.powerup), "no powerups in extreme");
+
+  const nor = newGame("normal", 7);
+  let saw = false;
+  for (let i = 0; i < 400 && !saw; i++) {
+    hardDropAndLock(nor.state);
+    nor.state.board = nor.state.board.map(r => r.fill(null));
+    settle(nor.state, 1200);
+    saw = nor.events.some(e => e.type === "spawn" && e.d.shape.powerup);
+  }
+  assert.ok(saw, "normal mode serves powerups");
+});
+
+test("line clears shift piece instances and emit rowsDestroyed", () => {
+  const { state, events } = newGame("normal");
+  // bottom row full except column 0; a "lentil" (1x1) drops into column 0
+  for (let x = 1; x < COLS; x++) state.board[ROWS - 1][x] = filler();
+  // a piece sitting above the full row should drop by one when it clears
+  placeActive(state, "lentil", 5, ROWS - 3);
+  hardDropAndLock(state); // lands on the filler row at y = ROWS - 2
+  const above = [...state.instances.values()].find(i => i.shape.id === "lentil");
+  assert.equal(above.y, ROWS - 2);
+
+  placeActive(state, "lentil", 0, 0);
+  hardDropAndLock(state);
+  assert.ok(events.some(e => e.type === "rowsDestroyed" && e.d.count === 1 && e.d.source === "clear"));
+  assert.equal(state.rowsDestroyed, 1);
+  assert.equal(above.y, ROWS - 1, "instance moved down with the collapse");
+  assert.equal(above.intact, true);
+});
+
+test("zones: food dropped into the mouth is detected (and unlocks Om Nom Nom)", () => {
+  const storage = memoryStorage();
+  const unlocked = [];
+  const ach = createAchievements(ACHIEVEMENTS, { storage, onUnlock: (d) => unlocked.push(d.id) });
+  const state = createGameState(shapes, powerups, { rng: makeRng(3) });
+  on(state, (t, d, st) => ach.handle(t, d, st));
+  startRun(state, "normal");
+
+  // "another mouth to feed" = ["XXX","X..","XXX"], rotated 3 times it opens upward:
+  // rotation 3 of a 3x3 C opening right -> U opening up
+  const mouth = byId("another");
+  const rot = mouth.rotations.findIndex(m => !m[0][1] && m[2].every(Boolean));
+  assert.ok(rot >= 0, "found an upward-opening rotation");
+  placeActive(state, "another", 4, 0, rot);
+  hardDropAndLock(state);
+  settle(state, 100);
+  const m = [...state.instances.values()].find(i => i.shape.id === "another");
+  assert.ok(m && m.intact);
+
+  // drop a pea into the gap: the gap is the middle column of the U
+  placeActive(state, "pea", m.x + 1, 0);
+  hardDropAndLock(state);
+  assert.ok(unlocked.includes("food_mouth"), `unlocked: ${unlocked}`);
+  assert.ok(unlocked.includes("pea_mouth"));
+});
+
+test("insidePairs works in both orders (container placed last)", () => {
+  const { state } = newGame("normal");
+  const mouth = byId("another");
+  // the mouth opening DOWNWARDS (∩): it can come down over something already on the floor
+  const rot = mouth.rotations.findIndex(m => m[0].every(Boolean) && !m[1][1] && !m[2][1]);
+  assert.ok(rot >= 0, "found a downward-opening rotation");
+  // pea first, on the floor at x=5; then the mouth comes down around it (legs at x=4 and x=6)
+  placeActive(state, "pea", 5, 0);
+  hardDropAndLock(state);
+  const peaPid = [...state.instances.entries()].find(([, i]) => i.shape.id === "pea")[0];
+  placeActive(state, "another", 4, 0, rot);
+  hardDropAndLock(state);
+  const mouthPid = [...state.instances.entries()].find(([, i]) => i.shape.id === "another")[0];
+  const pairs = insidePairs(state, mouthPid);
+  assert.ok(pairs.some(p => p.inner.id === "pea" && p.container.id === "another"), JSON.stringify(pairs.map(p => [p.inner.id, p.container.id])));
+  assert.ok(peaPid);
+});
+
+test("variety: a shape on the board is less likely to be picked again", () => {
+  const { state } = newGame("normal");
+  placeActive(state, "lentil", 0, 0);
+  hardDropAndLock(state);
+  const presence = computeBoardPresence(state);
+  assert.ok(Math.abs((presence.get("lentil") ?? 0) - 1) < 1e-9);
+  state.pieceSel.presence = presence;
+  state.pieceSel.recentShapeIds = [];
+  const m = varietyMultiplier(state.pieceSel, byId("lentil"));
+  assert.ok(m < 1 && m >= CONFIG.assist.variety.onBoard.minMultiplier, `multiplier ${m}`);
+  assert.equal(varietyMultiplier(state.pieceSel, byId("pea")), 1);
+});
+
+test("a destroyer powerup fires through the real game loop", () => {
+  const { state, events } = newGame("normal");
+  for (let y = ROWS - 4; y < ROWS; y++) for (let x = 0; x < COLS - 1; x++) state.board[y][x] = filler();
+  placeActive(state, "small_black_hole", 6, 0);
+  hardDropAndLock(state);
+  assert.ok(state.effect, "effect running");
+  settle(state, 1500);
+  assert.equal(state.effect, null);
+  const fire = events.find(e => e.type === "powerupFire");
+  assert.ok(fire && fire.d.affected > 0, "destroyed something");
+  assert.ok(state.blocksDestroyed >= fire.d.affected);
+  assert.ok(state.active, "next piece spawned");
+  assert.ok(![...state.instances.values()].some(i => i.shape.id === "small_black_hole"), "consumed");
+});
+
+test("a Shiny Piece goes off faster the faster the pieces fall, but only so fast", () => {
+  const P = CONFIG.fx.powerup, start = CONFIG.difficulty.normal.speed.fromMs;
+  // with the pieces falling a row every `dropMs`: how long it holds the next piece back, and how
+  // long until the last of its show has gone (ms of game time), and both as planned (at 1×)
+  const goOff = (dropMs) => {
+    const { state, events } = newGame("normal");
+    for (let y = ROWS - 4; y < ROWS; y++) for (let x = 0; x < COLS - 1; x++) state.board[y][x] = filler();
+    state.dropMs = dropMs;
+    placeActive(state, "small_black_hole", 6, 0);
+    hardDropAndLock(state);
+    let held = 0, gone = 0;
+    for (; state.effect; held += 16) updateGame(state, 16);
+    for (gone = held; state.fx.show; gone += 16) updateGame(state, 16);
+    assert.ok(state.active, "and the next piece comes");
+    const show = events.find(e => e.type === "powerupFire").d.show;
+    return { held, gone, plan: P.chargeMs + show.settleMs, all: P.chargeMs + show.durationMs };
+  };
+  const near = (got, want, what) => assert.ok(Math.abs(got - want) <= 40, `${what}: ${got} ms, not about ${Math.round(want)}`);
+  const first = goOff(start), quicker = goOff(start / 1.25), quickest = goOff(start / 20);
+  near(first.held, first.plan / P.speed, "at the start of a game");
+  near(quicker.held, quicker.plan / Math.min(P.maxSpeed, P.speed * 1.25), "falling a quarter faster, a quarter faster");
+  near(quickest.held, quickest.plan / P.maxSpeed, "falling far faster, no faster than maxSpeed");
+  near(quickest.gone, quickest.all / P.maxSpeed, "its rings and glows go in step");
+  assert.ok(quickest.held < quicker.held && quicker.held < first.held);
+  // (turbo zen keeps to its own pace)
+  assert.equal(showSpeed(newGame("turbo").state), 1);
+});
+
+test("gravity powerup keeps a piece that slides as one block intact", () => {
+  const { state } = newGame("normal");
+  // a 1x1 lentil floating at the top of column 7 with a gap below; sand lands next to it
+  state.board[ROWS - 1][7] = filler();
+  placeActive(state, "lentil", 7, 0);
+  // freeze the lentil mid-air by placing a support, then removing it
+  state.board[10][7] = filler(123456);
+  hardDropAndLock(state);
+  state.board[10][7] = null;
+  const inst = [...state.instances.values()].find(i => i.shape.id === "lentil");
+  const y0 = inst.y;
+  placeActive(state, "infectious_sand", 8, 0); // its area covers columns 7..9
+  hardDropAndLock(state);
+  settle(state, 2000);
+  assert.ok(inst.y > y0, "lentil fell");
+  assert.equal(inst.intact, true);
+});
+
+test("achievements: sequences, multi-row, lifetime rows persist, mode filter", () => {
+  const storage = memoryStorage();
+  const got = [];
+  const ach = createAchievements(ACHIEVEMENTS, { storage, onUnlock: (d) => got.push(d.id) });
+  const spam = byId("spam");
+  ach.handle("start", { mode: "extreme" }, null);
+  assert.ok(got.includes("first_game"));
+  // (spam on its own isn't the spam: the level 6 set of it is)
+  ach.handle("spawn", { shape: spam });
+  ach.handle("spawn", { shape: spam });
+  assert.ok(!got.includes("spam") && !got.includes("spam_3"));
+  ach.handle("spawn", { shape: spam });
+  assert.ok(got.includes("spam_3") && !got.includes("spam"));
+  for (let i = 0; i < 3; i++) ach.handle("spawn", { shape: spam, set: "spam" });
+  assert.ok(got.includes("spam"));
+
+  ach.handle("rowsDestroyed", { count: 4, source: "clear" });
+  assert.ok(got.includes("multi_4") && got.includes("multi_2") && !got.includes("rows_1"), "rows_1 is retired");
+  assert.ok(!got.includes("multi_5"));
+
+  // powerup achievements are Normal-only
+  ach.handle("powerupFire", { shape: byId("katana"), type: "destroyer", affected: 30 });
+  assert.ok(!got.includes("katana") && !got.includes("overkill"));
+
+  // lifetime rows survive a reload
+  const ach2 = createAchievements(ACHIEVEMENTS, { storage, onUnlock: (d) => got.push(d.id) });
+  assert.equal(ach2.stats.rowsDestroyed, 4);
+  assert.ok(ach2.isUnlocked("spam"));
+  ach2.handle("start", { mode: "normal" }, null);
+  ach2.handle("powerupFire", { shape: byId("katana"), type: "destroyer", affected: 30 });
+  assert.ok(got.includes("katana") && got.includes("overkill") && got.includes("powerup_1"));
+});
+
+test("achievements come as a trickle: the starters at once, then one only every so many pieces", () => {
+  const got = [];
+  const pace = { starters: ["first_game", "rows_10"], gapPieces: 5 };
+  const ach = createAchievements(ACHIEVEMENTS, { storage: memoryStorage(), onUnlock: (d) => got.push(d.id), pace });
+  ach.handle("start", { mode: "normal" }, null);
+  ach.handle("rowsDestroyed", { count: 3, source: "clear" });
+  assert.deepEqual(got, ["first_game"], "too soon for anything but a starter");
+  ach.handle("rowsDestroyed", { count: 7, source: "clear" });
+  assert.deepEqual(got, ["first_game", "rows_10"], "a starter comes whenever it's earned");
+  for (let i = 1; i <= 4; i++) ach.handle("lock", { drops: i, onBoard: () => [] });
+  ach.handle("rowsDestroyed", { count: 2, source: "clear" });
+  assert.equal(got.length, 2, "still too soon");
+  ach.handle("lock", { drops: 5, onBoard: () => [] });
+  ach.handle("rowsDestroyed", { count: 10, source: "clear" });
+  assert.equal(got.length, 3, "then one, and only one");
+  assert.ok(got[2] === "rows_20" || got[2].startsWith("multi_"), got[2]);
+  // (a save from before the pacing waits for nothing)
+  const storage = memoryStorage();
+  storage.save({ version: 1, unlocked: { first_game: { at: 1, mode: "normal" } }, stats: {}, progress: {} });
+  const got2 = [];
+  const ach2 = createAchievements(ACHIEVEMENTS, { storage, onUnlock: (d) => got2.push(d.id), pace });
+  ach2.handle("start", { mode: "normal" }, null);
+  ach2.handle("rowsDestroyed", { count: 2, source: "clear" });
+  assert.deepEqual(got2, ["multi_2"]);
+});
+
+test("achievements: game over triggers", () => {
+  const got = [];
+  const ach = createAchievements(ACHIEVEMENTS, { storage: memoryStorage(), onUnlock: (d) => got.push(d.id) });
+  ach.handle("start", { mode: "normal" }, null);
+  ach.handle("gameOver", { killer: byId("david"), drops: 40 });
+  assert.ok(got.includes("death_by_art"));
+  assert.ok(!got.includes("quick_death"));
+  ach.handle("start", { mode: "normal" }, null);
+  ach.handle("gameOver", { killer: byId("pea"), drops: 9 });
+  assert.ok(got.includes("quick_death"));
+});
+
+test("every achievement trigger in the data file is a known type", () => {
+  const KNOWN = ["together", "blocksDestroyed", "rowWith", "rowsDestroyed", "multiRow", "pieceServed", "pieceSequence", "pieceInside", "seenAll",
+    "powerupUsed", "powerupBlocks", "score", "level", "drops", "boardCleared", "gameOver", "level6", "endGameEscaped",
+    "keptAlive", "killed", "killedQuickly", "aliveAtEnd", "setServed", "games"];
+  const ids = new Set();
+  for (const a of ACHIEVEMENTS) {
+    assert.ok(KNOWN.includes(a.trigger.type), `${a.id}: ${a.trigger.type}`);
+    assert.ok(!ids.has(a.id), `duplicate id ${a.id}`);
+    ids.add(a.id);
+  }
+});
+
+test("movement and rotation respect walls", () => {
+  const { state } = newGame("normal");
+  placeActive(state, "lentil", 0, 5);
+  assert.equal(tryMove(state, -1, 0), false);
+  assert.equal(tryMove(state, 1, 0), true);
+  placeActive(state, "katana", 3, 5);
+  const before = state.active.shape.powerup.areaRotations[0];
+  assert.equal(tryRotate(state), true, "every powerup turns");
+  // ...but its effect doesn't: still its own rows (its own and the two under it)
+  const after = state.active.shape.powerup.areaRotations[state.active.rotIdx];
+  assert.equal(after.rows.length, 3);
+  assert.equal(after.cols.length, 0);
+  assert.equal(before.rows.length, 3);
+  setNextPiece(state, byId("pea"));
+  assert.equal(state.next.id, "pea");
+});
+
+test("achievements: together (groups and count)", () => {
+  const got = [];
+  const ach = createAchievements(ACHIEVEMENTS, { storage: memoryStorage(), onUnlock: (d) => got.push(d.id) });
+  ach.handle("start", { mode: "normal" }, null);
+  ach.handle("lock", { drops: 1, onBoard: () => [byId("david")] });
+  assert.ok(!got.includes("art_gallery"));
+  ach.handle("lock", { drops: 2, onBoard: () => [byId("david"), byId("lisa")] });
+  assert.ok(got.includes("art_gallery"));
+  ach.handle("lock", { drops: 3, onBoard: () => [byId("eyeball"), byId("seeyou1"), byId("eyeball")] });
+  assert.ok(!got.includes("being_watched"), "needs 3 different eyes");
+  ach.handle("lock", { drops: 4, onBoard: () => [byId("eyeball"), byId("seeyou1"), byId("seeyou3")] });
+  assert.ok(got.includes("being_watched"));
+});
+
+test("only big pieces shake the board: not two kangaroos, nor anything marked noShake", async () => {
+  const { shakesOnLanding } = await import("../src/game.js");
+  const { shapes } = loadShapes(SHAPES);
+  const get = (id) => shapes.find(s => s.id === id);
+  for (const id of ["two_kangaroos", "two_penguins", "iceberg_tip", "nagging_doubt", "emotion_happiness", "crisps_mostly_air", "very_long_cat"]) assert.equal(shakesOnLanding(get(id)), false, id);
+  for (const id of ["everest", "pyramid", "iceberg_rest", "earth", "moai", "boulder"]) assert.equal(shakesOnLanding(get(id)), true, id);
+  assert.equal(shakesOnLanding(get("bees")), false, "bees are noShake");
+  // nothing small shakes, unless it's marked `shake` (a small boulder)
+  for (const s of shapes) if (!s.shake && s.rotations[0].flat().filter(Boolean).length < CONFIG.fx.largePieceLock.minBlocks) assert.equal(shakesOnLanding(s), false, s.id);
+  // and the thud of a big one is plain to see (the board moves maxOffsetPx × trauma²)
+  const { state } = newGame("normal");
+  placeActive(state, "moai", 4, 0);
+  hardDropAndLock(state);
+  assert.ok(CONFIG.fx.quake.maxOffsetPx * state.fx.quake.trauma ** 2 >= 3, `trauma ${state.fx.quake.trauma}`);
+});
+
+test("a powerup that vanishes when it fires still clears the rows it completed", () => {
+  for (const id of ["plunger", "small_black_hole"]) {
+    const { state } = newGame("normal");
+    const p = byId(id), mat = p.rotations[0], H = mat.length, x0 = 4;
+    assert.ok(p.powerup.consume, `${id} vanishes`);
+    // the bottom row is full except under the piece's bottom row; it lands and fills the gaps
+    for (let x = 0; x < COLS; x++) if (!mat[H - 1][x - x0]) state.board[ROWS - 1][x] = filler();
+    placeActive(state, id, x0, 0);
+    hardDropAndLock(state);
+    settle(state, 2500);
+    assert.equal(state.lines, 1, `${id}: the row cleared`);
+    assert.ok(state.board.every(row => row.every(c => !c)), `${id}: nothing left behind`);
+  }
+});
+
+// The piece `id` on the board, in one piece: every block of it where its shape says, from where it
+// is now, each with its own bit of its art. Returns [pid, its instance].
+function inOnePiece(state, id, what) {
+  const [pid, inst] = [...state.instances].find(([, i]) => i.shape?.id === id) ?? [];
+  assert.ok(inst, `${what}: still on the board`);
+  const mat = inst.shape.rotations[inst.rotIdx], n = mat.flat().filter(Boolean).length;
+  assert.equal(inst.intact, true, `${what}: in one piece`);
+  assert.equal(inst.cells.length, n, `${what}: all ${n} of its blocks`);
+  mat.forEach((row, j) => row.forEach((on, i) => {
+    if (!on) return;
+    const c = state.board[inst.y + j]?.[inst.x + i];
+    assert.ok(c?.pid === pid && c.paint === inst.shape.cellPaints[inst.rotIdx][j][i], `${what}: its block at ${inst.x + i},${inst.y + j}, with its art`);
+  }));
+  return [pid, inst];
+}
+
+// Every block of the piece `id` still on the board, wherever each has come down to, with its own
+// bit of its art. Returns [pid, its instance].
+function allOfIt(state, id, what) {
+  const [pid, inst] = [...state.instances].find(([, i]) => i.shape?.id === id) ?? [];
+  assert.ok(inst, `${what}: still on the board`);
+  const paints = new Set(inst.shape.cellPaints[inst.rotIdx].flat()), n = inst.shape.rotations[inst.rotIdx].flat().filter(Boolean).length;
+  assert.equal(inst.cells.length, n, `${what}: all ${n} of its blocks`);
+  for (const { x, y } of inst.cells) {
+    const c = state.board[y]?.[x];
+    assert.ok(c?.pid === pid && paints.has(c.paint), `${what}: its block at ${x},${y}, with its art`);
+  }
+  return [pid, inst];
+}
+// (every block of it on the floor or on another block: none left hanging over a gap)
+const resting = (state, inst) => inst.cells.every(({ x, y }) => y === ROWS - 1 || !!state.board[y + 1][x]);
+
+test("a Gravitizer stays, and its blocks come down with everything else in its zone, each into the gaps under it", () => {
+  const gravitizers = powerups.filter(p => p.powerup.type === "gravity" && (p.frequency ?? 1) > 0);
+  assert.ok(gravitizers.length >= 10, `${gravitizers.length} of them`);
+  for (const p of gravitizers) for (let r = 0; r < p.rotations.length; r++) {
+    const what = `${p.id} (turn ${r})`;
+    assert.equal(p.powerup.consume, false, `${p.id} stays`);
+    const { state } = newGame("normal");
+    // a stack full of gaps (the left column empty all the way down, so no row clears)
+    for (let y = ROWS - 6; y < ROWS; y++) for (let x = 1; x < COLS; x++) if ((x + y) % 3) state.board[y][x] = filler();
+    const mat = p.rotations[r], n = mat.flat().filter(Boolean).length, had = state.board.flat().filter(Boolean).length;
+    placeActive(state, p.id, Math.max(1, Math.floor((COLS - mat[0].length) / 2)), 0, r);
+    hardDropAndLock(state);
+    settle(state, 2500);
+    assert.equal(state.effect, null, `${what}: it went off`);
+    const [, inst] = allOfIt(state, p.id, what);
+    assert.ok(resting(state, inst), `${what}: every block of it resting on something`);
+    assert.equal(state.board.flat().filter(Boolean).length, had + n, `${what}: nothing gone`);
+  }
+});
+
+test("a Gravitizer that lands sticking out above the top only ends the game if it can't come down far enough", () => {
+  const p = byId("sumo_wrestler"), mat = p.rotations[0], x0 = 6;
+  const drop = (holes) => {
+    const { state, events } = newGame("normal");
+    // a stack right up to the top (the left column empty, so no row clears), with holes all
+    // through it or none
+    for (let y = 0; y < ROWS; y++) for (let x = 1; x < COLS; x++) if (!holes || (x + y) % 3) state.board[y][x] = filler();
+    placeActive(state, p.id, x0, -mat.length); // (on top of it, all of it above the top)
+    return { state, events, locked: hardDropAndLock(state, { lastChance: true }) };
+  };
+  const goesOff = (state) => { for (let t = 0; t < 5000 && state.effect; t += 16) updateGame(state, 16); };
+  // the stack comes down, and so does he, all of him, onto the board: the game goes on
+  {
+    const { state, events, locked } = drop(true);
+    assert.equal(locked, true, "no last chance: it isn't the end");
+    assert.ok(!events.some(e => e.type === "lastChance"));
+    assert.ok(state.effect && !state.gameOver, "he has landed, and goes off");
+    goesOff(state);
+    assert.ok(events.some(e => e.type === "powerupFire"));
+    assert.equal(state.gameOver, false, "the game goes on");
+    const [, inst] = allOfIt(state, p.id, "the sumo wrestler");
+    assert.ok(inst.cells.every(c => c.y >= 0), "all of him on the board");
+  }
+  // nothing comes down: he's left sticking out above the top, and that's the end, once he's gone off
+  {
+    const { state, events, locked } = drop(false);
+    assert.equal(locked, false, "a last chance");
+    assert.ok(state.active?.lastChance);
+    for (let t = 0; t < CONFIG.timing.lastChanceMs + 1000 && !state.effect && !state.gameOver; t += 16) updateGame(state, 16);
+    assert.ok(state.effect && !state.gameOver, "he has landed, and goes off first");
+    goesOff(state);
+    assert.ok(events.some(e => e.type === "powerupFire"));
+    assert.equal(state.gameOver, true, "then it's over");
+  }
+});
+
+test("a Gravitizer is always in its own zone, however it's turned, with everything under it, and comes down with it", () => {
+  // (every one, and a combo's dropping part if the combo stays)
+  const staying = powerups.filter(p => comesDown(p.powerup));
+  assert.ok(staying.filter(p => p.powerup.type === "gravity").length >= 20, `${staying.length} of them`);
+  for (const p of staying) for (let r = 0; r < p.rotations.length; r++) {
+    const what = `${p.id} (turn ${r})`;
+    const { state } = newGame("normal");
+    // the same stack full of gaps as above
+    for (let y = ROWS - 6; y < ROWS; y++) for (let x = 1; x < COLS; x++) if ((x + y) % 3) state.board[y][x] = filler();
+    const mat = p.rotations[r], had = state.board.flat().filter(Boolean).length + mat.flat().filter(Boolean).length;
+    placeActive(state, p.id, Math.max(1, Math.floor((COLS - mat[0].length) / 2)), 0, r);
+    hardDropAndLock(state);
+    // where it lands, its zone (a combo's dropping part's) has every block of it in it, and
+    // everything under them down to the floor (sliding sideways, just its blocks)
+    const [, inst] = inOnePiece(state, p.id, `${what} as it lands`);
+    const { x, y } = inst, from = inst.cells.map(c => ({ ...c })), parts = p.powerup.parts ?? [p.powerup];
+    const area = resolvePowerupArea(p.powerup, r, x, y, COLS, ROWS);
+    const zone = new Set(parts.flatMap((q, i) => q.type === "gravity" ? (area.parts?.[i] ?? area).indices : []));
+    const dir = parts.find(q => q.type === "gravity").direction ?? "down";
+    mat.forEach((row, j) => row.forEach((on, i) => {
+      if (!on) return;
+      assert.ok(zone.has((y + j) * COLS + x + i), `${what}: its block at ${x + i},${y + j} in its zone`);
+      if (dir === "down") for (let below = y + j + 1; below < ROWS; below++) assert.ok(zone.has(below * COLS + x + i), `${what}: ${x + i},${below}, under it, in its zone`);
+    }));
+    if (p.powerup.type !== "gravity") continue; // (a combo's other parts can fill, or clear, round it after)
+    settle(state, 2500);
+    assert.equal(state.effect, null, `${what}: it went off`);
+    const [, now] = allOfIt(state, p.id, what);
+    const d = { down: [0, 1], up: [0, -1], left: [-1, 0], right: [1, 0] }[dir], along = (cells) => cells.reduce((n, c) => n + c.x * d[0] + c.y * d[1], 0);
+    assert.ok(along(now.cells) > along(from), `${what}: it came ${dir} with its zone`);
+    if (dir === "down") assert.ok(resting(state, now), `${what}: every block of it resting on something`);
+    assert.equal(state.board.flat().filter(Boolean).length, had, `${what}: nothing gone`);
+  }
+});
+
+test("a Gravitizer that lands on an uneven stack: its blocks over a gap fall into it, however it's turned", () => {
+  const gravitizers = powerups.filter(p => p.powerup.type === "gravity" && comesDown(p.powerup) && (p.powerup.direction ?? "down") === "down");
+  assert.ok(gravitizers.length >= 20, `${gravitizers.length} of them`);
+  for (const p of gravitizers) for (let r = 0; r < p.rotations.length; r++) {
+    const what = `${p.id} (turn ${r})`;
+    const { state } = newGame("normal");
+    // a solid floor (the left column empty, so no row clears), and one block standing on it, under
+    // the first block of the piece's bottom row: the rest of it lands over gaps
+    for (let y = ROWS - 3; y < ROWS; y++) for (let x = 1; x < COLS; x++) state.board[y][x] = filler();
+    const mat = p.rotations[r], x0 = Math.max(1, Math.floor((COLS - mat[0].length) / 2));
+    state.board[ROWS - 4][x0 + mat[mat.length - 1].findIndex(Boolean)] = filler();
+    const had = state.board.flat().filter(Boolean).length + mat.flat().filter(Boolean).length;
+    placeActive(state, p.id, x0, 0, r);
+    hardDropAndLock(state);
+    const [, inst] = inOnePiece(state, p.id, `${what} as it lands`);
+    const hanging = !resting(state, inst);
+    settle(state, 2500);
+    assert.equal(state.effect, null, `${what}: it went off`);
+    const [, now] = allOfIt(state, p.id, what);
+    assert.ok(resting(state, now), `${what}: every block of it resting on something, none left over a gap`);
+    if (hanging) assert.equal(now.intact, false, `${what}: it came apart to fill the gaps`);
+    assert.equal(state.board.flat().filter(Boolean).length, had, `${what}: nothing gone`);
+  }
+});
+
+test("a Gravitizer holds up what's on top of it, which comes down after it: nothing comes into its place and goes", () => {
+  const p = byId("sumo_wrestler"), mat = p.rotations[0], { state } = newGame("normal");
+  // a solid floor (the left column empty, so no row clears), and a shelf over it on a pillar
+  for (let y = ROWS - 4; y < ROWS; y++) for (let x = 1; x < COLS; x++) state.board[y][x] = filler();
+  for (let y = ROWS - 9; y < ROWS - 4; y++) state.board[y][0] = filler();
+  for (let x = 0; x <= 8; x++) state.board[ROWS - 9][x] = filler();
+  const had = state.board.flat().filter(Boolean).length + mat.flat().filter(Boolean).length;
+  // he's slid in under the shelf, onto the floor, and goes off: the shelf over him falls onto him
+  placeActive(state, p.id, 5, ROWS - 4 - mat.length);
+  hardDropAndLock(state);
+  settle(state, 2500);
+  const [pid, inst] = inOnePiece(state, p.id, "the sumo wrestler");
+  assert.equal(state.board.flat().filter(Boolean).length, had, "nothing gone");
+  for (const { x, y } of inst.cells) {
+    if (y === inst.y) assert.ok(state.board[y - 1][x] && state.board[y - 1][x].pid !== pid, `the shelf's block on top of him at ${x},${y - 1}`);
+  }
+});
+
+test("a piece about to top out gets a last chance: it can still be moved out of trouble", () => {
+  const setup = () => {
+    const { state, events } = newGame("extreme", 3);
+    // every column full to the top, but for a deep, empty well at the right
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS - 2; x++) state.board[y][x] = filler();
+    placeActive(state, "pea", 3, -1); // (one block, sitting on top of the stack)
+    return { state, events };
+  };
+  // left alone: a moment's grace (it flashes red), then game over
+  {
+    const { state, events } = setup();
+    const landed = CONFIG.timing.baseDropMs + CONFIG.timing.lockDelayMsKeyboard + 300; // (it lands, then the lock delay)
+    settle(state, landed);
+    assert.equal(state.gameOver, false, "not yet");
+    assert.ok(state.active?.lastChance, "on its last chance");
+    assert.ok(events.some(e => e.type === "lastChance"));
+    settle(state, CONFIG.timing.lastChanceMs + 400);
+    assert.equal(state.gameOver, true, "then it's over");
+  }
+  // moved across to the well in time: saved
+  {
+    const { state } = setup();
+    settle(state, CONFIG.timing.baseDropMs + CONFIG.timing.lockDelayMsKeyboard + 300);
+    assert.ok(state.active?.lastChance);
+    updateGame(state, 16);
+    assert.equal(state.active.lastChance.safe, false, "it flashes red");
+    while (tryMove(state, 1, 0)) { /* over to the well */ }
+    updateGame(state, 16);
+    assert.equal(state.active.lastChance.safe, true, "on its way down the well: no more flashing");
+    settle(state, 3000);
+    assert.equal(state.gameOver, false, "saved");
+  }
+});
+
+test("a piece comes down where it can get onto the board, not over a stack right up to the top", () => {
+  // (an Expander's tower right up to the top in the middle, say: the next piece used to come down
+  // on top of it, out of sight, and end the game)
+  const tower = [...Array(COLS).keys()].filter(x => Math.abs(x - (COLS - 1) / 2) < 3);
+  for (let seed = 1; seed <= 12; seed++) {
+    const { state } = newGame("extreme", seed);
+    state.board.forEach(row => row.fill(null));
+    for (let y = 0; y < ROWS; y++) for (const x of tower) state.board[y][x] = filler();
+    placeActive(state, "pea", 0, 0);
+    setNextPiece(state, byId("square"));
+    hardDropAndLock(state);
+    const a = state.active, w = a.shape.rotations[a.rotIdx][0].length;
+    assert.equal(a.shape.id, "square");
+    assert.ok(a.x + w <= tower[0] || a.x > tower.at(-1), `seed ${seed}: it comes down clear of the tower (x ${a.x})`);
+    settle(state, 4000);
+    assert.equal(state.gameOver, false, `seed ${seed}: and lands on the board`);
+  }
+  // (with room where it would come down anyway, it comes down there, as always)
+  const { state } = newGame("extreme", 1);
+  state.board.forEach(row => row.fill(null));
+  placeActive(state, "pea", 0, 0);
+  setNextPiece(state, byId("square"));
+  hardDropAndLock(state);
+  assert.ok(Math.abs(state.active.x - (COLS - 2) / 2) <= 3, "near the middle");
+});
+
+// (dropped straight down from where it is, would all of the falling piece end up on the board?)
+function landsWhole(state) {
+  const a = state.active, mat = a.shape.rotations[a.rotIdx];
+  const hits = (y) => mat.some((row, j) => row.some((c, i) => c && (y + j >= ROWS || (y + j >= 0 && state.board[y + j][a.x + i]))));
+  let y = a.y;
+  while (!hits(y + 1)) y++;
+  return mat.every((row, j) => row.every(c => !c || y + j >= 0));
+}
+
+test("a piece comes down where all of it gets onto the board, not just some of it, turned if it must", () => {
+  // (a stack in the middle up to the second row: the big square coming down over it would get
+  // only its bottom row on, and stick out over the top)
+  const tower = [...Array(COLS).keys()].filter(x => Math.abs(x - (COLS - 1) / 2) < 3);
+  for (let seed = 1; seed <= 8; seed++) {
+    const { state } = newGame("extreme", seed);
+    state.board.forEach(row => row.fill(null));
+    for (let y = 1; y < ROWS; y++) for (const x of tower) state.board[y][x] = filler();
+    placeActive(state, "pea", 0, 0);
+    setNextPiece(state, byId("square"));
+    hardDropAndLock(state);
+    const a = state.active;
+    assert.equal(a.shape.id, "square");
+    assert.ok(a.x + 4 <= tower[0] || a.x > tower.at(-1), `seed ${seed}: it comes down clear of the stack (x ${a.x})`);
+    assert.ok(landsWhole(state), `seed ${seed}: all of it on the board`);
+  }
+  // (every row full but for two columns: a straight piece lying down would stick out wherever it
+  // went; stood on its end, it goes down one of them)
+  const stick = byId("astronaut_ice_cream"), gaps = [3, 10];
+  assert.equal(stick.rotations[0].length, 1, "(lying down to start with)");
+  const { state } = newGame("extreme", 2);
+  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) state.board[y][x] = gaps.includes(x) ? null : filler();
+  placeActive(state, "pea", 10, 0);
+  setNextPiece(state, stick);
+  hardDropAndLock(state);
+  assert.equal(state.active.shape.id, stick.id);
+  assert.ok(stick.rotations[state.active.rotIdx].length === 4 && gaps.includes(state.active.x), "stood up, over a gap");
+  assert.ok(landsWhole(state));
+  hardDropAndLock(state);
+  assert.equal(state.gameOver, false);
+});
+
+test("a piece that couldn't go anywhere without sticking out over the top doesn't come, if another could", () => {
+  // (the board full but for a well two deep and one a block deep: only the smallest pieces fit)
+  const setUp = (seed) => {
+    const { state, events } = newGame("extreme", seed);
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
+      const gap = y <= 1 ? x === 3 || x === 10 : x === (y * 5 + 1) % COLS; // (holes further down, under blocks)
+      state.board[y][x] = gap ? null : filler();
+    }
+    placeActive(state, "pea", 10, 0); // (into the second well)
+    return { state, events };
+  };
+  let swapped = 0;
+  for (let seed = 1; seed <= 10; seed++) {
+    const { state, events } = setUp(seed);
+    hardDropAndLock(state);
+    assert.ok(state.active, `seed ${seed}: something came`);
+    assert.ok(landsWhole(state), `seed ${seed}: ${state.active.shape.id} fits`);
+    if (events.some(e => e.type === "deferred")) swapped++;
+  }
+  assert.ok(swapped >= 5, `most of what was picked couldn't fit, and something else came (${swapped} of 10)`);
+  // (one asked for by name still comes, all the same)
+  const { state } = setUp(1);
+  setNextPiece(state, byId("square"));
+  hardDropAndLock(state);
+  assert.equal(state.active.shape.id, "square");
+});
+
+test("a piece slid along the ground waits a little longer, so it can be slid again (up to a point)", () => {
+  const fresh = () => {
+    const { state } = newGame("extreme", 5);
+    placeActive(state, "square", 2, ROWS - 2); // (resting on the floor)
+    for (let t = 0; t < 2000 && !state.locking; t += 16) updateGame(state, 16); // (until it starts to lock)
+    assert.ok(state.locking);
+    return state;
+  };
+  // left alone, it locks at the usual pace
+  {
+    const state = fresh(), piece = state.active;
+    settle(state, CONFIG.timing.lockDelayMsKeyboard + 50);
+    assert.notEqual(state.active, piece, "locked");
+  }
+  // slid every little while (a bit sooner than it would lock), it's still sliding; let go, and
+  // it locks
+  const every = CONFIG.timing.slideLockMs - 60;
+  {
+    const state = fresh(), piece = state.active;
+    for (let i = 0; i < 4; i++) { assert.ok(tryMove(state, 1, 0)); settle(state, every); assert.equal(state.active, piece, `still there after slide ${i + 1}`); }
+    // (it starts to lock again at its next step down, then waits)
+    settle(state, state.dropMs + CONFIG.timing.slideLockMs + 50);
+    assert.notEqual(state.active, piece, "then it locks");
+  }
+  // but not for ever
+  {
+    const state = fresh(), piece = state.active;
+    let dir = 1;
+    for (let t = 0; t < CONFIG.timing.slideMaxMs + 1500 && state.active === piece; t += every) { if (!tryMove(state, dir, 0)) { dir = -dir; tryMove(state, dir, 0); } settle(state, every); }
+    assert.notEqual(state.active, piece, "it locks in the end");
+  }
+});
+
+test("a giant or a set's piece that couldn't go anywhere without ending the game doesn't come (a set ends there)", () => {
+  const { state, events } = newGame("normal", 6);
+  // the board full nearly to the top, but for a narrow gap
+  for (let y = 3; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (x !== y % COLS) state.board[y][x] = filler();
+  placeActive(state, "pea", 0, -1); // (it lands on top, in the board)
+  state.pieceSel.level6.queue = [byId("everest_trash")];
+  setNextPiece(state, byId("everest")); // (a level 6 piece, far too big for what's left)
+  hardDropAndLock(state);
+  assert.equal(state.gameOver, false);
+  assert.ok(state.active, "something came");
+  assert.notEqual(state.active.shape.id, "everest", "not the mountain");
+  assert.ok(state.active.shape.powerup, "something to make room");
+  assert.ok(events.some(e => e.type === "deferred"));
+  assert.equal(state.next, null, "nothing picked ahead");
+  assert.deepEqual(state.pieceSel.level6.queue, [], "nor the rest of its set, ever");
+});
+
+test("a piece's card says how rare it is, in words", async () => {
+  const { rarity } = await import("../src/rarity.js");
+  const { GROUPS } = await import("../shapes/groups.js");
+  const state = createGameState(shapes, powerups, { rng: makeRng(2), groups: GROUPS });
+  const words = new Set(CONFIG.rarity.words.map(w => w[1]));
+  const seen = new Set();
+  for (const s of [...shapes, ...powerups]) {
+    if ((s.frequency ?? 1) <= 0 || s.difficulty === 6 || s.powerup?.setOnly) continue;
+    const r = rarity(state, s);
+    assert.ok(words.has(r.words), `${s.id}: ${r.words}`);
+    seen.add(r.words);
+  }
+  assert.equal(seen.size, words.size, `all the words get used: ${[...seen]}`);
+  assert.deepEqual(rarity(state, byId("everest")), { words: "only ever in a set", set: "Mt Everest" });
+  assert.deepEqual(rarity(state, powerups.find(p => p.id === "a_horrible_thing")), { words: "only ever in a set", set: "great and terrible things" }, "a powerup that only comes in its set");
+  assert.equal(rarity(state, byId("last_straw")).words, "only ever after something else");
+  assert.equal(rarity(state, byId("piece_of_string")).words, "only in zen mode");
+});
+
+test("a powerup the piece before it left with nothing to do is swapped for one of the same outline", () => {
+  const outline = (m) => m.map(r => r.map(c => (c ? 1 : 0)).join("")).join("/");
+  // a tidy board: four full-but-one rows, no gaps for a phantom to sink into
+  const tidy = (state) => { for (let y = ROWS - 4; y < ROWS; y++) for (let x = 0; x < COLS - 1; x++) state.board[y][x] = filler(); };
+  if (!byId("friendly_ghost")) return; // (the phantoms are out of the game for now: nothing it can leave useless)
+  {
+    const { state } = newGame("god", 4);
+    tidy(state);
+    placeActive(state, "pea", 0, -1);
+    state.next = byId("friendly_ghost"); // (as if picked a turn ago, when it had a gap to go into)
+    hardDropAndLock(state);
+    const a = state.active;
+    assert.ok(a.shape.powerup, "still a powerup");
+    assert.notEqual(a.shape.id, "friendly_ghost", "swapped");
+    assert.equal(outline(a.shape.rotations[a.rotIdx]), "1", "the same outline as the preview");
+    assert.ok(powerupUsefulness(state.board, a.shape) >= 1, "and it does something");
+  }
+  {
+    // ...turned to match the preview when its own first turn is the other way up
+    const { state } = newGame("god", 4);
+    state.powerups = state.powerups.filter(p => ["ghost_eel", "time_machine"].includes(p.id));
+    tidy(state);
+    placeActive(state, "pea", 0, -1);
+    state.next = byId("ghost_eel");
+    hardDropAndLock(state);
+    assert.equal(state.active.shape.id, "time_machine");
+    assert.equal(outline(state.active.shape.rotations[state.active.rotIdx]), "1111");
+  }
+  {
+    // one asked for by name (dev mode, tests) stays as it is
+    const { state } = newGame("god", 4);
+    tidy(state);
+    placeActive(state, "pea", 0, -1);
+    setNextPiece(state, byId("friendly_ghost"));
+    hardDropAndLock(state);
+    assert.equal(state.active.shape.id, "friendly_ghost");
+  }
+});
+
+test("a run on a board of another size starts on a board that size (turbo zen filling the window, first thing)", () => {
+  const state = createGameState(shapes, powerups, { rng: makeRng(2) });
+  const usual = { cols: CONFIG.board.cols, rows: CONFIG.board.rows };
+  CONFIG.board.cols = 39; CONFIG.board.rows = 27;
+  try {
+    startRun(state, "turbo");
+    assert.equal(state.board.length, 27);
+    assert.ok(state.board.every(r => r.length === 39));
+    for (let t = 0; t < 20000; t += 37) updateGame(state, 37);
+    assert.ok(state.drops > 5, `${state.drops} pieces`);
+    assert.ok(state.board.length === 27 && state.board.every(r => r.length === 39), "and stays that size");
+  } finally {
+    CONFIG.board.cols = usual.cols; CONFIG.board.rows = usual.rows;
+  }
+});
+
+test("achievements that watch a piece's life: destroyed straight away, kept alive, alive at the end; and its last words", () => {
+  const [cute] = loadShapes([{ id: "fragile", name: "a fragile thing", grid: ["XXX", ".X."], difficulty: 1, tags: ["cute"], onDeath: "goodbye" }]).shapes;
+  const defs = [
+    { id: "quick", name: "q", description: "", trigger: { type: "killedQuickly", match: { tags: ["cute"] }, drops: 2 } },
+    { id: "dead", name: "d", description: "", trigger: { type: "killed", match: { tags: ["cute"] } } },
+    { id: "alive5", name: "a", description: "", trigger: { type: "keptAlive", match: { tags: ["cute"] }, drops: 5 } },
+    { id: "end", name: "e", description: "", trigger: { type: "aliveAtEnd", match: { tags: ["cute"] } } },
+  ];
+  const play = () => {
+    const state = createGameState(shapes, powerups, { rng: makeRng(3) });
+    const got = [];
+    const ach = createAchievements(defs, { storage: memoryStorage(), onUnlock: (d) => got.push(d.id) });
+    on(state, (t, d, st) => ach.handle(t, d, st));
+    startRun(state, "extreme");
+    return { state, got, ach };
+  };
+  {
+    // it lands where it completes two rows: gone at once, with a word
+    const { state, got } = play();
+    for (let x = 0; x < COLS; x++) { if (x !== 1) state.board[ROWS - 1][x] = filler(); if (x > 2) state.board[ROWS - 2][x] = filler(); }
+    state.active = { shape: cute, rotIdx: 0, x: 0, y: ROWS - 4 };
+    hardDropAndLock(state);
+    assert.ok(state.fx.callouts.some(c => c.text === "goodbye"), "its last words");
+    assert.deepEqual(got.sort(), ["dead", "quick"]);
+  }
+  {
+    // kept alive five pieces on, and still there at the end
+    const { state, got, ach } = play();
+    state.active = { shape: cute, rotIdx: 0, x: 0, y: ROWS - 4 };
+    hardDropAndLock(state);
+    for (let i = 0; i < 5; i++) { placeActive(state, "pea", COLS - 1, 0); hardDropAndLock(state); }
+    assert.ok(got.includes("alive5"), got.join());
+    ach.handle("gameOver", {}, state);
+    assert.ok(got.includes("end") && !got.includes("dead"), got.join());
+  }
+  {
+    // locked entirely above the top: it never lived, so it isn't still there at the end
+    const { state, got } = play();
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) state.board[y][x] = filler();
+    state.active = { shape: cute, rotIdx: 0, x: 0, y: -2 };
+    hardDropAndLock(state);
+    assert.ok(state.gameOver, "it topped out");
+    assert.ok(!got.includes("end") && !got.includes("dead"), got.join());
+  }
+});
+
+test("a piece marked once only ever turns up once a game (a sock with no match)", async () => {
+  const { selectPiece } = await import("../src/selection.js");
+  const lone = { id: "lone_sock_test", name: "a sock with no match", grid: ["X", "X", "XX"], color: "#aa3344", difficulty: 1, frequency: 50, once: true, rotation: { mode: "any" } };
+  const { shapes: S, powerups: P } = loadShapes([...SHAPES, lone]);
+  assert.equal(S.find(s => s.id === lone.id).once, true);
+  const state = createGameState(S, P, { rng: makeRng(3) });
+  startRun(state, "extreme");
+  let seen = 0;
+  for (let i = 0; i < 400; i++) {
+    const s = selectPiece(state);
+    if (s.id === lone.id) seen++;
+  }
+  assert.equal(seen, 1, "once, and only once");
+});
+
+test("the Sphinx's nose slots back into the notch in its face, and sticks out in front of it", () => {
+  const { state } = newGame("normal", 3);
+  placeActive(state, "sphinx", 2, -6);
+  hardDropAndLock(state);
+  const at = (x, y) => state.board[y][x];
+  // the notch: the front of its head, between the brow and the chin, the face behind it
+  const nx = 2 + 3, ny = ROWS - 6 + 1;
+  assert.ok(!at(nx, ny) && at(nx, ny - 1) && at(nx, ny + 1) && at(nx + 1, ny), "a notch where the nose was");
+  // the nose comes down in front of the head, and over into the notch on its way past
+  placeActive(state, "sphinx_nose", nx - 2, -1);
+  while (state.active.y < ny) assert.ok(tryMove(state, 0, 1), "down in front of the head");
+  assert.ok(tryMove(state, 1, 0), "over into the notch");
+  hardDropAndLock(state);
+  const nose = at(nx, ny);
+  assert.ok(nose && nose.pid !== at(nx + 1, ny).pid, "the nose in the notch");
+  assert.equal(at(nx - 1, ny)?.pid, nose.pid, "...and the rest of it sticking out in front");
+  assert.ok(!at(nx - 1, ny - 1) && !at(nx - 1, ny + 1), "with nothing over or under it");
+});
+
+test("tiles never come in a game (only turbo zen builds with them)", async () => {
+  const { selectPiece } = await import("../src/selection.js");
+  const tagged = (s) => s.tags?.some(t => CONFIG.assist.turboOnlyTags.includes(t));
+  assert.ok(shapes.some(tagged), "there are tiles");
+  for (const mode of ["normal", "extreme", "god"]) {
+    const state = createGameState(shapes, powerups, { rng: makeRng(5) });
+    startRun(state, mode);
+    for (let i = 0; i < 600; i++) {
+      const s = selectPiece(state);
+      assert.ok(!tagged(s), `${mode}: ${s.id}`);
+    }
+  }
+});
+
+test("the game over page's pieces: the one that ended it and the few before it, and some from earlier, in order", async () => {
+  const { somePieces } = await import("../src/pausemenu.js");
+  const { pieces, last } = CONFIG.gameOver;
+  assert.deepEqual(somePieces([1, 2, 3], CONFIG.gameOver), [1, 2, 3], "a short game: all of them");
+  const list = Array.from({ length: 200 }, (_, i) => i), rng = makeRng(3), earlier = new Set();
+  for (let k = 0; k < 40; k++) {
+    const got = somePieces(list, CONFIG.gameOver, rng);
+    assert.equal(got.length, pieces);
+    assert.deepEqual(got.slice(-(last + 1)), list.slice(-(last + 1)), "ending with the last few, as they fell");
+    assert.ok(got.every((v, i) => !i || v > got[i - 1]), "in the order they fell, each once");
+    for (const v of got.slice(0, -(last + 1))) earlier.add(v);
+  }
+  assert.ok(earlier.size > 3 * pieces, `not the same few from earlier each time (${earlier.size})`);
+});

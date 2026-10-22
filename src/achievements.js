@@ -1,0 +1,306 @@
+// ============================================================
+// ACHIEVEMENTS (no DOM) — definitions live in shapes/achievements.js
+// ============================================================
+// Feed it the game's events: tracker.handle(type, data, state).
+// Unlocks are saved through `storage` ({ load(), save(data) }).
+
+import { matchShape } from "./shapes.js";
+import { currentPool } from "./game.js";
+import { store } from "./util.js";
+
+const STORAGE_KEY = "eztrix.achievements.v1";
+
+export const localStorageAdapter = {
+  load: () => store.getJSON(STORAGE_KEY, null),
+  save: (data) => store.setJSON(STORAGE_KEY, data),
+};
+
+function emptyData() {
+  return {
+    version: 1,
+    unlocked: {},                       // id -> { at, mode }
+    stats: { rowsDestroyed: 0, blocksDestroyed: 0, powerupsUsed: 0, games: 0, bestRowsInGame: 0, bestBlocksInGame: 0 },
+    progress: {},                       // achievement id -> lifetime counter
+    sinceLast: 0,                       // pieces placed since the last unlock (`pace`)
+  };
+}
+
+// `pace` (CONFIG.achievements.pace): { starters: [ids], gapPieces } — apart from the starters, an
+// achievement only unlocks once the player has placed gapPieces pieces since the last one did
+// (until then it simply doesn't, and can still be earned later), so they come as a trickle.
+export function createAchievements(defs, { storage = localStorageAdapter, onUnlock = () => {}, now = () => Date.now(), pace = null } = {}) {
+  const list = (Array.isArray(defs) ? defs : []).filter(d => d && d.id && d.trigger?.type && !d.retired);
+  const saved = storage.load();
+  // (a save from before the pacing: nothing to wait for)
+  const data = { ...emptyData(), ...(saved ? { sinceLast: Infinity } : {}), ...(saved ?? {}) };
+  if (data.sinceLast == null) data.sinceLast = Infinity; // (JSON keeps Infinity as null)
+  data.stats = { ...emptyData().stats, ...(data.stats ?? {}) };
+  data.unlocked = data.unlocked ?? {};
+  data.progress = data.progress ?? {};
+
+  // Per-game bookkeeping (reset on "start").
+  let game = newGame("normal", []);
+
+  function newGame(mode, pool) {
+    return { mode, pool, rows: 0, blocks: 0, drops: 0, history: [], seen: new Set(), served: new Map(), sets: new Map(), progress: {}, unlocked: [], lives: new Map() };
+  }
+  // (the triggers that watch a piece's life, so only those pieces are followed)
+  const LIFE = new Set(["keptAlive", "killed", "killedQuickly", "aliveAtEnd"]);
+  const lifeTriggers = () => list.filter(def => LIFE.has(def.trigger.type) && eligible(def)).map(def => def.trigger);
+
+  const save = () => storage.save(data);
+  const isUnlocked = (id) => !!data.unlocked[id];
+
+  function eligible(def) {
+    if (isUnlocked(def.id)) return false;
+    const mode = def.mode ?? "any";
+    // "powerups" = any mode that has powerups
+    return mode === "any" || mode === game.mode || (mode === "powerups" && game.mode !== "extreme");
+  }
+
+  // The name and description to show: achievements with `variants` pick one at random
+  // when they unlock (and keep it).
+  function display(def) {
+    const v = data.unlocked[def.id]?.v;
+    const alt = v != null ? def.variants?.[v - 1] : null;
+    return { name: alt?.name ?? def.name, description: alt?.description ?? def.description ?? "" };
+  }
+
+  function unlock(def) {
+    if (isUnlocked(def.id)) return;
+    if (pace && !pace.starters?.includes(def.id) && data.sinceLast < (pace.gapPieces ?? 0)) return;
+    data.sinceLast = 0;
+    const n = Array.isArray(def.variants) ? def.variants.length : 0;
+    const v = n ? Math.floor(Math.random() * (n + 1)) : 0; // 0 = the main name
+    data.unlocked[def.id] = { at: now(), mode: game.mode, ...(v ? { v } : {}) };
+    game.unlocked.push(def.id);
+    save();
+    try { onUnlock({ ...def, ...display(def) }); } catch (e) { console.error(e); }
+  }
+
+  // Count towards a counter trigger; scope "lifetime" persists between games.
+  function bump(def, by = 1) {
+    if ((def.trigger.scope ?? "game") === "lifetime") {
+      data.progress[def.id] = (data.progress[def.id] ?? 0) + by;
+      return data.progress[def.id];
+    }
+    game.progress[def.id] = (game.progress[def.id] ?? 0) + by;
+    return game.progress[def.id];
+  }
+
+  function each(type, fn) {
+    for (const def of list) {
+      if (def.trigger.type === type && eligible(def)) fn(def, def.trigger);
+    }
+  }
+
+  // Thresholds that depend on the live game state.
+  function checkState(state) {
+    if (!state) return;
+    each("score", (def, t) => { if (state.score >= (t.value ?? Infinity)) unlock(def); });
+    each("level", (def, t) => { if (state.level >= (t.value ?? Infinity)) unlock(def); });
+    each("drops", (def, t) => { if (game.drops >= (t.count ?? Infinity)) unlock(def); });
+
+    // blocks destroyed (line clears and powerups both count)
+    const blocks = state.blocksDestroyed ?? 0;
+    if (blocks > game.blocks) {
+      data.stats.blocksDestroyed += blocks - game.blocks;
+      data.stats.bestBlocksInGame = Math.max(data.stats.bestBlocksInGame, blocks);
+      game.blocks = blocks;
+      dirty = true;
+    }
+    each("blocksDestroyed", (def, t) => {
+      const have = (t.scope ?? "game") === "lifetime" ? data.stats.blocksDestroyed : game.blocks;
+      if (have >= (t.count ?? 1)) unlock(def);
+    });
+    if (dirty) { dirty = false; save(); }
+  }
+  let dirty = false;
+
+  function handle(type, d = {}, state = null) {
+    switch (type) {
+      case "start": {
+        game = newGame(d.mode ?? "normal", state ? currentPool(state) : []);
+        data.stats.games++;
+        save();
+        each("games", (def, t) => { if (data.stats.games >= (t.count ?? 1)) unlock(def); });
+        break;
+      }
+
+      case "spawn": {
+        const shape = d.shape;
+        if (!shape) break;
+        game.history.push(shape.id);
+        if (game.history.length > 64) game.history.shift();
+        game.seen.add(shape.id);
+
+        each("pieceServed", (def, t) => {
+          if (!matchShape(shape, t.match)) return;
+          const n = (game.served.get(def.id) ?? 0) + 1; // (matching pieces this game)
+          game.served.set(def.id, n);
+          if (n >= (t.count ?? 1)) unlock(def);
+        });
+
+        each("pieceSequence", (def, t) => {
+          const ids = t.ids ?? [];
+          if (!ids.length || game.history.length < ids.length) return;
+          const tail = game.history.slice(-ids.length);
+          if (tail.every((id, i) => id === ids[i])) unlock(def);
+        });
+
+        each("seenAll", (def, t) => {
+          const wanted = game.pool.filter(s => matchShape(s, t.match));
+          if (wanted.length && wanted.every(s => game.seen.has(s.id))) unlock(def);
+        });
+
+        // (a piece of a level 6 set: d.set is the set's id)
+        if (d.set) game.sets.set(d.set, (game.sets.get(d.set) ?? 0) + 1);
+        each("setServed", (def, t) => {
+          if (d.set && (t.ids ?? []).includes(d.set) && game.sets.get(d.set) >= (t.count ?? 1)) unlock(def);
+        });
+        break;
+      }
+
+      case "lock": {
+        game.drops = d.drops ?? game.drops + 1;
+        if (data.sinceLast !== Infinity) { data.sinceLast++; if (data.sinceLast % 10 === 0) dirty = true; }
+        // (pieces whose life is watched: kept alive so many pieces, killed so soon)
+        // (only one that landed on the board: one that locked above the top never lived)
+        if (d.shape && d.pid != null && d.cells?.length && lifeTriggers().some(t => matchShape(d.shape, t.match))) game.lives.set(d.pid, { shape: d.shape, at: game.drops });
+        for (const [pid, life] of game.lives) {
+          if (state && !state.instances?.get(pid)?.cells.length) continue; // (none of it left)
+          each("keptAlive", (def, t) => { if (matchShape(life.shape, t.match) && game.drops - life.at >= (t.drops ?? 1)) unlock(def); });
+        }
+        each("together", (def, t) => {
+          const present = d.onBoard ? d.onBoard() : [];
+          if (t.groups?.length) {
+            // one distinct piece on the board for each group
+            const used = new Set();
+            const ok = t.groups.every(g => {
+              const i = present.findIndex((s, k) => !used.has(k) && matchShape(s, g));
+              if (i < 0) return false;
+              used.add(i);
+              return true;
+            });
+            if (ok) unlock(def);
+          } else if (t.count) {
+            const ids = new Set(present.filter(s => matchShape(s, t.match)).map(s => s.id));
+            if (ids.size >= t.count) unlock(def);
+          }
+        });
+        each("pieceInside", (def, t) => {
+          const pairs = d.inside ? d.inside(t.zone ?? "inside") : [];
+          if (pairs.some(p => matchShape(p.inner, t.piece) && matchShape(p.container, t.container))) unlock(def);
+        });
+        break;
+      }
+
+      case "rowsDestroyed": {
+        const n = d.count ?? 0;
+        if (n <= 0) break;
+        game.rows += n;
+        data.stats.rowsDestroyed += n;
+        data.stats.bestRowsInGame = Math.max(data.stats.bestRowsInGame, game.rows);
+        save();
+        each("rowsDestroyed", (def, t) => {
+          const have = (t.scope ?? "game") === "lifetime" ? data.stats.rowsDestroyed : game.rows;
+          if (have >= (t.count ?? 1)) unlock(def);
+        });
+        each("multiRow", (def, t) => { if (n >= (t.rows ?? 2)) unlock(def); });
+        each("rowWith", (def, t) => { if ((d.shapes ?? []).some(sh => matchShape(sh, t.match))) unlock(def); });
+        break;
+      }
+
+      case "powerupFire": {
+        const shape = d.shape;
+        data.stats.powerupsUsed++;
+        save();
+        each("powerupUsed", (def, t) => {
+          if (!matchShape(shape, t.match)) return;
+          if (bump(def) >= (t.count ?? 1)) unlock(def);
+          else if ((t.scope ?? "game") === "lifetime") save();
+        });
+        each("powerupBlocks", (def, t) => {
+          if (matchShape(shape, t.match) && (d.affected ?? 0) >= (t.count ?? 1)) unlock(def);
+        });
+        break;
+      }
+
+      case "pieceGone": {
+        const life = game.lives.get(d.pid);
+        if (!life) break;
+        game.lives.delete(d.pid);
+        each("killed", (def, t) => { if (matchShape(life.shape, t.match)) unlock(def); });
+        each("killedQuickly", (def, t) => { if (matchShape(life.shape, t.match) && game.drops - life.at <= (t.drops ?? 1)) unlock(def); });
+        break;
+      }
+
+      case "boardCleared": {
+        each("boardCleared", (def) => unlock(def));
+        break;
+      }
+
+      case "level6Unlocked": {
+        each("level6", (def) => unlock(def));
+        break;
+      }
+
+      case "endGame": {
+        if (d.escaped) each("endGameEscaped", (def) => unlock(def));
+        break;
+      }
+
+      case "gameOver": {
+        for (const [pid, life] of game.lives) {
+          if (state && !state.instances?.get(pid)?.cells.length) continue; // (none of it left)
+          each("aliveAtEnd", (def, t) => { if (matchShape(life.shape, t.match)) unlock(def); });
+        }
+        each("gameOver", (def, t) => {
+          if (t.killer && !matchShape(d.killer, t.killer)) return;
+          if (t.maxDrops != null && (d.drops ?? Infinity) > t.maxDrops) return;
+          unlock(def);
+        });
+        break;
+      }
+
+      default:
+        break;
+    }
+    checkState(state);
+  }
+
+  // Progress towards counter-style achievements: { value, target } or null.
+  function progressOf(def) {
+    const t = def.trigger;
+    const lifetime = (t.scope ?? "game") === "lifetime";
+    if (t.type === "rowsDestroyed") {
+      return lifetime
+        ? { value: data.stats.rowsDestroyed, target: t.count ?? 1 }
+        : { value: data.stats.bestRowsInGame, target: t.count ?? 1, best: true };
+    }
+    if (t.type === "blocksDestroyed") {
+      return lifetime
+        ? { value: data.stats.blocksDestroyed, target: t.count ?? 1 }
+        : { value: data.stats.bestBlocksInGame, target: t.count ?? 1, best: true };
+    }
+    if (t.type === "powerupUsed" && lifetime) return { value: data.progress[def.id] ?? 0, target: t.count ?? 1 };
+    return null;
+  }
+
+  return {
+    handle,
+    isUnlocked,
+    display,
+    progressOf,
+    get defs() { return list; },
+    get stats() { return data.stats; },
+    get unlockedThisGame() { return game.unlocked.slice(); },
+    unlockedCount: () => list.filter(d => isUnlocked(d.id)).length,
+    unlockedAt: (id) => data.unlocked[id]?.at ?? null,
+    resetAll() {
+      const fresh = emptyData();
+      Object.assign(data, fresh);
+      save();
+    },
+  };
+}
