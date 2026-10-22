@@ -180,12 +180,10 @@
   
     /* the border (--edge-*), on anything; all of them torn a little further apart at once, now
        and then, like a screen catching a bad signal */
-    .edge{ border: var(--edge-w) solid var(--edge-line); box-shadow: var(--edge-split), var(--edge-glow); animation: edgeTear 6.7s steps(1, end) infinite; }
-    @keyframes edgeTear{
-      0%, 100%{ box-shadow: var(--edge-split), var(--edge-glow); }
-      71%{ box-shadow: var(--edge-torn), var(--edge-glow); }
-      72.5%{ box-shadow: var(--edge-split), var(--edge-glow); }
-    }
+    .edge{ border: var(--edge-w) solid var(--edge-line); box-shadow: var(--edge-split), var(--edge-glow); }
+    /* (torn: for a moment every 6.7 seconds, src/ui.js; a class on the page rather than an
+       animation on each, which had the browser restyling them for every frame, tear or not) */
+    html.edgeTorn .edge{ box-shadow: var(--edge-torn), var(--edge-glow); }
 
     html,
     body{
@@ -452,8 +450,15 @@
     /* (glowing white, its edges running into the warm rainbow, and now and then a glitch that
        tears it further apart) */
     .homeLogo span{
-      display: inline-block; perspective: 3em;
+      display: inline-block;
       color: #fff;
+      animation: letterHop 1.9s ease-in-out infinite;
+      animation-delay: calc(var(--i) * -0.16s);
+    }
+    /* (its glow and its glitch on a box of their own inside the letter's: so the hop is on its own,
+       and runs off the main thread, the letters, glow and all, not drawn again for every frame) */
+    .homeLogo i{
+      display: inline-block; perspective: 3em; font-style: normal;
       --sx: 0.035em;
       text-shadow:
         calc(var(--sx) * -1) 0 0 rgba(var(--om-pink),0.95),
@@ -465,19 +470,13 @@
         0 0.15em 0 rgba(0,0,0,0.9),
         0 0 0.3em rgba(255,255,255,0.65),
         0 0 0.7em rgba(var(--om-orange),0.45);
-      animation: letterHop 1.9s ease-in-out infinite, rgbGlitch 3.7s steps(1, end) infinite;
-      animation-delay: calc(var(--i) * -0.16s), calc(var(--i) * -0.61s);
     }
+    /* (the glitch, a moment at a time, each letter in turn: src/home.js stepGlitch) */
+    .homeLogo i[data-g="a"]{ --sx: 0.12em; transform: translateX(0.03em) skewX(-6deg); }
+    .homeLogo i[data-g="b"]{ --sx: -0.06em; transform: translateX(-0.02em); }
+    .homeLogo i[data-g="c"]{ --sx: 0.07em; }
     .homeLogo b{ display: inline-block; font-weight: inherit; }
     @property --sx{ syntax: "<length>"; inherits: true; initial-value: 0.035em; }
-    @keyframes rgbGlitch{
-      0%, 100%{ --sx: 0.035em; }
-      61%{ --sx: 0.12em; transform: translateX(0.03em) skewX(-6deg); }
-      63%{ --sx: -0.06em; transform: translateX(-0.02em); }
-      65%{ --sx: 0.035em; }
-      88%{ --sx: 0.07em; }
-      89%{ --sx: 0.035em; }
-    }
     @keyframes logoZoom{ 0%, 100%{ transform: scale(0.94) rotate(-2.5deg); } 50%{ transform: scale(1.06) rotate(2.5deg); } }
     @keyframes letterHop{ 0%, 100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-0.08em) rotate(-4deg); } }
     /* the moves (src/home.js picks one every few seconds), passed from letter to letter */
@@ -1762,7 +1761,7 @@
         <div id="overlay" class="overlay show">
           <div id="pieceCard" class="pieceCard" hidden></div>
           <div class="msg panel homeMenu" id="panelMenu" hidden>
-            <div class="homeLogoWrap"><div class="homeLogo" id="homeLogo" role="img" aria-label="Estrix"><span style="--i:0;--h:350"><b>E</b></span><span style="--i:1;--h:35"><b>S</b></span><span style="--i:2;--h:58"><b>T</b></span><span style="--i:3;--h:140"><b>R</b></span><span style="--i:4;--h:200"><b>I</b></span><span style="--i:5;--h:275"><b>X</b></span></div></div>
+            <div class="homeLogoWrap"><div class="homeLogo" id="homeLogo" role="img" aria-label="Estrix"><span style="--i:0;--h:350"><i><b>E</b></i></span><span style="--i:1;--h:35"><i><b>S</b></i></span><span style="--i:2;--h:58"><i><b>T</b></i></span><span style="--i:3;--h:140"><i><b>R</b></i></span><span style="--i:4;--h:200"><i><b>I</b></i></span><span style="--i:5;--h:275"><i><b>X</b></i></span></div></div>
             <!-- (in this order down a phone; on a wider screen, Classic in the middle and the rest
                  round it: index.html .homeModes) -->
             <div class="homeModes">
@@ -1777,7 +1776,7 @@
               <button id="btnAchievements" class="secondary small">Achievements <span id="achCount"></span></button>
             </div>
             <div class="menuRow homeRow" id="devRow" hidden><button id="btnDevTools" class="secondary small">Developer tools</button></div>
-            <div class="small" id="gameVersion">version 202610201906</div>
+            <div class="small" id="gameVersion">version 202610221613</div>
           </div>
 
           <div class="msg panel devToolsPanel" id="panelDevTools" hidden>
@@ -1821,7 +1820,7 @@
               <h3>Modes</h3>
               <div id="howtoModes"></div>
 
-              <p class="small menuFoot">[<span class="gameName">Estrix</span> version 202610201906 copyright 2026 geometrixgamestudio@gmail.com]</p>
+              <p class="small menuFoot">[<span class="gameName">Estrix</span> version 202610221613 copyright 2026 geometrixgamestudio@gmail.com]</p>
             </div>
             <div class="panelBtns">
               <button data-back>Back</button>

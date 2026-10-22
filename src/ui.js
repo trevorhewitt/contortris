@@ -202,7 +202,7 @@ function showGameName() {
       const s = document.createElement("span");
       if (big) s.style.setProperty("--i", String(i));
       s.style.setProperty("--h", hues[i % hues.length]);
-      if (big) s.appendChild(document.createElement("b")).textContent = ch; else s.textContent = ch;
+      if (big) s.appendChild(document.createElement("i")).appendChild(document.createElement("b")).textContent = ch; else s.textContent = ch;
       logo.appendChild(s);
     });
     if (big) logo.setAttribute("aria-label", name);
@@ -217,6 +217,14 @@ function showGameName() {
 export function bindUI({ state, renderer, achievements }) {
   const $ = (id) => document.getElementById(id);
   showGameName();
+
+  // The edges (index.html .edge), all torn a little further apart at once, for a moment every
+  // so often: a class on the page (not with calmer animations, src/settings.js)
+  setInterval(() => {
+    if (document.body.classList.contains("calmFx")) return;
+    document.documentElement.classList.add("edgeTorn");
+    setTimeout(() => document.documentElement.classList.remove("edgeTorn"), 100);
+  }, 6700);
 
   const scoreText = $("scoreText");
   const overlay = $("overlay");
@@ -1583,7 +1591,13 @@ export function bindUI({ state, renderer, achievements }) {
         if ((fontIn && !home.warming()) || performance.now() - t0 > (CONFIG.home.bootMaxMs ?? 2500)) {
           // (the loading screen fills its bar the rest of the way, then goes: src/loading.js)
           // (and from then on, the frames count towards the look's tier: src/particles.js)
-          const show = () => { document.body.classList.remove("booting"); fxTierReady(); };
+          // (and once it's faded, the loading screen out of the page altogether: its word's
+          // jitter, hidden, still had the browser restyling it for every frame)
+          const show = () => {
+            document.body.classList.remove("booting");
+            fxTierReady();
+            setTimeout(() => { const boot = $("boot"); if (boot) boot.style.display = "none"; }, 700);
+          };
           if (window.__loading) window.__loading.done(show); else show();
         } else requestAnimationFrame(reveal);
       };

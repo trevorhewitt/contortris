@@ -570,6 +570,20 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
     logoFx = next;
   }
 
+  // The letters' glitch (index.html .homeLogo i[data-g]), each in its turn, a moment at a time:
+  // set from here, as an animation of it (its colours a custom property, which only the main
+  // thread can animate) had the browser restyling the letters for every frame, glitch or not.
+  const GLITCH_MS = 3700, GLITCH = [[0.61, "a"], [0.63, "b"], [0.65, ""], [0.88, "c"], [0.89, ""]];
+  const glitching = logo?.getElementsByTagName("i") ?? [], glitchNow = [];
+  function stepGlitch(now) {
+    for (let k = 0; k < glitching.length; k++) {
+      const u = ((now + k * 610) % GLITCH_MS) / GLITCH_MS;
+      let g = "";
+      if (!reduced) for (const [at, s] of GLITCH) if (u >= at) g = s;
+      if (glitchNow[k] !== g) glitching[k].dataset.g = glitchNow[k] = g;
+    }
+  }
+
   /* ---------- the effects over it ---------- */
 
   const MOODS = ["embers", "sparkles", "confetti", "comets", "snow"];
@@ -1082,11 +1096,13 @@ export function createHome({ state, boardCanvas, setBoardSize, restoreBoard, set
       else { camera.step(dt, now); camera.draw(); }
       stepFx(dt, now);
       stepLogo(now);
+      stepGlitch(now);
       if (phase === "home" && now >= idleAt && !document.hidden && idleFrom()) goIdle();
     } else if (phase === "off") {
       // (the game over, left alone: no game going on behind it any more)
       if (now >= idleAt && !document.hidden && idleFrom()) goIdle();
     } else if (phase === "starting") {
+      stepGlitch(now);
       if (warp) drawBurst(dt);
       if (now >= endAt) finishStart();
     }
