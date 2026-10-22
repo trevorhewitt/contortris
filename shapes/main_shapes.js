@@ -115429,7 +115429,7 @@ export const SHAPES = [
     rotation: {
         "mode": "any"
       },
-    frequency: 1,
+    frequency: 0,
   },
   {
     id: "emotion_being_a_piece",
